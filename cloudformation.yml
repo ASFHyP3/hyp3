@@ -32,6 +32,7 @@ Resources:
       ComputeEnvironmentName: !Ref AWS::StackName
       ComputeResources:
         Type: SPOT
+        SpotIamFleetRole: !Ref FleetServiceRole
         BidPercentage: 100
         MinvCpus: 0
         MaxvCpus: 40
@@ -130,3 +131,17 @@ Resources:
           Effect: Allow
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+
+  FleetServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-fleet-service-role"
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: ec2.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/aws-service-role/AWSEC2FleetServiceRolePolicy
