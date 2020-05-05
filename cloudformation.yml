@@ -2,9 +2,6 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  BatchServiceRole:
-    Type: String
-
   InstanceRole:
     Type: String
 
@@ -96,7 +93,7 @@ Resources:
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Ref AWS::StackName
+      RoleName: !Sub "AWS::StackName-task-role"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -112,3 +109,17 @@ Resources:
           - Effect: Allow
             Action: s3:PutObject
             Resource: !Sub "arn:aws:s3:::${Bucket}/*"
+
+  BatchServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "AWS::StackName-batch-service-role"
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: batch.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
