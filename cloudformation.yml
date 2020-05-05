@@ -2,9 +2,6 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  InstanceRole:
-    Type: String
-
   SpotFleetRole:
     Type: String
 
@@ -123,3 +120,17 @@ Resources:
           Effect: Allow
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
+
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "AWS::StackName-instance-role"
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: ecs.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
