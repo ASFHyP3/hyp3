@@ -41,7 +41,7 @@ Resources:
         MaxvCpus: 40
         InstanceTypes:
         - r5d.xlarge
-        InstanceRole: !Ref InstanceRole
+        InstanceRole: !Ref InstanceProfile
         SecurityGroupIds:
         - !Ref SecurityGroup
         Subnets: !Ref Subnets
@@ -134,3 +134,10 @@ Resources:
           Effect: Allow
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: !Sub "${AWS::StackName}-instance-role"
+      Roles:
+      - !Ref InstanceRole
