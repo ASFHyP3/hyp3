@@ -2,9 +2,6 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  SpotFleetRole:
-    Type: String
-
   VpcId:
     Type: AWS::EC2::VPC::Id
 
@@ -36,7 +33,6 @@ Resources:
       ComputeResources:
         Type: SPOT
         BidPercentage: 100
-        SpotIamFleetRole: !Ref SpotFleetRole
         MinvCpus: 0
         MaxvCpus: 40
         InstanceTypes:
