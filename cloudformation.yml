@@ -106,7 +106,7 @@ Resources:
   BatchServiceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "AWS::StackName-batch-service-role"
+      RoleName: !Sub "${AWS::StackName}-batch-service-role"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -120,7 +120,7 @@ Resources:
   InstanceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "AWS::StackName-instance-role"
+      RoleName: !Sub "${AWS::StackName}-instance-role"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
