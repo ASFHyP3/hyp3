@@ -1,0 +1,114 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+  BatchServiceRole:
+    Type: String
+
+  InstanceRole:
+    Type: String
+
+  SpotFleetRole:
+    Type: String
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+  Subnets:
+    Type: List<AWS::EC2::Subnet::Id>
+
+  EDLUsername:
+    Type: String
+
+  EDLPassword:
+    Type: String
+    NoEcho: true
+
+Resources:
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Ref AWS::StackName
+      GroupDescription: !Sub "Security group for ${AWS::StackName} machines"
+      VpcId: !Ref VpcId
+
+  ComputeEnvironment:
+    Type: AWS::Batch::ComputeEnvironment
+    Properties:
+      Type: MANAGED
+      ServiceRole: !Ref BatchServiceRole
+      ComputeEnvironmentName: !Ref AWS::StackName
+      ComputeResources:
+        Type: SPOT
+        BidPercentage: 100
+        SpotIamFleetRole: !Ref SpotFleetRole
+        MinvCpus: 0
+        MaxvCpus: 40
+        InstanceTypes:
+        - r5d.xlarge
+        InstanceRole: !Ref InstanceRole
+        SecurityGroupIds:
+        - !Ref SecurityGroup
+        Subnets: !Ref Subnets
+        Tags:
+          Name: !Ref AWS::StackName
+
+  JobQueue:
+    Type: AWS::Batch::JobQueue
+    Properties:
+      JobQueueName: !Ref AWS::StackName
+      Priority: 1
+      ComputeEnvironmentOrder:
+      - ComputeEnvironment: !Ref ComputeEnvironment
+        Order: 1
+
+  JobDefinition:
+    Type: AWS::Batch::JobDefinition
+    Properties:
+      JobDefinitionName: !Ref AWS::StackName
+      Type: container
+      Parameters:
+        granule: ""
+        bucket: !Ref Bucket
+        username: !Ref EDLUsername
+        password: !Ref EDLPassword
+      ContainerProperties:
+        Image: hello-world
+        Vcpus: 4
+        Memory: 10000
+        JobRoleArn: !GetAtt TaskRole.Arn
+        Command:
+        - --granule
+        - Ref::granule
+        - --username
+        - Ref::username
+        - --http-password
+        - Ref::password
+      RetryStrategy:
+        Attempts: 2
+
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref AWS::StackName
+  
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref AWS::StackName
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: batch.amazonaws.com
+          Effect: Allow
+      Policies:
+      - PolicyName: policy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action: s3:PutObject
+            Resource: !Sub "arn:aws:s3:::${Bucket}/*"
