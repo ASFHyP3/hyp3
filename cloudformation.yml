@@ -35,7 +35,7 @@ Resources:
       ComputeEnvironmentName: !Ref AWS::StackName
       ComputeResources:
         Type: SPOT
-        SpotIamFleetRole: !Ref SpotFleetServiceRole
+        SpotIamFleetRole: !Ref SpotFleetServiceRoleArn
         BidPercentage: 100
         MinvCpus: 0
         MaxvCpus: 40
