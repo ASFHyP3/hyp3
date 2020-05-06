@@ -41,7 +41,8 @@ Resources:
         - !Ref SecurityGroup
         TagSpecifications:
         - Tags:
-          - Name: !Ref AWS::StackName
+          - Key: Name
+            Value: !Ref AWS::StackName
         UserData:
           Fn::Base64:
             Fn::Sub: |-
