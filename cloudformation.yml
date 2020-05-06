@@ -39,6 +39,9 @@ Resources:
         InstanceType: r5d.xlarge
         SecurityGroupIds:
         - !Ref SecurityGroup
+        TagSpecifications:
+        - Tags:
+          - Name: !Ref AWS::StackName
         UserData:
           Fn::Base64:
             Fn::Sub: |-
