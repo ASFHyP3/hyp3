@@ -63,7 +63,7 @@ Resources:
         username: !Ref EDLUsername
         password: !Ref EDLPassword
       ContainerProperties:
-        Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repository}:latest
+        Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repository}:latest"
         Vcpus: 4
         Memory: 10000
         JobRoleArn: !GetAtt TaskRole.Arn
