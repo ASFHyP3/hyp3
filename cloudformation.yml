@@ -81,6 +81,11 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref AWS::StackName
+      
+  Bucket:
+   Type: AWS::ECR::Repository
+   Properties:
+     BucketName: !Ref AWS::StackName
   
   TaskRole:
     Type: AWS::IAM::Role
