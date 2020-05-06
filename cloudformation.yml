@@ -46,6 +46,10 @@ Resources:
           Tags:
           - Key: Name
             Value: !Ref AWS::StackName
+        - ResourceType: volume
+          Tags:
+          - Key: Name
+            Value: !Ref AWS::StackName
         UserData:
           Fn::Base64:
             Fn::Sub: |-
