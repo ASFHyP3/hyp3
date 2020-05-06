@@ -37,6 +37,8 @@ Resources:
           Name: !Ref InstanceProfile
         ImageId: !Ref AmiId
         InstanceType: r5d.xlarge
+        InstanceMarketOptions:
+          MarketType: spot
         SecurityGroupIds:
         - !Ref SecurityGroup
         TagSpecifications:
