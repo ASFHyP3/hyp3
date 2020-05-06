@@ -20,7 +20,6 @@ Resources:
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: !Ref AWS::StackName
       GroupDescription: !Sub "Security group for ${AWS::StackName} machines"
       VpcId: !Ref VpcId
 
@@ -29,7 +28,6 @@ Resources:
     Properties:
       Type: MANAGED
       ServiceRole: !GetAtt BatchServiceRole.Arn
-      ComputeEnvironmentName: !Ref AWS::StackName
       ComputeResources:
         Type: EC2
         MinvCpus: 0
@@ -40,13 +38,10 @@ Resources:
         SecurityGroupIds:
         - !Ref SecurityGroup
         Subnets: !Ref Subnets
-        Tags:
-          Name: !Ref AWS::StackName
 
   JobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
-      JobQueueName: !Ref AWS::StackName
       Priority: 1
       ComputeEnvironmentOrder:
       - ComputeEnvironment: !Ref ComputeEnvironment
@@ -55,7 +50,6 @@ Resources:
   JobDefinition:
     Type: AWS::Batch::JobDefinition
     Properties:
-      JobDefinitionName: !Ref AWS::StackName
       Type: container
       Parameters:
         granule: ""
@@ -79,13 +73,10 @@ Resources:
 
   Bucket:
     Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Ref AWS::StackName
   
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "${AWS::StackName}-task-role"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -105,7 +96,6 @@ Resources:
   BatchServiceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "${AWS::StackName}-batch-service-role"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -119,7 +109,6 @@ Resources:
   InstanceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "${AWS::StackName}-instance-role"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -133,6 +122,5 @@ Resources:
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      InstanceProfileName: !Sub "${AWS::StackName}-instance-role"
       Roles:
       - !Ref InstanceRole
