@@ -27,41 +27,42 @@ Resources:
       GroupName: !Ref AWS::StackName
       GroupDescription: !Sub "Security group for ${AWS::StackName} machines"
       VpcId: !Ref VpcId
-  
+
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateName: !Ref AWS::StackName
       LaunchTemplateData:
-        IamInstanceProfile: 
+        IamInstanceProfile:
           Name: !Ref InstanceProfile
         ImageId: !Ref AmiId
         InstanceType: r5d.xlarge
         SecurityGroupIds:
         - !Ref SecurityGroup
         TagSpecifications:
-        - Tags:
+        - ResourceType: instance
+          Tags:
           - Key: Name
             Value: !Ref AWS::StackName
         UserData:
           Fn::Base64:
             Fn::Sub: |-
-              Content-Type: multipart/mixed; boundary="==BOUNDARY==" 
-              MIME-Version: 1.0 
+              Content-Type: multipart/mixed; boundary="==BOUNDARY=="
+              MIME-Version: 1.0
 
-              --==BOUNDARY== 
-              MIME-Version: 1.0 
+              --==BOUNDARY==
+              MIME-Version: 1.0
               Content-Type: text/x-shellscript; charset="us-ascii"
 
-              #!/bin/bash 
+              #!/bin/bash
               yum install -y awscli
               ECS_CLUSTER=$(aws batch describe-compute-environments --compute-environments ${ComputeEnvironment} --query computeEnvironments[].ecsClusterArn --output text --region ${AWS::Region})
               echo "ECS_CLUSTER=$ECS_CLUSTER" >> /etc/ecs/ecs.config
 
-              echo ECS_DISABLE_IMAGE_CLEANUP=false>>/etc/ecs/ecs.config 
-              echo ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=2m>>/etc/ecs/ecs.config 
-              echo ECS_IMAGE_CLEANUP_INTERVAL=10m>>/etc/ecs/ecs.config 
-              echo ECS_IMAGE_MINIMUM_CLEANUP_AGE=10m>>/etc/ecs/ecs.config 
+              echo ECS_DISABLE_IMAGE_CLEANUP=false>>/etc/ecs/ecs.config
+              echo ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=2m>>/etc/ecs/ecs.config
+              echo ECS_IMAGE_CLEANUP_INTERVAL=10m>>/etc/ecs/ecs.config
+              echo ECS_IMAGE_MINIMUM_CLEANUP_AGE=10m>>/etc/ecs/ecs.config
               echo ECS_NUM_IMAGES_DELETE_PER_CYCLE=5>>/etc/ecs/ecs.config
               echo ECS_RESERVED_MEMORY=32>>/etc/ecs/ecs.config
               echo 'OPTIONS="$''OPTIONS --storage-opt dm.basesize=170G"' >> /etc/sysconfig/docker
@@ -84,7 +85,7 @@ Resources:
       VPCZoneIdentifier: !Ref Subnets
 
 
-  ComputeEnvironment: 
+  ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       ComputeEnvironmentName: !Ref AWS::StackName
@@ -130,12 +131,12 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref AWS::StackName
-      
+
   Repository:
    Type: AWS::ECR::Repository
    Properties:
      RepositoryName: !Ref AWS::StackName
-  
+
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
