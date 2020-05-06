@@ -96,7 +96,7 @@ Resources:
         Statement:
           Action: sts:AssumeRole
           Principal:
-            Service: ecs.amazonaws.com
+            Service: ecs-tasks.amazonaws.com
           Effect: Allow
       Policies:
       - PolicyName: policy
