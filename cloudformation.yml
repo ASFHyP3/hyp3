@@ -82,10 +82,10 @@ Resources:
     Properties:
       BucketName: !Ref AWS::StackName
       
-  Bucket:
+  Repository:
    Type: AWS::ECR::Repository
    Properties:
-     BucketName: !Ref AWS::StackName
+     RepositoryName: !Ref AWS::StackName
   
   TaskRole:
     Type: AWS::IAM::Role
