@@ -96,7 +96,7 @@ Resources:
         Statement:
           Action: sts:AssumeRole
           Principal:
-            Service: batch.amazonaws.com
+            Service: ecs.amazonaws.com
           Effect: Allow
       Policies:
       - PolicyName: policy
