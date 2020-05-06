@@ -138,6 +138,6 @@ Resources:
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      InstanceProfileName: !Sub "${AWS::StackName}-instance-role"
+      InstanceProfileName: !Ref InstanceRole
       Roles:
       - !Ref InstanceRole
