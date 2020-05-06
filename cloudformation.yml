@@ -14,9 +14,6 @@ Parameters:
   EDLPassword:
     Type: String
     NoEcho: true
-  
-  SpotFleetServiceRoleArn:
-    Type: String
 
 Resources:
 
@@ -34,9 +31,7 @@ Resources:
       ServiceRole: !GetAtt BatchServiceRole.Arn
       ComputeEnvironmentName: !Ref AWS::StackName
       ComputeResources:
-        Type: SPOT
-        SpotIamFleetRole: !Ref SpotFleetServiceRoleArn
-        BidPercentage: 100
+        Type: EC2
         MinvCpus: 0
         MaxvCpus: 40
         InstanceTypes:
