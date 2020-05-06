@@ -51,7 +51,7 @@ Resources:
 
               #!/bin/bash 
               echo ECS_CLUSTER=$(aws batch describe-compute-environments --compute-environments ${ComputeEnvironment} --query computeEnvironments[].ecsClusterArn --output text)
-              echo "ECS_CLUSTER=$ECSCLUSTER" >> /etc/ecs/ecs.config
+              echo "ECS_CLUSTER=$ECS_CLUSTER" >> /etc/ecs/ecs.config
 
               echo ECS_DISABLE_IMAGE_CLEANUP=false>>/etc/ecs/ecs.config 
               echo ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=2m>>/etc/ecs/ecs.config 
