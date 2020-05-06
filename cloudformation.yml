@@ -125,7 +125,7 @@ Resources:
         Statement:
           Action: sts:AssumeRole
           Principal:
-            Service: ecs.amazonaws.com
+            Service: ec2.amazonaws.com
           Effect: Allow
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
