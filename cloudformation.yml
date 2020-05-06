@@ -15,6 +15,10 @@ Parameters:
     Type: String
     NoEcho: true
 
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+
 Resources:
 
   SecurityGroup:
@@ -23,25 +27,63 @@ Resources:
       GroupName: !Ref AWS::StackName
       GroupDescription: !Sub "Security group for ${AWS::StackName} machines"
       VpcId: !Ref VpcId
-
-  ComputeEnvironment:
-    Type: AWS::Batch::ComputeEnvironment
+  
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
     Properties:
-      Type: MANAGED
-      ServiceRole: !GetAtt BatchServiceRole.Arn
-      ComputeEnvironmentName: !Ref AWS::StackName
-      ComputeResources:
-        Type: EC2
-        MinvCpus: 0
-        MaxvCpus: 40
-        InstanceTypes:
-        - r5d.xlarge
-        InstanceRole: !Ref InstanceProfile
+      LaunchTemplateName: !Ref AWS::StackName
+      LaunchTemplateData:
+        IamInstanceProfile: !Ref InstanceProfile
+        ImageId: !Ref AmiId
+        InstanceType: r5d.xlarge
         SecurityGroupIds:
         - !Ref SecurityGroup
-        Subnets: !Ref Subnets
-        Tags:
-          Name: !Ref AWS::StackName
+        UserData:
+          Fn::Base64:
+            Fn::Sub: |-
+              Content-Type: multipart/mixed; boundary="==BOUNDARY==" 
+              MIME-Version: 1.0 
+
+              --==BOUNDARY== 
+              MIME-Version: 1.0 
+              Content-Type: text/x-shellscript; charset="us-ascii"
+
+              #!/bin/bash 
+              echo ECS_CLUSTER=$(aws batch describe-compute-environments --compute-environments ${ComputeEnvironment} --query computeEnvironments[].ecsClusterArn --output text)
+              echo "ECS_CLUSTER=$ECSCLUSTER" >> /etc/ecs/ecs.config
+
+              echo ECS_DISABLE_IMAGE_CLEANUP=false>>/etc/ecs/ecs.config 
+              echo ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=2m>>/etc/ecs/ecs.config 
+              echo ECS_IMAGE_CLEANUP_INTERVAL=10m>>/etc/ecs/ecs.config 
+              echo ECS_IMAGE_MINIMUM_CLEANUP_AGE=10m>>/etc/ecs/ecs.config 
+              echo ECS_NUM_IMAGES_DELETE_PER_CYCLE=5>>/etc/ecs/ecs.config
+              echo ECS_RESERVED_MEMORY=32>>/etc/ecs/ecs.config
+              echo 'OPTIONS="$''OPTIONS --storage-opt dm.basesize=170G"' >> /etc/sysconfig/docker
+              /etc/init.d/docker restart
+              mkfs /dev/nvme2n1
+              vgextend -y docker /dev/nvme2n1
+              lvextend -L+139G /dev/docker/docker-pool
+
+              --==BOUNDARY==--
+
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: !Ref AWS::StackName
+      LaunchTemplate:
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+        LaunchTemplateId: !Ref LaunchTemplate
+      MinSize: "0"
+      MaxSize: "10"
+      VPCZoneIdentifier: !Ref Subnets
+
+
+  ComputeEnvironment: 
+    Type: AWS::Batch::ComputeEnvironment
+    Properties:
+      ComputeEnvironmentName: !Ref AWS::StackName
+      ServiceRole: !GetAtt BatchServiceRole.Arn
+      Type: UNMANAGED
 
   JobQueue:
     Type: AWS::Batch::JobQueue
@@ -135,6 +177,14 @@ Resources:
           Effect: Allow
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+            - Effect: Allow
+              Action: batch:DescribeComputeEnvironments
+              Resource: "*"
+          PolicyName: policy
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
