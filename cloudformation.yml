@@ -68,12 +68,13 @@ Resources:
         Memory: 10000
         JobRoleArn: !GetAtt TaskRole.Arn
         Command:
-        - --granule
-        - Ref::granule
         - --username
         - Ref::username
-        - --http-password
+        - --password
         - Ref::password
+        - --bucket
+        - Ref::bucket
+        - Ref::granule
       RetryStrategy:
         Attempts: 2
 
