@@ -50,7 +50,8 @@ Resources:
               Content-Type: text/x-shellscript; charset="us-ascii"
 
               #!/bin/bash 
-              ECS_CLUSTER=$(aws batch describe-compute-environments --compute-environments ${ComputeEnvironment} --query computeEnvironments[].ecsClusterArn --output text)
+              yum install -y awscli
+              ECS_CLUSTER=$(aws batch describe-compute-environments --compute-environments ${ComputeEnvironment} --query computeEnvironments[].ecsClusterArn --output text --region ${AWS::Region})
               echo "ECS_CLUSTER=$ECS_CLUSTER" >> /etc/ecs/ecs.config
 
               echo ECS_DISABLE_IMAGE_CLEANUP=false>>/etc/ecs/ecs.config 
@@ -61,8 +62,8 @@ Resources:
               echo ECS_RESERVED_MEMORY=32>>/etc/ecs/ecs.config
               echo 'OPTIONS="$''OPTIONS --storage-opt dm.basesize=170G"' >> /etc/sysconfig/docker
               /etc/init.d/docker restart
-              mkfs /dev/nvme2n1
-              vgextend -y docker /dev/nvme2n1
+              mkfs /dev/nvme1n1
+              vgextend -y docker /dev/nvme1n1
               lvextend -L+139G /dev/docker/docker-pool
 
               --==BOUNDARY==--
