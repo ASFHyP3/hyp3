@@ -65,7 +65,7 @@ Resources:
       ContainerProperties:
         Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repository}:latest"
         Vcpus: 4
-        Memory: 10000
+        Memory: 30000
         JobRoleArn: !GetAtt TaskRole.Arn
         Command:
         - --username
