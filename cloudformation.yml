@@ -21,6 +21,43 @@ Parameters:
 
 Resources:
 
+  LaunchInstanceStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        InstanceRoleArn: !GetAtt InstanceRole.Arn
+      TemplateURL: launch-instance/cloudformation.yml
+
+  EventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Ref AWS::StackName
+      EventPattern: !Sub |-
+        {
+          "source": ["aws.batch"],
+          "detail-type": ["Batch Job State Change"],
+          "detail": {
+            "jobQueue": ["${JobQueue}"],
+            "status": ["RUNNABLE"]
+          }
+        }
+      Targets:
+      - Arn: !GetAtt LaunchInstanceStack.Outputs.LambdaArn
+        Id: lambda
+        Input: !Sub |-
+          {
+            "LaunchTemplateId": "${LaunchTemplate}",
+            "Version": "${LaunchTemplate.LatestVersionNumber}"
+          }
+
+  EventPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt LaunchInstanceStack.Outputs.LambdaArn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt EventRule.Arn
+
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -78,17 +115,6 @@ Resources:
               lvextend -L+139G /dev/docker/docker-pool
 
               --==BOUNDARY==--
-
-  AutoScalingGroup:
-    Type: AWS::AutoScaling::AutoScalingGroup
-    Properties:
-      AutoScalingGroupName: !Ref AWS::StackName
-      LaunchTemplate:
-        Version: !GetAtt LaunchTemplate.LatestVersionNumber
-        LaunchTemplateId: !Ref LaunchTemplate
-      MinSize: "0"
-      MaxSize: "10"
-      VPCZoneIdentifier: !Ref Subnets
 
 
   ComputeEnvironment:
