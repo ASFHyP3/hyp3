@@ -84,12 +84,11 @@ Resources:
     Properties:
       AutoScalingGroupName: !Ref AWS::StackName
       LaunchTemplate:
-        Version: !GetAtt LaunchTemplate.LatestVersionNumber
         LaunchTemplateId: !Ref LaunchTemplate
-      MinSize: "0"
-      MaxSize: "10"
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+      MinSize: 0
+      MaxSize: 10
       VPCZoneIdentifier: !Ref Subnets
-
 
   ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
@@ -191,13 +190,13 @@ Resources:
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
       Policies:
-        - PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-            - Effect: Allow
-              Action: batch:DescribeComputeEnvironments
-              Resource: "*"
-          PolicyName: policy
+      - PolicyName: policy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action: batch:DescribeComputeEnvironments
+            Resource: "*"
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
