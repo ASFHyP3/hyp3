@@ -155,8 +155,6 @@ Resources:
         - --bucket
         - Ref::bucket
         - Ref::granule
-      RetryStrategy:
-        Attempts: 2
 
   Bucket:
     Type: AWS::S3::Bucket
