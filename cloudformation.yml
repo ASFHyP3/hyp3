@@ -1,0 +1,207 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+  Subnets:
+    Type: List<AWS::EC2::Subnet::Id>
+
+  EDLUsername:
+    Type: String
+
+  EDLPassword:
+    Type: String
+    NoEcho: true
+
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+
+Resources:
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Ref AWS::StackName
+      GroupDescription: !Sub "Security group for ${AWS::StackName} machines"
+      VpcId: !Ref VpcId
+
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Ref AWS::StackName
+      LaunchTemplateData:
+        IamInstanceProfile:
+          Name: !Ref InstanceProfile
+        ImageId: !Ref AmiId
+        InstanceType: r5d.xlarge
+        InstanceMarketOptions:
+          MarketType: spot
+        SecurityGroupIds:
+        - !Ref SecurityGroup
+        TagSpecifications:
+        - ResourceType: instance
+          Tags:
+          - Key: Name
+            Value: !Ref AWS::StackName
+        - ResourceType: volume
+          Tags:
+          - Key: Name
+            Value: !Ref AWS::StackName
+        UserData:
+          Fn::Base64:
+            Fn::Sub: |-
+              Content-Type: multipart/mixed; boundary="==BOUNDARY=="
+              MIME-Version: 1.0
+
+              --==BOUNDARY==
+              MIME-Version: 1.0
+              Content-Type: text/x-shellscript; charset="us-ascii"
+
+              #!/bin/bash
+              yum install -y awscli
+              ECS_CLUSTER=$(aws batch describe-compute-environments --compute-environments ${ComputeEnvironment} --query computeEnvironments[].ecsClusterArn --output text --region ${AWS::Region})
+              echo "ECS_CLUSTER=$ECS_CLUSTER" >> /etc/ecs/ecs.config
+
+              echo ECS_DISABLE_IMAGE_CLEANUP=false>>/etc/ecs/ecs.config
+              echo ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=2m>>/etc/ecs/ecs.config
+              echo ECS_IMAGE_CLEANUP_INTERVAL=10m>>/etc/ecs/ecs.config
+              echo ECS_IMAGE_MINIMUM_CLEANUP_AGE=10m>>/etc/ecs/ecs.config
+              echo ECS_NUM_IMAGES_DELETE_PER_CYCLE=5>>/etc/ecs/ecs.config
+              echo ECS_RESERVED_MEMORY=32>>/etc/ecs/ecs.config
+              echo 'OPTIONS="$''OPTIONS --storage-opt dm.basesize=170G"' >> /etc/sysconfig/docker
+              /etc/init.d/docker restart
+              mkfs /dev/nvme1n1
+              vgextend -y docker /dev/nvme1n1
+              lvextend -L+139G /dev/docker/docker-pool
+
+              --==BOUNDARY==--
+
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: !Ref AWS::StackName
+      LaunchTemplate:
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+        LaunchTemplateId: !Ref LaunchTemplate
+      MinSize: "0"
+      MaxSize: "10"
+      VPCZoneIdentifier: !Ref Subnets
+
+
+  ComputeEnvironment:
+    Type: AWS::Batch::ComputeEnvironment
+    Properties:
+      ComputeEnvironmentName: !Ref AWS::StackName
+      ServiceRole: !GetAtt BatchServiceRole.Arn
+      Type: UNMANAGED
+
+  JobQueue:
+    Type: AWS::Batch::JobQueue
+    Properties:
+      JobQueueName: !Ref AWS::StackName
+      Priority: 1
+      ComputeEnvironmentOrder:
+      - ComputeEnvironment: !Ref ComputeEnvironment
+        Order: 1
+
+  JobDefinition:
+    Type: AWS::Batch::JobDefinition
+    Properties:
+      JobDefinitionName: !Ref AWS::StackName
+      Type: container
+      Parameters:
+        granule: ""
+        bucket: !Ref Bucket
+        username: !Ref EDLUsername
+        password: !Ref EDLPassword
+      ContainerProperties:
+        Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repository}:latest"
+        Vcpus: 4
+        Memory: 30000
+        JobRoleArn: !GetAtt TaskRole.Arn
+        Command:
+        - --username
+        - Ref::username
+        - --password
+        - Ref::password
+        - --bucket
+        - Ref::bucket
+        - Ref::granule
+      RetryStrategy:
+        Attempts: 2
+
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref AWS::StackName
+
+  Repository:
+   Type: AWS::ECR::Repository
+   Properties:
+     RepositoryName: !Ref AWS::StackName
+
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-task-role"
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+          Effect: Allow
+      Policies:
+      - PolicyName: policy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action: s3:PutObject
+            Resource: !Sub "arn:aws:s3:::${Bucket}/*"
+
+  BatchServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-batch-service-role"
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: batch.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
+
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-instance-role"
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: ec2.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+            - Effect: Allow
+              Action: batch:DescribeComputeEnvironments
+              Resource: "*"
+          PolicyName: policy
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: !Ref InstanceRole
+      Roles:
+      - !Ref InstanceRole
