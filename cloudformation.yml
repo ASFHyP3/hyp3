@@ -116,7 +116,6 @@ Resources:
 
               --==BOUNDARY==--
 
-
   ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
@@ -217,13 +216,13 @@ Resources:
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
       Policies:
-        - PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-            - Effect: Allow
-              Action: batch:DescribeComputeEnvironments
-              Resource: "*"
-          PolicyName: policy
+      - PolicyName: policy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action: batch:DescribeComputeEnvironments
+            Resource: "*"
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
