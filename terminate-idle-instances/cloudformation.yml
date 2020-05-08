@@ -75,7 +75,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Name: !Ref AWS::StackName
-      ScheduleExpression: "rate(1 minutes)"
+      ScheduleExpression: "rate(1 minute)"
       Targets:
       - Arn: !GetAtt Lambda.Arn
         Id: lambda
