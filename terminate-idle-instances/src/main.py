@@ -6,7 +6,7 @@ ec2 = boto3.client('ec2')
 
 
 def lambda_handler(event, context):
-    compute_environment_arn = event['computeEnvironmentArn']
+    compute_environment_arn = event['ComputeEnvironmentArn']
 
     response = batch.describe_compute_environments(computeEnvironments=[compute_environment_arn])
     ecs_cluster_arn = response['computeEnvironments'][0]['ecsClusterArn']
