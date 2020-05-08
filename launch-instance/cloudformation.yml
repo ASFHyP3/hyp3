@@ -65,5 +65,5 @@ Resources:
       Handler: main.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
-      Runtime: python3.7
+      Runtime: python3.8
       Timeout: 30
