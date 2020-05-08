@@ -15,6 +15,10 @@ Parameters:
     Type: String
     NoEcho: true
 
+  RtcGammaImage:
+    Type: String
+
+
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -150,7 +154,7 @@ Resources:
         username: !Ref EDLUsername
         password: !Ref EDLPassword
       ContainerProperties:
-        Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repository}:latest"
+        Image: !Ref RtcGammaImage
         Vcpus: 4
         Memory: 30000
         JobRoleArn: !GetAtt TaskRole.Arn
@@ -169,11 +173,6 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref AWS::StackName
-
-  Repository:
-   Type: AWS::ECR::Repository
-   Properties:
-     RepositoryName: !Ref AWS::StackName
 
   TaskRole:
     Type: AWS::IAM::Role
