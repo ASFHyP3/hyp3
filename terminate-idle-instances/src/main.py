@@ -15,7 +15,7 @@ def lambda_handler(event, context):
     min_instance_age_before_delete = datetime.now() - timedelta(minutes=5)
     response = ecs.list_container_instances(
         cluster=ecs_cluster_arn, 
-        filter=f'runningTasksCount==0 and registered at > {min_instance_age_before_delete.strftime("%Y-%m-%dT%H:%M:%SZ")}'
+        filter=f'runningTasksCount==0 and registered at < {min_instance_age_before_delete.strftime("%Y-%m-%dT%H:%M:%SZ")}'
     )
     container_instance_arns = response['containerInstanceArns']
 
