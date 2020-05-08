@@ -45,8 +45,11 @@ Resources:
             Resource: !GetAtt DeadLetterQueue.Arn
           - Effect: Allow
             Action:
-            - ec2:*
-            Resource: !Sub "arn:aws:ec2:${AWS::Region}:*"
+            - batch:DescribeComputeEnvironments
+            - ecs:ListContainerInstances
+            - ecs:DescribeContainerInstances
+            - ec2:TerminateInstances
+            Resource: "*"
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -72,7 +75,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Name: !Ref AWS::StackName
-      ScheduleExpression: "rate(2 minutes)"
+      ScheduleExpression: "rate(1 minutes)"
       Targets:
       - Arn: !GetAtt Lambda.Arn
         Id: lambda
