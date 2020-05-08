@@ -15,6 +15,9 @@ Parameters:
     Type: String
     NoEcho: true
 
+  RtcGammaImage:
+    Type: String
+
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -27,6 +30,13 @@ Resources:
       Parameters:
         InstanceRoleArn: !GetAtt InstanceRole.Arn
       TemplateURL: launch-instance/cloudformation.yml
+
+  TerminateIdleInstancesStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ComputeEnvironmentArn: !Ref ComputeEnvironment
+      TemplateURL: terminate-idle-instances/cloudformation.yml
 
   EventRule:
     Type: AWS::Events::Rule
@@ -132,10 +142,10 @@ Resources:
       - ComputeEnvironment: !Ref ComputeEnvironment
         Order: 1
 
-  JobDefinition:
+  RtcGammaJobDefinition:
     Type: AWS::Batch::JobDefinition
     Properties:
-      JobDefinitionName: !Ref AWS::StackName
+      JobDefinitionName: !Sub "${AWS::StackName}-rtc-gamma"
       Type: container
       Parameters:
         granule: ""
@@ -143,7 +153,7 @@ Resources:
         username: !Ref EDLUsername
         password: !Ref EDLPassword
       ContainerProperties:
-        Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repository}:latest"
+        Image: !Ref RtcGammaImage
         Vcpus: 4
         Memory: 30000
         JobRoleArn: !GetAtt TaskRole.Arn
@@ -155,16 +165,13 @@ Resources:
         - --bucket
         - Ref::bucket
         - Ref::granule
+      Timeout:
+        AttemptDurationSeconds: 5400
 
   Bucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref AWS::StackName
-
-  Repository:
-   Type: AWS::ECR::Repository
-   Properties:
-     RepositoryName: !Ref AWS::StackName
 
   TaskRole:
     Type: AWS::IAM::Role
