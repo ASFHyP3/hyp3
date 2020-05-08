@@ -162,6 +162,8 @@ Resources:
         - --bucket
         - Ref::bucket
         - Ref::granule
+      Timeout:
+        AttemptDurationSeconds: 5400
 
   Bucket:
     Type: AWS::S3::Bucket
