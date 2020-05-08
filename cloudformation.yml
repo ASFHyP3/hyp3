@@ -142,10 +142,10 @@ Resources:
       - ComputeEnvironment: !Ref ComputeEnvironment
         Order: 1
 
-  JobDefinition:
+  RtcGammaJobDefinition:
     Type: AWS::Batch::JobDefinition
     Properties:
-      JobDefinitionName: !Ref AWS::StackName
+      JobDefinitionName: !Sub "${AWS::StackName}-rtc-gamma"
       Type: container
       Parameters:
         granule: ""
