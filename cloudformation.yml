@@ -28,6 +28,13 @@ Resources:
         InstanceRoleArn: !GetAtt InstanceRole.Arn
       TemplateURL: launch-instance/cloudformation.yml
 
+  TerminateIdleInstancesStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ComputeEnvironmentArn: !Ref ComputeEnvironment
+      TemplateURL: terminate-idle-instances/cloudformation.yml
+
   EventRule:
     Type: AWS::Events::Rule
     Properties:
