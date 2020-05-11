@@ -36,7 +36,7 @@ jobs:
         template: packaged.yml
         capabilities: CAPABILITY_NAMED_IAM
         parameter-overrides:
-          VpcId: ${{ secrets.VpcId }}
+          VpcId: ${{ secrets.VPC_ID }}
           EDLUsername: ${{ secrets.EDL_USERNAME }}
           EDLPassword: ${{ secrets.EDL_PASSWORD }}
           RtcGammaImage: ${RTC_GAMMA_REPOSITORY}:${MATURITY}
