@@ -5,9 +5,6 @@ Parameters:
   VpcId:
     Type: AWS::EC2::VPC::Id
 
-  Subnets:
-    Type: List<AWS::EC2::Subnet::Id>
-
   EDLUsername:
     Type: String
 
