@@ -6,7 +6,7 @@ name: Flake8 Python Linting
 on: [push, pull_request]
 
 jobs:
-  build:
+  flake8:
 
     runs-on: ubuntu-latest
     strategy:
