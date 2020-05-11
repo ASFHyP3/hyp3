@@ -1,0 +1,26 @@
+name: Lint CloudFormation Templates
+
+on: [push, pull_request]
+
+jobs:
+  cfn-lint:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install cfn-lint
+
+    - name: Run cfn-lint
+      # ingore "W3002 This code may only work with `package` cli command" warning
+      run: cfn-lint --ignore-checks W3002 --template *.yml **/*.yml
