@@ -1,6 +1,7 @@
 import boto3
 
-ec2 = boto3.client('ec2')
+EC2 = boto3.client('ec2')
+
 
 def lambda_handler(event, context):
     print(event)
@@ -8,5 +9,5 @@ def lambda_handler(event, context):
       "LaunchTemplateId": event['LaunchTemplateId'],
       "Version": event['Version'],
     }
-    response = ec2.run_instances(LaunchTemplate=launch_template, MinCount=1, MaxCount=1)
+    response = EC2.run_instances(LaunchTemplate=launch_template, MinCount=1, MaxCount=1)
     print(response)
