@@ -6,8 +6,20 @@ on:
     - master
     - develop
 
+env:
+  AWS_REGION: us-west-2
+  TEMPLATE_BUCKET: cf-templates-aubvn3i9olmk-us-west-2
+  MATURITY: ${GITHUB_REF##*/}
+  RTC_GAMMA_IMAGE: 845172464411.dkr.ecr.us-west-2.amazonaws.com/rtc-gamma:${MATURITY}
+
+  VPC_ID: ${{ secrets.VPC_ID }}
+  EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
+  EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 jobs:
-  cf_deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,26 +29,17 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-west-2
+        aws-access-key-id: ${AWS_ACCESS_KEY_ID}
+        aws-secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+        aws-region: ${AWS_REGION}
       
     - name: Package CloudFormation Template
-      env:
-        BUCKET: cf-templates-aubvn3i9olmk-us-west-2
-      run: aws cloudformation package --template-file cloudformation.yml --s3-bucket ${BUCKET} --output-template-file packaged.yml
+      run: aws cloudformation package --template-file cloudformation.yml --s3-bucket ${TEMPLATE_BUCKET} --output-template-file packaged.yml
 
     - name: Deploy to AWS CloudFormation
       uses: aws-actions/aws-cloudformation-github-deploy@v1
-      env:
-        RTC_GAMMA_REPOSITORY: 845172464411.dkr.ecr.us-west-2.amazonaws.com/rtc-gamma
-        MATURITY: ${GITHUB_REF##*/}
       with:
         name: hyp3-${MATURITY}
         template: packaged.yml
         capabilities: CAPABILITY_NAMED_IAM
-        parameter-overrides:
-          VpcId: ${{ secrets.VPC_ID }}
-          EDLUsername: ${{ secrets.EDL_USERNAME }}
-          EDLPassword: ${{ secrets.EDL_PASSWORD }}
-          RtcGammaImage: ${RTC_GAMMA_REPOSITORY}:${MATURITY}
+        parameter-overrides: VpcId=${VPC_ID},EDLUsername=${EDL_USERNAME},EDLPassword=${EDL_PASSWORD},RtcGammaImage=${RTC_GAMMA_IMAGE}
