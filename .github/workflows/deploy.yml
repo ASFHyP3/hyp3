@@ -1,0 +1,42 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches: 
+    - master
+    - develop
+
+jobs:
+  cf_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2
+      
+    - name: Package CloudFormation Template
+      env:
+        BUCKET: cf-templates-aubvn3i9olmk-us-west-2
+      run: aws cloudformation package --template-file cloudformation.yml --s3-bucket ${BUCKET} --output-template-file packaged.yml
+
+    - name: Deploy to AWS CloudFormation
+      uses: aws-actions/aws-cloudformation-github-deploy@v1
+      env:
+        RTC_GAMMA_REPOSITORY: 845172464411.dkr.ecr.us-west-2.amazonaws.com/rtc-gamma
+        MATURITY: ${GITHUB_REF##*/}
+      with:
+        name: hyp3-${MATURITY}
+        template: packaged.yml
+        capabilities: CAPABILITY_NAMED_IAM
+        parameter-overrides:
+          VpcId: ${{ secrets.VpcId }}
+          EDLUsername: ${{ secrets.EDL_USERNAME }}
+          EDLPassword: ${{ secrets.EDL_PASSWORD }}
+          RtcGammaImage: ${RTC_GAMMA_REPOSITORY}:${MATURITY}
