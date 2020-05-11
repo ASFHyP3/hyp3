@@ -9,8 +9,7 @@ on:
 env:
   AWS_REGION: us-west-2
   TEMPLATE_BUCKET: cf-templates-aubvn3i9olmk-us-west-2
-  MATURITY: ${GITHUB_REF##*/}
-  RTC_GAMMA_IMAGE: 845172464411.dkr.ecr.us-west-2.amazonaws.com/rtc-gamma:${MATURITY}
+  RTC_GAMMA_IMAGE: 845172464411.dkr.ecr.us-west-2.amazonaws.com/rtc-gamma:develop
 
   VPC_ID: ${{ secrets.VPC_ID }}
   EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
@@ -39,7 +38,7 @@ jobs:
     - name: Deploy to AWS CloudFormation
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
-        name: hyp3-${{ env.MATURITY }}
+        name: hyp3-develop
         template: packaged.yml
         capabilities: CAPABILITY_NAMED_IAM
         parameter-overrides: VpcId=${{ env.VPC_ID }},EDLUsername=${{ env.EDL_USERNAME }},EDLPassword=${{ env.EDL_PASSWORD }},RtcGammaImage=${{ env.RTC_GAMMA_IMAGE }}
