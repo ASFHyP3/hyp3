@@ -29,17 +29,17 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${AWS_ACCESS_KEY_ID}
-        aws-secret-access-key: ${AWS_SECRET_ACCESS_KEY}
-        aws-region: ${AWS_REGION}
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
       
     - name: Package CloudFormation Template
-      run: aws cloudformation package --template-file cloudformation.yml --s3-bucket ${TEMPLATE_BUCKET} --output-template-file packaged.yml
+      run: aws cloudformation package --template-file cloudformation.yml --s3-bucket ${{ env.TEMPLATE_BUCKET }} --output-template-file packaged.yml
 
     - name: Deploy to AWS CloudFormation
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
-        name: hyp3-${MATURITY}
+        name: hyp3-${{ env.MATURITY }}
         template: packaged.yml
         capabilities: CAPABILITY_NAMED_IAM
-        parameter-overrides: VpcId=${VPC_ID},EDLUsername=${EDL_USERNAME},EDLPassword=${EDL_PASSWORD},RtcGammaImage=${RTC_GAMMA_IMAGE}
+        parameter-overrides: VpcId=${{ env.VPC_ID }},EDLUsername=${{ env.EDL_USERNAME }},EDLPassword=${{ env.EDL_PASSWORD }},RtcGammaImage=${{ env.RTC_GAMMA_IMAGE }}
