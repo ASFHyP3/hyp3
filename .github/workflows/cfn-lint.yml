@@ -23,4 +23,4 @@ jobs:
 
     - name: Run cfn-lint
       # ingore "W3002 This code may only work with `package` cli command" warning
-      run: cfn-lint --template *.yml **/*.yml
+      run: cfn-lint --ignore-checks W3002 --template *.yml **/*.yml
