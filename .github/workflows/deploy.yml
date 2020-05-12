@@ -40,7 +40,7 @@ jobs:
           --s3-bucket ${{ env.TEMPLATE_BUCKET }} \
           --output-template-file packaged.yml
         aws cloudformation deploy \
-          --stack-name hyp3-develop \
+          --stack-name hyp3-${GITHUB_REF##*/} \
           --template-file packaged.yml \
           --role-arn ${{ env.CLOUDFORMATION_ROLE_ARN }} \
           --capabilities CAPABILITY_NAMED_IAM \
