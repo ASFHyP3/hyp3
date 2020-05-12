@@ -35,6 +35,17 @@ jobs:
 
     - name: Deploy to AWS CloudFormation
       run: |
-        aws cloudformation package --template-file cloudformation.yml --s3-bucket ${TEMPLATE_BUCKET} --output-template-file packaged.yml
-        aws cloudformation deploy --stack-name hyp3-${GITHUB_REF##*/} --template-file packaged.yml --role-arn ${CLOUDFORMATION_ROLE_ARN} --capabilities CAPABILITY_NAMED_IAM \
-                                  --parameter-overrides VpcId=${VPC_ID} EDLUsername=${EDL_USERNAME} EDLPassword=${EDL_PASSWORD} RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${GITHUB_REF##*/}
+        aws cloudformation package \
+          --template-file cloudformation.yml \
+          --s3-bucket ${TEMPLATE_BUCKET} \
+          --output-template-file packaged.yml
+        aws cloudformation deploy \
+          --stack-name hyp3-${GITHUB_REF##*/} \
+          --template-file packaged.yml \
+          --role-arn ${CLOUDFORMATION_ROLE_ARN} \
+          --capabilities CAPABILITY_NAMED_IAM \
+          --parameter-overrides \
+              VpcId=${VPC_ID} \
+              EDLUsername=${EDL_USERNAME} \
+              EDLPassword=${EDL_PASSWORD} \
+              RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${GITHUB_REF##*/}
