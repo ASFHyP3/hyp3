@@ -1,0 +1,50 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Static code analysis
+
+on: [push]
+
+jobs:
+
+  flake8:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8  flake8-import-order flake8-blind-except flake8-builtins
+
+    - name: Lint with flake8
+      run: flake8 --max-line-length=120 --import-order-style=pycharm --statistics
+
+
+  cfn-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install cfn-lint
+
+    - name: Run cfn-lint
+      # ingore "W3002 This code may only work with `package` cli command" warning
+      run: cfn-lint --ignore-checks W3002 --template *.yml **/*.yml
