@@ -16,6 +16,7 @@ env:
   EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
 
 jobs:
   deploy:
@@ -31,14 +32,20 @@ jobs:
         aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
-      
-    - name: Package CloudFormation Template
-      run: aws cloudformation package --template-file cloudformation.yml --s3-bucket ${{ env.TEMPLATE_BUCKET }} --output-template-file packaged.yml
 
     - name: Deploy to AWS CloudFormation
-      uses: aws-actions/aws-cloudformation-github-deploy@v1
-      with:
-        name: hyp3-develop
-        template: packaged.yml
-        capabilities: CAPABILITY_NAMED_IAM
-        parameter-overrides: VpcId=${{ env.VPC_ID }},EDLUsername=${{ env.EDL_USERNAME }},EDLPassword=${{ env.EDL_PASSWORD }},RtcGammaImage=${{ env.RTC_GAMMA_IMAGE }}
+      run: |
+        aws cloudformation package \
+          --template-file cloudformation.yml \
+          --s3-bucket ${{ env.TEMPLATE_BUCKET }} \
+          --output-template-file packaged.yml
+        aws cloudformation deploy \
+          --stack-name hyp3-develop \
+          --template-file packaged.yml \
+          --role-arn ${{ env.CLOUDFORMATION_ROLE_ARN }} \
+          --capabilities CAPABILITY_NAMED_IAM \
+          --parameter-overrides \
+              VpcId=${{ env.VPC_ID }} \
+              EDLUsername=${{ env.EDL_USERNAME }} \
+              EDLPassword=${{ env.EDL_PASSWORD }} \
+              RtcGammaImage=${{ env.RTC_GAMMA_IMAGE }}
