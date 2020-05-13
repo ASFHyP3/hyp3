@@ -20,6 +20,7 @@ Parameters:
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
 Resources:
+
   ApiStack:
       Type: AWS::CloudFormation::Stack
       Properties:
