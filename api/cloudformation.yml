@@ -25,10 +25,10 @@ Resources:
           title: hyp3-api
           version: 0.0.1
         servers:
-          - url: https://yxedp20dk1.execute-api.us-west-2.amazonaws.com/{basePath}
+          - url: https://yxedp20dk1.execute-api.us-west-2.amazonaws.com/{basePath} #TODO create custom url
             variables:
               basePath:
-                default: /develop
+                default: /v1
         paths:
           /jobs:
             post:
@@ -47,8 +47,8 @@ Resources:
                         $ref: "#/components/schemas/Empty"
               x-amazon-apigateway-request-validator: Validate body
               x-amazon-apigateway-integration:
-                credentials: arn:aws:iam::845172464411:role/asj-api-dev
-                uri: arn:aws:apigateway:us-west-2:batch:path/v1/submitjob
+                credentials: !GetAtt IamRole.Arn
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:batch:path/v1/submitjob"
                 responses:
                   default:
                     statusCode: 200
