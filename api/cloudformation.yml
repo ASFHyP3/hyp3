@@ -36,7 +36,7 @@ Resources:
                 content:
                   application/json:
                     schema:
-                      $ref: #/components/schemas/submitJob
+                      $ref: "#/components/schemas/submitJob"
                 required: true
               responses:
                 200:
@@ -44,7 +44,7 @@ Resources:
                   content:
                     application/json:
                       schema:
-                        $ref: #/components/schemas/Empty
+                        $ref: "#/components/schemas/Empty"
               x-amazon-apigateway-request-validator: Validate body
               x-amazon-apigateway-integration:
                 credentials: arn:aws:iam::845172464411:role/asj-api-dev
