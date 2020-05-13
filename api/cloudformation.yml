@@ -115,4 +115,6 @@ Resources:
           Statement:
           - Effect: Allow
             Action: batch:SubmitJob
-            Resource: !Ref JobQueueArn
+            Resource: 
+            - !Ref JobQueueArn
+            - !Ref JobDefinition
