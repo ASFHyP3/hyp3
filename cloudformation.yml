@@ -21,6 +21,14 @@ Parameters:
 
 Resources:
 
+  ApiStack:
+      Type: AWS::CloudFormation::Stack
+      Properties:
+        Parameters:
+          JobQueueArn: !Ref JobQueue
+          JobDefinition: !Ref RtcGammaJobDefinition
+        TemplateURL: api/cloudformation.yml
+
   LaunchInstanceStack:
     Type: AWS::CloudFormation::Stack
     Properties:
