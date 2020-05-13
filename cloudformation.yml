@@ -26,7 +26,7 @@ Resources:
         Parameters:
           JobQueueArn: !Ref JobQueue
           JobDefinition: !Ref RtcGammaJobDefinition
-          TemplateURL: launch-instance/cloudformation.yml
+        TemplateURL: api/cloudformation.yml
 
   LaunchInstanceStack:
     Type: AWS::CloudFormation::Stack
