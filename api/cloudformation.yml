@@ -39,7 +39,7 @@ Resources:
                       $ref: "#/components/schemas/submitJob"
                 required: true
               responses:
-                200:
+                "200":
                   description: 200 response
                   content:
                     application/json:
