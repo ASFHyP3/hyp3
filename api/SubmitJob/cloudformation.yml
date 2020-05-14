@@ -45,14 +45,16 @@ Resources:
             Action: batch:SubmitJob
             Resource:
               - !Ref JobQueueArn
+              - !Ref JobDefinition
 
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Ref AWS::StackName
       Environment:
-        JobQueue: !Ref JobQueueArn
-        JobDefinition: !Ref JobDefinition
+        Variables:
+          JobQueue: !Ref JobQueueArn
+          JobDefinition: !Ref JobDefinition
       Code: src/
       Handler: main.lambda_handler
       MemorySize: 128
