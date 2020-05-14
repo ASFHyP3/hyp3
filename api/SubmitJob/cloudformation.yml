@@ -55,7 +55,7 @@ Resources:
       Environment:
         Variables:
           JOB_QUEUE: !Ref JobQueueArn
-          JOB_DEFINITION: !Ref JobDefinitioqn
+          JOB_DEFINITION: !Ref JobDefinition
       Code: src/
       Handler: main.lambda_handler
       MemorySize: 128
