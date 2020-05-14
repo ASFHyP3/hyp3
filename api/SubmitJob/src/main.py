@@ -1,8 +1,5 @@
+import boto3
 
-
+client = boto3.client('batch')
 def lambda_handler(event, context):
-    response = {
-        "statusCode": 200,
-        "body": "api_working"
-    }
-    return response
+    client.submit_job(event['body']['granule'], )

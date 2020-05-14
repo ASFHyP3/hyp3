@@ -20,6 +20,7 @@ Resources:
     Properties:
       Parameters:
         JobQueueArn: !Ref JobQueueArn
+        JobDefinition: !Ref JobDefinition
       TemplateURL: SubmitJob/cloudformation.yml
 
 

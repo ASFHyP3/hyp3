@@ -9,6 +9,9 @@ Parameters:
   JobQueueArn:
     Type: String
 
+  JobDefinition:
+    Type: String
+
 Resources:
 
   LogGroup:
@@ -47,6 +50,9 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Ref AWS::StackName
+      Environment:
+        JobQueue: !Ref JobQueueArn
+        JobDefinition: !Ref JobDefinition
       Code: src/
       Handler: main.lambda_handler
       MemorySize: 128
