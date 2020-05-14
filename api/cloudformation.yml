@@ -50,9 +50,9 @@ Resources:
                 "200":
                   description: 200 response
                   content:
-                  application/json:
-                  schema:
-                  $ref: "#/components/schemas/Empty"
+                    application/json:
+                      schema:
+                        $ref: "#/components/schemas/Empty"
               x-amazon-apigateway-request-validator: Validate body
               x-amazon-apigateway-integration:
                 type: aws_proxy
@@ -62,7 +62,7 @@ Resources:
                 credentials: !GetAtt IamRole.Arn
                 responses:
                   default:
-                  statusCode: 200
+                    statusCode: 200
         components:
           schemas:
             Empty:
