@@ -36,8 +36,9 @@ jobs:
 
     - name: Deploy to AWS CloudFormation
       run: |
+        sed "s/$REPLACE_ME$/$(openssl rand -hex 4)/" cloudformation.yaml > cloudformation-replaced.yaml
         aws cloudformation package \
-          --template-file cloudformation.yml \
+          --template-file cloudformation-replaced.yml \
           --s3-bucket ${TEMPLATE_BUCKET} \
           --output-template-file packaged.yml
         aws cloudformation deploy \
