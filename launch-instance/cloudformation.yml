@@ -12,12 +12,6 @@ Outputs:
 
 Resources:
 
-  DeadLetterQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: !Ref AWS::StackName
-      MessageRetentionPeriod: 1209600
-
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -46,9 +40,6 @@ Resources:
             - logs:PutLogEvents
             Resource: !GetAtt LogGroup.Arn
           - Effect: Allow
-            Action: sqs:SendMessage
-            Resource: !GetAtt DeadLetterQueue.Arn
-          - Effect: Allow
             Action:
             - ec2:RunInstances
             - ec2:CreateTags
@@ -62,8 +53,6 @@ Resources:
     Properties:
       FunctionName: !Ref AWS::StackName
       Code: src/
-      DeadLetterConfig:
-        TargetArn: !GetAtt DeadLetterQueue.Arn
       Handler: main.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
