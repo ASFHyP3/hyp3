@@ -15,6 +15,13 @@ Outputs:
 
 Resources:
 
+  SubmitJob:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+      TemplateURL: SubmitJob/cloudformation.yml
+
+
   RestApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
@@ -48,24 +55,13 @@ Resources:
               x-amazon-apigateway-request-validator: Validate body
               x-amazon-apigateway-integration:
                 credentials: !GetAtt IamRole.Arn
-                uri: !Sub "arn:aws:apigateway:${AWS::Region}:batch:path/v1/submitjob"
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SubmitJob.Outputs.LamdaArn}/invocations"
                 responses:
                   default:
                     statusCode: 200
-                requestTemplates:
-                  application/json: !Sub |-
-                    #set($inputRoot = $input.path('$'))
-                    {
-                       "jobDefinition": "${JobDefinition}",
-                       "jobName": $input.json('$.granule'),
-                       "jobQueue": "${JobQueueArn}",
-                       "parameters": {
-                          "granule" : $input.json('$.granule')
-                       }
-                    }
-                passthroughBehavior: when_no_templates
+                passthroughBehavior: when_no_match
                 httpMethod: POST
-                type: aws
+                type: aws_proxy
         components:
           schemas:
             Empty:
@@ -118,3 +114,4 @@ Resources:
             Resource: 
             - !Ref JobQueueArn
             - !Ref JobDefinition
+
