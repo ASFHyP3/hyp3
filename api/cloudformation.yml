@@ -21,6 +21,14 @@ Outputs:
 
 Resources:
 
+  SubmitJob:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        JobQueueArn: !Ref JobQueueArn
+        JobDefinition: !Ref JobDefinition
+      TemplateURL: submit-job/cloudformation.yml
+
   RestApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
@@ -56,25 +64,14 @@ Resources:
                         $ref: "#/components/schemas/Empty"
               x-amazon-apigateway-request-validator: Validate body
               x-amazon-apigateway-integration:
+                type: aws_proxy
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SubmitJob.Outputs.LambdaArn}/invocations"
+                httpMethod: POST
+                passthroughBehavior: when_no_match
                 credentials: !GetAtt IamRole.Arn
-                uri: !Sub "arn:aws:apigateway:${AWS::Region}:batch:path/v1/submitjob"
                 responses:
                   default:
                     statusCode: 200
-                requestTemplates:
-                  application/json: !Sub |-
-                    #set($inputRoot = $input.path('$'))
-                    {
-                       "jobDefinition": "${JobDefinition}",
-                       "jobName": $input.json('$.granule'),
-                       "jobQueue": "${JobQueueArn}",
-                       "parameters": {
-                          "granule" : $input.json('$.granule')
-                       }
-                    }
-                passthroughBehavior: when_no_templates
-                httpMethod: POST
-                type: aws
         components:
           schemas:
             Empty:
@@ -142,10 +139,8 @@ Resources:
           Version: 2012-10-17
           Statement:
           - Effect: Allow
-            Action: batch:SubmitJob
-            Resource:
-            - !Ref JobQueueArn
-            - !Ref JobDefinition
+            Action: lambda:InvokeFunction
+            Resource: !GetAtt SubmitJob.Outputs.LambdaArn
 
   LogGroup:
     Type: AWS::Logs::LogGroup
