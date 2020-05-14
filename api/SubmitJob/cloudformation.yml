@@ -16,7 +16,7 @@ Resources:
   Role:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Ref Name
+      RoleName: !Ref AWS""StackName
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -35,22 +35,18 @@ Resources:
             - logs:PutLogEvents
             Resource: !GetAtt LogGroup.Arn
           - Effect: Allow
-            Action: sqs:SendMessage
-            Resource: !GetAtt DeadLetterQueue.Arn
-          - Effect: Allow
-            Action: s3:PutObject
-            Resource: !Sub "arn:aws:s3:::${Bucket}/*"
-          - Effect: Allow
-            Action: secretsmanager:getSecretValue
-            Resource: !Ref SecretArn
+            Action: batch:SubmitJob
+            Resource:
+              - !Ref JobQueueArn
+              - !Ref JobDefinitionArn
 
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Ref Name
+      FunctionName: !Ref AWS::StackName
       Code: src/
       Handler: main.lambda_handler
-      MemorySize: 3008
+      MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.8
       Timeout: 30
