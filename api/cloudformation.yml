@@ -25,6 +25,9 @@ Resources:
     Type: AWS::ApiGateway::RestApi
     Properties:
       Name: !Ref AWS::StackName
+      EndpointConfiguration:
+        Types:
+        - REGIONAL
       Body:
         openapi: 3.0.1
         info:
@@ -110,7 +113,11 @@ Resources:
     Type: AWS::ApiGateway::DomainName
     Properties:
       DomainName: !Ref DomainName
-      CertificateArn: !Ref CertificateArn
+      EndpointConfiguration:
+        Types:
+        - REGIONAL
+      RegionalCertificateArn: !Ref CertificateArn
+      SecurityPolicy: TLS_1_2
 
   BasePathMapping:
     Type: AWS::ApiGateway::BasePathMapping
