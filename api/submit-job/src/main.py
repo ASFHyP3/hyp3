@@ -14,11 +14,11 @@ def lambda_handler(event, context):
         jobDefinition=environ['JOB_DEFINITION'],
         parameters=parameters
     )
-    response = {
+    response_body = {
         'jobId': job['jobId'],
         'jobName': job['jobName']
     }
     return {
         'statusCode': 200,
-        'body': json.dumps(response)
+        'body': json.dumps(response_body)
     }
