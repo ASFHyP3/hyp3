@@ -23,7 +23,6 @@ Resources:
         JobDefinition: !Ref JobDefinition
       TemplateURL: SubmitJob/cloudformation.yml
 
-
   RestApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
