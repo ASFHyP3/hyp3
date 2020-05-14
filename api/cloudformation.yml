@@ -18,6 +18,8 @@ Resources:
   SubmitJob:
     Type: AWS::CloudFormation::Stack
     Properties:
+      Parameters:
+        JobQueueArn: !Ref JobQueueArn
       TemplateURL: SubmitJob/cloudformation.yml
 
 
