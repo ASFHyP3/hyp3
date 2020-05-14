@@ -21,7 +21,7 @@ Resources:
       Parameters:
         JobQueueArn: !Ref JobQueueArn
         JobDefinition: !Ref JobDefinition
-      TemplateURL: SubmitJob/cloudformation.yml
+      TemplateURL: submit-job/cloudformation.yml
 
   RestApi:
     Type: AWS::ApiGateway::RestApi
