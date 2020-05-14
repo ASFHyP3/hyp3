@@ -18,7 +18,6 @@ Resources:
   SubmitJob:
     Type: AWS::CloudFormation::Stack
     Properties:
-      Parameters:
       TemplateURL: SubmitJob/cloudformation.yml
 
 
