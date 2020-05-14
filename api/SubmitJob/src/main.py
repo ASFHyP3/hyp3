@@ -14,8 +14,8 @@ def lambda_handler(event, context):
                             parameters=parameters
                             )
     response = {
-        'Job Name': job['jobName'],
-        'Job Id': job['jobId']
+        'jobName': job['jobName'],
+        'jobId': job['jobId']
 
     }
     return {

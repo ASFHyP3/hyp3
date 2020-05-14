@@ -50,19 +50,19 @@ Resources:
                 "200":
                   description: 200 response
                   content:
-                    application/json:
-                      schema:
-                        $ref: "#/components/schemas/Empty"
+                  application/json:
+                  schema:
+                  $ref: "#/components/schemas/Empty"
               x-amazon-apigateway-request-validator: Validate body
               x-amazon-apigateway-integration:
-                credentials: !GetAtt IamRole.Arn
+                type: aws_proxy
                 uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SubmitJob.Outputs.LambdaArn}/invocations"
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+                credentials: !GetAtt IamRole.Arn
                 responses:
                   default:
-                    statusCode: 200
-                passthroughBehavior: when_no_match
-                httpMethod: POST
-                type: aws_proxy
+                  statusCode: 200
         components:
           schemas:
             Empty:
