@@ -82,7 +82,7 @@ Resources:
             validateRequestParameters: false
             validateRequestBody: true
 
-  Deployment:
+  Deployment$REPLACE_ME$:
     Type: AWS::ApiGateway::Deployment
     Properties:
       RestApiId: !Ref RestApi
