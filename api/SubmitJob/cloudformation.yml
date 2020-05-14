@@ -54,8 +54,8 @@ Resources:
       FunctionName: !Ref AWS::StackName
       Environment:
         Variables:
-          JobQueue: !Ref JobQueueArn
-          JobDefinition: !Ref JobDefinition
+          JOB_QUEUE: !Ref JobQueueArn
+          JOB_DEFINITION: !Ref JobDefinitioqn
       Code: src/
       Handler: main.lambda_handler
       MemorySize: 128

@@ -8,9 +8,8 @@ client = boto3.client('batch')
 
 def lambda_handler(event, context):
     parameters = json.loads(event['body'])
-    job = client.submit_job(jobName=parameters['granule'],
-                            jobQueue=environ['JobQueue'],
-                            jobDefinition=environ['JobDefinition'],
+    job = client.submit_job(jobQueue=environ['JOB_QUEUE'],
+                            jobDefinition=environ['JOB_NAME'],
                             parameters=parameters
                             )
     response = {
