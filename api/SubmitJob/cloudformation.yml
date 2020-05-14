@@ -6,6 +6,7 @@ Outputs:
     Value: !GetAtt Lambda.Arn
 
 Parameters:
+
   JobQueueArn:
     Type: String
 
@@ -44,8 +45,8 @@ Resources:
           - Effect: Allow
             Action: batch:SubmitJob
             Resource:
-              - !Ref JobQueueArn
-              - !Ref JobDefinition
+            - !Ref JobQueueArn
+            - !Ref JobDefinition
 
   Lambda:
     Type: AWS::Lambda::Function
