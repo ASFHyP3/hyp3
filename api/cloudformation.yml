@@ -56,7 +56,7 @@ Resources:
               x-amazon-apigateway-request-validator: Validate body
               x-amazon-apigateway-integration:
                 credentials: !GetAtt IamRole.Arn
-                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SubmitJob.Outputs.LamdaArn}/invocations"
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SubmitJob.Outputs.LambdaArn}/invocations"
                 responses:
                   default:
                     statusCode: 200
@@ -111,8 +111,6 @@ Resources:
           Version: 2012-10-17
           Statement:
           - Effect: Allow
-            Action: batch:SubmitJob
+            Action: lambda:InvokeFunction
             Resource: 
-            - !Ref JobQueueArn
-            - !Ref JobDefinition
-
+            - !GetAtt SubmitJob.Outputs.LambdaArn
