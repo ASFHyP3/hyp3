@@ -1,8 +1,4 @@
-AWSTemplateFormatVersion: 2010-09-09
-
-Parameters:
-
-
+AWSTemplateFormatVersion: 2010-09-09:wq
 
 Outputs:
 
