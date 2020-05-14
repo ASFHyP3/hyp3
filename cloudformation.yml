@@ -15,12 +15,6 @@ Parameters:
   RtcGammaImage:
     Type: String
 
-  DomainName:
-    Type: String
-
-  CertificateArn:
-    Type: String
-
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -33,8 +27,6 @@ Resources:
         Parameters:
           JobQueueArn: !Ref JobQueue
           JobDefinition: !Ref RtcGammaJobDefinition
-          DomainName: !Ref DomainName
-          CertificateArn: !Ref CertificateArn
         TemplateURL: api/cloudformation.yml
 
   LaunchInstanceStack:

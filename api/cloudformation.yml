@@ -8,16 +8,10 @@ Parameters:
   JobDefinition:
     Type: String
 
-  DomainName:
-    Type: String
-
-  CertificateArn:
-    Type: String
-
 Outputs:
 
   ApiEndpoint:
-    Value: !Sub "https://${DomainName}/${Stage}/"
+    Value: !Sub "https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
 
 Resources:
 
@@ -31,7 +25,7 @@ Resources:
           title: hyp3-api
           version: 0.0.1
         servers:
-          - url: !Sub "https://${DomainName}/{basePath}"
+          - url: https://yxedp20dk1.execute-api.us-west-2.amazonaws.com/{basePath} #TODO create custom url
             variables:
               basePath:
                 default: /v1
@@ -105,18 +99,6 @@ Resources:
       AccessLogSetting:
         DestinationArn: !GetAtt LogGroup.Arn
         Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId
-
-  CustomDomainName:
-    Type: AWS::ApiGateway::DomainName
-    Properties:
-      DomainName: !Ref DomainName
-      CertificateArn: !Ref CertificateArn
-
-  BasePathMapping:
-    Type: AWS::ApiGateway::BasePathMapping
-    Properties:
-      DomainName: !Ref CustomDomainName
-      RestApiId: !Ref RestApi
 
   IamRole:
     Type: AWS::IAM::Role
