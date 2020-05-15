@@ -91,7 +91,7 @@ Resources:
             validateRequestParameters: false
             validateRequestBody: true
 
-  Deployment:
+  DeploymentREPLACE_ME:
     Type: AWS::ApiGateway::Deployment
     Properties:
       RestApiId: !Ref RestApi
@@ -101,7 +101,8 @@ Resources:
     Properties:
       StageName: v1
       RestApiId: !Ref RestApi
-      DeploymentId: !Ref Deployment
+      DeploymentId: !Ref DeploymentREPLACE_ME
+
       AccessLogSetting:
         DestinationArn: !GetAtt LogGroup.Arn
         Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId
