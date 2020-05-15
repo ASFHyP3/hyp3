@@ -102,6 +102,7 @@ Resources:
       StageName: v1
       RestApiId: !Ref RestApi
       DeploymentId: !Ref DeploymentREPLACE_ME
+
       AccessLogSetting:
         DestinationArn: !GetAtt LogGroup.Arn
         Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId
