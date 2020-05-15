@@ -82,7 +82,7 @@ Resources:
             validateRequestParameters: false
             validateRequestBody: true
 
-  Deployment$REPLACE_ME$:
+  DeploymentREPLACE_ME:
     Type: AWS::ApiGateway::Deployment
     Properties:
       RestApiId: !Ref RestApi
@@ -92,7 +92,7 @@ Resources:
     Properties:
       StageName: v1
       RestApiId: !Ref RestApi
-      DeploymentId: !Ref Deployment$REPLACE_ME$
+      DeploymentId: !Ref DeploymentREPLACE_ME
 
   IamRole:
     Type: AWS::IAM::Role
