@@ -101,7 +101,6 @@ Resources:
     Properties:
       StageName: v1
       RestApiId: !Ref RestApi
-
       DeploymentId: !Ref DeploymentREPLACE_ME
       AccessLogSetting:
         DestinationArn: !GetAtt LogGroup.Arn
