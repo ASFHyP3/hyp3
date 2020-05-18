@@ -36,6 +36,7 @@ jobs:
 
     - name: Deploy to AWS CloudFormation
       run: |
+        pip install -r api/submit-job/requirements.txt -t api/submit-job/src/
         sed "s/REPLACE_ME/$(openssl rand -hex 4)/" api/cloudformation_unprocessed.yml > api/cloudformation.yml
         aws cloudformation package \
           --template-file cloudformation.yml \

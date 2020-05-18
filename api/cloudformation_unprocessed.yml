@@ -27,6 +27,7 @@ Resources:
       Parameters:
         JobQueueArn: !Ref JobQueueArn
         JobDefinition: !Ref JobDefinition
+        DomainName: !Ref DomainName
       TemplateURL: submit-job/cloudformation.yml
 
   RestApi:
