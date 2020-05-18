@@ -1,7 +1,7 @@
 import json
-from os import environ
 from http.cookies import SimpleCookie
-from urllib.parse import urljoin, quote_plus
+from os import environ
+from urllib.parse import quote_plus, urljoin
 
 import boto3
 import jwt
