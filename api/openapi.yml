@@ -1,0 +1,48 @@
+openapi: 3.0.1
+info:
+  title: hyp3-api
+  version: 0.0.1
+paths:
+  /jobs:
+    post:
+      operationId: hyp3_api.submit_job
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/parameters"
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/job"
+components:
+  schemas:
+    job:
+      type: object
+      properties:
+        jobId:
+          type: string
+        jobName:
+          type: string
+        parameters:
+          $ref: "#/components/schemas/parameters"
+      required:
+        - jobId
+        - jobName
+        - parameters
+      additionalProperties: false
+    parameters:
+      type: object
+      properties:
+        granule:
+          type: string
+          pattern: "^S1[AB]_(IW|EW)_(GRDM|GRDH|SLC_)_*"
+          minLength: 67
+          maxLength: 67
+      required:
+        - granule
+      additionalProperties: false
