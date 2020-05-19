@@ -1,5 +1,5 @@
-from hyp3_api import definitions
 import boto3
+from hyp3_api import definitions
 import connexion
 
 connexion_app = connexion.App(__name__)
