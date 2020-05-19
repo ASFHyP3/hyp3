@@ -5,6 +5,12 @@ import jwt
 
 
 def decode_token(token, required_scopes):
+    try:
+        jwt.decode(token, environ['AUTH_PUBLIC_KEY'], algorithms=environ['AUTH_ALGORITHM'])
+    except (jwt.DecodeError, jwt.ExpiredSignatureError):
+        return {
+            'active': False
+        }
     return {
         'active': True
     }

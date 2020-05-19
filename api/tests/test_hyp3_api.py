@@ -4,7 +4,7 @@ import pytest
 from botocore.stub import Stubber
 from flask_api import status
 
-from hyp3_api import BATCH_CLIENT, connexion_app
+from hyp3_api import BATCH_CLIENT, connexion_app, auth
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def add_response(batch_stub, granule, job_id='myJobId'):
 
 
 def login(client):
-    client.set_cookie('localhost', 'asf-urs', 'foo')
+    client.set_cookie('localhost', 'asf-urs', auth.get_mock_jwt_cookie('user', 50))
 
 
 def test_submit_job(client, batch_stub):
