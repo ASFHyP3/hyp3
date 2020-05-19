@@ -3,6 +3,7 @@ from os import environ
 import pytest
 from botocore.stub import Stubber
 from flask_api import status
+
 from hyp3_api import BATCH_CLIENT, connexion_app
 
 
@@ -37,7 +38,12 @@ def add_response(batch_stub, granule, job_id='myJobId'):
     )
 
 
+def login(client):
+    client.set_cookie('localhost', 'asf-urs', 'foo')
+
+
 def test_submit_job(client, batch_stub):
+    login(client)
     granule = 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9'
     add_response(batch_stub, granule, 'myJobId')
     response = client.post('/jobs', json={'granule': granule})
@@ -52,6 +58,7 @@ def test_submit_job(client, batch_stub):
 
 
 def test_granule_names(client, batch_stub):
+    login(client)
     response = client.post('/jobs', json={'granule': 'foo'})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -84,6 +91,7 @@ def test_granule_names(client, batch_stub):
 
 
 def test_jobs_bad_method(client):
+    login(client)
     response = client.get('/jobs')
     assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
     response = client.put('/jobs')
@@ -95,5 +103,6 @@ def test_jobs_bad_method(client):
 
 
 def test_no_route(client):
+    login(client)
     response = client.get('/no/such/path')
     assert response.status_code == status.HTTP_404_NOT_FOUND
