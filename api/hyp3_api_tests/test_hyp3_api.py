@@ -40,7 +40,8 @@ def add_response(batch_stub, granule, job_id='myJobId'):
 
 def test_submit_job(client, batch_stub):
     add_response(batch_stub, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9', 'myJobId')
-    response = client.post('/jobs', json={'granule': 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9'})
+    response = client.post('/jobs',
+                           json={'granule': 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9'})
     assert response.status_code == status.HTTP_200_OK
     assert response.get_json() == {
         'jobId': 'myJobId',
@@ -55,25 +56,31 @@ def test_granule_names(client, batch_stub):
     response = client.post('/jobs', json={'granule': 'foo'})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = client.post('/jobs', json={'granule': 'S1B_IW_OCN__2SDV_20200518T220815_20200518T220851_021642_02915F_B404'})
+    response = client.post('/jobs',
+                           json={'granule': 'S1B_IW_OCN__2SDV_20200518T220815_20200518T220851_021642_02915F_B404'})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = client.post('/jobs', json={'granule': 'S1B_S3_RAW__0SSV_20200518T185451_20200518T185522_021640_029151_BFBF'})
+    response = client.post('/jobs',
+                           json={'granule': 'S1B_S3_RAW__0SSV_20200518T185451_20200518T185522_021640_029151_BFBF'})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = client.post('/jobs', json={'granule': 'S1A_S3_GRDH_1SDV_20200516T173131_20200516T173140_032593_03C66A_F005'})
+    response = client.post('/jobs',
+                           json={'granule': 'S1A_S3_GRDH_1SDV_20200516T173131_20200516T173140_032593_03C66A_F005'})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     add_response(batch_stub, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9')
-    response = client.post('/jobs', json={'granule': 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9'})
+    response = client.post('/jobs',
+                           json={'granule': 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9'})
     assert response.status_code == status.HTTP_200_OK
 
     add_response(batch_stub, 'S1A_EW_GRDM_1SDH_20200518T172837_20200518T172941_032622_03C745_422A')
-    response = client.post('/jobs', json={'granule': 'S1A_EW_GRDM_1SDH_20200518T172837_20200518T172941_032622_03C745_422A'})
+    response = client.post('/jobs',
+                           json={'granule': 'S1A_EW_GRDM_1SDH_20200518T172837_20200518T172941_032622_03C745_422A'})
     assert response.status_code == status.HTTP_200_OK
 
     add_response(batch_stub, 'S1A_IW_SLC__1SSH_20200518T142852_20200518T142919_032620_03C734_E5EE')
-    response = client.post('/jobs', json={'granule': 'S1A_IW_SLC__1SSH_20200518T142852_20200518T142919_032620_03C734_E5EE'})
+    response = client.post('/jobs',
+                           json={'granule': 'S1A_IW_SLC__1SSH_20200518T142852_20200518T142919_032620_03C734_E5EE'})
     assert response.status_code == status.HTTP_200_OK
 
 

@@ -1,5 +1,6 @@
 from os import environ
-from hyp3_api import connexion_app, BATCH_CLIENT
+
+from hyp3_api import BATCH_CLIENT, connexion_app
 
 
 def submit_job(body):
