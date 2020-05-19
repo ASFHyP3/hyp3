@@ -5,7 +5,7 @@ info:
 paths:
   /jobs:
     post:
-      operationId: hyp3_api.submit_job
+      operationId: hyp3_api.handlers.submit_job
       requestBody:
         content:
           application/json:

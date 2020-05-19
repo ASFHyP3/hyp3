@@ -1,9 +1,6 @@
 from os import environ
 
-import boto3
-import connexion
-
-BATCH_CLIENT = boto3.client('batch')
+from hyp3_api import BATCH_CLIENT, connexion_app
 
 
 def submit_job(body):
@@ -21,9 +18,4 @@ def submit_job(body):
     return response
 
 
-connexion_app = connexion.App(__name__)
-connexion_app.add_api('openapi.yml')
-
-
-if __name__ == '__main__':
-    connexion_app.run(port=8080)
+connexion_app.add_api('openapi-spec.yml')
