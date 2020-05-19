@@ -3,8 +3,7 @@ from os import environ
 import pytest
 from botocore.stub import Stubber
 from flask_api import status
-
-from hyp3_api import BATCH_CLIENT, connexion_app, auth
+from hyp3_api import BATCH_CLIENT, auth, connexion_app
 
 
 @pytest.fixture
