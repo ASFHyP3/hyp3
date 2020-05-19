@@ -18,4 +18,4 @@ def submit_job(body):
     return response
 
 
-connexion_app.add_api('spec.yml')
+connexion_app.add_api('openapi-spec.yml')
