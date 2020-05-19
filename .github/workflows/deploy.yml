@@ -17,7 +17,6 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
-  CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
 
 jobs:
   deploy:
@@ -36,7 +35,6 @@ jobs:
 
     - name: Deploy to AWS CloudFormation
       run: |
-        sed "s/REPLACE_ME/$(openssl rand -hex 4)/" api/cloudformation_unprocessed.yml > api/cloudformation.yml
         aws cloudformation package \
           --template-file cloudformation.yml \
           --s3-bucket ${TEMPLATE_BUCKET} \
@@ -50,6 +48,4 @@ jobs:
               VpcId=${VPC_ID} \
               EDLUsername=${EDL_USERNAME} \
               EDLPassword=${EDL_PASSWORD} \
-              RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${GITHUB_REF##*/} \
-              DomainName=hyp3-${GITHUB_REF##*/}-api.asf.alaska.edu \
-              CertificateArn=${CERTIFICATE_ARN}
+              RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${GITHUB_REF##*/}
