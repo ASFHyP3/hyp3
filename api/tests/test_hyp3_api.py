@@ -6,6 +6,7 @@ from flask_api import status
 from hyp3_api import BATCH_CLIENT, auth, connexion_app
 
 
+AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 
 
@@ -47,7 +48,7 @@ def add_response(batch_stub, granule, job_id='myJobId'):
 
 
 def login(client):
-    client.set_cookie('localhost', 'asf-urs', auth.get_mock_jwt_cookie('user', 50))
+    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user', 50))
 
 
 def test_submit_job(client, batch_stub):
@@ -61,6 +62,23 @@ def test_submit_job(client, batch_stub):
             'granule': 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9',
         },
     }
+
+
+def test_not_logged_in(client):
+    response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9')
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_invalid_cookie(client):
+    client.set_cookie('localhost', AUTH_COOKIE, 'garbage I say!!! GARGBAGE!!!')
+    response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9')
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_expired_cookie(client):
+    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user', -1))
+    response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9')
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_good_granule_names(client, batch_stub):

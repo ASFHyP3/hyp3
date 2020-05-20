@@ -7,9 +7,9 @@ import jwt
 def decode_token(token, required_scopes):
     try:
         jwt.decode(token, environ['AUTH_PUBLIC_KEY'], algorithms=environ['AUTH_ALGORITHM'])
-    except (jwt.DecodeError, jwt.ExpiredSignatureError):
-        return {'active': False}
-    return {'active': True}
+        return {'active': True}
+    except (jwt.ExpiredSignatureError, jwt.DecodeError):
+        return None
 
 
 def get_mock_jwt_cookie(user, lifetime_in_seconds=100):
