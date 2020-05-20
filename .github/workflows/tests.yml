@@ -17,7 +17,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r api/requirements.txt
 
-    - uses: ./.github/actions/dotenv-action
+    - uses: actions/dotenv-action
       with:
         path: api/tests/cfg.env
 
