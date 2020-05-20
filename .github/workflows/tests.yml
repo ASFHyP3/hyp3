@@ -17,7 +17,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r api/requirements.txt
 
-    - uses: actions/dotenv-action
+    - uses: falti/dotenv-action
       with:
         path: api/tests/cfg.env
 
