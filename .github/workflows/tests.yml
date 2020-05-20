@@ -17,9 +17,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r api/requirements.txt
 
+    - uses: ./.github/actions/dotenv-action
+      with:
+        path: api/tests/cfg.env
+
     - env:
-        JOB_QUEUE: job-queue
-        JOB_DEFINITION: job-definition
         AWS_DEFAULT_REGION: us-west-2
         PYTHONPATH: api
       run: pytest api
