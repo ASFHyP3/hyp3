@@ -43,9 +43,11 @@ components:
       properties:
         granule:
           type: string
-          pattern: "^S1[AB]_(IW|EW)_(GRDM|GRDH|SLC_)_*"
+          pattern: "^S1[AB]_(IW|EW|S[1-6])_(GRDM|GRDH|SLC_)_*"
           minLength: 67
           maxLength: 67
+          example: S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_A4E0
+          description: The name of the Sentinel-1 granule to process.  SLC, GRDH, and GRDM products are supported for beam modes IW, EW, and S1-6.
       required:
         - granule
       additionalProperties: false
