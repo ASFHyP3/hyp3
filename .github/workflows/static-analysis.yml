@@ -35,7 +35,7 @@ jobs:
         pip install cfn-lint
 
     # ignore "W3002 This code may only work with `package` cli command" warning
-    - run: cfn-lint --ignore-checks W3002 --template **/cloudformation.yml
+    - run: cfn-lint --ignore-checks W3002 --template `find . -name cloudformation*.yml`
 
   openapi-spec-validator:
     runs-on: ubuntu-latest
@@ -51,4 +51,4 @@ jobs:
         python -m pip install --upgrade pip
         pip install openapi-spec-validator
 
-    - run: openapi-spec-validator api/*.yml
+    - run: openapi-spec-validator api/hyp3_api/openapi-spec.yml

@@ -1,3 +1,4 @@
-from hyp3_api.handlers import connexion_app
+from hyp3_api import connexion_app
 
-connexion_app.run(port=8080)
+if __name__ == "__main__":
+    connexion_app.run(port=8080)
