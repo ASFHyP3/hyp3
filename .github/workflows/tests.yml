@@ -18,8 +18,8 @@ jobs:
         pip install -r api/requirements.txt
 
     - env:
-        JOB_QUEUE: job-queue
-        JOB_DEFINITION: job-definition
         AWS_DEFAULT_REGION: us-west-2
         PYTHONPATH: api
-      run: pytest api
+      run: |
+        export $(xargs < api/tests/cfg.env)
+        pytest api
