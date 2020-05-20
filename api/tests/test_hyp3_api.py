@@ -48,7 +48,7 @@ def add_response(batch_stub, granule, job_id='myJobId'):
 
 
 def login(client):
-    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user', 50))
+    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user'))
 
 
 def test_submit_job(client, batch_stub):
