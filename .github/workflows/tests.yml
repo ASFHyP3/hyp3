@@ -17,11 +17,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r api/requirements.txt
 
-    - uses: falti/dotenv-action
-      with:
-        path: api/tests/cfg.env
-
     - env:
         AWS_DEFAULT_REGION: us-west-2
         PYTHONPATH: api
-      run: pytest api
+      run: |
+        export $(xargs < api/tests/cfg.env)
+        pytest api
