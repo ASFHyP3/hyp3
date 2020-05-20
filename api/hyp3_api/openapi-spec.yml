@@ -19,6 +19,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/job"
+      security:
+        - EarthDataLogin: []
+
 components:
   schemas:
     job:
@@ -48,3 +51,12 @@ components:
       required:
         - granule
       additionalProperties: false
+
+  securitySchemes:
+    EarthDataLogin:
+      description: |-
+        Authentication requires the user to have an account at urs.earthdata.nasa.gov and log in at auth.asf.alaska.edu
+      type: apiKey
+      in: cookie
+      name: asf-urs
+      x-apikeyInfoFunc: hyp3_api.auth.decode_token
