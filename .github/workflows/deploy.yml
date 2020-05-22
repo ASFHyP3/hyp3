@@ -2,7 +2,7 @@ name: Deploy to AWS
 
 on:
   push:
-    branches: 
+    branches:
     - master
     - develop
 
@@ -23,20 +23,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
+    - uses: actions/checkout@v2
+
+    - uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
-    - name: Deploy to AWS CloudFormation
-      run: |
+    - run: |
         aws cloudformation package \
-          --template-file cloudformation.yml \
+          --template-file batch-cluster/cloudformation.yml \
           --s3-bucket ${TEMPLATE_BUCKET} \
           --output-template-file packaged.yml
         aws cloudformation deploy \

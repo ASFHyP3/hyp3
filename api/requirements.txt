@@ -1,0 +1,6 @@
+connexion[swagger-ui]
+pytest
+boto3
+flask_api
+PyJWT
+cryptography
