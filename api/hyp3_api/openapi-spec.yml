@@ -1,0 +1,62 @@
+openapi: 3.0.1
+info:
+  title: hyp3-api
+  version: 0.0.1
+paths:
+  /jobs:
+    post:
+      operationId: hyp3_api.handlers.submit_job
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/parameters"
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/job"
+      security:
+        - EarthDataLogin: []
+
+components:
+  schemas:
+    job:
+      type: object
+      properties:
+        jobId:
+          type: string
+        jobName:
+          type: string
+        parameters:
+          $ref: "#/components/schemas/parameters"
+      required:
+        - jobId
+        - jobName
+        - parameters
+      additionalProperties: false
+    parameters:
+      type: object
+      properties:
+        granule:
+          type: string
+          pattern: "^S1[AB]_(IW|EW|S[1-6])_(GRDM|GRDH|SLC_)_*"
+          minLength: 67
+          maxLength: 67
+          example: S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_A4E0
+          description: The name of the Sentinel-1 granule to process.  SLC, GRDH, and GRDM products are supported for beam modes IW, EW, and S1-6.
+      required:
+        - granule
+      additionalProperties: false
+
+  securitySchemes:
+    EarthDataLogin:
+      description: |-
+        Authentication requires the user to have an account at urs.earthdata.nasa.gov and log in at auth.asf.alaska.edu
+      type: apiKey
+      in: cookie
+      name: asf-urs
+      x-apikeyInfoFunc: hyp3_api.auth.decode_token
