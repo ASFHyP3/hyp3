@@ -77,4 +77,4 @@ jobs:
         envsubst < api/zappa_settings_template.yml > zappa_settings.yml
 
     - run: |
-        zappa deploy asj-zappa
+        zappa deploy asjzappa
