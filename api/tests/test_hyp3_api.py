@@ -83,22 +83,31 @@ def test_expired_cookie(client):
 
 def test_good_granule_names(client, batch_stub):
     login(client)
-    response = submit_job(client, 'S1A_S3_GRDH_1SDV_20200516T173131_20200516T173140_032593_03C66A_F005', batch_stub)
-    assert response.status_code == status.HTTP_200_OK
-
     response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9', batch_stub)
     assert response.status_code == status.HTTP_200_OK
 
-    response = submit_job(client, 'S1A_EW_GRDM_1SDH_20200518T172837_20200518T172941_032622_03C745_422A', batch_stub)
-    assert response.status_code == status.HTTP_200_OK
-
-    response = submit_job(client, 'S1A_IW_SLC__1SSH_20200518T142852_20200518T142919_032620_03C734_E5EE', batch_stub)
+    response = submit_job(client, 'S1A_IW_GRDH_1SSH_20150609T141945_20150609T142014_006297_008439_B83E', batch_stub)
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_bad_granule_names(client, batch_stub):
+def test_bad_granule_names(client):
     login(client)
     response = submit_job(client, 'foo')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    response = submit_job(client, 'S1A_IW_GRDH_1SSH_20150609T141945_20150609T142014_006297_008439_B83')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    response = submit_job(client, 'S1A_IW_GRDH_1SSH_20150609T141945_20150609T142014_006297_008439_B83Ea')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    response = submit_job(client, 'S1A_S3_GRDH_1SDV_20200516T173131_20200516T173140_032593_03C66A_F005')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    response = submit_job(client, 'S1A_EW_GRDM_1SDH_20200518T172837_20200518T172941_032622_03C745_422A')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    response = submit_job(client, 'S1A_IW_SLC__1SSH_20200518T142852_20200518T142919_032620_03C734_E5EE')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     response = submit_job(client, 'S1B_IW_OCN__2SDV_20200518T220815_20200518T220851_021642_02915F_B404')
