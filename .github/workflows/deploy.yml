@@ -74,7 +74,7 @@ jobs:
         python -m venv venv
         . ./venv/bin/activate
         pip install -r api/requirements.txt
-        envsubst < zappa_settings_template.yml > zappa_settings.yml
+        envsubst < api/zappa_settings_template.yml > zappa_settings.yml
 
     - run: |
         zappa deploy asj-zappa
