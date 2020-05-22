@@ -5,6 +5,7 @@ on:
     branches:
     - master
     - develop
+    - asj-zappa
 
 env:
   AWS_REGION: us-west-2
@@ -19,7 +20,8 @@ env:
   CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
 
 jobs:
-  deploy:
+
+  deploy-batch-cluster:
     runs-on: ubuntu-latest
 
     steps:
@@ -46,3 +48,29 @@ jobs:
               EDLUsername=${EDL_USERNAME} \
               EDLPassword=${EDL_PASSWORD} \
               RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${GITHUB_REF##*/}
+
+  deploy-api:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - env:
+        JOB_QUEUE: myQueue
+        JOB_DEFINITION: myJobDefinition
+      run: |
+        python -m pip install --upgrade pip
+        pip install zappa
+        python -m venv venv
+        . ./venv/bin/activate
+        pip install -r api/requirements.txt
+        envsubst < zappa_settings_template.yml > zappa_settings.yml
+
+    - run: |
+        zappa deploy asj-zappa
