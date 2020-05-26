@@ -29,14 +29,14 @@ Outputs:
 
 Resources:
 
-  LaunchInstanceStack:
+  LaunchInstance:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
         InstanceRoleArn: !GetAtt InstanceRole.Arn
       TemplateURL: launch-instance/cloudformation.yml
 
-  TerminateIdleInstancesStack:
+  TerminateIdleInstances:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
@@ -46,7 +46,6 @@ Resources:
   EventRule:
     Type: AWS::Events::Rule
     Properties:
-      Name: !Ref AWS::StackName
       EventPattern: !Sub |-
         {
           "source": ["aws.batch"],
@@ -57,7 +56,7 @@ Resources:
           }
         }
       Targets:
-      - Arn: !GetAtt LaunchInstanceStack.Outputs.LambdaArn
+      - Arn: !GetAtt LaunchInstance.Outputs.LambdaArn
         Id: lambda
         Input: !Sub |-
           {
@@ -68,7 +67,7 @@ Resources:
   EventPermission:
     Type: AWS::Lambda::Permission
     Properties:
-      FunctionName: !GetAtt LaunchInstanceStack.Outputs.LambdaArn
+      FunctionName: !GetAtt LaunchInstance.Outputs.LambdaArn
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt EventRule.Arn
@@ -76,14 +75,12 @@ Resources:
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: !Ref AWS::StackName
       GroupDescription: !Sub "Security group for ${AWS::StackName} machines"
       VpcId: !Ref VpcId
 
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
-      LaunchTemplateName: !Ref AWS::StackName
       LaunchTemplateData:
         IamInstanceProfile:
           Name: !Ref InstanceProfile
@@ -134,14 +131,12 @@ Resources:
   ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
-      ComputeEnvironmentName: !Ref AWS::StackName
       ServiceRole: !GetAtt BatchServiceRole.Arn
       Type: UNMANAGED
 
   JobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
-      JobQueueName: !Ref AWS::StackName
       Priority: 1
       ComputeEnvironmentOrder:
       - ComputeEnvironment: !Ref ComputeEnvironment
@@ -150,7 +145,6 @@ Resources:
   RtcGammaJobDefinition:
     Type: AWS::Batch::JobDefinition
     Properties:
-      JobDefinitionName: !Sub "${AWS::StackName}-rtc-gamma"
       Type: container
       Parameters:
         granule: ""
@@ -179,7 +173,6 @@ Resources:
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "${AWS::StackName}-task-role"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -199,7 +192,6 @@ Resources:
   BatchServiceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "${AWS::StackName}-batch-service-role"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -213,7 +205,6 @@ Resources:
   InstanceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "${AWS::StackName}-instance-role"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -235,6 +226,5 @@ Resources:
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      InstanceProfileName: !Ref InstanceRole
       Roles:
       - !Ref InstanceRole

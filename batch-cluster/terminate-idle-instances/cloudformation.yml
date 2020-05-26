@@ -16,7 +16,6 @@ Resources:
   Role:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Ref AWS::StackName
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -63,7 +62,6 @@ Resources:
   Schedule:
     Type: AWS::Events::Rule
     Properties:
-      Name: !Ref AWS::StackName
       ScheduleExpression: "rate(1 minute)"
       Targets:
       - Arn: !GetAtt Lambda.Arn

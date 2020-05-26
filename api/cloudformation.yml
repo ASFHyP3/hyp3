@@ -22,8 +22,6 @@ Resources:
 
   RestApi:
     Type: AWS::ApiGateway::RestApi
-    Properties:
-      Name: !Ref AWS::StackName
 
   Resource:
     Type: AWS::ApiGateway::Resource
@@ -78,7 +76,6 @@ Resources:
   ApiRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "${AWS::StackName}-api"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -104,7 +101,6 @@ Resources:
   LambdaRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "${AWS::StackName}-lambda"
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
