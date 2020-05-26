@@ -135,7 +135,7 @@ Resources:
           JOB_QUEUE: !Ref JobQueueArn
           JOB_DEFINITION: !Ref RtcGammaJobDefinition
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
-          AUTH_ALGORITM: !Ref AuthAlgorithm
+          AUTH_ALGORITHM: !Ref AuthAlgorithm
       Code: zappa_package.zip
       Handler: handler.lambda_handler
       MemorySize: 128
