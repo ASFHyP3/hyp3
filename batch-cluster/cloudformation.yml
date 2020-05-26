@@ -175,8 +175,6 @@ Resources:
 
   Bucket:
     Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Ref AWS::StackName
 
   TaskRole:
     Type: AWS::IAM::Role
