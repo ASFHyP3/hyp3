@@ -22,6 +22,8 @@ Resources:
 
   RestApi:
     Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Ref AWS::StackName
 
   Resource:
     Type: AWS::ApiGateway::Resource
