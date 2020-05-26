@@ -22,10 +22,10 @@ Parameters:
     Type: String
     Default: RS256
 
-Outputs:
-
-  ApiUrl:
-    Value: !GetAtt Api.Outputs.Url
+# Outputs:
+#
+#   ApiUrl:
+#     Value: !GetAtt Api.Outputs.Url
 
 Resources:
 
