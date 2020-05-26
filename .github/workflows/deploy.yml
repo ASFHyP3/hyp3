@@ -58,8 +58,8 @@ jobs:
           --role-arn ${CLOUDFORMATION_ROLE_ARN} \
           --capabilities CAPABILITY_NAMED_IAM \
           --parameter-overrides \
-              VpcId=${VPC_ID} \
-              EDLUsername=${EDL_USERNAME} \
-              EDLPassword=${EDL_PASSWORD} \
-              RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${GITHUB_REF##*/} \
-              AuthPublicKey=${AUTH_PUBLIC_KEY}
+              'VpcId=${VPC_ID}' \
+              'EDLUsername=${EDL_USERNAME}' \
+              'EDLPassword=${EDL_PASSWORD}' \
+              'RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${GITHUB_REF##*/}' \
+              'AuthPublicKey=${AUTH_PUBLIC_KEY}'
