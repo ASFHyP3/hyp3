@@ -1,5 +1,5 @@
-from hyp3_api import connexion_app
 import serverless_wsgi
+from hyp3_api import connexion_app
 
 
 serverless_wsgi.TEXT_MIME_TYPES.append('application/problem+json')
