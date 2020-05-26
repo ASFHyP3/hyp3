@@ -3,7 +3,7 @@ Parameters:
   JobQueueArn:
     Type: String
 
-  JobDefinition:
+  RtcGammaJobDefinition:
     Type: String
 
   AuthPublicKey:
@@ -122,7 +122,7 @@ Resources:
             Action: batch:SubmitJob
             Resource:
             - !Ref JobQueueArn
-            - !Ref JobDefinition
+            - !Ref RtcGammaJobDefinition
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -131,7 +131,7 @@ Resources:
       Environment:
         Variables:
           JOB_QUEUE: !Ref JobQueueArn
-          JOB_DEFINITION: !Ref JobDefinition
+          JOB_DEFINITION: !Ref RtcGammaJobDefinition
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITM: !Ref AuthAlgorithm
       Code: zappa_package.zip
