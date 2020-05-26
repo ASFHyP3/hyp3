@@ -12,7 +12,6 @@ def submit_job(body):
     )
     response = {
         'jobId': job['jobId'],
-        'jobName': job['jobName'],
         'parameters': body,
     }
     return response
