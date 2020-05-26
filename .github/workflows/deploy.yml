@@ -40,10 +40,8 @@ jobs:
 
     - working-directory: api
       run: |
-        python -m venv venv
-        . ./venv/bin/activate
-        pip install -r requirements.txt
-        zappa package api -o zappa_package.zip
+        pip install --upgrade pip
+        pip install -r requirements.txt -t src
 
     - run: |
         aws cloudformation package \

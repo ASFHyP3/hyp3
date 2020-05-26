@@ -136,8 +136,8 @@ Resources:
           JOB_DEFINITION: !Ref RtcGammaJobDefinition
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITHM: !Ref AuthAlgorithm
-      Code: zappa_package.zip
-      Handler: handler.lambda_handler
+      Code: src/
+      Handler: lambda_handler.handler
       MemorySize: 128
       Role: !GetAtt LambdaRole.Arn
       Runtime: python3.8

@@ -1,4 +1,0 @@
-api:
-  app_function: hyp3_api.application
-  binary_support: false
-  log_level: INFO
