@@ -15,7 +15,7 @@ Resources:
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}"
+      LogGroupName: !Sub "/aws/lambda/${Lambda}"
       RetentionInDays: 30
 
   Role:
@@ -37,7 +37,7 @@ Resources:
             Action:
             - logs:CreateLogStream
             - logs:PutLogEvents
-            Resource: !GetAtt LogGroup.Arn
+            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group/*"
           - Effect: Allow
             Action:
             - ec2:RunInstances
@@ -50,7 +50,6 @@ Resources:
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Ref AWS::StackName
       Code: src/
       Handler: main.lambda_handler
       MemorySize: 128
