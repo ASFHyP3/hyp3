@@ -22,22 +22,22 @@ Parameters:
     Type: String
     Default: RS256
 
-# Outputs:
-#
-#   ApiUrl:
-#     Value: !GetAtt Api.Outputs.Url
+Outputs:
+
+  ApiUrl:
+    Value: !GetAtt Api.Outputs.Url
 
 Resources:
 
-  # Api:
-  #   Type: AWS::CloudFormation::Stack
-  #   Properties:
-  #     Parameters:
-  #       JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
-  #       RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
-  #       AuthPublicKey: !Ref AuthPublicKey
-  #       AuthAlgorithm: !Ref AuthAlgorithm
-  #     TemplateURL: api/cloudformation.yml
+  Api:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
+        AuthPublicKey: !Ref AuthPublicKey
+        AuthAlgorithm: !Ref AuthAlgorithm
+      TemplateURL: api/cloudformation.yml
 
   Cluster:
     Type: AWS::CloudFormation::Stack
