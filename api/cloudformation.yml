@@ -13,6 +13,11 @@ Parameters:
     Type: String
     Default: RS256
 
+Outputs:
+
+  Url:
+    Value: !Sub "https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
+
 Resources:
 
   RestApi:
@@ -131,8 +136,8 @@ Resources:
         Variables:
           JOB_QUEUE: !Ref JobQueueArn
           JOB_DEFINITION: !Ref JobDefinition
-          AUTH_PUBLIC_KEY: foo
-          AUTH_ALGORITM: RS256
+          AUTH_PUBLIC_KEY: !Ref AuthPublicKey
+          AUTH_ALGORITM: !Ref AuthAlgorithm
       Code: zappa_package.zip
       Handler: handler.lambda_handler
       MemorySize: 128

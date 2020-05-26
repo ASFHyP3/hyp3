@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+  EDLUsername:
+    Type: String
+
+  EDLPassword:
+    Type: String
+    NoEcho: true
+
+  RtcGammaImage:
+    Type: String
+
+  AuthPublicKey:
+    Type: String
+
+  AuthAlgorithm:
+    Type: String
+    Default: RS256
+
+Outputs:
+
+  ApiUrl:
+    Value: !GetAtt Api.Outputs.Url
+
+Resources:
+
+  Api:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        JobDefinition: !GetAtt Cluster.Outputs.JobDefinition
+        AuthPublicKey: !Ref AuthPublicKey
+        AuthAlgorithm: !Ref AuthAlgorithm
+      TemplateURL: api/cloudformation.yml
+
+  Cluster:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        VpcId: !Ref VpcId
+        EDLUsername: !Ref EDLUsername
+        EDLPassword: !Ref EDLPassword
+        RtcGammaImage: !Ref RtcGammaImage
+      TemplateURL: batch-cluster/cloudformation.yml

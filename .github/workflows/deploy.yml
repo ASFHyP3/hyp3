@@ -15,13 +15,14 @@ env:
   VPC_ID: ${{ secrets.VPC_ID }}
   EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
   EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
+  AUTH_PUBLIC_KEY: ${{ secrets.AUTH_PULIC_KEY }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
 
 jobs:
 
-  deploy-batch-cluster:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,9 +34,22 @@ jobs:
         aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
+    - uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - working-directory: api
+      run: |
+        python -m pip install --upgrade pip
+        pip install zappa
+        python -m venv venv
+        . ./venv/bin/activate
+        pip install -r requirements.txt
+        zappa package api -o zappa_package.zip
+
     - run: |
         aws cloudformation package \
-          --template-file batch-cluster/cloudformation.yml \
+          --template-file cloudformation.yml \
           --s3-bucket ${TEMPLATE_BUCKET} \
           --output-template-file packaged.yml
         aws cloudformation deploy \
@@ -47,34 +61,5 @@ jobs:
               VpcId=${VPC_ID} \
               EDLUsername=${EDL_USERNAME} \
               EDLPassword=${EDL_PASSWORD} \
-              RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${GITHUB_REF##*/}
-
-  deploy-api:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
-
-    - uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-
-    - env:
-        JOB_QUEUE: myQueue2
-        JOB_DEFINITION: myJobDefinition
-      run: |
-        python -m pip install --upgrade pip
-        pip install zappa
-        envsubst < api/zappa_settings_template.yml > zappa_settings.yml
-
-    - run: |
-        python -m venv venv
-        . ./venv/bin/activate
-        pip install -r api/requirements.txt
-        zappa deploy asjzappa
+              RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${GITHUB_REF##*/} \
+              AuthPublicKey=${AUTH_PUBLIC_KEY}
