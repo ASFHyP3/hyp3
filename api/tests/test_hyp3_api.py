@@ -57,7 +57,6 @@ def test_submit_job(client, batch_stub):
     assert response.status_code == status.HTTP_200_OK
     assert response.get_json() == {
         'jobId': 'myJobId',
-        'jobName': 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9',
         'parameters': {
             'granule': 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9',
         },
