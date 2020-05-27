@@ -31,13 +31,10 @@ components:
       properties:
         jobId:
           type: string
-        jobName:
-          type: string
         parameters:
           $ref: "#/components/schemas/parameters"
       required:
         - jobId
-        - jobName
         - parameters
       additionalProperties: false
     parameters:
