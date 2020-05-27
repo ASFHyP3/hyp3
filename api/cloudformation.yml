@@ -97,7 +97,7 @@ Resources:
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}"
+      LogGroupName: !Sub "/aws/lambda/${Lambda}"
       RetentionInDays: 90
 
   LambdaRole:
@@ -119,7 +119,7 @@ Resources:
             Action:
             - logs:CreateLogStream
             - logs:PutLogEvents
-            Resource: !GetAtt LambdaLogGroup.Arn
+            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
           - Effect: Allow
             Action: batch:SubmitJob
             Resource:
@@ -129,7 +129,6 @@ Resources:
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Ref AWS::StackName
       Environment:
         Variables:
           JOB_QUEUE: !Ref JobQueueArn
