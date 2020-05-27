@@ -51,4 +51,4 @@ jobs:
         python -m pip install --upgrade pip
         pip install openapi-spec-validator
 
-    - run: openapi-spec-validator api/hyp3_api/openapi-spec.yml
+    - run: openapi-spec-validator api/src/hyp3_api/openapi-spec.yml
