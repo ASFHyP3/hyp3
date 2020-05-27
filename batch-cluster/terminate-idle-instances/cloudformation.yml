@@ -24,22 +24,22 @@ Resources:
             Service: lambda.amazonaws.com
           Effect: Allow
       Policies:
-      - PolicyName: policy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-          - Effect: Allow
-            Action:
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
-          - Effect: Allow
-            Action:
-            - batch:DescribeComputeEnvironments
-            - ecs:ListContainerInstances
-            - ecs:DescribeContainerInstances
-            - ec2:TerminateInstances
-            Resource: "*"
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+              - Effect: Allow
+                Action:
+                  - batch:DescribeComputeEnvironments
+                  - ecs:ListContainerInstances
+                  - ecs:DescribeContainerInstances
+                  - ec2:TerminateInstances
+                Resource: "*"
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -63,12 +63,12 @@ Resources:
     Properties:
       ScheduleExpression: "rate(1 minute)"
       Targets:
-      - Arn: !GetAtt Lambda.Arn
-        Id: lambda
-        Input: !Sub |-
-          {
-            "ComputeEnvironmentArn": "${ComputeEnvironmentArn}"
-          }
+        - Arn: !GetAtt Lambda.Arn
+          Id: lambda
+          Input: !Sub |-
+            {
+              "ComputeEnvironmentArn": "${ComputeEnvironmentArn}"
+            }
 
   EventPermission:
     Type: AWS::Lambda::Permission

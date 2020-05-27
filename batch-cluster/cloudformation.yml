@@ -56,13 +56,13 @@ Resources:
           }
         }
       Targets:
-      - Arn: !GetAtt LaunchInstance.Outputs.LambdaArn
-        Id: lambda
-        Input: !Sub |-
-          {
-            "LaunchTemplateId": "${LaunchTemplate}",
-            "Version": "${LaunchTemplate.LatestVersionNumber}"
-          }
+        - Arn: !GetAtt LaunchInstance.Outputs.LambdaArn
+          Id: lambda
+          Input: !Sub |-
+            {
+              "LaunchTemplateId": "${LaunchTemplate}",
+              "Version": "${LaunchTemplate.LatestVersionNumber}"
+            }
 
   EventPermission:
     Type: AWS::Lambda::Permission
@@ -89,16 +89,16 @@ Resources:
         InstanceMarketOptions:
           MarketType: spot
         SecurityGroupIds:
-        - !Ref SecurityGroup
+          - !Ref SecurityGroup
         TagSpecifications:
-        - ResourceType: instance
-          Tags:
-          - Key: Name
-            Value: !Ref AWS::StackName
-        - ResourceType: volume
-          Tags:
-          - Key: Name
-            Value: !Ref AWS::StackName
+          - ResourceType: instance
+            Tags:
+              - Key: Name
+                Value: !Ref AWS::StackName
+          - ResourceType: volume
+            Tags:
+              - Key: Name
+                Value: !Ref AWS::StackName
         UserData:
           Fn::Base64:
             Fn::Sub: |-
@@ -139,8 +139,8 @@ Resources:
     Properties:
       Priority: 1
       ComputeEnvironmentOrder:
-      - ComputeEnvironment: !Ref ComputeEnvironment
-        Order: 1
+        - ComputeEnvironment: !Ref ComputeEnvironment
+          Order: 1
 
   RtcGammaJobDefinition:
     Type: AWS::Batch::JobDefinition
@@ -157,13 +157,13 @@ Resources:
         Memory: 30000
         JobRoleArn: !GetAtt TaskRole.Arn
         Command:
-        - --username
-        - Ref::username
-        - --password
-        - Ref::password
-        - --bucket
-        - Ref::bucket
-        - Ref::granule
+          - --username
+          - Ref::username
+          - --password
+          - Ref::password
+          - --bucket
+          - Ref::bucket
+          - Ref::granule
       Timeout:
         AttemptDurationSeconds: 5400
 
@@ -181,13 +181,13 @@ Resources:
             Service: ecs-tasks.amazonaws.com
           Effect: Allow
       Policies:
-      - PolicyName: policy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-          - Effect: Allow
-            Action: s3:PutObject
-            Resource: !Sub "arn:aws:s3:::${Bucket}/*"
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub "arn:aws:s3:::${Bucket}/*"
 
   BatchServiceRole:
     Type: AWS::IAM::Role
@@ -200,7 +200,7 @@ Resources:
             Service: batch.amazonaws.com
           Effect: Allow
       ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
+        - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
 
   InstanceRole:
     Type: AWS::IAM::Role
@@ -213,18 +213,18 @@ Resources:
             Service: ec2.amazonaws.com
           Effect: Allow
       ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
       Policies:
-      - PolicyName: policy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-          - Effect: Allow
-            Action: batch:DescribeComputeEnvironments
-            Resource: "*"
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: batch:DescribeComputeEnvironments
+                Resource: "*"
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Roles:
-      - !Ref InstanceRole
+        - !Ref InstanceRole

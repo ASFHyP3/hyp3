@@ -8,47 +8,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
 
-    - run: |
-        python -m pip install --upgrade pip
-        pip install flake8  flake8-import-order flake8-blind-except flake8-builtins
+      - run: |
+          python -m pip install --upgrade pip
+          pip install flake8  flake8-import-order flake8-blind-except flake8-builtins
 
-    - run: flake8 --max-line-length=120 --import-order-style=pycharm --statistics
+      - run: flake8 --max-line-length=120 --import-order-style=pycharm --statistics
 
   cfn-lint:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
 
-    - run: |
-        python -m pip install --upgrade pip
-        pip install cfn-lint
+      - run: |
+          python -m pip install --upgrade pip
+          pip install cfn-lint
 
-    # ignore "W3002 This code may only work with `package` cli command" warning
-    - run: cfn-lint --ignore-checks W3002 --template `find . -name cloudformation*.yml`
+      # ignore "W3002 This code may only work with `package` cli command" warning
+      - run: cfn-lint --ignore-checks W3002 --template `find . -name cloudformation*.yml`
 
   openapi-spec-validator:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
 
-    - run: |
-        python -m pip install --upgrade pip
-        pip install openapi-spec-validator
+      - run: |
+          python -m pip install --upgrade pip
+          pip install openapi-spec-validator
 
-    - run: openapi-spec-validator api/src/hyp3_api/openapi-spec.yml
+      - run: openapi-spec-validator api/src/hyp3_api/openapi-spec.yml

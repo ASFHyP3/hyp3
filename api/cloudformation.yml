@@ -86,13 +86,13 @@ Resources:
             Service: apigateway.amazonaws.com
           Effect: Allow
       Policies:
-      - PolicyName: policy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-          - Effect: Allow
-            Action: lambda:InvokeFunction
-            Resource: !GetAtt Lambda.Arn
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: !GetAtt Lambda.Arn
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -111,20 +111,20 @@ Resources:
             Service: lambda.amazonaws.com
           Effect: Allow
       Policies:
-      - PolicyName: policy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-          - Effect: Allow
-            Action:
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
-          - Effect: Allow
-            Action: batch:SubmitJob
-            Resource:
-            - !Ref JobQueueArn
-            - !Ref RtcGammaJobDefinition
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+              - Effect: Allow
+                Action: batch:SubmitJob
+                Resource:
+                  - !Ref JobQueueArn
+                  - !Ref RtcGammaJobDefinition
 
   Lambda:
     Type: AWS::Lambda::Function
