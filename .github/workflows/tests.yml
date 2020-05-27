@@ -7,19 +7,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
 
-    - run: |
-        python -m pip install --upgrade pip
-        pip install -r api/requirements.txt
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r api/requirements.txt
 
-    - env:
-        AWS_DEFAULT_REGION: us-west-2
-        PYTHONPATH: api/src
-      run: |
-        export $(xargs < api/tests/cfg.env)
-        pytest api
+      - env:
+          AWS_DEFAULT_REGION: us-west-2
+          PYTHONPATH: api/src
+        run: |
+          export $(xargs < api/tests/cfg.env)
+          pytest api
