@@ -52,7 +52,7 @@ jobs:
           --stack-name hyp3-${GITHUB_REF##*/} \
           --template-file packaged.yml \
           --role-arn ${CLOUDFORMATION_ROLE_ARN} \
-          --capabilities CAPABILITY_NAMED_IAM \
+          --capabilities CAPABILITY_IAM \
           --parameter-overrides \
               "VpcId=${VPC_ID}" \
               "EDLUsername=${EDL_USERNAME}" \
