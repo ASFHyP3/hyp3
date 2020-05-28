@@ -12,7 +12,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/parameters"
+              $ref: "#/components/schemas/submission"
         required: true
       responses:
         "200":
@@ -20,13 +20,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/job"
+                $ref: "#/components/schemas/response"
       security:
         - EarthDataLogin: []
 
 components:
   schemas:
-    job:
+    response:
       type: object
       properties:
         jobId:
@@ -35,6 +35,20 @@ components:
           $ref: "#/components/schemas/parameters"
       required:
         - jobId
+        - parameters
+      additionalProperties: false
+    submission:
+      type: object
+      properties:
+        process_type:
+          type: string
+        email:
+          type: string
+        parameters:
+          $ref: "#/components/schemas/parameters"
+      required:
+        - process_type
+        - email
         - parameters
       additionalProperties: false
     parameters:
