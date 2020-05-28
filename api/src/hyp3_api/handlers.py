@@ -1,8 +1,7 @@
 from os import environ
 
-from hyp3_api import BATCH_CLIENT, connexion_app
 from flask_cors import CORS
-
+from hyp3_api import BATCH_CLIENT, connexion_app
 
 
 def submit_job(body):
