@@ -136,3 +136,33 @@ def test_jobs_bad_method(client):
 def test_no_route(client):
     response = client.get('/no/such/path')
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_cors_no_origin(client):
+    response = client.post(JOBS_URI)
+    assert 'Access-Control-Allow-Origin' not in response.headers
+    assert 'Access-Control-Allow-Credentials' not in response.headers
+
+
+def test_cors_bad_origins(client):
+    response = client.post(JOBS_URI, headers={'Origin': 'https://www.google.com'})
+    assert 'Access-Control-Allow-Origin' not in response.headers
+    assert 'Access-Control-Allow-Credentials' not in response.headers
+
+    response = client.post(JOBS_URI, headers={'Origin': 'https://www.alaska.edu'})
+    assert 'Access-Control-Allow-Origin' not in response.headers
+    assert 'Access-Control-Allow-Credentials' not in response.headers
+
+
+def test_cors_good_origins(client):
+    response = client.post(JOBS_URI, headers={'Origin': 'https://search.asf.alaska.edu'})
+    assert response.headers['Access-Control-Allow-Origin'] == 'https://search.asf.alaska.edu'
+    assert response.headers['Access-Control-Allow-Credentials'] == 'true'
+
+    response = client.post(JOBS_URI, headers={'Origin': 'https://search-test.asf.alaska.edu'})
+    assert response.headers['Access-Control-Allow-Origin'] == 'https://search-test.asf.alaska.edu'
+    assert response.headers['Access-Control-Allow-Credentials'] == 'true'
+
+    response = client.post(JOBS_URI, headers={'Origin': 'http://local.asf.alaska.edu'})
+    assert response.headers['Access-Control-Allow-Origin'] == 'http://local.asf.alaska.edu'
+    assert response.headers['Access-Control-Allow-Credentials'] == 'true'
