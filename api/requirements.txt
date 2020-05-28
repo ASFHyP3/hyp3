@@ -5,3 +5,4 @@ flask_api
 PyJWT
 cryptography
 serverless_wsgi
+Flask-Cors
