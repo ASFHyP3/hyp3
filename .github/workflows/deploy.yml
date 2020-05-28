@@ -60,5 +60,5 @@ jobs:
                 "EDLPassword=${EDL_PASSWORD}" \
                 "RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${GITHUB_REF##*/}" \
                 "AuthPublicKey=${AUTH_PUBLIC_KEY}" \
-                "DomainName=hyp3-${GITHUB_REF##*/}.asf.alaska.edu" \
+                "DomainName=hyp3-${GITHUB_REF##*/}-api.asf.alaska.edu" \
                 "CertificateArn=${CERTIFICATE_ARN}"

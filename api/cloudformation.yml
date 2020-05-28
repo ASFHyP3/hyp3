@@ -22,7 +22,7 @@ Parameters:
 Outputs:
 
   Url:
-    Value: !Sub "https://${DomainName}/${Stage}/ui"
+    Value: !Sub "https://${DomainName}/ui"
 
 Resources:
 
@@ -100,7 +100,6 @@ Resources:
       DomainName: !Ref CustomDomainName
       RestApiId: !Ref RestApi
       Stage: !Ref Stage
-      BasePath: !Ref Stage
 
   ApiRole:
     Type: AWS::IAM::Role
