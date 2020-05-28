@@ -1,6 +1,8 @@
 from os import environ
 
 from hyp3_api import BATCH_CLIENT, connexion_app
+from flask_cors import CORS
+
 
 
 def submit_job(body):
@@ -18,3 +20,4 @@ def submit_job(body):
 
 
 connexion_app.add_api('openapi-spec.yml')
+CORS(connexion_app.app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
