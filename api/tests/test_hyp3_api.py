@@ -23,10 +23,17 @@ def batch_stub():
         stubber.assert_no_pending_responses()
 
 
-def submit_job(client, granule, batch_stub=None):
+def submit_job(client, granule, email="foo@bar.com", batch_stub=None):
     if batch_stub:
         add_response(batch_stub, granule)
-    return client.post(JOBS_URI, json={'granule': granule})
+    payload = {
+        'process_type': 'RTC_GAMMA',
+        'email': 'foo@bar.com',
+        'parameters': {
+            'granule': granule
+        }
+    }
+    return client.post(JOBS_URI, json=payload)
 
 
 def add_response(batch_stub, granule, job_id='myJobId'):
