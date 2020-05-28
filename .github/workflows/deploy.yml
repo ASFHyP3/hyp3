@@ -28,6 +28,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - if: endsWith(github.ref, '/develop')
+        run: |
+          echo "::set-env name=STACK_NAME::hyp3-test"
+          echo "::set-env name=DOMAIN_NAME::hyp3-test-api.asf.alaska.edu"
+          echo "::set-env name=IMAGE_TAG::test"
+
+      - if: endsWith(github.ref, '/master')
+        run: |
+          echo "::set-env name=STACK_NAME::hyp3"
+          echo "::set-env name=DOMAIN_NAME::hyp3-api.asf.alaska.edu"
+          echo "::set-env name=IMAGE_TAG::latest"
+
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
@@ -49,7 +61,7 @@ jobs:
             --s3-bucket ${TEMPLATE_BUCKET} \
             --output-template-file packaged.yml
           aws cloudformation deploy \
-            --stack-name hyp3-${GITHUB_REF##*/} \
+            --stack-name ${STACK_NAME} \
             --template-file packaged.yml \
             --role-arn ${CLOUDFORMATION_ROLE_ARN} \
             --capabilities CAPABILITY_IAM \
@@ -57,7 +69,7 @@ jobs:
                 "VpcId=${VPC_ID}" \
                 "EDLUsername=${EDL_USERNAME}" \
                 "EDLPassword=${EDL_PASSWORD}" \
-                "RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${GITHUB_REF##*/}" \
+                "RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${IMAGE_TAG}" \
                 "AuthPublicKey=${AUTH_PUBLIC_KEY}" \
-                "DomainName=hyp3-${GITHUB_REF##*/}-api.asf.alaska.edu" \
+                "DomainName=${DOMAIN_NAME}" \
                 "CertificateArn=${CERTIFICATE_ARN}"
