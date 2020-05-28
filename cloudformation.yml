@@ -22,6 +22,12 @@ Parameters:
     Type: String
     Default: RS256
 
+  DomainName:
+    Type: String
+
+  CertificateArn:
+    Type: String
+
 Outputs:
 
   ApiUrl:
@@ -37,6 +43,8 @@ Resources:
         RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
+        DomainName: !Ref DomainName
+        CertificateArn: !Ref CertificateArn
       TemplateURL: api/cloudformation.yml
 
   Cluster:

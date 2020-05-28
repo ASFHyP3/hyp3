@@ -13,10 +13,16 @@ Parameters:
     Type: String
     Default: RS256
 
+  DomainName:
+    Type: String
+
+  CertificateArn:
+    Type: String
+
 Outputs:
 
   Url:
-    Value: !Sub "https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
+    Value: !Sub "https://${DomainName}/ui"
 
 Resources:
 
@@ -24,6 +30,9 @@ Resources:
     Type: AWS::ApiGateway::RestApi
     Properties:
       Name: !Ref AWS::StackName
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
 
   Resource:
     Type: AWS::ApiGateway::Resource
@@ -74,6 +83,23 @@ Resources:
       StageName: api
       RestApiId: !Ref RestApi
       DeploymentId: !Ref Deployment
+
+  CustomDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: !Ref DomainName
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      RegionalCertificateArn: !Ref CertificateArn
+      SecurityPolicy: TLS_1_2
+
+  BasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    Properties:
+      DomainName: !Ref CustomDomainName
+      RestApiId: !Ref RestApi
+      Stage: !Ref Stage
 
   ApiRole:
     Type: AWS::IAM::Role
