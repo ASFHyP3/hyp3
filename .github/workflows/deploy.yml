@@ -18,6 +18,7 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
+  CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
 
 jobs:
 
@@ -57,4 +58,6 @@ jobs:
                 "EDLUsername=${EDL_USERNAME}" \
                 "EDLPassword=${EDL_PASSWORD}" \
                 "RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${GITHUB_REF##*/}" \
-                "AuthPublicKey=${AUTH_PUBLIC_KEY}"
+                "AuthPublicKey=${AUTH_PUBLIC_KEY}" \
+                "DomainName=hyp3-${GITHUB_REF##*/}-api.asf.alaska.edu" \
+                "CertificateArn=${CERTIFICATE_ARN}"
