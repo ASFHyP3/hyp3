@@ -99,6 +99,8 @@ Resources:
     Properties:
       DomainName: !Ref CustomDomainName
       RestApiId: !Ref RestApi
+      Stage: !Ref Stage
+      BasePath: !Ref Stage
 
   ApiRole:
     Type: AWS::IAM::Role
