@@ -6,7 +6,6 @@ from hyp3_api import BATCH_CLIENT, connexion_app
 
 def submit_job(body):
     parameters = body['parameters']
-    print(parameters)
     job = BATCH_CLIENT.submit_job(
         jobName=parameters['granule'],
         jobQueue=environ['JOB_QUEUE'],
