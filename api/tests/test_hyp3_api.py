@@ -23,7 +23,7 @@ def batch_stub():
         stubber.assert_no_pending_responses()
 
 
-def submit_job(client, granule, batch_stub=None, email='foo@bar.com'):
+def submit_job(client, granule, batch_stub=None, email='john.doe@example.com'):
     if batch_stub:
         add_response(batch_stub, granule)
     payload = {
