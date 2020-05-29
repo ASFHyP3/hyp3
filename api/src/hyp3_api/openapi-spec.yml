@@ -42,8 +42,10 @@ components:
       properties:
         process_type:
           type: string
+          example: RTC_GAMMA
         email:
           type: string
+          example: john.doe@example.com
         parameters:
           $ref: "#/components/schemas/parameters"
       required:
