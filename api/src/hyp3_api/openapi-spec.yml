@@ -47,6 +47,7 @@ components:
             - RTC_GAMMA
         email:
           type: string
+          format: email
           example: john.doe@example.com
         parameters:
           $ref: "#/components/schemas/parameters"
