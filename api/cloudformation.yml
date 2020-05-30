@@ -83,6 +83,9 @@ Resources:
       StageName: api
       RestApiId: !Ref RestApi
       DeploymentId: !Ref Deployment
+      AccessLogSetting:
+        DestinationArn: !GetAtt ApiLogGroup.Arn
+        Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId
 
   CustomDomainName:
     Type: AWS::ApiGateway::DomainName
@@ -119,6 +122,11 @@ Resources:
               - Effect: Allow
                 Action: lambda:InvokeFunction
                 Resource: !GetAtt Lambda.Arn
+
+  ApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 180
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
