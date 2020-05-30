@@ -69,6 +69,11 @@ Resources:
         Credentials: !GetAtt ApiRole.Arn
         PassthroughBehavior: NEVER
 
+  ApiLogGroup:
+    Type: AWS::Logs::Log Group
+    Properties:
+      RetentionInDays: 180
+
   Deployment:
     Type: AWS::ApiGateway::Deployment
     DependsOn:
@@ -122,11 +127,6 @@ Resources:
               - Effect: Allow
                 Action: lambda:InvokeFunction
                 Resource: !GetAtt Lambda.Arn
-
-  ApiLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      RetentionInDays: 180
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
