@@ -69,6 +69,11 @@ Resources:
         Credentials: !GetAtt ApiRole.Arn
         PassthroughBehavior: NEVER
 
+  ApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 180
+
   Deployment:
     Type: AWS::ApiGateway::Deployment
     DependsOn:
@@ -83,6 +88,9 @@ Resources:
       StageName: api
       RestApiId: !Ref RestApi
       DeploymentId: !Ref Deployment
+      AccessLogSetting:
+        DestinationArn: !GetAtt ApiLogGroup.Arn
+        Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId
 
   CustomDomainName:
     Type: AWS::ApiGateway::DomainName
