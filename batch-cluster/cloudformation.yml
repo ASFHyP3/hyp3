@@ -167,6 +167,49 @@ Resources:
       Timeout:
         AttemptDurationSeconds: 5400
 
+  RtcGammaStepFunction:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      RoleArn: !ref RtcGammaStepFunctionRole
+      DefinitionString: !sub |-
+        {
+         "StartAt": "BATCH_JOB",
+         "States": {
+           "BATCH_JOB": {
+             "Type": "Task",
+             "Resource": "arn:aws:states:::batch:submitJob.sync",
+             "Parameters": {
+               "JobDefinition": "${RtcGammaJobDefinition}",
+               "JobName": "$.batchjob.parameters.granule",
+               "JobQueue": "${jobQueue}",
+               "Parameters.$": "$.batchjob.parameters",
+             },
+             "End": true
+            }
+          }
+        }
+
+  RtcGammaStepFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: states.amazonaws.com
+          Effect: Allow
+        Policies:
+          - PolicyName: policy
+            PolicyDocument:
+              Version: 2012-10-17
+              Statement:
+                - Effect: Allow
+                  Action: batch.SubmitJob
+                  Resource:
+                    - !Ref JobQueue
+                    - !Ref RtcGammaJobDefinition
+
   Bucket:
     Type: AWS::S3::Bucket
     Properties:
