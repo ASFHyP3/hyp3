@@ -170,7 +170,7 @@ Resources:
   RtcGammaStepFunction:
     Type: AWS::StepFunctions::StateMachine
     Properties:
-      RoleArn: !ref RtcGammaStepFunctionRole
+      RoleArn: !Ref RtcGammaStepFunctionRole
       DefinitionString: !Sub |-
         {
          "StartAt": "BATCH_JOB",
