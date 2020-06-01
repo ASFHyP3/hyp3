@@ -181,7 +181,7 @@ Resources:
              "Parameters": {
                "JobDefinition": "${RtcGammaJobDefinition}",
                "JobName": "$.batchjob.parameters.granule",
-               "JobQueue": "${jobQueue}",
+               "JobQueue": "${JobQueue}",
                "Parameters.$": "$.batchjob.parameters",
              },
              "End": true
