@@ -208,7 +208,7 @@ Resources:
             Version: 2012-10-17
             Statement:
               - Effect: Allow
-                Action: batch.SubmitJob
+                Action: batch:SubmitJob
                 Resource:
                   - !Ref JobQueue
                   - !Ref RtcGammaJobDefinition
