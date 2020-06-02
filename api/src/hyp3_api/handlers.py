@@ -13,8 +13,9 @@ def submit_job(body):
         stateMachineArn=environ['STEP_FUNCTION_ARN'],
         input=json.dumps(body, sort_keys=True),
     )
+    job_id = job['executionArn'].split(':')[-1]
     return {
-        'jobId': job['executionArn'],
+        'jobId': job_id,
     }
 
 
