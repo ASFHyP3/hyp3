@@ -55,7 +55,7 @@ def add_response(states_stub, granule, job_id='myJobId', email='john.doe@example
             'input': dumps(payload, sort_keys=True),
         },
         service_response={
-            'executionArn': job_id,
+            'executionArn': f'{environ["STEP_FUNCTION_ARN"]}:{job_id}',
             'startDate': datetime.utcnow(),
         },
     )
