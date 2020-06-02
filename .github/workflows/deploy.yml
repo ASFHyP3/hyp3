@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - develop
+      - jlr-steps
 
 env:
   AWS_REGION: us-west-2
@@ -27,6 +28,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - if: endsWith(github.ref, '/jlr-steps')
+        run: |
+          echo "::set-env name=STACK_NAME::hyp3-jlr"
+          echo "::set-env name=DOMAIN_NAME::hyp3-jlr-api.asf.alaska.edu"
+          echo "::set-env name=IMAGE_TAG::test"
 
       - if: endsWith(github.ref, '/develop')
         run: |
