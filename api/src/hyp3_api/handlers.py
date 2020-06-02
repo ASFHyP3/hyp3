@@ -2,7 +2,6 @@ import json
 from os import environ
 
 from flask_cors import CORS
-
 from hyp3_api import STEP_FUNCTION_CLIENT, connexion_app
 
 

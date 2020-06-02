@@ -173,7 +173,7 @@ Resources:
   StepFunction:
     Type: AWS::StepFunctions::StateMachine
     Properties:
-      RoleArn: !Ref StepFunctionRole
+      RoleArn: !GetAtt StepFunctionRole.Arn
       DefinitionString: |-
         {
          "StartAt": "BATCH_JOB",
