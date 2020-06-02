@@ -5,16 +5,19 @@ from hyp3_api import BATCH_CLIENT, connexion_app
 
 
 def submit_job(body):
+    parameters = body['parameters']
     job = BATCH_CLIENT.submit_job(
-        jobName=body['granule'],
+        jobName=parameters['granule'],
         jobQueue=environ['JOB_QUEUE'],
         jobDefinition=environ['JOB_DEFINITION'],
-        parameters=body
+        parameters=parameters
     )
+    print(job)
     response = {
         'jobId': job['jobId'],
-        'parameters': body,
+        'parameters': parameters,
     }
+
     return response
 
 
