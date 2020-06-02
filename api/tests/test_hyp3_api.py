@@ -1,6 +1,6 @@
+from datetime import datetime
 from json import dumps
 from os import environ
-from datetime import datetime
 
 import pytest
 from botocore.stub import Stubber
