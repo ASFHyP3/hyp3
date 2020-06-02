@@ -1,5 +1,8 @@
 Parameters:
 
+  StepFunctionArn:
+    Type: String
+
   JobQueueArn:
     Type: String
 
@@ -155,16 +158,16 @@ Resources:
                   - logs:PutLogEvents
                 Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
               - Effect: Allow
-                Action: batch:SubmitJob
+                Action: states.StartExecution
                 Resource:
-                  - !Ref JobQueueArn
-                  - !Ref RtcGammaJobDefinition
+                  - !Ref StepFunctionArn
 
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
       Environment:
         Variables:
+          STEP_FUNCTION_ARN: !Ref StepFunctionArn
           JOB_QUEUE: !Ref JobQueueArn
           JOB_DEFINITION: !Ref RtcGammaJobDefinition
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey

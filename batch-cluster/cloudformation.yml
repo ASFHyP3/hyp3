@@ -21,6 +21,9 @@ Parameters:
 
 Outputs:
 
+  StepFunctionArn:
+    Value: !Ref StepFunction
+
   JobQueueArn:
     Value: !Ref JobQueue
 
@@ -167,10 +170,10 @@ Resources:
       Timeout:
         AttemptDurationSeconds: 5400
 
-  RtcGammaStepFunction:
+  StepFunction:
     Type: AWS::StepFunctions::StateMachine
     Properties:
-      RoleArn: !Ref RtcGammaStepFunctionRole
+      RoleArn: !Ref StepFunctionRole
       DefinitionString: !Sub |-
         {
          "StartAt": "BATCH_JOB",
@@ -179,17 +182,17 @@ Resources:
              "Type": "Task",
              "Resource": "arn:aws:states:::batch:submitJob.sync",
              "Parameters": {
-               "JobDefinition": "${RtcGammaJobDefinition}",
-               "JobName": "$.batchjob.parameters.granule",
-               "JobQueue": "${JobQueue}",
-               "Parameters.$": "$.batchjob.parameters",
+               "JobDefinition": "$.jobDefinition",
+               "JobName": "$.parameters.granule",
+               "JobQueue": "$.jobQueue",
+               "Parameters.$": "$.parameters"
              },
              "End": true
             }
           }
         }
 
-  RtcGammaStepFunctionRole:
+  StepFunctionRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:

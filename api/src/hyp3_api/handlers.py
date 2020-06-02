@@ -9,15 +9,14 @@ from hyp3_api import STEP_FUNCTION_CLIENT, connexion_app
 def submit_job(body):
     parameters = body['parameters']
     job = STEP_FUNCTION_CLIENT.start_execution(
-        stateMachineArn=environ['stateMachineArn'],
-        input=json.dumps(parameters)
+        stateMachineArn=environ['STEP_FUNCTION_ARN'],
+        input=json.dumps(body),
     )
     print(job)
     response = {
-        'jobId': job['jobId'],
+        'jobId': job['executionArn'],
         'parameters': parameters,
     }
-
     return response
 
 
