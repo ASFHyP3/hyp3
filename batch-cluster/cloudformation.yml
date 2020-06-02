@@ -176,8 +176,8 @@ Resources:
       RoleArn: !GetAtt StepFunctionRole.Arn
       DefinitionString: |-
         {
-         "StartAt": "BATCH_JOB",
-         "States": {
+          "StartAt": "BATCH_JOB",
+          "States": {
            "BATCH_JOB": {
              "Type": "Task",
              "Resource": "arn:aws:states:::batch:submitJob.sync",
