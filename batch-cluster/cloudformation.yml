@@ -182,9 +182,9 @@ Resources:
              "Type": "Task",
              "Resource": "arn:aws:states:::batch:submitJob.sync",
              "Parameters": {
-               "JobDefinition": "$.jobDefinition",
-               "JobName": "$.parameters.granule",
-               "JobQueue": "$.jobQueue",
+               "JobDefinition.$": "$.jobDefinition",
+               "JobName.$": "$.parameters.granule",
+               "JobQueue.$": "$.jobQueue",
                "Parameters.$": "$.parameters"
              },
              "End": true
