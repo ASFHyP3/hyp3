@@ -3,7 +3,7 @@ from os import environ
 import pytest
 from botocore.stub import Stubber
 from flask_api import status
-from hyp3_api import BATCH_CLIENT, auth, connexion_app
+from hyp3_api import STEP_FUNCTION_CLIENT, auth, connexion_app
 
 
 AUTH_COOKIE = 'asf-urs'
@@ -18,7 +18,7 @@ def client():
 
 @pytest.fixture(autouse=True)
 def batch_stub():
-    with Stubber(BATCH_CLIENT) as stubber:
+    with Stubber(STEP_FUNCTION_CLIENT) as stubber:
         yield stubber
         stubber.assert_no_pending_responses()
 
