@@ -1,5 +1,5 @@
-from os import environ
 from json import dumps
+from os import environ
 from datetime import datetime
 
 import pytest
@@ -39,7 +39,7 @@ def submit_job(client, granule, states_stub=None, email='john.doe@example.com'):
 
 
 def add_response(states_stub, granule, job_id='myJobId', email='john.doe@example.com'):
-    input = {
+    payload = {
         'email': email,
         'parameters': {
             'granule': granule,
@@ -52,7 +52,7 @@ def add_response(states_stub, granule, job_id='myJobId', email='john.doe@example
         method='start_execution',
         expected_params={
             'stateMachineArn': environ['STEP_FUNCTION_ARN'],
-            'input': dumps(input, sort_keys=True),
+            'input': dumps(payload, sort_keys=True),
         },
         service_response={
             'executionArn': job_id,
