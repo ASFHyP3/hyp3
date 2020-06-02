@@ -11,7 +11,7 @@ def submit_job(body):
     body['jobQueue'] = environ['JOB_QUEUE']
     job = STEP_FUNCTION_CLIENT.start_execution(
         stateMachineArn=environ['STEP_FUNCTION_ARN'],
-        input=json.dumps(body),
+        input=json.dumps(body, sort_keys=True),
     )
     return {
         'jobId': job['executionArn'],
