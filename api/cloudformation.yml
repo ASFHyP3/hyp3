@@ -158,7 +158,7 @@ Resources:
                   - logs:PutLogEvents
                 Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
               - Effect: Allow
-                Action: states.StartExecution
+                Action: states:StartExecution
                 Resource:
                   - !Ref StepFunctionArn
 
