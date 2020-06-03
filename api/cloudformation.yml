@@ -3,12 +3,6 @@ Parameters:
   StepFunctionArn:
     Type: String
 
-  JobQueueArn:
-    Type: String
-
-  RtcGammaJobDefinition:
-    Type: String
-
   AuthPublicKey:
     Type: String
 
@@ -168,8 +162,6 @@ Resources:
       Environment:
         Variables:
           STEP_FUNCTION_ARN: !Ref StepFunctionArn
-          JOB_QUEUE: !Ref JobQueueArn
-          JOB_DEFINITION: !Ref RtcGammaJobDefinition
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITHM: !Ref AuthAlgorithm
       Code: src/

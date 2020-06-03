@@ -6,8 +6,6 @@ from hyp3_api import STEP_FUNCTION_CLIENT, connexion_app
 
 
 def submit_job(body):
-    body['jobDefinition'] = environ['JOB_DEFINITION']
-    body['jobQueue'] = environ['JOB_QUEUE']
     job = STEP_FUNCTION_CLIENT.start_execution(
         stateMachineArn=environ['STEP_FUNCTION_ARN'],
         input=json.dumps(body, sort_keys=True),
