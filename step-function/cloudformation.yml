@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
-  JobQueue:
+  JobQueueArn:
     type: string
   RtcGammaJobDefinition:
     type: string
@@ -22,7 +22,7 @@ Resources:
              "Parameters": {
                "JobDefinition": "${RtcGammaJobDefinition}",
                "JobName.$": "$.parameters.granule",
-               "JobQueue": "${JobQueue}",
+               "JobQueue": "${JobQueueArn}",
                "Parameters.$": "$.parameters"
              },
              "End": true
