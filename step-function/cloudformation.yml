@@ -1,12 +1,14 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
+
   JobQueueArn:
     Type: String
   RtcGammaJobDefinition:
     Type: String
 
 Outputs:
+
   StepFunctionArn:
     Value: !Ref StepFunction
 
