@@ -20,12 +20,9 @@ Parameters:
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
   ProductBucket:
-    Type: string
+    Type: String
 
 Outputs:
-
-  StepFunctionArn:
-    Value: !Ref StepFunction
 
   JobQueueArn:
     Value: !Ref JobQueue

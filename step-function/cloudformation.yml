@@ -2,9 +2,13 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
   JobQueueArn:
-    type: string
+    type: String
   RtcGammaJobDefinition:
-    type: string
+    type: String
+
+Outputs:
+  StepFunctionArn:
+    Type: String
 
 Resources:
 
@@ -48,7 +52,7 @@ Resources:
               - Effect: Allow
                 Action: batch:SubmitJob
                 Resource:
-                  - !Ref JobQueue
+                  - !Ref JobQueueArn
                   - !Ref RtcGammaJobDefinition
               - Effect: Allow
                 Action:
