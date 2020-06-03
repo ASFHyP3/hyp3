@@ -45,8 +45,6 @@ def add_response(states_stub, granule, job_id='myJobId', email='john.doe@example
             'granule': granule,
         },
         'process_type': 'RTC_GAMMA',
-        'jobDefinition': 'arn:aws:batch:us-west-2:1234:job-definition/hyp3-develop-rtc-gamma:1',
-        'jobQueue': 'arn:aws:batch:us-west-2:1234:job-queue/hyp3-develop',
     }
     states_stub.add_response(
         method='start_execution',
