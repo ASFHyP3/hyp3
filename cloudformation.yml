@@ -63,6 +63,7 @@ Resources:
       Parameters:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
         RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
+        JobsTable: !Ref JobsTable
       TemplateURL: step-function/cloudformation.yml
 
   ContentBucket:
@@ -105,4 +106,3 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
-
