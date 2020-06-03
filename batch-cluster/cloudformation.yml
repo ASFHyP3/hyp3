@@ -19,6 +19,9 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
+  ContentBucket:
+    Type: String
+
 Outputs:
 
   JobQueueArn:
@@ -148,7 +151,7 @@ Resources:
       Type: container
       Parameters:
         granule: ""
-        bucket: !Ref Bucket
+        bucket: !Ref ContentBucket
         username: !Ref EDLUsername
         password: !Ref EDLPassword
       ContainerProperties:
@@ -167,27 +170,6 @@ Resources:
       Timeout:
         AttemptDurationSeconds: 5400
 
-  Bucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: True
-        IgnorePublicAcls: True
-        BlockPublicPolicy: False
-        RestrictPublicBuckets: False
-
-  BucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref Bucket
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal: "*"
-            Action: s3:GetObject
-            Resource: !Sub "${Bucket.Arn}/*"
-
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
@@ -205,7 +187,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: s3:PutObject
-                Resource: !Sub "arn:aws:s3:::${Bucket}/*"
+                Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
 
   BatchServiceRole:
     Type: AWS::IAM::Role

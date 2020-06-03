@@ -1,24 +1,19 @@
+import json
 from os import environ
 
 from flask_cors import CORS
-from hyp3_api import BATCH_CLIENT, connexion_app
+from hyp3_api import STEP_FUNCTION_CLIENT, connexion_app
 
 
 def submit_job(body):
-    parameters = body['parameters']
-    job = BATCH_CLIENT.submit_job(
-        jobName=parameters['granule'],
-        jobQueue=environ['JOB_QUEUE'],
-        jobDefinition=environ['JOB_DEFINITION'],
-        parameters=parameters
+    job = STEP_FUNCTION_CLIENT.start_execution(
+        stateMachineArn=environ['STEP_FUNCTION_ARN'],
+        input=json.dumps(body, sort_keys=True),
     )
-    print(job)
-    response = {
-        'jobId': job['jobId'],
-        'parameters': parameters,
+    job_id = job['executionArn'].split(':')[-1]
+    return {
+        'jobId': job_id,
     }
-
-    return response
 
 
 connexion_app.add_api('openapi-spec.yml')
