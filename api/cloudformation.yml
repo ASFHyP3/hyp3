@@ -93,7 +93,7 @@ Resources:
       DeploymentId: !Ref Deployment
       AccessLogSetting:
         DestinationArn: !GetAtt ApiLogGroup.Arn
-        Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId
+        Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.path $context.protocol" $context.status $context.responseLength $context.requestId
 
   CustomDomainName:
     Type: AWS::ApiGateway::DomainName
