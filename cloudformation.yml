@@ -40,8 +40,6 @@ Resources:
     Properties:
       Parameters:
         StepFunctionArn: !GetAtt StepFunction.Outputs.StepFunctionArn
-        JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
-        RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
         DomainName: !Ref DomainName
