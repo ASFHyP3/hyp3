@@ -1,9 +1,11 @@
+from datetime import datetime
+from json import dumps
 from os import environ
 
 import pytest
 from botocore.stub import Stubber
 from flask_api import status
-from hyp3_api import BATCH_CLIENT, auth, connexion_app
+from hyp3_api import STEP_FUNCTION_CLIENT, auth, connexion_app
 
 
 AUTH_COOKIE = 'asf-urs'
@@ -17,15 +19,15 @@ def client():
 
 
 @pytest.fixture(autouse=True)
-def batch_stub():
-    with Stubber(BATCH_CLIENT) as stubber:
+def states_stub():
+    with Stubber(STEP_FUNCTION_CLIENT) as stubber:
         yield stubber
         stubber.assert_no_pending_responses()
 
 
-def submit_job(client, granule, batch_stub=None, email='john.doe@example.com'):
-    if batch_stub:
-        add_response(batch_stub, granule)
+def submit_job(client, granule, states_stub=None, email='john.doe@example.com'):
+    if states_stub:
+        add_response(states_stub, granule, email=email)
     payload = {
         'process_type': 'RTC_GAMMA',
         'email': email,
@@ -36,20 +38,25 @@ def submit_job(client, granule, batch_stub=None, email='john.doe@example.com'):
     return client.post(JOBS_URI, json=payload)
 
 
-def add_response(batch_stub, granule, job_id='myJobId'):
-    batch_stub.add_response(
-        method='submit_job',
+def add_response(states_stub, granule, job_id='myJobId', email='john.doe@example.com'):
+    payload = {
+        'email': email,
+        'parameters': {
+            'granule': granule,
+        },
+        'process_type': 'RTC_GAMMA',
+        'jobDefinition': environ['JOB_DEFINITION'],
+        'jobQueue': environ['JOB_QUEUE'],
+    }
+    states_stub.add_response(
+        method='start_execution',
         expected_params={
-            'jobName': granule,
-            'jobQueue': environ['JOB_QUEUE'],
-            'jobDefinition': environ['JOB_DEFINITION'],
-            'parameters': {
-                'granule': granule,
-            },
+            'stateMachineArn': environ['STEP_FUNCTION_ARN'],
+            'input': dumps(payload, sort_keys=True),
         },
         service_response={
-            'jobId': job_id,
-            'jobName': granule,
+            'executionArn': f'{environ["STEP_FUNCTION_ARN"]}:{job_id}',
+            'startDate': datetime.utcnow(),
         },
     )
 
@@ -58,15 +65,12 @@ def login(client):
     client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user'))
 
 
-def test_submit_job(client, batch_stub):
+def test_submit_job(client, states_stub):
     login(client)
-    response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9', batch_stub)
+    response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9', states_stub)
     assert response.status_code == status.HTTP_200_OK
     assert response.get_json() == {
         'jobId': 'myJobId',
-        'parameters': {
-            'granule': 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9',
-        },
     }
 
 
@@ -87,12 +91,12 @@ def test_expired_cookie(client):
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_good_granule_names(client, batch_stub):
+def test_good_granule_names(client, states_stub):
     login(client)
-    response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9', batch_stub)
+    response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9', states_stub)
     assert response.status_code == status.HTTP_200_OK
 
-    response = submit_job(client, 'S1A_IW_GRDH_1SSH_20150609T141945_20150609T142014_006297_008439_B83E', batch_stub)
+    response = submit_job(client, 'S1A_IW_GRDH_1SSH_20150609T141945_20150609T142014_006297_008439_B83E', states_stub)
     assert response.status_code == status.HTTP_200_OK
 
 

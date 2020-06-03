@@ -39,6 +39,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
+        StepFunctionArn: !GetAtt Cluster.Outputs.StepFunctionArn
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
         RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
         AuthPublicKey: !Ref AuthPublicKey

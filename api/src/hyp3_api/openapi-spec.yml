@@ -31,11 +31,9 @@ components:
       properties:
         jobId:
           type: string
-        parameters:
-          $ref: "#/components/schemas/parameters"
+          format: uuid
       required:
         - jobId
-        - parameters
       additionalProperties: false
     submission:
       type: object
