@@ -5,6 +5,7 @@ import boto3
 DB = boto3.resource('dynamodb')
 PRIMARY_KEY = 'job_id'
 
+
 def lambda_handler(event, context):
     table = DB.Table(environ['TABLE_NAME'])
 
