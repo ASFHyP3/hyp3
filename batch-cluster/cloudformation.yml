@@ -170,56 +170,6 @@ Resources:
       Timeout:
         AttemptDurationSeconds: 5400
 
-  StepFunction:
-    Type: AWS::StepFunctions::StateMachine
-    Properties:
-      RoleArn: !GetAtt StepFunctionRole.Arn
-      DefinitionString: |-
-        {
-          "StartAt": "BATCH_JOB",
-          "States": {
-           "BATCH_JOB": {
-             "Type": "Task",
-             "Resource": "arn:aws:states:::batch:submitJob.sync",
-             "Parameters": {
-               "JobDefinition.$": "$.jobDefinition",
-               "JobName.$": "$.parameters.granule",
-               "JobQueue.$": "$.jobQueue",
-               "Parameters.$": "$.parameters"
-             },
-             "End": true
-            }
-          }
-        }
-
-  StepFunctionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          Action: sts:AssumeRole
-          Principal:
-            Service: states.amazonaws.com
-          Effect: Allow
-      Policies:
-        - PolicyName: policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action: batch:SubmitJob
-                Resource:
-                  - !Ref JobQueue
-                  - !Ref RtcGammaJobDefinition
-              - Effect: Allow
-                Action:
-                  - events:PutTargets
-                  - events:PutRule
-                  - events:DescribeRule
-                Resource: !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/StepFunctionsGetEventsForBatchJobsRule"
-
-
   Bucket:
     Type: AWS::S3::Bucket
     Properties:
