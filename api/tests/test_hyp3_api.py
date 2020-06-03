@@ -45,8 +45,6 @@ def add_response(states_stub, granule, job_id='myJobId', email='john.doe@example
             'granule': granule,
         },
         'process_type': 'RTC_GAMMA',
-        'jobDefinition': environ['JOB_DEFINITION'],
-        'jobQueue': environ['JOB_QUEUE'],
     }
     states_stub.add_response(
         method='start_execution',

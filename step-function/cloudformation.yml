@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+  JobQueueArn:
+    Type: String
+
+  RtcGammaJobDefinition:
+    Type: String
+
+Outputs:
+
+  StepFunctionArn:
+    Value: !Ref StepFunction
+
+Resources:
+
+  StepFunction:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      RoleArn: !GetAtt StepFunctionRole.Arn
+      DefinitionString: !Sub |-
+        {
+          "StartAt": "BATCH_JOB",
+          "States": {
+           "BATCH_JOB": {
+             "Type": "Task",
+             "Resource": "arn:aws:states:::batch:submitJob.sync",
+             "Parameters": {
+               "JobDefinition": "${RtcGammaJobDefinition}",
+               "JobName.$": "$$.Execution.Name",
+               "JobQueue": "${JobQueueArn}",
+               "Parameters.$": "$.parameters"
+             },
+             "End": true
+            }
+          }
+        }
+
+  StepFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: states.amazonaws.com
+          Effect: Allow
+      Policies:
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: batch:SubmitJob
+                Resource:
+                  - !Ref JobQueueArn
+                  - !Ref RtcGammaJobDefinition
+              - Effect: Allow
+                Action:
+                  - events:PutTargets
+                  - events:PutRule
+                  - events:DescribeRule
+                Resource: !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/StepFunctionsGetEventsForBatchJobsRule"

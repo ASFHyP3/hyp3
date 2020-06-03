@@ -39,9 +39,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        StepFunctionArn: !GetAtt Cluster.Outputs.StepFunctionArn
-        JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
-        RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
+        StepFunctionArn: !GetAtt StepFunction.Outputs.StepFunctionArn
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
         DomainName: !Ref DomainName
@@ -56,4 +54,34 @@ Resources:
         EDLUsername: !Ref EDLUsername
         EDLPassword: !Ref EDLPassword
         RtcGammaImage: !Ref RtcGammaImage
+        ContentBucket: !Ref ContentBucket
       TemplateURL: batch-cluster/cloudformation.yml
+
+  StepFunction:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
+      TemplateURL: step-function/cloudformation.yml
+
+  ContentBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        IgnorePublicAcls: True
+        BlockPublicPolicy: False
+        RestrictPublicBuckets: False
+
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ContentBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "${ContentBucket.Arn}/*"

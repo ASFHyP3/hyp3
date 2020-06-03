@@ -19,10 +19,10 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
-Outputs:
+  ContentBucket:
+    Type: String
 
-  StepFunctionArn:
-    Value: !Ref StepFunction
+Outputs:
 
   JobQueueArn:
     Value: !Ref JobQueue
@@ -151,7 +151,7 @@ Resources:
       Type: container
       Parameters:
         granule: ""
-        bucket: !Ref Bucket
+        bucket: !Ref ContentBucket
         username: !Ref EDLUsername
         password: !Ref EDLPassword
       ContainerProperties:
@@ -170,77 +170,6 @@ Resources:
       Timeout:
         AttemptDurationSeconds: 5400
 
-  StepFunction:
-    Type: AWS::StepFunctions::StateMachine
-    Properties:
-      RoleArn: !GetAtt StepFunctionRole.Arn
-      DefinitionString: |-
-        {
-          "StartAt": "BATCH_JOB",
-          "States": {
-           "BATCH_JOB": {
-             "Type": "Task",
-             "Resource": "arn:aws:states:::batch:submitJob.sync",
-             "Parameters": {
-               "JobDefinition.$": "$.jobDefinition",
-               "JobName.$": "$.parameters.granule",
-               "JobQueue.$": "$.jobQueue",
-               "Parameters.$": "$.parameters"
-             },
-             "End": true
-            }
-          }
-        }
-
-  StepFunctionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          Action: sts:AssumeRole
-          Principal:
-            Service: states.amazonaws.com
-          Effect: Allow
-      Policies:
-        - PolicyName: policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action: batch:SubmitJob
-                Resource:
-                  - !Ref JobQueue
-                  - !Ref RtcGammaJobDefinition
-              - Effect: Allow
-                Action:
-                  - events:PutTargets
-                  - events:PutRule
-                  - events:DescribeRule
-                Resource: !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/StepFunctionsGetEventsForBatchJobsRule"
-
-
-  Bucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: True
-        IgnorePublicAcls: True
-        BlockPublicPolicy: False
-        RestrictPublicBuckets: False
-
-  BucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref Bucket
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal: "*"
-            Action: s3:GetObject
-            Resource: !Sub "${Bucket.Arn}/*"
-
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
@@ -258,7 +187,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: s3:PutObject
-                Resource: !Sub "arn:aws:s3:::${Bucket}/*"
+                Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
 
   BatchServiceRole:
     Type: AWS::IAM::Role
