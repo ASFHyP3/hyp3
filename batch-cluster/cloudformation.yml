@@ -19,7 +19,7 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
-  ProductBucket:
+  ContentBucket:
     Type: String
 
 Outputs:
@@ -29,7 +29,6 @@ Outputs:
 
   RtcGammaJobDefinition:
     Value: !Ref RtcGammaJobDefinition
-
 
 Resources:
 
@@ -152,7 +151,7 @@ Resources:
       Type: container
       Parameters:
         granule: ""
-        bucket: !Ref ProductBucket
+        bucket: !Ref ContentBucket
         username: !Ref EDLUsername
         password: !Ref EDLPassword
       ContainerProperties:
@@ -188,7 +187,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: s3:PutObject
-                Resource: !Sub "arn:aws:s3:::${ProductBucket}/*"
+                Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
 
   BatchServiceRole:
     Type: AWS::IAM::Role

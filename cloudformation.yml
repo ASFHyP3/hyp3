@@ -56,7 +56,7 @@ Resources:
         EDLUsername: !Ref EDLUsername
         EDLPassword: !Ref EDLPassword
         RtcGammaImage: !Ref RtcGammaImage
-        ProductBucket: !Ref Bucket
+        ContentBucket: !Ref ContentBucket
       TemplateURL: batch-cluster/cloudformation.yml
 
   StepFunction:
@@ -67,7 +67,7 @@ Resources:
         RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
       TemplateURL: step-function/cloudformation.yml
 
-  Bucket:
+  ContentBucket:
     Type: AWS::S3::Bucket
     Properties:
       PublicAccessBlockConfiguration:

@@ -4,6 +4,7 @@ Parameters:
 
   JobQueueArn:
     Type: String
+
   RtcGammaJobDefinition:
     Type: String
 
@@ -27,7 +28,7 @@ Resources:
              "Resource": "arn:aws:states:::batch:submitJob.sync",
              "Parameters": {
                "JobDefinition": "${RtcGammaJobDefinition}",
-               "JobName.$": "$.parameters.granule",
+               "JobName.$": "$$.Execution.Name",
                "JobQueue": "${JobQueueArn}",
                "Parameters.$": "$.parameters"
              },
