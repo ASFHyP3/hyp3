@@ -79,11 +79,11 @@ Resources:
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref Bucket
+      Bucket: !Ref ContentBucket
       PolicyDocument:
         Version: 2012-10-17
         Statement:
           - Effect: Allow
             Principal: "*"
             Action: s3:GetObject
-            Resource: !Sub "${Bucket.Arn}/*"
+            Resource: !Sub "${ContentBucket.Arn}/*"
