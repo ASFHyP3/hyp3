@@ -89,9 +89,10 @@ Resources:
   JobsTable:
     Type: AWS::DynamoDB::Table
     Properties:
+      BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: job_id
-            AttributeType: S
+          AttributeType: S
         - AttributeName: user_id
           AttributeType: S
       KeySchema:
@@ -104,6 +105,4 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
-      ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
+
