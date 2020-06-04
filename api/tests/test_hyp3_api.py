@@ -6,7 +6,7 @@ import pytest
 from botocore.stub import Stubber
 from flask_api import status
 from moto import mock_dynamodb2
-from hyp3_api import DYNAMODB_RESOURCE, auth, connexion_app, STEP_FUNCTION_CLIENT # noqa imports must be in this order for mock db
+from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, auth, connexion_app # noqa imports must be in this order for mock db
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
