@@ -97,6 +97,9 @@ Resources:
                   - events:PutRule
                   - events:DescribeRule
                 Resource: !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/StepFunctionsGetEventsForBatchJobsRule"
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: !GetAtt Lambda.Arn
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
