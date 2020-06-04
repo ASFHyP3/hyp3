@@ -25,12 +25,11 @@ def states_stub():
         stubber.assert_no_pending_responses()
 
 
-def submit_job(client, granule, states_stub=None, email='john.doe@example.com'):
+def submit_job(client, granule, states_stub=None):
     if states_stub:
-        add_response(states_stub, granule, email=email)
+        add_response(states_stub, granule)
     payload = {
         'process_type': 'RTC_GAMMA',
-        'email': email,
         'parameters': {
             'granule': granule
         }
@@ -38,9 +37,8 @@ def submit_job(client, granule, states_stub=None, email='john.doe@example.com'):
     return client.post(JOBS_URI, json=payload)
 
 
-def add_response(states_stub, granule, job_id='myJobId', email='john.doe@example.com'):
+def add_response(states_stub, granule, job_id='myJobId'):
     payload = {
-        'email': email,
         'parameters': {
             'granule': granule,
         },
