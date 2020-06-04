@@ -74,8 +74,6 @@ def test_submit_job(client, states_stub):
 
 @mock_dynamodb2
 def test_list_jobs(client):
-    hyp3_api.DYNAMODB_RESOURCE = boto3.resource('dynamodb')
-
     table = hyp3_api.DYNAMODB_RESOURCE.create_table(
         TableName=environ['TABLE_NAME'],
         KeySchema=[
