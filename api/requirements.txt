@@ -1,6 +1,7 @@
 connexion[swagger-ui]
 pytest
 boto3
+moto
 flask_api
 PyJWT
 cryptography
