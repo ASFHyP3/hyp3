@@ -8,6 +8,9 @@ Parameters:
   RtcGammaJobDefinition:
     Type: String
 
+  JobsTable:
+    Type: String
+
 Outputs:
 
   StepFunctionArn:
@@ -21,18 +24,49 @@ Resources:
       RoleArn: !GetAtt StepFunctionRole.Arn
       DefinitionString: !Sub |-
         {
-          "StartAt": "BATCH_JOB",
+          "StartAt": "JOB_RUNNING",
           "States": {
-           "BATCH_JOB": {
-             "Type": "Task",
-             "Resource": "arn:aws:states:::batch:submitJob.sync",
-             "Parameters": {
-               "JobDefinition": "${RtcGammaJobDefinition}",
-               "JobName.$": "$$.Execution.Name",
-               "JobQueue": "${JobQueueArn}",
-               "Parameters.$": "$.parameters"
-             },
-             "End": true
+            "JOB_RUNNING": {
+              "Type": "Task",
+              "Resource": "${Lambda.Arn}",
+              "Parameters": {
+                "job_id": "$$.Execution.Name",
+                "job_status": "RUNNING"
+              },
+              "Next": "RTC_GAMMA"
+            },
+            "RTC_GAMMA": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::batch:submitJob.sync",
+              "Parameters": {
+                "JobDefinition": "${RtcGammaJobDefinition}",
+                "JobName.$": "$$.Execution.Name",
+                "JobQueue": "${JobQueueArn}",
+                "Parameters.$": "$.parameters"
+              },
+              "Next": "JOB_SUCCEEDED",
+              "Catch": [{
+                "ErrorEquals": ["States.ALL"],
+                "Next": "JOB_FAILED"
+              }]
+            },
+            "JOB_SUCCEEDED": {
+              "Type": "Task",
+              "Resource": "${Lambda.Arn}",
+              "Parameters": {
+                "job_id": "$$.Execution.Name",
+                "job_status": "SUCCEEDED"
+              },
+              "End": true
+            },
+            "JOB_FAILED": {
+              "Type": "Task",
+              "Resource": "${Lambda.Arn}",
+              "Parameters": {
+                "job_id": "$$.Execution.Name",
+                "job_status": "FAILED"
+              },
+              "End": true
             }
           }
         }
@@ -63,3 +97,46 @@ Resources:
                   - events:PutRule
                   - events:DescribeRule
                 Resource: !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/StepFunctionsGetEventsForBatchJobsRule"
+
+  LambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${Lambda}"
+      RetentionInDays: 90
+
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: lambda.amazonaws.com
+          Effect: Allow
+      Policies:
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+              - Effect: Allow
+                Action: dynamodb:UpdateItem
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}/*"
+
+  Lambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref JobsTable
+      Code: src/
+      Handler: main.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt LambdaRole.Arn
+      Runtime: python3.8
+      Timeout: 30
