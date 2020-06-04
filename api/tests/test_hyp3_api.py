@@ -37,8 +37,9 @@ def submit_job(client, granule, states_stub=None):
     return client.post(JOBS_URI, json=payload)
 
 
-def add_response(states_stub, granule, job_id='myJobId'):
+def add_response(states_stub, granule):
     payload = {
+        'user_id': 'test_username',
         'parameters': {
             'granule': granule,
         },
@@ -51,14 +52,14 @@ def add_response(states_stub, granule, job_id='myJobId'):
             'input': dumps(payload, sort_keys=True),
         },
         service_response={
-            'executionArn': f'{environ["STEP_FUNCTION_ARN"]}:{job_id}',
+            'executionArn': f'{environ["STEP_FUNCTION_ARN"]}:myJobId',
             'startDate': datetime.utcnow(),
         },
     )
 
 
 def login(client):
-    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user'))
+    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('test_username'))
 
 
 def test_submit_job(client, states_stub):
