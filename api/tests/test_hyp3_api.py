@@ -73,10 +73,7 @@ def test_submit_job(client, states_stub):
 
 @mock_dynamodb2
 def test_list_jobs(client):
-    environ['AWS_ACCESS_KEY_ID'] = 'testing'
-    environ['AWS_SECRET_ACCESS_KEY'] = 'testing'
-    environ['AWS_SECURITY_TOKEN'] = 'testing'
-    environ['AWS_SESSION_TOKEN'] = 'testing'
+    assert environ['AWS_ACCESS_KEY_ID'] == 'testing'
     from hyp3_api import DYNAMODB_RESOURCE
 
     table = DYNAMODB_RESOURCE.create_table(
