@@ -5,8 +5,8 @@ from os import environ
 import pytest
 from botocore.stub import Stubber
 from flask_api import status
-from hyp3_api import STEP_FUNCTION_CLIENT, auth, connexion_app
 from moto import mock_dynamodb2
+from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, auth, connexion_app  # noqa hyp3 must be imported after moto
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
@@ -73,9 +73,6 @@ def test_submit_job(client, states_stub):
 
 @mock_dynamodb2
 def test_list_jobs(client):
-    assert environ['AWS_ACCESS_KEY_ID'] == 'testing'
-    from hyp3_api import DYNAMODB_RESOURCE
-
     table = DYNAMODB_RESOURCE.create_table(
         TableName=environ['TABLE_NAME'],
         AttributeDefinitions=[
