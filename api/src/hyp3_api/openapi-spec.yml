@@ -4,6 +4,9 @@ info:
   title: hyp3-api
   version: 0.0.1
 
+security:
+  - EarthDataLogin: []
+
 paths:
   /jobs:
     post:
@@ -21,8 +24,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/response"
-      security:
-        - EarthDataLogin: []
 
 components:
   schemas:
