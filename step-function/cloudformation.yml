@@ -33,6 +33,7 @@ Resources:
                 "job_id.$": "$$.Execution.Name",
                 "job_status": "RUNNING"
               },
+              "ResultPath": null,
               "Next": "RTC_GAMMA"
             },
             "RTC_GAMMA": {
