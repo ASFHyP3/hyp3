@@ -1,9 +1,9 @@
 import json
 from os import environ
 
-from flask_cors import CORS
-from hyp3_api import STEP_FUNCTION_CLIENT, DYNAMODB_RESOURCE, connexion_app
 from boto3.dynamodb.conditions import Key
+from flask_cors import CORS
+from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, connexion_app
 
 
 def submit_job(body, user):
