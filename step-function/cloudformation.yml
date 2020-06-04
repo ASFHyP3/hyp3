@@ -32,6 +32,7 @@ Resources:
               "Parameters": {
                 "job_id.$": "$$.Execution.Name",
                 "process_type.$": "$.process_type",
+                "user_id.$": "$.user_id",
                 "status_code": "RUNNING",
                 "job_parameters.$": "$.parameters",
                 "start_time.$": "$$.Execution.StartTime"
