@@ -10,7 +10,7 @@ def decode_token(token, required_scopes):
         return {
             'active': True,
             'sub': payload['urs-user-id'],
-            }
+        }
     except (jwt.ExpiredSignatureError, jwt.DecodeError):
         return None
 
