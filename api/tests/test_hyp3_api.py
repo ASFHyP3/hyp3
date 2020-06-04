@@ -82,14 +82,14 @@ def test_list_jobs(client):
             },
             {
                 'AttributeName': 'user_id',
-                'AttributeType': 'S'
+                'AttributeType': 'S',
             },
 
         ],
         KeySchema=[
             {
                 'AttributeName': 'job_id',
-                'KeyType': 'HASH'
+                'KeyType': 'HASH',
             },
         ],
         GlobalSecondaryIndexes=[
@@ -102,13 +102,13 @@ def test_list_jobs(client):
                     },
                 ],
                 'Projection': {
-                    'ProjectionType': 'ALL'
+                    'ProjectionType': 'ALL',
                 },
-            }
+            },
         ],
         ProvisionedThroughput={
             'ReadCapacityUnits': 15,
-            'WriteCapacityUnits': 15
+            'WriteCapacityUnits': 15,
         },
     )
 
@@ -117,14 +117,14 @@ def test_list_jobs(client):
             'job_id': '0ddaeb98-7636-494d-9496-03ea4a7df266',
             'user_id': 'user_with_jobs',
             'parameters': {
-                'granule': 'S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_A4E0'
+                'granule': 'S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_A4E0',
             },
         },
         {
             'job_id': '27836b79-e5b2-4d8f-932f-659724ea02c3',
             'user_id': 'user_with_jobs',
             'parameters': {
-                'granule': 'S1B_IW_GRDH_1SDV_20200604T044748_20200604T044813_021879_029863_93A4'
+                'granule': 'S1B_IW_GRDH_1SDV_20200604T044748_20200604T044813_021879_029863_93A4',
             },
         },
     ]
@@ -141,7 +141,9 @@ def test_list_jobs(client):
     login(client, 'user_without_jobs')
     response = client.get(JOBS_URI)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json == {'jobs': []}
+    assert response.json == {
+        'jobs': [],
+    }
 
 
 def test_not_logged_in(client):

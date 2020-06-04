@@ -54,6 +54,8 @@ components:
           $ref: "#/components/schemas/process_type"
         parameters:
           $ref: "#/components/schemas/parameters"
+        tags:
+          $ref: "#/components/schemas/tags"
       required:
         - process_type
         - parameters
@@ -78,6 +80,11 @@ components:
       example: RTC_GAMMA
       enum:
         - RTC_GAMMA
+
+    tags:
+      type: array
+      items:
+        type: string
 
     jobs:
       type: array
@@ -114,6 +121,8 @@ components:
               - SUCCEEDED
               - FAILED
             example: SUCCEEDED
+          tags:
+            $ref: "#/components/schemas/tags"
 
 
   securitySchemes:
