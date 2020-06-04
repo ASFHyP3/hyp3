@@ -3,8 +3,8 @@ from json import dumps
 from os import environ
 
 import boto3
-import pytest
 import hyp3_api
+import pytest
 from botocore.stub import Stubber
 from flask_api import status
 from hyp3_api import STEP_FUNCTION_CLIENT, auth, connexion_app
