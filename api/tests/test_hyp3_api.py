@@ -5,8 +5,8 @@ from os import environ
 import pytest
 from botocore.stub import Stubber
 from flask_api import status
+from hyp3_api import STEP_FUNCTION_CLIENT, auth, connexion_app
 from moto import mock_dynamodb2
-from hyp3_api import STEP_FUNCTION_CLIENT, auth, connexion_app # noqa imports must be in this order for mock db
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
