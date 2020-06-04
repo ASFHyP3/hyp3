@@ -7,7 +7,7 @@ import pytest
 from botocore.stub import Stubber
 from flask_api import status
 from moto import mock_dynamodb2
-import hyp3_api  # noqa imports must be in this order for mock db
+from hyp3_api import DYNAMODB_RESOURCE, auth, connexion_app, STEP_FUNCTION_CLIENT # noqa imports must be in this order for mock db
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
@@ -15,13 +15,13 @@ JOBS_URI = '/jobs'
 
 @pytest.fixture
 def client():
-    with hyp3_api.connexion_app.app.test_client() as test_client:
+    with connexion_app.app.test_client() as test_client:
         yield test_client
 
 
 @pytest.fixture(autouse=True)
 def states_stub():
-    with Stubber(hyp3_api.STEP_FUNCTION_CLIENT) as stubber:
+    with Stubber(STEP_FUNCTION_CLIENT) as stubber:
         yield stubber
         stubber.assert_no_pending_responses()
 
@@ -60,7 +60,7 @@ def stub_response(states_stub, granule):
 
 
 def login(client, username='test_username'):
-    client.set_cookie('localhost', AUTH_COOKIE, hyp3_api.auth.get_mock_jwt_cookie(username))
+    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username))
 
 
 def test_submit_job(client, states_stub):
@@ -74,7 +74,7 @@ def test_submit_job(client, states_stub):
 
 @mock_dynamodb2
 def test_list_jobs(client):
-    table = hyp3_api.DYNAMODB_RESOURCE.create_table(
+    table = DYNAMODB_RESOURCE.create_table(
         TableName=environ['TABLE_NAME'],
         KeySchema=[
             {
@@ -178,7 +178,7 @@ def test_invalid_cookie(client):
 
 
 def test_expired_cookie(client):
-    client.set_cookie('localhost', AUTH_COOKIE, hyp3_api.auth.get_mock_jwt_cookie('user', -1))
+    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user', -1))
     response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9')
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
