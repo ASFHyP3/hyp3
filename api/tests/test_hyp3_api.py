@@ -80,6 +80,17 @@ def test_list_jobs(client):
 
     table = DYNAMODB_RESOURCE.create_table(
         TableName=environ['TABLE_NAME'],
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'job_id',
+                'AttributeType': 'S'
+            },
+            {
+                'AttributeName': 'user_id',
+                'AttributeType': 'S'
+            },
+
+        ],
         KeySchema=[
             {
                 'AttributeName': 'job_id',
@@ -100,21 +111,10 @@ def test_list_jobs(client):
                 },
             }
         ],
-        AttributeDefinitions=[
-            {
-                'AttributeName': 'job_id',
-                'AttributeType': 'S'
-            },
-            {
-                'AttributeName': 'user_id',
-                'AttributeType': 'S'
-            },
-
-        ],
         ProvisionedThroughput={
             'ReadCapacityUnits': 15,
             'WriteCapacityUnits': 15
-        }
+        },
     )
 
     items = [
