@@ -31,6 +31,7 @@ Resources:
               "Resource": "${Lambda.Arn}",
               "Parameters": {
                 "job_id.$": "$$.Execution.Name",
+                "process_type.$": "$.process_type",
                 "status_code": "RUNNING",
                 "job_parameters.$": "$.parameters",
                 "start_time.$": "$$.Execution.StartTime"
