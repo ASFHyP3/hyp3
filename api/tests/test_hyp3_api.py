@@ -74,11 +74,10 @@ def test_submit_job(client, states_stub):
 
 @mock_dynamodb2
 def test_list_jobs(client):
-    table_name = environ['TABLE_NAME']
     hyp3_api.DYNAMODB_RESOURCE = boto3.resource('dynamodb')
 
     table = hyp3_api.DYNAMODB_RESOURCE.create_table(
-        TableName=table_name,
+        TableName=environ['TABLE_NAME'],
         KeySchema=[
             {
                 'AttributeName': 'job_id',
@@ -96,7 +95,7 @@ def test_list_jobs(client):
                 ],
                 'Projection': {
                     'ProjectionType': 'ALL'
-                }
+                },
             }
         ],
         AttributeDefinitions=[
