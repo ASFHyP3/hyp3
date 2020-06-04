@@ -24,9 +24,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/response"
+    get:
+      operationId: hyp3_api.handlers.list_jobs
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/jobs"
 
 components:
   schemas:
+
     response:
       type: object
       properties:
@@ -36,20 +46,19 @@ components:
       required:
         - jobId
       additionalProperties: false
+
     submission:
       type: object
       properties:
         process_type:
-          type: string
-          example: RTC_GAMMA
-          enum:
-            - RTC_GAMMA
+          $ref: "#/components/schemas/process_type"
         parameters:
           $ref: "#/components/schemas/parameters"
       required:
         - process_type
         - parameters
       additionalProperties: false
+
     parameters:
       type: object
       properties:
@@ -63,6 +72,49 @@ components:
       required:
         - granule
       additionalProperties: false
+
+    process_type:
+      type: string
+      example: RTC_GAMMA
+      enum:
+        - RTC_GAMMA
+
+    jobs:
+      type: array
+      items:
+        type: object
+        required:
+          - job_id
+          - user_id
+          - process_type
+          - job_parameters
+          - start_time
+          - status_code
+        additionalProperties: false
+        properties:
+          job_id:
+            type: string
+            format: uuid
+            example: 27836b79-e5b2-4d8f-932f-659724ea02c3
+          user_id:
+            type: string
+            example: myUserId
+          process_type:
+            $ref: "#/components/schemas/process_type"
+          job_parameters:
+            $ref: "#/components/schemas/parameters"
+          start_time:
+            type: string
+            format: date-time
+            example: 2020-06-04T18:00:03.548Z
+          status_code:
+            type: string
+            enum:
+              - RUNNING
+              - SUCCEEDED
+              - FAILED
+            example: SUCCEEDED
+
 
   securitySchemes:
     EarthDataLogin:

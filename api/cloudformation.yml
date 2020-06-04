@@ -3,6 +3,9 @@ Parameters:
   StepFunctionArn:
     Type: String
 
+  JobsTable:
+    Type: String
+
   AuthPublicKey:
     Type: String
 
@@ -162,6 +165,7 @@ Resources:
       Environment:
         Variables:
           STEP_FUNCTION_ARN: !Ref StepFunctionArn
+          TABLE_NAME: !Ref JobsTable
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITHM: !Ref AuthAlgorithm
       Code: src/
