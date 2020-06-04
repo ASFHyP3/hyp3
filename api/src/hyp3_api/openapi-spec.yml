@@ -50,16 +50,16 @@ components:
     submission:
       type: object
       properties:
-        process_type:
-          $ref: "#/components/schemas/process_type"
-        parameters:
-          $ref: "#/components/schemas/parameters"
+        job_type:
+          $ref: "#/components/schemas/job_type"
+        job_parameters:
+          $ref: "#/components/schemas/job_parameters"
       required:
-        - process_type
-        - parameters
+        - job_type
+        - job_parameters
       additionalProperties: false
 
-    parameters:
+    job_parameters:
       type: object
       properties:
         granule:
@@ -73,7 +73,7 @@ components:
         - granule
       additionalProperties: false
 
-    process_type:
+    job_type:
       type: string
       example: RTC_GAMMA
       enum:
@@ -86,7 +86,7 @@ components:
         required:
           - job_id
           - user_id
-          - process_type
+          - job_type
           - job_parameters
           - start_time
           - status_code
@@ -99,10 +99,10 @@ components:
           user_id:
             type: string
             example: myUserId
-          process_type:
-            $ref: "#/components/schemas/process_type"
+          job_type:
+            $ref: "#/components/schemas/job_type"
           job_parameters:
-            $ref: "#/components/schemas/parameters"
+            $ref: "#/components/schemas/job_parameters"
           start_time:
             type: string
             format: date-time
