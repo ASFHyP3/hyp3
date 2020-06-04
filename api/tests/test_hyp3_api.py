@@ -4,10 +4,10 @@ from os import environ
 
 import pytest
 from botocore.stub import Stubber
-from flask_api import status
 import boto3
-from moto import mock_dynamodb2
+from flask_api import status
 import hyp3_api
+from moto import mock_dynamodb2
 from hyp3_api import STEP_FUNCTION_CLIENT, auth, connexion_app
 
 AUTH_COOKIE = 'asf-urs'
