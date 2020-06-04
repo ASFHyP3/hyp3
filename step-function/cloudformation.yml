@@ -31,7 +31,10 @@ Resources:
               "Resource": "${Lambda.Arn}",
               "Parameters": {
                 "job_id.$": "$$.Execution.Name",
-                "job_status": "RUNNING"
+                "process_type.$": "$.process_type",
+                "status_code": "RUNNING",
+                "job_parameters.$": "$.parameters",
+                "start_time.$": "$$.Execution.StartTime"
               },
               "ResultPath": null,
               "Next": "RTC_GAMMA"
@@ -56,7 +59,7 @@ Resources:
               "Resource": "${Lambda.Arn}",
               "Parameters": {
                 "job_id.$": "$$.Execution.Name",
-                "job_status": "SUCCEEDED"
+                "status_code": "SUCCEEDED"
               },
               "End": true
             },
@@ -65,7 +68,7 @@ Resources:
               "Resource": "${Lambda.Arn}",
               "Parameters": {
                 "job_id.$": "$$.Execution.Name",
-                "job_status": "FAILED"
+                "status_code": "FAILED"
               },
               "End": true
             }
