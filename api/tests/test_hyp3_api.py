@@ -29,8 +29,8 @@ def submit_job(client, granule, states_stub=None):
     if states_stub:
         stub_response(states_stub, granule)
     payload = {
-        'process_type': 'RTC_GAMMA',
-        'parameters': {
+        'job_type': 'RTC_GAMMA',
+        'job_parameters': {
             'granule': granule
         }
     }
@@ -40,10 +40,10 @@ def submit_job(client, granule, states_stub=None):
 def stub_response(states_stub, granule):
     payload = {
         'user_id': 'test_username',
-        'parameters': {
+        'job_parameters': {
             'granule': granule,
         },
-        'process_type': 'RTC_GAMMA',
+        'job_type': 'RTC_GAMMA',
     }
     states_stub.add_response(
         method='start_execution',
@@ -116,14 +116,14 @@ def test_list_jobs(client):
         {
             'job_id': '0ddaeb98-7636-494d-9496-03ea4a7df266',
             'user_id': 'user_with_jobs',
-            'parameters': {
+            'job_parameters': {
                 'granule': 'S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_A4E0'
             },
         },
         {
             'job_id': '27836b79-e5b2-4d8f-932f-659724ea02c3',
             'user_id': 'user_with_jobs',
-            'parameters': {
+            'job_parameters': {
                 'granule': 'S1B_IW_GRDH_1SDV_20200604T044748_20200604T044813_021879_029863_93A4'
             },
         },
