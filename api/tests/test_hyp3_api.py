@@ -27,7 +27,7 @@ def states_stub():
 
 def submit_job(client, granule, states_stub=None):
     if states_stub:
-        add_response(states_stub, granule)
+        stub_response(states_stub, granule)
     payload = {
         'process_type': 'RTC_GAMMA',
         'parameters': {
@@ -37,7 +37,7 @@ def submit_job(client, granule, states_stub=None):
     return client.post(JOBS_URI, json=payload)
 
 
-def add_response(states_stub, granule):
+def stub_response(states_stub, granule):
     payload = {
         'user_id': 'test_username',
         'parameters': {
