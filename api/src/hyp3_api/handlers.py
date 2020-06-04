@@ -1,8 +1,9 @@
 import json
 from os import environ
 
+from boto3.dynamodb.conditions import Key
 from flask_cors import CORS
-from hyp3_api import STEP_FUNCTION_CLIENT, connexion_app
+from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, connexion_app
 
 
 def submit_job(body, user):
@@ -17,6 +18,12 @@ def submit_job(body, user):
     return {
         'jobId': job_id,
     }
+
+
+def list_jobs(user):
+    table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
+    response = table.query(IndexName='user_id', KeyConditionExpression=Key('user_id').eq(user))
+    return {'jobs': response['Items']}
 
 
 connexion_app.add_api('openapi-spec.yml')

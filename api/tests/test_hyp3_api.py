@@ -5,8 +5,8 @@ from os import environ
 import pytest
 from botocore.stub import Stubber
 from flask_api import status
-from hyp3_api import STEP_FUNCTION_CLIENT, auth, connexion_app
-
+from moto import mock_dynamodb2
+from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, auth, connexion_app  # noqa hyp3 must be imported after moto
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
@@ -58,8 +58,8 @@ def stub_response(states_stub, granule):
     )
 
 
-def login(client):
-    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('test_username'))
+def login(client, username='test_username'):
+    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username))
 
 
 def test_submit_job(client, states_stub):
@@ -71,8 +71,87 @@ def test_submit_job(client, states_stub):
     }
 
 
+@mock_dynamodb2
+def test_list_jobs(client):
+    table = DYNAMODB_RESOURCE.create_table(
+        TableName=environ['TABLE_NAME'],
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'job_id',
+                'AttributeType': 'S'
+            },
+            {
+                'AttributeName': 'user_id',
+                'AttributeType': 'S'
+            },
+
+        ],
+        KeySchema=[
+            {
+                'AttributeName': 'job_id',
+                'KeyType': 'HASH'
+            },
+        ],
+        GlobalSecondaryIndexes=[
+            {
+                'IndexName': 'user_id',
+                'KeySchema': [
+                    {
+                        'AttributeName': 'user_id',
+                        'KeyType': 'HASH',
+                    },
+                ],
+                'Projection': {
+                    'ProjectionType': 'ALL'
+                },
+            }
+        ],
+        ProvisionedThroughput={
+            'ReadCapacityUnits': 15,
+            'WriteCapacityUnits': 15
+        },
+    )
+
+    items = [
+        {
+            'job_id': '0ddaeb98-7636-494d-9496-03ea4a7df266',
+            'user_id': 'user_with_jobs',
+            'parameters': {
+                'granule': 'S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_A4E0'
+            },
+        },
+        {
+            'job_id': '27836b79-e5b2-4d8f-932f-659724ea02c3',
+            'user_id': 'user_with_jobs',
+            'parameters': {
+                'granule': 'S1B_IW_GRDH_1SDV_20200604T044748_20200604T044813_021879_029863_93A4'
+            },
+        },
+    ]
+    for item in items:
+        table.put_item(Item=item)
+
+    login(client, 'user_with_jobs')
+    response = client.get(JOBS_URI)
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {
+        'jobs': items,
+    }
+
+    login(client, 'user_without_jobs')
+    response = client.get(JOBS_URI)
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': []}
+
+
 def test_not_logged_in(client):
     response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9')
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    response = client.get(JOBS_URI)
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    response = client.head(JOBS_URI)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
@@ -128,16 +207,10 @@ def test_bad_granule_names(client):
 
 
 def test_jobs_bad_method(client):
-    response = client.get(JOBS_URI)
-    assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
-
     response = client.put(JOBS_URI)
     assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
     response = client.delete(JOBS_URI)
-    assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
-
-    response = client.head(JOBS_URI)
     assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
 

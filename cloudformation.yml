@@ -40,6 +40,7 @@ Resources:
     Properties:
       Parameters:
         StepFunctionArn: !GetAtt StepFunction.Outputs.StepFunctionArn
+        JobsTable: !Ref JobsTable
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
         DomainName: !Ref DomainName
