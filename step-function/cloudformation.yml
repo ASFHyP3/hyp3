@@ -30,7 +30,7 @@ Resources:
               "Type": "Task",
               "Resource": "${Lambda.Arn}",
               "Parameters": {
-                "job_id": "$$.Execution.Name",
+                "job_id.$": "$$.Execution.Name",
                 "job_status": "RUNNING"
               },
               "Next": "RTC_GAMMA"
@@ -54,7 +54,7 @@ Resources:
               "Type": "Task",
               "Resource": "${Lambda.Arn}",
               "Parameters": {
-                "job_id": "$$.Execution.Name",
+                "job_id.$": "$$.Execution.Name",
                 "job_status": "SUCCEEDED"
               },
               "End": true
@@ -63,7 +63,7 @@ Resources:
               "Type": "Task",
               "Resource": "${Lambda.Arn}",
               "Parameters": {
-                "job_id": "$$.Execution.Name",
+                "job_id.$": "$$.Execution.Name",
                 "job_status": "FAILED"
               },
               "End": true
