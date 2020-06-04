@@ -2,7 +2,6 @@ from datetime import datetime
 from json import dumps
 from os import environ
 
-import boto3
 import pytest
 from botocore.stub import Stubber
 from flask_api import status
