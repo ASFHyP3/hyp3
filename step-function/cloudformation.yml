@@ -24,18 +24,49 @@ Resources:
       RoleArn: !GetAtt StepFunctionRole.Arn
       DefinitionString: !Sub |-
         {
-          "StartAt": "BATCH_JOB",
+          "StartAt": "JOB_RUNNING",
           "States": {
-           "BATCH_JOB": {
-             "Type": "Task",
-             "Resource": "arn:aws:states:::batch:submitJob.sync",
-             "Parameters": {
-               "JobDefinition": "${RtcGammaJobDefinition}",
-               "JobName.$": "$$.Execution.Name",
-               "JobQueue": "${JobQueueArn}",
-               "Parameters.$": "$.parameters"
-             },
-             "End": true
+            "JOB_RUNNING": {
+              "Type": "Task",
+              "Resource": "${Lambda.Arn}",
+              "Parameters": {
+                "job_id": "$$.Execution.Name",
+                "job_status": "RUNNING"
+              },
+              "Next": "RTC_GAMMA"
+            },
+            "RTC_GAMMA": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::batch:submitJob.sync",
+              "Parameters": {
+                "JobDefinition": "${RtcGammaJobDefinition}",
+                "JobName.$": "$$.Execution.Name",
+                "JobQueue": "${JobQueueArn}",
+                "Parameters.$": "$.parameters"
+              },
+              "Next": "JOB_SUCCEEDED",
+              "Catch": [{
+                "ErrorEquals": ["States.ALL"],
+                "Next": "JOB_FAILED"
+              }]
+            },
+            "JOB_SUCCEEDED": {
+              "Type": "Task",
+              "Resource": "${Lambda.Arn}",
+              "Parameters": {
+                "job_id": "$$.Execution.Name",
+                "job_status": "SUCCEEDED"
+              },
+              "End": true
+            },
+            "JOB_FAILED": {
+              "Type": "Task",
+              "Resource": "${Lambda.Arn}",
+              "Parameters": {
+                "job_id": "$$.Execution.Name",
+                "job_status": "FAILED"
+              },
+              "End": true
             }
           }
         }
