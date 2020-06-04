@@ -122,7 +122,7 @@ def test_list_jobs(client):
             'job_id': '0ddaeb98-7636-494d-9496-03ea4a7df266',
             'user_id': 'user_with_jobs',
             'parameters': {
-                'granule': 'S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_b4E0'
+                'granule': 'S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_A4E0'
             },
         },
         {
@@ -145,7 +145,7 @@ def test_list_jobs(client):
                 'job_id': '0ddaeb98-7636-494d-9496-03ea4a7df266',
                 'user_id': 'user_with_jobs',
                 'parameters': {
-                    'granule': 'S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_b4E0',
+                    'granule': 'S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_A4E0',
                 },
             },
             {
