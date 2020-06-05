@@ -11,9 +11,9 @@ def auth():
     token = request.cookies.get('asf-urs')
     if token:
         try:
-            payload = jwt.decode(token.encode(), environ['AUTH_PUBLIC_KEY'], algorithms=environ['AUTH_ALGORITHM'])
+            payload = jwt.decode(token, environ['AUTH_PUBLIC_KEY'], algorithms=environ['AUTH_ALGORITHM'])
             for group in payload['urs-groups']:
-                if group['name'] == 'HAS_ACCESS_TO_HYP3' and group['app_uid'] == 'asf_urs':
+                if group['name'] == environ['AUTH_GROUP_NAME'] and group['app_uid'] == environ['AUTH_APP_UID']:
                     return
             abort(403)
         except (jwt.DecodeError, jwt.ExpiredSignatureError):
@@ -39,8 +39,8 @@ def get_mock_jwt_cookie(user, lifetime_in_seconds=100, authorized=True):
     }
     if authorized:
         payload['urs-groups'].append({
-                'name': 'HAS_ACCESS_TO_HYP3',
-                'app_uid': 'asf_urs'
+                'name': environ['AUTH_GROUP_NAME'],
+                'app_uid':  environ['AUTH_APP_UID']
             })
     value = jwt.encode(
         payload=payload,
