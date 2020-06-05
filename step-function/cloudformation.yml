@@ -31,10 +31,10 @@ Resources:
               "Resource": "${Lambda.Arn}",
               "Parameters": {
                 "job_id.$": "$$.Execution.Name",
-                "process_type.$": "$.process_type",
+                "job_type.$": "$.job_type",
                 "user_id.$": "$.user_id",
                 "status_code": "RUNNING",
-                "job_parameters.$": "$.parameters",
+                "job_parameters.$": "$.job_parameters",
                 "start_time.$": "$$.Execution.StartTime",
                 "description.$": "$.description"
               },
