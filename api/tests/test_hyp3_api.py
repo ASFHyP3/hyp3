@@ -58,8 +58,8 @@ def stub_response(states_stub, granule):
     )
 
 
-def login(client, username='test_username'):
-    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username))
+def login(client, username='test_username', authorized=True):
+    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username, authorized=authorized))
 
 
 def test_submit_job(client, states_stub):
@@ -131,7 +131,7 @@ def test_list_jobs(client):
     for item in items:
         table.put_item(Item=item)
 
-    login(client, 'user_with_jobs')
+    login(client, 'user_with_jobs', authorized=False)
     response = client.get(JOBS_URI)
     assert response.status_code == status.HTTP_200_OK
     assert response.json == {
@@ -153,6 +153,12 @@ def test_not_logged_in(client):
 
     response = client.head(JOBS_URI)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_logged_in_not_authorized(client):
+    login(client, authorized=False)
+    response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38')
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_invalid_cookie(client):

@@ -2,6 +2,8 @@ import json
 from os import environ
 
 from boto3.dynamodb.conditions import Key
+from connexion import context
+from flask import abort
 from flask_cors import CORS
 from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, connexion_app
 
@@ -9,6 +11,8 @@ from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, connexion_app
 def submit_job(body, user):
     body['user_id'] = user
     print(body)
+    if not context['is_authorized']:
+        abort(403)
 
     job = STEP_FUNCTION_CLIENT.start_execution(
         stateMachineArn=environ['STEP_FUNCTION_ARN'],
