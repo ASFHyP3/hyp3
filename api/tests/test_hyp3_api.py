@@ -25,19 +25,21 @@ def states_stub():
         stubber.assert_no_pending_responses()
 
 
-def submit_job(client, granule, states_stub=None):
+def submit_job(client, granule, states_stub=None, description=None):
     if states_stub:
-        stub_response(states_stub, granule)
+        stub_response(states_stub, granule, description)
     payload = {
         'job_type': 'RTC_GAMMA',
         'job_parameters': {
             'granule': granule
         }
     }
+    if description:
+        payload['description'] = description
     return client.post(JOBS_URI, json=payload)
 
 
-def stub_response(states_stub, granule):
+def stub_response(states_stub, granule, description):
     payload = {
         'user_id': 'test_username',
         'job_parameters': {
@@ -45,6 +47,8 @@ def stub_response(states_stub, granule):
         },
         'job_type': 'RTC_GAMMA',
     }
+    if description:
+        payload['description'] = description
     states_stub.add_response(
         method='start_execution',
         expected_params={
@@ -65,6 +69,20 @@ def login(client, username='test_username'):
 def test_submit_job(client, states_stub):
     login(client)
     response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38', states_stub)
+    assert response.status_code == status.HTTP_200_OK
+    assert response.get_json() == {
+        'jobId': 'myJobId',
+    }
+
+
+def test_submit_job_with_description(client, states_stub):
+    login(client)
+    response = submit_job(
+        client,
+        'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
+        states_stub,
+        description='foo',
+    )
     assert response.status_code == status.HTTP_200_OK
     assert response.get_json() == {
         'jobId': 'myJobId',
