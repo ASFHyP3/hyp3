@@ -11,15 +11,12 @@ Parameters:
 
   AuthAlgorithm:
     Type: String
-    Default: RS256
 
   AuthGroupName:
     Type: String
-    Default: HAS_ACCESS_TO_HYP3
 
   AuthAppUid:
     Type: String
-    Default: asf-urs
 
   DomainName:
     Type: String
