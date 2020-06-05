@@ -69,6 +69,5 @@ jobs:
                 "EDLUsername=${EDL_USERNAME}" \
                 "EDLPassword=${EDL_PASSWORD}" \
                 "RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${IMAGE_TAG}" \
-                "AuthPublicKey=${AUTH_PUBLIC_KEY}" \
                 "DomainName=${DOMAIN_NAME}" \
                 "CertificateArn=${CERTIFICATE_ARN}"
