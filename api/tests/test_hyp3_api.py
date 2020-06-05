@@ -131,7 +131,7 @@ def test_list_jobs(client):
     for item in items:
         table.put_item(Item=item)
 
-    login(client, 'user_with_jobs')
+    login(client, 'user_with_jobs', authorized=False)
     response = client.get(JOBS_URI)
     assert response.status_code == status.HTTP_200_OK
     assert response.json == {
@@ -158,9 +158,6 @@ def test_not_logged_in(client):
 def test_logged_in_not_authorized(client):
     login(client, authorized=False)
     response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9')
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-
-    response = client.get(JOBS_URI)
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 

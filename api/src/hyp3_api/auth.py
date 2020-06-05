@@ -2,27 +2,20 @@ import time
 from os import environ
 
 import jwt
-from flask import abort, request
-from hyp3_api import connexion_app
+from connexion import context
 
 
-@connexion_app.app.before_request
-def auth():
-    token = request.cookies.get('asf-urs')
-    if token:
-        try:
-            payload = jwt.decode(token, environ['AUTH_PUBLIC_KEY'], algorithms=environ['AUTH_ALGORITHM'])
-            for group in payload['urs-groups']:
-                if group['name'] == environ['AUTH_GROUP_NAME'] and group['app_uid'] == environ['AUTH_APP_UID']:
-                    return
-            abort(403)
-        except (jwt.DecodeError, jwt.ExpiredSignatureError):
-            pass
+def is_authorized(groups):
+    for group in groups:
+        if group['name'] == environ['AUTH_GROUP_NAME'] and group['app_uid'] == environ['AUTH_APP_UID']:
+            return True
+    return False
 
 
 def decode_token(token, required_scopes):
     try:
         payload = jwt.decode(token, environ['AUTH_PUBLIC_KEY'], algorithms=environ['AUTH_ALGORITHM'])
+        context['is_authorized'] = is_authorized(payload['urs-groups'])
         return {
             'active': True,
             'sub': payload['urs-user-id'],
