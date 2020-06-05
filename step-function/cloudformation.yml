@@ -35,7 +35,8 @@ Resources:
                 "user_id.$": "$.user_id",
                 "status_code": "RUNNING",
                 "job_parameters.$": "$.parameters",
-                "start_time.$": "$$.Execution.StartTime"
+                "start_time.$": "$$.Execution.StartTime",
+                "description.$": "$.description"
               },
               "ResultPath": null,
               "Next": "RTC_GAMMA"
