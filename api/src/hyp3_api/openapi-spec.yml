@@ -64,11 +64,11 @@ components:
       properties:
         granule:
           type: string
-          pattern: "^S1[AB]_IW_GRDH_*"
+          pattern: "^S1[AB]_IW_SLC__*"
           minLength: 67
           maxLength: 67
-          example: S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_A4E0
-          description: The name of the Sentinel-1 granule to process.  Only GRDH products with beam mode IW are supported.
+          example: S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38
+          description: The name of the Sentinel-1 granule to process.  Only SLC products with beam mode IW are supported.
       required:
         - granule
       additionalProperties: false
