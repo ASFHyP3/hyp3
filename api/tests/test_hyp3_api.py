@@ -157,7 +157,7 @@ def test_not_logged_in(client):
 
 def test_logged_in_not_authorized(client):
     login(client, authorized=False)
-    response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9')
+    response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38')
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
