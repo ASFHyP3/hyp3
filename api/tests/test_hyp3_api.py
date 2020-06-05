@@ -184,22 +184,31 @@ def test_bad_granule_names(client):
     response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E3')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = submit_job(client, 'S1B_IW_SLC__1SSV_20200604T082331_20200604T083138_021881_029875_0FBFe')
+    response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38_')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+
+def test_bad_beam_modes(client):
+    login(client)
     response = submit_job(client, 'S1B_S3_SLC__1SDV_20200604T091417_20200604T091430_021882_029879_5765')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+    response = submit_job(client, 'S1B_WV_SLC__1SSV_20200519T140110_20200519T140719_021651_0291AA_2A86')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    response = submit_job(client, 'S1B_EW_SLC__1SDH_20200605T065551_20200605T065654_021895_0298DC_EFB5')
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_bad_product_types(client):
+    login(client)
     response = submit_job(client, 'S1A_IW_GRDH_1SDV_20200604T190627_20200604T190652_032871_03CEB7_56F3')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     response = submit_job(client, 'S1B_IW_OCN__2SDV_20200518T220815_20200518T220851_021642_02915F_B404')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = submit_job(client, 'S1B_S3_RAW__0SSV_20200518T185451_20200518T185522_021640_029151_BFBF')
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-    response = submit_job(client, 'S1B_WV_SLC__1SSV_20200519T140110_20200519T140719_021651_0291AA_2A86')
+    response = submit_job(client, 'S1B_IW_RAW__0SDV_20200605T145138_20200605T145210_021900_029903_AFF4')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
