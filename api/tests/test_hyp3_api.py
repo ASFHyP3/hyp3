@@ -184,7 +184,7 @@ def test_bad_granule_names(client):
     response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E3')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = submit_job(client, 'S1B_WV_SLC__1SSV_20200604T082331_20200604T083138_021881_029875_0FBFe')
+    response = submit_job(client, 'S1B_IW_SLC__1SSV_20200604T082331_20200604T083138_021881_029875_0FBFe')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     response = submit_job(client, 'S1B_S3_SLC__1SDV_20200604T091417_20200604T091430_021882_029879_5765')
