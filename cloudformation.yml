@@ -29,7 +29,7 @@ Parameters:
 
   AuthAppUid:
     Type: String
-    Default: asf-urs
+    Default: asf_urs
 
   DomainName:
     Type: String

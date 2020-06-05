@@ -38,10 +38,12 @@ def get_mock_jwt_cookie(user, lifetime_in_seconds=100, authorized=True):
         'urs-groups': []
     }
     if authorized:
-        payload['urs-groups'].append({
+        payload['urs-groups'].append(
+            {
                 'name': environ['AUTH_GROUP_NAME'],
                 'app_uid':  environ['AUTH_APP_UID']
-            })
+            }
+        )
     value = jwt.encode(
         payload=payload,
         key=environ['AUTH_PUBLIC_KEY'],
