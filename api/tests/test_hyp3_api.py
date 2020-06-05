@@ -172,7 +172,7 @@ def test_good_granule_names(client, states_stub):
     response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38', states_stub)
     assert response.status_code == status.HTTP_200_OK
 
-    response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T091417_20200604T091430_021882_029879_5765', states_stub)
+    response = submit_job(client, 'S1A_IW_SLC__1SSH_20150608T205059_20150608T205126_006287_0083E8_C4F0', states_stub)
     assert response.status_code == status.HTTP_200_OK
 
 
@@ -181,7 +181,7 @@ def test_bad_granule_names(client):
     response = submit_job(client, 'foo')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = submit_job(client, 'S1A_IW_GRDH_1SSH_20150609T141945_20150609T142014_006297_008439_B83')
+    response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E3')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     response = submit_job(client, 'S1B_WV_SLC__1SSV_20200604T082331_20200604T083138_021881_029875_0FBFe')
@@ -190,7 +190,7 @@ def test_bad_granule_names(client):
     response = submit_job(client, 'S1B_S3_SLC__1SDV_20200604T091417_20200604T091430_021882_029879_5765')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = submit_job(client, 'S1B_EW_SLC__1SDV_20200604T091417_20200604T091430_021882_029879_5765')
+    response = submit_job(client, 'S1A_IW_GRDH_1SDV_20200604T190627_20200604T190652_032871_03CEB7_56F3')
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     response = submit_job(client, 'S1B_IW_OCN__2SDV_20200518T220815_20200518T220851_021642_02915F_B404')
