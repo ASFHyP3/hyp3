@@ -78,9 +78,9 @@ def test_submit_job(client, states_stub):
 def test_submit_job_with_description(client, states_stub):
     login(client)
     response = submit_job(
-        client,
-        'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
-        states_stub,
+        client=client,
+        granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
+        states_stub=states_stub,
         description='foo',
     )
     assert response.status_code == status.HTTP_200_OK
