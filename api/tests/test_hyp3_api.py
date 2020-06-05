@@ -34,7 +34,7 @@ def submit_job(client, granule, states_stub=None, description=None):
             'granule': granule
         }
     }
-    if description:
+    if description is not None:
         payload['description'] = description
     return client.post(JOBS_URI, json=payload)
 
@@ -47,7 +47,7 @@ def stub_response(states_stub, granule, description):
         },
         'job_type': 'RTC_GAMMA',
     }
-    if description:
+    if description is not None:
         payload['description'] = description
     states_stub.add_response(
         method='start_execution',
@@ -87,6 +87,16 @@ def test_submit_job_with_description(client, states_stub):
     assert response.get_json() == {
         'jobId': 'myJobId',
     }
+
+
+def test_submit_job_with_empty_description(client):
+    login(client)
+    response = submit_job(
+        client=client,
+        granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
+        description='',
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 @mock_dynamodb2
