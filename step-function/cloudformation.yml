@@ -48,7 +48,7 @@ Resources:
                 "JobDefinition": "${RtcGammaJobDefinition}",
                 "JobName.$": "$$.Execution.Name",
                 "JobQueue": "${JobQueueArn}",
-                "Parameters.$": "$.parameters"
+                "Parameters.$": "$.job_parameters"
               },
               "Next": "JOB_SUCCEEDED",
               "Catch": [{

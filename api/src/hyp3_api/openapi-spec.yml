@@ -50,9 +50,9 @@ components:
     submission:
       type: object
       properties:
-        process_type:
-          $ref: "#/components/schemas/process_type"
-        parameters:
+        job_type:
+          $ref: "#/components/schemas/job_type"
+        job_parameters:
           $ref: "#/components/schemas/job_parameters"
         description:
           $ref: "#/components/schemas/description"
