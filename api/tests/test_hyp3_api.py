@@ -25,19 +25,21 @@ def states_stub():
         stubber.assert_no_pending_responses()
 
 
-def submit_job(client, granule, states_stub=None):
+def submit_job(client, granule, states_stub=None, description=None):
     if states_stub:
-        stub_response(states_stub, granule)
+        stub_response(states_stub, granule, description)
     payload = {
         'job_type': 'RTC_GAMMA',
         'job_parameters': {
             'granule': granule
         }
     }
+    if description is not None:
+        payload['description'] = description
     return client.post(JOBS_URI, json=payload)
 
 
-def stub_response(states_stub, granule):
+def stub_response(states_stub, granule, description):
     payload = {
         'user_id': 'test_username',
         'job_parameters': {
@@ -45,6 +47,8 @@ def stub_response(states_stub, granule):
         },
         'job_type': 'RTC_GAMMA',
     }
+    if description is not None:
+        payload['description'] = description
     states_stub.add_response(
         method='start_execution',
         expected_params={
@@ -71,6 +75,30 @@ def test_submit_job(client, states_stub):
     }
 
 
+def test_submit_job_with_description(client, states_stub):
+    login(client)
+    response = submit_job(
+        client=client,
+        granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
+        states_stub=states_stub,
+        description='foo',
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.get_json() == {
+        'jobId': 'myJobId',
+    }
+
+
+def test_submit_job_with_empty_description(client):
+    login(client)
+    response = submit_job(
+        client=client,
+        granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
+        description='',
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
 @mock_dynamodb2
 def test_list_jobs(client):
     table = DYNAMODB_RESOURCE.create_table(
@@ -82,14 +110,14 @@ def test_list_jobs(client):
             },
             {
                 'AttributeName': 'user_id',
-                'AttributeType': 'S'
+                'AttributeType': 'S',
             },
 
         ],
         KeySchema=[
             {
                 'AttributeName': 'job_id',
-                'KeyType': 'HASH'
+                'KeyType': 'HASH',
             },
         ],
         GlobalSecondaryIndexes=[
@@ -102,13 +130,13 @@ def test_list_jobs(client):
                     },
                 ],
                 'Projection': {
-                    'ProjectionType': 'ALL'
+                    'ProjectionType': 'ALL',
                 },
-            }
+            },
         ],
         ProvisionedThroughput={
             'ReadCapacityUnits': 15,
-            'WriteCapacityUnits': 15
+            'WriteCapacityUnits': 15,
         },
     )
 
@@ -117,14 +145,14 @@ def test_list_jobs(client):
             'job_id': '0ddaeb98-7636-494d-9496-03ea4a7df266',
             'user_id': 'user_with_jobs',
             'job_parameters': {
-                'granule': 'S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_A4E0'
+                'granule': 'S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_A4E0',
             },
         },
         {
             'job_id': '27836b79-e5b2-4d8f-932f-659724ea02c3',
             'user_id': 'user_with_jobs',
             'job_parameters': {
-                'granule': 'S1B_IW_GRDH_1SDV_20200604T044748_20200604T044813_021879_029863_93A4'
+                'granule': 'S1B_IW_GRDH_1SDV_20200604T044748_20200604T044813_021879_029863_93A4',
             },
         },
     ]
@@ -141,7 +169,9 @@ def test_list_jobs(client):
     login(client, 'user_without_jobs')
     response = client.get(JOBS_URI)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json == {'jobs': []}
+    assert response.json == {
+        'jobs': [],
+    }
 
 
 def test_not_logged_in(client):

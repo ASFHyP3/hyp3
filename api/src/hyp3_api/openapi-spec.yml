@@ -54,6 +54,8 @@ components:
           $ref: "#/components/schemas/job_type"
         job_parameters:
           $ref: "#/components/schemas/job_parameters"
+        description:
+          $ref: "#/components/schemas/description"
       required:
         - job_type
         - job_parameters
@@ -78,6 +80,10 @@ components:
       example: RTC_GAMMA
       enum:
         - RTC_GAMMA
+
+    description:
+      type: string
+      minLength: 1
 
     jobs:
       type: array
@@ -114,6 +120,8 @@ components:
               - SUCCEEDED
               - FAILED
             example: SUCCEEDED
+          description:
+            $ref: "#/components/schemas/description"
 
 
   securitySchemes:
