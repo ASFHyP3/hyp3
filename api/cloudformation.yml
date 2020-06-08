@@ -3,12 +3,20 @@ Parameters:
   StepFunctionArn:
     Type: String
 
+  JobsTable:
+    Type: String
+
   AuthPublicKey:
     Type: String
 
   AuthAlgorithm:
     Type: String
-    Default: RS256
+
+  AuthGroupName:
+    Type: String
+
+  AuthAppUid:
+    Type: String
 
   DomainName:
     Type: String
@@ -155,6 +163,9 @@ Resources:
                 Action: states:StartExecution
                 Resource:
                   - !Ref StepFunctionArn
+              - Effect: Allow
+                Action: dynamodb:Query
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -162,8 +173,11 @@ Resources:
       Environment:
         Variables:
           STEP_FUNCTION_ARN: !Ref StepFunctionArn
+          TABLE_NAME: !Ref JobsTable
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITHM: !Ref AuthAlgorithm
+          AUTH_GROUP_NAME: !Ref AuthGroupName
+          AUTH_APP_UID: !Ref AuthAppUid
       Code: src/
       Handler: lambda_handler.handler
       MemorySize: 128

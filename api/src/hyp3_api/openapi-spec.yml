@@ -4,6 +4,9 @@ info:
   title: hyp3-api
   version: 0.0.1
 
+security:
+  - EarthDataLogin: []
+
 paths:
   /jobs:
     post:
@@ -21,11 +24,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/response"
-      security:
-        - EarthDataLogin: []
+    get:
+      operationId: hyp3_api.handlers.list_jobs
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/jobs"
 
 components:
   schemas:
+
     response:
       type: object
       properties:
@@ -35,38 +46,83 @@ components:
       required:
         - jobId
       additionalProperties: false
+
     submission:
       type: object
       properties:
-        process_type:
-          type: string
-          example: RTC_GAMMA
-          enum:
-            - RTC_GAMMA
-        email:
-          type: string
-          format: email
-          example: john.doe@example.com
-        parameters:
-          $ref: "#/components/schemas/parameters"
+        job_type:
+          $ref: "#/components/schemas/job_type"
+        job_parameters:
+          $ref: "#/components/schemas/job_parameters"
+        description:
+          $ref: "#/components/schemas/description"
       required:
-        - process_type
-        - email
-        - parameters
+        - job_type
+        - job_parameters
       additionalProperties: false
-    parameters:
+
+    job_parameters:
       type: object
       properties:
         granule:
           type: string
-          pattern: "^S1[AB]_IW_GRDH_*"
+          pattern: "^S1[AB]_IW_SLC__*"
           minLength: 67
           maxLength: 67
-          example: S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_A4E0
-          description: The name of the Sentinel-1 granule to process.  Only GRDH products with beam mode IW are supported.
+          example: S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38
+          description: The name of the Sentinel-1 granule to process.  Only SLC products with beam mode IW are supported.
       required:
         - granule
       additionalProperties: false
+
+    job_type:
+      type: string
+      example: RTC_GAMMA
+      enum:
+        - RTC_GAMMA
+
+    description:
+      type: string
+      minLength: 1
+
+    jobs:
+      type: array
+      items:
+        type: object
+        required:
+          - job_id
+          - user_id
+          - job_type
+          - job_parameters
+          - start_time
+          - status_code
+        additionalProperties: false
+        properties:
+          job_id:
+            type: string
+            format: uuid
+            example: 27836b79-e5b2-4d8f-932f-659724ea02c3
+          user_id:
+            type: string
+            example: myUserId
+          job_type:
+            $ref: "#/components/schemas/job_type"
+          job_parameters:
+            $ref: "#/components/schemas/job_parameters"
+          start_time:
+            type: string
+            format: date-time
+            example: 2020-06-04T18:00:03.548Z
+          status_code:
+            type: string
+            enum:
+              - RUNNING
+              - SUCCEEDED
+              - FAILED
+            example: SUCCEEDED
+          description:
+            $ref: "#/components/schemas/description"
+
 
   securitySchemes:
     EarthDataLogin:
