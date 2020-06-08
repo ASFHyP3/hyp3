@@ -25,7 +25,6 @@ Parameters:
 
   AuthGroupName:
     Type: String
-    Default: HAS_ACCESS_TO_HYP3
 
   AuthAppUid:
     Type: String
