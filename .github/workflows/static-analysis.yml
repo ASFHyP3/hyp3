@@ -52,3 +52,13 @@ jobs:
           pip install openapi-spec-validator
 
       - run: openapi-spec-validator api/src/hyp3_api/openapi-spec.yml
+
+  statelint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+      - run: gem install statelint
+      - run: statelint step-function/step-function.json
