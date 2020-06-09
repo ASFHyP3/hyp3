@@ -47,7 +47,7 @@ Resources:
                 "description.$": "$.description"
               },
               "ResultPath": null,
-              "Next": "ADD_PREFIX_TO_PARAMETERS"
+              "Next": "ADD_PREFIX_TO_JOB_PARAMETERS"
             },
             "ADD_PREFIX_TO_JOB_PARAMETERS": {
               "Type": "Pass",
