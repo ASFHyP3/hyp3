@@ -161,7 +161,7 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref JobsTable
-      Code: src/
+      Code: update-db/
       Handler: main.lambda_handler
       MemorySize: 128
       Role: !GetAtt LambdaRole.Arn
