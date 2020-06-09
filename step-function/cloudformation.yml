@@ -25,6 +25,7 @@ Resources:
       DefinitionString: !Sub |-
         {
           "StartAt": "JOB_RUNNING",
+          "States": {
             "JOB_RUNNING": {
               "Type": "Task",
               "Resource": "${Lambda.Arn}",
