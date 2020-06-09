@@ -75,6 +75,7 @@ Resources:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
         RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
         JobsTable: !Ref JobsTable
+        Bucket: !Ref ContentBucket
       TemplateURL: step-function/cloudformation.yml
 
   LogBucket:

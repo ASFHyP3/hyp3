@@ -122,7 +122,23 @@ components:
             example: SUCCEEDED
           description:
             $ref: "#/components/schemas/description"
-
+          files:
+            type: array
+            items:
+              type: object
+              required:
+                - filename
+                - size
+                - url
+              additionalProperties: False
+              properties:
+                filename:
+                  type: string
+                size:
+                  type: integer
+                  minimum: 0
+                url:
+                  type: string
 
   securitySchemes:
     EarthDataLogin:
