@@ -46,7 +46,7 @@ Resources:
                 "start_time.$": "$$.Execution.StartTime",
                 "description.$": "$.description"
               },
-              "ResultPath": null,
+              "ResultPath": "$.results.job_running",
               "Next": "ADD_PREFIX_TO_JOB_PARAMETERS"
             },
             "ADD_PREFIX_TO_JOB_PARAMETERS": {
@@ -64,6 +64,7 @@ Resources:
                 "JobQueue": "${JobQueueArn}",
                 "Parameters.$": "$.job_parameters"
               },
+              "ResultPath": "$.results.rtc_gamma",
               "Next": "JOB_SUCCEEDED",
               "Catch": [{
                 "ErrorEquals": ["States.ALL"],
@@ -77,6 +78,7 @@ Resources:
                 "job_id.$": "$.context.job_id",
                 "status_code": "SUCCEEDED"
               },
+              "ResultPath": "$.results.job_succeeded",
               "End": true
             },
             "JOB_FAILED": {
@@ -86,6 +88,7 @@ Resources:
                 "job_id.$": "$.context.job_id",
                 "status_code": "FAILED"
               },
+              "ResultPath": "$.results.job_failed",
               "End": true
             }
           }
