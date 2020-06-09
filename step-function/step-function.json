@@ -27,7 +27,7 @@
     "ADD_PREFIX_TO_JOB_PARAMETERS": {
       "Type": "Pass",
       "InputPath": "$.context.job_id",
-      "ResultPath": "$.job_parameters.bucket-prefix",
+      "ResultPath": "$.job_parameters.bucket_prefix",
       "Next": "RTC_GAMMA"
     },
     "RTC_GAMMA": {

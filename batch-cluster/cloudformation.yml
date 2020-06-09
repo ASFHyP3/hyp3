@@ -152,7 +152,7 @@ Resources:
       Parameters:
         granule: ""
         bucket: !Ref ContentBucket
-        bucket-prefix: ""
+        bucket_prefix: ""
         username: !Ref EDLUsername
         password: !Ref EDLPassword
       ContainerProperties:
@@ -168,7 +168,7 @@ Resources:
           - --bucket
           - Ref::bucket
           - --bucket-prefix
-          - Ref::bucket-prefix
+          - Ref::bucket_prefix
           - Ref::granule
       Timeout:
         AttemptDurationSeconds: 5400
