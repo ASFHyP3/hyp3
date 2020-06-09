@@ -59,6 +59,7 @@ components:
       required:
         - job_type
         - job_parameters
+        - description
       additionalProperties: false
 
     job_parameters:
@@ -83,7 +84,7 @@ components:
 
     description:
       type: string
-      minLength: 1
+      example: a description of the job
 
     jobs:
       type: array
