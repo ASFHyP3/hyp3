@@ -6,10 +6,12 @@ Parameters:
     Type: String
 
 Outputs:
+
   LambdaArn:
-    Value: !GetAtt Lambda.arn
+    Value: !GetAtt Lambda.Arn
 
 Resources:
+
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
