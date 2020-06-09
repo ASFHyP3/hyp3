@@ -63,5 +63,5 @@ jobs:
       - run: gem install statelint
       - run: |
           # replace ${LambdaArn} placeholder to suppress "Resource is "${LambdaArn}" but should be A URI" errors
-          sed -i "s/${LambdaArn}/arn:aws:lambda:us-west-2:111122223333:function:foo/" step-function/step-function.json
+          sed -i "s/\${LambdaArn}/arn:aws:lambda:us-west-2:111122223333:function:foo/" step-function/step-function.json
           statelint step-function/step-function.json
