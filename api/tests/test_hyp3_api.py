@@ -1,9 +1,8 @@
 from datetime import datetime
-from json import dumps
 from os import environ
 
 import pytest
-from botocore.stub import Stubber, ANY
+from botocore.stub import ANY, Stubber
 from flask_api import status
 from moto import mock_dynamodb2
 from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, auth, connexion_app  # noqa hyp3 must be imported after moto

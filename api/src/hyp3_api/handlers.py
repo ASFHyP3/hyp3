@@ -16,7 +16,7 @@ def submit_job(body, user):
     if not context['is_authorized']:
         abort(403)
 
-    job = STEP_FUNCTION_CLIENT.start_execution(
+    STEP_FUNCTION_CLIENT.start_execution(
         stateMachineArn=environ['STEP_FUNCTION_ARN'],
         name=body['job_id'],
         input=json.dumps(body, sort_keys=True),
