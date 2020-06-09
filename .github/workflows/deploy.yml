@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - develop
+      - asj-json
 
 env:
   AWS_REGION: us-west-2
@@ -26,6 +27,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - if: endsWith(github.ref, '/asj-deploy')
+        run: |
+          echo "::set-env name=STACK_NAME::hyp3-asj-json"
+          echo "::set-env name=DOMAIN_NAME::hyp3-asj.asf.alaska.edu"
+          echo "::set-env name=IMAGE_TAG::test"
+          echo "::set-env name=AUTH_GROUP_NAME::HAS_ACCESS_TO_HYP3_TEST"
 
       - if: endsWith(github.ref, '/develop')
         run: |
