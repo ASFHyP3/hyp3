@@ -68,19 +68,29 @@ Resources:
                 "Parameters.$": "$.job_parameters"
               },
               "ResultPath": "$.results.rtc_gamma",
-              "Next": "JOB_SUCCEEDED",
+              "Next": "GET_FILES",
               "Catch": [{
                 "ErrorEquals": ["States.ALL"],
                 "Next": "JOB_FAILED",
                 "ResultPath": "$.results.rtc_gamma"
               }]
             },
+            "GET_FILES": {
+               "Type": "Task",
+               "Resource": "${GetFiles.Outputs.LambdaArn}",
+               "Parameters": {
+                 "job_id.$": "$.context.job_id"
+               },
+               "ResultPath": "$.results.get_files",
+               "Next": "JOB_SUCCEEDED"
+             },
             "JOB_SUCCEEDED": {
               "Type": "Task",
               "Resource": "${UpdateDB.Outputs.LambdaArn}",
               "Parameters": {
                 "job_id.$": "$.context.job_id",
-                "status_code": "SUCCEEDED"
+                "status_code": "SUCCEEDED",
+                "files.$": "$.results.get_files"
               },
               "ResultPath": "$.results.job_succeeded",
               "End": true
