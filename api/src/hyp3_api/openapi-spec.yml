@@ -129,7 +129,7 @@ components:
               required:
                 - filename
                 - size
-                - download_url
+                - url
               additionalProperties: False
               properties:
                 filename:
@@ -137,7 +137,7 @@ components:
                 size:
                   type: integer
                   minimum: 0
-                download_url:
+                url:
                   type: string
 
   securitySchemes:
