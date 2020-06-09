@@ -24,13 +24,21 @@ Resources:
       RoleArn: !GetAtt StepFunctionRole.Arn
       DefinitionString: !Sub |-
         {
-          "StartAt": "JOB_RUNNING",
+          "StartAt": "ADD_JOB_ID_TO_INPUT",
           "States": {
+            "ADD_JOB_ID_TO_INPUT": {
+              "Type": "Pass",
+              "Parameters": {
+                "job_id.$": "$$.Execution.Name"
+              },
+              "ResultPath": "$.context",
+              "Next": "JOB_RUNNING"
+            },
             "JOB_RUNNING": {
               "Type": "Task",
               "Resource": "${Lambda.Arn}",
               "Parameters": {
-                "job_id.$": "$$.Execution.Name",
+                "job_id.$": "$.context.job_id",
                 "job_type.$": "$.job_type",
                 "user_id.$": "$.user_id",
                 "status_code": "RUNNING",
@@ -39,6 +47,12 @@ Resources:
                 "description.$": "$.description"
               },
               "ResultPath": null,
+              "Next": "ADD_PREFIX_TO_PARAMETERS"
+            },
+            "ADD_PREFIX_TO_JOB_PARAMETERS": {
+              "Type": "Pass",
+              "InputPath": "$.context.job_id"
+              "ResultPath": "$.job_parameters.bucket-prefix",
               "Next": "RTC_GAMMA"
             },
             "RTC_GAMMA": {
@@ -46,7 +60,7 @@ Resources:
               "Resource": "arn:aws:states:::batch:submitJob.sync",
               "Parameters": {
                 "JobDefinition": "${RtcGammaJobDefinition}",
-                "JobName.$": "$$.Execution.Name",
+                "JobName.$": "$.context.job_id",
                 "JobQueue": "${JobQueueArn}",
                 "Parameters.$": "$.job_parameters"
               },
@@ -60,7 +74,7 @@ Resources:
               "Type": "Task",
               "Resource": "${Lambda.Arn}",
               "Parameters": {
-                "job_id.$": "$$.Execution.Name",
+                "job_id.$": "$.context.job_id",
                 "status_code": "SUCCEEDED"
               },
               "End": true
@@ -69,7 +83,7 @@ Resources:
               "Type": "Task",
               "Resource": "${Lambda.Arn}",
               "Parameters": {
-                "job_id.$": "$$.Execution.Name",
+                "job_id.$": "$.context.job_id",
                 "status_code": "FAILED"
               },
               "End": true
