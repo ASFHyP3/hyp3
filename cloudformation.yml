@@ -77,9 +77,22 @@ Resources:
         JobsTable: !Ref JobsTable
       TemplateURL: step-function/cloudformation.yml
 
+  LogBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: LogDeliveryWrite
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        IgnorePublicAcls: True
+        BlockPublicPolicy: True
+        RestrictPublicBuckets: True
+
   ContentBucket:
     Type: AWS::S3::Bucket
     Properties:
+      LoggingConfiguration:
+        DestinationBucketName: !Ref LogBucket
+        LogFilePrefix: s3-access-logs/content-bucket/
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
         IgnorePublicAcls: True
