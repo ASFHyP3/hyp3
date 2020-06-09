@@ -68,7 +68,8 @@ Resources:
               "Next": "JOB_SUCCEEDED",
               "Catch": [{
                 "ErrorEquals": ["States.ALL"],
-                "Next": "JOB_FAILED"
+                "Next": "JOB_FAILED",
+                "ResultPath": "$.results.rtc_gamma"
               }]
             },
             "JOB_SUCCEEDED": {
