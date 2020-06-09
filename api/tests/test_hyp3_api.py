@@ -3,7 +3,7 @@ from json import dumps
 from os import environ
 
 import pytest
-from botocore.stub import Stubber
+from botocore.stub import Stubber, ANY
 from flask_api import status
 from moto import mock_dynamodb2
 from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, auth, connexion_app  # noqa hyp3 must be imported after moto
@@ -27,7 +27,7 @@ def states_stub():
 
 def submit_job(client, granule, states_stub=None, description=None):
     if states_stub:
-        stub_response(states_stub, granule, description)
+        stub_response(states_stub)
     payload = {
         'job_type': 'RTC_GAMMA',
         'job_parameters': {
@@ -39,24 +39,16 @@ def submit_job(client, granule, states_stub=None, description=None):
     return client.post(JOBS_URI, json=payload)
 
 
-def stub_response(states_stub, granule, description):
-    payload = {
-        'user_id': 'test_username',
-        'job_parameters': {
-            'granule': granule,
-        },
-        'job_type': 'RTC_GAMMA',
-    }
-    if description is not None:
-        payload['description'] = description
+def stub_response(states_stub):
     states_stub.add_response(
         method='start_execution',
         expected_params={
             'stateMachineArn': environ['STEP_FUNCTION_ARN'],
-            'input': dumps(payload, sort_keys=True),
+            'name': ANY,
+            'input': ANY,
         },
         service_response={
-            'executionArn': f'{environ["STEP_FUNCTION_ARN"]}:myJobId',
+            'executionArn': f'{environ["STEP_FUNCTION_ARN"]}:myExecutionName',
             'startDate': datetime.utcnow(),
         },
     )
@@ -70,9 +62,7 @@ def test_submit_job(client, states_stub):
     login(client)
     response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38', states_stub)
     assert response.status_code == status.HTTP_200_OK
-    assert response.get_json() == {
-        'jobId': 'myJobId',
-    }
+    assert response.get_json().keys() == {'jobId'}
 
 
 def test_submit_job_with_description(client, states_stub):
@@ -84,9 +74,7 @@ def test_submit_job_with_description(client, states_stub):
         description='foo',
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.get_json() == {
-        'jobId': 'myJobId',
-    }
+    assert response.get_json().keys() == {'jobId'}
 
 
 def test_submit_job_with_empty_description(client):

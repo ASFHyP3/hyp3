@@ -1,5 +1,6 @@
 import json
 from os import environ
+from uuid import uuid4
 
 from boto3.dynamodb.conditions import Key
 from connexion import context
@@ -10,17 +11,18 @@ from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, connexion_app
 
 def submit_job(body, user):
     body['user_id'] = user
+    body['job_id'] = str(uuid4())
     print(body)
     if not context['is_authorized']:
         abort(403)
 
     job = STEP_FUNCTION_CLIENT.start_execution(
         stateMachineArn=environ['STEP_FUNCTION_ARN'],
+        name=body['job_id'],
         input=json.dumps(body, sort_keys=True),
     )
-    job_id = job['executionArn'].split(':')[-1]
     return {
-        'jobId': job_id,
+        'jobId': body['job_id'],
     }
 
 
