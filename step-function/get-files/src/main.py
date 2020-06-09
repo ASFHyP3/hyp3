@@ -13,12 +13,12 @@ def get_download_url(key):
 
 
 def lambda_handler(event, context):
-    objects = S3_CLIENT.list_objects_v2(Bucket=environ['BUCKET'], Prefix=event['job_id'])
+    response = S3_CLIENT.list_objects_v2(Bucket=environ['BUCKET'], Prefix=event['job_id'])
     return [
         {
             'url': get_download_url(item['Key']),
             'size': item['Size'],
-            'filename': basename(item['key']),
+            'filename': basename(item['Key']),
         }
-        for item in objects['Contents']
+        for item in response['Contents']
     ]

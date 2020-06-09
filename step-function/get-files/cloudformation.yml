@@ -1,10 +1,12 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
+
   Bucket:
     Type: String
 
 Outputs:
+
   LambdaArn:
     Value: !GetAtt Lambda.Arn
 
