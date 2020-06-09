@@ -11,6 +11,9 @@ Parameters:
   JobsTable:
     Type: String
 
+  Bucket:
+    Type: String
+
 Outputs:
 
   StepFunctionArn:
@@ -36,7 +39,7 @@ Resources:
             },
             "JOB_RUNNING": {
               "Type": "Task",
-              "Resource": "${Lambda.Arn}",
+              "Resource": "${UpdateDB.Outputs.LambdaArn}",
               "Parameters": {
                 "job_id.$": "$.context.job_id",
                 "job_type.$": "$.job_type",
@@ -65,26 +68,36 @@ Resources:
                 "Parameters.$": "$.job_parameters"
               },
               "ResultPath": "$.results.rtc_gamma",
-              "Next": "JOB_SUCCEEDED",
+              "Next": "GET_FILES",
               "Catch": [{
                 "ErrorEquals": ["States.ALL"],
                 "Next": "JOB_FAILED",
                 "ResultPath": "$.results.rtc_gamma"
               }]
             },
+            "GET_FILES": {
+               "Type": "Task",
+               "Resource": "${GetFiles.Outputs.LambdaArn}",
+               "Parameters": {
+                 "job_id.$": "$.context.job_id"
+               },
+               "ResultPath": "$.results.get_files",
+               "Next": "JOB_SUCCEEDED"
+             },
             "JOB_SUCCEEDED": {
               "Type": "Task",
-              "Resource": "${Lambda.Arn}",
+              "Resource": "${UpdateDB.Outputs.LambdaArn}",
               "Parameters": {
                 "job_id.$": "$.context.job_id",
-                "status_code": "SUCCEEDED"
+                "status_code": "SUCCEEDED",
+                "files.$": "$.results.get_files"
               },
               "ResultPath": "$.results.job_succeeded",
               "End": true
             },
             "JOB_FAILED": {
               "Type": "Task",
-              "Resource": "${Lambda.Arn}",
+              "Resource": "${UpdateDB.Outputs.LambdaArn}",
               "Parameters": {
                 "job_id.$": "$.context.job_id",
                 "status_code": "FAILED"
@@ -123,47 +136,20 @@ Resources:
                 Resource: !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/StepFunctionsGetEventsForBatchJobsRule"
               - Effect: Allow
                 Action: lambda:InvokeFunction
-                Resource: !GetAtt Lambda.Arn
+                Resource:
+                 - !GetAtt UpdateDB.Outputs.LambdaArn
+                 - !GetAtt GetFiles.Outputs.LambdaArn
 
-  LambdaLogGroup:
-    Type: AWS::Logs::LogGroup
+  UpdateDB:
+    Type: AWS::CloudFormation::Stack
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${Lambda}"
-      RetentionInDays: 90
+      Parameters:
+        JobsTable: !Ref JobsTable
+      TemplateURL: update-db/cloudformation.yml
 
-  LambdaRole:
-    Type: AWS::IAM::Role
+  GetFiles:
+    Type: AWS::CloudFormation::Stack
     Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          Action: sts:AssumeRole
-          Principal:
-            Service: lambda.amazonaws.com
-          Effect: Allow
-      Policies:
-        - PolicyName: policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
-              - Effect: Allow
-                Action: dynamodb:UpdateItem
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
-
-  Lambda:
-    Type: AWS::Lambda::Function
-    Properties:
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref JobsTable
-      Code: src/
-      Handler: main.lambda_handler
-      MemorySize: 128
-      Role: !GetAtt LambdaRole.Arn
-      Runtime: python3.8
-      Timeout: 30
+      Parameters:
+        Bucket: !Ref Bucket
+      TemplateURL: get-files/cloudformation.yml
