@@ -19,7 +19,7 @@ def submit_job(body, user):
     STEP_FUNCTION_CLIENT.start_execution(
         stateMachineArn=environ['STEP_FUNCTION_ARN'],
         name=body['job_id'],
-        input=json.dumps(body, sort_keys=True),
+        input=json.dumps(body),
     )
     return {
         'jobId': body['job_id'],
