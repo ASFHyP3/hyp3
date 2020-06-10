@@ -15,7 +15,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/submission"
+              $ref: "#/components/schemas/batch_submission"
         required: true
       responses:
         "200":
@@ -47,7 +47,17 @@ components:
         - jobId
       additionalProperties: false
 
-    submission:
+    batch_submission:
+      type: object
+      properties:
+        jobs:
+          type: array
+          items:
+            $ref: "#/components/schemas/job_submission"
+          minItems: 1
+
+
+    job_submission:
       type: object
       properties:
         job_type:

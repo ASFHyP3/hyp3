@@ -11,9 +11,15 @@ from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, auth, connexion_ap
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 
-DEFAULT_GRANULE = 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'
 DEFAULT_JOB_ID = 'myJobId'
-DEFAULT_DESCRIPTION = 'my job description'
+DEFAULT_GRANULE = 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'
+DEFAULT_DESCRIPTION = 'someDescription'
+DEFAULT_BATCH = [
+    {
+        'granule': DEFAULT_GRANULE,
+        'description': DEFAULT_DESCRIPTION,
+    },
+]
 
 
 @pytest.fixture
@@ -29,18 +35,26 @@ def states_stub():
         stubber.assert_no_pending_responses()
 
 
-def submit_job(client, granule=DEFAULT_GRANULE, states_stub=None, description=DEFAULT_DESCRIPTION):
-    if states_stub:
-        stub_response(states_stub, granule, description)
+def submit_batch(client, batch=DEFAULT_BATCH, states_stub=None):
+    jobs = []
+    for job in batch:
+        if states_stub:
+            stub_response(states_stub, job['granule'], job['description'])
+        jobs.append(get_job_payload(job))
+
+    return client.post(JOBS_URI, json={'jobs': jobs})
+
+
+def get_job_payload(job):
     payload = {
         'job_type': 'RTC_GAMMA',
         'job_parameters': {
-            'granule': granule
+            'granule': job['granule']
         }
     }
-    if description is not None:
-        payload['description'] = description
-    return client.post(JOBS_URI, json=payload)
+    if job.get('description') is not None:
+        payload['description'] = job['description']
+    return payload
 
 
 def stub_response(states_stub, granule, description):
@@ -72,22 +86,33 @@ def login(client, username='test_username', authorized=True):
 
 def test_submit_job(client, states_stub):
     login(client)
-    response = submit_job(client, states_stub=states_stub)
+    response = submit_batch(client, states_stub=states_stub)
     assert response.status_code == status.HTTP_200_OK
-    assert response.get_json() == {
-        'jobId': DEFAULT_JOB_ID,
-    }
+    assert response.get_json() == [
+        {'job_id': DEFAULT_JOB_ID}
+    ]
 
 
 def test_submit_job_without_description(client):
     login(client)
-    response = submit_job(client, description=None)
+    batch = [
+        {
+            'granule': DEFAULT_GRANULE,
+        },
+    ]
+    response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_submit_job_with_empty_description(client, states_stub):
     login(client)
-    response = submit_job(client, states_stub=states_stub, description='')
+    batch = [
+        {
+            'granule': DEFAULT_GRANULE,
+            'description': ''
+        },
+    ]
+    response = submit_batch(client, batch=batch, states_stub=states_stub)
     assert response.status_code == status.HTTP_200_OK
 
 
@@ -167,7 +192,7 @@ def test_list_jobs(client):
 
 
 def test_not_logged_in(client):
-    response = submit_job(client)
+    response = submit_batch(client)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     response = client.get(JOBS_URI)
@@ -179,64 +204,133 @@ def test_not_logged_in(client):
 
 def test_logged_in_not_authorized(client):
     login(client, authorized=False)
-    response = submit_job(client)
+    response = submit_batch(client)
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_invalid_cookie(client):
     client.set_cookie('localhost', AUTH_COOKIE, 'garbage I say!!! GARGBAGE!!!')
-    response = submit_job(client)
+    response = submit_batch(client)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_expired_cookie(client):
     client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user', -1))
-    response = submit_job(client)
+    response = submit_batch(client)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_good_granule_names(client, states_stub):
     login(client)
-    response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38', states_stub)
+    batch = [
+        {
+            'granule': 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
+            'description': DEFAULT_DESCRIPTION,
+        },
+    ]
+    response = submit_batch(client, batch, states_stub)
     assert response.status_code == status.HTTP_200_OK
 
-    response = submit_job(client, 'S1A_IW_SLC__1SSH_20150608T205059_20150608T205126_006287_0083E8_C4F0', states_stub)
+    batch = [
+        {
+            'granule': 'S1A_IW_SLC__1SSH_20150608T205059_20150608T205126_006287_0083E8_C4F0',
+            'description': DEFAULT_DESCRIPTION,
+        },
+    ]
+    response = submit_batch(client, batch, states_stub)
     assert response.status_code == status.HTTP_200_OK
 
 
 def test_bad_granule_names(client):
     login(client)
-    response = submit_job(client, 'foo')
+
+    batch = [
+        {
+            'granule': 'foo',
+            'description': DEFAULT_DESCRIPTION,
+        },
+    ]
+    response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E3')
+    batch = [
+        {
+            'granule': 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E3',
+            'description': DEFAULT_DESCRIPTION,
+        },
+    ]
+    response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38_')
+    batch = [
+        {
+            'granule': 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38_',
+            'description': DEFAULT_DESCRIPTION,
+        },
+    ]
+    response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_bad_beam_modes(client):
     login(client)
-    response = submit_job(client, 'S1B_S3_SLC__1SDV_20200604T091417_20200604T091430_021882_029879_5765')
+
+    batch = [
+        {
+            'granule': 'S1B_S3_SLC__1SDV_20200604T091417_20200604T091430_021882_029879_5765',
+            'description': DEFAULT_DESCRIPTION,
+        },
+    ]
+    response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = submit_job(client, 'S1B_WV_SLC__1SSV_20200519T140110_20200519T140719_021651_0291AA_2A86')
+    batch = [
+        {
+            'granule': 'S1B_WV_SLC__1SSV_20200519T140110_20200519T140719_021651_0291AA_2A86',
+            'description': DEFAULT_DESCRIPTION,
+        },
+    ]
+    response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = submit_job(client, 'S1B_EW_SLC__1SDH_20200605T065551_20200605T065654_021895_0298DC_EFB5')
+    batch = [
+        {
+            'granule': 'S1B_EW_SLC__1SDH_20200605T065551_20200605T065654_021895_0298DC_EFB5',
+            'description': DEFAULT_DESCRIPTION,
+        },
+    ]
+    response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_bad_product_types(client):
     login(client)
-    response = submit_job(client, 'S1A_IW_GRDH_1SDV_20200604T190627_20200604T190652_032871_03CEB7_56F3')
+
+    batch = [
+        {
+            'granule': 'S1A_IW_GRDH_1SDV_20200604T190627_20200604T190652_032871_03CEB7_56F3',
+            'description': DEFAULT_DESCRIPTION,
+        },
+    ]
+    response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = submit_job(client, 'S1B_IW_OCN__2SDV_20200518T220815_20200518T220851_021642_02915F_B404')
+    batch = [
+        {
+            'granule': 'S1B_IW_OCN__2SDV_20200518T220815_20200518T220851_021642_02915F_B404',
+            'description': DEFAULT_DESCRIPTION,
+        },
+    ]
+    response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    response = submit_job(client, 'S1B_IW_RAW__0SDV_20200605T145138_20200605T145210_021900_029903_AFF4')
+    batch = [
+        {
+            'granule': 'S1B_IW_RAW__0SDV_20200605T145138_20200605T145210_021900_029903_AFF4',
+            'description': DEFAULT_DESCRIPTION,
+        },
+    ]
+    response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
