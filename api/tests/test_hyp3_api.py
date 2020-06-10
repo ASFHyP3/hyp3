@@ -11,6 +11,10 @@ from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, auth, connexion_ap
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 
+DEFAULT_GRANULE = 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'
+DEFAULT_JOB_ID = 'myJobId'
+DEFAULT_DESCRIPTION = 'my job description'
+
 
 @pytest.fixture
 def client():
@@ -25,7 +29,7 @@ def states_stub():
         stubber.assert_no_pending_responses()
 
 
-def submit_job(client, granule, states_stub=None, description=None):
+def submit_job(client, granule=DEFAULT_GRANULE, states_stub=None, description=DEFAULT_DESCRIPTION):
     if states_stub:
         stub_response(states_stub, granule, description)
     payload = {
@@ -56,7 +60,7 @@ def stub_response(states_stub, granule, description):
             'input': dumps(payload, sort_keys=True),
         },
         service_response={
-            'executionArn': f'{environ["STEP_FUNCTION_ARN"]}:myJobId',
+            'executionArn': f'{environ["STEP_FUNCTION_ARN"]}:{DEFAULT_JOB_ID}',
             'startDate': datetime.utcnow(),
         },
     )
@@ -68,35 +72,23 @@ def login(client, username='test_username', authorized=True):
 
 def test_submit_job(client, states_stub):
     login(client)
-    response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38', states_stub)
+    response = submit_job(client, states_stub=states_stub)
     assert response.status_code == status.HTTP_200_OK
     assert response.get_json() == {
-        'jobId': 'myJobId',
+        'jobId': DEFAULT_JOB_ID,
     }
 
 
-def test_submit_job_with_description(client, states_stub):
+def test_submit_job_without_description(client):
     login(client)
-    response = submit_job(
-        client=client,
-        granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
-        states_stub=states_stub,
-        description='foo',
-    )
-    assert response.status_code == status.HTTP_200_OK
-    assert response.get_json() == {
-        'jobId': 'myJobId',
-    }
-
-
-def test_submit_job_with_empty_description(client):
-    login(client)
-    response = submit_job(
-        client=client,
-        granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
-        description='',
-    )
+    response = submit_job(client, description=None)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_submit_job_with_empty_description(client, states_stub):
+    login(client)
+    response = submit_job(client, states_stub=states_stub, description='')
+    assert response.status_code == status.HTTP_200_OK
 
 
 @mock_dynamodb2
@@ -175,7 +167,7 @@ def test_list_jobs(client):
 
 
 def test_not_logged_in(client):
-    response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9')
+    response = submit_job(client)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     response = client.get(JOBS_URI)
@@ -187,19 +179,19 @@ def test_not_logged_in(client):
 
 def test_logged_in_not_authorized(client):
     login(client, authorized=False)
-    response = submit_job(client, 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38')
+    response = submit_job(client)
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_invalid_cookie(client):
     client.set_cookie('localhost', AUTH_COOKIE, 'garbage I say!!! GARGBAGE!!!')
-    response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9')
+    response = submit_job(client)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_expired_cookie(client):
     client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user', -1))
-    response = submit_job(client, 'S1B_IW_GRDH_1SDV_20200518T220541_20200518T220610_021641_02915F_82D9')
+    response = submit_job(client)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
