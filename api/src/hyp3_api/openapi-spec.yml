@@ -97,12 +97,15 @@ components:
       additionalProperties: false
       properties:
         granule:
-          type: string
-          pattern: "^S1[AB]_IW_SLC__*"
-          minLength: 67
-          maxLength: 67
-          example: S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38
-          description: The name of the Sentinel-1 granule to process.  Only SLC products with beam mode IW are supported.
+          $ref: "#/components/schemas/granule"
+
+    granule:
+      type: string
+      pattern: "^S1[AB]_IW_SLC__*"
+      minLength: 67
+      maxLength: 67
+      example: S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38
+      description: The name of the Sentinel-1 granule to process.  Only SLC products with beam mode IW are supported.
 
     job_type:
       type: string
