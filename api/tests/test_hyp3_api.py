@@ -81,6 +81,17 @@ def test_submit_job(client, states_stub):
         {'job_id': DEFAULT_JOB_ID}
     ]
 
+    batch = [
+        make_job(),
+        make_job(),
+    ]
+    response = submit_batch(client, batch, states_stub=states_stub)
+    assert response.status_code == status.HTTP_200_OK
+    assert response.get_json() == [
+        {'job_id': DEFAULT_JOB_ID},
+        {'job_id': DEFAULT_JOB_ID}
+    ]
+
 
 def test_submit_job_without_description(client):
     login(client)
