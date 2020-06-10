@@ -58,8 +58,7 @@ components:
         additionalProperties: false
         properties:
           job_id:
-            type: string
-            format: uuid
+            $ref: "#/components/schemas/job_id"
 
     get_jobs_response:
       type: object
@@ -78,6 +77,11 @@ components:
 
     new_job:
       type: object
+      required:
+        - job_type
+        - job_parameters
+        - description
+      additionalProperties: false
       properties:
         job_type:
           $ref: "#/components/schemas/job_type"
@@ -85,14 +89,12 @@ components:
           $ref: "#/components/schemas/job_parameters"
         description:
           $ref: "#/components/schemas/description"
-      required:
-        - job_type
-        - job_parameters
-        - description
-      additionalProperties: false
 
     job_parameters:
       type: object
+      required:
+        - granule
+      additionalProperties: false
       properties:
         granule:
           type: string
@@ -101,9 +103,6 @@ components:
           maxLength: 67
           example: S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38
           description: The name of the Sentinel-1 granule to process.  Only SLC products with beam mode IW are supported.
-      required:
-        - granule
-      additionalProperties: false
 
     job_type:
       type: string
@@ -120,6 +119,12 @@ components:
       items:
         $ref: "#/components/schemas/job"
 
+    job_id:
+      type: string
+      format: uuid
+      example: 27836b79-e5b2-4d8f-932f-659724ea02c3
+
+
     job:
       type: object
       required:
@@ -132,9 +137,7 @@ components:
       additionalProperties: false
       properties:
         job_id:
-          type: string
-          format: uuid
-          example: 27836b79-e5b2-4d8f-932f-659724ea02c3
+          $ref: "#/components/schemas/job_id"
         user_id:
           type: string
           example: myUserId
