@@ -162,16 +162,34 @@ def test_list_jobs(client):
         {
             'job_id': '0ddaeb98-7636-494d-9496-03ea4a7df266',
             'user_id': 'user_with_jobs',
+            'job_type': 'RTC_GAMMA',
             'job_parameters': {
-                'granule': 'S1A_IW_GRDH_1SDV_20200426T125708_20200426T125733_032299_03BCC4_A4E0',
+                'granule': 'S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B',
             },
+            'start_time': '2020-06-10T22:13:47.622Z',
+            'status_code': 'RUNNING',
         },
         {
             'job_id': '27836b79-e5b2-4d8f-932f-659724ea02c3',
             'user_id': 'user_with_jobs',
+            'job_type': 'RTC_GAMMA',
             'job_parameters': {
-                'granule': 'S1B_IW_GRDH_1SDV_20200604T044748_20200604T044813_021879_029863_93A4',
+                'granule': 'S1B_IW_SLC__1SDV_20200610T151040_20200610T151108_021973_029B41_4F5A',
             },
+            'start_time': '2020-06-08T17:48:39.040Z',
+            'status_code': 'SUCCEEDED',
+            'files': [
+              {
+                'filename': 'foo.txt',
+                'size': 123,
+                'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/foo.txt',
+              },
+              {
+                'filename': 'bar.png',
+                'size': 0,
+                'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/bar.png',
+              },
+            ]
         },
     ]
     for item in items:
