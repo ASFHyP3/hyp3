@@ -10,12 +10,12 @@ security:
 paths:
   /jobs:
     post:
-      operationId: hyp3_api.handlers.submit_job
+      operationId: hyp3_api.handlers.post_jobs
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/submission"
+              $ref: "#/components/schemas/batch_submission"
         required: true
       responses:
         "200":
@@ -25,7 +25,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/response"
     get:
-      operationId: hyp3_api.handlers.list_jobs
+      operationId: hyp3_api.handlers.get_jobs
       responses:
         "200":
           description: 200 response
@@ -47,7 +47,16 @@ components:
         - jobId
       additionalProperties: false
 
-    submission:
+    batch_submission:
+      type: object
+      properties:
+        jobs:
+          type: array
+          items:
+            $ref: "#/components/schemas/job_submission"
+          minItems: 1
+
+    job_submission:
       type: object
       properties:
         job_type:
