@@ -90,77 +90,10 @@ components:
         description:
           $ref: "#/components/schemas/description"
 
-    job_parameters:
-      type: object
-      required:
-        - granule
-      additionalProperties: false
-      properties:
-        granule:
-          $ref: "#/components/schemas/granule"
-
-    granule:
-      type: string
-      pattern: "^S1[AB]_IW_SLC__*"
-      minLength: 67
-      maxLength: 67
-      example: S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38
-      description: The name of the Sentinel-1 granule to process.  Only SLC products with beam mode IW are supported.
-
-    job_type:
-      type: string
-      example: RTC_GAMMA
-      enum:
-        - RTC_GAMMA
-
-    description:
-      type: string
-      example: a description of the job
-
     list_of_jobs:
       type: array
       items:
         $ref: "#/components/schemas/job"
-
-    job_id:
-      type: string
-      format: uuid
-      example: 27836b79-e5b2-4d8f-932f-659724ea02c3
-
-    status_code:
-      type: string
-      enum:
-        - RUNNING
-        - SUCCEEDED
-        - FAILED
-      example: SUCCEEDED
-
-    list_of_files:
-      type: array
-      items:
-        type: object
-        required:
-          - filename
-          - size
-          - url
-        additionalProperties: False
-        properties:
-          filename:
-            type: string
-          size:
-            type: number
-            minimum: 0
-          url:
-            type: string
-
-    start_time:
-      type: string
-      format: date-time
-      example: 2020-06-04T18:00:03.548Z
-
-    user_id:
-      type: string
-      example: myUserId
 
     job:
       type: object
@@ -189,6 +122,73 @@ components:
           $ref: "#/components/schemas/description"
         files:
           $ref: "#/components/schemas/list_of_files"
+
+    job_id:
+      type: string
+      format: uuid
+      example: 27836b79-e5b2-4d8f-932f-659724ea02c3
+
+    user_id:
+      type: string
+      example: myUserId
+
+    job_type:
+      type: string
+      example: RTC_GAMMA
+      enum:
+        - RTC_GAMMA
+
+    job_parameters:
+      type: object
+      required:
+        - granule
+      additionalProperties: false
+      properties:
+        granule:
+          $ref: "#/components/schemas/granule"
+
+    granule:
+      type: string
+      pattern: "^S1[AB]_IW_SLC__*"
+      minLength: 67
+      maxLength: 67
+      example: S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38
+      description: The name of the Sentinel-1 granule to process.  Only SLC products with beam mode IW are supported.
+
+    start_time:
+      type: string
+      format: date-time
+      example: 2020-06-04T18:00:03.548Z
+
+    status_code:
+      type: string
+      enum:
+        - RUNNING
+        - SUCCEEDED
+        - FAILED
+      example: SUCCEEDED
+
+    description:
+      type: string
+      example: a description of the job
+
+    list_of_files:
+      type: array
+      items:
+        type: object
+        required:
+          - filename
+          - size
+          - url
+        additionalProperties: False
+        properties:
+          filename:
+            type: string
+          size:
+            type: number
+            minimum: 0
+          url:
+            type: string
 
   securitySchemes:
     EarthDataLogin:
