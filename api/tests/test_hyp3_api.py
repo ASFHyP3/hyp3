@@ -13,9 +13,6 @@ AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 
 DEFAULT_JOB_ID = 'myJobId'
-DEFAULT_GRANULE = 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'
-DEFAULT_DESCRIPTION = 'someDescription'
-DEFAULT_JOB_TYPE = 'RTC_GAMMA'
 
 
 @pytest.fixture
@@ -31,7 +28,9 @@ def states_stub():
         stubber.assert_no_pending_responses()
 
 
-def make_job(granule=DEFAULT_GRANULE, description=DEFAULT_DESCRIPTION, job_type=DEFAULT_JOB_TYPE):
+def make_job(granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
+             description='someDescription',
+             job_type='RTC_GAMMA'):
     job = {
         'job_type': job_type,
         'job_parameters': {
