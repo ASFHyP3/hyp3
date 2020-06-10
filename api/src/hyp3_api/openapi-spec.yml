@@ -35,11 +35,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/jobs"
+                $ref: "#/components/schemas/get_jobs_response"
 
 components:
   schemas:
-
 
     post_jobs_body:
       type: object
@@ -61,6 +60,15 @@ components:
           job_id:
             type: string
             format: uuid
+
+    get_jobs_response:
+      type: object
+      required:
+        - jobs
+      additionalProperties: false
+      properties:
+        jobs:
+          $ref: "#/components/schemas/list_of_jobs"
 
     list_of_new_jobs:
       type: array
@@ -106,15 +114,6 @@ components:
     description:
       type: string
       example: a description of the job
-
-    jobs:
-      type: object
-      required:
-        - jobs
-      additionalProperties: false
-      properties:
-        jobs:
-          $ref: "#/components/schemas/list_of_jobs"
 
     list_of_jobs:
       type: array
