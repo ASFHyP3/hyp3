@@ -17,7 +17,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/batch_submission"
+              $ref: "#/components/schemas/post_jobs_body"
         required: true
       responses:
         "200":
@@ -25,7 +25,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/response"
+                $ref: "#/components/schemas/post_jobs_response"
 
     get:
       operationId: hyp3_api.handlers.get_jobs
@@ -40,7 +40,17 @@ paths:
 components:
   schemas:
 
-    response:
+
+    post_jobs_body:
+      type: object
+      required:
+        - jobs
+      additionalProperties: false
+      properties:
+        jobs:
+          $ref: "#/components/schemas/list_of_new_jobs"
+
+    post_jobs_response:
       type: array
       items:
         type: object
@@ -51,15 +61,6 @@ components:
           job_id:
             type: string
             format: uuid
-
-    batch_submission:
-      type: object
-      required:
-        - jobs
-      additionalProperties: false
-      properties:
-        jobs:
-          $ref: "#/components/schemas/list_of_new_jobs"
 
     list_of_new_jobs:
       type: array
