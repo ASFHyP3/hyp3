@@ -8,16 +8,13 @@ from flask_cors import CORS
 from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, connexion_app
 
 
-def start_execution(payload, user):
-    payload['user_id'] = user
+def start_execution(payload):
     job = STEP_FUNCTION_CLIENT.start_execution(
         stateMachineArn=environ['STEP_FUNCTION_ARN'],
         input=json.dumps(payload, sort_keys=True),
     )
     job_id = job['executionArn'].split(':')[-1]
-    return {
-        'job_id': job_id,
-    }
+    return job_id
 
 
 def post_jobs(body, user):
@@ -25,7 +22,13 @@ def post_jobs(body, user):
     if not context['is_authorized']:
         abort(403)
 
-    return [start_execution(job, user) for job in body['jobs']]
+    job_ids = []
+    for job in body['jobs']:
+        job['user_id'] = user
+        job_id = start_execution(job)
+        job_ids.append(job_id)
+
+    return [{'job_id': job_id} for job_id in job_ids]
 
 
 def get_jobs(user):
