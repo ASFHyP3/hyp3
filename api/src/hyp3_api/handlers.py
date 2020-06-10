@@ -37,5 +37,5 @@ def get_jobs(user):
     return {'jobs': response['Items']}
 
 
-connexion_app.add_api('openapi-spec.yml')
+connexion_app.add_api('openapi-spec.yml', validate_responses=True)
 CORS(connexion_app.app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
