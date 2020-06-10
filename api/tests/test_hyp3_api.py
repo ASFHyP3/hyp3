@@ -108,7 +108,7 @@ def test_submit_job_with_empty_description(client, states_stub):
     batch = [
         make_job(description='')
     ]
-    response = submit_batch(client, batch=batch, states_stub=states_stub)
+    response = submit_batch(client, batch, states_stub)
     assert response.status_code == status.HTTP_200_OK
 
 
