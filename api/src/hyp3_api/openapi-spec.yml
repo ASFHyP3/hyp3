@@ -8,14 +8,16 @@ security:
   - EarthDataLogin: []
 
 paths:
+
   /jobs:
+
     post:
-      operationId: hyp3_api.handlers.submit_job
+      operationId: hyp3_api.handlers.post_jobs
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/submission"
+              $ref: "#/components/schemas/post_jobs_body"
         required: true
       responses:
         "200":
@@ -23,32 +25,63 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/response"
+                $ref: "#/components/schemas/post_jobs_response"
+
     get:
-      operationId: hyp3_api.handlers.list_jobs
+      operationId: hyp3_api.handlers.get_jobs
       responses:
         "200":
           description: 200 response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/jobs"
+                $ref: "#/components/schemas/get_jobs_response"
 
 components:
   schemas:
 
-    response:
+    post_jobs_body:
       type: object
-      properties:
-        jobId:
-          type: string
-          format: uuid
       required:
-        - jobId
+        - jobs
       additionalProperties: false
+      properties:
+        jobs:
+          $ref: "#/components/schemas/list_of_new_jobs"
 
-    submission:
+    post_jobs_response:
+      type: array
+      items:
+        type: object
+        required:
+          - job_id
+        additionalProperties: false
+        properties:
+          job_id:
+            $ref: "#/components/schemas/job_id"
+
+    get_jobs_response:
       type: object
+      required:
+        - jobs
+      additionalProperties: false
+      properties:
+        jobs:
+          $ref: "#/components/schemas/list_of_jobs"
+
+    list_of_new_jobs:
+      type: array
+      minItems: 1
+      items:
+        $ref: "#/components/schemas/new_job"
+
+    new_job:
+      type: object
+      required:
+        - job_type
+        - job_parameters
+        - description
+      additionalProperties: false
       properties:
         job_type:
           $ref: "#/components/schemas/job_type"
@@ -56,25 +89,48 @@ components:
           $ref: "#/components/schemas/job_parameters"
         description:
           $ref: "#/components/schemas/description"
+
+    list_of_jobs:
+      type: array
+      items:
+        $ref: "#/components/schemas/job"
+
+    job:
+      type: object
       required:
+        - job_id
+        - user_id
         - job_type
         - job_parameters
-        - description
+        - start_time
+        - status_code
       additionalProperties: false
-
-    job_parameters:
-      type: object
       properties:
-        granule:
-          type: string
-          pattern: "^S1[AB]_IW_SLC__*"
-          minLength: 67
-          maxLength: 67
-          example: S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38
-          description: The name of the Sentinel-1 granule to process.  Only SLC products with beam mode IW are supported.
-      required:
-        - granule
-      additionalProperties: false
+        job_id:
+          $ref: "#/components/schemas/job_id"
+        user_id:
+          $ref: "#/components/schemas/user_id"
+        job_type:
+          $ref: "#/components/schemas/job_type"
+        job_parameters:
+          $ref: "#/components/schemas/job_parameters"
+        start_time:
+          $ref: "#/components/schemas/start_time"
+        status_code:
+          $ref: "#/components/schemas/status_code"
+        description:
+          $ref: "#/components/schemas/description"
+        files:
+          $ref: "#/components/schemas/list_of_files"
+
+    job_id:
+      type: string
+      format: uuid
+      example: 27836b79-e5b2-4d8f-932f-659724ea02c3
+
+    user_id:
+      type: string
+      example: myUserId
 
     job_type:
       type: string
@@ -82,64 +138,57 @@ components:
       enum:
         - RTC_GAMMA
 
+    job_parameters:
+      type: object
+      required:
+        - granule
+      additionalProperties: false
+      properties:
+        granule:
+          $ref: "#/components/schemas/granule"
+
+    granule:
+      type: string
+      pattern: "^S1[AB]_IW_SLC__*"
+      minLength: 67
+      maxLength: 67
+      example: S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38
+      description: The name of the Sentinel-1 granule to process.  Only SLC products with beam mode IW are supported.
+
+    start_time:
+      type: string
+      format: date-time
+      example: 2020-06-04T18:00:03.548Z
+
+    status_code:
+      type: string
+      enum:
+        - RUNNING
+        - SUCCEEDED
+        - FAILED
+      example: SUCCEEDED
+
     description:
       type: string
       example: a description of the job
 
-    jobs:
+    list_of_files:
       type: array
       items:
         type: object
         required:
-          - job_id
-          - user_id
-          - job_type
-          - job_parameters
-          - start_time
-          - status_code
-        additionalProperties: false
+          - filename
+          - size
+          - url
+        additionalProperties: False
         properties:
-          job_id:
+          filename:
             type: string
-            format: uuid
-            example: 27836b79-e5b2-4d8f-932f-659724ea02c3
-          user_id:
+          size:
+            type: number
+            minimum: 0
+          url:
             type: string
-            example: myUserId
-          job_type:
-            $ref: "#/components/schemas/job_type"
-          job_parameters:
-            $ref: "#/components/schemas/job_parameters"
-          start_time:
-            type: string
-            format: date-time
-            example: 2020-06-04T18:00:03.548Z
-          status_code:
-            type: string
-            enum:
-              - RUNNING
-              - SUCCEEDED
-              - FAILED
-            example: SUCCEEDED
-          description:
-            $ref: "#/components/schemas/description"
-          files:
-            type: array
-            items:
-              type: object
-              required:
-                - filename
-                - size
-                - url
-              additionalProperties: False
-              properties:
-                filename:
-                  type: string
-                size:
-                  type: integer
-                  minimum: 0
-                url:
-                  type: string
 
   securitySchemes:
     EarthDataLogin:
