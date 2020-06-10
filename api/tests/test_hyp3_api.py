@@ -9,6 +9,8 @@ from moto import mock_dynamodb2
 
 from hyp3_api import DYNAMODB_RESOURCE, STEP_FUNCTION_CLIENT, auth, connexion_app  # noqa hyp3 must be imported here
 
+DEFAULT_USERNAME = 'test_username'
+
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 
@@ -54,7 +56,7 @@ def submit_batch(client, batch=None, states_stub=None):
 
 def stub_response(states_stub, job):
     payload = job.copy()
-    payload['user_id'] = 'test_username'
+    payload['user_id'] = DEFAULT_USERNAME
     states_stub.add_response(
         method='start_execution',
         expected_params={
@@ -68,7 +70,7 @@ def stub_response(states_stub, job):
     )
 
 
-def login(client, username='test_username', authorized=True):
+def login(client, username=DEFAULT_USERNAME, authorized=True):
     client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username, authorized=authorized))
 
 
