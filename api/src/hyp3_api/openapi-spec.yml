@@ -49,6 +49,9 @@ components:
 
     batch_submission:
       type: object
+      required:
+        - jobs
+      additionalProperties: false
       properties:
         jobs:
           type: array
