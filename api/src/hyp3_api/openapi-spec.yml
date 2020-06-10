@@ -124,6 +124,31 @@ components:
       format: uuid
       example: 27836b79-e5b2-4d8f-932f-659724ea02c3
 
+    status_code:
+      type: string
+      enum:
+        - RUNNING
+        - SUCCEEDED
+        - FAILED
+      example: SUCCEEDED
+
+    list_of_files:
+      type: array
+      items:
+        type: object
+        required:
+          - filename
+          - size
+          - url
+        additionalProperties: False
+        properties:
+          filename:
+            type: string
+          size:
+            type: integer
+            minimum: 0
+          url:
+            type: string
 
     job:
       type: object
@@ -150,31 +175,11 @@ components:
           format: date-time
           example: 2020-06-04T18:00:03.548Z
         status_code:
-          type: string
-          enum:
-            - RUNNING
-            - SUCCEEDED
-            - FAILED
-          example: SUCCEEDED
+          $ref: "#/components/schemas/status_code"
         description:
           $ref: "#/components/schemas/description"
         files:
-          type: array
-          items:
-            type: object
-            required:
-              - filename
-              - size
-              - url
-            additionalProperties: False
-            properties:
-              filename:
-                type: string
-              size:
-                type: integer
-                minimum: 0
-              url:
-                type: string
+          $ref: "#/components/schemas/list_of_files"
 
   securitySchemes:
     EarthDataLogin:
