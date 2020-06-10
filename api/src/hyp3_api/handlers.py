@@ -20,7 +20,7 @@ def start_execution(payload, user):
     }
 
 
-def submit_job(body, user):
+def post_jobs(body, user):
     print(body)
     if not context['is_authorized']:
         abort(403)
@@ -28,7 +28,7 @@ def submit_job(body, user):
     return [start_execution(job, user) for job in body['jobs']]
 
 
-def list_jobs(user):
+def get_jobs(user):
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
     response = table.query(IndexName='user_id', KeyConditionExpression=Key('user_id').eq(user))
     return {'jobs': response['Items']}

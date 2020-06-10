@@ -10,7 +10,7 @@ security:
 paths:
   /jobs:
     post:
-      operationId: hyp3_api.handlers.submit_job
+      operationId: hyp3_api.handlers.post_jobs
       requestBody:
         content:
           application/json:
@@ -25,7 +25,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/response"
     get:
-      operationId: hyp3_api.handlers.list_jobs
+      operationId: hyp3_api.handlers.get_jobs
       responses:
         "200":
           description: 200 response
