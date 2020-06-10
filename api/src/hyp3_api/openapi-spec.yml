@@ -65,9 +65,9 @@ components:
       type: array
       minItems: 1
       items:
-        $ref: "#/components/schemas/job_submission"
+        $ref: "#/components/schemas/new_job"
 
-    job_submission:
+    new_job:
       type: object
       properties:
         job_type:
@@ -113,9 +113,12 @@ components:
       additionalProperties: false
       properties:
         jobs:
-          type: array
-          items:
-            $ref: "#/components/schemas/job"
+          $ref: "#/components/schemas/list_of_jobs"
+
+    list_of_jobs:
+      type: array
+      items:
+        $ref: "#/components/schemas/job"
 
     job:
       type: object
