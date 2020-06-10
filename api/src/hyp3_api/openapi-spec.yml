@@ -56,7 +56,6 @@ components:
             $ref: "#/components/schemas/job_submission"
           minItems: 1
 
-
     job_submission:
       type: object
       properties:
