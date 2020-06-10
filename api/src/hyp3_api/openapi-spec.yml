@@ -148,7 +148,7 @@ components:
           filename:
             type: string
           size:
-            type: integer
+            type: number
             minimum: 0
           url:
             type: string

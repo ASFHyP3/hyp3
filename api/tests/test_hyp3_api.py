@@ -178,6 +178,19 @@ def test_list_jobs(client):
             },
             'start_time': '2020-06-08T17:48:39.040Z',
             'status_code': 'SUCCEEDED',
+            'files': [
+              {
+                'filename': 'foo.txt',
+                'size': 123,
+                'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/foo.txt',
+              },
+              {
+                'filename': 'bar.png',
+                'size': 0,
+                'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/bar.png',
+              },
+
+            ]
         },
     ]
     for item in items:
