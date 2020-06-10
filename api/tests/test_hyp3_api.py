@@ -189,7 +189,6 @@ def test_list_jobs(client):
                 'size': 0,
                 'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/bar.png',
               },
-
             ]
         },
     ]
