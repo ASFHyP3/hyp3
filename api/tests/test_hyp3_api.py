@@ -45,7 +45,7 @@ def make_job(granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_02
 
 
 def submit_batch(client, batch=None, states_stub=None):
-    if not batch:
+    if batch is None:
         batch = [make_job()]
     if states_stub:
         for job in batch:
@@ -74,7 +74,7 @@ def login(client, username=DEFAULT_USERNAME, authorized=True):
     client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username, authorized=authorized))
 
 
-def test_submit_job(client, states_stub):
+def test_submit_one_job(client, states_stub):
     login(client)
     response = submit_batch(client, states_stub=states_stub)
     assert response.status_code == status.HTTP_200_OK
@@ -82,16 +82,21 @@ def test_submit_job(client, states_stub):
         {'job_id': DEFAULT_JOB_ID}
     ]
 
-    batch = [
-        make_job(),
-        make_job(),
-    ]
+
+def test_submit_many_jobs(client, states_stub):
+    num_jobs = 1000
+    login(client)
+    batch = [make_job() for ii in range(num_jobs)]
     response = submit_batch(client, batch, states_stub=states_stub)
     assert response.status_code == status.HTTP_200_OK
-    assert response.get_json() == [
-        {'job_id': DEFAULT_JOB_ID},
-        {'job_id': DEFAULT_JOB_ID}
-    ]
+    assert response.get_json() == [{'job_id': DEFAULT_JOB_ID} for ii in range(num_jobs)]
+
+
+def test_submit_without_jobs(client):
+    login(client)
+    batch = []
+    response = submit_batch(client, batch)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_submit_job_without_description(client):
