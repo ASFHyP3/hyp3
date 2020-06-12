@@ -109,7 +109,12 @@ Resources:
               MIME-Version: 1.0
 
               --==BOUNDARY==
-              MIME-Version: 1.0
+              Content-Type: text/cloud-boothook; charset="us-ascii"
+
+              cloud-init-per instance mkfs_ssd mkfs.ext4 /dev/nvme1n1
+              cloud-init-per instance mount_ssd mount /dev/nvme1n1 /var/lib/docker
+
+              --==BOUNDARY==
               Content-Type: text/x-shellscript; charset="us-ascii"
 
               #!/bin/bash
@@ -123,11 +128,6 @@ Resources:
               echo ECS_IMAGE_MINIMUM_CLEANUP_AGE=10m>>/etc/ecs/ecs.config
               echo ECS_NUM_IMAGES_DELETE_PER_CYCLE=5>>/etc/ecs/ecs.config
               echo ECS_RESERVED_MEMORY=32>>/etc/ecs/ecs.config
-              echo 'OPTIONS="$''OPTIONS --storage-opt dm.basesize=170G"' >> /etc/sysconfig/docker
-              /etc/init.d/docker restart
-              mkfs /dev/nvme1n1
-              vgextend -y docker /dev/nvme1n1
-              lvextend -L+139G /dev/docker/docker-pool
 
               --==BOUNDARY==--
 
