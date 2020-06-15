@@ -9,7 +9,7 @@ on:
 env:
   AWS_REGION: us-west-2
   TEMPLATE_BUCKET: cf-templates-aubvn3i9olmk-us-west-2
-  RTC_GAMMA_REPOSITORY: 845172464411.dkr.ecr.us-west-2.amazonaws.com/rtc-gamma
+  RTC_GAMMA_REPOSITORY: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-rtc-gamma
 
   VPC_ID: ${{ secrets.VPC_ID }}
   EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
@@ -31,8 +31,7 @@ jobs:
         run: |
           echo "::set-env name=STACK_NAME::hyp3-test"
           echo "::set-env name=DOMAIN_NAME::hyp3-test-api.asf.alaska.edu"
-          echo "::set-env name=RTC_GAMMA_REPOSITORY::626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-rtc-gamma"
-          echo "::set-env name=IMAGE_TAG::1.3.2.dev111_g4f50147"
+          echo "::set-env name=IMAGE_TAG::test"
           echo "::set-env name=AUTH_GROUP_NAME::HAS_ACCESS_TO_HYP3_TEST"
 
       - if: endsWith(github.ref, '/master')
