@@ -103,7 +103,10 @@ Resources:
                 "status_code": "FAILED"
               },
               "ResultPath": "$.results.job_failed",
-              "End": true
+              "Next": "FAIL"
+            },
+            "FAIL": {
+              "Type": "Fail"
             }
           }
         }
