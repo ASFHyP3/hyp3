@@ -1,7 +1,7 @@
 import json
 from os import environ
 
-from boto3.dynamodb.conditions import Key, Attr
+from boto3.dynamodb.conditions import Attr, Key
 from connexion import context
 from flask import abort
 from flask_cors import CORS
