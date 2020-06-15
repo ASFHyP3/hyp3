@@ -29,6 +29,11 @@ paths:
 
     get:
       operationId: hyp3_api.handlers.get_jobs
+      parameters:
+        - name: status_code
+          in: query
+          schema:
+            $ref: "#/components/schemas/status_code"
       responses:
         "200":
           description: 200 response

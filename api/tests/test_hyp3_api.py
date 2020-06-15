@@ -74,51 +74,7 @@ def login(client, username=DEFAULT_USERNAME, authorized=True):
     client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username, authorized=authorized))
 
 
-def test_submit_one_job(client, states_stub):
-    login(client)
-    response = submit_batch(client, states_stub=states_stub)
-    assert response.status_code == status.HTTP_200_OK
-    assert response.get_json() == [
-        {'job_id': DEFAULT_JOB_ID}
-    ]
-
-
-def test_submit_many_jobs(client, states_stub):
-    num_jobs = 1000
-    login(client)
-    batch = [make_job() for ii in range(num_jobs)]
-    response = submit_batch(client, batch, states_stub=states_stub)
-    assert response.status_code == status.HTTP_200_OK
-    assert response.get_json() == [{'job_id': DEFAULT_JOB_ID} for ii in range(num_jobs)]
-
-
-def test_submit_without_jobs(client):
-    login(client)
-    batch = []
-    response = submit_batch(client, batch)
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-
-def test_submit_job_without_description(client):
-    login(client)
-    batch = [
-        make_job(description=None)
-    ]
-    response = submit_batch(client, batch)
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-
-def test_submit_job_with_empty_description(client, states_stub):
-    login(client)
-    batch = [
-        make_job(description='')
-    ]
-    response = submit_batch(client, batch, states_stub)
-    assert response.status_code == status.HTTP_200_OK
-
-
-@mock_dynamodb2
-def test_list_jobs(client):
+def setup_database():
     table = DYNAMODB_RESOURCE.create_table(
         TableName=environ['TABLE_NAME'],
         AttributeDefinitions=[
@@ -179,21 +135,72 @@ def test_list_jobs(client):
             'start_time': '2020-06-08T17:48:39.040Z',
             'status_code': 'SUCCEEDED',
             'files': [
-              {
-                'filename': 'foo.txt',
-                'size': 123,
-                'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/foo.txt',
-              },
-              {
-                'filename': 'bar.png',
-                'size': 0,
-                'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/bar.png',
-              },
+                {
+                    'filename': 'foo.txt',
+                    'size': 123,
+                    'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/foo.txt',
+                },
+                {
+                    'filename': 'bar.png',
+                    'size': 0,
+                    'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/bar.png',
+                },
             ]
         },
     ]
     for item in items:
         table.put_item(Item=item)
+    return items
+
+
+
+def test_submit_one_job(client, states_stub):
+    login(client)
+    response = submit_batch(client, states_stub=states_stub)
+    assert response.status_code == status.HTTP_200_OK
+    assert response.get_json() == [
+        {'job_id': DEFAULT_JOB_ID}
+    ]
+
+
+def test_submit_many_jobs(client, states_stub):
+    num_jobs = 1000
+    login(client)
+    batch = [make_job() for ii in range(num_jobs)]
+    response = submit_batch(client, batch, states_stub=states_stub)
+    assert response.status_code == status.HTTP_200_OK
+    assert response.get_json() == [{'job_id': DEFAULT_JOB_ID} for ii in range(num_jobs)]
+
+
+def test_submit_without_jobs(client):
+    login(client)
+    batch = []
+    response = submit_batch(client, batch)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_submit_job_without_description(client):
+    login(client)
+    batch = [
+        make_job(description=None)
+    ]
+    response = submit_batch(client, batch)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_submit_job_with_empty_description(client, states_stub):
+    login(client)
+    batch = [
+        make_job(description='')
+    ]
+    response = submit_batch(client, batch, states_stub)
+    assert response.status_code == status.HTTP_200_OK
+
+
+
+@mock_dynamodb2
+def test_list_jobs(client):
+    items = setup_database()
 
     login(client, 'user_with_jobs', authorized=False)
     response = client.get(JOBS_URI)
@@ -208,6 +215,17 @@ def test_list_jobs(client):
     assert response.json == {
         'jobs': [],
     }
+
+
+@mock_dynamodb2
+def test_list_jobs_by_status(client):
+    items = setup_database()
+
+    login(client, 'user_with_jobs')
+    response = client.get(JOBS_URI, query_string={'status_code': 'RUNNING'})
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json['jobs']) == 1
+    assert response.json['jobs'][0] == items[0]
 
 
 def test_not_logged_in(client):
