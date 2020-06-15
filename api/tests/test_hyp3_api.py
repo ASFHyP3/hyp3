@@ -44,6 +44,28 @@ def make_job(granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_02
     return job
 
 
+def make_db_record(job_id,
+                   granule='S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B',
+                   job_type='RTC_GAMMA',
+                   user_id=DEFAULT_USERNAME,
+                   start_time='2020-06-10T22:13:47.622Z',
+                   status_code='RUNNING',
+                   files=None):
+    record = {
+        'job_id': job_id,
+        'user_id': user_id,
+        'job_type': job_type,
+        'job_parameters': {
+            'granule': granule,
+        },
+        'start_time': start_time,
+        'status_code': status_code,
+    }
+    if files is not None:
+        record['files'] = files
+    return record
+
+
 def submit_batch(client, batch=None, states_stub=None):
     if batch is None:
         batch = [make_job()]
@@ -72,6 +94,49 @@ def stub_response(states_stub, job):
 
 def login(client, username=DEFAULT_USERNAME, authorized=True):
     client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username, authorized=authorized))
+
+
+def setup_database(items=[]):
+    table = DYNAMODB_RESOURCE.create_table(
+        TableName=environ['TABLE_NAME'],
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'job_id',
+                'AttributeType': 'S'
+            },
+            {
+                'AttributeName': 'user_id',
+                'AttributeType': 'S',
+            },
+
+        ],
+        KeySchema=[
+            {
+                'AttributeName': 'job_id',
+                'KeyType': 'HASH',
+            },
+        ],
+        GlobalSecondaryIndexes=[
+            {
+                'IndexName': 'user_id',
+                'KeySchema': [
+                    {
+                        'AttributeName': 'user_id',
+                        'KeyType': 'HASH',
+                    },
+                ],
+                'Projection': {
+                    'ProjectionType': 'ALL',
+                },
+            },
+        ],
+        ProvisionedThroughput={
+            'ReadCapacityUnits': 15,
+            'WriteCapacityUnits': 15,
+        },
+    )
+    for item in items:
+        table.put_item(Item=item)
 
 
 def test_submit_one_job(client, states_stub):
@@ -119,83 +184,25 @@ def test_submit_job_with_empty_description(client, states_stub):
 
 @mock_dynamodb2
 def test_list_jobs(client):
-    table = DYNAMODB_RESOURCE.create_table(
-        TableName=environ['TABLE_NAME'],
-        AttributeDefinitions=[
-            {
-                'AttributeName': 'job_id',
-                'AttributeType': 'S'
-            },
-            {
-                'AttributeName': 'user_id',
-                'AttributeType': 'S',
-            },
-
-        ],
-        KeySchema=[
-            {
-                'AttributeName': 'job_id',
-                'KeyType': 'HASH',
-            },
-        ],
-        GlobalSecondaryIndexes=[
-            {
-                'IndexName': 'user_id',
-                'KeySchema': [
-                    {
-                        'AttributeName': 'user_id',
-                        'KeyType': 'HASH',
-                    },
-                ],
-                'Projection': {
-                    'ProjectionType': 'ALL',
-                },
-            },
-        ],
-        ProvisionedThroughput={
-            'ReadCapacityUnits': 15,
-            'WriteCapacityUnits': 15,
-        },
-    )
-
-    items = [
+    files = [
         {
-            'job_id': '0ddaeb98-7636-494d-9496-03ea4a7df266',
-            'user_id': 'user_with_jobs',
-            'job_type': 'RTC_GAMMA',
-            'job_parameters': {
-                'granule': 'S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B',
-            },
-            'start_time': '2020-06-10T22:13:47.622Z',
-            'status_code': 'RUNNING',
+            'filename': 'foo.txt',
+            'size': 123,
+            'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/foo.txt',
         },
         {
-            'job_id': '27836b79-e5b2-4d8f-932f-659724ea02c3',
-            'user_id': 'user_with_jobs',
-            'job_type': 'RTC_GAMMA',
-            'job_parameters': {
-                'granule': 'S1B_IW_SLC__1SDV_20200610T151040_20200610T151108_021973_029B41_4F5A',
-            },
-            'start_time': '2020-06-08T17:48:39.040Z',
-            'status_code': 'SUCCEEDED',
-            'files': [
-              {
-                'filename': 'foo.txt',
-                'size': 123,
-                'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/foo.txt',
-              },
-              {
-                'filename': 'bar.png',
-                'size': 0,
-                'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/bar.png',
-              },
-            ]
+            'filename': 'bar.png',
+            'size': 0,
+            'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/bar.png',
         },
     ]
-    for item in items:
-        table.put_item(Item=item)
+    items = [
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', user_id='user_with_jobs'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', user_id='user_with_jobs', files=files)
+    ]
+    setup_database(items)
 
-    login(client, 'user_with_jobs', authorized=False)
+    login(client, 'user_with_jobs')
     response = client.get(JOBS_URI)
     assert response.status_code == status.HTTP_200_OK
     assert response.json == {
@@ -208,6 +215,44 @@ def test_list_jobs(client):
     assert response.json == {
         'jobs': [],
     }
+
+
+@mock_dynamodb2
+def test_list_jobs_not_authorized(client):
+    setup_database()
+    login(client, authorized=False)
+    response = client.get(JOBS_URI)
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': []}
+
+
+@mock_dynamodb2
+def test_list_jobs_by_status(client):
+    items = [
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', status_code='RUNNING'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', status_code='SUCCEEDED')
+    ]
+    setup_database(items)
+
+    login(client)
+    response = client.get(JOBS_URI, query_string={'status_code': 'RUNNING'})
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json['jobs']) == 1
+    assert response.json['jobs'][0] == items[0]
+
+    response = client.get(JOBS_URI, query_string={'status_code': 'FAILED'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': []}
+
+
+def test_list_jobs_bad_status(client):
+    login(client)
+
+    response = client.get(JOBS_URI, query_string={'status_code': 'BAD'})
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    response = client.get(JOBS_URI, query_string={'status_code': ''})
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_not_logged_in(client):
