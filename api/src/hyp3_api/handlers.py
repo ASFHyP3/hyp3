@@ -31,11 +31,15 @@ def post_jobs(body, user):
     return [{'job_id': job_id} for job_id in job_ids]
 
 
-def get_jobs(user, status_code=None):
+def get_jobs(user, status_code=None, start=None, end=None):
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
     filter_expression = Attr('job_id').exists()
     if status_code is not None:
         filter_expression = filter_expression & Attr('status_code').eq(status_code)
+    if start:
+        filter_expression = filter_expression & Attr('start_time').gte(start)
+    if end:
+        filter_expression = filter_expression & Attr('start_time').lte(end)
     response = table.query(
         IndexName='user_id',
         KeyConditionExpression=Key('user_id').eq(user),
@@ -44,5 +48,5 @@ def get_jobs(user, status_code=None):
     return {'jobs': response['Items']}
 
 
-connexion_app.add_api('openapi-spec.yml', validate_responses=True)
+connexion_app.add_api('openapi-spec.yml', validate_responses=True, strict_validation=True)
 CORS(connexion_app.app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)

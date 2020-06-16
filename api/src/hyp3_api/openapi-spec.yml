@@ -34,6 +34,14 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/status_code"
+        - name: start
+          in: query
+          schema:
+            $ref: "#/components/schemas/datetime"
+        - name: end
+          in: query
+          schema:
+            $ref: "#/components/schemas/datetime"
       responses:
         "200":
           description: 200 response
@@ -120,7 +128,7 @@ components:
         job_parameters:
           $ref: "#/components/schemas/job_parameters"
         start_time:
-          $ref: "#/components/schemas/start_time"
+          $ref: "#/components/schemas/datetime"
         status_code:
           $ref: "#/components/schemas/status_code"
         description:
@@ -160,7 +168,7 @@ components:
       example: S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38
       description: The name of the Sentinel-1 granule to process.  Only SLC products with beam mode IW are supported.
 
-    start_time:
+    datetime:
       type: string
       format: date-time
       example: 2020-06-04T18:00:03.548Z

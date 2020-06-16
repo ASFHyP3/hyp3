@@ -198,7 +198,7 @@ def test_list_jobs(client):
     ]
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', user_id='user_with_jobs'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', user_id='user_with_jobs', files=files)
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', user_id='user_with_jobs', files=files),
     ]
     setup_database(items)
 
@@ -230,15 +230,14 @@ def test_list_jobs_not_authorized(client):
 def test_list_jobs_by_status(client):
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', status_code='RUNNING'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', status_code='SUCCEEDED')
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', status_code='SUCCEEDED'),
     ]
     setup_database(items)
 
     login(client)
     response = client.get(JOBS_URI, query_string={'status_code': 'RUNNING'})
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json['jobs']) == 1
-    assert response.json['jobs'][0] == items[0]
+    assert response.json == {'jobs': [items[0]]}
 
     response = client.get(JOBS_URI, query_string={'status_code': 'FAILED'})
     assert response.status_code == status.HTTP_200_OK
@@ -252,6 +251,52 @@ def test_list_jobs_bad_status(client):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     response = client.get(JOBS_URI, query_string={'status_code': ''})
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@mock_dynamodb2
+def test_list_jobs_by_date(client):
+    items = [
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', start_time='2018-01-01T00:00:00.000Z'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', start_time='2019-01-01T00:00:00.000Z'),
+        make_db_record('c4617ae4-c7e1-4ada-bb6f-9e06a4a2d5e7', start_time='2020-01-01T00:00:00.000Z'),
+    ]
+    setup_database(items)
+
+    login(client)
+    response = client.get(JOBS_URI, query_string={'end': '2018-01-01T00:00:00.000Z'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': [items[0]]}
+
+    response = client.get(JOBS_URI, query_string={'start': '2019-01-01T00:00:00.000Z', 'end': '2019-01-01T00:00:00.000Z'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': [items[1]]}
+
+    response = client.get(JOBS_URI, query_string={'start': '2020-01-01T00:00:00.000Z'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': [items[2]]}
+
+    response = client.get(JOBS_URI, query_string={'start': '2020-01-01T00:00:00.001Z'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': []}
+
+    response = client.get(JOBS_URI, query_string={'end': '2017-12-31T23:59:59.999Z'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': []}
+
+
+def test_list_jobs_bad_dates(client):
+    login(client)
+    response = client.get(JOBS_URI, query_string={'start': 'foo'})
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    response = client.get(JOBS_URI, query_string={'end': 'foo'})
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    response = client.get(JOBS_URI, query_string={'start': '2020-02-30T00:00:00.000Z'})
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    response = client.get(JOBS_URI, query_string={'end': '2020-02-30T00:00:00.000Z'})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
