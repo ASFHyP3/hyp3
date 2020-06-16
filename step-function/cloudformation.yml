@@ -46,7 +46,7 @@ Resources:
                 "user_id.$": "$.user_id",
                 "status_code": "RUNNING",
                 "job_parameters.$": "$.job_parameters",
-                "start_time.$": "$$.Execution.StartTime",
+                "request_time.$": "$$.Execution.StartTime",
                 "description.$": "$.description"
               },
               "ResultPath": "$.results.job_running",
