@@ -1,7 +1,7 @@
 import json
 from os import environ
 
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Attr, Key
 from connexion import context
 from flask import abort
 from flask_cors import CORS
@@ -31,9 +31,16 @@ def post_jobs(body, user):
     return [{'job_id': job_id} for job_id in job_ids]
 
 
-def get_jobs(user):
+def get_jobs(user, status_code=None):
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
-    response = table.query(IndexName='user_id', KeyConditionExpression=Key('user_id').eq(user))
+    filter_expression = Attr('job_id').exists()
+    if status_code is not None:
+        filter_expression = filter_expression & Attr('status_code').eq(status_code)
+    response = table.query(
+        IndexName='user_id',
+        KeyConditionExpression=Key('user_id').eq(user),
+        FilterExpression=filter_expression,
+    )
     return {'jobs': response['Items']}
 
 
