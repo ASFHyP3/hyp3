@@ -268,7 +268,8 @@ def test_list_jobs_by_date(client):
     assert response.status_code == status.HTTP_200_OK
     assert response.json == {'jobs': [items[0]]}
 
-    response = client.get(JOBS_URI, query_string={'start': '2019-01-01T00:00:00.000Z', 'end': '2019-01-01T00:00:00.000Z'})
+    parameters = {'start': '2019-01-01T00:00:00.000Z', 'end': '2019-01-01T00:00:00.000Z'}
+    response = client.get(JOBS_URI, query_string=parameters)
     assert response.status_code == status.HTTP_200_OK
     assert response.json == {'jobs': [items[1]]}
 
