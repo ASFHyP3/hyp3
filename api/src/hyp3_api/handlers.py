@@ -37,9 +37,9 @@ def get_jobs(user, status_code=None, start=None, end=None):
     if status_code is not None:
         filter_expression = filter_expression & Attr('status_code').eq(status_code)
     if start:
-        filter_expression = filter_expression & Attr('start_time').gte(start)
+        filter_expression = filter_expression & Attr('request_time').gte(start)
     if end:
-        filter_expression = filter_expression & Attr('start_time').lte(end)
+        filter_expression = filter_expression & Attr('request_time').lte(end)
     response = table.query(
         IndexName='user_id',
         KeyConditionExpression=Key('user_id').eq(user),

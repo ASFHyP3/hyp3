@@ -48,7 +48,7 @@ def make_db_record(job_id,
                    granule='S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B',
                    job_type='RTC_GAMMA',
                    user_id=DEFAULT_USERNAME,
-                   start_time='2020-06-10T22:13:47.622Z',
+                   request_time='2020-06-10T22:13:47.622Z',
                    status_code='RUNNING',
                    files=None):
     record = {
@@ -58,7 +58,7 @@ def make_db_record(job_id,
         'job_parameters': {
             'granule': granule,
         },
-        'start_time': start_time,
+        'request_time': request_time,
         'status_code': status_code,
     }
     if files is not None:
@@ -257,9 +257,9 @@ def test_list_jobs_bad_status(client):
 @mock_dynamodb2
 def test_list_jobs_by_date(client):
     items = [
-        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', start_time='2018-01-01T00:00:00.000Z'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', start_time='2019-01-01T00:00:00.000Z'),
-        make_db_record('c4617ae4-c7e1-4ada-bb6f-9e06a4a2d5e7', start_time='2020-01-01T00:00:00.000Z'),
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2018-01-01T00:00:00.000Z'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-01-01T00:00:00.000Z'),
+        make_db_record('c4617ae4-c7e1-4ada-bb6f-9e06a4a2d5e7', request_time='2020-01-01T00:00:00.000Z'),
     ]
     setup_database(items)
 

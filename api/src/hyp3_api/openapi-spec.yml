@@ -115,7 +115,7 @@ components:
         - user_id
         - job_type
         - job_parameters
-        - start_time
+        - request_time
         - status_code
       additionalProperties: false
       properties:
@@ -127,7 +127,7 @@ components:
           $ref: "#/components/schemas/job_type"
         job_parameters:
           $ref: "#/components/schemas/job_parameters"
-        start_time:
+        request_time:
           $ref: "#/components/schemas/datetime"
         status_code:
           $ref: "#/components/schemas/status_code"
