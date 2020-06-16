@@ -48,7 +48,7 @@ def make_db_record(job_id,
                    granule='S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B',
                    job_type='RTC_GAMMA',
                    user_id=DEFAULT_USERNAME,
-                   start_time='2020-06-10T22:13:47.622Z',
+                   request_time='2020-06-10T22:13:47.622Z',
                    status_code='RUNNING',
                    files=None):
     record = {
@@ -58,7 +58,7 @@ def make_db_record(job_id,
         'job_parameters': {
             'granule': granule,
         },
-        'start_time': start_time,
+        'request_time': request_time,
         'status_code': status_code,
     }
     if files is not None:
