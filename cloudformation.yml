@@ -18,7 +18,7 @@ Parameters:
   ProductLifetimeInDays:
     Type: Number
     MinValue: 1
-    Default: 7
+    Default: 14
 
   AuthPublicKey:
     Type: String
