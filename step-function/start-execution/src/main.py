@@ -12,7 +12,9 @@ STEP_FUNCTION = boto3.client('stepfunctions')
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, decimal.Decimal):
-            return int(o)
+            if int(o) == o:
+                return int(o)
+            return float(o)
         return super(DecimalEncoder, self).default(o)
 
 
