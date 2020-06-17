@@ -1,3 +1,4 @@
+import decimal
 import json
 from os import environ
 
@@ -6,6 +7,13 @@ from boto3.dynamodb.conditions import Attr
 
 DB = boto3.resource('dynamodb')
 STEP_FUNCTION = boto3.client('stepfunctions')
+
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            return int(o)
+        return super(DecimalEncoder, self).default(o)
 
 
 def lambda_handler(event, context):
