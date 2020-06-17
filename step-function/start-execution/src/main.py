@@ -17,5 +17,6 @@ def lambda_handler(event, context):
     for job in pending_jobs:
         STEP_FUNCTION.start_execution(
             stateMachineArn=environ['STEP_FUNCTION_ARN'],
-            input=json.dumps(job, name=job['job_id']),
+            input=json.dumps(job),
+            name=job['job_id']
         )
