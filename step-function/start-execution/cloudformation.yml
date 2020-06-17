@@ -8,11 +8,6 @@ Parameters:
   StepFunctionArn:
     Type: String
 
-Outputs:
-
-  LambdaArn:
-    Value: !GetAtt Lambda.Arn
-
 Resources:
 
   LogGroup:
@@ -46,8 +41,7 @@ Resources:
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
               - Effect: Allow
                 Action: states:StartExecution
-                Resource:
-                  - !Ref StepFunctionArn
+                Resource: !Ref StepFunctionArn
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -61,7 +55,7 @@ Resources:
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.8
-      Timeout: 30
+      Timeout: 45
 
   EventInvokeConfig:
     Type: AWS::Lambda::EventInvokeConfig
