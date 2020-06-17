@@ -14,11 +14,6 @@ Parameters:
   Bucket:
     Type: String
 
-Outputs:
-
-  StepFunctionArn:
-    Value: !Ref StepFunction
-
 Resources:
 
   StepFunction:
@@ -27,34 +22,20 @@ Resources:
       RoleArn: !GetAtt StepFunctionRole.Arn
       DefinitionString: !Sub |-
         {
-          "StartAt": "ADD_JOB_ID_TO_INPUT",
-          "States": {
-            "ADD_JOB_ID_TO_INPUT": {
-              "Type": "Pass",
-              "Parameters": {
-                "job_id.$": "$$.Execution.Name"
-              },
-              "ResultPath": "$.context",
-              "Next": "JOB_RUNNING"
-            },
+          "StartAt": "JOB_RUNNING",
             "JOB_RUNNING": {
               "Type": "Task",
               "Resource": "${UpdateDB.Outputs.LambdaArn}",
               "Parameters": {
-                "job_id.$": "$.context.job_id",
-                "job_type.$": "$.job_type",
-                "user_id.$": "$.user_id",
+                "job_id.$": "$.job_id",
                 "status_code": "RUNNING",
-                "job_parameters.$": "$.job_parameters",
-                "request_time.$": "$$.Execution.StartTime",
-                "description.$": "$.description"
               },
               "ResultPath": "$.results.job_running",
               "Next": "ADD_PREFIX_TO_JOB_PARAMETERS"
             },
             "ADD_PREFIX_TO_JOB_PARAMETERS": {
               "Type": "Pass",
-              "InputPath": "$.context.job_id",
+              "InputPath": "$.job_id",
               "ResultPath": "$.job_parameters.bucket-prefix",
               "Next": "RTC_GAMMA"
             },
@@ -63,7 +44,7 @@ Resources:
               "Resource": "arn:aws:states:::batch:submitJob.sync",
               "Parameters": {
                 "JobDefinition": "${RtcGammaJobDefinition}",
-                "JobName.$": "$.context.job_id",
+                "JobName.$": "$.job_id",
                 "JobQueue": "${JobQueueArn}",
                 "Parameters.$": "$.job_parameters"
               },
@@ -79,7 +60,7 @@ Resources:
                "Type": "Task",
                "Resource": "${GetFiles.Outputs.LambdaArn}",
                "Parameters": {
-                 "job_id.$": "$.context.job_id"
+                 "job_id.$": "$.job_id"
                },
                "ResultPath": "$.results.get_files",
                "Next": "JOB_SUCCEEDED"
@@ -88,7 +69,7 @@ Resources:
               "Type": "Task",
               "Resource": "${UpdateDB.Outputs.LambdaArn}",
               "Parameters": {
-                "job_id.$": "$.context.job_id",
+                "job_id.$": "$.job_id",
                 "status_code": "SUCCEEDED",
                 "files.$": "$.results.get_files"
               },
@@ -99,7 +80,7 @@ Resources:
               "Type": "Task",
               "Resource": "${UpdateDB.Outputs.LambdaArn}",
               "Parameters": {
-                "job_id.$": "$.context.job_id",
+                "job_id.$": "$.job_id",
                 "status_code": "FAILED"
               },
               "ResultPath": "$.results.job_failed",
@@ -156,3 +137,11 @@ Resources:
       Parameters:
         Bucket: !Ref Bucket
       TemplateURL: get-files/cloudformation.yml
+
+  StartExecution:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        JobsTable: !Ref JobsTable
+        StepFunctionArn: !Ref StepFunction
+      TemplateURL: start-execution/cloudformation.yml

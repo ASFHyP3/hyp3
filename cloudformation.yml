@@ -47,7 +47,6 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        StepFunctionArn: !GetAtt StepFunction.Outputs.StepFunctionArn
         JobsTable: !Ref JobsTable
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
