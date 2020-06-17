@@ -25,7 +25,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/post_jobs_response"
+                $ref: "#/components/schemas/jobs_response"
 
     get:
       operationId: hyp3_api.handlers.get_jobs
@@ -40,7 +40,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/get_jobs_response"
+                $ref: "#/components/schemas/jobs_response"
 
 components:
   schemas:
@@ -54,18 +54,7 @@ components:
         jobs:
           $ref: "#/components/schemas/list_of_new_jobs"
 
-    post_jobs_response:
-      type: array
-      items:
-        type: object
-        required:
-          - job_id
-        additionalProperties: false
-        properties:
-          job_id:
-            $ref: "#/components/schemas/job_id"
-
-    get_jobs_response:
+    jobs_response:
       type: object
       required:
         - jobs
@@ -85,7 +74,6 @@ components:
       required:
         - job_type
         - job_parameters
-        - description
       additionalProperties: false
       properties:
         job_type:
@@ -157,17 +145,18 @@ components:
       pattern: "^S1[AB]_IW_SLC__*"
       minLength: 67
       maxLength: 67
-      example: S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38
+      example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
       description: The name of the Sentinel-1 granule to process.  Only SLC products with beam mode IW are supported.
 
     datetime:
-      type: string
-      format: date-time
-      example: 2020-06-04T18:00:03.548Z
+      type: number
+      minimum: 0
+      description: a date time in unix epoch time
 
     status_code:
       type: string
       enum:
+        - PENDING
         - RUNNING
         - SUCCEEDED
         - FAILED
@@ -175,6 +164,7 @@ components:
 
     description:
       type: string
+      minLength: 1
       example: a description of the job
 
     list_of_files:
