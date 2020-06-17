@@ -23,6 +23,7 @@ Resources:
       DefinitionString: !Sub |-
         {
           "StartAt": "JOB_RUNNING",
+          "states": {
             "JOB_RUNNING": {
               "Type": "Task",
               "Resource": "${UpdateDB.Outputs.LambdaArn}",
