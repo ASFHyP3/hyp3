@@ -23,13 +23,13 @@ Resources:
       DefinitionString: !Sub |-
         {
           "StartAt": "JOB_RUNNING",
-          "states": {
+          "States": {
             "JOB_RUNNING": {
               "Type": "Task",
               "Resource": "${UpdateDB.Outputs.LambdaArn}",
               "Parameters": {
                 "job_id.$": "$.job_id",
-                "status_code": "RUNNING",
+                "status_code": "RUNNING"
               },
               "ResultPath": "$.results.job_running",
               "Next": "ADD_PREFIX_TO_JOB_PARAMETERS"
