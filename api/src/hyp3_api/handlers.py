@@ -23,7 +23,7 @@ def post_jobs(body, user):
         table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
         table.put_item(Item=job)
 
-    return {'jobs': body['jobs']}
+    return body
 
 
 def get_jobs(user, status_code=None):
