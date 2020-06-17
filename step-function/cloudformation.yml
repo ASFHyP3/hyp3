@@ -14,11 +14,6 @@ Parameters:
   Bucket:
     Type: String
 
-Outputs:
-
-  StepFunctionArn:
-    Value: !Ref StepFunction
-
 Resources:
 
   StepFunction:
@@ -156,3 +151,11 @@ Resources:
       Parameters:
         Bucket: !Ref Bucket
       TemplateURL: get-files/cloudformation.yml
+
+  StartExecution:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        JobsTable: !Ref JobsTable
+        StepFunctionArn: !Ref StepFunction
+      TemplateURL: start-execution/cloudformation.yml
