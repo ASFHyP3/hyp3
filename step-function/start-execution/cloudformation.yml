@@ -45,9 +45,9 @@ Resources:
                 Action: dynamodb:Scan
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
               - Effect: Allow
-                  Action: states:StartExecution
-                  Resource:
-                    - !Ref StepFunctionArn
+                Action: states:StartExecution
+                Resource:
+                  - !Ref StepFunctionArn
 
   Lambda:
     Type: AWS::Lambda::Function
