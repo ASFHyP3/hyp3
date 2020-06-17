@@ -9,7 +9,7 @@ STEP_FUNCTION = boto3.client('stepfunctions')
 
 
 def lambda_handler(event, context):
-    table = DB.Table('test-JobsTable-BUEBQNRB6FX3')
+    table = DB.Table(environ['TABLE_NAME'])
     filter_expression = Attr('status_code').eq('PENDING')
     response = table.scan(FilterExpression=filter_expression)
     pending_jobs = response['Items']
