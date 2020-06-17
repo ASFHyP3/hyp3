@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 from os import environ
 
 import boto3
@@ -17,6 +18,6 @@ def lambda_handler(event, context):
     for job in pending_jobs:
         STEP_FUNCTION.start_execution(
             stateMachineArn=environ['STEP_FUNCTION_ARN'],
-            input=json.dumps(job),
+            input=json.dumps(job, parse_float=Decimal),
             name=job['job_id']
         )
