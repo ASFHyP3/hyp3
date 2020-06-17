@@ -1,5 +1,6 @@
 import decimal
 import json
+from decimal import Decimal
 from os import environ
 
 import boto3

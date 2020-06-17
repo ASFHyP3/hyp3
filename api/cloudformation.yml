@@ -1,8 +1,5 @@
 Parameters:
 
-  StepFunctionArn:
-    Type: String
-
   JobsTable:
     Type: String
 
@@ -160,11 +157,9 @@ Resources:
                   - logs:PutLogEvents
                 Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
               - Effect: Allow
-                Action: states:StartExecution
-                Resource:
-                  - !Ref StepFunctionArn
-              - Effect: Allow
-                Action: dynamodb:Query
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:Query
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
 
   Lambda:
@@ -172,7 +167,6 @@ Resources:
     Properties:
       Environment:
         Variables:
-          STEP_FUNCTION_ARN: !Ref StepFunctionArn
           TABLE_NAME: !Ref JobsTable
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITHM: !Ref AuthAlgorithm
