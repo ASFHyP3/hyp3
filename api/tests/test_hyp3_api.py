@@ -85,6 +85,7 @@ def make_db_record(job_id,
                    user_id=DEFAULT_USERNAME,
                    request_time=1577836800,
                    status_code='RUNNING',
+                   expiration_time=1577836800,
                    files=None):
     record = {
         'job_id': job_id,
@@ -98,6 +99,8 @@ def make_db_record(job_id,
     }
     if files is not None:
         record['files'] = files
+    if expiration_time is not None:
+        record['expiration_time'] = expiration_time
     return record
 
 
@@ -123,13 +126,18 @@ def test_submit_one_job(client, table):
 
 
 def test_submit_many_jobs(client, table):
-    num_jobs = 1000
+    max_jobs = 100
     login(client)
-    batch = [make_job() for ii in range(num_jobs)]
+
+    batch = [make_job() for ii in range(max_jobs)]
     response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_200_OK
     jobs = response.get_json()['jobs']
-    assert len(jobs) == 1000
+    assert len(jobs) == max_jobs
+
+    batch.append(make_job())
+    response = submit_batch(client, batch)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_submit_without_jobs(client):

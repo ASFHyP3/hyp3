@@ -66,6 +66,7 @@ components:
     list_of_new_jobs:
       type: array
       minItems: 1
+      maxItems: 100
       items:
         $ref: "#/components/schemas/new_job"
 
@@ -115,6 +116,8 @@ components:
           $ref: "#/components/schemas/description"
         files:
           $ref: "#/components/schemas/list_of_files"
+        expiration_time:
+          $ref: "#/components/schemas/datetime"
 
     job_id:
       type: string
