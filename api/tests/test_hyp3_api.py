@@ -85,6 +85,7 @@ def make_db_record(job_id,
                    user_id=DEFAULT_USERNAME,
                    request_time=1577836800,
                    status_code='RUNNING',
+                   expiration_time=1577836800,
                    files=None):
     record = {
         'job_id': job_id,
@@ -98,6 +99,8 @@ def make_db_record(job_id,
     }
     if files is not None:
         record['files'] = files
+    if expiration_time is not None:
+        record['expiration_time'] = expiration_time
     return record
 
 

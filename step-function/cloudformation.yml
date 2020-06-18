@@ -72,7 +72,8 @@ Resources:
               "Parameters": {
                 "job_id.$": "$.job_id",
                 "status_code": "SUCCEEDED",
-                "files.$": "$.results.get_files"
+                "files.$": "$.results.get_files.files",
+                "expiration_time.$": "$.results.get_files.expiration_time"
               },
               "ResultPath": "$.results.job_succeeded",
               "End": true

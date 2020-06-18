@@ -116,6 +116,8 @@ components:
           $ref: "#/components/schemas/description"
         files:
           $ref: "#/components/schemas/list_of_files"
+        expiration_time:
+          $ref: "#/components/schemas/datetime"
 
     job_id:
       type: string
