@@ -15,8 +15,6 @@ def get_download_url(key):
 
 def get_expiration_time(key):
     s3_object = S3_CLIENT.get_object(Bucket=environ['BUCKET'], Key=key)
-    if 'Expiration' not in s3_object:
-        return None
     expiration_string = s3_object['Expiration'].split('"')[1]
     expiration_datetime = datetime.strptime(expiration_string, '%a, %d %b %Y %H:%M:%S %Z')
     return int(expiration_datetime.timestamp())
