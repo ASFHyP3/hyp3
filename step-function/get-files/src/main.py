@@ -1,6 +1,6 @@
+from datetime import datetime
 from os import environ
 from os.path import basename
-from dateutil.parser import parse
 
 import boto3
 
@@ -18,7 +18,7 @@ def get_expiration_time(key):
     if 'Expiration' not in s3_object:
         return None
     expiration_string = s3_object['Expiration'].split('"')[1]
-    return int(parse(expiration_string).timestamp())
+    return int(datetime.strptime(expiration_string, '%a, %d %b %Y %H:%M:%S %Z').timestamp())
 
 
 def lambda_handler(event, context):
