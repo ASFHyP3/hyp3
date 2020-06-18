@@ -18,7 +18,8 @@ def get_expiration_time(key):
     if 'Expiration' not in s3_object:
         return None
     expiration_string = s3_object['Expiration'].split('"')[1]
-    return int(datetime.strptime(expiration_string, '%a, %d %b %Y %H:%M:%S %Z').timestamp())
+    expiration_datetime = datetime.strptime(expiration_string, '%a, %d %b %Y %H:%M:%S %Z')
+    return int(expiration_datetime.timestamp())
 
 
 def lambda_handler(event, context):
