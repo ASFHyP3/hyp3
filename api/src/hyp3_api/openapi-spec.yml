@@ -66,6 +66,7 @@ components:
     list_of_new_jobs:
       type: array
       minItems: 1
+      maxItems: 100
       items:
         $ref: "#/components/schemas/new_job"
 
