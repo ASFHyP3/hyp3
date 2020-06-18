@@ -1,12 +1,23 @@
+from decimal import Decimal
 from os import environ
 from time import time
 from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
 from connexion import context
+from connexion.apps.flask_app import FlaskJSONEncoder
 from flask import abort
 from flask_cors import CORS
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
+
+
+class DecimalEncoder(FlaskJSONEncoder):
+    def default(self, o):
+        if isinstance(o, Decimal):
+            if o == int(o):
+                return int(o)
+            return float(o)
+        return super(DecimalEncoder, self).default(o)
 
 
 def post_jobs(body, user):
@@ -39,5 +50,6 @@ def get_jobs(user, status_code=None):
     return {'jobs': response['Items']}
 
 
+connexion_app.app.json_encoder = DecimalEncoder
 connexion_app.add_api('openapi-spec.yml', validate_responses=True, strict_validation=True)
 CORS(connexion_app.app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
