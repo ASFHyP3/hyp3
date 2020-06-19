@@ -25,11 +25,12 @@ def post_jobs(body, user):
     if not context['is_authorized']:
         abort(403)
 
+    request_time = int(time())
     for job in body['jobs']:
         job['job_id'] = str(uuid4())
         job['user_id'] = user
         job['status_code'] = 'PENDING'
-        job['request_time'] = int(time())
+        job['request_time'] = request_time
 
         table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
         table.put_item(Item=job)

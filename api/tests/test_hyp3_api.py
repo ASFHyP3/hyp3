@@ -134,6 +134,7 @@ def test_submit_many_jobs(client, table):
     assert response.status_code == status.HTTP_200_OK
     jobs = response.get_json()['jobs']
     assert len(jobs) == max_jobs
+    assert len({job['request_time'] for job in jobs}) == 1
 
     batch.append(make_job())
     response = submit_batch(client, batch)
