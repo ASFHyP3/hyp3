@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from os import environ
 from time import time
@@ -24,7 +25,9 @@ def post_jobs(body, user):
     print(body)
     if not context['is_authorized']:
         abort(403)
-
+    job_count = get_job_count_for_month(user)
+    if job_count + len(body['jobs']) > int(environ['MONTHLY_JOB_QUOTA_PER_USER']):
+        abort(400)
     request_time = int(time())
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
 
@@ -38,11 +41,20 @@ def post_jobs(body, user):
     return body
 
 
-def get_jobs(user, status_code=None):
+def get_job_count_for_month(user):
+    now = datetime.utcnow()
+    start_of_month = datetime(year=now.year, month=now.month, day=1)
+    response = get_jobs(user, int(start_of_month.timestamp()))
+    return len(response['jobs'])
+
+
+def get_jobs(user, start=None, status_code=None):
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
     filter_expression = Attr('job_id').exists()
     if status_code is not None:
         filter_expression = filter_expression & Attr('status_code').eq(status_code)
+    if start is not None:
+        filter_expression = filter_expression & Attr('request_time').gte(start)
     response = table.query(
         IndexName='user_id',
         KeyConditionExpression=Key('user_id').eq(user),
