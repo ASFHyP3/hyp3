@@ -64,7 +64,7 @@ Resources:
         AuthAppUid: !Ref AuthAppUid
         DomainName: !Ref DomainName
         CertificateArn: !Ref CertificateArn
-        MonthlyJobQuotaPerUser: !Ref MonthlyJobUserQuota
+        MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
       TemplateURL: api/cloudformation.yml
 
   Cluster:
