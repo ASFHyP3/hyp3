@@ -29,10 +29,12 @@ def post_jobs(body, user):
     print(body)
     if not context['is_authorized']:
         abort(403)
+
     try:
         check_quota_for_user(user, len(body['jobs']))
     except QuotaError as e:
         return problem(400, 'Bad Request', str(e))
+
     request_time = int(time())
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
 
@@ -44,21 +46,6 @@ def post_jobs(body, user):
         table.put_item(Item=job)
 
     return body
-
-
-def check_quota_for_user(user, number_of_jobs):
-    previous_jobs = get_job_count_for_month(user)
-    quota = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
-    job_count = previous_jobs + number_of_jobs
-    if job_count > quota:
-        raise QuotaError(f'Your monthly quota is {quota} jobs. You have {quota - previous_jobs} jobs remaining.')
-
-
-def get_job_count_for_month(user):
-    now = datetime.utcnow()
-    start_of_month = datetime(year=now.year, month=now.month, day=1)
-    response = get_jobs(user, int(start_of_month.timestamp()))
-    return len(response['jobs'])
 
 
 def get_jobs(user, start=None, status_code=None):
@@ -74,6 +61,21 @@ def get_jobs(user, start=None, status_code=None):
         FilterExpression=filter_expression,
     )
     return {'jobs': response['Items']}
+
+
+def check_quota_for_user(user, number_of_jobs):
+    previous_jobs = get_job_count_for_month(user)
+    quota = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
+    job_count = previous_jobs + number_of_jobs
+    if job_count > quota:
+        raise QuotaError(f'Your monthly quota is {quota} jobs. You have {quota - previous_jobs} jobs remaining.')
+
+
+def get_job_count_for_month(user):
+    now = datetime.utcnow()
+    start_of_month = datetime(year=now.year, month=now.month, day=1)
+    response = get_jobs(user, int(start_of_month.timestamp()))
+    return len(response['jobs'])
 
 
 connexion_app.app.json_encoder = DecimalEncoder
