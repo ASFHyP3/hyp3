@@ -5,7 +5,7 @@ from time import time
 from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
-from connexion import context
+from connexion import context, problem
 from connexion.apps.flask_app import FlaskJSONEncoder
 from flask import abort
 from flask_cors import CORS
@@ -21,13 +21,18 @@ class DecimalEncoder(FlaskJSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 
+class QuotaError(Exception):
+    pass
+
+
 def post_jobs(body, user):
     print(body)
     if not context['is_authorized']:
         abort(403)
-    job_count = get_job_count_for_month(user)
-    if job_count + len(body['jobs']) > int(environ['MONTHLY_JOB_QUOTA_PER_USER']):
-        abort(400)
+    try:
+        check_quota_for_user(user, len(body['jobs']))
+    except QuotaError as e:
+        return problem(400, 'Bad Request', str(e))
     request_time = int(time())
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
 
@@ -39,6 +44,14 @@ def post_jobs(body, user):
         table.put_item(Item=job)
 
     return body
+
+
+def check_quota_for_user(user, number_of_jobs):
+    previous_jobs = get_job_count_for_month(user)
+    quota = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
+    job_count = previous_jobs + number_of_jobs
+    if job_count > quota:
+        raise QuotaError(f'Your monthly quota is {quota} jobs. You have {quota - previous_jobs} jobs remaining.')
 
 
 def get_job_count_for_month(user):
