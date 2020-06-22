@@ -41,6 +41,11 @@ Parameters:
   CertificateArn:
     Type: String
 
+  MonthlyJobQuotaPerUser:
+    Type: Number
+    MinValue: 1
+    Default: 100
+
 Outputs:
 
   ApiUrl:
@@ -59,6 +64,7 @@ Resources:
         AuthAppUid: !Ref AuthAppUid
         DomainName: !Ref DomainName
         CertificateArn: !Ref CertificateArn
+        MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
       TemplateURL: api/cloudformation.yml
 
   Cluster:

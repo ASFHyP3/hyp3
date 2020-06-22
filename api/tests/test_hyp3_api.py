@@ -142,6 +142,21 @@ def test_submit_many_jobs(client, table):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
+def test_submit_exceeds_quota(client, table):
+    login(client)
+    seconds_in_32_days = 2764800
+    job_from_previous_month = make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266',
+                                             request_time=int(time()) - seconds_in_32_days)
+    table.put_item(Item=job_from_previous_month)
+
+    batch = [make_job() for ii in range(int(environ['MONTHLY_JOB_QUOTA_PER_USER']))]
+    response = submit_batch(client, batch)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = submit_batch(client)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
 def test_submit_without_jobs(client):
     login(client)
     batch = []
