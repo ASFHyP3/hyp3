@@ -27,7 +27,7 @@ class QuotaError(Exception):
 def post_jobs(body, user):
     print(body)
     if not context['is_authorized']:
-        return problem(403, 'Forbidden', 'You do not have permission to submit jobs.')
+        return problem(403, 'Forbidden', f'User {user} does not have permission to submit jobs.')
 
     try:
         check_quota_for_user(user, len(body['jobs']))
