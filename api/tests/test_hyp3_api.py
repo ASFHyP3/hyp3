@@ -8,12 +8,12 @@ from moto import mock_dynamodb2
 
 from hyp3_api import DYNAMODB_RESOURCE, auth, connexion_app  # noqa hyp3 must be imported here
 
-DEFAULT_USERNAME = 'test_username'
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 
 DEFAULT_JOB_ID = 'myJobId'
+DEFAULT_USERNAME = 'test_username'
 
 
 @pytest.fixture
@@ -110,11 +110,27 @@ def test_submit_many_jobs(client, table):
     response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_200_OK
     jobs = response.get_json()['jobs']
+    distinct_request_times = {job['request_time'] for job in jobs}
     assert len(jobs) == max_jobs
-    assert len({job['request_time'] for job in jobs}) == 1
+    assert len(distinct_request_times) == 1
 
     batch.append(make_job())
     response = submit_batch(client, batch)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_submit_exceeds_quota(client, table):
+    login(client)
+    seconds_in_32_days = 2764800
+    job_from_previous_month = make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266',
+                                             request_time=int(time()) - seconds_in_32_days)
+    table.put_item(Item=job_from_previous_month)
+
+    batch = [make_job() for ii in range(int(environ['MONTHLY_JOB_QUOTA_PER_USER']))]
+    response = submit_batch(client, batch)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = submit_batch(client)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
@@ -229,6 +245,7 @@ def test_logged_in_not_authorized(client):
     login(client, authorized=False)
     response = submit_batch(client)
     assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert DEFAULT_USERNAME in response.get_json()['detail']
 
 
 def test_invalid_cookie(client):
