@@ -1,18 +1,19 @@
-from os import environ
+from os import environ, path
 from time import time
 
 import pytest
+import yaml
 from flask_api import status
 from moto import mock_dynamodb2
 
 from hyp3_api import DYNAMODB_RESOURCE, auth, connexion_app  # noqa hyp3 must be imported here
 
-DEFAULT_USERNAME = 'test_username'
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 
 DEFAULT_JOB_ID = 'myJobId'
+DEFAULT_USERNAME = 'test_username'
 
 
 @pytest.fixture
@@ -23,46 +24,22 @@ def client():
 
 @pytest.fixture
 def table():
+    table_properties = get_table_properties_from_template()
     with mock_dynamodb2():
         table = DYNAMODB_RESOURCE.create_table(
             TableName=environ['TABLE_NAME'],
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'job_id',
-                    'AttributeType': 'S'
-                },
-                {
-                    'AttributeName': 'user_id',
-                    'AttributeType': 'S',
-                },
-
-            ],
-            KeySchema=[
-                {
-                    'AttributeName': 'job_id',
-                    'KeyType': 'HASH',
-                },
-            ],
-            GlobalSecondaryIndexes=[
-                {
-                    'IndexName': 'user_id',
-                    'KeySchema': [
-                        {
-                            'AttributeName': 'user_id',
-                            'KeyType': 'HASH',
-                        },
-                    ],
-                    'Projection': {
-                        'ProjectionType': 'ALL',
-                    },
-                },
-            ],
-            ProvisionedThroughput={
-                'ReadCapacityUnits': 15,
-                'WriteCapacityUnits': 15,
-            },
+            **table_properties,
         )
         yield table
+
+
+def get_table_properties_from_template():
+    yaml.SafeLoader.add_multi_constructor('!', lambda loader, suffix, node: None)
+    template_file = path.join(path.dirname(__file__), '../../cloudformation.yml')
+    with open(template_file, 'r') as f:
+        template = yaml.safe_load(f)
+    table_properties = template['Resources']['JobsTable']['Properties']
+    return table_properties
 
 
 def make_job(granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
@@ -133,10 +110,27 @@ def test_submit_many_jobs(client, table):
     response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_200_OK
     jobs = response.get_json()['jobs']
+    distinct_request_times = {job['request_time'] for job in jobs}
     assert len(jobs) == max_jobs
+    assert len(distinct_request_times) == 1
 
     batch.append(make_job())
     response = submit_batch(client, batch)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_submit_exceeds_quota(client, table):
+    login(client)
+    seconds_in_32_days = 2764800
+    job_from_previous_month = make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266',
+                                             request_time=int(time()) - seconds_in_32_days)
+    table.put_item(Item=job_from_previous_month)
+
+    batch = [make_job() for ii in range(int(environ['MONTHLY_JOB_QUOTA_PER_USER']))]
+    response = submit_batch(client, batch)
+    assert response.status_code == status.HTTP_200_OK
+
+    response = submit_batch(client)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
@@ -251,6 +245,7 @@ def test_logged_in_not_authorized(client):
     login(client, authorized=False)
     response = submit_batch(client)
     assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert DEFAULT_USERNAME in response.get_json()['detail']
 
 
 def test_invalid_cookie(client):

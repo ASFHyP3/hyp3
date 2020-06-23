@@ -41,6 +41,11 @@ Parameters:
   CertificateArn:
     Type: String
 
+  MonthlyJobQuotaPerUser:
+    Type: Number
+    MinValue: 1
+    Default: 100
+
 Outputs:
 
   ApiUrl:
@@ -59,6 +64,7 @@ Resources:
         AuthAppUid: !Ref AuthAppUid
         DomainName: !Ref DomainName
         CertificateArn: !Ref CertificateArn
+        MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
       TemplateURL: api/cloudformation.yml
 
   Cluster:
@@ -132,6 +138,10 @@ Resources:
           AttributeType: S
         - AttributeName: user_id
           AttributeType: S
+        - AttributeName: status_code
+          AttributeType: S
+        - AttributeName: request_time
+          AttributeType: N
       KeySchema:
         - AttributeName: job_id
           KeyType: HASH
@@ -139,6 +149,14 @@ Resources:
         - IndexName: user_id
           KeySchema:
             - AttributeName: user_id
+              KeyType: HASH
+            - AttributeName: request_time
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: status_code
+          KeySchema:
+            - AttributeName: status_code
               KeyType: HASH
           Projection:
             ProjectionType: ALL

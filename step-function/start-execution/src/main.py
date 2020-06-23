@@ -3,7 +3,7 @@ from decimal import Decimal
 from os import environ
 
 import boto3
-from boto3.dynamodb.conditions import Attr
+from boto3.dynamodb.conditions import Key
 
 DB = boto3.resource('dynamodb')
 STEP_FUNCTION = boto3.client('stepfunctions')
@@ -18,12 +18,17 @@ class DecimalEncoder(json.JSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 
-def lambda_handler(event, context):
+def get_pending_jobs():
     table = DB.Table(environ['TABLE_NAME'])
-    filter_expression = Attr('status_code').eq('PENDING')
-    response = table.scan(FilterExpression=filter_expression)
-    pending_jobs = response['Items']
+    response = table.query(
+        IndexName='status_code',
+        KeyConditionExpression=Key('status_code').eq('PENDING'),
+    )
+    return response['Items']
 
+
+def lambda_handler(event, context):
+    pending_jobs = get_pending_jobs()
     for job in pending_jobs:
         STEP_FUNCTION.start_execution(
             stateMachineArn=environ['STEP_FUNCTION_ARN'],
