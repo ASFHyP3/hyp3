@@ -132,6 +132,8 @@ Resources:
           AttributeType: S
         - AttributeName: user_id
           AttributeType: S
+        - AttributeName: status_code
+          AttributeType: S
       KeySchema:
         - AttributeName: job_id
           KeyType: HASH
@@ -139,6 +141,12 @@ Resources:
         - IndexName: user_id
           KeySchema:
             - AttributeName: user_id
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: status_code
+          KeySchema:
+            - AttributeName: status_code
               KeyType: HASH
           Projection:
             ProjectionType: ALL
