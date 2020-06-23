@@ -37,7 +37,7 @@ Resources:
                   - logs:PutLogEvents
                 Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
               - Effect: Allow
-                Action: dynamodb:Scan
+                Action: dynamodb:Query
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
               - Effect: Allow
                 Action: states:StartExecution
