@@ -1,4 +1,4 @@
-from os import environ
+from os import environ, path
 from time import time
 
 import pytest
@@ -35,7 +35,8 @@ def table():
 
 def get_table_properties_from_template():
     yaml.SafeLoader.add_multi_constructor('!', lambda loader, suffix, node: None)
-    with open('../cloudformation.yml', 'r') as f:
+    template_file = path.join(path.dirname(__file__), '../../cloudformation.yml')
+    with open(template_file, 'r') as f:
         template = yaml.safe_load(f)
     table_properties = template['Resources']['JobsTable']['Properties']
     return table_properties
