@@ -3,7 +3,7 @@ from decimal import Decimal
 from os import environ
 
 import boto3
-from boto3.dynamodb.conditions import Attr
+from boto3.dynamodb.conditions import Key
 
 DB = boto3.resource('dynamodb')
 STEP_FUNCTION = boto3.client('stepfunctions')
