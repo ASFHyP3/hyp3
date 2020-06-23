@@ -7,12 +7,12 @@ from moto import mock_dynamodb2
 
 from hyp3_api import DYNAMODB_RESOURCE, auth, connexion_app  # noqa hyp3 must be imported here
 
-DEFAULT_USERNAME = 'test_username'
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 
 DEFAULT_JOB_ID = 'myJobId'
+DEFAULT_USERNAME = 'test_username'
 
 
 @pytest.fixture
