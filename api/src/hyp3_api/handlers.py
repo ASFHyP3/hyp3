@@ -52,11 +52,11 @@ def get_jobs(user, start=None, status_code=None):
 
     key_expression = Key('user_id').eq(user)
     if start is not None:
-        key_expression = key_expression & Key('request_time').gte(start)
+        key_expression &= Key('request_time').gte(start)
 
     filter_expression = Attr('job_id').exists()
     if status_code is not None:
-        filter_expression = filter_expression & Attr('status_code').eq(status_code)
+        filter_expression &= Attr('status_code').eq(status_code)
 
     response = table.query(
         IndexName='user_id',
