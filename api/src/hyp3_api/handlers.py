@@ -7,7 +7,6 @@ from uuid import uuid4
 from boto3.dynamodb.conditions import Attr, Key
 from connexion import context, problem
 from connexion.apps.flask_app import FlaskJSONEncoder
-from flask import abort
 from flask_cors import CORS
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
 
@@ -28,7 +27,7 @@ class QuotaError(Exception):
 def post_jobs(body, user):
     print(body)
     if not context['is_authorized']:
-        abort(403)
+        return problem(403, 'Forbidden', f'User {user} does not have permission to submit jobs.')
 
     try:
         check_quota_for_user(user, len(body['jobs']))
