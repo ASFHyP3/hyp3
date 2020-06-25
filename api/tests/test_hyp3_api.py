@@ -230,6 +230,30 @@ def test_list_jobs_bad_status(client):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
+def test_list_jobs_by_start(client, table):
+    items = [
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time=50),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time=75)
+    ]
+    for item in items:
+        table.put_item(Item=item)
+
+    login(client)
+    response = client.get(JOBS_URI, query_string={'start': 50})
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json['jobs']) == 2
+    assert items[0] in response.json['jobs']
+    assert items[1] in response.json['jobs']
+
+    response = client.get(JOBS_URI, query_string={'start': 75})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': [items[1]]}
+
+    response = client.get(JOBS_URI, query_string={'start': 76})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': []}
+
+
 def test_not_logged_in(client):
     response = submit_batch(client)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED

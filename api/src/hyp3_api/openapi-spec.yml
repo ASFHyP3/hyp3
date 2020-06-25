@@ -34,6 +34,10 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/status_code"
+        - name: start
+          in: query
+          schema:
+            $ref: "#/components/schemas/datetime"
       responses:
         "200":
           description: 200 response
