@@ -239,17 +239,17 @@ def test_list_jobs_by_start(client, table):
         table.put_item(Item=item)
 
     login(client)
-    response = client.get(JOBS_URI, query_string={'start': 30})
+    response = client.get(JOBS_URI, query_string={'start': 50})
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json['jobs']) == 2
     assert items[0] in response.json['jobs']
     assert items[1] in response.json['jobs']
 
-    response = client.get(JOBS_URI, query_string={'start': 60})
+    response = client.get(JOBS_URI, query_string={'start': 75})
     assert response.status_code == status.HTTP_200_OK
     assert response.json['jobs'][0] == items[1]
 
-    response = client.get(JOBS_URI, query_string={'start': 80})
+    response = client.get(JOBS_URI, query_string={'start': 76})
     assert response.status_code == status.HTTP_200_OK
     assert response.json == {'jobs': []}
 
