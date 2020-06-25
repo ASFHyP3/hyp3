@@ -247,7 +247,7 @@ def test_list_jobs_by_start(client, table):
 
     response = client.get(JOBS_URI, query_string={'start': 75})
     assert response.status_code == status.HTTP_200_OK
-    assert response.json['jobs'][0] == items[1]
+    assert response.json['jobs'] == {'jobs': [items[1]]}
 
     response = client.get(JOBS_URI, query_string={'start': 76})
     assert response.status_code == status.HTTP_200_OK
