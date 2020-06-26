@@ -9,7 +9,7 @@ def test_submit_one_job(client, table):
     login(client)
     response = submit_batch(client)
     assert response.status_code == status.HTTP_200_OK
-    jobs = response.get_json()['jobs']
+    jobs = response.json['jobs']
     assert len(jobs) == 1
     assert jobs[0]['status_code'] == 'PENDING'
     assert jobs[0]['request_time'] == int(time())
@@ -23,7 +23,7 @@ def test_submit_many_jobs(client, table):
     batch = [make_job() for ii in range(max_jobs)]
     response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_200_OK
-    jobs = response.get_json()['jobs']
+    jobs = response.json['jobs']
     distinct_request_times = {job['request_time'] for job in jobs}
     assert len(jobs) == max_jobs
     assert len(distinct_request_times) == 1
