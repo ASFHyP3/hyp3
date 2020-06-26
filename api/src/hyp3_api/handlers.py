@@ -1,15 +1,15 @@
-from dateutil.parser import parse
 from datetime import datetime
 from decimal import Decimal
 from os import environ
 from uuid import uuid4
 
+import pytz
 from boto3.dynamodb.conditions import Attr, Key
 from connexion import context, problem
 from connexion.apps.flask_app import FlaskJSONEncoder
+from dateutil.parser import parse
 from flask_cors import CORS
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
-import pytz
 
 
 class DecimalEncoder(FlaskJSONEncoder):
