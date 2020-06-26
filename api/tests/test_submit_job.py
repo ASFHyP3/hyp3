@@ -1,9 +1,8 @@
-from time import time
 from os import environ
-
-from flask_api import status
+from time import time
 
 from conftest import DEFAULT_USERNAME, login, make_db_record, make_job, submit_batch
+from flask_api import status
 
 
 def test_submit_one_job(client, table):

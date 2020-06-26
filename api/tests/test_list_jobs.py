@@ -1,8 +1,5 @@
+from conftest import JOBS_URI, login, make_db_record
 from flask_api import status
-
-from hyp3_api import auth
-
-from conftest import AUTH_COOKIE, DEFAULT_USERNAME, JOBS_URI, login, make_db_record, make_job, submit_batch
 
 
 def test_list_jobs(client, table):
