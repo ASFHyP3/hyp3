@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from os import environ
 from time import time
 
@@ -12,7 +13,7 @@ def test_submit_one_job(client, table):
     jobs = response.get_json()['jobs']
     assert len(jobs) == 1
     assert jobs[0]['status_code'] == 'PENDING'
-    assert jobs[0]['request_time'] == int(time())
+    assert jobs[0]['request_time'] <= datetime.utcnow().isoformat('T')
     assert jobs[0]['user_id'] == DEFAULT_USERNAME
 
 
@@ -35,9 +36,9 @@ def test_submit_many_jobs(client, table):
 
 def test_submit_exceeds_quota(client, table):
     login(client)
-    seconds_in_32_days = 2764800
+    time_for_previous_month = (datetime.utcnow() - timedelta(days=32)).isoformat('T')
     job_from_previous_month = make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266',
-                                             request_time=int(time()) - seconds_in_32_days)
+                                             request_time=time_for_previous_month)
     table.put_item(Item=job_from_previous_month)
 
     batch = [make_job() for ii in range(int(environ['MONTHLY_JOB_QUOTA_PER_USER']))]

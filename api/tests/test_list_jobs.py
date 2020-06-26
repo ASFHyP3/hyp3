@@ -75,23 +75,23 @@ def test_list_jobs_bad_status(client):
 
 def test_list_jobs_by_start(client, table):
     items = [
-        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time=50),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time=75)
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T15:00:00'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T15:00:10')
     ]
     for item in items:
         table.put_item(Item=item)
 
     login(client)
-    response = client.get(JOBS_URI, query_string={'start': 50})
+    response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:00'})
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json['jobs']) == 2
     assert items[0] in response.json['jobs']
     assert items[1] in response.json['jobs']
 
-    response = client.get(JOBS_URI, query_string={'start': 75})
+    response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:10'})
     assert response.status_code == status.HTTP_200_OK
     assert response.json == {'jobs': [items[1]]}
 
-    response = client.get(JOBS_URI, query_string={'start': 76})
+    response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:11'})
     assert response.status_code == status.HTTP_200_OK
     assert response.json == {'jobs': []}
