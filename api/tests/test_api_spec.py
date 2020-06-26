@@ -3,6 +3,13 @@ from flask_api import status
 from hyp3_api import auth
 
 
+def test_options(client):
+    response = client.options(JOBS_URI)
+    assert response.status_code == status.HTTP_200_OK
+    allowed_methods = response.headers['allow'].split(', ')
+    assert sorted(allowed_methods) == ['GET', 'HEAD', 'OPTIONS', 'POST']
+
+
 def test_not_logged_in(client):
     for method in ['POST', 'GET', 'HEAD']:
         response = client.open(JOBS_URI, method=method)
