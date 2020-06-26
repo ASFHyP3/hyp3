@@ -1,6 +1,5 @@
 from os import environ, path
 
-import boto3
 import pytest
 import yaml
 from moto import mock_dynamodb2
@@ -24,7 +23,6 @@ def client():
 def table():
     table_properties = get_table_properties_from_template()
     with mock_dynamodb2():
-        boto3.setup_default_session()
         table = DYNAMODB_RESOURCE.create_table(
             TableName=environ['TABLE_NAME'],
             **table_properties,
@@ -55,6 +53,12 @@ def make_job(granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_02
     return job
 
 
+def submit_batch(client, batch=None):
+    if batch is None:
+        batch = [make_job()]
+    return client.post(JOBS_URI, json={'jobs': batch})
+
+
 def make_db_record(job_id,
                    granule='S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B',
                    job_type='RTC_GAMMA',
@@ -78,12 +82,6 @@ def make_db_record(job_id,
     if expiration_time is not None:
         record['expiration_time'] = expiration_time
     return record
-
-
-def submit_batch(client, batch=None):
-    if batch is None:
-        batch = [make_job()]
-    return client.post(JOBS_URI, json={'jobs': batch})
 
 
 def login(client, username=DEFAULT_USERNAME, authorized=True):
