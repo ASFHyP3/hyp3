@@ -1,8 +1,7 @@
 from dateutil.parser import parse
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 from os import environ
-from time import time
 from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
@@ -10,6 +9,7 @@ from connexion import context, problem
 from connexion.apps.flask_app import FlaskJSONEncoder
 from flask_cors import CORS
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
+import pytz
 
 
 class DecimalEncoder(FlaskJSONEncoder):
@@ -53,8 +53,9 @@ def get_jobs(user, start=None, status_code=None):
 
     key_expression = Key('user_id').eq(user)
     if start is not None:
-        formatted_start = parse(start).isoformat('T')
-        key_expression &= Key('request_time').gte(formatted_start)
+        datetime_start = parse(start)
+        utc_start = convert_to_utc(datetime_start)
+        key_expression &= Key('request_time').gte(utc_start.isoformat('T'))
 
     filter_expression = Attr('job_id').exists()
     if status_code is not None:
@@ -67,6 +68,13 @@ def get_jobs(user, start=None, status_code=None):
     )
 
     return {'jobs': response['Items']}
+
+
+def convert_to_utc(time: datetime):
+    if time.tzinfo is not None:
+        return time.astimezone(pytz.UTC)
+    else:
+        return time
 
 
 def check_quota_for_user(user, number_of_jobs):
