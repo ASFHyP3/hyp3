@@ -157,6 +157,7 @@ components:
 
     datetime:
       type: string
+      format: date-time
       example: 2020-06-04T18:00:03.548Z
 
     status_code:
