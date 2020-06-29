@@ -75,8 +75,8 @@ def test_list_jobs_bad_status(client):
 
 def test_list_jobs_by_start(client, table):
     items = [
-        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T15:00:00'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T15:00:10')
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T15:00:00.000000'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T15:00:10.000000')
     ]
     for item in items:
         table.put_item(Item=item)
@@ -99,8 +99,8 @@ def test_list_jobs_by_start(client, table):
 
 def test_list_jobs_by_start_timezones(client, table):
     items = [
-        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T10:00:00'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T10:00:10')
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T10:00:00.000000'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T10:00:10.000000')
     ]
     for item in items:
         table.put_item(Item=item)
