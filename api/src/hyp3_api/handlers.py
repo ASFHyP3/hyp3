@@ -35,7 +35,7 @@ def post_jobs(body, user):
     except QuotaError as e:
         return problem(400, 'Bad Request', str(e))
 
-    request_time = datetime.utcnow().isoformat('T')
+    request_time = datetime.utcnow().isoformat('T') + 'Z'
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
 
     for job in body['jobs']:
