@@ -55,8 +55,8 @@ def test_list_jobs_by_status(client, table):
     login(client)
     response = client.get(JOBS_URI, query_string={'status_code': 'RUNNING'})
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json['jobs']) == 1
     assert response.json['jobs'][0] == items[0]
+    assert len(response.json['jobs']) == 1
 
     response = client.get(JOBS_URI, query_string={'status_code': 'FAILED'})
     assert response.status_code == status.HTTP_200_OK
@@ -84,9 +84,9 @@ def test_list_jobs_by_start(client, table):
     login(client)
     response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:00Z'})
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json['jobs']) == 2
     assert items[0] in response.json['jobs']
     assert items[1] in response.json['jobs']
+    assert len(response.json['jobs']) == 2
 
     response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:10Z'})
     assert response.status_code == status.HTTP_200_OK
@@ -120,9 +120,16 @@ def test_list_jobs_by_start_formats(client, table):
     for date in dates:
         response = client.get(JOBS_URI, query_string={'start': date})
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.json['jobs']) == 2
         assert items[1] in response.json['jobs']
         assert items[2] in response.json['jobs']
+        assert len(response.json['jobs']) == 2
+
+        response = client.get(JOBS_URI, query_string={'end': date})
+        print(response.json)
+        assert response.status_code == status.HTTP_200_OK
+        assert items[0] in response.json['jobs']
+        assert items[1] in response.json['jobs']
+        assert len(response.json['jobs']) == 2
 
 
 def test_bad_date_formats(client):
@@ -142,4 +149,6 @@ def test_bad_date_formats(client):
     login(client)
     for bad_date in bad_dates:
         response = client.get(JOBS_URI, query_string={'start': bad_date})
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        response = client.get(JOBS_URI, query_string={'end': bad_date})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
