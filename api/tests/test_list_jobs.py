@@ -97,7 +97,7 @@ def test_list_jobs_by_start(client, table):
     assert response.json == {'jobs': []}
 
 
-def test_list_jobs_by_start_timezones(client, table):
+def test_list_jobs_by_start_formats(client, table):
     items = [
         make_db_record('874f7533-807d-4b20-afe1-27b5b6fc9d6c', request_time='2019-12-31T10:00:00Z'),
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T10:00:10Z'),
@@ -106,13 +106,19 @@ def test_list_jobs_by_start_timezones(client, table):
     for item in items:
         table.put_item(Item=item)
 
-    dates_with_timezones = [
-        '2019-12-31T11:00:10+01:00',
+    dates = [
         '2019-12-31T10:00:10Z',
+        '2019-12-31T10:00:10.000Z',
+        '2019-12-31T10:00:10.999999Z',
+        '2019-12-31T11:00:10+01:00',
+        '2019-12-31T09:00:10-01:00',
+        '2020-01-01T09:00:10+23:00',
+        '2019-12-30T11:00:10-23:00',
+        '2019-12-31T11:30:10+01:30',
     ]
     login(client)
-    for date_with_timezone in dates_with_timezones:
-        response = client.get(JOBS_URI, query_string={'start': date_with_timezone})
+    for date in dates:
+        response = client.get(JOBS_URI, query_string={'start': date})
         assert response.status_code == status.HTTP_200_OK
         assert len(response.json['jobs']) == 2
         assert items[1] in response.json['jobs']
@@ -129,20 +135,11 @@ def test_bad_date_formats(client):
       '2020-01-01'
       '2020-01-01T00:00:00+25:00',
       '2020-01-01T00:00:00',
+      '2020-01-01T00:00:00+01',
+      '2020-01-01T00:00:00+0100',
+      '2020-01-01T00:00:00-24:00',
     ]
     login(client)
     for bad_date in bad_dates:
         response = client.get(JOBS_URI, query_string={'start': bad_date})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-
-def test_good_date_formats(client, table):
-    good_dates = [
-      '2020-01-01T00:00:00Z',
-      '2020-01-01T00:00:00+01:00',
-      '2020-01-01T00:00:00.123456Z',
-    ]
-    login(client)
-    for good_date in good_dates:
-        response = client.get(JOBS_URI, query_string={'start': good_date})
-        assert response.status_code == status.HTTP_200_OK
