@@ -51,8 +51,7 @@ def test_list_jobs_by_status(client, table):
     login(client)
     response = client.get(JOBS_URI, query_string={'status_code': 'RUNNING'})
     assert response.status_code == status.HTTP_200_OK
-    assert response.json['jobs'][0] == items[0]
-    assert len(response.json['jobs']) == 1
+    assert response.json == {'jobs': [items[0]]}
 
     response = client.get(JOBS_URI, query_string={'status_code': 'FAILED'})
     assert response.status_code == status.HTTP_200_OK
