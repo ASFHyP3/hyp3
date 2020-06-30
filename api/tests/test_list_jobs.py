@@ -25,16 +25,12 @@ def test_list_jobs(client, table):
     login(client, 'user_with_jobs')
     response = client.get(JOBS_URI)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json == {
-        'jobs': items,
-    }
+    assert response.json == {'jobs': items}
 
     login(client, 'user_without_jobs')
     response = client.get(JOBS_URI)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json == {
-        'jobs': [],
-    }
+    assert response.json == {'jobs': []}
 
 
 def test_list_jobs_not_authorized(client, table):
@@ -130,6 +126,7 @@ def test_list_jobs_by_start_formats(client, table):
 
 
 def test_bad_date_formats(client):
+    datetime_parameters = ['start', 'end']
     bad_dates = [
       '',
       'foo',
@@ -143,9 +140,8 @@ def test_bad_date_formats(client):
       '2020-01-01T00:00:00+0100',
       '2020-01-01T00:00:00-24:00',
     ]
-    datetime_parameters = ['start', 'end']
     login(client)
-    for bad_date in bad_dates:
-        for datetime_parameter in datetime_parameters:
+    for datetime_parameter in datetime_parameters:
+        for bad_date in bad_dates:
             response = client.get(JOBS_URI, query_string={datetime_parameter: bad_date})
             assert response.status_code == status.HTTP_400_BAD_REQUEST
