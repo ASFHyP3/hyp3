@@ -84,9 +84,7 @@ def test_list_jobs_by_start(client, table):
     login(client)
     response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:00+00:00'})
     assert response.status_code == status.HTTP_200_OK
-    assert items[0] in response.json['jobs']
-    assert items[1] in response.json['jobs']
-    assert len(response.json['jobs']) == 2
+    assert response.json == {'jobs': items}
 
     response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:10Z'})
     assert response.status_code == status.HTTP_200_OK
@@ -120,15 +118,11 @@ def test_list_jobs_by_start_formats(client, table):
     for date in dates:
         response = client.get(JOBS_URI, query_string={'start': date})
         assert response.status_code == status.HTTP_200_OK
-        assert items[1] in response.json['jobs']
-        assert items[2] in response.json['jobs']
-        assert len(response.json['jobs']) == 2
+        assert response.json == {'jobs': items[1:]}
 
         response = client.get(JOBS_URI, query_string={'end': date})
         assert response.status_code == status.HTTP_200_OK
-        assert items[0] in response.json['jobs']
-        assert items[1] in response.json['jobs']
-        assert len(response.json['jobs']) == 2
+        assert response.json == {'jobs': items[:2]}
 
         response = client.get(JOBS_URI, query_string={'start': date, 'end': date})
         assert response.status_code == status.HTTP_200_OK
@@ -149,9 +143,9 @@ def test_bad_date_formats(client):
       '2020-01-01T00:00:00+0100',
       '2020-01-01T00:00:00-24:00',
     ]
+    datetime_parameters = ['start', 'end']
     login(client)
     for bad_date in bad_dates:
-        response = client.get(JOBS_URI, query_string={'start': bad_date})
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        response = client.get(JOBS_URI, query_string={'end': bad_date})
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        for datetime_parameter in datetime_parameters:
+            response = client.get(JOBS_URI, query_string={datetime_parameter: bad_date})
+            assert response.status_code == status.HTTP_400_BAD_REQUEST
