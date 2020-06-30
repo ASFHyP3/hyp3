@@ -83,7 +83,7 @@ def check_quota_for_user(user, number_of_jobs):
 
 
 def get_job_count_for_month(user):
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     start_of_month = datetime(year=now.year, month=now.month, day=1, tzinfo=timezone.utc)
     response = get_jobs(user, format_time(start_of_month))
     return len(response['jobs'])
