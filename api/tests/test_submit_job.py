@@ -4,6 +4,8 @@ from os import environ
 from conftest import DEFAULT_USERNAME, login, make_db_record, make_job, submit_batch
 from flask_api import status
 
+from hyp3_api.handlers import format_time
+
 
 def test_submit_one_job(client, table):
     login(client)
@@ -12,7 +14,7 @@ def test_submit_one_job(client, table):
     jobs = response.get_json()['jobs']
     assert len(jobs) == 1
     assert jobs[0]['status_code'] == 'PENDING'
-    assert jobs[0]['request_time'] <= datetime.utcnow().isoformat(timespec='seconds') + 'Z'
+    assert jobs[0]['request_time'] <= format_time(datetime.utcnow())
     assert jobs[0]['user_id'] == DEFAULT_USERNAME
 
 

@@ -35,7 +35,7 @@ def post_jobs(body, user):
     except QuotaError as e:
         return problem(400, 'Bad Request', str(e))
 
-    request_time = datetime.utcnow().isoformat(timespec='seconds') + 'Z'
+    request_time = format_time(datetime.utcnow())
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
 
     for job in body['jobs']:
@@ -55,7 +55,7 @@ def get_jobs(user, start=None, status_code=None):
     if start is not None:
         datetime_start = parse(start)
         utc_start = convert_to_utc(datetime_start)
-        key_expression &= Key('request_time').gte(utc_start.isoformat(timespec='seconds'))
+        key_expression &= Key('request_time').gte(format_time(utc_start))
 
     filter_expression = Attr('job_id').exists()
     if status_code is not None:
@@ -68,6 +68,10 @@ def get_jobs(user, start=None, status_code=None):
     )
 
     return {'jobs': response['Items']}
+
+
+def format_time(time: datetime):
+    return time.isoformat(timespec='seconds') + 'Z'
 
 
 def convert_to_utc(time: datetime):
@@ -88,7 +92,7 @@ def check_quota_for_user(user, number_of_jobs):
 def get_job_count_for_month(user):
     now = datetime.utcnow()
     start_of_month = datetime(year=now.year, month=now.month, day=1)
-    response = get_jobs(user, start_of_month.isoformat(timespec='seconds'))
+    response = get_jobs(user, format_time(start_of_month))
     return len(response['jobs'])
 
 
