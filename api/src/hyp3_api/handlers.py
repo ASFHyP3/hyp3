@@ -73,15 +73,11 @@ def get_jobs(user, start=None, end=None, status_code=None):
 
 
 def format_time(time: datetime):
-    utc_time = convert_to_utc(time)
-    return utc_time.isoformat(timespec='seconds') + 'Z'
-
-
-def convert_to_utc(time: datetime):
     if time.tzinfo is not None:
-        return time.astimezone(pytz.UTC)
+        utc_time = time.astimezone(pytz.UTC)
+        return utc_time.isoformat(timespec='seconds')
     else:
-        return time
+        return time.isoformat(timespec='seconds') + '+00:00'
 
 
 def check_quota_for_user(user, number_of_jobs):

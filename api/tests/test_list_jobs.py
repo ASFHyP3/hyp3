@@ -75,14 +75,14 @@ def test_list_jobs_bad_status(client):
 
 def test_list_jobs_by_start(client, table):
     items = [
-        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T15:00:00Z'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T15:00:10Z'),
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T15:00:00+00:00'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T15:00:10+00:00'),
     ]
     for item in items:
         table.put_item(Item=item)
 
     login(client)
-    response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:00Z'})
+    response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:00+00:00'})
     assert response.status_code == status.HTTP_200_OK
     assert items[0] in response.json['jobs']
     assert items[1] in response.json['jobs']
@@ -99,9 +99,9 @@ def test_list_jobs_by_start(client, table):
 
 def test_list_jobs_by_start_formats(client, table):
     items = [
-        make_db_record('874f7533-807d-4b20-afe1-27b5b6fc9d6c', request_time='2019-12-31T10:00:00Z'),
-        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T10:00:10Z'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T10:00:20Z'),
+        make_db_record('874f7533-807d-4b20-afe1-27b5b6fc9d6c', request_time='2019-12-31T10:00:00+00:00'),
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T10:00:10+00:00'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T10:00:20+00:00'),
     ]
     for item in items:
         table.put_item(Item=item)
