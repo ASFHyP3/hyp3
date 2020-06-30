@@ -91,7 +91,7 @@ def test_list_jobs_by_start(client, table):
     assert response.json == {'jobs': []}
 
 
-def test_list_jobs_by_start_formats(client, table):
+def test_list_jobs_date_formats(client, table):
     items = [
         make_db_record('874f7533-807d-4b20-afe1-27b5b6fc9d6c', request_time='2019-12-31T10:00:00+00:00'),
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T10:00:10+00:00'),
