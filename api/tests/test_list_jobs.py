@@ -111,3 +111,32 @@ def test_list_jobs_by_start_timezones(client, table):
     assert len(response.json['jobs']) == 2
     assert items[0] in response.json['jobs']
     assert items[1] in response.json['jobs']
+
+
+def test_bad_date_formats(client):
+    bad_dates = [
+      '',
+      'foo',
+      '2020-13-01T00:00:00Z',
+      '01-JAN-2020',
+      '01/01/2020',
+      '2020-01-01'
+      '2020-01-01T00:00:00+25:00',
+      '2020-01-01T00:00:00',
+    ]
+    login(client)
+    for bad_date in bad_dates:
+        response = client.get(JOBS_URI, query_string={'start': bad_date})
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_good_date_formats(client, table):
+    good_dates = [
+      '2020-01-01T00:00:00Z',
+      '2020-01-01T00:00:00+01:00',
+      '2020-01-01T00:00:00.123456Z',
+    ]
+    login(client)
+    for good_date in good_dates:
+        response = client.get(JOBS_URI, query_string={'start': good_date})
+        assert response.status_code == status.HTTP_200_OK
