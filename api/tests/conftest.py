@@ -63,9 +63,9 @@ def make_db_record(job_id,
                    granule='S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B',
                    job_type='RTC_GAMMA',
                    user_id=DEFAULT_USERNAME,
-                   request_time=1577836800,
+                   request_time='2019-12-31T15:00:00Z',
                    status_code='RUNNING',
-                   expiration_time=1577836800,
+                   expiration_time='2019-12-31T15:00:00Z',
                    files=None):
     record = {
         'job_id': job_id,

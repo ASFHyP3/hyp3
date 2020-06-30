@@ -8,4 +8,5 @@ cryptography
 serverless_wsgi
 Flask-Cors
 strict-rfc3339
+pytz
 PyYAML

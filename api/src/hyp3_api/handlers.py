@@ -1,12 +1,13 @@
 from datetime import datetime
 from decimal import Decimal
 from os import environ
-from time import time
 from uuid import uuid4
 
+import pytz
 from boto3.dynamodb.conditions import Attr, Key
 from connexion import context, problem
 from connexion.apps.flask_app import FlaskJSONEncoder
+from dateutil.parser import parse
 from flask_cors import CORS
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
 
@@ -34,7 +35,7 @@ def post_jobs(body, user):
     except QuotaError as e:
         return problem(400, 'Bad Request', str(e))
 
-    request_time = int(time())
+    request_time = format_time(datetime.utcnow())
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
 
     for job in body['jobs']:
@@ -52,7 +53,8 @@ def get_jobs(user, start=None, status_code=None):
 
     key_expression = Key('user_id').eq(user)
     if start is not None:
-        key_expression &= Key('request_time').gte(start)
+        datetime_start = parse(start)
+        key_expression &= Key('request_time').gte(format_time(datetime_start))
 
     filter_expression = Attr('job_id').exists()
     if status_code is not None:
@@ -63,7 +65,20 @@ def get_jobs(user, start=None, status_code=None):
         KeyConditionExpression=key_expression,
         FilterExpression=filter_expression,
     )
+
     return {'jobs': response['Items']}
+
+
+def format_time(time: datetime):
+    utc_time = convert_to_utc(time)
+    return utc_time.isoformat(timespec='seconds') + 'Z'
+
+
+def convert_to_utc(time: datetime):
+    if time.tzinfo is not None:
+        return time.astimezone(pytz.UTC)
+    else:
+        return time
 
 
 def check_quota_for_user(user, number_of_jobs):
@@ -77,7 +92,7 @@ def check_quota_for_user(user, number_of_jobs):
 def get_job_count_for_month(user):
     now = datetime.utcnow()
     start_of_month = datetime(year=now.year, month=now.month, day=1)
-    response = get_jobs(user, int(start_of_month.timestamp()))
+    response = get_jobs(user, format_time(start_of_month))
     return len(response['jobs'])
 
 
