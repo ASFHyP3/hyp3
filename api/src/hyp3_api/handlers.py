@@ -54,8 +54,7 @@ def get_jobs(user, start=None, status_code=None):
     key_expression = Key('user_id').eq(user)
     if start is not None:
         datetime_start = parse(start)
-        utc_start = convert_to_utc(datetime_start)
-        key_expression &= Key('request_time').gte(format_time(utc_start))
+        key_expression &= Key('request_time').gte(format_time(datetime_start))
 
     filter_expression = Attr('job_id').exists()
     if status_code is not None:
@@ -71,7 +70,8 @@ def get_jobs(user, start=None, status_code=None):
 
 
 def format_time(time: datetime):
-    return time.isoformat(timespec='seconds') + 'Z'
+    utc_time = convert_to_utc(time)
+    return utc_time.isoformat(timespec='seconds') + 'Z'
 
 
 def convert_to_utc(time: datetime):

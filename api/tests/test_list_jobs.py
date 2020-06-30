@@ -76,7 +76,7 @@ def test_list_jobs_bad_status(client):
 def test_list_jobs_by_start(client, table):
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T15:00:00Z'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T15:00:10Z')
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T15:00:10Z'),
     ]
     for item in items:
         table.put_item(Item=item)
@@ -99,18 +99,24 @@ def test_list_jobs_by_start(client, table):
 
 def test_list_jobs_by_start_timezones(client, table):
     items = [
-        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T10:00:00Z'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T10:00:10Z')
+        make_db_record('874f7533-807d-4b20-afe1-27b5b6fc9d6c', request_time='2019-12-31T10:00:00Z'),
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T10:00:10Z'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T10:00:20Z'),
     ]
     for item in items:
         table.put_item(Item=item)
 
+    dates_with_timezones = [
+        '2019-12-31T11:00:10+01:00',
+        '2019-12-31T10:00:10Z',
+    ]
     login(client)
-    response = client.get(JOBS_URI, query_string={'start': '2019-12-31T09:00:00+01:00'})
-    assert response.status_code == status.HTTP_200_OK
-    assert len(response.json['jobs']) == 2
-    assert items[0] in response.json['jobs']
-    assert items[1] in response.json['jobs']
+    for date_with_timezone in dates_with_timezones:
+        response = client.get(JOBS_URI, query_string={'start': date_with_timezone})
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.json['jobs']) == 2
+        assert items[1] in response.json['jobs']
+        assert items[2] in response.json['jobs']
 
 
 def test_bad_date_formats(client):
