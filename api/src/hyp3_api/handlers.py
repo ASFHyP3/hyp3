@@ -69,7 +69,7 @@ def get_jobs(user, start=None, end=None, status_code=None):
 
 def format_time(time: datetime):
     if time.tzinfo is None:
-        raise ValueError(f'no timezone provided for {time}')
+        raise ValueError(f'missing tzinfo for datetime {time}')
     utc_time = time.astimezone(timezone.utc)
     return utc_time.isoformat(timespec='seconds')
 
