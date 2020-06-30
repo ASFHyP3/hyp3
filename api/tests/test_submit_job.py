@@ -36,7 +36,7 @@ def test_submit_many_jobs(client, table):
 
 def test_submit_exceeds_quota(client, table):
     login(client)
-    time_for_previous_month = (datetime.utcnow() - timedelta(days=32)).isoformat('T')
+    time_for_previous_month = format_time(datetime.utcnow() - timedelta(days=32))
     job_from_previous_month = make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266',
                                              request_time=time_for_previous_month)
     table.put_item(Item=job_from_previous_month)
