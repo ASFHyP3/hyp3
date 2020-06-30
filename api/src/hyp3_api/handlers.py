@@ -52,16 +52,8 @@ def get_jobs(user, start=None, end=None, status_code=None):
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
-    if start is not None and end is not None:
-        formatted_start = format_time(parse(start))
-        formatted_end = format_time(parse(end))
-        key_expression &= Key('request_time').between(formatted_start, formatted_end)
-    elif start is not None:
-        formatted_start = format_time(parse(start))
-        key_expression &= Key('request_time').gte(formatted_start)
-    elif end is not None:
-        formatted_end = format_time(parse(end))
-        key_expression &= Key('request_time').lte(formatted_end)
+    if start is not None or end is not None:
+        key_expression &= get_request_time_expression(start, end)
 
     filter_expression = Attr('job_id').exists()
     if status_code is not None:
@@ -97,6 +89,19 @@ def get_job_count_for_month(user):
     start_of_month = datetime(year=now.year, month=now.month, day=1)
     response = get_jobs(user, format_time(start_of_month))
     return len(response['jobs'])
+
+
+def get_request_time_expression(start, end):
+    key = Key('request_time')
+    formatted_start = format_time(parse(start)) if start else None
+    formatted_end = format_time(parse(end)) if end else None
+
+    if formatted_start and formatted_end:
+        return key.between(formatted_start, formatted_end)
+    if formatted_start:
+        return key.gte(formatted_start)
+    if formatted_end:
+        return key.lte(formatted_end)
 
 
 connexion_app.app.json_encoder = DecimalEncoder
