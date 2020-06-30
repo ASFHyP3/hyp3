@@ -52,10 +52,14 @@ def get_jobs(user, start=None, end=None, status_code=None):
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
-    if start is not None:
+    if start is not None and end is not None:
+        formatted_start = format_time(parse(start))
+        formatted_end = format_time(parse(end))
+        key_expression &= Key('request_time').between(formatted_start, formatted_end)
+    elif start is not None:
         formatted_start = format_time(parse(start))
         key_expression &= Key('request_time').gte(formatted_start)
-    if end is not None:
+    elif end is not None:
         formatted_end = format_time(parse(end))
         key_expression &= Key('request_time').lte(formatted_end)
 

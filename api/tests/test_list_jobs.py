@@ -125,11 +125,14 @@ def test_list_jobs_by_start_formats(client, table):
         assert len(response.json['jobs']) == 2
 
         response = client.get(JOBS_URI, query_string={'end': date})
-        print(response.json)
         assert response.status_code == status.HTTP_200_OK
         assert items[0] in response.json['jobs']
         assert items[1] in response.json['jobs']
         assert len(response.json['jobs']) == 2
+
+        response = client.get(JOBS_URI, query_string={'start': date, 'end': date})
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json == {'jobs': [items[1]]}
 
 
 def test_bad_date_formats(client):
