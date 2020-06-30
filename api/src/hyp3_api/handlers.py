@@ -1,9 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from os import environ
 from uuid import uuid4
 
-import pytz
 from boto3.dynamodb.conditions import Attr, Key
 from connexion import context, problem
 from connexion.apps.flask_app import FlaskJSONEncoder
@@ -35,7 +34,7 @@ def post_jobs(body, user):
     except QuotaError as e:
         return problem(400, 'Bad Request', str(e))
 
-    request_time = format_time(datetime.utcnow())
+    request_time = format_time(datetime.now(timezone.utc))
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
 
     for job in body['jobs']:
@@ -69,11 +68,10 @@ def get_jobs(user, start=None, end=None, status_code=None):
 
 
 def format_time(time: datetime):
-    if time.tzinfo is not None:
-        utc_time = time.astimezone(pytz.UTC)
-        return utc_time.isoformat(timespec='seconds')
-    else:
-        return time.isoformat(timespec='seconds') + '+00:00'
+    if time.tzinfo is None:
+        raise ValueError(f'no timezone provided for {time}')
+    utc_time = time.astimezone(timezone.utc)
+    return utc_time.isoformat(timespec='seconds')
 
 
 def check_quota_for_user(user, number_of_jobs):
@@ -86,7 +84,7 @@ def check_quota_for_user(user, number_of_jobs):
 
 def get_job_count_for_month(user):
     now = datetime.utcnow()
-    start_of_month = datetime(year=now.year, month=now.month, day=1)
+    start_of_month = datetime(year=now.year, month=now.month, day=1, tzinfo=timezone.utc)
     response = get_jobs(user, format_time(start_of_month))
     return len(response['jobs'])
 
