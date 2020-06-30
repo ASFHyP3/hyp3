@@ -12,7 +12,7 @@ def test_submit_one_job(client, table):
     jobs = response.get_json()['jobs']
     assert len(jobs) == 1
     assert jobs[0]['status_code'] == 'PENDING'
-    assert jobs[0]['request_time'] <= datetime.utcnow().isoformat('T')
+    assert jobs[0]['request_time'] <= datetime.utcnow().isoformat(timespec='seconds') + 'Z'
     assert jobs[0]['user_id'] == DEFAULT_USERNAME
 
 
