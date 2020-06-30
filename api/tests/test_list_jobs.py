@@ -82,13 +82,35 @@ def test_list_jobs_by_start(client, table):
     assert response.status_code == status.HTTP_200_OK
     assert response.json == {'jobs': items}
 
-    response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:10Z'})
+    response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:10+00:00'})
     assert response.status_code == status.HTTP_200_OK
     assert response.json == {'jobs': [items[1]]}
 
-    response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:11Z'})
+    response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:11+00:00'})
     assert response.status_code == status.HTTP_200_OK
     assert response.json == {'jobs': []}
+
+
+def test_list_jobs_by_end(client, table):
+    items = [
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T15:00:00+00:00'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T15:00:10+00:00'),
+    ]
+    for item in items:
+        table.put_item(Item=item)
+
+    login(client)
+    response = client.get(JOBS_URI, query_string={'end': '2019-12-30T23:59:59+00:00'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': []}
+
+    response = client.get(JOBS_URI, query_string={'end': '2019-12-31T15:00:00+00:00'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': [items[0]]}
+
+    response = client.get(JOBS_URI, query_string={'end': '2019-12-31T15:00:10+00:00'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': items}
 
 
 def test_list_jobs_date_formats(client, table):
