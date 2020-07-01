@@ -1,12 +1,12 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from os import environ
-from time import time
 from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
 from connexion import context, problem
 from connexion.apps.flask_app import FlaskJSONEncoder
+from dateutil.parser import parse
 from flask_cors import CORS
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
 
@@ -34,7 +34,7 @@ def post_jobs(body, user):
     except QuotaError as e:
         return problem(400, 'Bad Request', str(e))
 
-    request_time = int(time())
+    request_time = format_time(datetime.now(timezone.utc))
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
 
     for job in body['jobs']:
@@ -47,12 +47,12 @@ def post_jobs(body, user):
     return body
 
 
-def get_jobs(user, start=None, status_code=None):
+def get_jobs(user, start=None, end=None, status_code=None):
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
-    if start is not None:
-        key_expression &= Key('request_time').gte(start)
+    if start is not None or end is not None:
+        key_expression &= get_request_time_expression(start, end)
 
     filter_expression = Attr('job_id').exists()
     if status_code is not None:
@@ -63,7 +63,15 @@ def get_jobs(user, start=None, status_code=None):
         KeyConditionExpression=key_expression,
         FilterExpression=filter_expression,
     )
+
     return {'jobs': response['Items']}
+
+
+def format_time(time: datetime):
+    if time.tzinfo is None:
+        raise ValueError(f'missing tzinfo for datetime {time}')
+    utc_time = time.astimezone(timezone.utc)
+    return utc_time.isoformat(timespec='seconds')
 
 
 def check_quota_for_user(user, number_of_jobs):
@@ -75,10 +83,23 @@ def check_quota_for_user(user, number_of_jobs):
 
 
 def get_job_count_for_month(user):
-    now = datetime.utcnow()
-    start_of_month = datetime(year=now.year, month=now.month, day=1)
-    response = get_jobs(user, int(start_of_month.timestamp()))
+    now = datetime.now(timezone.utc)
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    response = get_jobs(user, format_time(start_of_month))
     return len(response['jobs'])
+
+
+def get_request_time_expression(start, end):
+    key = Key('request_time')
+    formatted_start = (format_time(parse(start)) if start else None)
+    formatted_end = (format_time(parse(end)) if end else None)
+
+    if formatted_start and formatted_end:
+        return key.between(formatted_start, formatted_end)
+    if formatted_start:
+        return key.gte(formatted_start)
+    if formatted_end:
+        return key.lte(formatted_end)
 
 
 connexion_app.app.json_encoder = DecimalEncoder

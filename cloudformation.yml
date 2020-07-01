@@ -141,7 +141,7 @@ Resources:
         - AttributeName: status_code
           AttributeType: S
         - AttributeName: request_time
-          AttributeType: N
+          AttributeType: S
       KeySchema:
         - AttributeName: job_id
           KeyType: HASH
