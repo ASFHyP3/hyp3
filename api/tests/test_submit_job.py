@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from os import environ
 
 from conftest import DEFAULT_USERNAME, login, make_db_record, make_job, submit_batch
@@ -13,7 +13,7 @@ def test_submit_one_job(client, table):
     jobs = response.json['jobs']
     assert len(jobs) == 1
     assert jobs[0]['status_code'] == 'PENDING'
-    assert jobs[0]['request_time'] <= format_time(datetime.utcnow())
+    assert jobs[0]['request_time'] <= format_time(datetime.now(timezone.utc))
     assert jobs[0]['user_id'] == DEFAULT_USERNAME
 
 
@@ -36,7 +36,7 @@ def test_submit_many_jobs(client, table):
 
 def test_submit_exceeds_quota(client, table):
     login(client)
-    time_for_previous_month = format_time(datetime.utcnow() - timedelta(days=32))
+    time_for_previous_month = format_time(datetime.now(timezone.utc) - timedelta(days=32))
     job_from_previous_month = make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266',
                                              request_time=time_for_previous_month)
     table.put_item(Item=job_from_previous_month)

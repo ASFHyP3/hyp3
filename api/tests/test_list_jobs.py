@@ -25,16 +25,12 @@ def test_list_jobs(client, table):
     login(client, 'user_with_jobs')
     response = client.get(JOBS_URI)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json == {
-        'jobs': items,
-    }
+    assert response.json == {'jobs': items}
 
     login(client, 'user_without_jobs')
     response = client.get(JOBS_URI)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json == {
-        'jobs': [],
-    }
+    assert response.json == {'jobs': []}
 
 
 def test_list_jobs_not_authorized(client, table):
@@ -55,8 +51,7 @@ def test_list_jobs_by_status(client, table):
     login(client)
     response = client.get(JOBS_URI, query_string={'status_code': 'RUNNING'})
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json['jobs']) == 1
-    assert response.json['jobs'][0] == items[0]
+    assert response.json == {'jobs': [items[0]]}
 
     response = client.get(JOBS_URI, query_string={'status_code': 'FAILED'})
     assert response.status_code == status.HTTP_200_OK
@@ -73,35 +68,11 @@ def test_list_jobs_bad_status(client):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_list_jobs_by_start(client, table):
+def test_list_jobs_date_start_and_end(client, table):
     items = [
-        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T15:00:00Z'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T15:00:10Z'),
-    ]
-    for item in items:
-        table.put_item(Item=item)
-
-    login(client)
-    response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:00Z'})
-    assert response.status_code == status.HTTP_200_OK
-    assert len(response.json['jobs']) == 2
-    assert items[0] in response.json['jobs']
-    assert items[1] in response.json['jobs']
-
-    response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:10Z'})
-    assert response.status_code == status.HTTP_200_OK
-    assert response.json == {'jobs': [items[1]]}
-
-    response = client.get(JOBS_URI, query_string={'start': '2019-12-31T15:00:11Z'})
-    assert response.status_code == status.HTTP_200_OK
-    assert response.json == {'jobs': []}
-
-
-def test_list_jobs_by_start_formats(client, table):
-    items = [
-        make_db_record('874f7533-807d-4b20-afe1-27b5b6fc9d6c', request_time='2019-12-31T10:00:00Z'),
-        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T10:00:10Z'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T10:00:20Z'),
+        make_db_record('874f7533-807d-4b20-afe1-27b5b6fc9d6c', request_time='2019-12-31T10:00:09+00:00'),
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T10:00:10+00:00'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T10:00:11+00:00'),
     ]
     for item in items:
         table.put_item(Item=item)
@@ -120,12 +91,19 @@ def test_list_jobs_by_start_formats(client, table):
     for date in dates:
         response = client.get(JOBS_URI, query_string={'start': date})
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.json['jobs']) == 2
-        assert items[1] in response.json['jobs']
-        assert items[2] in response.json['jobs']
+        assert response.json == {'jobs': items[1:]}
+
+        response = client.get(JOBS_URI, query_string={'end': date})
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json == {'jobs': items[:2]}
+
+        response = client.get(JOBS_URI, query_string={'start': date, 'end': date})
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json == {'jobs': [items[1]]}
 
 
 def test_bad_date_formats(client):
+    datetime_parameters = ['start', 'end']
     bad_dates = [
       '',
       'foo',
@@ -140,6 +118,7 @@ def test_bad_date_formats(client):
       '2020-01-01T00:00:00-24:00',
     ]
     login(client)
-    for bad_date in bad_dates:
-        response = client.get(JOBS_URI, query_string={'start': bad_date})
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+    for datetime_parameter in datetime_parameters:
+        for bad_date in bad_dates:
+            response = client.get(JOBS_URI, query_string={datetime_parameter: bad_date})
+            assert response.status_code == status.HTTP_400_BAD_REQUEST
