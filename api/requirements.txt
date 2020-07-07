@@ -8,5 +8,6 @@ PyJWT
 pytest
 PyYAML
 responses
+requests
 serverless_wsgi
 strict-rfc3339
