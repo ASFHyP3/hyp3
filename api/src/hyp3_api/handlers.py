@@ -129,7 +129,7 @@ def check_granules_exist(granules):
     found_granules = [entry['producer_granule_id'] for entry in response.json()['feed']['entry']]
     not_found_granules = set(granules) - set(found_granules)
     if not_found_granules:
-        raise CmrError(f'Requested scenes could not be found: {",".join(not_found_granules)}')
+        raise CmrError(f'Some requested scenes could not be found: {",".join(not_found_granules)}')
 
 
 connexion_app.app.json_encoder = DecimalEncoder
