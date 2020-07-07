@@ -92,10 +92,9 @@ def make_db_record(job_id,
 def setup_requests_mock(batch):
     granules = [job['job_parameters']['granule'] for job in batch]
     cmr_response = {
-        'feed':
-            {
+        'feed': {
                 'entry': [{'producer_granule_id': granule} for granule in granules]
-            }
+        }
     }
     responses.add(responses.GET, CMR_URL_RE, json.dumps(cmr_response))
 
