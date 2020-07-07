@@ -94,5 +94,5 @@ def test_submit_job_granule_does_not_exist(client, table):
     response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json['title'] == 'Bad Request'
-    assert response.json['detail'] == 'Requested scenes could not be found: ' \
+    assert response.json['detail'] == 'Some requested scenes could not be found: ' \
                                       'S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A'
