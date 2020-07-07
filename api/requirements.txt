@@ -7,5 +7,6 @@ moto
 PyJWT
 pytest
 PyYAML
+responses
 serverless_wsgi
 strict-rfc3339

@@ -1,9 +1,14 @@
+import json
+import re
 from datetime import datetime, timedelta, timezone
 from os import environ
 
 from conftest import DEFAULT_USERNAME, login, make_db_record, make_job, submit_batch
 from flask_api import status
 from hyp3_api.handlers import format_time
+import responses
+
+CMR_URL_RE = re.compile('https://cmr.earthdata.nasa.gov/search/granules.json.*')
 
 
 def test_submit_one_job(client, table):
@@ -72,3 +77,35 @@ def test_submit_job_with_empty_description(client):
     ]
     response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@responses.activate
+def test_submit_job_granule_does_not_exist(client):
+    cmr_query = {
+        'feed':
+            {
+                'entry': [
+                    {
+                        'producer_granule_id': 'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'
+                    },
+                    {
+                        'producer_granule_id': 'S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B'
+                    },
+                ],
+            },
+    }
+    responses.add(responses.GET, CMR_URL_RE, json.dumps(cmr_query))
+
+    batch = [
+        make_job('S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'),
+        make_job('S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B')
+    ]
+
+    response = submit_batch(client, batch)
+    assert response.status_code == status.HTTP_200_OK
+
+    submit_batch(client, ['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A'])
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json['title'] == 'Bad Request'
+    assert response.json['detail'] == 'Requested scenes could not be found: ' \
+                                      'S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A '
