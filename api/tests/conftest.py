@@ -1,6 +1,9 @@
+import json
+import re
 from os import environ, path
 
 import pytest
+import responses
 import yaml
 from moto import mock_dynamodb2
 
@@ -11,6 +14,8 @@ JOBS_URI = '/jobs'
 
 DEFAULT_JOB_ID = 'myJobId'
 DEFAULT_USERNAME = 'test_username'
+
+CMR_URL_RE = re.compile('https://cmr.earthdata.nasa.gov/search/granules.json.*')
 
 
 @pytest.fixture
@@ -82,6 +87,17 @@ def make_db_record(job_id,
     if expiration_time is not None:
         record['expiration_time'] = expiration_time
     return record
+
+
+def setup_requests_mock(batch):
+    granules = [job['job_parameters']['granule'] for job in batch]
+    cmr_response = {
+        'feed':
+            {
+                'entry': [{'producer_granule_id': granule} for granule in granules]
+            }
+    }
+    responses.add(responses.GET, CMR_URL_RE, json.dumps(cmr_response))
 
 
 def login(client, username=DEFAULT_USERNAME, authorized=True):
