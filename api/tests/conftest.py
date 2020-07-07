@@ -7,7 +7,7 @@ import responses
 import yaml
 from moto import mock_dynamodb2
 
-from hyp3_api import DYNAMODB_RESOURCE, auth, connexion_app  # noqa hyp3 must be imported here
+from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, connexion_app  # noqa hyp3 must be imported here
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
@@ -15,7 +15,7 @@ JOBS_URI = '/jobs'
 DEFAULT_JOB_ID = 'myJobId'
 DEFAULT_USERNAME = 'test_username'
 
-CMR_URL_RE = re.compile('https://cmr.earthdata.nasa.gov/search/granules.json.*')
+CMR_URL_RE = re.compile(f'{CMR_URL}.*')
 
 
 @pytest.fixture

@@ -9,7 +9,7 @@ from connexion import context, problem
 from connexion.apps.flask_app import FlaskJSONEncoder
 from dateutil.parser import parse
 from flask_cors import CORS
-from hyp3_api import DYNAMODB_RESOURCE, connexion_app
+from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, connexion_app
 
 
 class DecimalEncoder(FlaskJSONEncoder):
@@ -40,7 +40,8 @@ def post_jobs(body, user):
         return problem(400, 'Bad Request', str(e))
 
     try:
-        check_granules_exists([job['job_parameters']['granule'] for job in body['jobs']])
+        granules = [job['job_parameters']['granule'] for job in body['jobs']]
+        check_granules_exist(granules)
     except requests.HTTPError:
         pass
     except CmrError as e:
@@ -114,7 +115,7 @@ def get_request_time_expression(start, end):
         return key.lte(formatted_end)
 
 
-def check_granules_exists(granules):
+def check_granules_exist(granules):
     cmr_parameters = {
         'producer_granule_id': granules,
         'provider': 'ASF',
@@ -123,11 +124,11 @@ def check_granules_exists(granules):
             "C1327985661-ASF",  # SENTINEL-1B_SLC
         }
     }
-    response = requests.get('https://cmr.earthdata.nasa.gov/search/granules.json', params=cmr_parameters)
+    response = requests.get(CMR_URL, params=cmr_parameters)
     response.raise_for_status()
     found_granules = [entry['producer_granule_id'] for entry in response.json()['feed']['entry']]
-    if set(granules) != set(found_granules):
-        not_found_granules = [granule for granule in granules if granule not in found_granules]
+    not_found_granules = set(granules) - set(found_granules)
+    if not_found_granules:
         raise CmrError(f'Requested scenes could not be found: {",".join(not_found_granules)}')
 
 
