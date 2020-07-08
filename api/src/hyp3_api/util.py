@@ -54,12 +54,12 @@ def check_granules_exist(granules):
     cmr_parameters = {
         'producer_granule_id': granules,
         'provider': 'ASF',
-        'short_name': {
+        'short_name': [
             'SENTINEL-1A_SLC',
             'SENTINEL-1B_SLC',
-        }
+          ]
     }
-    response = requests.get(CMR_URL, params=cmr_parameters)
+    response = requests.post(CMR_URL, data=cmr_parameters)
     response.raise_for_status()
     found_granules = [entry['producer_granule_id'] for entry in response.json()['feed']['entry']]
     not_found_granules = set(granules) - set(found_granules)

@@ -96,7 +96,7 @@ def setup_requests_mock(batch):
                 'entry': [{'producer_granule_id': granule} for granule in granules]
         }
     }
-    responses.add(responses.GET, CMR_URL_RE, json.dumps(cmr_response))
+    responses.add(responses.POST, CMR_URL_RE, json.dumps(cmr_response))
 
 
 def login(client, username=DEFAULT_USERNAME, authorized=True):
