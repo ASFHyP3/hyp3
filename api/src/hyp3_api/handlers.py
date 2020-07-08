@@ -35,8 +35,8 @@ def post_jobs(body, user):
     try:
         granules = [job['job_parameters']['granule'] for job in body['jobs']]
         check_granules_exist(granules)
-    except requests.HTTPError:
-        pass
+    except requests.HTTPError as e:
+        print(f'WARN: CMR search failed: {e}')
     except CmrError as e:
         return problem(400, 'Bad Request', str(e))
 
