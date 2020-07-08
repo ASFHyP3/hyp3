@@ -1,16 +1,21 @@
+import json
+import re
 from os import environ, path
 
 import pytest
+import responses
 import yaml
 from moto import mock_dynamodb2
 
-from hyp3_api import DYNAMODB_RESOURCE, auth, connexion_app  # noqa hyp3 must be imported here
+from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, connexion_app  # noqa hyp3 must be imported here
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 
 DEFAULT_JOB_ID = 'myJobId'
 DEFAULT_USERNAME = 'test_username'
+
+CMR_URL_RE = re.compile(f'{CMR_URL}.*')
 
 
 @pytest.fixture
@@ -82,6 +87,16 @@ def make_db_record(job_id,
     if expiration_time is not None:
         record['expiration_time'] = expiration_time
     return record
+
+
+def setup_requests_mock(batch):
+    granules = [job['job_parameters']['granule'] for job in batch]
+    cmr_response = {
+        'feed': {
+                'entry': [{'producer_granule_id': granule} for granule in granules]
+        }
+    }
+    responses.add(responses.GET, CMR_URL_RE, json.dumps(cmr_response))
 
 
 def login(client, username=DEFAULT_USERNAME, authorized=True):

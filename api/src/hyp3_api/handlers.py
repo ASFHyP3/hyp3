@@ -3,12 +3,13 @@ from decimal import Decimal
 from os import environ
 from uuid import uuid4
 
+import requests
 from boto3.dynamodb.conditions import Attr, Key
 from connexion import context, problem
 from connexion.apps.flask_app import FlaskJSONEncoder
 from dateutil.parser import parse
 from flask_cors import CORS
-from hyp3_api import DYNAMODB_RESOURCE, connexion_app
+from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, connexion_app
 
 
 class DecimalEncoder(FlaskJSONEncoder):
@@ -24,6 +25,10 @@ class QuotaError(Exception):
     pass
 
 
+class CmrError(Exception):
+    pass
+
+
 def post_jobs(body, user):
     print(body)
     if not context['is_authorized']:
@@ -32,6 +37,14 @@ def post_jobs(body, user):
     try:
         check_quota_for_user(user, len(body['jobs']))
     except QuotaError as e:
+        return problem(400, 'Bad Request', str(e))
+
+    try:
+        granules = [job['job_parameters']['granule'] for job in body['jobs']]
+        check_granules_exist(granules)
+    except requests.HTTPError:
+        pass
+    except CmrError as e:
         return problem(400, 'Bad Request', str(e))
 
     request_time = format_time(datetime.now(timezone.utc))
@@ -100,6 +113,23 @@ def get_request_time_expression(start, end):
         return key.gte(formatted_start)
     if formatted_end:
         return key.lte(formatted_end)
+
+
+def check_granules_exist(granules):
+    cmr_parameters = {
+        'producer_granule_id': granules,
+        'provider': 'ASF',
+        'collection_concept_ids': {
+            "C1214470488-ASF",  # SENTINEL-1A_SLC
+            "C1327985661-ASF",  # SENTINEL-1B_SLC
+        }
+    }
+    response = requests.get(CMR_URL, params=cmr_parameters)
+    response.raise_for_status()
+    found_granules = [entry['producer_granule_id'] for entry in response.json()['feed']['entry']]
+    not_found_granules = set(granules) - set(found_granules)
+    if not_found_granules:
+        raise CmrError(f'Some requested scenes could not be found: {",".join(not_found_granules)}')
 
 
 connexion_app.app.json_encoder = DecimalEncoder
