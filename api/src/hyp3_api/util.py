@@ -54,9 +54,9 @@ def check_granules_exist(granules):
     cmr_parameters = {
         'producer_granule_id': granules,
         'provider': 'ASF',
-        'collection_concept_ids': {
-            "C1214470488-ASF",  # SENTINEL-1A_SLC
-            "C1327985661-ASF",  # SENTINEL-1B_SLC
+        'short_name': {
+            'SENTINEL-1A_SLC',
+            'SENTINEL-1B_SLC',
         }
     }
     response = requests.get(CMR_URL, params=cmr_parameters)
