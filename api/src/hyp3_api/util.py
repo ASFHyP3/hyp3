@@ -57,7 +57,7 @@ def check_granules_exist(granules):
         'short_name': [
             'SENTINEL-1A_SLC',
             'SENTINEL-1B_SLC',
-          ]
+        ],
     }
     response = requests.post(CMR_URL, data=cmr_parameters)
     response.raise_for_status()
