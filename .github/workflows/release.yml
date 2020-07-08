@@ -1,0 +1,21 @@
+on:
+  push:
+    tags:
+    - 'v*'
+
+name: Create Release
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release
+          uses: docker://antonyurchenko/git-release:latest
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            DRAFT_RELEASE: "false"
+            PRE_RELEASE: "false"
+            ALLOW_EMPTY_CHANGELOG: "false"
+            ALLOW_TAG_PREFIX: "true"
+            RELEASE_NAME_PREFIX: HYp3-
