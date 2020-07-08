@@ -3,7 +3,7 @@ from os import environ
 
 from conftest import DEFAULT_USERNAME, login, make_db_record, make_job, setup_requests_mock, submit_batch
 from flask_api import status
-from hyp3_api.handlers import format_time
+from hyp3_api.util import format_time
 
 
 def test_submit_one_job(client, table):
