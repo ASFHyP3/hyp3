@@ -124,6 +124,10 @@ components:
           $ref: "#/components/schemas/description"
         files:
           $ref: "#/components/schemas/list_of_files"
+        browse_images:
+          $ref: "#/components/schemas/list_of_urls"
+        thumbnail_images:
+          $ref: "#/components/schemas/list_of_urls"
         expiration_time:
           $ref: "#/components/schemas/datetime"
 
@@ -195,6 +199,11 @@ components:
             minimum: 0
           url:
             type: string
+
+    list_of_urls:
+      type: array
+      items:
+        type: string
 
   securitySchemes:
     EarthDataLogin:
