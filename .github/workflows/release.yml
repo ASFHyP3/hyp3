@@ -10,6 +10,7 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Release
         uses: docker://antonyurchenko/git-release:latest
         env:
