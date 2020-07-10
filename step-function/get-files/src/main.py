@@ -31,7 +31,7 @@ def lambda_handler(event, context):
         download_url = get_download_url(item['Key'])
         if item['Key'].startswith(f'{event["job_id"]}/browse/'):
             browse_images.append(download_url)
-        if item['Key'].startswith(f'{event["job_id"]}/thumbnail/'):
+        elif item['Key'].startswith(f'{event["job_id"]}/thumbnail/'):
             thumbnail_images.append(download_url)
         else:
             file = {
