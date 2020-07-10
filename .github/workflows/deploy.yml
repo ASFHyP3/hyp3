@@ -78,6 +78,29 @@ jobs:
                 "DomainName=${DOMAIN_NAME}" \
                 "CertificateArn=${CERTIFICATE_ARN}" \
                 "AuthGroupName=${AUTH_GROUP_NAME}"
+          
+      - name: Get associated PR
+        if: github.ref == 'refs/heads/master'
+        uses: helaili/github-graphql-action@2.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
+        with:
+          query: .github/queries/asssociated-pr.query.yml
+          outputFile: pr.json
+          owner: asfadmin
+          name: hyp3
+          sha: ${{ github.sha }}
+
+      - name: Get PR labels
+        if: github.ref == 'refs/heads/master'
+        uses: helaili/github-graphql-action@2.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
+        with:
+          query: .github/queries/pr-labels.query.yml
+          outputFile: labels.json
+          owner: asfadmin
+          name: hyp3
 
       - name: Tag version
         if: github.ref == 'refs/heads/master'
