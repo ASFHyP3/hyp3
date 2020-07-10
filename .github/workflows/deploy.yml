@@ -26,6 +26,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.TOOLS_BOT_PAK }}
 
       - if: endsWith(github.ref, '/develop')
         run: |
@@ -55,6 +58,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt -t src
+          pip install bump2version
 
       - run: |
           aws cloudformation package \
@@ -74,3 +78,19 @@ jobs:
                 "DomainName=${DOMAIN_NAME}" \
                 "CertificateArn=${CERTIFICATE_ARN}" \
                 "AuthGroupName=${AUTH_GROUP_NAME}"
+
+      - name: Tag version
+        if: github.ref == 'refs/heads/master'
+        run: |
+          git fetch origin +refs/tags/*:refs/tags/*
+          git config user.email "UAF-asf-apd@alaska.edu"
+          git config user.name "tools-bot"
+          LABEL_QUERY='.data.repository.pullRequest.labels.nodes[].name'
+          SELECT='select(. == "major" or . == "minor" or . == "patch")'
+          BUMP_PART=$(jq --raw-output  "${LABEL_QUERY} | ${SELECT}" labels.json | sort | head -1)
+          PR_QUERY='.data.repository.commit.associatedPullRequests.edges[0].node.title'
+          TAG_MSG=$(jq --raw-output "${PR_QUERY}"  pr.json)
+          bump2version --current-version $(git describe --abbrev=0) \
+              --tag --tag-message "${TAG_MSG}" "${BUMP_PART}"
+          git push --tags
+          echo "Tagged version $(git describe --abbrev=0) and pushed back to repo"
