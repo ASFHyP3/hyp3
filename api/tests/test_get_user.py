@@ -1,9 +1,8 @@
-from os import environ
 from datetime import datetime, timezone
+from os import environ
 
+from conftest import USER_URI, login, make_db_record
 from flask_api import status
-
-from conftest import USER_URI, make_db_record, login
 from hyp3_api.util import format_time
 
 
