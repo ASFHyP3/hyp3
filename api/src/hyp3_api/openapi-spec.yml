@@ -49,6 +49,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/jobs_response"
+  /user:
+    get:
+      operationId: hyp3_api.handlers.get_user
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
 
 components:
   schemas:
@@ -70,6 +80,26 @@ components:
       properties:
         jobs:
           $ref: "#/components/schemas/list_of_jobs"
+
+    user:
+      type: object
+      properties:
+        quota:
+          $ref: "#/components/schemas/quota"
+        user_id:
+          $ref: "#/components/schemas/user_id"
+        authorized:
+          type: boolean
+
+    quota:
+      type: object
+      properties:
+        limit:
+          type: integer
+          minimum: 0
+        remaining:
+          type: integer
+          minimum: 0
 
     list_of_new_jobs:
       type: array

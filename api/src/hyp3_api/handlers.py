@@ -10,7 +10,7 @@ from connexion.apps.flask_app import FlaskJSONEncoder
 from flask_cors import CORS
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
 from hyp3_api.util import CmrError, QuotaError, check_granules_exist, check_quota_for_user, format_time,\
-    get_request_time_expression
+    get_request_time_expression, get_remaining_jobs_for_user
 
 
 class DecimalEncoder(FlaskJSONEncoder):
@@ -69,8 +69,21 @@ def get_jobs(user, start=None, end=None, status_code=None):
         KeyConditionExpression=key_expression,
         FilterExpression=filter_expression,
     )
-
     return {'jobs': response['Items']}
+
+
+def get_user(user):
+    quota = {
+        'limit': int(environ['MONTHLY_JOB_QUOTA_PER_USER']),
+        'remaining': get_remaining_jobs_for_user(user)
+    }
+    authorized = context['is_authorized']
+    return {
+        'quota': quota,
+        'authorized': authorized,
+        'user_id': user,
+    }
+
 
 
 connexion_app.app.json_encoder = DecimalEncoder

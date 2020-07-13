@@ -22,6 +22,12 @@ def format_time(time: datetime):
     return utc_time.isoformat(timespec='seconds')
 
 
+def get_remaining_jobs_for_user(user):
+    previous_jobs = get_job_count_for_month(user)
+    quota = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
+    return quota - previous_jobs
+
+
 def check_quota_for_user(user, number_of_jobs):
     previous_jobs = get_job_count_for_month(user)
     quota = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
