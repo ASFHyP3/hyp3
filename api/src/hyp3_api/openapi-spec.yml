@@ -83,16 +83,23 @@ components:
 
     user:
       type: object
+      required:
+        - user_id
+        - authorized
+        - quota
       properties:
-        quota:
-          $ref: "#/components/schemas/quota"
         user_id:
           $ref: "#/components/schemas/user_id"
         authorized:
           type: boolean
+        quota:
+          $ref: "#/components/schemas/quota"
 
     quota:
       type: object
+      required:
+        - limit
+        - remaining
       properties:
         limit:
           type: integer
