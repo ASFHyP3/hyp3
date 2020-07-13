@@ -8,9 +8,6 @@ from hyp3_api.util import format_time
 
 QUOTA = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
 
-# TODO:
-# resets on
-# user with no jobs
 
 def test_get_user(client, table):
     request_time = format_time(datetime.now(timezone.utc))
