@@ -73,17 +73,23 @@ def get_jobs(user, start=None, end=None, status_code=None):
 
 
 def get_user(user):
-    quota = {
-        'limit': int(environ['MONTHLY_JOB_QUOTA_PER_USER']),
-        'remaining': get_remaining_jobs_for_user(user)
-    }
     authorized = context['is_authorized']
-    return {
-        'quota': quota,
-        'authorized': authorized,
-        'user_id': user,
-    }
 
+    if authorized:
+        limit = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
+        remaining = get_remaining_jobs_for_user(user)
+    else:
+        limit = 0
+        remaining = 0
+
+    return {
+        'user_id': user,
+        'authorized': authorized,
+        'quota': {
+            'limit': limit,
+            'remaining': remaining,
+        },
+    }
 
 
 connexion_app.app.json_encoder = DecimalEncoder
