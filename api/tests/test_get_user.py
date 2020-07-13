@@ -3,12 +3,11 @@ from datetime import datetime, timezone
 
 from flask_api import status
 
-from conftest import make_db_record, login
+from conftest import USER_URI, make_db_record, login
 from hyp3_api.util import format_time
-USER_URI = '/user'
+
 
 # TODO:
-# unauthorized user
 # resets on
 # user with no jobs
 # user with jobs > quota

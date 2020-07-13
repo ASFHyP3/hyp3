@@ -11,6 +11,7 @@ from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, connexion_app  # noqa hyp
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
+USER_URI = '/user'
 
 DEFAULT_JOB_ID = 'myJobId'
 DEFAULT_USERNAME = 'test_username'
