@@ -25,7 +25,8 @@ def format_time(time: datetime):
 def get_remaining_jobs_for_user(user):
     previous_jobs = get_job_count_for_month(user)
     quota = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
-    return quota - previous_jobs
+    remaining_jobs = quota - previous_jobs
+    return max(remaining_jobs, 0)
 
 
 def get_job_count_for_month(user):
