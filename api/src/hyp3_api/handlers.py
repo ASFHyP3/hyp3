@@ -9,7 +9,7 @@ from connexion import context, problem
 from connexion.apps.flask_app import FlaskJSONEncoder
 from flask_cors import CORS
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
-from hyp3_api.util import CmrError, QuotaError, check_granules_exist, check_quota_for_user, format_time,\
+from hyp3_api.util import CmrError, check_granules_exist, format_time, get_remaining_jobs_for_user,\
     get_request_time_expression
 
 
@@ -27,10 +27,10 @@ def post_jobs(body, user):
     if not context['is_authorized']:
         return problem(403, 'Forbidden', f'User {user} does not have permission to submit jobs.')
 
-    try:
-        check_quota_for_user(user, len(body['jobs']))
-    except QuotaError as e:
-        return problem(400, 'Bad Request', str(e))
+    quota = get_user(user)['quota']
+    if quota['remaining'] - len(body['jobs']) < 0:
+        message = 'Your monthly quota is {quota["limit"]} jobs. You have {quota["remaining"]} jobs remaining.'
+        return problem(400, 'Bad Request', message)
 
     try:
         granules = [job['job_parameters']['granule'] for job in body['jobs']]
@@ -69,8 +69,27 @@ def get_jobs(user, start=None, end=None, status_code=None):
         KeyConditionExpression=key_expression,
         FilterExpression=filter_expression,
     )
-
     return {'jobs': response['Items']}
+
+
+def get_user(user):
+    authorized = context['is_authorized']
+
+    if authorized:
+        limit = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
+        remaining = get_remaining_jobs_for_user(user)
+    else:
+        limit = 0
+        remaining = 0
+
+    return {
+        'user_id': user,
+        'authorized': authorized,
+        'quota': {
+            'limit': limit,
+            'remaining': remaining,
+        },
+    }
 
 
 connexion_app.app.json_encoder = DecimalEncoder
