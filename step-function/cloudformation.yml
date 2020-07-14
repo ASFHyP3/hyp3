@@ -73,6 +73,8 @@ Resources:
                 "job_id.$": "$.job_id",
                 "status_code": "SUCCEEDED",
                 "files.$": "$.results.get_files.files",
+                "browse_images.$": "$.results.get_files.browse_images",
+                "thumbnail_images.$": "$.results.get_files.thumbnail_images",
                 "expiration_time.$": "$.results.get_files.expiration_time"
               },
               "ResultPath": "$.results.job_succeeded",
