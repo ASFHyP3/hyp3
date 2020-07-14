@@ -15,9 +15,12 @@ def test_list_jobs(client, table):
             'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/bar.png',
         },
     ]
+    browse_images = ['https://mybucket.s3.us-west-2.amazonaws.com/prefix/browse/foo.png']
+    thumbnail_images = []
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', user_id='user_with_jobs'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', user_id='user_with_jobs', files=files)
+        make_db_record(job_id='27836b79-e5b2-4d8f-932f-659724ea02c3', user_id='user_with_jobs', files=files,
+                       browse_images=browse_images, thumbnail_images=thumbnail_images)
     ]
     for item in items:
         table.put_item(Item=item)
