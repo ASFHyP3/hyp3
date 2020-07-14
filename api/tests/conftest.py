@@ -11,6 +11,7 @@ from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, connexion_app  # noqa hyp
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
+USER_URI = '/user'
 
 DEFAULT_JOB_ID = 'myJobId'
 DEFAULT_USERNAME = 'test_username'
@@ -71,7 +72,9 @@ def make_db_record(job_id,
                    request_time='2019-12-31T15:00:00+00:00',
                    status_code='RUNNING',
                    expiration_time='2019-12-31T15:00:00+00:00',
-                   files=None):
+                   files=None,
+                   browse_images=None,
+                   thumbnail_images=None):
     record = {
         'job_id': job_id,
         'user_id': user_id,
@@ -84,6 +87,10 @@ def make_db_record(job_id,
     }
     if files is not None:
         record['files'] = files
+    if browse_images is not None:
+        record['browse_images'] = browse_images
+    if thumbnail_images is not None:
+        record['thumbnail_images'] = thumbnail_images
     if expiration_time is not None:
         record['expiration_time'] = expiration_time
     return record

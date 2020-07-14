@@ -19,4 +19,4 @@ jobs:
           PRE_RELEASE: "false"
           ALLOW_EMPTY_CHANGELOG: "false"
           ALLOW_TAG_PREFIX: "true"
-          RELEASE_NAME_PREFIX: HYp3-
+          RELEASE_NAME_PREFIX: HyP3-

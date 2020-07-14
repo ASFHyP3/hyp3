@@ -22,12 +22,11 @@ def format_time(time: datetime):
     return utc_time.isoformat(timespec='seconds')
 
 
-def check_quota_for_user(user, number_of_jobs):
+def get_remaining_jobs_for_user(user):
     previous_jobs = get_job_count_for_month(user)
     quota = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
-    job_count = previous_jobs + number_of_jobs
-    if job_count > quota:
-        raise QuotaError(f'Your monthly quota is {quota} jobs. You have {quota - previous_jobs} jobs remaining.')
+    remaining_jobs = quota - previous_jobs
+    return max(remaining_jobs, 0)
 
 
 def get_job_count_for_month(user):

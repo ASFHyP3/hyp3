@@ -1,19 +1,37 @@
-from conftest import AUTH_COOKIE, DEFAULT_USERNAME, JOBS_URI, login, make_job, submit_batch
+from conftest import AUTH_COOKIE, DEFAULT_USERNAME, JOBS_URI, USER_URI, login, make_job, submit_batch
 from flask_api import status
 from hyp3_api import auth
 
 
+ENDPOINTS = {
+    JOBS_URI: {'GET', 'HEAD', 'OPTIONS', 'POST'},
+    USER_URI: {'GET', 'HEAD', 'OPTIONS'},
+}
+
+
 def test_options(client):
-    response = client.options(JOBS_URI)
-    assert response.status_code == status.HTTP_200_OK
-    allowed_methods = response.headers['allow'].split(', ')
-    assert sorted(allowed_methods) == ['GET', 'HEAD', 'OPTIONS', 'POST']
+    all_methods = {'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE'}
+
+    login(client)
+    for uri, good_methods in ENDPOINTS.items():
+        response = client.options(uri)
+        assert response.status_code == status.HTTP_200_OK
+        allowed_methods = response.headers['allow'].split(', ')
+        assert set(allowed_methods) == good_methods
+
+        for bad_method in all_methods - good_methods:
+            response = client.open(uri, method=bad_method)
+            assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
 
 def test_not_logged_in(client):
-    for method in ['POST', 'GET', 'HEAD']:
-        response = client.open(JOBS_URI, method=method)
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    for uri, methods in ENDPOINTS.items():
+        for method in methods:
+            response = client.open(uri, method=method)
+            if method == 'OPTIONS':
+                assert response.status_code == status.HTTP_200_OK
+            else:
+                assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_logged_in_not_authorized(client):
@@ -24,15 +42,17 @@ def test_logged_in_not_authorized(client):
 
 
 def test_invalid_cookie(client):
-    client.set_cookie('localhost', AUTH_COOKIE, 'garbage I say!!! GARGBAGE!!!')
-    response = submit_batch(client)
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    for uri in ENDPOINTS:
+        client.set_cookie('localhost', AUTH_COOKIE, 'garbage I say!!! GARGBAGE!!!')
+        response = client.get(uri)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_expired_cookie(client):
-    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user', -1))
-    response = submit_batch(client)
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    for uri in ENDPOINTS:
+        client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user', -1))
+        response = client.get(uri)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_good_granule_names(client, table):
@@ -94,21 +114,16 @@ def test_bad_product_types(client):
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_jobs_bad_method(client):
-    for method in ['PUT', 'DELETE']:
-        response = client.open(JOBS_URI, method=method)
-        assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
-
-
 def test_no_route(client):
     response = client.get('/no/such/path')
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_cors_no_origin(client):
-    response = client.post(JOBS_URI)
-    assert 'Access-Control-Allow-Origin' not in response.headers
-    assert 'Access-Control-Allow-Credentials' not in response.headers
+    for uri in ENDPOINTS:
+        response = client.get(uri)
+        assert 'Access-Control-Allow-Origin' not in response.headers
+        assert 'Access-Control-Allow-Credentials' not in response.headers
 
 
 def test_cors_bad_origins(client):
@@ -116,10 +131,11 @@ def test_cors_bad_origins(client):
         'https://www.google.com',
         'https://www.alaska.edu',
     ]
-    for origin in bad_origins:
-        response = client.post(JOBS_URI, headers={'Origin': origin})
-        assert 'Access-Control-Allow-Origin' not in response.headers
-        assert 'Access-Control-Allow-Credentials' not in response.headers
+    for uri in ENDPOINTS:
+        for origin in bad_origins:
+            response = client.get(uri, headers={'Origin': origin})
+            assert 'Access-Control-Allow-Origin' not in response.headers
+            assert 'Access-Control-Allow-Credentials' not in response.headers
 
 
 def test_cors_good_origins(client):
@@ -128,7 +144,8 @@ def test_cors_good_origins(client):
         'https://search-test.asf.alaska.edu',
         'http://local.asf.alaska.edu',
     ]
-    for origin in good_origins:
-        response = client.post(JOBS_URI, headers={'Origin': origin})
-        assert response.headers['Access-Control-Allow-Origin'] == origin
-        assert response.headers['Access-Control-Allow-Credentials'] == 'true'
+    for uri in ENDPOINTS:
+        for origin in good_origins:
+            response = client.get(uri, headers={'Origin': origin})
+            assert response.headers['Access-Control-Allow-Origin'] == origin
+            assert response.headers['Access-Control-Allow-Credentials'] == 'true'

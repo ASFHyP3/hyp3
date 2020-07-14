@@ -22,14 +22,28 @@ def get_expiration_time(key):
 
 def lambda_handler(event, context):
     response = S3_CLIENT.list_objects_v2(Bucket=environ['BUCKET'], Prefix=event['job_id'])
-    return {
-        'expiration_time': get_expiration_time(response['Contents'][0]['Key']),
-        'files': [
-            {
-                'url': get_download_url(item['Key']),
+
+    files = []
+    browse_images = []
+    thumbnail_images = []
+
+    for item in response['Contents']:
+        download_url = get_download_url(item['Key'])
+        if item['Key'].startswith(f'{event["job_id"]}/browse/'):
+            browse_images.append(download_url)
+        elif item['Key'].startswith(f'{event["job_id"]}/thumbnail/'):
+            thumbnail_images.append(download_url)
+        else:
+            file = {
+                'url': download_url,
                 'size': item['Size'],
                 'filename': basename(item['Key']),
             }
-            for item in response['Contents']
-        ],
+            files.append(file)
+
+    return {
+        'expiration_time': get_expiration_time(response['Contents'][0]['Key']),
+        'files': files,
+        'browse_images': browse_images,
+        'thumbnail_images': thumbnail_images,
     }
