@@ -87,7 +87,7 @@ jobs:
         with:
           query: .github/queries/asssociated-pr.query.yml
           outputFile: pr.json
-          owner: asfadmin
+          owner: ASFHyP3
           name: hyp3
           sha: ${{ github.sha }}
 
@@ -99,7 +99,7 @@ jobs:
         with:
           query: .github/queries/pr-labels.query.yml
           outputFile: labels.json
-          owner: asfadmin
+          owner: ASFHyP3
           name: hyp3
 
       - name: Tag version
