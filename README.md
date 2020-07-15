@@ -1,6 +1,7 @@
 # hyp3
 ![Static code analysis](https://github.com/ASFHyP3/hyp3/workflows/Static%20code%20analysis/badge.svg)
 ![Deploy to AWS](https://github.com/ASFHyP3/hyp3/workflows/Deploy%20to%20AWS/badge.svg)
+![Run tests](https://github.com/ASFHyP3/hyp3/workflows/Run%20tests/badge.svg)
 
 A processing environment for running RTC Gamma container jobs in Amazon Web Services.
 
