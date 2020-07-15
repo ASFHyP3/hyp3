@@ -7,22 +7,15 @@ Parameters:
 
 Resources:
 
-  DeadLetterQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: !Ref AWS::StackName
-      MessageRetentionPeriod: 1209600
-
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}"
+      LogGroupName: !Sub "/aws/lambda/${Lambda}"
       RetentionInDays: 30
 
   Role:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Ref AWS::StackName
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -31,33 +24,27 @@ Resources:
             Service: lambda.amazonaws.com
           Effect: Allow
       Policies:
-      - PolicyName: policy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-          - Effect: Allow
-            Action:
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            Resource: !GetAtt LogGroup.Arn
-          - Effect: Allow
-            Action: sqs:SendMessage
-            Resource: !GetAtt DeadLetterQueue.Arn
-          - Effect: Allow
-            Action:
-            - batch:DescribeComputeEnvironments
-            - ecs:ListContainerInstances
-            - ecs:DescribeContainerInstances
-            - ec2:TerminateInstances
-            Resource: "*"
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+              - Effect: Allow
+                Action:
+                  - batch:DescribeComputeEnvironments
+                  - ecs:ListContainerInstances
+                  - ecs:DescribeContainerInstances
+                  - ec2:TerminateInstances
+                Resource: "*"
 
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Ref AWS::StackName
       Code: src/
-      DeadLetterConfig:
-        TargetArn: !GetAtt DeadLetterQueue.Arn
       Handler: main.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
@@ -74,15 +61,14 @@ Resources:
   Schedule:
     Type: AWS::Events::Rule
     Properties:
-      Name: !Ref AWS::StackName
       ScheduleExpression: "rate(1 minute)"
       Targets:
-      - Arn: !GetAtt Lambda.Arn
-        Id: lambda
-        Input: !Sub |-
-          {
-            "ComputeEnvironmentArn": "${ComputeEnvironmentArn}"
-          }
+        - Arn: !GetAtt Lambda.Arn
+          Id: lambda
+          Input: !Sub |-
+            {
+              "ComputeEnvironmentArn": "${ComputeEnvironmentArn}"
+            }
 
   EventPermission:
     Type: AWS::Lambda::Permission

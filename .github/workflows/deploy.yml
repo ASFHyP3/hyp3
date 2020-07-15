@@ -3,13 +3,13 @@ name: Deploy to AWS
 on:
   push:
     branches:
-    - master
-    - develop
+      - master
+      - develop
 
 env:
   AWS_REGION: us-west-2
   TEMPLATE_BUCKET: cf-templates-aubvn3i9olmk-us-west-2
-  RTC_GAMMA_REPOSITORY: 845172464411.dkr.ecr.us-west-2.amazonaws.com/rtc-gamma
+  RTC_GAMMA_REPOSITORY: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-rtc-gamma
 
   VPC_ID: ${{ secrets.VPC_ID }}
   EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
@@ -20,35 +20,100 @@ env:
   CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
 
 jobs:
+
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.TOOLS_BOT_PAK }}
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
+      - if: endsWith(github.ref, '/develop')
+        run: |
+          echo "::set-env name=STACK_NAME::hyp3-test"
+          echo "::set-env name=DOMAIN_NAME::hyp3-test-api.asf.alaska.edu"
+          echo "::set-env name=IMAGE_TAG::test"
+          echo "::set-env name=AUTH_GROUP_NAME::HAS_ACCESS_TO_HYP3_TEST"
 
-    - name: Deploy to AWS CloudFormation
-      run: |
-        aws cloudformation package \
-          --template-file cloudformation.yml \
-          --s3-bucket ${TEMPLATE_BUCKET} \
-          --output-template-file packaged.yml
-        aws cloudformation deploy \
-          --stack-name hyp3-${GITHUB_REF##*/} \
-          --template-file packaged.yml \
-          --role-arn ${CLOUDFORMATION_ROLE_ARN} \
-          --capabilities CAPABILITY_NAMED_IAM \
-          --parameter-overrides \
-              VpcId=${VPC_ID} \
-              EDLUsername=${EDL_USERNAME} \
-              EDLPassword=${EDL_PASSWORD} \
-              RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${GITHUB_REF##*/} \
-              DomainName=hyp3-${GITHUB_REF##*/}-api.asf.alaska.edu \
-              CertificateArn=${CERTIFICATE_ARN}
+      - if: endsWith(github.ref, '/master')
+        run: |
+          echo "::set-env name=STACK_NAME::hyp3"
+          echo "::set-env name=DOMAIN_NAME::hyp3-api.asf.alaska.edu"
+          echo "::set-env name=IMAGE_TAG::latest"
+          echo "::set-env name=AUTH_GROUP_NAME::HAS_ACCESS_TO_HYP3"
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - working-directory: api
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt -t src
+          pip install bump2version
+
+      - run: |
+          aws cloudformation package \
+            --template-file cloudformation.yml \
+            --s3-bucket ${TEMPLATE_BUCKET} \
+            --output-template-file packaged.yml
+          aws cloudformation deploy \
+            --stack-name ${STACK_NAME} \
+            --template-file packaged.yml \
+            --role-arn ${CLOUDFORMATION_ROLE_ARN} \
+            --capabilities CAPABILITY_IAM \
+            --parameter-overrides \
+                "VpcId=${VPC_ID}" \
+                "EDLUsername=${EDL_USERNAME}" \
+                "EDLPassword=${EDL_PASSWORD}" \
+                "RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${IMAGE_TAG}" \
+                "DomainName=${DOMAIN_NAME}" \
+                "CertificateArn=${CERTIFICATE_ARN}" \
+                "AuthGroupName=${AUTH_GROUP_NAME}"
+          
+      - name: Get associated PR
+        if: github.ref == 'refs/heads/master'
+        uses: helaili/github-graphql-action@2.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
+        with:
+          query: .github/queries/asssociated-pr.query.yml
+          outputFile: pr.json
+          owner: ASFHyP3
+          name: hyp3
+          sha: ${{ github.sha }}
+
+      - name: Get PR labels
+        if: github.ref == 'refs/heads/master'
+        uses: helaili/github-graphql-action@2.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
+        with:
+          query: .github/queries/pr-labels.query.yml
+          outputFile: labels.json
+          owner: ASFHyP3
+          name: hyp3
+
+      - name: Tag version
+        if: github.ref == 'refs/heads/master'
+        run: |
+          git fetch origin +refs/tags/*:refs/tags/*
+          git config user.email "UAF-asf-apd@alaska.edu"
+          git config user.name "tools-bot"
+          LABEL_QUERY='.data.repository.pullRequest.labels.nodes[].name'
+          SELECT='select(. == "major" or . == "minor" or . == "patch")'
+          BUMP_PART=$(jq --raw-output  "${LABEL_QUERY} | ${SELECT}" labels.json | sort | head -1)
+          PR_QUERY='.data.repository.commit.associatedPullRequests.edges[0].node.title'
+          TAG_MSG=$(jq --raw-output "${PR_QUERY}"  pr.json)
+          bump2version --current-version $(git describe --abbrev=0) \
+              --tag --tag-message "${TAG_MSG}" "${BUMP_PART}"
+          git push --tags
+          echo "Tagged version $(git describe --abbrev=0) and pushed back to repo"

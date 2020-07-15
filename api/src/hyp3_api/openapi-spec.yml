@@ -1,0 +1,252 @@
+openapi: 3.0.1
+
+info:
+  title: hyp3-api
+  version: 0.0.1
+
+security:
+  - EarthDataLogin: []
+
+paths:
+
+  /jobs:
+
+    post:
+      operationId: hyp3_api.handlers.post_jobs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/post_jobs_body"
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/jobs_response"
+
+    get:
+      operationId: hyp3_api.handlers.get_jobs
+      parameters:
+        - name: status_code
+          in: query
+          schema:
+            $ref: "#/components/schemas/status_code"
+        - name: start
+          in: query
+          schema:
+            $ref: "#/components/schemas/datetime"
+        - name: end
+          in: query
+          schema:
+            $ref: "#/components/schemas/datetime"
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/jobs_response"
+  /user:
+    get:
+      operationId: hyp3_api.handlers.get_user
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+
+components:
+  schemas:
+
+    post_jobs_body:
+      type: object
+      required:
+        - jobs
+      additionalProperties: false
+      properties:
+        jobs:
+          $ref: "#/components/schemas/list_of_new_jobs"
+
+    jobs_response:
+      type: object
+      required:
+        - jobs
+      additionalProperties: false
+      properties:
+        jobs:
+          $ref: "#/components/schemas/list_of_jobs"
+
+    user:
+      type: object
+      required:
+        - user_id
+        - authorized
+        - quota
+      properties:
+        user_id:
+          $ref: "#/components/schemas/user_id"
+        authorized:
+          type: boolean
+        quota:
+          $ref: "#/components/schemas/quota"
+
+    quota:
+      type: object
+      required:
+        - limit
+        - remaining
+      properties:
+        limit:
+          type: integer
+          minimum: 0
+        remaining:
+          type: integer
+          minimum: 0
+
+    list_of_new_jobs:
+      type: array
+      minItems: 1
+      maxItems: 100
+      items:
+        $ref: "#/components/schemas/new_job"
+
+    new_job:
+      type: object
+      required:
+        - job_type
+        - job_parameters
+      additionalProperties: false
+      properties:
+        job_type:
+          $ref: "#/components/schemas/job_type"
+        job_parameters:
+          $ref: "#/components/schemas/job_parameters"
+        description:
+          $ref: "#/components/schemas/description"
+
+    list_of_jobs:
+      type: array
+      items:
+        $ref: "#/components/schemas/job"
+
+    job:
+      type: object
+      required:
+        - job_id
+        - user_id
+        - job_type
+        - job_parameters
+        - request_time
+        - status_code
+      additionalProperties: false
+      properties:
+        job_id:
+          $ref: "#/components/schemas/job_id"
+        user_id:
+          $ref: "#/components/schemas/user_id"
+        job_type:
+          $ref: "#/components/schemas/job_type"
+        job_parameters:
+          $ref: "#/components/schemas/job_parameters"
+        request_time:
+          $ref: "#/components/schemas/datetime"
+        status_code:
+          $ref: "#/components/schemas/status_code"
+        description:
+          $ref: "#/components/schemas/description"
+        files:
+          $ref: "#/components/schemas/list_of_files"
+        browse_images:
+          $ref: "#/components/schemas/list_of_urls"
+        thumbnail_images:
+          $ref: "#/components/schemas/list_of_urls"
+        expiration_time:
+          $ref: "#/components/schemas/datetime"
+
+    job_id:
+      type: string
+      format: uuid
+      example: 27836b79-e5b2-4d8f-932f-659724ea02c3
+
+    user_id:
+      type: string
+      example: myUserId
+
+    job_type:
+      type: string
+      example: RTC_GAMMA
+      enum:
+        - RTC_GAMMA
+
+    job_parameters:
+      type: object
+      required:
+        - granule
+      additionalProperties: false
+      properties:
+        granule:
+          $ref: "#/components/schemas/granule"
+
+    granule:
+      type: string
+      pattern: "^S1[AB]_IW_SLC__*"
+      minLength: 67
+      maxLength: 67
+      example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+      description: The name of the Sentinel-1 granule to process.  Only SLC products with beam mode IW are supported.
+
+    datetime:
+      type: string
+      format: date-time
+      example: 2020-06-04T18:00:03+00:00
+
+    status_code:
+      type: string
+      enum:
+        - PENDING
+        - RUNNING
+        - SUCCEEDED
+        - FAILED
+      example: SUCCEEDED
+
+    description:
+      type: string
+      minLength: 1
+      example: a description of the job
+
+    list_of_files:
+      type: array
+      items:
+        type: object
+        required:
+          - filename
+          - size
+          - url
+        additionalProperties: False
+        properties:
+          filename:
+            type: string
+          size:
+            type: integer
+            minimum: 0
+          url:
+            type: string
+
+    list_of_urls:
+      type: array
+      items:
+        type: string
+
+  securitySchemes:
+    EarthDataLogin:
+      description: |-
+        Authentication requires the user to have an account at urs.earthdata.nasa.gov and log in at auth.asf.alaska.edu
+      type: apiKey
+      in: cookie
+      name: asf-urs
+      x-apikeyInfoFunc: hyp3_api.auth.decode_token

@@ -1,0 +1,13 @@
+boto3
+connexion[swagger-ui]
+cryptography
+flask_api
+Flask-Cors
+moto
+PyJWT
+pytest
+PyYAML
+responses
+requests
+serverless_wsgi
+strict-rfc3339

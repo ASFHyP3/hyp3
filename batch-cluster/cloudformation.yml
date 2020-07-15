@@ -1,0 +1,235 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+  EDLUsername:
+    Type: String
+
+  EDLPassword:
+    Type: String
+    NoEcho: true
+
+  RtcGammaImage:
+    Type: String
+
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+
+  ContentBucket:
+    Type: String
+
+Outputs:
+
+  JobQueueArn:
+    Value: !Ref JobQueue
+
+  RtcGammaJobDefinition:
+    Value: !Ref RtcGammaJobDefinition
+
+Resources:
+
+  LaunchInstance:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        InstanceRoleArn: !GetAtt InstanceRole.Arn
+      TemplateURL: launch-instance/cloudformation.yml
+
+  TerminateIdleInstances:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ComputeEnvironmentArn: !Ref ComputeEnvironment
+      TemplateURL: terminate-idle-instances/cloudformation.yml
+
+  EventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventPattern: !Sub |-
+        {
+          "source": ["aws.batch"],
+          "detail-type": ["Batch Job State Change"],
+          "detail": {
+            "jobQueue": ["${JobQueue}"],
+            "status": ["RUNNABLE"]
+          }
+        }
+      Targets:
+        - Arn: !GetAtt LaunchInstance.Outputs.LambdaArn
+          Id: lambda
+          Input: !Sub |-
+            {
+              "LaunchTemplateId": "${LaunchTemplate}",
+              "Version": "${LaunchTemplate.LatestVersionNumber}"
+            }
+
+  EventPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt LaunchInstance.Outputs.LambdaArn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt EventRule.Arn
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub "Security group for ${AWS::StackName} machines"
+      VpcId: !Ref VpcId
+
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        IamInstanceProfile:
+          Name: !Ref InstanceProfile
+        ImageId: !Ref AmiId
+        InstanceType: r5d.xlarge
+        InstanceMarketOptions:
+          MarketType: spot
+        SecurityGroupIds:
+          - !Ref SecurityGroup
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key: Name
+                Value: !Ref AWS::StackName
+          - ResourceType: volume
+            Tags:
+              - Key: Name
+                Value: !Ref AWS::StackName
+        UserData:
+          Fn::Base64:
+            Fn::Sub: |-
+              Content-Type: multipart/mixed; boundary="==BOUNDARY=="
+              MIME-Version: 1.0
+
+              --==BOUNDARY==
+              Content-Type: text/cloud-boothook; charset="us-ascii"
+
+              cloud-init-per instance mkfs_ssd mkfs.ext4 /dev/nvme1n1
+              cloud-init-per instance mount_ssd mount /dev/nvme1n1 /var/lib/docker
+
+              --==BOUNDARY==
+              Content-Type: text/x-shellscript; charset="us-ascii"
+
+              #!/bin/bash
+              yum install -y awscli
+              ECS_CLUSTER=$(aws batch describe-compute-environments --compute-environments ${ComputeEnvironment} --query computeEnvironments[].ecsClusterArn --output text --region ${AWS::Region})
+              echo "ECS_CLUSTER=$ECS_CLUSTER" >> /etc/ecs/ecs.config
+
+              echo ECS_DISABLE_IMAGE_CLEANUP=false>>/etc/ecs/ecs.config
+              echo ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=2m>>/etc/ecs/ecs.config
+              echo ECS_IMAGE_CLEANUP_INTERVAL=10m>>/etc/ecs/ecs.config
+              echo ECS_IMAGE_MINIMUM_CLEANUP_AGE=10m>>/etc/ecs/ecs.config
+              echo ECS_NUM_IMAGES_DELETE_PER_CYCLE=5>>/etc/ecs/ecs.config
+              echo ECS_RESERVED_MEMORY=32>>/etc/ecs/ecs.config
+
+              --==BOUNDARY==--
+
+  ComputeEnvironment:
+    Type: AWS::Batch::ComputeEnvironment
+    Properties:
+      ServiceRole: !GetAtt BatchServiceRole.Arn
+      Type: UNMANAGED
+
+  JobQueue:
+    Type: AWS::Batch::JobQueue
+    Properties:
+      Priority: 1
+      ComputeEnvironmentOrder:
+        - ComputeEnvironment: !Ref ComputeEnvironment
+          Order: 1
+
+  RtcGammaJobDefinition:
+    Type: AWS::Batch::JobDefinition
+    Properties:
+      Type: container
+      Parameters:
+        granule: ""
+        bucket: !Ref ContentBucket
+        bucket-prefix: ""
+        username: !Ref EDLUsername
+        password: !Ref EDLPassword
+      ContainerProperties:
+        Image: !Ref RtcGammaImage
+        Vcpus: 4
+        Memory: 30000
+        JobRoleArn: !GetAtt TaskRole.Arn
+        Command:
+          - ++entrypoint
+          - hyp3_rtc_gamma_v2
+          - --username
+          - Ref::username
+          - --password
+          - Ref::password
+          - --bucket
+          - Ref::bucket
+          - --bucket-prefix
+          - Ref::bucket-prefix
+          - Ref::granule
+      Timeout:
+        AttemptDurationSeconds: 5400
+
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+          Effect: Allow
+      Policies:
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
+
+  BatchServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: batch.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
+
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: ec2.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+      Policies:
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: batch:DescribeComputeEnvironments
+                Resource: "*"
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref InstanceRole

@@ -1,11 +1,18 @@
-AWSTemplateFormatVersion: 2010-09-09
-
 Parameters:
 
-  JobQueueArn:
+  JobsTable:
     Type: String
 
-  JobDefinition:
+  AuthPublicKey:
+    Type: String
+
+  AuthAlgorithm:
+    Type: String
+
+  AuthGroupName:
+    Type: String
+
+  AuthAppUid:
     Type: String
 
   DomainName:
@@ -14,10 +21,13 @@ Parameters:
   CertificateArn:
     Type: String
 
+  MonthlyJobQuotaPerUser:
+    Type: Number
+
 Outputs:
 
-  ApiEndpoint:
-    Value: !Sub "https://${DomainName}/${Stage}/"
+  Url:
+    Value: !Sub "https://${DomainName}/ui"
 
 Resources:
 
@@ -27,87 +37,65 @@ Resources:
       Name: !Ref AWS::StackName
       EndpointConfiguration:
         Types:
-        - REGIONAL
-      Body:
-        openapi: 3.0.1
-        info:
-          title: hyp3-api
-          version: 0.0.1
-        servers:
-          - url: !Sub "https://${DomainName}/{basePath}"
-            variables:
-              basePath:
-                default: /v1
-        paths:
-          /jobs:
-            post:
-              requestBody:
-                content:
-                  application/json:
-                    schema:
-                      $ref: "#/components/schemas/submitJob"
-                required: true
-              responses:
-                "200":
-                  description: 200 response
-                  content:
-                    application/json:
-                      schema:
-                        $ref: "#/components/schemas/Empty"
-              x-amazon-apigateway-request-validator: Validate body
-              x-amazon-apigateway-integration:
-                credentials: !GetAtt IamRole.Arn
-                uri: !Sub "arn:aws:apigateway:${AWS::Region}:batch:path/v1/submitjob"
-                responses:
-                  default:
-                    statusCode: 200
-                requestTemplates:
-                  application/json: !Sub |-
-                    #set($inputRoot = $input.path('$'))
-                    {
-                       "jobDefinition": "${JobDefinition}",
-                       "jobName": $input.json('$.granule'),
-                       "jobQueue": "${JobQueueArn}",
-                       "parameters": {
-                          "granule" : $input.json('$.granule')
-                       }
-                    }
-                passthroughBehavior: when_no_templates
-                httpMethod: POST
-                type: aws
-        components:
-          schemas:
-            Empty:
-              title: Empty Schema
-              type: object
-            submitJob:
-              title: JobInputModel
-              required:
-                - granule
-              type: object
-              properties:
-                granule:
-                  type: string
-              additionalProperties: false
-        x-amazon-apigateway-request-validators:
-          Validate body:
-            validateRequestParameters: false
-            validateRequestBody: true
+          - REGIONAL
+
+  Resource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !GetAtt RestApi.RootResourceId
+      PathPart: "{proxy+}"
+
+  RootMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !GetAtt RestApi.RootResourceId
+      HttpMethod: ANY
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
+        IntegrationHttpMethod: POST
+        Credentials: !GetAtt ApiRole.Arn
+        PassthroughBehavior: NEVER
+
+  ResourceMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref Resource
+      HttpMethod: ANY
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
+        IntegrationHttpMethod: POST
+        Credentials: !GetAtt ApiRole.Arn
+        PassthroughBehavior: NEVER
+
+  ApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 180
 
   Deployment:
     Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - RootMethod
+      - ResourceMethod
     Properties:
       RestApiId: !Ref RestApi
 
   Stage:
     Type: AWS::ApiGateway::Stage
     Properties:
-      StageName: v1
+      StageName: api
       RestApiId: !Ref RestApi
       DeploymentId: !Ref Deployment
       AccessLogSetting:
-        DestinationArn: !GetAtt LogGroup.Arn
-        Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId
+        DestinationArn: !GetAtt ApiLogGroup.Arn
+        Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.path $context.protocol" $context.status $context.responseLength $context.requestId
 
   CustomDomainName:
     Type: AWS::ApiGateway::DomainName
@@ -115,7 +103,7 @@ Resources:
       DomainName: !Ref DomainName
       EndpointConfiguration:
         Types:
-        - REGIONAL
+          - REGIONAL
       RegionalCertificateArn: !Ref CertificateArn
       SecurityPolicy: TLS_1_2
 
@@ -124,11 +112,11 @@ Resources:
     Properties:
       DomainName: !Ref CustomDomainName
       RestApiId: !Ref RestApi
+      Stage: !Ref Stage
 
-  IamRole:
+  ApiRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Ref AWS::StackName
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -137,18 +125,60 @@ Resources:
             Service: apigateway.amazonaws.com
           Effect: Allow
       Policies:
-      - PolicyName: policy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-          - Effect: Allow
-            Action: batch:SubmitJob
-            Resource:
-            - !Ref JobQueueArn
-            - !Ref JobDefinition
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: !GetAtt Lambda.Arn
 
-  LogGroup:
+  LambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Ref AWS::StackName
+      LogGroupName: !Sub "/aws/lambda/${Lambda}"
       RetentionInDays: 90
+
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: lambda.amazonaws.com
+          Effect: Allow
+      Policies:
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:Query
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
+
+  Lambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref JobsTable
+          AUTH_PUBLIC_KEY: !Ref AuthPublicKey
+          AUTH_ALGORITHM: !Ref AuthAlgorithm
+          AUTH_GROUP_NAME: !Ref AuthGroupName
+          AUTH_APP_UID: !Ref AuthAppUid
+          MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
+      Code: src/
+      Handler: lambda_handler.handler
+      MemorySize: 128
+      Role: !GetAtt LambdaRole.Arn
+      Runtime: python3.8
+      Timeout: 30

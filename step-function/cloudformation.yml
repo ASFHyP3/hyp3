@@ -1,0 +1,151 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+  JobQueueArn:
+    Type: String
+
+  RtcGammaJobDefinition:
+    Type: String
+
+  JobsTable:
+    Type: String
+
+  Bucket:
+    Type: String
+
+Resources:
+
+  StepFunction:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      RoleArn: !GetAtt StepFunctionRole.Arn
+      DefinitionString: !Sub |-
+        {
+          "StartAt": "JOB_RUNNING",
+          "States": {
+            "JOB_RUNNING": {
+              "Type": "Task",
+              "Resource": "${UpdateDB.Outputs.LambdaArn}",
+              "Parameters": {
+                "job_id.$": "$.job_id",
+                "status_code": "RUNNING"
+              },
+              "ResultPath": "$.results.job_running",
+              "Next": "ADD_PREFIX_TO_JOB_PARAMETERS"
+            },
+            "ADD_PREFIX_TO_JOB_PARAMETERS": {
+              "Type": "Pass",
+              "InputPath": "$.job_id",
+              "ResultPath": "$.job_parameters.bucket-prefix",
+              "Next": "RTC_GAMMA"
+            },
+            "RTC_GAMMA": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::batch:submitJob.sync",
+              "Parameters": {
+                "JobDefinition": "${RtcGammaJobDefinition}",
+                "JobName.$": "$.job_id",
+                "JobQueue": "${JobQueueArn}",
+                "Parameters.$": "$.job_parameters"
+              },
+              "ResultPath": "$.results.rtc_gamma",
+              "Next": "GET_FILES",
+              "Catch": [{
+                "ErrorEquals": ["States.ALL"],
+                "Next": "JOB_FAILED",
+                "ResultPath": "$.results.rtc_gamma"
+              }]
+            },
+            "GET_FILES": {
+               "Type": "Task",
+               "Resource": "${GetFiles.Outputs.LambdaArn}",
+               "Parameters": {
+                 "job_id.$": "$.job_id"
+               },
+               "ResultPath": "$.results.get_files",
+               "Next": "JOB_SUCCEEDED"
+             },
+            "JOB_SUCCEEDED": {
+              "Type": "Task",
+              "Resource": "${UpdateDB.Outputs.LambdaArn}",
+              "Parameters": {
+                "job_id.$": "$.job_id",
+                "status_code": "SUCCEEDED",
+                "files.$": "$.results.get_files.files",
+                "browse_images.$": "$.results.get_files.browse_images",
+                "thumbnail_images.$": "$.results.get_files.thumbnail_images",
+                "expiration_time.$": "$.results.get_files.expiration_time"
+              },
+              "ResultPath": "$.results.job_succeeded",
+              "End": true
+            },
+            "JOB_FAILED": {
+              "Type": "Task",
+              "Resource": "${UpdateDB.Outputs.LambdaArn}",
+              "Parameters": {
+                "job_id.$": "$.job_id",
+                "status_code": "FAILED"
+              },
+              "ResultPath": "$.results.job_failed",
+              "Next": "FAIL"
+            },
+            "FAIL": {
+              "Type": "Fail"
+            }
+          }
+        }
+
+  StepFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: states.amazonaws.com
+          Effect: Allow
+      Policies:
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: batch:SubmitJob
+                Resource:
+                  - !Ref JobQueueArn
+                  - !Ref RtcGammaJobDefinition
+              - Effect: Allow
+                Action:
+                  - events:PutTargets
+                  - events:PutRule
+                  - events:DescribeRule
+                Resource: !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/StepFunctionsGetEventsForBatchJobsRule"
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource:
+                 - !GetAtt UpdateDB.Outputs.LambdaArn
+                 - !GetAtt GetFiles.Outputs.LambdaArn
+
+  UpdateDB:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        JobsTable: !Ref JobsTable
+      TemplateURL: update-db/cloudformation.yml
+
+  GetFiles:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        Bucket: !Ref Bucket
+      TemplateURL: get-files/cloudformation.yml
+
+  StartExecution:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        JobsTable: !Ref JobsTable
+        StepFunctionArn: !Ref StepFunction
+      TemplateURL: start-execution/cloudformation.yml

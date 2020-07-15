@@ -15,236 +15,148 @@ Parameters:
   RtcGammaImage:
     Type: String
 
+  ProductLifetimeInDays:
+    Type: Number
+    MinValue: 1
+    Default: 14
+
+  AuthPublicKey:
+    Type: String
+    Default: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDBU3T16Db/88XQ2MTHgm9uFALjSJAMSejmVL+tO0ILzHw2OosKlVb38urmIGQ+xMPXTs1AQQYpJ/CdO7TaJ51pv4iz+zF0DYeUhPczsBEQYisLMZUwedPm9QLoKu8dkt4EzMiatQimBmzDvxxRkAIDehYh468phR6zPqIDizbgAjD4qgTd+oSA9mDPBZ/oG1sVc7TcoP93FbO9u1frzhjf0LS1H7YReVP4XsUTpCN0FsxDAMfLpOYZylChkFQeay7n9CIK8em4W4JL/T0PC218jXpF7W2p92rfAQztiWlFJc66tt45SXAVtD1rMEdWGlzze4acjMn4P7mugHHb17igtlF82H/wpdm84qTPShvBp/F4YZejgAzOAxzKVbCQ8lrApk1XYVDRAVk3AphfvNK5IC/X9zDSXstH9U94z8BTjkL2fR4eKzFu5kkvVoGHAACIv72QvH06Vwd0PNzLyaNXr9D5jO61EbR4RfpbzvAG0IzgXsUq0Rj7qwvzTCu6yLwTi/fn9bmRaOQNPtBch4ai5w7cfUWe2r7ZPv31AXPm1A+aGXvYTEZkiQMrBN/dXlNdUmafNNDoMBm/frQhMl+2DZp+C9GXCr2Z/JmYUHO8PaEj6UyYTkkrmtZNlZ43Nd2TblPEzL0pprJM9MxEf2Peaai8GKmTJz6C5tSGU+XdZQ== root@9dce6b43747e
+
+  AuthAlgorithm:
+    Type: String
+    Default: RS256
+
+  AuthGroupName:
+    Type: String
+
+  AuthAppUid:
+    Type: String
+    Default: asf_urs
+
   DomainName:
     Type: String
 
   CertificateArn:
     Type: String
 
-  AmiId:
-    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+  MonthlyJobQuotaPerUser:
+    Type: Number
+    MinValue: 1
+    Default: 100
+
+Outputs:
+
+  ApiUrl:
+    Value: !GetAtt Api.Outputs.Url
 
 Resources:
 
-  ApiStack:
-      Type: AWS::CloudFormation::Stack
-      Properties:
-        Parameters:
-          JobQueueArn: !Ref JobQueue
-          JobDefinition: !Ref RtcGammaJobDefinition
-          DomainName: !Ref DomainName
-          CertificateArn: !Ref CertificateArn
-        TemplateURL: api/cloudformation.yml
-
-  LaunchInstanceStack:
+  Api:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        InstanceRoleArn: !GetAtt InstanceRole.Arn
-      TemplateURL: launch-instance/cloudformation.yml
+        JobsTable: !Ref JobsTable
+        AuthPublicKey: !Ref AuthPublicKey
+        AuthAlgorithm: !Ref AuthAlgorithm
+        AuthGroupName: !Ref AuthGroupName
+        AuthAppUid: !Ref AuthAppUid
+        DomainName: !Ref DomainName
+        CertificateArn: !Ref CertificateArn
+        MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
+      TemplateURL: api/cloudformation.yml
 
-  TerminateIdleInstancesStack:
+  Cluster:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        ComputeEnvironmentArn: !Ref ComputeEnvironment
-      TemplateURL: terminate-idle-instances/cloudformation.yml
+        VpcId: !Ref VpcId
+        EDLUsername: !Ref EDLUsername
+        EDLPassword: !Ref EDLPassword
+        RtcGammaImage: !Ref RtcGammaImage
+        ContentBucket: !Ref ContentBucket
+      TemplateURL: batch-cluster/cloudformation.yml
 
-  EventRule:
-    Type: AWS::Events::Rule
+  StepFunction:
+    Type: AWS::CloudFormation::Stack
     Properties:
-      Name: !Ref AWS::StackName
-      EventPattern: !Sub |-
-        {
-          "source": ["aws.batch"],
-          "detail-type": ["Batch Job State Change"],
-          "detail": {
-            "jobQueue": ["${JobQueue}"],
-            "status": ["RUNNABLE"]
-          }
-        }
-      Targets:
-      - Arn: !GetAtt LaunchInstanceStack.Outputs.LambdaArn
-        Id: lambda
-        Input: !Sub |-
-          {
-            "LaunchTemplateId": "${LaunchTemplate}",
-            "Version": "${LaunchTemplate.LatestVersionNumber}"
-          }
-
-  EventPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !GetAtt LaunchInstanceStack.Outputs.LambdaArn
-      Action: lambda:InvokeFunction
-      Principal: events.amazonaws.com
-      SourceArn: !GetAtt EventRule.Arn
-
-  SecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupName: !Ref AWS::StackName
-      GroupDescription: !Sub "Security group for ${AWS::StackName} machines"
-      VpcId: !Ref VpcId
-
-  LaunchTemplate:
-    Type: AWS::EC2::LaunchTemplate
-    Properties:
-      LaunchTemplateName: !Ref AWS::StackName
-      LaunchTemplateData:
-        IamInstanceProfile:
-          Name: !Ref InstanceProfile
-        ImageId: !Ref AmiId
-        InstanceType: r5d.xlarge
-        InstanceMarketOptions:
-          MarketType: spot
-        SecurityGroupIds:
-        - !Ref SecurityGroup
-        TagSpecifications:
-        - ResourceType: instance
-          Tags:
-          - Key: Name
-            Value: !Ref AWS::StackName
-        - ResourceType: volume
-          Tags:
-          - Key: Name
-            Value: !Ref AWS::StackName
-        UserData:
-          Fn::Base64:
-            Fn::Sub: |-
-              Content-Type: multipart/mixed; boundary="==BOUNDARY=="
-              MIME-Version: 1.0
-
-              --==BOUNDARY==
-              MIME-Version: 1.0
-              Content-Type: text/x-shellscript; charset="us-ascii"
-
-              #!/bin/bash
-              yum install -y awscli
-              ECS_CLUSTER=$(aws batch describe-compute-environments --compute-environments ${ComputeEnvironment} --query computeEnvironments[].ecsClusterArn --output text --region ${AWS::Region})
-              echo "ECS_CLUSTER=$ECS_CLUSTER" >> /etc/ecs/ecs.config
-
-              echo ECS_DISABLE_IMAGE_CLEANUP=false>>/etc/ecs/ecs.config
-              echo ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=2m>>/etc/ecs/ecs.config
-              echo ECS_IMAGE_CLEANUP_INTERVAL=10m>>/etc/ecs/ecs.config
-              echo ECS_IMAGE_MINIMUM_CLEANUP_AGE=10m>>/etc/ecs/ecs.config
-              echo ECS_NUM_IMAGES_DELETE_PER_CYCLE=5>>/etc/ecs/ecs.config
-              echo ECS_RESERVED_MEMORY=32>>/etc/ecs/ecs.config
-              echo 'OPTIONS="$''OPTIONS --storage-opt dm.basesize=170G"' >> /etc/sysconfig/docker
-              /etc/init.d/docker restart
-              mkfs /dev/nvme1n1
-              vgextend -y docker /dev/nvme1n1
-              lvextend -L+139G /dev/docker/docker-pool
-
-              --==BOUNDARY==--
-
-  ComputeEnvironment:
-    Type: AWS::Batch::ComputeEnvironment
-    Properties:
-      ComputeEnvironmentName: !Ref AWS::StackName
-      ServiceRole: !GetAtt BatchServiceRole.Arn
-      Type: UNMANAGED
-
-  JobQueue:
-    Type: AWS::Batch::JobQueue
-    Properties:
-      JobQueueName: !Ref AWS::StackName
-      Priority: 1
-      ComputeEnvironmentOrder:
-      - ComputeEnvironment: !Ref ComputeEnvironment
-        Order: 1
-
-  RtcGammaJobDefinition:
-    Type: AWS::Batch::JobDefinition
-    Properties:
-      JobDefinitionName: !Sub "${AWS::StackName}-rtc-gamma"
-      Type: container
       Parameters:
-        granule: ""
-        bucket: !Ref Bucket
-        username: !Ref EDLUsername
-        password: !Ref EDLPassword
-      ContainerProperties:
-        Image: !Ref RtcGammaImage
-        Vcpus: 4
-        Memory: 30000
-        JobRoleArn: !GetAtt TaskRole.Arn
-        Command:
-        - --username
-        - Ref::username
-        - --password
-        - Ref::password
-        - --bucket
-        - Ref::bucket
-        - Ref::granule
-      Timeout:
-        AttemptDurationSeconds: 5400
+        JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
+        JobsTable: !Ref JobsTable
+        Bucket: !Ref ContentBucket
+      TemplateURL: step-function/cloudformation.yml
 
-  Bucket:
+  LogBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref AWS::StackName
+      AccessControl: LogDeliveryWrite
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        IgnorePublicAcls: True
+        BlockPublicPolicy: True
+        RestrictPublicBuckets: True
 
-  TaskRole:
-    Type: AWS::IAM::Role
+  ContentBucket:
+    Type: AWS::S3::Bucket
     Properties:
-      RoleName: !Sub "${AWS::StackName}-task-role"
-      AssumeRolePolicyDocument:
+      LoggingConfiguration:
+        DestinationBucketName: !Ref LogBucket
+        LogFilePrefix: s3-access-logs/content-bucket/
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        IgnorePublicAcls: True
+        BlockPublicPolicy: False
+        RestrictPublicBuckets: False
+      LifecycleConfiguration:
+        Rules:
+          - Status: Enabled
+            ExpirationInDays: !Ref ProductLifetimeInDays
+          - Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
+
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ContentBucket
+      PolicyDocument:
         Version: 2012-10-17
         Statement:
-          Action: sts:AssumeRole
-          Principal:
-            Service: ecs-tasks.amazonaws.com
-          Effect: Allow
-      Policies:
-      - PolicyName: policy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
           - Effect: Allow
-            Action: s3:PutObject
-            Resource: !Sub "arn:aws:s3:::${Bucket}/*"
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "${ContentBucket.Arn}/*"
 
-  BatchServiceRole:
-    Type: AWS::IAM::Role
+  JobsTable:
+    Type: AWS::DynamoDB::Table
     Properties:
-      RoleName: !Sub "${AWS::StackName}-batch-service-role"
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          Action: sts:AssumeRole
-          Principal:
-            Service: batch.amazonaws.com
-          Effect: Allow
-      ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
-
-  InstanceRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub "${AWS::StackName}-instance-role"
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          Action: sts:AssumeRole
-          Principal:
-            Service: ec2.amazonaws.com
-          Effect: Allow
-      ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
-      Policies:
-      - PolicyName: policy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-          - Effect: Allow
-            Action: batch:DescribeComputeEnvironments
-            Resource: "*"
-
-  InstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      InstanceProfileName: !Ref InstanceRole
-      Roles:
-      - !Ref InstanceRole
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: job_id
+          AttributeType: S
+        - AttributeName: user_id
+          AttributeType: S
+        - AttributeName: status_code
+          AttributeType: S
+        - AttributeName: request_time
+          AttributeType: S
+      KeySchema:
+        - AttributeName: job_id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: user_id
+          KeySchema:
+            - AttributeName: user_id
+              KeyType: HASH
+            - AttributeName: request_time
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: status_code
+          KeySchema:
+            - AttributeName: status_code
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
