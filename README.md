@@ -5,12 +5,16 @@
 
 A processing environment for running RTC Gamma container jobs in Amazon Web Services.
 
-# Components
-
+## Table of contents
+- [Deployment](#deployment)
+  - [Prerequisites](#prerequisites)
+  - [Stack Parameters](#stack-parameters)
+  - [Deploy with Cloudformation](#deploy-with-cloudformation)
+- [Testing](#testing)
 ## Deployment
 
-### Prerequisites
 
+### Prerequisites
 These resources are required for a successful deployment, but managed separately:
 
 - IAM role configured for api gateway access logging
@@ -41,7 +45,7 @@ The following Parameters can be provided at deploy-time to change or configure t
     Default: RS256
 
 - AuthGroupName: Name of EDL group for restriction of user submission of jobs
-
+ 
 - AuthAppUid: Name of jwt auth provider app uid, if using https://auth.asf.alska.edu then keep default
     Default: asf_urs
 
@@ -52,7 +56,7 @@ The following Parameters can be provided at deploy-time to change or configure t
   MonthlyJobQuotaPerUser: number of jobs a single user is allowed each month.
     Default: 100
 
-### Deploy with cloudformation
+### Deploy with Cloudformation
 
 - Install and package dependancies for api
 ```sh
