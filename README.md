@@ -11,6 +11,7 @@ A processing environment for running RTC Gamma container jobs in Amazon Web Serv
   - [Stack Parameters](#stack-parameters)
   - [Deploy with Cloudformation](#deploy-with-cloudformation)
 - [Testing](#testing)
+- [Running the API Locally](#running-the-api-locally)
 ## Deployment
 
 
@@ -87,17 +88,39 @@ aws cloudformation deploy \
 ## Testing
 The HyP3 api source contains test files in `/api/tests/`. To run them you need to do a bit of setup first.
 
-add hyp3-api to python path
+- Add hyp3-api to python path
 ```sh
 export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
 ```
-
-setup environment variables
+- Setup environment variables
 ```sh
 export (cat /api/test/cfg.env | xargs)
 ```
-
-run tests
+- Run tests
 ```sh
 pytest /api/src/
 ```
+
+## Running the API Locally
+The API can be run locally to verify changes, but must be tied to existing orchestration.
+
+- Setup aws credentials in your environment [Documentation by AWS](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration)
+- setup environment variables
+  - TABLE_NAME=<jobs table id>
+  - MONTHLY_JOB_QUOTA_PER_USER=100
+  - AUTH_PUBLIC_KEY=123456789 `we use this auth config so that we can set the cookie ourselves to a known good value`
+  - AUTH_ALGORITHM=HS256
+  - AUTH_GROUP_NAME=auth-group
+  - AUTH_APP_UID=auth-uid
+- Add hyp3-api to python path
+```sh
+export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
+```
+- run api
+```sh
+python3 /api/src/hyp3_api/__main__.py
+```
+
+in order to connect you will need to include the following cookie
+```eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1cnMtdXNlci1pZCI6InVzZXIiLCJleHAiOjE1OTUxMDEzMjcsInVycy1ncm91cHMiOlt7Im5hbWUiOiJhdXRoLWdyb3VwIiwiYXBwX3VpZCI6ImF1dGgtdWlkIn1dfQ.x8CMKRwQn8LgtWFhz8m68mTGfW9bfsbBh-eiPPDFUpE```
+
