@@ -7,9 +7,9 @@ A processing environment for running RTC Gamma container jobs in Amazon Web Serv
 
 # Components
 
-# Deployment
+## Deployment
 
-## Prerequisites
+### Prerequisites
 
 These resources are required for a successful deployment, but managed separately:
 
@@ -22,7 +22,7 @@ These resources are required for a successful deployment, but managed separately
 - Earthdata Login account authorized to download data from ASF
 - default VPC
 
-## Stack Parameters
+### Stack Parameters
 The following Parameters can be provided at deploy-time to change or configure the stack:
 - VpcId: 
 
@@ -51,3 +51,31 @@ The following Parameters can be provided at deploy-time to change or configure t
 
   MonthlyJobQuotaPerUser: number of jobs a single user is allowed each month.
     Default: 100
+
+### Deploy with cloudformation
+
+- Install and package dependancies for api
+```sh
+pip install -r api/requirements.txt -t api/src
+aws cloudformation package \
+            --template-file cloudformation.yml \
+            --s3-bucket <Cloud Formation artifact bucket> \
+            --output-template-file packaged.yml
+```
+
+- deploy to AWS with Cloud Formation
+```sh
+aws cloudformation deploy \
+            --stack-name <name of your HyP3 Stack> \
+            --template-file packaged.yml \
+            --role-arn <arn for your deployment user/role> \
+            --capabilities CAPABILITY_IAM \
+            --parameter-overrides \
+                "VpcId=<default vpc>" \
+                "EDLUsername=<EDL Username to download products>" \
+                "EDLPassword=<EDL Password to download products>" \
+                "RtcGammaImage=<location of RtcGammaImage to use>" \
+                "DomainName=<Domain Name>" \
+                "CertificateArn=<arn for ssl certificate>" \
+                "AuthGroupName=<EDL group name for access control>"
+```
