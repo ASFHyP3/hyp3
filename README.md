@@ -120,7 +120,6 @@ export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
 ```sh
 python3 /api/src/hyp3_api/__main__.py
 ```
-
-in order to connect you will need to include the following cookie
+- In order to connect you will need to include the following cookie
 ```eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1cnMtdXNlci1pZCI6InVzZXIiLCJleHAiOjE1OTUxMDEzMjcsInVycy1ncm91cHMiOlt7Im5hbWUiOiJhdXRoLWdyb3VwIiwiYXBwX3VpZCI6ImF1dGgtdWlkIn1dfQ.x8CMKRwQn8LgtWFhz8m68mTGfW9bfsbBh-eiPPDFUpE```
 
