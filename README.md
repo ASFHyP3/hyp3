@@ -79,3 +79,21 @@ aws cloudformation deploy \
                 "CertificateArn=<arn for ssl certificate>" \
                 "AuthGroupName=<EDL group name for access control>"
 ```
+
+## Testing
+The HyP3 api source contains test files in `/api/tests/`. To run them you need to do a bit of setup first.
+
+add hyp3-api to python path
+```sh
+export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
+```
+
+setup environment variables
+```sh
+export (cat /api/test/cfg.env | xargs)
+```
+
+run tests
+```sh
+pytest /api/src/
+```
