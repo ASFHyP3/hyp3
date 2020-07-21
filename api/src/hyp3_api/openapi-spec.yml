@@ -2,7 +2,7 @@ openapi: 3.0.1
 
 info:
   title: hyp3-api
-  version: 0.0.1
+  version: ""
 
 security:
   - EarthDataLogin: []
