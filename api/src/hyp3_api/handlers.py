@@ -24,8 +24,6 @@ class DecimalEncoder(FlaskJSONEncoder):
 
 def post_jobs(body, user):
     print(body)
-    if not context['is_authorized']:
-        return problem(403, 'Forbidden', f'User {user} does not have permission to submit jobs.')
 
     quota = get_user(user)['quota']
     if quota['remaining'] - len(body['jobs']) < 0:
@@ -73,21 +71,11 @@ def get_jobs(user, start=None, end=None, status_code=None):
 
 
 def get_user(user):
-    authorized = context['is_authorized']
-
-    if authorized:
-        limit = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
-        remaining = get_remaining_jobs_for_user(user)
-    else:
-        limit = 0
-        remaining = 0
-
     return {
         'user_id': user,
-        'authorized': authorized,
         'quota': {
-            'limit': limit,
-            'remaining': remaining,
+            'limit': int(environ['MONTHLY_JOB_QUOTA_PER_USER']),
+            'remaining': get_remaining_jobs_for_user(user),
         },
     }
 

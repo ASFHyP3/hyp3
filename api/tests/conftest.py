@@ -106,5 +106,5 @@ def setup_requests_mock(batch):
     responses.add(responses.POST, CMR_URL_RE, json.dumps(cmr_response))
 
 
-def login(client, username=DEFAULT_USERNAME, authorized=True):
-    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username, authorized=authorized))
+def login(client, username=DEFAULT_USERNAME):
+    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username))

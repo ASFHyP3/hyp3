@@ -26,24 +26,9 @@ def test_get_user(client, table):
     assert response.status_code == status.HTTP_200_OK
     assert response.json == {
         'user_id': 'user_with_jobs',
-        'authorized': True,
         'quota': {
             'limit': QUOTA,
             'remaining': QUOTA - 4,
-        },
-    }
-
-
-def test_unauthoried_user(client, table):
-    login(client, 'unauthorized_user', authorized=False)
-    response = client.get(USER_URI)
-    assert response.status_code == status.HTTP_200_OK
-    assert response.json == {
-        'user_id': 'unauthorized_user',
-        'authorized': False,
-        'quota': {
-            'limit': 0,
-            'remaining': 0,
         },
     }
 
