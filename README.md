@@ -65,7 +65,7 @@ aws cloudformation deploy \
 
 
 ## Testing the API
-The HyP3 API source contains test files in `/API/tests/`. To run them you need to do a bit of setup first.
+The HyP3 API source contains test files in `api/tests/`. To run them you need to do a bit of setup first.
 
 - Add hyp3-api to python path
 ```sh
