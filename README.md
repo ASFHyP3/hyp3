@@ -89,7 +89,7 @@ pytest api/
 The API can be run locally to verify changes, but must be tied to existing orchestration.
 
 - Setup aws credentials in your environment [Documentation by AWS](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration)
-- setup environment variables
+- Setup environment variables
   - `TABLE_NAME=<jobs table id>`
   - `MONTHLY_JOB_QUOTA_PER_USER=100`
   - `AUTH_PUBLIC_KEY=123456789` *we use this auth config so that we can set the cookie ourselves to a known good value*
