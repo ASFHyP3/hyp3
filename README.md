@@ -10,7 +10,7 @@ A processing environment for HyP3 Plugins in AWS.
   - [Prerequisites](#prerequisites)
   - [Stack Parameters](#stack-parameters)
   - [Deploy with CloudFormation](#deploy-with-cloudformation)
-- [Testing](#testing)
+- [Testing the API](#testing-the-api)
 - [Running the API Locally](#running-the-api-locally)
 
 ## Deployment
@@ -18,27 +18,27 @@ A processing environment for HyP3 Plugins in AWS.
 ### Prerequisites
 These resources are required for a successful deployment, but managed separately:
 
-- IAM role configured for api gateway access logging
+- IAM role configured for API gateway access logging
 - IAM user and roles for automated CloudFormation deployments
 - HyP3 plugin container images and tags:
   - RTC-GAMMA
 - S3 bucket for CloudFormation deployment artifacts
-- DNS record for custom api domain name
-- SSL certificate in AWS Certificate Manager for custom api domain name
+- DNS record for custom API domain name
+- SSL certificate in AWS Certificate Manager for custom API domain name
 - EarthData Login account authorized to download data from ASF
 - default VPC
 
 ### Stack Parameters
-Review Parameters in [cloudformation.yml](cloudformation.yml) for deploy time configuration options.
+Review the parameters in [cloudformation.yml](cloudformation.yml) for deploy time configuration options.
 
 ### Deploy with CloudFormation
 
-- Install api dependencies
+- Install API dependencies
 ```sh
 pip install -r api/requirements.txt -t api/src
 ```
 
-- Package the api
+- Package the CloudFormation template
 ```sh
 aws cloudformation package \
             --template-file cloudformation.yml \
@@ -61,9 +61,11 @@ aws cloudformation deploy \
                 "DomainName=<Domain Name>" \
                 "CertificateArn=<arn for ssl certificate>"
 ```
+- Check API at `<custom domain name>/ui`
+
 
 ## Testing the API
-The HyP3 api source contains test files in `/api/tests/`. To run them you need to do a bit of setup first.
+The HyP3 API source contains test files in `/API/tests/`. To run them you need to do a bit of setup first.
 
 - Add hyp3-api to python path
 ```sh
@@ -91,7 +93,7 @@ The API can be run locally to verify changes, but must be tied to existing orche
 ```sh
 export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
 ```
-- run api
+- run API
 ```sh
 python3 api/src/hyp3_api/__main__.py
 ```
