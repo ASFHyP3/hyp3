@@ -73,7 +73,7 @@ export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
 ```
 - Setup environment variables
 ```sh
-export $(cat /api/test/cfg.env | xargs)
+export $(cat api/test/cfg.env | xargs)
 ```
 - Run tests
 ```sh
