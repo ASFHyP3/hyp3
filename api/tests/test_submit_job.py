@@ -18,7 +18,7 @@ def test_submit_one_job(client, table):
 
 
 def test_submit_many_jobs(client, table):
-    max_jobs = 100
+    max_jobs = 25
     login(client)
 
     batch = [make_job() for ii in range(max_jobs)]

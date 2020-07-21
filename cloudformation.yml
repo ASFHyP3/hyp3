@@ -44,7 +44,7 @@ Parameters:
   MonthlyJobQuotaPerUser:
     Type: Number
     MinValue: 1
-    Default: 100
+    Default: 25
 
 Outputs:
 
