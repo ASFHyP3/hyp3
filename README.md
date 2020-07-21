@@ -61,7 +61,7 @@ aws cloudformation deploy \
                 "DomainName=<Domain Name>" \
                 "CertificateArn=<arn for ssl certificate>"
 ```
-- Check API at `<Domain Name>/ui`
+- Check API at `https://<Domain Name>/ui`
 
 
 ## Testing the API
