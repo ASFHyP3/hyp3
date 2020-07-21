@@ -2,7 +2,6 @@ import time
 from os import environ
 
 import jwt
-from connexion import context
 
 
 def decode_token(token, required_scopes):
