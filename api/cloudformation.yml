@@ -9,12 +9,6 @@ Parameters:
   AuthAlgorithm:
     Type: String
 
-<<<<<<< Updated upstream
-=======
-  AuthAppUid:
-    Type: String
-
->>>>>>> Stashed changes
   DomainName:
     Type: String
 
