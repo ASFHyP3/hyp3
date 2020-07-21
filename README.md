@@ -75,9 +75,14 @@ export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
 ```sh
 export $(cat api/tests/cfg.env | xargs)
 ```
+- Install requirements
+```sh
+pip install -r api/requirements.txt
+```
+
 - Run tests
 ```sh
-pytest api/src/
+pytest api/
 ```
 
 ## Running the API Locally
