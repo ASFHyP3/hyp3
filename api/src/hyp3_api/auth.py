@@ -19,7 +19,6 @@ def get_mock_jwt_cookie(user, lifetime_in_seconds=100):
     payload = {
         'urs-user-id': user,
         'exp': int(time.time()) + lifetime_in_seconds,
-        'urs-groups': []
     }
     value = jwt.encode(
         payload=payload,
