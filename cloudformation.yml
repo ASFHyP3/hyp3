@@ -43,7 +43,7 @@ Parameters:
     Type: String
 
   MonthlyJobQuotaPerUser:
-    Description: Number of jobs a single user is allowed each month.
+    Description: Number of jobs each user is allowed per month.
     Type: Number
     MinValue: 1
     Default: 25
