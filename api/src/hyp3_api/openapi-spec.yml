@@ -91,7 +91,6 @@ components:
       type: object
       required:
         - user_id
-        - authorized
         - quota
       properties:
         user_id:
