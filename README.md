@@ -86,7 +86,7 @@ pytest api/
 ```
 
 ## Running the API Locally
-The API can be run locally to verify changes, but must be tied to existing orchestration.
+The API can be run locally to verify changes, but must be connected to an existing DynamoDB jobs table.
 
 - Setup aws credentials in your environment [Documentation by AWS](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration)
 - Setup environment variables
@@ -104,5 +104,5 @@ python3 api/src/hyp3_api/__main__.py
 ```
 - In order to connect you will need to include the following cookie
 ```
-eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1cnMtdXNlci1pZCI6InVzZXIiLCJleHAiOjIxNTk1MzY1MzIzLCJ1cnMtZ3JvdXBzIjpbeyJuYW1lIjoiYXV0aC1ncm91cCIsImFwcF91aWQiOiJhdXRoLXVpZCJ9XX0.Xa0T6kRD5nihlH6UneYUpt1pzumjYre0fWVrxOq-1pw
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1cnMtdXNlci1pZCI6InVzZXIiLCJleHAiOjIxNTk1Mzc0OTYyLCJ1cnMtZ3JvdXBzIjpbeyJuYW1lIjoiYXV0aC1ncm91cCIsImFwcF91aWQiOiJhdXRoLXVpZCJ9XX0.hMtgDTqS5wxDPCzK9MlXB-3j6MAcGYeSZjGf4SYvq9Y
 ```
