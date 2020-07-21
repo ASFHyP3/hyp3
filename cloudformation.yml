@@ -15,11 +15,11 @@ Parameters:
     NoEcho: true
 
   RtcGammaImage:
-    Description: Link to Rtc-Gamma processing image to use when running RTC-GAMMA jobs.
+    Description: Link to RTC_GAMMA processing image to use when running RTC_GAMMA jobs.
     Type: String
 
   ProductLifetimeInDays:
-    Description: Number of days to keep files before deleting them.
+    Description: Number of days to keep output files before deleting them.
     Type: Number
     MinValue: 1
     Default: 14
@@ -35,11 +35,11 @@ Parameters:
     Default: RS256
 
   DomainName:
-    Description: DNS domain record that will be used to invoke this api.
+    Description: DNS domain name that will be used to invoke this api.
     Type: String
 
   CertificateArn:
-    Description: ARN of Certificate setup previously for this domain name.
+    Description: ARN of Certificate in AWS Certificate Manager setup previously for this domain name.
     Type: String
 
   MonthlyJobQuotaPerUser:
