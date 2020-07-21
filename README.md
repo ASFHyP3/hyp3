@@ -1,4 +1,4 @@
-# hyp3
+# HyP3
 ![Static code analysis](https://github.com/ASFHyP3/hyp3/workflows/Static%20code%20analysis/badge.svg)
 ![Deploy to AWS](https://github.com/ASFHyP3/hyp3/workflows/Deploy%20to%20AWS/badge.svg)
 ![Run tests](https://github.com/ASFHyP3/hyp3/workflows/Run%20tests/badge.svg)
@@ -9,11 +9,11 @@ A processing environment for HyP3 Plugins in AWS.
 - [Deployment](#deployment)
   - [Prerequisites](#prerequisites)
   - [Stack Parameters](#stack-parameters)
-  - [Deploy with Cloudformation](#deploy-with-cloudformation)
+  - [Deploy with CloudFormation](#deploy-with-cloudformation)
 - [Testing](#testing)
 - [Running the API Locally](#running-the-api-locally)
-## Deployment
 
+## Deployment
 
 ### Prerequisites
 These resources are required for a successful deployment, but managed separately:
@@ -29,20 +29,24 @@ These resources are required for a successful deployment, but managed separately
 - default VPC
 
 ### Stack Parameters
-Review Parameters in `cloudformation.yml` for deploy time configuration options.
+Review Parameters in [cloudformation.yml](cloudformation.yml) for deploy time configuration options.
 
 ### Deploy with CloudFormation
 
-- Install and package dependencies for api
+- Install api dependencies
 ```sh
 pip install -r api/requirements.txt -t api/src
+```
+
+- Package the api
+```sh
 aws cloudformation package \
             --template-file cloudformation.yml \
-            --s3-bucket <Cloud Formation artifact bucket> \
+            --s3-bucket <CloudFormation artifact bucket> \
             --output-template-file packaged.yml
 ```
 
-- deploy to AWS with Cloud Formation
+- Deploy to AWS with CloudFormation
 ```sh
 aws cloudformation deploy \
             --stack-name <name of your HyP3 Stack> \
