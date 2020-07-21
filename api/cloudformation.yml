@@ -9,12 +9,6 @@ Parameters:
   AuthAlgorithm:
     Type: String
 
-  AuthGroupName:
-    Type: String
-
-  AuthAppUid:
-    Type: String
-
   DomainName:
     Type: String
 
@@ -173,8 +167,6 @@ Resources:
           TABLE_NAME: !Ref JobsTable
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITHM: !Ref AuthAlgorithm
-          AUTH_GROUP_NAME: !Ref AuthGroupName
-          AUTH_APP_UID: !Ref AuthAppUid
           MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
       Code: src/
       Handler: lambda_handler.handler

@@ -28,13 +28,6 @@ Parameters:
     Type: String
     Default: RS256
 
-  AuthGroupName:
-    Type: String
-
-  AuthAppUid:
-    Type: String
-    Default: asf_urs
-
   DomainName:
     Type: String
 
@@ -44,7 +37,7 @@ Parameters:
   MonthlyJobQuotaPerUser:
     Type: Number
     MinValue: 1
-    Default: 100
+    Default: 25
 
 Outputs:
 
@@ -60,8 +53,6 @@ Resources:
         JobsTable: !Ref JobsTable
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
-        AuthGroupName: !Ref AuthGroupName
-        AuthAppUid: !Ref AuthAppUid
         DomainName: !Ref DomainName
         CertificateArn: !Ref CertificateArn
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
