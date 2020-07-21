@@ -12,7 +12,7 @@ paths:
   /jobs:
 
     post:
-      descriptions: Submits a list of jobs for processing.
+      description: Submits a list of jobs for processing.
       operationId: hyp3_api.handlers.post_jobs
       requestBody:
         content:
