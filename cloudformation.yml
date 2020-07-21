@@ -6,11 +6,11 @@ Parameters:
     Type: AWS::EC2::VPC::Id
 
   EDLUsername:
-    Description: Earth Data Login username to use when downloading products.
+    Description: Earthdata Login username to use when downloading products.
     Type: String
 
   EDLPassword:
-    Description: Earth Data Login password to use when downloading products.
+    Description: Earthdata Login password to use when downloading products.
     Type: String
     NoEcho: true
 
