@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased]
+### Changed
+- Reduced monthly job quota per user from 100 to 25
+- Reduced maximum number of jobs allowed in a single POST /jobs request from 100 to 25
 ### Removed
 - Removed user authorization requirement for submitting jobs
 - Removed is_authorized field from GET /user response
