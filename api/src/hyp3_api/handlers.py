@@ -27,7 +27,7 @@ def post_jobs(body, user):
 
     quota = get_user(user)['quota']
     if quota['remaining'] - len(body['jobs']) < 0:
-        message = 'Your monthly quota is {quota["limit"]} jobs. You have {quota["remaining"]} jobs remaining.'
+        message = f'Your monthly quota is {quota["limit"]} jobs. You have {quota["remaining"]} jobs remaining.'
         return problem(400, 'Bad Request', message)
 
     try:

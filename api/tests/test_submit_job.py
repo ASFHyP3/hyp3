@@ -43,7 +43,8 @@ def test_submit_exceeds_quota(client, table):
                                              request_time=time_for_previous_month)
     table.put_item(Item=job_from_previous_month)
 
-    batch = [make_job() for ii in range(int(environ['MONTHLY_JOB_QUOTA_PER_USER']))]
+    quota = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
+    batch = [make_job() for ii in range(quota)]
     setup_requests_mock(batch)
 
     response = submit_batch(client, batch)
@@ -51,6 +52,8 @@ def test_submit_exceeds_quota(client, table):
 
     response = submit_batch(client)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert f'{quota} jobs' in response.json['detail']
+    assert '0 jobs' in response.json['detail']
 
 
 def test_submit_without_jobs(client):
