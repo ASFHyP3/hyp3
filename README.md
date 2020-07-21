@@ -109,8 +109,6 @@ The API can be run locally to verify changes, but must be tied to existing orche
   - MONTHLY_JOB_QUOTA_PER_USER=100
   - AUTH_PUBLIC_KEY=123456789 `we use this auth config so that we can set the cookie ourselves to a known good value`
   - AUTH_ALGORITHM=HS256
-  - AUTH_GROUP_NAME=auth-group
-  - AUTH_APP_UID=auth-uid
 - Add hyp3-api to python path
 ```sh
 export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
