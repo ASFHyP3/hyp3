@@ -35,14 +35,12 @@ jobs:
           echo "::set-env name=STACK_NAME::hyp3-test"
           echo "::set-env name=DOMAIN_NAME::hyp3-test-api.asf.alaska.edu"
           echo "::set-env name=IMAGE_TAG::test"
-          echo "::set-env name=AUTH_GROUP_NAME::HAS_ACCESS_TO_HYP3_TEST"
 
       - if: endsWith(github.ref, '/master')
         run: |
           echo "::set-env name=STACK_NAME::hyp3"
           echo "::set-env name=DOMAIN_NAME::hyp3-api.asf.alaska.edu"
           echo "::set-env name=IMAGE_TAG::latest"
-          echo "::set-env name=AUTH_GROUP_NAME::HAS_ACCESS_TO_HYP3"
 
       - uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -76,9 +74,8 @@ jobs:
                 "EDLPassword=${EDL_PASSWORD}" \
                 "RtcGammaImage=${RTC_GAMMA_REPOSITORY}:${IMAGE_TAG}" \
                 "DomainName=${DOMAIN_NAME}" \
-                "CertificateArn=${CERTIFICATE_ARN}" \
-                "AuthGroupName=${AUTH_GROUP_NAME}"
-          
+                "CertificateArn=${CERTIFICATE_ARN}"
+
       - name: Get associated PR
         if: github.ref == 'refs/heads/master'
         uses: helaili/github-graphql-action@2.0.1
