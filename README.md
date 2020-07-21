@@ -81,8 +81,7 @@ aws cloudformation deploy \
                 "EDLPassword=<EDL Password to download products>" \
                 "RtcGammaImage=<location of RtcGammaImage to use>" \
                 "DomainName=<Domain Name>" \
-                "CertificateArn=<arn for ssl certificate>" \
-                "AuthGroupName=<EDL group name for access control>"
+                "CertificateArn=<arn for ssl certificate>"
 ```
 
 ## Testing
@@ -94,11 +93,11 @@ export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
 ```
 - Setup environment variables
 ```sh
-export (cat /api/test/cfg.env | xargs)
+export $(cat /api/test/cfg.env | xargs)
 ```
 - Run tests
 ```sh
-pytest /api/src/
+pytest api/src/
 ```
 
 ## Running the API Locally
@@ -118,7 +117,7 @@ export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
 ```
 - run api
 ```sh
-python3 /api/src/hyp3_api/__main__.py
+python3 api/src/hyp3_api/__main__.py
 ```
 - In order to connect you will need to include the following cookie
 ```eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1cnMtdXNlci1pZCI6InVzZXIiLCJleHAiOjE1OTUxMDEzMjcsInVycy1ncm91cHMiOlt7Im5hbWUiOiJhdXRoLWdyb3VwIiwiYXBwX3VpZCI6ImF1dGgtdWlkIn1dfQ.x8CMKRwQn8LgtWFhz8m68mTGfW9bfsbBh-eiPPDFUpE```
