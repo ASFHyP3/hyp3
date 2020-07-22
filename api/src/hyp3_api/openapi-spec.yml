@@ -53,7 +53,7 @@ paths:
                 $ref: "#/components/schemas/jobs_response"
   /user:
     get:
-      description: Get information about a user.
+      description: Get information about the logged in user.
       operationId: hyp3_api.handlers.get_user
       responses:
         "200":
@@ -182,7 +182,7 @@ components:
       example: 27836b79-e5b2-4d8f-932f-659724ea02c3
 
     user_id:
-      description: Username from EarthData Login.
+      description: Username from Earthdata Login.
       type: string
       example: myUserId
 
