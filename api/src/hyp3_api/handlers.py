@@ -9,8 +9,9 @@ from connexion import problem
 from connexion.apps.flask_app import FlaskJSONEncoder
 from flask_cors import CORS
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
-from hyp3_api.util import CmrError, check_granules_exist, format_time, get_remaining_jobs_for_user,\
+from hyp3_api.util import format_time, get_remaining_jobs_for_user,\
     get_request_time_expression
+from hyp3_api.validation import CmrError, check_granules_exist
 
 
 class DecimalEncoder(FlaskJSONEncoder):
