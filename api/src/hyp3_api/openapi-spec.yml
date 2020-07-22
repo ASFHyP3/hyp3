@@ -85,13 +85,10 @@ components:
       type: object
       required:
         - user_id
-        - authorized
         - quota
       properties:
         user_id:
           $ref: "#/components/schemas/user_id"
-        authorized:
-          type: boolean
         quota:
           $ref: "#/components/schemas/quota"
 
@@ -111,7 +108,7 @@ components:
     list_of_new_jobs:
       type: array
       minItems: 1
-      maxItems: 100
+      maxItems: 25
       items:
         $ref: "#/components/schemas/new_job"
 

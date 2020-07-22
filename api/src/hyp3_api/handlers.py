@@ -5,7 +5,7 @@ from uuid import uuid4
 
 import requests
 from boto3.dynamodb.conditions import Attr, Key
-from connexion import context, problem
+from connexion import problem
 from connexion.apps.flask_app import FlaskJSONEncoder
 from flask_cors import CORS
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
@@ -24,12 +24,10 @@ class DecimalEncoder(FlaskJSONEncoder):
 
 def post_jobs(body, user):
     print(body)
-    if not context['is_authorized']:
-        return problem(403, 'Forbidden', f'User {user} does not have permission to submit jobs.')
 
     quota = get_user(user)['quota']
     if quota['remaining'] - len(body['jobs']) < 0:
-        message = 'Your monthly quota is {quota["limit"]} jobs. You have {quota["remaining"]} jobs remaining.'
+        message = f'Your monthly quota is {quota["limit"]} jobs. You have {quota["remaining"]} jobs remaining.'
         return problem(400, 'Bad Request', message)
 
     try:
@@ -73,21 +71,11 @@ def get_jobs(user, start=None, end=None, status_code=None):
 
 
 def get_user(user):
-    authorized = context['is_authorized']
-
-    if authorized:
-        limit = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
-        remaining = get_remaining_jobs_for_user(user)
-    else:
-        limit = 0
-        remaining = 0
-
     return {
         'user_id': user,
-        'authorized': authorized,
         'quota': {
-            'limit': limit,
-            'remaining': remaining,
+            'limit': int(environ['MONTHLY_JOB_QUOTA_PER_USER']),
+            'remaining': get_remaining_jobs_for_user(user),
         },
     }
 
