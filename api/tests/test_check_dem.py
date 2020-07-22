@@ -29,3 +29,19 @@ def test_dem_validation_intersections():
     for polygon in polygons:
         result = check_intersect(polygon['shape'])
         assert result == polygon['intersects_coverage']
+
+
+# GOOD:
+#
+# S1B_IW_SLC__1SDV_20200720T011819_20200720T011846_022548_02ACB8_592D # inland
+#
+# S1B_IW_SLC__1SDV_20200719T190653_20200719T190723_022544_02AC9B_B3DA # island
+#
+# S1A_IW_SLC__1SDV_20200610T175045_20200610T175112_032958_03D14E_CD96 # good on dateline
+#
+#
+# BAD:
+#
+# S1B_IW_SLC__1SDV_20200719T184932_20200719T184959_022544_02AC97_4B4F # slight offshore
+#
+# S1A_IW_SLC__1SDV_20200610T175135_20200610T175201_032958_03D14E_7884 #

@@ -11,7 +11,11 @@ class CmrError(Exception):
     pass
 
 
-def check_granules_exist(granules):
+class DemError(Exception):
+    pass
+
+
+def validate_granules(granules):
     cmr_parameters = {
         'producer_granule_id': granules,
         'provider': 'ASF',
@@ -22,27 +26,34 @@ def check_granules_exist(granules):
     }
     response = requests.post(CMR_URL, data=cmr_parameters)
     response.raise_for_status()
-    found_granules = [entry['producer_granule_id'] for entry in response.json()['feed']['entry']]
+    check_granules_exist(granules, response.json())
+    check_dem_coverage(granules, response.json())
+
+
+def check_granules_exist(granules, cmr_response):
+    found_granules = [entry['producer_granule_id'] for entry in cmr_response['feed']['entry']]
     not_found_granules = set(granules) - set(found_granules)
     if not_found_granules:
         raise CmrError(f'Some requested scenes could not be found: {",".join(not_found_granules)}')
 
 
-def get_granule_polygon(granule):
-    cmr_parameters = {
-        'producer_granule_id': granule,
-        'provider': 'ASF',
-        'short_name': [
-            'SENTINEL-1A_SLC',
-            'SENTINEL-1B_SLC',
-        ],
-    }
-    response = requests.post(CMR_URL, data=cmr_parameters)
-    response.raise_for_status()
-    points_string = response.json()['feed']['entry'][0]['polygons'][0][0]
-    points_list = [float(a) for a in points_string.split(' ')]
-    points = [list(t) for t in zip(points_list[1::2], points_list[::2])]
-    return Polygon(points)
+def check_dem_coverage(granules, cmr_response):
+    granules = [
+        {
+            'name': entry['producer_granule_id'],
+            'polygon':Polygon(format_points(entry['polygons'][0][0]))
+        } for entry in cmr_response['feed']['entry']
+    ]
+
+    bad_granules = [granule['name'] for granule in granules if not check_intersect(granule['polygon'])]
+    if bad_granules:
+        raise DemError(f'Some requested scenes do not have dem coverage: {",".join(bad_granules)}')
+
+
+def format_points(point_string):
+    converted_to_float = [float(x) for x in point_string.split(' ')]
+    points = [list(t) for t in zip(converted_to_float[1::2], converted_to_float[::2])]
+    return points
 
 
 def get_coverage_shapes_from_geojson():

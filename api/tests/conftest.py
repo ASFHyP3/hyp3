@@ -100,7 +100,12 @@ def setup_requests_mock(batch):
     granules = [job['job_parameters']['granule'] for job in batch]
     cmr_response = {
         'feed': {
-                'entry': [{'producer_granule_id': granule} for granule in granules]
+                'entry': [
+                    {
+                        'producer_granule_id': granule,
+                        'polygons': [["63.871941 -157.47052 62.278873 -156.62677 62.712959 -151.784653 64.318275 -152.353271 63.871941 -157.47052"]],
+                    } for granule in granules
+                ]
         }
     }
     responses.add(responses.POST, CMR_URL_RE, json.dumps(cmr_response))
