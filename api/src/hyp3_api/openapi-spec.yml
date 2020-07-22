@@ -116,7 +116,7 @@ components:
       description: Contains a list of new job objects.
       type: array
       minItems: 1
-      maxItems: 100
+      maxItems: 25
       items:
         $ref: "#/components/schemas/new_job"
 

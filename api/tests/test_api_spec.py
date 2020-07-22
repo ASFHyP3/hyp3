@@ -1,4 +1,4 @@
-from conftest import AUTH_COOKIE, DEFAULT_USERNAME, JOBS_URI, USER_URI, login, make_job, submit_batch
+from conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login, make_job, submit_batch
 from flask_api import status
 from hyp3_api import auth
 
@@ -32,13 +32,6 @@ def test_not_logged_in(client):
                 assert response.status_code == status.HTTP_200_OK
             else:
                 assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-
-def test_logged_in_not_authorized(client):
-    login(client, authorized=False)
-    response = submit_batch(client)
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert DEFAULT_USERNAME in response.json['detail']
 
 
 def test_invalid_cookie(client):
