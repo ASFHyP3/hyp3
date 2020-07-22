@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [0.3.0] - 2020-07-22
+### Added
+- README.md with instructions for deploying, testing, and running the application
+- Descriptions for all parameters in the top level cloudformation template
+- Descriptions for all schema objects in the OpenAPI specification
 ### Changed
 - Reduced monthly job quota per user from 100 to 25
 - Reduced maximum number of jobs allowed in a single POST /jobs request from 100 to 25
