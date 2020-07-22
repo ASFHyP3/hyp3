@@ -28,7 +28,7 @@ def test_dem_validation_intersections():
     ]
     coverage = get_coverage_shapes_from_geojson()
     for polygon in polygons:
-        result = check_intersect(polygon['shape'], coverage )
+        result = check_intersect(polygon['shape'], coverage)
         assert result == polygon['intersects_coverage']
 
 
