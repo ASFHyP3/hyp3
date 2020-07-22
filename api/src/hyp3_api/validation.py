@@ -63,7 +63,7 @@ def get_coverage_shapes_from_geojson():
     return [x.buffer(0) for x in shape(shp).buffer(0).geoms]
 
 
-def check_intersect(granule: Polygon, coverage: Polygon):
+def check_intersect(granule: Polygon, coverage: list):
     for polygon in coverage:
         if granule.intersects(polygon):
             return True
