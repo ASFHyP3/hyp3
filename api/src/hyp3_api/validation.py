@@ -27,7 +27,7 @@ def validate_granules(granules):
     response = requests.post(CMR_URL, data=cmr_parameters)
     response.raise_for_status()
     check_granules_exist(granules, response.json())
-    check_dem_coverage(granules, response.json())
+    check_dem_coverage(response.json())
 
 
 def check_granules_exist(granules, cmr_response):
@@ -37,15 +37,15 @@ def check_granules_exist(granules, cmr_response):
         raise CmrError(f'Some requested scenes could not be found: {",".join(not_found_granules)}')
 
 
-def check_dem_coverage(granules, cmr_response):
+def check_dem_coverage(cmr_response):
     granules = [
         {
             'name': entry['producer_granule_id'],
             'polygon':Polygon(format_points(entry['polygons'][0][0]))
         } for entry in cmr_response['feed']['entry']
     ]
-
-    bad_granules = [granule['name'] for granule in granules if not check_intersect(granule['polygon'])]
+    coverage = get_coverage_shapes_from_geojson()
+    bad_granules = [granule['name'] for granule in granules if not check_intersect(granule['polygon'], coverage)]
     if bad_granules:
         raise DemError(f'Some requested scenes do not have dem coverage: {",".join(bad_granules)}')
 
@@ -63,9 +63,8 @@ def get_coverage_shapes_from_geojson():
     return [x.buffer(0) for x in shape(shp).buffer(0).geoms]
 
 
-def check_intersect(polygon: Polygon):
-    coverage = get_coverage_shapes_from_geojson()
-    for poly in coverage:
-        if polygon.intersects(poly):
+def check_intersect(granule: Polygon, coverage: Polygon):
+    for polygon in coverage:
+        if granule.intersects(polygon):
             return True
     return False
