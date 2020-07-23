@@ -36,13 +36,6 @@ def test_list_jobs(client, table):
     assert response.json == {'jobs': []}
 
 
-def test_list_jobs_not_authorized(client, table):
-    login(client, authorized=False)
-    response = client.get(JOBS_URI)
-    assert response.status_code == status.HTTP_200_OK
-    assert response.json == {'jobs': []}
-
-
 def test_list_jobs_by_status(client, table):
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', status_code='RUNNING'),
