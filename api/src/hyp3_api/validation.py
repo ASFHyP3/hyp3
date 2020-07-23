@@ -16,6 +16,13 @@ class DemError(Exception):
 
 
 def validate_granules(granules):
+    granule_metadata = get_cmr_metadata(granules)
+
+    check_granules_exist(granules, granule_metadata)
+    check_dem_coverage(granule_metadata)
+
+
+def get_cmr_metadata(granules):
     cmr_parameters = {
         'producer_granule_id': granules,
         'provider': 'ASF',
@@ -26,26 +33,26 @@ def validate_granules(granules):
     }
     response = requests.post(CMR_URL, data=cmr_parameters)
     response.raise_for_status()
-    check_granules_exist(granules, response.json())
-    check_dem_coverage(response.json())
+    granules = [
+        {
+            'name': entry['producer_granule_id'],
+            'polygon': Polygon(format_points(entry['polygons'][0][0]))
+        } for entry in response.json()['feed']['entry']
+    ]
+    return granules
 
 
-def check_granules_exist(granules, cmr_response):
-    found_granules = [entry['producer_granule_id'] for entry in cmr_response['feed']['entry']]
+def check_granules_exist(granules, granule_metadata):
+    found_granules = [granule['name'] for granule in granule_metadata]
     not_found_granules = set(granules) - set(found_granules)
     if not_found_granules:
         raise CmrError(f'Some requested scenes could not be found: {",".join(not_found_granules)}')
 
 
-def check_dem_coverage(cmr_response):
-    granules = [
-        {
-            'name': entry['producer_granule_id'],
-            'polygon':Polygon(format_points(entry['polygons'][0][0]))
-        } for entry in cmr_response['feed']['entry']
-    ]
+def check_dem_coverage(granule_metadata):
     coverage = get_coverage_shapes_from_geojson()
-    bad_granules = [granule['name'] for granule in granules if not check_intersect(granule['polygon'], coverage)]
+    bad_granules = [granule['name'] for granule in granule_metadata if
+                    not check_intersect(granule['polygon'], coverage)]
     if bad_granules:
         raise DemError(f'Some requested scenes do not have dem coverage: {",".join(bad_granules)}')
 

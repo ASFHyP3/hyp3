@@ -1,10 +1,10 @@
 from datetime import datetime, timezone
 from os import environ
 
-import requests
 from boto3.dynamodb.conditions import Key
 from dateutil.parser import parse
-from hyp3_api import CMR_URL, handlers
+
+from hyp3_api import handlers
 
 
 class QuotaError(Exception):

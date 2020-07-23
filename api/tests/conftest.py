@@ -47,7 +47,8 @@ def get_table_properties_from_template():
 
 def make_job(granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
              description='someDescription',
-             job_type='RTC_GAMMA'):
+             job_type='RTC_GAMMA',
+             polygon=''):
     job = {
         'job_type': job_type,
         'job_parameters': {
@@ -103,7 +104,10 @@ def setup_requests_mock(batch):
                 'entry': [
                     {
                         'producer_granule_id': granule,
-                        'polygons': [["63.871941 -157.47052 62.278873 -156.62677 62.712959 -151.784653 64.318275 -152.353271 63.871941 -157.47052"]],
+                        'polygons': [
+                            ["63.871941 -157.47052 62.278873 -156.62677 62.712959 -151.784653 64.318275 -152.353271 "
+                             "63.871941 -157.47052"]
+                        ],
                     } for granule in granules
                 ]
         }
