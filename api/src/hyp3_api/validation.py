@@ -13,6 +13,16 @@ class GranuleValidationError(Exception):
     pass
 
 
+def check_intersects_with_coverage(granule: Polygon):
+    global DEM_COVERAGE
+    if DEM_COVERAGE is None:
+        DEM_COVERAGE = get_coverage_shapes_from_geojson()
+    for polygon in DEM_COVERAGE:
+        if granule.intersects(polygon):
+            return True
+    return False
+
+
 def validate_granules(granules):
     granule_metadata = get_cmr_metadata(granules)
 
@@ -48,9 +58,6 @@ def check_granules_exist(granules, granule_metadata):
 
 
 def check_dem_coverage(granule_metadata):
-    global DEM_COVERAGE
-    if DEM_COVERAGE is None:
-        DEM_COVERAGE = get_coverage_shapes_from_geojson()
     bad_granules = {granule['name'] for granule in granule_metadata if
                     not check_intersects_with_coverage(granule['polygon'])}
     if bad_granules:
@@ -68,10 +75,3 @@ def get_coverage_shapes_from_geojson():
     with open(dem_file) as f:
         shp = json.load(f)['features'][0]['geometry']
     return [x.buffer(0) for x in shape(shp).buffer(0).geoms]
-
-
-def check_intersects_with_coverage(granule: Polygon):
-    for polygon in DEM_COVERAGE:
-        if granule.intersects(polygon):
-            return True
-    return False
