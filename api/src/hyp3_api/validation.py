@@ -38,6 +38,7 @@ def get_cmr_metadata(granules):
             'SENTINEL-1A_SLC',
             'SENTINEL-1B_SLC',
         ],
+        'page_size': 2000,
     }
     response = requests.post(CMR_URL, data=cmr_parameters)
     response.raise_for_status()
