@@ -1,7 +1,6 @@
 from shapely.geometry import Polygon
 
-from hyp3_api.validation import check_intersect, get_coverage_shapes_from_geojson
-
+from hyp3_api.validation import check_dem_coverage
 
 def test_dem_validation_intersections():
     polygons = [
@@ -36,7 +35,6 @@ def test_dem_validation_intersections():
             'intersects_coverage': False,
         },
     ]
-    coverage = get_coverage_shapes_from_geojson()
     for polygon in polygons:
-        result = check_intersect(polygon['shape'], coverage)
+        result = check_dem_coverage(polygon['shape'])
         assert result == polygon['intersects_coverage']

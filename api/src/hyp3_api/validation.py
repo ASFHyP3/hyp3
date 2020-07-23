@@ -48,7 +48,7 @@ def check_granules_exist(granules, granule_metadata):
 def check_dem_coverage(granule_metadata):
     coverage = get_coverage_shapes_from_geojson()
     bad_granules = [granule['name'] for granule in granule_metadata if
-                    not check_intersect(granule['polygon'], coverage)]
+                    not check_intersects_with_coverage(granule['polygon'], coverage)]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have dem coverage: {",".join(bad_granules)}')
 
@@ -66,7 +66,7 @@ def get_coverage_shapes_from_geojson():
     return [x.buffer(0) for x in shape(shp).buffer(0).geoms]
 
 
-def check_intersect(granule: Polygon, coverage: list):
+def check_intersects_with_coverage(granule: Polygon, coverage: list):
     for polygon in coverage:
         if granule.intersects(polygon):
             return True
