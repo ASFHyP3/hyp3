@@ -5,7 +5,7 @@ from shapely.geometry import Polygon
 from hyp3_api.validation import GranuleValidationError, check_dem_coverage
 
 
-def test_dem_validation_intersections():
+def test_check_dem_coverage():
     polygons = [
         {  # Checks inland polygon
             'polygon': Polygon(
