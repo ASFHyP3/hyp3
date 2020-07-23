@@ -7,10 +7,6 @@ from dateutil.parser import parse
 from hyp3_api import handlers
 
 
-class QuotaError(Exception):
-    pass
-
-
 def format_time(time: datetime):
     if time.tzinfo is None:
         raise ValueError(f'missing tzinfo for datetime {time}')
