@@ -4,7 +4,7 @@ import os
 import requests
 from shapely.geometry import Polygon, shape
 
-from hyp3_api import CMR_URL
+from hyp3_api import CMR_URL, DEM_COVERAGE
 
 
 class GranuleValidationError(Exception):
@@ -46,11 +46,13 @@ def check_granules_exist(granules, granule_metadata):
 
 
 def check_dem_coverage(granule_metadata):
-    coverage = get_coverage_shapes_from_geojson()
+    global DEM_COVERAGE
+    if DEM_COVERAGE is None:
+        DEM_COVERAGE = get_coverage_shapes_from_geojson()
     bad_granules = {granule['name'] for granule in granule_metadata if
-                    not check_intersects_with_coverage(granule['polygon'], coverage)}
+                    not check_intersects_with_coverage(granule['polygon'])}
     if bad_granules:
-        raise GranuleValidationError(f'Some requested scenes do not have dem coverage: {", ".join(bad_granules)}')
+        raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
 def format_points(point_string):
@@ -66,8 +68,8 @@ def get_coverage_shapes_from_geojson():
     return [x.buffer(0) for x in shape(shp).buffer(0).geoms]
 
 
-def check_intersects_with_coverage(granule: Polygon, coverage: list):
-    for polygon in coverage:
+def check_intersects_with_coverage(granule: Polygon):
+    for polygon in DEM_COVERAGE:
         if granule.intersects(polygon):
             return True
     return False

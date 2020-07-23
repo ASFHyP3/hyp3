@@ -40,4 +40,4 @@ def test_dem_validation_intersections():
     ]
     with raises(GranuleValidationError) as exception_info:
         check_dem_coverage(polygons)
-    assert 'Some requested scenes do not have dem coverage: bad1, bad2' in str(exception_info)
+    assert 'Some requested scenes do not have DEM coverage: bad1, bad2' in str(exception_info)
