@@ -6,8 +6,7 @@ from shapely.geometry import Polygon, shape
 
 from hyp3_api import CMR_URL
 
-
-DEM_COVERAGE = None  # set on first request to avoid reading from disk each request
+DEM_COVERAGE = None
 
 
 class GranuleValidationError(Exception):
