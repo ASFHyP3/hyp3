@@ -10,4 +10,5 @@ PyYAML
 responses
 requests
 serverless_wsgi
+shapely
 strict-rfc3339

@@ -1,4 +1,5 @@
 import serverless_wsgi
+
 from hyp3_api import connexion_app
 
 

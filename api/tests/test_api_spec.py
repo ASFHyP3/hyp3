@@ -1,5 +1,6 @@
 from conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login, make_job, submit_batch
 from flask_api import status
+
 from hyp3_api import auth
 
 
