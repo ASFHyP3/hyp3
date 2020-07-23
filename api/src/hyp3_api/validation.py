@@ -42,7 +42,7 @@ def check_granules_exist(granules, granule_metadata):
     found_granules = [granule['name'] for granule in granule_metadata]
     not_found_granules = set(granules) - set(found_granules)
     if not_found_granules:
-        raise GranuleValidationError(f'Some requested scenes could not be found: {",".join(not_found_granules)}')
+        raise GranuleValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 
 
 def check_dem_coverage(granule_metadata):
@@ -50,7 +50,7 @@ def check_dem_coverage(granule_metadata):
     bad_granules = [granule['name'] for granule in granule_metadata if
                     not check_intersects_with_coverage(granule['polygon'], coverage)]
     if bad_granules:
-        raise GranuleValidationError(f'Some requested scenes do not have dem coverage: {",".join(bad_granules)}')
+        raise GranuleValidationError(f'Some requested scenes do not have dem coverage: {", ".join(bad_granules)}')
 
 
 def format_points(point_string):
