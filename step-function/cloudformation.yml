@@ -51,6 +51,11 @@ Resources:
               },
               "ResultPath": "$.results.rtc_gamma",
               "Next": "GET_FILES",
+              "Retry": [{
+                "ErrorEquals": [ "States.ALL" ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 2
+              }],
               "Catch": [{
                 "ErrorEquals": ["States.ALL"],
                 "Next": "JOB_FAILED",
