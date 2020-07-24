@@ -204,9 +204,9 @@ components:
           $ref: "#/components/schemas/granule"
 
     granule:
-      description: The name of the Sentinel-1 granule to process.  Only SLC products with beam mode IW are supported.
+      description: The name of the Sentinel-1 granule to process.  Only SLC and GRDH products with beam mode IW are supported.
       type: string
-      pattern: "^S1[AB]_IW_SLC__*"
+      pattern: "^S1[AB]_IW_(SLC_|GRDH)_*"
       minLength: 67
       maxLength: 67
       example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
