@@ -48,6 +48,14 @@ Parameters:
     MinValue: 1
     Default: 25
 
+  SystemAvailable:
+    Description: Set to false to shutdown system, API will run and provide errors to users, but will not accept jobs.
+    Type: String
+    Default: true
+    AllowedValues:
+      - false
+      - true
+
 Outputs:
 
   ApiUrl:
@@ -65,6 +73,7 @@ Resources:
         DomainName: !Ref DomainName
         CertificateArn: !Ref CertificateArn
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
+        SystemAvailable: !Ref SystemAvailable
       TemplateURL: api/cloudformation.yml
 
   Cluster:

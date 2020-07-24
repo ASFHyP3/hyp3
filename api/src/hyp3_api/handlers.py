@@ -26,6 +26,10 @@ class DecimalEncoder(FlaskJSONEncoder):
 def post_jobs(body, user):
     print(body)
 
+    if environ['SYSTEM_AVAILABLE'] != "true":
+        message = 'HyP3 is currently unavailable. Please try again later.'
+        return problem('503', 'Service Unavailable', message)
+
     quota = get_user(user)['quota']
     if quota['remaining'] - len(body['jobs']) < 0:
         message = f'Your monthly quota is {quota["limit"]} jobs. You have {quota["remaining"]} jobs remaining.'
