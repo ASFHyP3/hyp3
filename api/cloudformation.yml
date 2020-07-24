@@ -170,7 +170,7 @@ Resources:
           MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
       Code: src/
       Handler: lambda_handler.handler
-      MemorySize: 128
+      MemorySize: 3008
       Role: !GetAtt LambdaRole.Arn
       Runtime: python3.8
       Timeout: 30
