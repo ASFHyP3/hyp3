@@ -1,4 +1,4 @@
-requirements.txt
+-r requirements.txt
 boto3
 moto
 pytest
