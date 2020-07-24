@@ -111,5 +111,3 @@ def test_submit_job_hyp3_unavailable(client):
 
     assert response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
     assert response.json['title'] == 'Service Unavailable'
-
-    environ['SYSTEM_AVAILABLE'] = 'true'
