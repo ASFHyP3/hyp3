@@ -5,42 +5,50 @@ from shapely.geometry import Polygon
 from hyp3_api.validation import GranuleValidationError, check_dem_coverage
 
 
+def nsew(north, south, east, west):
+    return Polygon([[west, north], [east, north], [east, south], [west, south]])
+
+
 def test_check_dem_coverage():
     polygons = [
-        {  # Checks inland polygon
-            'polygon': Polygon(
-                [[-112.217865, 40.589935], [-111.80838, 38.969978], [-108.877068, 39.369526], [-109.213676, 40.98851],
-                 [-112.217865, 40.589935]]),
+        {  # Wyoming
+            'polygon': nsew(45, 41, -104, -111),
             'name': 'good1',
         },
-        {  # Checks island polygon
-            'polygon': Polygon(
-                [[168.840698, 53.818138], [169.488266, 55.596813], [165.534683, 55.997574], [165.060516, 54.214031],
-                 [168.840698, 53.818138]]),
+        {  # Alluetean Islands over antimeridian
+            'polygon': nsew(51.7, 51.3, 179.7, -179.3),
             'name': 'good2',
         },
-        {  # Checks polygon over land on international dateline
-            'polygon': Polygon(
-                [[-168.355133, 63.74361], [-167.437805, 65.333801], [-172.817642, 65.79171], [-173.428421, 64.18708],
-                 [-168.355133, 63.74361]]),
+        {  # ocean over antimeridian; no dem coverage but we expect to pass validation
+            'polygon': nsew(-40, -41, 179.7, -179.3),
             'name': 'good3',
         },
-        {  # Checks polygon over water on international dateline
-            'polygon': Polygon(
-                [[-169.842026, 60.806404], [-169.061523, 62.402794], [-173.905548, 62.836201], [-174.439957, 61.229523],
-                 [-169.842026, 60.806404]]),
+        {  # completely encloses tile over Ascension Island in the Atlantic
+            'polygon': nsew(-6, -9, -16, -13),
+            'name': 'good4',
+        },
+        {  # barely intersects off the coast of Eureka, CA
+            'polygon': nsew(40.1, 40, -126, -125.00166),
+            'name': 'good5',
+        },
+        {  # barely misses off the coast of Eureka, CA
+            'polygon': nsew(40.1, 40, -126, -125.00167),
             'name': 'bad1',
         },
-        {  # Checks polygon slightly missing dem coverage
-            'polygon': Polygon(
-                [[-21.174782, 62.767269], [-20.375685, 61.171268], [-15.655336, 61.604073], [-16.198036, 63.211052],
-                 [-21.174782, 62.767269]]),
+        {  # polygon in missing tile over Gulf of Californa
+            'polygon': nsew(26.9, 26.1, -110.1, -110.9),
             'name': 'bad2',
+        },
+        {  # southern Greenland
+            'polygon': nsew(62, 61, -44, -45),
+            'name': 'bad3',
+        },
+        {  # Antarctica
+            'polygon': nsew(-62, -90, 180, -180),
+            'name': 'bad4',
         },
     ]
     with raises(GranuleValidationError) as exception_info:
         check_dem_coverage(polygons)
-    for name in ['bad1', 'bad2']:
-        assert name in str(exception_info)
-    for name in ['good1', 'good2', 'good3']:
-        assert name not in str(exception_info)
+    for polygon in polygons:
+        assert polygon['name'].startswith('bad') == (polygon['name'] in str(exception_info))
