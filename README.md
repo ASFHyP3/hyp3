@@ -75,9 +75,9 @@ export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
 ```sh
 export $(cat api/tests/cfg.env | xargs)
 ```
-- Install requirements
+- Install test requirements
 ```sh
-pip install -r api/requirements.txt
+pip install -r api/requirements-test.txt
 ```
 
 - Run tests

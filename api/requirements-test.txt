@@ -1,0 +1,6 @@
+-r requirements.txt
+boto3
+moto
+pytest
+PyYAML
+responses

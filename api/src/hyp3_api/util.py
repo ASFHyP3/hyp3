@@ -1,18 +1,10 @@
 from datetime import datetime, timezone
 from os import environ
 
-import requests
 from boto3.dynamodb.conditions import Key
 from dateutil.parser import parse
-from hyp3_api import CMR_URL, handlers
 
-
-class QuotaError(Exception):
-    pass
-
-
-class CmrError(Exception):
-    pass
+from hyp3_api import handlers
 
 
 def format_time(time: datetime):
@@ -47,20 +39,3 @@ def get_request_time_expression(start, end):
         return key.gte(formatted_start)
     if formatted_end:
         return key.lte(formatted_end)
-
-
-def check_granules_exist(granules):
-    cmr_parameters = {
-        'producer_granule_id': granules,
-        'provider': 'ASF',
-        'short_name': [
-            'SENTINEL-1A_SLC',
-            'SENTINEL-1B_SLC',
-        ],
-    }
-    response = requests.post(CMR_URL, data=cmr_parameters)
-    response.raise_for_status()
-    found_granules = [entry['producer_granule_id'] for entry in response.json()['feed']['entry']]
-    not_found_granules = set(granules) - set(found_granules)
-    if not_found_granules:
-        raise CmrError(f'Some requested scenes could not be found: {",".join(not_found_granules)}')
