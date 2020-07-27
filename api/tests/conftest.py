@@ -111,6 +111,7 @@ def setup_requests_mock(batch):
                 ]
         }
     }
+    responses.reset()
     responses.add(responses.POST, CMR_URL_RE, json.dumps(cmr_response))
 
 
