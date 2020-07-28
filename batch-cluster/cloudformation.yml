@@ -45,18 +45,6 @@ Resources:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
-        ImageId: !Ref AmiId
-        SecurityGroupIds:
-          - !Ref SecurityGroup
-        TagSpecifications:
-          - ResourceType: instance
-            Tags:
-              - Key: Name
-                Value: !Ref AWS::StackName
-          - ResourceType: volume
-            Tags:
-              - Key: Name
-                Value: !Ref AWS::StackName
         UserData:
           Fn::Base64: |-
             Content-Type: multipart/mixed; boundary="==BOUNDARY=="
@@ -76,16 +64,21 @@ Resources:
       ServiceRole: !GetAtt BatchServiceRole.Arn
       Type: MANAGED
       ComputeResources:
-        LaunchTemplate:
-          LaunchTemplateId: !Ref LaunchTemplate
-        MinvCpus: 0
-        MaxvCpus: 100
-        InstanceTypes:
-          - r5d.xlarge
         Type: SPOT
         AllocationStrategy: SPOT_CAPACITY_OPTIMIZED
-        InstanceRole: !Ref InstanceProfile
+        MinvCpus: 0
+        MaxvCpus: 400
+        InstanceTypes:
+          - r5d.xlarge
+        ImageId: !Ref AmiId
         Subnets: !Ref SubnetIds
+        InstanceRole: !Ref InstanceProfile
+        SecurityGroupIds:
+          - !Ref SecurityGroup
+        LaunchTemplate:
+          LaunchTemplateId: !Ref LaunchTemplate
+        Tags:
+          Name: !Ref AWS::StackName
 
   JobQueue:
     Type: AWS::Batch::JobQueue
