@@ -5,6 +5,9 @@ Parameters:
   ComputeEnvironmentArn:
     Type: String
 
+  JobQueueArn:
+    Type: String
+
 Resources:
 
   LogGroup:
@@ -36,6 +39,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - batch:DescribeComputeEnvironments
+                  - batch:ListJobs
                   - ecs:ListContainerInstances
                   - ecs:DescribeContainerInstances
                   - ec2:TerminateInstances
@@ -67,7 +71,8 @@ Resources:
           Id: lambda
           Input: !Sub |-
             {
-              "ComputeEnvironmentArn": "${ComputeEnvironmentArn}"
+              "ComputeEnvironmentArn": "${ComputeEnvironmentArn}",
+              "JobQueueArn": "${JobQueueArn}"
             }
 
   EventPermission:

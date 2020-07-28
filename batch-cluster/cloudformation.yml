@@ -44,6 +44,7 @@ Resources:
     Properties:
       Parameters:
         ComputeEnvironmentArn: !Ref ComputeEnvironment
+        JobQueueArn: !Ref JobQueue
       TemplateURL: terminate-idle-instances/cloudformation.yml
 
   EventRule:
