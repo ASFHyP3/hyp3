@@ -5,9 +5,12 @@ ECS = boto3.client('ecs')
 EC2 = boto3.client('ec2')
 
 
-def runnable_jobs_exist(job_queue_arn):
-    response = BATCH.list_jobs(jobQueue=job_queue_arn, jobStatus='RUNNABLE', maxResults=1)
-    return response['jobSummaryList'] != []
+def oustanding_jobs_exist(job_queue_arn):
+    for status in ['RUNNABLE', 'STARTING', 'SUBMITTED', 'PENDING']:
+        response = BATCH.list_jobs(jobQueue=job_queue_arn, jobStatus=status, maxResults=1)
+        if response['jobSummaryList']:
+            return True
+    return False
 
 
 def get_idle_instance_ids(compute_environment_arn):
@@ -25,7 +28,7 @@ def get_idle_instance_ids(compute_environment_arn):
 
 
 def lambda_handler(event, context):
-    if runnable_jobs_exist(event['JobQueueArn']):
+    if oustanding_jobs_exist(event['JobQueueArn']):
         return
 
     idle_instance_ids = get_idle_instance_ids(event['ComputeEnvironmentArn'])
