@@ -5,6 +5,9 @@ Parameters:
   VpcId:
     Type: AWS::EC2::VPC::Id
 
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+
   EDLUsername:
     Description: Earthdata Login username to use when downloading input products.
     Type: String
@@ -72,6 +75,7 @@ Resources:
     Properties:
       Parameters:
         VpcId: !Ref VpcId
+        SubnetIds: !Ref SubnetIds
         EDLUsername: !Ref EDLUsername
         EDLPassword: !Ref EDLPassword
         RtcGammaImage: !Ref RtcGammaImage
