@@ -75,7 +75,7 @@ Resources:
     Properties:
       Parameters:
         VpcId: !Ref VpcId
-        SubnetIds: !Ref SubnetIds
+        SubnetIds: !Join [',', !Ref SubnetIds]
         EDLUsername: !Ref EDLUsername
         EDLPassword: !Ref EDLPassword
         RtcGammaImage: !Ref RtcGammaImage
