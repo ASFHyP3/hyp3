@@ -18,9 +18,6 @@ Parameters:
   MonthlyJobQuotaPerUser:
     Type: Number
 
-  SystemAvailable:
-    Type: String
-
 Outputs:
 
   Url:
@@ -171,7 +168,6 @@ Resources:
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITHM: !Ref AuthAlgorithm
           MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
-          SYSTEM_AVAILABLE: !Ref SystemAvailable
       Code: src/
       Handler: lambda_handler.handler
       MemorySize: 3008

@@ -144,15 +144,3 @@ def test_submit_bad_granule_names(client):
         setup_requests_mock(batch)
         response = submit_batch(client, batch)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-
-def test_submit_job_hyp3_unavailable(client):
-    batch = [
-        make_job()
-    ]
-    login(client)
-    environ['SYSTEM_AVAILABLE'] = 'false'
-    response = submit_batch(client, batch)
-
-    assert response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
-    assert response.json['title'] == 'Service Unavailable'
