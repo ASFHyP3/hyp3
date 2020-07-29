@@ -7,7 +7,7 @@ import requests
 from boto3.dynamodb.conditions import Attr, Key
 from connexion import problem
 from connexion.apps.flask_app import FlaskJSONEncoder
-from flask import make_response, jsonify
+from flask import jsonify, make_response
 from flask_cors import CORS
 
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
