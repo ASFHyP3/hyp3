@@ -33,7 +33,6 @@ Resources:
               },
               "Retry": [{
                 "ErrorEquals": [ "States.ALL" ],
-                "IntervalSeconds": 1,
                 "MaxAttempts": 2
               }],
               "ResultPath": "$.results.job_running",
@@ -58,7 +57,6 @@ Resources:
               "Next": "GET_FILES",
               "Retry": [{
                 "ErrorEquals": [ "States.ALL" ],
-                "IntervalSeconds": 1,
                 "MaxAttempts": 2
               }],
               "Catch": [{
@@ -75,7 +73,6 @@ Resources:
                },
               "Retry": [{
                 "ErrorEquals": [ "States.ALL" ],
-                "IntervalSeconds": 1,
                 "MaxAttempts": 2
               }],
                "ResultPath": "$.results.get_files",
@@ -94,7 +91,6 @@ Resources:
               },
               "Retry": [{
                 "ErrorEquals": [ "States.ALL" ],
-                "IntervalSeconds": 1,
                 "MaxAttempts": 2
               }],
               "ResultPath": "$.results.job_succeeded",
@@ -109,7 +105,6 @@ Resources:
               },
               "Retry": [{
                 "ErrorEquals": [ "States.ALL" ],
-                "IntervalSeconds": 1,
                 "MaxAttempts": 2
               }],
               "ResultPath": "$.results.job_failed",
