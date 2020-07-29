@@ -33,8 +33,8 @@ Resources:
               },
               "Retry": [{
                 "ErrorEquals": [ "States.ALL" ],
-                  "IntervalSeconds": 1,
-                  "MaxAttempts": 2
+                "IntervalSeconds": 1,
+                "MaxAttempts": 2
               }],
               "ResultPath": "$.results.job_running",
               "Next": "ADD_PREFIX_TO_JOB_PARAMETERS"
@@ -58,8 +58,8 @@ Resources:
               "Next": "GET_FILES",
               "Retry": [{
                 "ErrorEquals": [ "States.ALL" ],
-                  "IntervalSeconds": 1,
-                  "MaxAttempts": 2
+                "IntervalSeconds": 1,
+                "MaxAttempts": 2
               }],
               "Catch": [{
                 "ErrorEquals": ["States.ALL"],
@@ -75,8 +75,8 @@ Resources:
                },
               "Retry": [{
                 "ErrorEquals": [ "States.ALL" ],
-                  "IntervalSeconds": 1,
-                  "MaxAttempts": 2
+                "IntervalSeconds": 1,
+                "MaxAttempts": 2
               }],
                "ResultPath": "$.results.get_files",
                "Next": "JOB_SUCCEEDED"
@@ -94,8 +94,8 @@ Resources:
               },
               "Retry": [{
                 "ErrorEquals": [ "States.ALL" ],
-                  "IntervalSeconds": 1,
-                  "MaxAttempts": 2
+                "IntervalSeconds": 1,
+                "MaxAttempts": 2
               }],
               "ResultPath": "$.results.job_succeeded",
               "End": true
@@ -109,8 +109,8 @@ Resources:
               },
               "Retry": [{
                 "ErrorEquals": [ "States.ALL" ],
-                  "IntervalSeconds": 1,
-                  "MaxAttempts": 2
+                "IntervalSeconds": 1,
+                "MaxAttempts": 2
               }],
               "ResultPath": "$.results.job_failed",
               "Next": "FAIL"
