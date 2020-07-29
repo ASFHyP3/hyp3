@@ -31,6 +31,10 @@ Resources:
                 "job_id.$": "$.job_id",
                 "status_code": "RUNNING"
               },
+              "Retry": [{
+                "ErrorEquals": [ "States.ALL" ],
+                "MaxAttempts": 2
+              }],
               "ResultPath": "$.results.job_running",
               "Next": "ADD_PREFIX_TO_JOB_PARAMETERS"
             },
@@ -51,6 +55,10 @@ Resources:
               },
               "ResultPath": "$.results.rtc_gamma",
               "Next": "GET_FILES",
+              "Retry": [{
+                "ErrorEquals": [ "States.ALL" ],
+                "MaxAttempts": 2
+              }],
               "Catch": [{
                 "ErrorEquals": ["States.ALL"],
                 "Next": "JOB_FAILED",
@@ -63,6 +71,10 @@ Resources:
                "Parameters": {
                  "job_id.$": "$.job_id"
                },
+              "Retry": [{
+                "ErrorEquals": [ "States.ALL" ],
+                "MaxAttempts": 2
+              }],
                "ResultPath": "$.results.get_files",
                "Next": "JOB_SUCCEEDED"
              },
@@ -77,6 +89,10 @@ Resources:
                 "thumbnail_images.$": "$.results.get_files.thumbnail_images",
                 "expiration_time.$": "$.results.get_files.expiration_time"
               },
+              "Retry": [{
+                "ErrorEquals": [ "States.ALL" ],
+                "MaxAttempts": 2
+              }],
               "ResultPath": "$.results.job_succeeded",
               "End": true
             },
@@ -87,6 +103,10 @@ Resources:
                 "job_id.$": "$.job_id",
                 "status_code": "FAILED"
               },
+              "Retry": [{
+                "ErrorEquals": [ "States.ALL" ],
+                "MaxAttempts": 2
+              }],
               "ResultPath": "$.results.job_failed",
               "Next": "FAIL"
             },
