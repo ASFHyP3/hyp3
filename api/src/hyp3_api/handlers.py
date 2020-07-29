@@ -7,7 +7,6 @@ import requests
 from boto3.dynamodb.conditions import Attr, Key
 from connexion import problem
 from connexion.apps.flask_app import FlaskJSONEncoder
-from flask import jsonify, make_response
 from flask_cors import CORS
 
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
@@ -24,20 +23,7 @@ class DecimalEncoder(FlaskJSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 
-@connexion_app.app.before_request
-def check_system_available():
-    if environ['SYSTEM_AVAILABLE'] != "true":
-        message = 'HyP3 is currently unavailable. Please try again later.'
-        error = {
-                'detail': message,
-                'status': 503,
-                'title': 'Service Unavailable',
-                'type': 'about:blank'
-        }
-        return make_response(jsonify(error), 503)
-
-
-def post_jobs(body, user, token_info):
+def post_jobs(body, user):
     print(body)
 
     quota = get_user(user)['quota']
