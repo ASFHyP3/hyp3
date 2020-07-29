@@ -37,6 +37,10 @@ def get_cmr_metadata(granules):
         'short_name': [
             'SENTINEL-1A_SLC',
             'SENTINEL-1B_SLC',
+            'SENTINEL-1A_SP_GRD_HIGH',
+            'SENTINEL-1B_SP_GRD_HIGH',
+            'SENTINEL-1A_DP_GRD_HIGH',
+            'SENTINEL-1B_DP_GRD_HIGH',
         ],
         'page_size': 2000,
     }
