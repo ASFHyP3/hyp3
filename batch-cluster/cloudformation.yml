@@ -56,7 +56,7 @@ Resources:
             cloud-init-per instance mkfs_ssd mkfs.ext4 /dev/nvme1n1
             cloud-init-per instance mount_ssd mount /dev/nvme1n1 /var/lib/docker
 
-            --==BOUNDARY==
+            --==BOUNDARY==--
 
   ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
@@ -77,6 +77,7 @@ Resources:
           - !Ref SecurityGroup
         LaunchTemplate:
           LaunchTemplateId: !Ref LaunchTemplate
+          Version: $Latest
         Tags:
           Name: !Ref AWS::StackName
 
