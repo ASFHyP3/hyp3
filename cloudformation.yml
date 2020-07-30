@@ -84,7 +84,7 @@ Resources:
     Properties:
       Parameters:
         VpcId: !Ref VpcId
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SubnetIds: !Join [",", !Ref SubnetIds]
         EDLUsername: !Ref EDLUsername
         EDLPassword: !Ref EDLPassword
         RtcGammaImage: !Ref RtcGammaImage
@@ -116,7 +116,7 @@ Resources:
     Properties:
       LoggingConfiguration:
         DestinationBucketName: !Ref LogBucket
-        LogFilePrefix: s3-access-logs/content-bucket/
+        LogFilePrefix: !Sub "s3-access-logs/{AWS::StackName}/"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
         IgnorePublicAcls: True
