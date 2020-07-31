@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.3]
 ### Added
-- Administrators can now shut down Hyp3-api by setting SytemAvailable flag to false in CloudFormation Template and deploying
+- Administrators can now shut down Hyp3-api by setting SystemAvailable flag to false in CloudFormation Template and deploying
 
 ## [0.3.2]
 ### Added
