@@ -20,6 +20,4 @@ jobs:
       - env:
           AWS_DEFAULT_REGION: us-west-2
           PYTHONPATH: api/src
-        run: |
-          export $(xargs < api/tests/cfg.env)
-          pytest api
+        run: pytest api

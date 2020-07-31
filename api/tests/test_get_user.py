@@ -1,12 +1,9 @@
 from datetime import datetime, timezone
-from os import environ
 
 from conftest import USER_URI, login, make_db_record
 from flask_api import status
 
 from hyp3_api.util import format_time
-
-
 
 
 def test_get_user(client, table, monkeypatch):
