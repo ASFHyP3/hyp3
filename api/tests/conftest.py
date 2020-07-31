@@ -19,13 +19,27 @@ DEFAULT_USERNAME = 'test_username'
 CMR_URL_RE = re.compile(f'{CMR_URL}.*')
 
 
+@pytest.fixture(autouse=True)
+def set_environment(monkeypatch):
+    monkeypatch.setenv('STEP_FUNCTION_ARN', 'arn:aws:states:us-west-2:1234:stateMachine:hyp3-step-function')
+    monkeypatch.setenv('TABLE_NAME', 'hyp3-db-table')
+    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
+    monkeypatch.setenv('AUTH_PUBLIC_KEY', '123456789')
+    monkeypatch.setenv('AUTH_ALGORITHM', 'HS256')
+    monkeypatch.setenv('AWS_ACCESS_KEY_ID', 'testing')
+    monkeypatch.setenv('AWS_SECRET_ACCESS_KEY', 'testing')
+    monkeypatch.setenv('AWS_SECURITY_TOKEN', 'testing')
+    monkeypatch.setenv('AWS_SESSION_TOKEN', 'testing')
+    monkeypatch.setenv('SYSTEM_AVAILABLE', 'true')
+
+
 @pytest.fixture
 def client():
     with connexion_app.app.test_client() as test_client:
         yield test_client
 
 
-@pytest.fixture()
+@pytest.fixture
 def table():
     table_properties = get_table_properties_from_template()
     with mock_dynamodb2():
