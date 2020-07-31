@@ -22,14 +22,15 @@ CMR_URL_RE = re.compile(f'{CMR_URL}.*')
 @pytest.fixture(autouse=True)
 def set_environment(monkeypatch):
     monkeypatch.setenv('TABLE_NAME', 'hyp3-db-table')
-    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
     monkeypatch.setenv('AUTH_PUBLIC_KEY', '123456789')
     monkeypatch.setenv('AUTH_ALGORITHM', 'HS256')
+    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
+    monkeypatch.setenv('SYSTEM_AVAILABLE', 'true')
+
     monkeypatch.setenv('AWS_ACCESS_KEY_ID', 'testing')
     monkeypatch.setenv('AWS_SECRET_ACCESS_KEY', 'testing')
     monkeypatch.setenv('AWS_SECURITY_TOKEN', 'testing')
     monkeypatch.setenv('AWS_SESSION_TOKEN', 'testing')
-    monkeypatch.setenv('SYSTEM_AVAILABLE', 'true')
 
 
 @pytest.fixture
