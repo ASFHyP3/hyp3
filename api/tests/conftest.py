@@ -21,7 +21,6 @@ CMR_URL_RE = re.compile(f'{CMR_URL}.*')
 
 @pytest.fixture(autouse=True)
 def set_environment(monkeypatch):
-    monkeypatch.setenv('STEP_FUNCTION_ARN', 'arn:aws:states:us-west-2:1234:stateMachine:hyp3-step-function')
     monkeypatch.setenv('TABLE_NAME', 'hyp3-db-table')
     monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
     monkeypatch.setenv('AUTH_PUBLIC_KEY', '123456789')
