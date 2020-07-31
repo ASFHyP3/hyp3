@@ -1,5 +1,3 @@
-from os import environ
-
 from conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login
 from flask_api import status
 
