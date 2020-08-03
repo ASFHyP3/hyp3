@@ -36,6 +36,24 @@ def test_list_jobs(client, table):
     assert response.json == {'jobs': []}
 
 
+def test_list_jobs_by_name(client, table):
+    items = [
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', name='item1'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', name='item2')
+    ]
+    for item in items:
+        table.put_item(Item=item)
+
+    login(client)
+    response = client.get(JOBS_URI, query_string={'name': 'item1'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': [items[0]]}
+
+    response = client.get(JOBS_URI, query_string={'name': 'item does not exist'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': []}
+
+
 def test_list_jobs_by_status(client, table):
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', status_code='RUNNING'),

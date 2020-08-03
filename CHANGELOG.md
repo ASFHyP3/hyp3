@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.4]
+### Added
+- Name field to job parameter, set in the same way as description but with max length of 20
+
 ## [0.3.3]
 ### Added
 - Administrators can now shut down Hyp3-api by setting SystemAvailable flag to false in CloudFormation Template and deploying

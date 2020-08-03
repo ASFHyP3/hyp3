@@ -29,15 +29,15 @@ def check_system_available():
     if environ['SYSTEM_AVAILABLE'] != "true":
         message = 'HyP3 is currently unavailable. Please try again later.'
         error = {
-                'detail': message,
-                'status': 503,
-                'title': 'Service Unavailable',
-                'type': 'about:blank'
+            'detail': message,
+            'status': 503,
+            'title': 'Service Unavailable',
+            'type': 'about:blank'
         }
         return make_response(jsonify(error), 503)
 
 
-def post_jobs(body, user, token_info):
+def post_jobs(body, user):
     print(body)
 
     quota = get_user(user)['quota']
@@ -66,7 +66,7 @@ def post_jobs(body, user, token_info):
     return body
 
 
-def get_jobs(user, start=None, end=None, status_code=None):
+def get_jobs(user, start=None, end=None, status_code=None, name=None):
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
@@ -76,6 +76,8 @@ def get_jobs(user, start=None, end=None, status_code=None):
     filter_expression = Attr('job_id').exists()
     if status_code is not None:
         filter_expression &= Attr('status_code').eq(status_code)
+    if name is not None:
+        filter_expression &= Attr('name').eq(name)
 
     response = table.query(
         IndexName='user_id',

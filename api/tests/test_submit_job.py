@@ -84,6 +84,37 @@ def test_submit_job_with_empty_description(client):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
+def test_submit_job_without_name(client, table):
+    login(client)
+    batch = [
+        make_job(name=None)
+    ]
+    setup_requests_mock(batch)
+
+    response = submit_batch(client, batch)
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_submit_job_with_empty_name(client):
+    login(client)
+    batch = [
+        make_job(name='')
+    ]
+    setup_requests_mock(batch)
+    response = submit_batch(client, batch)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_submit_job_with_long_name(client):
+    login(client)
+    batch = [
+        make_job(name='X' * 21)
+    ]
+    setup_requests_mock(batch)
+    response = submit_batch(client, batch)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
 def test_submit_job_granule_does_not_exist(client, table):
     batch = [
         make_job('S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'),
