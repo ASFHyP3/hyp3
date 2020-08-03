@@ -29,15 +29,15 @@ def check_system_available():
     if environ['SYSTEM_AVAILABLE'] != "true":
         message = 'HyP3 is currently unavailable. Please try again later.'
         error = {
-                'detail': message,
-                'status': 503,
-                'title': 'Service Unavailable',
-                'type': 'about:blank'
+            'detail': message,
+            'status': 503,
+            'title': 'Service Unavailable',
+            'type': 'about:blank'
         }
         return make_response(jsonify(error), 503)
 
 
-def post_jobs(body, user, token_info):
+def post_jobs(body, user):
     print(body)
 
     quota = get_user(user)['quota']

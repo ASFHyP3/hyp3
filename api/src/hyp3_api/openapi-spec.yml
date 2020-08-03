@@ -134,6 +134,8 @@ components:
           $ref: "#/components/schemas/job_parameters"
         description:
           $ref: "#/components/schemas/description"
+        name:
+          $ref: "#/components/schemas/name"
 
     list_of_jobs:
       type: array
@@ -166,6 +168,8 @@ components:
           $ref: "#/components/schemas/status_code"
         description:
           $ref: "#/components/schemas/description"
+        name:
+          $ref: "#/components/schemas/name"
         files:
           $ref: "#/components/schemas/list_of_files"
         browse_images:
@@ -231,6 +235,13 @@ components:
       description: User provided text to describe the job
       type: string
       minLength: 1
+      example: a description of the job
+
+    name:
+      description: User provided text to name the job
+      type: string
+      minLength: 1
+      maxLength: 50
       example: a description of the job
 
     list_of_files:
