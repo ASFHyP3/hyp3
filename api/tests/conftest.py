@@ -73,10 +73,10 @@ def make_db_record(job_id,
                    granule='S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B',
                    job_type='RTC_GAMMA',
                    user_id=DEFAULT_USERNAME,
-                   name=None,
                    request_time='2019-12-31T15:00:00+00:00',
                    status_code='RUNNING',
                    expiration_time='2019-12-31T15:00:00+00:00',
+                   name=None,
                    files=None,
                    browse_images=None,
                    thumbnail_images=None):
@@ -90,6 +90,8 @@ def make_db_record(job_id,
         'request_time': request_time,
         'status_code': status_code,
     }
+    if name is not None:
+        record['name'] = name
     if files is not None:
         record['files'] = files
     if browse_images is not None:

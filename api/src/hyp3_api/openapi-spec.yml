@@ -44,6 +44,11 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/datetime"
+        - name: name
+          in: query
+          schema:
+            $ref: "#/components/schemas/name"
+
       responses:
         "200":
           description: 200 response
