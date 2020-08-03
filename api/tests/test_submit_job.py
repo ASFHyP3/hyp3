@@ -83,6 +83,7 @@ def test_submit_job_with_empty_description(client):
     response = submit_batch(client, batch)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+
 def test_submit_job_without_name(client, table):
     login(client)
     batch = [
