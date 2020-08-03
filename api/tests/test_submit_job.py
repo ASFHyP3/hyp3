@@ -108,7 +108,7 @@ def test_submit_job_with_empty_name(client):
 def test_submit_job_with_long_name(client):
     login(client)
     batch = [
-        make_job(name='X' * 51)
+        make_job(name='X' * 21)
     ]
     setup_requests_mock(batch)
     response = submit_batch(client, batch)
