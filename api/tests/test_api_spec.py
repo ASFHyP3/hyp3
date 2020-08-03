@@ -84,3 +84,11 @@ def test_cors_good_origins(client):
             response = client.get(uri, headers={'Origin': origin})
             assert response.headers['Access-Control-Allow-Origin'] == origin
             assert response.headers['Access-Control-Allow-Credentials'] == 'true'
+
+
+def test_hyp3_unavailable(client, monkeypatch):
+    monkeypatch.setenv('SYSTEM_AVAILABLE', 'false')
+    for uri, methods in ENDPOINTS.items():
+        for method in methods:
+            response = client.open(uri, method=method)
+            assert response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
