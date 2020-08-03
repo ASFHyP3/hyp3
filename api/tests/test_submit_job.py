@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-from os import environ
 
 from conftest import DEFAULT_USERNAME, login, make_db_record, make_job, setup_requests_mock, submit_batch
 from flask_api import status
@@ -37,15 +36,15 @@ def test_submit_many_jobs(client, table):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_submit_exceeds_quota(client, table):
+def test_submit_exceeds_quota(client, table, monkeypatch):
     login(client)
     time_for_previous_month = format_time(datetime.now(timezone.utc) - timedelta(days=32))
     job_from_previous_month = make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266',
                                              request_time=time_for_previous_month)
     table.put_item(Item=job_from_previous_month)
 
-    quota = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
-    batch = [make_job() for ii in range(quota)]
+    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
+    batch = [make_job() for ii in range(25)]
     setup_requests_mock(batch)
 
     response = submit_batch(client, batch)
@@ -53,7 +52,7 @@ def test_submit_exceeds_quota(client, table):
 
     response = submit_batch(client)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert f'{quota} jobs' in response.json['detail']
+    assert '25 jobs' in response.json['detail']
     assert '0 jobs' in response.json['detail']
 
 
@@ -144,15 +143,3 @@ def test_submit_bad_granule_names(client):
         setup_requests_mock(batch)
         response = submit_batch(client, batch)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-
-def test_submit_job_hyp3_unavailable(client):
-    batch = [
-        make_job()
-    ]
-    login(client)
-    environ['SYSTEM_AVAILABLE'] = 'false'
-    response = submit_batch(client, batch)
-
-    assert response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
-    assert response.json['title'] == 'Service Unavailable'

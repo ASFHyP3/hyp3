@@ -25,7 +25,7 @@ def client():
         yield test_client
 
 
-@pytest.fixture()
+@pytest.fixture
 def table():
     table_properties = get_table_properties_from_template()
     with mock_dynamodb2():
