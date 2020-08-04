@@ -215,6 +215,8 @@ components:
           $ref: "#/components/schemas/resolution"
         radiometry:
           $ref: "#/components/schemas/radiometry"
+        speckle_filter:
+          $ref: "#/components/schemas/speckle_filter"
         scale:
           $ref: "#/components/schemas/scale"
         dem_matching:
