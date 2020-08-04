@@ -240,7 +240,6 @@ components:
         - 10.0
         - 30.0
       default: 30.0
-      example: 30.0
 
     radiometry:
       description: Backscatter coefficient normalization, either by ground area (sigma0) or illuminated area projected into the look direction (gamma0)
@@ -249,7 +248,6 @@ components:
         - gamma0
         - sigma0
       default: gamma0
-      example: sigma0
 
     scale:
       description: Output image scale
@@ -257,28 +255,22 @@ components:
       enum:
         - power
         - amplitude
-      default: power
-      example: amplitude
 
     speckle_filter:
       description: Apply an enhanced lee speckle filter
       type: boolean
-      default: false
 
     dem_matching:
       description: Attempt to match the DEMs otherwise use dead reconing
       type: boolean
-      default: false
 
     include_dem:
       description: Include the DEM files in the product package
       type: boolean
-      default: false
 
     include_inc_map:
       description: Include the incident angle map in the product package
       type: boolean
-      default: false
 
     datetime:
       description: Date and time object formatted according to ISO 8601
