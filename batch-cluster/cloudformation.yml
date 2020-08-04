@@ -127,11 +127,11 @@ Resources:
           - Ref::radiometry
           - --scale
           - Ref::scale
-          - --dem_matching
+          - --dem-matching
           - Ref::dem_matching
-          - --include_dem
+          - --include-dem
           - Ref::include_dem
-          - --include_inc_map
+          - --include-inc-map
           - Ref::include_inc_map
           - Ref::granule
       Timeout:
