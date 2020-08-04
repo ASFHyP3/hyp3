@@ -234,11 +234,11 @@ components:
 
     resolution:
       description: Desired output resolution in meters.
-      type: number
-      format: float
+      type: string
       enum:
-        - 10.0
-        - 30.0
+        - "30.0"
+        - "10.0"
+
 
     radiometry:
       description: Backscatter coefficient normalization, either by ground area (sigma0) or illuminated area projected into the look direction (gamma0)
@@ -256,19 +256,31 @@ components:
 
     speckle_filter:
       description: Apply an enhanced lee speckle filter
-      type: boolean
+      type: string
+      enum:
+        - "false"
+        - "true"
 
     dem_matching:
       description: Attempt to match the DEMs otherwise use dead reconing
-      type: boolean
+      type: string
+      enum:
+        - "false"
+        - "true"
 
     include_dem:
       description: Include the DEM files in the product package
-      type: boolean
+      type: string
+      enum:
+        - "false"
+        - "true"
 
     include_inc_map:
       description: Include the incident angle map in the product package
-      type: boolean
+      type: string
+      enum:
+        - "false"
+        - "true"
 
     datetime:
       description: Date and time object formatted according to ISO 8601
