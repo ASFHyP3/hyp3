@@ -239,7 +239,6 @@ components:
       enum:
         - 10.0
         - 30.0
-      default: 30.0
 
     radiometry:
       description: Backscatter coefficient normalization, either by ground area (sigma0) or illuminated area projected into the look direction (gamma0)
@@ -247,7 +246,6 @@ components:
       enum:
         - gamma0
         - sigma0
-      default: gamma0
 
     scale:
       description: Output image scale
