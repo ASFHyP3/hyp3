@@ -155,6 +155,9 @@ Resources:
               - Effect: Allow
                 Action: s3:PutObject
                 Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
+              - Effect: Allow
+                Action: s3:PutObjectTagging
+                Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
 
   BatchServiceRole:
     Type: AWS::IAM::Role
