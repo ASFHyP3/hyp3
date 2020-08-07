@@ -63,10 +63,10 @@ def make_job(granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_02
     return job
 
 
-def submit_batch(client, batch=None):
+def submit_batch(client, batch=None, validate_only=False):
     if batch is None:
         batch = [make_job()]
-    return client.post(JOBS_URI, json={'jobs': batch})
+    return client.post(JOBS_URI, json={'validate_only': validate_only, 'jobs': batch})
 
 
 def make_db_record(job_id,

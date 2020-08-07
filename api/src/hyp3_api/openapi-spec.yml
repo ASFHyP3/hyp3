@@ -78,6 +78,9 @@ components:
         - jobs
       additionalProperties: false
       properties:
+        validate_only:
+          type: boolean
+          default: false
         jobs:
           $ref: "#/components/schemas/list_of_new_jobs"
 
@@ -88,6 +91,8 @@ components:
         - jobs
       additionalProperties: false
       properties:
+        validate_only:
+          type: boolean
         jobs:
           $ref: "#/components/schemas/list_of_jobs"
 

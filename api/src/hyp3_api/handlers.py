@@ -61,7 +61,8 @@ def post_jobs(body, user):
         job['user_id'] = user
         job['status_code'] = 'PENDING'
         job['request_time'] = request_time
-        table.put_item(Item=job)
+        if not body['validate_only']:
+            table.put_item(Item=job)
 
     return body
 
