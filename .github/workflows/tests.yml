@@ -17,8 +17,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r api/requirements-test.txt
 
-      - env:
+      - name: pytest api
+        env:
           PYTHONPATH: api/src
         run: |
           export $(xargs < api/tests/cfg.env)
           pytest api
+
+      - name: pyest get_files
+        env:
+          PYTHONPATH: step-function/get-files
+        run: pytest step-function/get-files
