@@ -1,13 +1,15 @@
 from os import environ
+
+import pytest
+from botocore.stub import Stubber
 from src.main import S3_CLIENT, get_expiration_time, get_object_file_type, lambda_handler
 
-from botocore.stub import Stubber
-import pytest
 
 @pytest.fixture(autouse=True)
 def setup_env():
     environ['BUCKET'] = 'mybucket'
     environ['AWS_REGION'] = 'region'
+
 
 @pytest.fixture
 def s3_stubber():
@@ -98,14 +100,14 @@ def test_get_files(s3_stubber: Stubber):
     }
     response = lambda_handler(event, None)
     assert response == {
-            'expiration_time': '2020-01-01T00:00:00+00:00',
-            'files': [
-                {
-                    'url': 'https://mybucket.s3.region.amazonaws.com/job_id/product',
-                    'size': 50,
-                    'filename': 'product',
-                }
-            ],
-            'browse_images': ['https://mybucket.s3.region.amazonaws.com/job_id/browse'],
-            'thumbnail_images': ['https://mybucket.s3.region.amazonaws.com/job_id/thumbnail'],
-        }
+        'expiration_time': '2020-01-01T00:00:00+00:00',
+        'files': [
+            {
+                'url': 'https://mybucket.s3.region.amazonaws.com/job_id/product',
+                'size': 50,
+                'filename': 'product',
+            }
+        ],
+        'browse_images': ['https://mybucket.s3.region.amazonaws.com/job_id/browse'],
+        'thumbnail_images': ['https://mybucket.s3.region.amazonaws.com/job_id/thumbnail'],
+    }
