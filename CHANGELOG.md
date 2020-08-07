@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [0.3.5]
+### Added
+- `POST /jobs` now excepts custom job parameters when submitting jobs
+- `GET /jobs` now shows parameters job was run with
+
 ### Changed
 - `get_files.py` now uses tags to identify file_type instead of path
 
