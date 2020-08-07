@@ -34,6 +34,7 @@ def lambda_handler(event, context):
     files = []
     browse_images = []
     thumbnail_images = []
+    expiration = None
 
     for item in response['Contents']:
         download_url = get_download_url(bucket, item['Key'])
@@ -49,9 +50,10 @@ def lambda_handler(event, context):
                 'filename': basename(item['Key']),
             }
             files.append(file)
+            expiration = get_expiration_time(bucket, item['Key'])
 
     return {
-        'expiration_time': get_expiration_time(bucket, response['Contents'][0]['Key']),
+        'expiration_time': expiration,
         'files': files,
         'browse_images': browse_images,
         'thumbnail_images': thumbnail_images,
