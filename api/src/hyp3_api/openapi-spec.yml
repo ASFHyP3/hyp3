@@ -79,8 +79,7 @@ components:
       additionalProperties: false
       properties:
         validate_only:
-          type: boolean
-          default: false
+          $ref: "#/components/schemas/validate_only"
         jobs:
           $ref: "#/components/schemas/list_of_new_jobs"
 
@@ -92,7 +91,7 @@ components:
       additionalProperties: false
       properties:
         validate_only:
-          type: boolean
+          $ref: "#/components/schemas/validate_only"
         jobs:
           $ref: "#/components/schemas/list_of_jobs"
 
@@ -188,6 +187,10 @@ components:
           $ref: "#/components/schemas/list_of_urls"
         expiration_time:
           $ref: "#/components/schemas/datetime"
+
+    validate_only:
+      type: boolean
+      default: false
 
     job_id:
       description: Unique identifier for a job
