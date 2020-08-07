@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [0.3.5]
+### Added
+- `POST /jobs` now excepts custom job parameters when submitting jobs
+- `GET /jobs` now shows parameters job was run with
+
+### Changed
+- `get_files.py` now uses tags to identify file_type instead of path
+
 ## [0.3.4]
 ### Added
 - Name field to job parameter, set in the same way as description but with max length of 20

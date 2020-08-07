@@ -211,6 +211,20 @@ components:
       properties:
         granule:
           $ref: "#/components/schemas/granule"
+        resolution:
+          $ref: "#/components/schemas/resolution"
+        radiometry:
+          $ref: "#/components/schemas/radiometry"
+        speckle_filter:
+          $ref: "#/components/schemas/speckle_filter"
+        scale:
+          $ref: "#/components/schemas/scale"
+        dem_matching:
+          $ref: "#/components/schemas/dem_matching"
+        include_dem:
+          $ref: "#/components/schemas/include_dem"
+        include_inc_map:
+          $ref: "#/components/schemas/include_inc_map"
 
     granule:
       description: The name of the Sentinel-1 granule to process.  Only SLC and GRDH products with beam mode IW are supported.
@@ -219,6 +233,56 @@ components:
       minLength: 67
       maxLength: 67
       example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+
+    resolution:
+      description: Desired output resolution in meters.
+      type: string
+      enum:
+        - "30.0"
+        - "10.0"
+
+
+    radiometry:
+      description: Backscatter coefficient normalization, either by ground area (sigma0) or illuminated area projected into the look direction (gamma0)
+      type: string
+      enum:
+        - gamma0
+        - sigma0
+
+    scale:
+      description: Output image scale
+      type: string
+      enum:
+        - power
+        - amplitude
+
+    speckle_filter:
+      description: Apply an enhanced lee speckle filter
+      type: string
+      enum:
+        - "false"
+        - "true"
+
+    dem_matching:
+      description: Attempt to match the DEMs otherwise use dead reconing
+      type: string
+      enum:
+        - "false"
+        - "true"
+
+    include_dem:
+      description: Include the DEM files in the product package
+      type: string
+      enum:
+        - "false"
+        - "true"
+
+    include_inc_map:
+      description: Include the incident angle map in the product package
+      type: string
+      enum:
+        - "false"
+        - "true"
 
     datetime:
       description: Date and time object formatted according to ISO 8601

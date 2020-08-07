@@ -99,6 +99,12 @@ Resources:
         bucket-prefix: ""
         username: !Ref EDLUsername
         password: !Ref EDLPassword
+        resolution: 30.0
+        radiometry: gamma0
+        scale: power
+        dem_matching: false
+        include_dem: false
+        include_inc_map: false
       ContainerProperties:
         Image: !Ref RtcGammaImage
         Vcpus: 4
@@ -115,6 +121,18 @@ Resources:
           - Ref::bucket
           - --bucket-prefix
           - Ref::bucket-prefix
+          - --resolution
+          - Ref::resolution
+          - --radiometry
+          - Ref::radiometry
+          - --scale
+          - Ref::scale
+          - --dem-matching
+          - Ref::dem_matching
+          - --include-dem
+          - Ref::include_dem
+          - --include-inc-map
+          - Ref::include_inc_map
           - Ref::granule
       Timeout:
         AttemptDurationSeconds: 5400
@@ -136,6 +154,9 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: s3:PutObject
+                Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
+              - Effect: Allow
+                Action: s3:PutObjectTagging
                 Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
 
   BatchServiceRole:
