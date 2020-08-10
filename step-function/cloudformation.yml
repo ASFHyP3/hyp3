@@ -31,10 +31,14 @@ Resources:
                 "job_id.$": "$.job_id",
                 "status_code": "RUNNING"
               },
-              "Retry": [{
-                "ErrorEquals": [ "States.ALL" ],
-                "MaxAttempts": 2
-              }],
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "MaxAttempts": 2
+                }
+              ],
               "ResultPath": "$.results.job_running",
               "Next": "ADD_PREFIX_TO_JOB_PARAMETERS"
             },
@@ -55,29 +59,50 @@ Resources:
               },
               "ResultPath": "$.results.rtc_gamma",
               "Next": "GET_FILES",
-              "Retry": [{
-                "ErrorEquals": [ "States.ALL" ],
-                "MaxAttempts": 2
-              }],
-              "Catch": [{
-                "ErrorEquals": ["States.ALL"],
-                "Next": "JOB_FAILED",
-                "ResultPath": "$.results.rtc_gamma"
-              }]
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "MaxAttempts": 2
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "Next": "JOB_FAILED",
+                  "ResultPath": "$.results.rtc_gamma"
+                }
+              ]
             },
             "GET_FILES": {
-               "Type": "Task",
-               "Resource": "${GetFiles.Outputs.LambdaArn}",
-               "Parameters": {
-                 "job_id.$": "$.job_id"
-               },
-              "Retry": [{
-                "ErrorEquals": [ "States.ALL" ],
-                "MaxAttempts": 2
-              }],
-               "ResultPath": "$.results.get_files",
-               "Next": "JOB_SUCCEEDED"
-             },
+              "Type": "Task",
+              "Resource": "${GetFiles.Outputs.LambdaArn}",
+              "Parameters": {
+                "job_id.$": "$.job_id"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "MaxAttempts": 2
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "Next": "JOB_FAILED",
+                  "ResultPath": "$.results.get_files"
+                }
+              ],
+              "ResultPath": "$.results.get_files",
+              "Next": "JOB_SUCCEEDED"
+            },
             "JOB_SUCCEEDED": {
               "Type": "Task",
               "Resource": "${UpdateDB.Outputs.LambdaArn}",
@@ -89,10 +114,14 @@ Resources:
                 "thumbnail_images.$": "$.results.get_files.thumbnail_images",
                 "expiration_time.$": "$.results.get_files.expiration_time"
               },
-              "Retry": [{
-                "ErrorEquals": [ "States.ALL" ],
-                "MaxAttempts": 2
-              }],
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "MaxAttempts": 2
+                }
+              ],
               "ResultPath": "$.results.job_succeeded",
               "End": true
             },
@@ -103,10 +132,14 @@ Resources:
                 "job_id.$": "$.job_id",
                 "status_code": "FAILED"
               },
-              "Retry": [{
-                "ErrorEquals": [ "States.ALL" ],
-                "MaxAttempts": 2
-              }],
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "MaxAttempts": 2
+                }
+              ],
               "ResultPath": "$.results.job_failed",
               "Next": "FAIL"
             },
