@@ -6,9 +6,9 @@ from src.main import S3_CLIENT, get_expiration_time, get_object_file_type, lambd
 
 
 @pytest.fixture(autouse=True)
-def setup_env():
-    environ['BUCKET'] = 'mybucket'
-    environ['AWS_REGION'] = 'region'
+def setup_env(monkeypatch):
+    monkeypatch.setenv('BUCKET', 'mybucket')
+    monkeypatch.setenv('AWS_REGION', 'region')
 
 
 @pytest.fixture
@@ -18,7 +18,7 @@ def s3_stubber():
         stubber.assert_no_pending_responses()
 
 
-def stub_experation(s3_stubber: Stubber, key):
+def stub_expiration(s3_stubber: Stubber, key):
     params = {
         'Bucket': 'mybucket',
         'Key': key
@@ -31,7 +31,7 @@ def stub_experation(s3_stubber: Stubber, key):
 
 
 def test_get_expiration(s3_stubber: Stubber):
-    stub_experation(s3_stubber, 'mykey')
+    stub_expiration(s3_stubber, 'mykey')
     response = get_expiration_time('mybucket', 'mykey')
     assert response == '2020-01-01T00:00:00+00:00'
 
@@ -91,7 +91,7 @@ def test_get_files(s3_stubber: Stubber):
     ]
     stub_list_files(s3_stubber, files, 'job_id')
     stub_file_type(s3_stubber, 'job_id/product', 'product')
-    stub_experation(s3_stubber, 'job_id/product')
+    stub_expiration(s3_stubber, 'job_id/product')
     stub_file_type(s3_stubber, 'job_id/thumbnail', 'thumbnail')
     stub_file_type(s3_stubber, 'job_id/browse', 'browse')
 
