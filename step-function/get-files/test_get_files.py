@@ -1,5 +1,3 @@
-from os import environ
-
 import pytest
 from botocore.stub import Stubber
 from src.main import S3_CLIENT, get_expiration_time, get_object_file_type, lambda_handler
