@@ -188,3 +188,8 @@ def test_submit_validate_only(client, table):
     assert response.status_code == status.HTTP_200_OK
     jobs = table.scan()['Items']
     assert len(jobs) == 1
+
+    response = submit_batch(client, validate_only=None)
+    assert response.status_code == status.HTTP_200_OK
+    jobs = table.scan()['Items']
+    assert len(jobs) == 2
