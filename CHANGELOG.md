@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [0.3.8]
+### Added
+- `POST /jobs` now accepts a `validate_only` key at root level, set to true to skip submitting jobs but run api validation.
+
 ## [0.3.7]
 ### Fixed 
 - `get-files` get expiration only from product
@@ -12,9 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - `get-files` step functions AMI roles for tags
 
+
 ## [0.3.5]
 ### Added
-- `POST /jobs` now excepts custom job parameters when submitting jobs
+- `POST /jobs` now accepts custom job parameters when submitting jobs
 - `GET /jobs` now shows parameters job was run with
 
 ### Changed
