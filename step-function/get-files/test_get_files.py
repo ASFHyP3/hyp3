@@ -1,6 +1,6 @@
 import pytest
 from botocore.stub import Stubber
-from src.main import S3_CLIENT, get_expiration_time, get_object_file_type, lambda_handler
+from src.main import S3_CLIENT, get_download_url, get_expiration_time, get_object_file_type, lambda_handler
 
 
 @pytest.fixture(autouse=True)
@@ -16,7 +16,7 @@ def s3_stubber():
         stubber.assert_no_pending_responses()
 
 
-def get_download_url():
+def test_get_download_url():
     assert get_download_url('myBucket', 'myKey') == 'https://myBucket.s3.myRegion.amazonaws.com/myKey'
 
 
