@@ -1,0 +1,110 @@
+import pytest
+from botocore.stub import Stubber
+from src.main import S3_CLIENT, get_download_url, get_expiration_time, get_object_file_type, lambda_handler
+
+
+@pytest.fixture(autouse=True)
+def setup_env(monkeypatch):
+    monkeypatch.setenv('BUCKET', 'myBucket')
+    monkeypatch.setenv('AWS_REGION', 'myRegion')
+
+
+@pytest.fixture
+def s3_stubber():
+    with Stubber(S3_CLIENT) as stubber:
+        yield stubber
+        stubber.assert_no_pending_responses()
+
+
+def test_get_download_url():
+    assert get_download_url('myBucket', 'myKey') == 'https://myBucket.s3.myRegion.amazonaws.com/myKey'
+
+
+def stub_expiration(s3_stubber: Stubber, bucket, key):
+    params = {
+        'Bucket': bucket,
+        'Key': key
+    }
+    s3_response = {
+        'Expiration': 'expiry-date="Wed, 01 Jan 2020 00:00:00 UTC", '
+                      'rule-id="MDQxMzRmZTgtNDFlMi00Y2UwLWIyZjEtMTEzYTllNDNjYjJk"'
+    }
+    s3_stubber.add_response(method='get_object', expected_params=params, service_response=s3_response)
+
+
+def test_get_expiration(s3_stubber: Stubber):
+    stub_expiration(s3_stubber, 'myBucket', 'myKey')
+    response = get_expiration_time('myBucket', 'myKey')
+    assert response == '2020-01-01T00:00:00+00:00'
+
+
+def stub_get_object_tagging(s3_stubber: Stubber, bucket, key, file_type):
+    params = {
+        'Bucket': bucket,
+        'Key': key
+    }
+    s3_response = {
+        'TagSet': [
+            {
+                'Key': 'file_type',
+                'Value': file_type
+            }
+        ]
+    }
+    s3_stubber.add_response(method='get_object_tagging', expected_params=params, service_response=s3_response)
+
+
+def test_get_file_type(s3_stubber: Stubber):
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myKey', file_type='product')
+    response = get_object_file_type('myBucket', 'myKey')
+    assert response == 'product'
+
+
+def stub_list_files(s3_stubber: Stubber, job_id, bucket, contents):
+    params = {
+        'Bucket': bucket,
+        'Prefix': job_id,
+    }
+    s3_response = {
+        'Contents': contents,
+    }
+    s3_stubber.add_response('list_objects_v2', expected_params=params, service_response=s3_response)
+
+
+def test_get_files(s3_stubber: Stubber):
+    files = [
+        {
+            'Key': 'myJobId/myProduct.zip',
+            'Size': 50,
+        },
+        {
+            'Key': 'myJobId/myThumbnail.png',
+            'Size': 5,
+        },
+        {
+            'Key': 'myJobId/myBrowse.png',
+            'Size': 10,
+        },
+    ]
+    stub_list_files(s3_stubber, 'myJobId', 'myBucket', files)
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myProduct.zip', 'product')
+    stub_expiration(s3_stubber, 'myBucket', 'myJobId/myProduct.zip')
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myThumbnail.png', 'thumbnail')
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'browse')
+
+    event = {
+        'job_id': 'myJobId'
+    }
+    response = lambda_handler(event, None)
+    assert response == {
+        'expiration_time': '2020-01-01T00:00:00+00:00',
+        'files': [
+            {
+                'url': 'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myProduct.zip',
+                'size': 50,
+                'filename': 'myProduct.zip',
+            }
+        ],
+        'browse_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse.png'],
+        'thumbnail_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myThumbnail.png'],
+    }
