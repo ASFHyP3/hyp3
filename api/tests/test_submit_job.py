@@ -178,31 +178,13 @@ def test_submit_bad_granule_names(client):
 
 def test_submit_validate_only(client, table):
     login(client)
-    response = submit_batch(client, validate_only=True)
 
+    response = submit_batch(client, validate_only=True)
     assert response.status_code == status.HTTP_200_OK
     jobs = table.scan()['Items']
     assert len(jobs) == 0
 
-    bad_granule_names = [
-        'foo',
-        'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E3',
-        'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38_',
-        # bad mission
-        'S1C_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
-        # bad beam modes
-        'S1B_S3_SLC__1SDV_20200604T091417_20200604T091430_021882_029879_5765',
-        'S1B_WV_SLC__1SSV_20200519T140110_20200519T140719_021651_0291AA_2A86',
-        'S1B_EW_SLC__1SDH_20200605T065551_20200605T065654_021895_0298DC_EFB5',
-        'S1A_EW_GRDH_1SDH_20171121T103939_20171121T104044_019362_020D26_CF9A',
-        'S1B_S1_GRDH_1SDH_20171024T121032_20171024T121101_007971_00E153_F8F2',
-        # bad product types
-        'S1B_IW_OCN__2SDV_20200518T220815_20200518T220851_021642_02915F_B404',
-        'S1B_IW_RAW__0SDV_20200605T145138_20200605T145210_021900_029903_AFF4',
-        'S1A_IW_GRDM_1SDH_20190624T101121_20190624T101221_027820_0323FF_79E4',
-    ]
-
-    batch = [make_job(name) for name in bad_granule_names]
-    setup_requests_mock(batch)
-    response = submit_batch(client, batch)
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    response = submit_batch(client, validate_only=False)
+    assert response.status_code == status.HTTP_200_OK
+    jobs = table.scan()['Items']
+    assert len(jobs) == 1
