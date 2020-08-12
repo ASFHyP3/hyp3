@@ -63,27 +63,6 @@ def test_submit_without_jobs(client):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_submit_job_without_description(client, table):
-    login(client)
-    batch = [
-        make_job(description=None)
-    ]
-    setup_requests_mock(batch)
-
-    response = submit_batch(client, batch)
-    assert response.status_code == status.HTTP_200_OK
-
-
-def test_submit_job_with_empty_description(client):
-    login(client)
-    batch = [
-        make_job(description='')
-    ]
-    setup_requests_mock(batch)
-    response = submit_batch(client, batch)
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-
 def test_submit_job_without_name(client, table):
     login(client)
     batch = [
