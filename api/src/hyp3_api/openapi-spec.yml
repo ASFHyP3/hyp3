@@ -249,7 +249,6 @@ components:
         - "30.0"
         - "10.0"
 
-
     radiometry:
       description: Backscatter coefficient normalization, either by ground area (sigma0) or illuminated area projected into the look direction (gamma0)
       type: string
