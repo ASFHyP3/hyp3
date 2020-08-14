@@ -13,14 +13,18 @@ class GranuleValidationError(Exception):
     pass
 
 
-def check_intersects_with_coverage(granule: Polygon):
+def has_sufficient_coverage(granule: Polygon, buffer: float = 0.15, threshold: float = 0.2):
     global DEM_COVERAGE
     if DEM_COVERAGE is None:
         DEM_COVERAGE = get_coverage_shapes_from_geojson()
+
+    buffered_granule = granule.buffer(buffer)
+    covered_area = 0
+
     for polygon in DEM_COVERAGE:
-        if granule.intersects(polygon):
-            return True
-    return False
+        covered_area += buffered_granule.intersection(polygon).area
+
+    return covered_area / buffered_granule.area >= threshold
 
 
 def validate_granules(granules):
@@ -63,8 +67,7 @@ def check_granules_exist(granules, granule_metadata):
 
 
 def check_dem_coverage(granule_metadata):
-    bad_granules = {granule['name'] for granule in granule_metadata if
-                    not check_intersects_with_coverage(granule['polygon'])}
+    bad_granules = {granule['name'] for granule in granule_metadata if not has_sufficient_coverage(granule['polygon'])}
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
