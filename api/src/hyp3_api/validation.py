@@ -19,7 +19,7 @@ def has_sufficient_coverage(granule: Polygon, buffer: float = 0.15, threshold: f
         DEM_COVERAGE = get_coverage_shapes_from_geojson()
 
     buffered_granule = granule.buffer(buffer)
-    covered_area = 0
+    covered_area = 0.0
 
     for polygon in DEM_COVERAGE:
         covered_area += buffered_granule.intersection(polygon).area
