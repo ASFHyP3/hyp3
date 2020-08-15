@@ -2,7 +2,7 @@ import json
 import os
 
 import requests
-from shapely.geometry import Polygon, shape
+from shapely.geometry import MultiPolygon, Polygon, shape
 
 from hyp3_api import CMR_URL
 
@@ -16,13 +16,10 @@ class GranuleValidationError(Exception):
 def has_sufficient_coverage(granule: Polygon, buffer: float = 0.15, threshold: float = 0.2):
     global DEM_COVERAGE
     if DEM_COVERAGE is None:
-        DEM_COVERAGE = get_coverage_shapes_from_geojson()
+        DEM_COVERAGE = MultiPolygon(get_coverage_shapes_from_geojson())
 
     buffered_granule = granule.buffer(buffer)
-    covered_area = 0.0
-
-    for polygon in DEM_COVERAGE:
-        covered_area += buffered_granule.intersection(polygon).area
+    covered_area = buffered_granule.intersection(DEM_COVERAGE).area
 
     return covered_area / buffered_granule.area >= threshold
 
