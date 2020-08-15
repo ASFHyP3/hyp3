@@ -20,7 +20,7 @@ def test_check_dem_coverage():
             'name': 'good2',
         },
         {  # not enough coverage of Aleutian Islands over antimeridian; should FAIL with fixed antimeridian
-            'polygon': nsew(51.7, 51.3, 179.7, -179.3),
+            'polygon': nsew(51.7, 41.3, 179.7, -179.3),
             'name': 'shouldbebad1',
         },
         {  # completely encloses tile over Ascension Island in the Atlantic
