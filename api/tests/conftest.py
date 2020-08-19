@@ -46,7 +46,6 @@ def get_table_properties_from_template():
 
 
 def make_job(granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
-             description='someDescription',
              name='someName',
              job_type='RTC_GAMMA'):
     job = {
@@ -55,8 +54,6 @@ def make_job(granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_02
             'granule': granule
         }
     }
-    if description is not None:
-        job['description'] = description
     if name is not None:
         job['name'] = name
 
