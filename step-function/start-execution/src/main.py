@@ -27,11 +27,20 @@ def get_pending_jobs():
     return response['Items']
 
 
-def lambda_handler(event, context):
-    pending_jobs = get_pending_jobs()
-    for job in pending_jobs:
+def convert_parameters_to_strings(parameters):
+    return {key: str(value) for key, value in parameters.items()}
+
+
+def submit_jobs(jobs):
+    for job in jobs:
+        job['job_parameters'] = convert_parameters_to_strings(job['job_parameters'])
         STEP_FUNCTION.start_execution(
             stateMachineArn=environ['STEP_FUNCTION_ARN'],
-            input=json.dumps(job, cls=DecimalEncoder),
+            input=json.dumps(job, cls=DecimalEncoder, sort_keys=True),
             name=job['job_id']
         )
+
+
+def lambda_handler(event, context):
+    pending_jobs = get_pending_jobs()
+    submit_jobs(pending_jobs)
