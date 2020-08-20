@@ -260,18 +260,22 @@ components:
 
     speckle_filter:
       description: Apply an enhanced lee speckle filter
+      default: false
       type: boolean
 
     dem_matching:
       description: Attempt to match the DEMs otherwise use dead-reckoning
+      default: false
       type: boolean
 
     include_dem:
       description: Include the DEM files in the product package
+      default: false
       type: boolean
 
     include_inc_map:
       description: Include the incident angle map in the product package
+      default: false
       type: boolean
 
     datetime:
