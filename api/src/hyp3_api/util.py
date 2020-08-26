@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from decimal import Decimal
 from os import environ
 
 from boto3.dynamodb.conditions import Key
@@ -39,3 +40,13 @@ def get_request_time_expression(start, end):
         return key.gte(formatted_start)
     if formatted_end:
         return key.lte(formatted_end)
+
+
+def convert_floats_to_decimals(element):
+    if type(element) is float:
+        return Decimal(element)
+    if type(element) is list:
+        return [convert_floats_to_decimals(item) for item in element]
+    if type(element) is dict:
+        return {key: convert_floats_to_decimals(value) for key, value in element.items()}
+    return element
