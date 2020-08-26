@@ -88,6 +88,7 @@ def make_db_record(job_id,
         'job_type': job_type,
         'job_parameters': {
             'granule': granule,
+            'resolution': 30.0
         },
         'request_time': request_time,
         'status_code': status_code,
