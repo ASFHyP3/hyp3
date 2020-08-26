@@ -51,7 +51,8 @@ def make_job(granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_02
     job = {
         'job_type': job_type,
         'job_parameters': {
-            'granule': granule
+            'granule': granule,
+            'resolution': 30.0
         }
     }
     if name is not None:
@@ -87,8 +88,7 @@ def make_db_record(job_id,
         'user_id': user_id,
         'job_type': job_type,
         'job_parameters': {
-            'granule': granule,
-            'resolution': 30.0
+            'granule': granule
         },
         'request_time': request_time,
         'status_code': status_code,

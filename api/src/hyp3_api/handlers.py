@@ -7,6 +7,7 @@ import requests
 from boto3.dynamodb.conditions import Attr, Key
 from connexion import problem
 from connexion.apps.flask_app import FlaskJSONEncoder
+
 from flask import jsonify, make_response
 from flask_cors import CORS
 
@@ -15,14 +16,14 @@ from hyp3_api.util import format_time, get_remaining_jobs_for_user, get_request_
 from hyp3_api.validation import GranuleValidationError, validate_granules
 
 
+
 class DecimalEncoder(FlaskJSONEncoder):
     def default(self, o):
         if isinstance(o, Decimal):
             if o == int(o):
                 return int(o)
-            return float(o)
+            return float
         return super(DecimalEncoder, self).default(o)
-
 
 
 @connexion_app.app.before_request
@@ -61,6 +62,8 @@ def post_jobs(body, user):
         job['user_id'] = user
         job['status_code'] = 'PENDING'
         job['request_time'] = request_time
+        if 'resolution' in job['job_parameters']:
+            job['job_parameters']['resolution'] = Decimal(job['job_parameters']['resolution'])
         if not body.get('validate_only'):
             table.put_item(Item=job)
 
