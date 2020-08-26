@@ -11,8 +11,8 @@ from flask import jsonify, make_response
 from flask_cors import CORS
 
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
-from hyp3_api.util import format_time, get_remaining_jobs_for_user, get_request_time_expression, \
-    convert_floats_to_decimals
+from hyp3_api.util import convert_floats_to_decimals, format_time, get_remaining_jobs_for_user, \
+    get_request_time_expression
 from hyp3_api.validation import GranuleValidationError, validate_granules
 
 
