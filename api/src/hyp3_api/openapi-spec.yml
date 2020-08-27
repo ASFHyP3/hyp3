@@ -207,6 +207,10 @@ components:
         - RTC_GAMMA
 
     job_parameters:
+      oneOf:
+        - $ref: "#/components/schemas/rtc_gamma_job_parameters"
+
+    rtc_gamma_job_parameters:
       description: Options and parameters for running the job process.
       type: object
       required:

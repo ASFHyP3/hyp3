@@ -11,7 +11,7 @@ from flask import jsonify, make_response
 from flask_cors import CORS
 
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
-from hyp3_api.util import convert_floats_to_decimals, format_time, get_remaining_jobs_for_user, \
+from hyp3_api.util import convert_floats_to_decimals, format_time, get_granules, get_remaining_jobs_for_user, \
     get_request_time_expression
 from hyp3_api.validation import GranuleValidationError, validate_granules
 
@@ -47,7 +47,7 @@ def post_jobs(body, user):
         return problem(400, 'Bad Request', message)
 
     try:
-        granules = [job['job_parameters']['granule'] for job in body['jobs']]
+        granules = get_granules(body)
         validate_granules(granules)
     except requests.HTTPError as e:
         print(f'WARN: CMR search failed: {e}')
