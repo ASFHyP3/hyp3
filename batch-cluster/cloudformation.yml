@@ -18,6 +18,9 @@ Parameters:
   RtcGammaImage:
     Type: String
 
+  InsarGammaImage:
+    Type: String
+
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -134,6 +137,47 @@ Resources:
           - --include-inc-map
           - Ref::include_inc_map
           - Ref::granule
+      Timeout:
+        AttemptDurationSeconds: 5400
+
+  InsarGammaJobDefinition:
+    Type: AWS::Batch::JobDefinition
+    Properties:
+      Type: container
+      Parameters:
+        granule1: ""
+        granule2: ""
+        bucket: !Ref ContentBucket
+        bucket-prefix: ""
+        username: !Ref EDLUsername
+        password: !Ref EDLPassword
+        angle-maps: false
+        los-displacement: false
+        multilook: 20x4
+      ContainerProperties:
+        Image: !Ref RtcGammaImage
+        Vcpus: 4
+        Memory: 30000
+        JobRoleArn: !GetAtt TaskRole.Arn
+        Command:
+          - ++entrypoint
+          - hyp3_insar_gamma_v2
+          - --username
+          - Ref::username
+          - --password
+          - Ref::password
+          - --bucket
+          - Ref::bucket
+          - --bucket-prefix
+          - Ref::bucket-prefix
+          - --angle-maps
+          - Ref::angle-maps
+          - --los-displacement
+          - Ref::los-displacement
+          - --multilook
+          - Ref::multilook
+          - Ref::granule1
+          - Ref::granule2
       Timeout:
         AttemptDurationSeconds: 5400
 
