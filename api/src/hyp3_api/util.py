@@ -8,6 +8,15 @@ from dateutil.parser import parse
 from hyp3_api import handlers
 
 
+def get_granules(jobs):
+    granules = set()
+    for job in jobs:
+        parameters = job['job_parameters']
+        if job['job_type'] == 'RTC_GAMMA':
+            granules.add(parameters['granule'])
+    return granules
+
+
 def format_time(time: datetime):
     if time.tzinfo is None:
         raise ValueError(f'missing tzinfo for datetime {time}')
