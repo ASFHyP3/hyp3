@@ -10,6 +10,7 @@ env:
   AWS_REGION: us-west-2
   TEMPLATE_BUCKET: cf-templates-aubvn3i9olmk-us-west-2
   RTC_GAMMA_REPOSITORY: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-rtc-gamma
+  INSAR_GAMMA_REPOSITORY: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-insar-gamma
 
   VPC_ID: ${{ secrets.VPC_ID }}
   SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
@@ -77,6 +78,7 @@ jobs:
                 EDLUsername="${EDL_USERNAME}" \
                 EDLPassword="${EDL_PASSWORD}" \
                 RtcGammaImage="${RTC_GAMMA_REPOSITORY}:${IMAGE_TAG}" \
+                InsarGammaImage="${INSAR_GAMMA_REPOSITORY}:${IMAGE_TAG}" \
                 DomainName="${DOMAIN_NAME}" \
                 CertificateArn="${CERTIFICATE_ARN}"
 
