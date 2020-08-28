@@ -172,7 +172,7 @@ Resources:
           - --bucket
           - Ref::bucket
           - --bucket-prefix
-          - Ref::bucket-prefix
+          - Ref::bucket_prefix
           - --include-inc-map
           - Ref::include_inc_map
           - --los-displacement
