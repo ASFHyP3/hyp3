@@ -13,7 +13,7 @@ def get_granules(jobs):
     for job in jobs:
         parameters = job['job_parameters']
         if job['job_type'] == 'RTC_GAMMA':
-            granules.append(parameters['granule'])
+            granules.add(parameters['granule'])
     return granules
 
 
