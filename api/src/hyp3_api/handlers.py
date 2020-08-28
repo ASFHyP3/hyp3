@@ -47,7 +47,7 @@ def post_jobs(body, user):
         return problem(400, 'Bad Request', message)
 
     try:
-        granules = get_granules(body)
+        granules = get_granules(body['jobs)
         validate_granules(granules)
     except requests.HTTPError as e:
         print(f'WARN: CMR search failed: {e}')
