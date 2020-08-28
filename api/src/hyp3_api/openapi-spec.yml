@@ -221,9 +221,9 @@ components:
       additionalProperties: false
       properties:
         granule1:
-          $ref: "#/components/schemas/granule"
+          $ref: "#/components/schemas/granule_slc"
         granule2:
-          $ref: "#/components/schemas/granule"
+          $ref: "#/components/schemas/granule_slc"
         include_inc_map:
           $ref: "#/components/schemas/include_inc_map"
         looks:
@@ -257,9 +257,22 @@ components:
           $ref: "#/components/schemas/include_inc_map"
 
     granule:
-      description: The name of the Sentinel-1 granule to process.  Only SLC and GRDH products with beam mode IW are supported.
+      oneOf:
+        - $ref: "#/components/schemas/granule_slc"
+        - $ref: "#/components/schemas/granule_grdh"
+
+    granule_grdh:
+      description: The name of the Sentinel-1 GRDH granule to process.
       type: string
-      pattern: "^S1[AB]_IW_(SLC_|GRDH)_*"
+      pattern: "^S1[AB]_IW_GRDH_*"
+      minLength: 67
+      maxLength: 67
+      example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+
+    granule_slc:
+      description: The name of the Sentinel-1 SLC granule to process.
+      type: string
+      pattern: "^S1[AB]_IW_SLC__*"
       minLength: 67
       maxLength: 67
       example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
