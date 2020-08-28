@@ -102,7 +102,7 @@ Resources:
       Parameters:
         granule: ""
         bucket: !Ref ContentBucket
-        bucket-prefix: ""
+        bucket_prefix: ""
         username: !Ref EDLUsername
         password: !Ref EDLPassword
         resolution: 30.0
@@ -126,7 +126,7 @@ Resources:
           - --bucket
           - Ref::bucket
           - --bucket-prefix
-          - Ref::bucket-prefix
+          - Ref::bucket_prefix
           - --resolution
           - Ref::resolution
           - --radiometry
@@ -151,7 +151,7 @@ Resources:
         granule1: ""
         granule2: ""
         bucket: !Ref ContentBucket
-        bucket-prefix: ""
+        bucket_prefix: ""
         username: !Ref EDLUsername
         password: !Ref EDLPassword
         include_inc_map: false
@@ -174,9 +174,9 @@ Resources:
           - --bucket-prefix
           - Ref::bucket-prefix
           - --include-inc-map
-          - Ref::include-inc-map
+          - Ref::include_inc_map
           - --los-displacement
-          - Ref::los-displacement
+          - Ref::los_displacement
           - --looks
           - Ref::looks
           - Ref::granule1
