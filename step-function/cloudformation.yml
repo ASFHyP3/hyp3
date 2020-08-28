@@ -48,7 +48,7 @@ Resources:
             "ADD_PREFIX_TO_JOB_PARAMETERS": {
               "Type": "Pass",
               "InputPath": "$.job_id",
-              "ResultPath": "$.job_parameters.bucket-prefix",
+              "ResultPath": "$.job_parameters.bucket_prefix",
               "Next": "INSPECT_JOB_TYPE"
             },
             "INSPECT_JOB_TYPE": {
@@ -217,6 +217,7 @@ Resources:
                 Resource:
                   - !Ref JobQueueArn
                   - !Ref RtcGammaJobDefinition
+                  - !Ref InsarGammaJobDefinition
               - Effect: Allow
                 Action:
                   - events:PutTargets
