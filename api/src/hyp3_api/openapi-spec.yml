@@ -210,12 +210,14 @@ components:
     job_parameters:
       oneOf:
         - $ref: "#/components/schemas/rtc_gamma_job_parameters"
+        - $ref: "#/components/schemas/insar_gamma_job_parameters"
 
     insar_gamma_job_parameters:
       description: Options and parameters for running the job process.
       type: object
       required:
-        - granule
+        - granule1
+        - granule2
       additionalProperties: false
       properties:
         granule1:
