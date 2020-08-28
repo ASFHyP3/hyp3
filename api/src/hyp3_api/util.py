@@ -8,9 +8,9 @@ from dateutil.parser import parse
 from hyp3_api import handlers
 
 
-def get_granules(body):
-    granules = []
-    for job in body['jobs']:
+def get_granules(jobs):
+    granules = {}
+    for job in jobs:
         parameters = job['job_parameters']
         if job['job_type'] == 'RTC_GAMMA':
             granules.append(parameters['granule'])
