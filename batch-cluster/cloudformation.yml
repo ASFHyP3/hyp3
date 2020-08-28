@@ -36,6 +36,9 @@ Outputs:
   RtcGammaJobDefinition:
     Value: !Ref RtcGammaJobDefinition
 
+  InsarGammaJobDefinition:
+    Value: !Ref InsarGammaJobDefinition
+
 Resources:
 
   SecurityGroup:
