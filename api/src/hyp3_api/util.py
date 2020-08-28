@@ -14,6 +14,9 @@ def get_granules(jobs):
         parameters = job['job_parameters']
         if job['job_type'] == 'RTC_GAMMA':
             granules.add(parameters['granule'])
+        if job['job_type'] == 'INSAR_GAMMA':
+            granules.add(parameters['granule1'])
+            granules.add(parameters['granule2'])
     return granules
 
 

@@ -36,6 +36,9 @@ Outputs:
   RtcGammaJobDefinition:
     Value: !Ref RtcGammaJobDefinition
 
+  InsarGammaJobDefinition:
+    Value: !Ref InsarGammaJobDefinition
+
 Resources:
 
   SecurityGroup:
@@ -99,7 +102,7 @@ Resources:
       Parameters:
         granule: ""
         bucket: !Ref ContentBucket
-        bucket-prefix: ""
+        bucket_prefix: ""
         username: !Ref EDLUsername
         password: !Ref EDLPassword
         resolution: 30.0
@@ -123,7 +126,7 @@ Resources:
           - --bucket
           - Ref::bucket
           - --bucket-prefix
-          - Ref::bucket-prefix
+          - Ref::bucket_prefix
           - --resolution
           - Ref::resolution
           - --radiometry
@@ -148,12 +151,12 @@ Resources:
         granule1: ""
         granule2: ""
         bucket: !Ref ContentBucket
-        bucket-prefix: ""
+        bucket_prefix: ""
         username: !Ref EDLUsername
         password: !Ref EDLPassword
-        angle-maps: false
-        los-displacement: false
-        multilook: 20x4
+        include_inc_map: false
+        los_displacement: false
+        looks: 20x4
       ContainerProperties:
         Image: !Ref InsarGammaImage
         Vcpus: 4
@@ -169,13 +172,13 @@ Resources:
           - --bucket
           - Ref::bucket
           - --bucket-prefix
-          - Ref::bucket-prefix
-          - --angle-maps
-          - Ref::angle-maps
+          - Ref::bucket_prefix
+          - --include-inc-map
+          - Ref::include_inc_map
           - --los-displacement
-          - Ref::los-displacement
-          - --multilook
-          - Ref::multilook
+          - Ref::los_displacement
+          - --looks
+          - Ref::looks
           - Ref::granule1
           - Ref::granule2
       Timeout:
