@@ -205,10 +205,30 @@ components:
       example: RTC_GAMMA
       enum:
         - RTC_GAMMA
+        - INSAR_GAMMA
 
     job_parameters:
       oneOf:
         - $ref: "#/components/schemas/rtc_gamma_job_parameters"
+
+    insar_gamma_job_parameters:
+      description: Options and parameters for running the job process.
+      type: object
+      required:
+        - granule
+      additionalProperties: false
+      properties:
+        granule1:
+          $ref: "#/components/schemas/granule"
+        granule2:
+          $ref: "#/components/schemas/granule"
+        include_inc_map:
+          $ref: "#/components/schemas/include_inc_map"
+        looks:
+          $ref: "#/components/schemas/looks"
+        los_displacement:
+          $ref: "#/components/schemas/los_displacement"
+
 
     rtc_gamma_job_parameters:
       description: Options and parameters for running the job process.
@@ -279,6 +299,18 @@ components:
 
     include_inc_map:
       description: Include the incident angle map in the product package
+      default: false
+      type: boolean
+
+    looks:
+      description: Number of looks to take in range and azimuth
+      type: string
+      enum:
+        - 20x4
+        - 10x2
+
+    los_displacement:
+      description: Include a GeoTIFF in the product package containing the displacements along the Line-Of-Sight (LOS)
       default: false
       type: boolean
 

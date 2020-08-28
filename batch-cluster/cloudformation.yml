@@ -154,9 +154,9 @@ Resources:
         bucket-prefix: ""
         username: !Ref EDLUsername
         password: !Ref EDLPassword
-        angle-maps: false
-        los-displacement: false
-        multilook: 20x4
+        include_inc_map: false
+        los_displacement: false
+        looks: 20x4
       ContainerProperties:
         Image: !Ref InsarGammaImage
         Vcpus: 4
@@ -173,12 +173,12 @@ Resources:
           - Ref::bucket
           - --bucket-prefix
           - Ref::bucket-prefix
-          - --angle-maps
-          - Ref::angle-maps
+          - --include-inc-map
+          - Ref::include-inc-map
           - --los-displacement
           - Ref::los-displacement
-          - --multilook
-          - Ref::multilook
+          - --looks
+          - Ref::looks
           - Ref::granule1
           - Ref::granule2
       Timeout:
