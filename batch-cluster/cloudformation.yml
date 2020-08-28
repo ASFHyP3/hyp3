@@ -155,7 +155,7 @@ Resources:
         los-displacement: false
         multilook: 20x4
       ContainerProperties:
-        Image: !Ref RtcGammaImage
+        Image: !Ref InsarGammaImage
         Vcpus: 4
         Memory: 30000
         JobRoleArn: !GetAtt TaskRole.Arn
