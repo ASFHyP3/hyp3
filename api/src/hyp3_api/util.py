@@ -9,7 +9,7 @@ from hyp3_api import handlers
 
 
 def get_granules(jobs):
-    granules = {}
+    granules = set()
     for job in jobs:
         parameters = job['job_parameters']
         if job['job_type'] == 'RTC_GAMMA':
