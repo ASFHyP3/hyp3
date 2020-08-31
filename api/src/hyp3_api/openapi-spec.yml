@@ -211,7 +211,8 @@ components:
       example: RTC_GAMMA
       enum:
         - RTC_GAMMA
-        - INSAR_GAMMA
+# Holding INSAR GAMMA support until Vertex integration is ready
+#       - INSAR_GAMMA
 
     job_parameters:
       oneOf:
@@ -234,7 +235,7 @@ components:
           $ref: "#/components/schemas/include_inc_map"
         looks:
           $ref: "#/components/schemas/looks"
-        los_displacement:
+        include_los_displacement:
           $ref: "#/components/schemas/los_displacement"
 
 
