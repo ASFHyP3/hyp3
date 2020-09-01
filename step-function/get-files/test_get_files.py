@@ -34,7 +34,7 @@ def stub_expiration(s3_stubber: Stubber, bucket, key):
 
 def test_get_expiration(s3_stubber: Stubber):
     stub_expiration(s3_stubber, 'myBucket', 'myKey')
-    response = get_expiration_time('myBucket', 'myKey')
+    response = get_expiration_time('myKey', 'myBucket')
     assert response == '2020-01-01T00:00:00+00:00'
 
 
@@ -85,12 +85,17 @@ def test_get_files(s3_stubber: Stubber):
             'Key': 'myJobId/myBrowse.png',
             'Size': 10,
         },
+        {
+            'Key': 'myJobId/myBrowse_rgb.png',
+            'Size': 10,
+        },
     ]
     stub_list_files(s3_stubber, 'myJobId', 'myBucket', files)
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myProduct.zip', 'product')
     stub_expiration(s3_stubber, 'myBucket', 'myJobId/myProduct.zip')
-    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myThumbnail.png', 'thumbnail')
-    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'browse')
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myThumbnail.png', 'amp_thumbnail')
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'amp_browse')
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse_rgb.png', 'rgb_browse')
 
     event = {
         'job_id': 'myJobId'
@@ -105,6 +110,9 @@ def test_get_files(s3_stubber: Stubber):
                 'filename': 'myProduct.zip',
             }
         ],
-        'browse_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse.png'],
+        'browse_images': [
+            'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse.png',
+            'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse_rgb.png'
+        ],
         'thumbnail_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myThumbnail.png'],
     }
