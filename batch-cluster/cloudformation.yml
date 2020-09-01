@@ -155,7 +155,7 @@ Resources:
         username: !Ref EDLUsername
         password: !Ref EDLPassword
         include_inc_map: false
-        los_displacement: false
+        include_los_displacement: false
         looks: 20x4
       ContainerProperties:
         Image: !Ref InsarGammaImage
@@ -175,8 +175,8 @@ Resources:
           - Ref::bucket_prefix
           - --include-inc-map
           - Ref::include_inc_map
-          - --los-displacement
-          - Ref::los_displacement
+          - --include-los-displacement
+          - Ref::include_los_displacement
           - --looks
           - Ref::looks
           - Ref::granule1
