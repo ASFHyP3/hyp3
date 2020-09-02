@@ -223,8 +223,7 @@ components:
       description: Options and parameters for running the job process.
       type: object
       required:
-        - granule1
-        - granule2
+        - granules
       additionalProperties: false
       properties:
         granules:
@@ -241,7 +240,7 @@ components:
       description: Options and parameters for running the job process.
       type: object
       required:
-        - granule
+        - granules
       additionalProperties: false
       properties:
         granules:
