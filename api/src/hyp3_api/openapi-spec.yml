@@ -138,7 +138,8 @@ components:
       additionalProperties: false
       example:
         job_parameters:
-          granule: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+          granules:
+            - S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
         job_type: RTC_GAMMA
         name: Job Name
 
@@ -215,7 +216,7 @@ components:
 #       - INSAR_GAMMA
 
     job_parameters:
-      oneOf:
+      anyOf:
         - $ref: "#/components/schemas/rtc_gamma_job_parameters"
         - $ref: "#/components/schemas/insar_gamma_job_parameters"
 
@@ -268,7 +269,7 @@ components:
     rtc_gamma_granules:
       type: array
       items:
-        oneOf:
+        anyOf:
           - $ref: '#/components/schemas/granule_grdh'
           - $ref: '#/components/schemas/granule_slc'
 
