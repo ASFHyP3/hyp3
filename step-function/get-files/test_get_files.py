@@ -34,7 +34,7 @@ def stub_expiration(s3_stubber: Stubber, bucket, key):
 
 def test_get_expiration(s3_stubber: Stubber):
     stub_expiration(s3_stubber, 'myBucket', 'myKey')
-    response = get_expiration_time('myKey', 'myBucket')
+    response = get_expiration_time('myBucket', 'myKey')
     assert response == '2020-01-01T00:00:00+00:00'
 
 

@@ -12,7 +12,7 @@ def get_download_url(bucket, key):
     return f'https://{bucket}.s3.{region}.amazonaws.com/{key}'
 
 
-def get_expiration_time(key, bucket):
+def get_expiration_time(bucket, key):
     s3_object = S3_CLIENT.get_object(Bucket=bucket, Key=key)
     expiration_string = s3_object['Expiration'].split('"')[1]
     expiration_datetime = datetime.strptime(expiration_string, '%a, %d %b %Y %H:%M:%S %Z')
@@ -36,17 +36,20 @@ def get_products(files):
 
 
 def get_browse(files):
-    browse = [item for item in files if item['file_type'] in ('amp_browse', 'rgb_browse')]
+    browse = [item for item in files if 'browse' in item['file_type']]
     sorted_files = sorted(browse, key=lambda x: x['file_type'])
     urls = [item['download_url'] for item in sorted_files]
     return urls
 
 
 def get_thumbnail(files):
-    return [item['download_url'] for item in files if item['file_type'] in ('amp_thumbnail', 'rgb_thumbnail')]
+    thumbnail = [item for item in files if 'thumbnail' in item['file_type']]
+    sorted_files = sorted(thumbnail, key=lambda x: x['file_type'])
+    urls = [item['download_url'] for item in sorted_files]
+    return urls
 
 
-def sort_files(files_dict, bucket):
+def organize_files(files_dict, bucket):
     all_files = []
     expiration = None
     for item in files_dict:
@@ -59,7 +62,7 @@ def sort_files(files_dict, bucket):
             'filename': basename(item['Key']),
         })
         if file_type == 'product':
-            expiration = get_expiration_time(item['Key'], bucket)
+            expiration = get_expiration_time(bucket, item['Key'])
 
     return {
         'files': get_products(all_files),
@@ -73,4 +76,4 @@ def lambda_handler(event, context):
     bucket = environ['BUCKET']
 
     response = S3_CLIENT.list_objects_v2(Bucket=bucket, Prefix=event['job_id'])
-    return sort_files(response['Contents'], bucket)
+    return organize_files(response['Contents'], bucket)
