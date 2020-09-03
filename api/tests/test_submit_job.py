@@ -17,6 +17,32 @@ def test_submit_one_job(client, table):
     assert jobs[0]['user_id'] == DEFAULT_USERNAME
 
 
+def test_submit_insar_gamma(client, table):
+    login(client)
+    job = make_job(
+        [
+            'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
+            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E'
+        ],
+        job_type='INSAR_GAMMA'
+    )
+    response = submit_batch(client, batch=[job])
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_submit_multiple_job_types(client, table):
+    login(client)
+    job = make_job(
+        [
+            'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
+            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E'
+        ],
+        job_type='INSAR_GAMMA'
+    )
+    response = submit_batch(client, batch=[job, make_job()])
+    assert response.status_code == status.HTTP_200_OK
+
+
 def test_submit_many_jobs(client, table):
     max_jobs = 25
     login(client)
@@ -153,6 +179,19 @@ def test_submit_bad_granule_names(client):
         setup_requests_mock(batch)
         response = submit_batch(client, batch)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_float_input(client, table):
+    login(client)
+    job = make_job(parameters={'resolution': 30.0})
+    response = submit_batch(client, batch=[job])
+    assert response.status_code == status.HTTP_200_OK
+    assert isinstance(response.json['jobs'][0]['job_parameters']['resolution'], float)
+
+    job = make_job(parameters={'resolution': 30})
+    response = submit_batch(client, batch=[job])
+    assert response.status_code == status.HTTP_200_OK
+    assert isinstance(response.json['jobs'][0]['job_parameters']['resolution'], int)
 
 
 def test_submit_validate_only(client, table):
