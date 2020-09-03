@@ -29,8 +29,8 @@ def test_lambda_handler(states_stubber):
               'decimal_integer_field': Decimal('10'),
               'job_parameters': {
                   'granules': [
-                      'granule1',
-                      'granule2',
+                      'granuleA',
+                      'granuleB',
                   ],
                   'string_field': 'value1',
                   'boolean_field': True,
@@ -47,7 +47,8 @@ def test_lambda_handler(states_stubber):
         'decimal_float_field': 10.1,
         'decimal_integer_field': 10,
         'job_parameters': {
-            'granules': 'granule1 granule2',
+            'granule0': 'granuleA',
+            'granule1': 'granuleB',
             'string_field': 'value1',
             'boolean_field': 'True',
             'decimal_float_field': '10.1',

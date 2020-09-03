@@ -28,8 +28,9 @@ def get_pending_jobs():
 
 
 def convert_parameters_to_strings(parameters):
-    parameters['granules'] = ' '.join(parameters['granules'])
-    return {key: str(value) for key, value in parameters.items()}
+    for index, value in enumerate(parameters['granules']):
+        parameters[f'granule{index}'] = value
+    return {key: str(value) for key, value in parameters.items() if key != 'granules'}
 
 
 def submit_jobs(jobs):

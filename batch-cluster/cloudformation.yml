@@ -100,7 +100,7 @@ Resources:
     Properties:
       Type: container
       Parameters:
-        granules: ""
+        granule0: ""
         bucket: !Ref ContentBucket
         bucket_prefix: ""
         username: !Ref EDLUsername
@@ -139,7 +139,7 @@ Resources:
           - Ref::include_dem
           - --include-inc-map
           - Ref::include_inc_map
-          - Ref::granules
+          - Ref::granule0
       Timeout:
         AttemptDurationSeconds: 5400
 
@@ -148,7 +148,8 @@ Resources:
     Properties:
       Type: container
       Parameters:
-        granules: ""
+        granule0: ""
+        granule1: ""
         bucket: !Ref ContentBucket
         bucket_prefix: ""
         username: !Ref EDLUsername
@@ -178,7 +179,8 @@ Resources:
           - Ref::include_los_displacement
           - --looks
           - Ref::looks
-          - Ref::granules
+          - Ref::granule0
+          - Ref::granule1
       Timeout:
         AttemptDurationSeconds: 5400
 
