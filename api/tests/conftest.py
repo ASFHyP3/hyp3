@@ -8,7 +8,7 @@ import yaml
 from moto import mock_dynamodb2
 
 from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, connexion_app  # noqa hyp3 must be imported here
-
+from hyp3_api.util import get_granules
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 USER_URI = '/user'
@@ -107,8 +107,7 @@ def make_db_record(job_id,
 
 
 def setup_requests_mock(batch):
-    granules = []
-    [[granules.append(granule) for granule in job['job_parameters']['granules']] for job in batch]
+    granules = get_granules(batch)
     cmr_response = {
         'feed': {
             'entry': [
