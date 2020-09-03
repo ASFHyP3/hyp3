@@ -9,6 +9,7 @@ from moto import mock_dynamodb2
 
 from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, connexion_app  # noqa hyp3 must be imported here
 from hyp3_api.util import get_granules
+
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 USER_URI = '/user'
