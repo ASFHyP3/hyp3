@@ -11,12 +11,8 @@ from hyp3_api import handlers
 def get_granules(jobs):
     granules = set()
     for job in jobs:
-        parameters = job['job_parameters']
-        if job['job_type'] == 'RTC_GAMMA':
-            granules.add(parameters['granule'])
-        if job['job_type'] == 'INSAR_GAMMA':
-            granules.add(parameters['granule1'])
-            granules.add(parameters['granule2'])
+        for granule in job['job_parameters']['granules']:
+            granules.add(granule)
     return granules
 
 

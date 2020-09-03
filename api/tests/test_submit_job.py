@@ -96,11 +96,11 @@ def test_submit_job_with_long_name(client):
 
 def test_submit_job_granule_does_not_exist(client, table):
     batch = [
-        make_job('S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'),
-        make_job('S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B')
+        make_job(['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38']),
+        make_job(['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B'])
     ]
     setup_requests_mock(batch)
-    batch.append(make_job('S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A'))
+    batch.append(make_job(['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A']))
 
     login(client)
     response = submit_batch(client, batch)
@@ -120,7 +120,7 @@ def test_submit_good_granule_names(client, table):
     ]
     for granule in good_granule_names:
         batch = [
-            make_job(granule),
+            make_job([granule]),
         ]
         setup_requests_mock(batch)
         response = submit_batch(client, batch)

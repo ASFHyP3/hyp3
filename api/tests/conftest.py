@@ -8,6 +8,7 @@ import yaml
 from moto import mock_dynamodb2
 
 from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, connexion_app  # noqa hyp3 must be imported here
+from hyp3_api.util import get_granules
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
@@ -45,13 +46,13 @@ def get_table_properties_from_template():
     return table_properties
 
 
-def make_job(granule='S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
+def make_job(granules=['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'],
              name='someName',
              job_type='RTC_GAMMA'):
     job = {
         'job_type': job_type,
         'job_parameters': {
-            'granule': granule,
+            'granules': granules,
             'resolution': 30.0,
         }
     }
@@ -73,7 +74,7 @@ def submit_batch(client, batch=None, validate_only=None):
 
 
 def make_db_record(job_id,
-                   granule='S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B',
+                   granules=['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B'],
                    job_type='RTC_GAMMA',
                    user_id=DEFAULT_USERNAME,
                    request_time='2019-12-31T15:00:00+00:00',
@@ -88,7 +89,7 @@ def make_db_record(job_id,
         'user_id': user_id,
         'job_type': job_type,
         'job_parameters': {
-            'granule': granule,
+            'granules': granules,
         },
         'request_time': request_time,
         'status_code': status_code,
@@ -107,7 +108,7 @@ def make_db_record(job_id,
 
 
 def setup_requests_mock(batch):
-    granules = [job['job_parameters']['granule'] for job in batch]
+    granules = get_granules(batch)
     cmr_response = {
         'feed': {
             'entry': [
