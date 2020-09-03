@@ -49,7 +49,7 @@ def get_table_properties_from_template():
 def make_job(granules=['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'],
              name='someName',
              job_type='RTC_GAMMA',
-             parameters = {},):
+             parameters={},):
     job = {
         'job_type': job_type,
         'job_parameters': {
