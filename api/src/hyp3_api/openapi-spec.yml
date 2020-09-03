@@ -212,8 +212,7 @@ components:
       example: RTC_GAMMA
       enum:
         - RTC_GAMMA
-# Holding INSAR GAMMA support until Vertex integration is ready
-#       - INSAR_GAMMA
+        - INSAR_GAMMA
 
     job_parameters:
       oneOf:
@@ -228,7 +227,7 @@ components:
       additionalProperties: false
       properties:
         granules:
-          $ref: '#/components/schemas/insar_gamma_granules'
+          $ref: "#/components/schemas/insar_gamma_granules"
         include_inc_map:
           $ref: "#/components/schemas/include_inc_map"
         looks:
@@ -245,7 +244,7 @@ components:
       additionalProperties: false
       properties:
         granules:
-          $ref: '#/components/schemas/rtc_gamma_granules'
+          $ref: "#/components/schemas/rtc_gamma_granules"
         resolution:
           $ref: "#/components/schemas/resolution"
         radiometry:
@@ -266,7 +265,7 @@ components:
       minItems: 2
       maxItems: 2
       items:
-        $ref: '#/components/schemas/granule_slc'
+        $ref: "#/components/schemas/granule_slc"
 
     rtc_gamma_granules:
       type: array
@@ -274,8 +273,8 @@ components:
       maxItems: 1
       items:
         anyOf:
-          - $ref: '#/components/schemas/granule_grdh'
-          - $ref: '#/components/schemas/granule_slc'
+          - $ref: "#/components/schemas/granule_grdh"
+          - $ref: "#/components/schemas/granule_slc"
 
 
     granule_grdh:
