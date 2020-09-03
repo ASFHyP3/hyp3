@@ -11,7 +11,8 @@ from hyp3_api import handlers
 def get_granules(jobs):
     granules = set()
     for job in jobs:
-        [granules.add(granule) for granule in job['job_parameters']['granules']]
+        for granule in job['job_parameters']['granules']:
+            granules.add(granule)
     return granules
 
 
