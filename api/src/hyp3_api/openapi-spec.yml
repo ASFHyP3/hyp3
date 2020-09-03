@@ -216,7 +216,7 @@ components:
 #       - INSAR_GAMMA
 
     job_parameters:
-      anyOf:
+      oneOf:
         - $ref: "#/components/schemas/rtc_gamma_job_parameters"
         - $ref: "#/components/schemas/insar_gamma_job_parameters"
 
