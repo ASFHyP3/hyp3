@@ -212,8 +212,7 @@ components:
       example: RTC_GAMMA
       enum:
         - RTC_GAMMA
-# Holding INSAR GAMMA support until Vertex integration is ready
-#       - INSAR_GAMMA
+        - INSAR_GAMMA
 
     job_parameters:
       oneOf:
