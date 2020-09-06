@@ -24,92 +24,48 @@ Parameters:
 Outputs:
 
   Url:
-    Value: !Sub "https://${DomainName}/ui"
+    Value: !Sub "https://${CustomDomainName}/ui"
 
 Resources:
 
-  RestApi:
-    Type: AWS::ApiGateway::RestApi
+  Api:
+    Type: AWS::ApiGatewayV2::Api
     Properties:
       Name: !Ref AWS::StackName
-      EndpointConfiguration:
-        Types:
-          - REGIONAL
+      ProtocolType: HTTP
+      Target: !GetAtt Lambda.Arn
+      CredentialsArn: !GetAtt ApiRole.Arn
 
-  Resource:
-    Type: AWS::ApiGateway::Resource
+  ApiOverrides:
+    Type: AWS::ApiGatewayV2::ApiGatewayManagedOverrides
     Properties:
-      RestApiId: !Ref RestApi
-      ParentId: !GetAtt RestApi.RootResourceId
-      PathPart: "{proxy+}"
-
-  RootMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      RestApiId: !Ref RestApi
-      ResourceId: !GetAtt RestApi.RootResourceId
-      HttpMethod: ANY
-      AuthorizationType: NONE
+      ApiId: !Ref Api
       Integration:
-        Type: AWS_PROXY
-        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
-        IntegrationHttpMethod: POST
-        Credentials: !GetAtt ApiRole.Arn
-        PassthroughBehavior: NEVER
-
-  ResourceMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      RestApiId: !Ref RestApi
-      ResourceId: !Ref Resource
-      HttpMethod: ANY
-      AuthorizationType: NONE
-      Integration:
-        Type: AWS_PROXY
-        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
-        IntegrationHttpMethod: POST
-        Credentials: !GetAtt ApiRole.Arn
-        PassthroughBehavior: NEVER
+        PayloadFormatVersion: "1.0"
+      Stage:
+        AccessLogSettings:
+          DestinationArn: !GetAtt ApiLogGroup.Arn
+          Format: $context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.path $context.protocol" $context.status $context.responseLength $context.requestId
 
   ApiLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       RetentionInDays: 180
 
-  Deployment:
-    Type: AWS::ApiGateway::Deployment
-    DependsOn:
-      - RootMethod
-      - ResourceMethod
-    Properties:
-      RestApiId: !Ref RestApi
-
-  Stage:
-    Type: AWS::ApiGateway::Stage
-    Properties:
-      StageName: api
-      RestApiId: !Ref RestApi
-      DeploymentId: !Ref Deployment
-      AccessLogSetting:
-        DestinationArn: !GetAtt ApiLogGroup.Arn
-        Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.path $context.protocol" $context.status $context.responseLength $context.requestId
-
   CustomDomainName:
-    Type: AWS::ApiGateway::DomainName
+    Type: AWS::ApiGatewayV2::DomainName
     Properties:
       DomainName: !Ref DomainName
-      EndpointConfiguration:
-        Types:
-          - REGIONAL
-      RegionalCertificateArn: !Ref CertificateArn
-      SecurityPolicy: TLS_1_2
+      DomainNameConfigurations:
+        - CertificateArn: !Ref CertificateArn
+          EndpointType: REGIONAL
 
-  BasePathMapping:
-    Type: AWS::ApiGateway::BasePathMapping
+  ApiMapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
     Properties:
+      ApiId: !Ref Api
       DomainName: !Ref CustomDomainName
-      RestApiId: !Ref RestApi
-      Stage: !Ref Stage
+      Stage: $default
 
   ApiRole:
     Type: AWS::IAM::Role
