@@ -1,0 +1,172 @@
+{
+  "StartAt": "JOB_RUNNING",
+  "States": {
+    "JOB_RUNNING": {
+      "Type": "Task",
+      "Resource": "${UpdateDBLambdaArn}",
+      "Parameters": {
+        "job_id.$": "$.job_id",
+        "status_code": "RUNNING"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "MaxAttempts": 2
+        }
+      ],
+      "ResultPath": "$.results.job_running",
+      "Next": "ADD_PREFIX_TO_JOB_PARAMETERS"
+    },
+    "ADD_PREFIX_TO_JOB_PARAMETERS": {
+      "Type": "Pass",
+      "InputPath": "$.job_id",
+      "ResultPath": "$.job_parameters.bucket_prefix",
+      "Next": "INSPECT_JOB_TYPE"
+    },
+    "INSPECT_JOB_TYPE": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.job_type",
+          "StringEquals": "INSAR_GAMMA",
+          "Next": "INSAR_GAMMA"
+        },
+        {
+          "Variable": "$.job_type",
+          "StringEquals": "RTC_GAMMA",
+          "Next": "RTC_GAMMA"
+        }
+      ],
+      "Default": "JOB_FAILED"
+    },
+    "INSAR_GAMMA": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::batch:submitJob.sync",
+      "Parameters": {
+        "JobDefinition": "${InsarGammaJobDefinition}",
+        "JobName.$": "$.job_id",
+        "JobQueue": "${JobQueueArn}",
+        "Parameters.$": "$.job_parameters"
+      },
+      "ResultPath": "$.results.insar_gamma",
+      "Next": "GET_FILES",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "MaxAttempts": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "JOB_FAILED",
+          "ResultPath": "$.results.insar_gamma"
+        }
+      ]
+    },
+    "RTC_GAMMA": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::batch:submitJob.sync",
+      "Parameters": {
+        "JobDefinition": "${RtcGammaJobDefinition}",
+        "JobName.$": "$.job_id",
+        "JobQueue": "${JobQueueArn}",
+        "Parameters.$": "$.job_parameters"
+      },
+      "ResultPath": "$.results.rtc_gamma",
+      "Next": "GET_FILES",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "MaxAttempts": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "JOB_FAILED",
+          "ResultPath": "$.results.rtc_gamma"
+        }
+      ]
+    },
+    "GET_FILES": {
+      "Type": "Task",
+      "Resource": "${GetFilesLambdaArn}",
+      "Parameters": {
+        "job_id.$": "$.job_id"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "MaxAttempts": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "JOB_FAILED",
+          "ResultPath": "$.results.get_files"
+        }
+      ],
+      "ResultPath": "$.results.get_files",
+      "Next": "JOB_SUCCEEDED"
+    },
+    "JOB_SUCCEEDED": {
+      "Type": "Task",
+      "Resource": "${UpdateDBLambdaArn}",
+      "Parameters": {
+        "job_id.$": "$.job_id",
+        "status_code": "SUCCEEDED",
+        "files.$": "$.results.get_files.files",
+        "browse_images.$": "$.results.get_files.browse_images",
+        "thumbnail_images.$": "$.results.get_files.thumbnail_images",
+        "expiration_time.$": "$.results.get_files.expiration_time"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "MaxAttempts": 2
+        }
+      ],
+      "ResultPath": "$.results.job_succeeded",
+      "End": true
+    },
+    "JOB_FAILED": {
+      "Type": "Task",
+      "Resource": "${UpdateDBLambdaArn}",
+      "Parameters": {
+        "job_id.$": "$.job_id",
+        "status_code": "FAILED"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "MaxAttempts": 2
+        }
+      ],
+      "ResultPath": "$.results.job_failed",
+      "Next": "FAIL"
+    },
+    "FAIL": {
+      "Type": "Fail"
+    }
+  }
+}
