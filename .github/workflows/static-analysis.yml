@@ -51,5 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
       - run: gem install statelint
       - run: statelint step-function/step-function.json
