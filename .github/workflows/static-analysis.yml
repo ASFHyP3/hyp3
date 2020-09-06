@@ -54,4 +54,6 @@ jobs:
         with:
           ruby-version: 2.7
       - run: gem install statelint
-      - run: statelint step-function/step-function.json
+      - run: |
+          sed -i 's/${\(.*\)}/\1/' step-function/step-function.json
+          statelint step-function/step-function.json
