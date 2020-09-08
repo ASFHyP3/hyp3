@@ -97,10 +97,7 @@ def get_names_for_user(user):
         IndexName='user_id',
         KeyConditionExpression=key_expression,
     )
-    names = set()
-    for record in response['Items']:
-        if 'name' in record:
-            names.add(record['name'])
+    names = {record['name'] for record in response['Items'] if 'name' in record}
     return sorted(list(names))
 
 
