@@ -101,7 +101,7 @@ def get_names_for_user(user):
     for record in response['Items']:
         if 'name' in record:
             names.add(record['name'])
-    return list(names)
+    return sorted(list(names))
 
 
 def get_user(user):

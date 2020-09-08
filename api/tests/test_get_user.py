@@ -28,10 +28,10 @@ def test_get_user(client, table, monkeypatch):
             'limit': 25,
             'remaining': 21,
         },
-        'names': [
+        'names': sorted([
             'job1',
             'job2',
-        ],
+        ]),
     }
 
 
