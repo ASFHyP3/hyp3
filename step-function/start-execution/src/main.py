@@ -28,6 +28,7 @@ def get_pending_jobs():
 
 
 def convert_parameters_to_strings(parameters):
+    parameters['granules'] = ' '.join(parameters['granules'])
     return {key: str(value) for key, value in parameters.items()}
 
 

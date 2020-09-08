@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0]
+### Added
+- Added a new `INSAR_GAMMA` job type for producing an interferogram from a pair of Sentinel-1 SLC IW scenes using [GAMMA](https://www.gamma-rs.ch/software).  For details, refer to the [hyp3-insar-gamma](https://github.com/ASFHyP3/hyp3-insar-gamma) plugin repository.
+
+### Changed
+- All job types requiring one or more granules now expose a single `granules` job parameter, formatted as a list of granule names:
+  - `"granules": ["myGranule"]` for `RTC_GAMMA` jobs
+  - `"granules": ["granule1", "granule2"]` for `INSAR_GAMMA` jobs
+
+  Note this is a breaking change for `RTC_GAMMA` jobs.
+- Browse and thumbnail URLs for `RTC_GAMMA` jobs will now be sorted with the amplitude image first, followed by the rgb image, in `GET /jobs` responses.
+
 ## [0.5.1]
 ### Fixed
 - Resolved HTTP 500 error when submitting jobs with a resolution with decimal precision (e.g. `30.0`)

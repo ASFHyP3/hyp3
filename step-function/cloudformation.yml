@@ -8,6 +8,9 @@ Parameters:
   RtcGammaJobDefinition:
     Type: String
 
+  InsarGammaJobDefinition:
+    Type: String
+
   JobsTable:
     Type: String
 
@@ -45,8 +48,53 @@ Resources:
             "ADD_PREFIX_TO_JOB_PARAMETERS": {
               "Type": "Pass",
               "InputPath": "$.job_id",
-              "ResultPath": "$.job_parameters.bucket-prefix",
-              "Next": "RTC_GAMMA"
+              "ResultPath": "$.job_parameters.bucket_prefix",
+              "Next": "INSPECT_JOB_TYPE"
+            },
+            "INSPECT_JOB_TYPE": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.job_type",
+                  "StringEquals": "INSAR_GAMMA",
+                  "Next": "INSAR_GAMMA"
+                },
+                {
+                  "Variable": "$.job_type",
+                  "StringEquals": "RTC_GAMMA",
+                  "Next": "RTC_GAMMA"
+                }
+              ],
+              "Default": "JOB_FAILED"
+            },
+            "INSAR_GAMMA": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::batch:submitJob.sync",
+              "Parameters": {
+                "JobDefinition": "${InsarGammaJobDefinition}",
+                "JobName.$": "$.job_id",
+                "JobQueue": "${JobQueueArn}",
+                "Parameters.$": "$.job_parameters"
+              },
+              "ResultPath": "$.results.insar_gamma",
+              "Next": "GET_FILES",
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "MaxAttempts": 2
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "Next": "JOB_FAILED",
+                  "ResultPath": "$.results.insar_gamma"
+                }
+              ]
             },
             "RTC_GAMMA": {
               "Type": "Task",
@@ -169,6 +217,7 @@ Resources:
                 Resource:
                   - !Ref JobQueueArn
                   - !Ref RtcGammaJobDefinition
+                  - !Ref InsarGammaJobDefinition
               - Effect: Allow
                 Action:
                   - events:PutTargets

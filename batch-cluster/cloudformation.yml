@@ -18,6 +18,9 @@ Parameters:
   RtcGammaImage:
     Type: String
 
+  InsarGammaImage:
+    Type: String
+
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -32,6 +35,9 @@ Outputs:
 
   RtcGammaJobDefinition:
     Value: !Ref RtcGammaJobDefinition
+
+  InsarGammaJobDefinition:
+    Value: !Ref InsarGammaJobDefinition
 
 Resources:
 
@@ -94,9 +100,9 @@ Resources:
     Properties:
       Type: container
       Parameters:
-        granule: ""
+        granules: ""
         bucket: !Ref ContentBucket
-        bucket-prefix: ""
+        bucket_prefix: ""
         username: !Ref EDLUsername
         password: !Ref EDLPassword
         resolution: 30.0
@@ -120,7 +126,7 @@ Resources:
           - --bucket
           - Ref::bucket
           - --bucket-prefix
-          - Ref::bucket-prefix
+          - Ref::bucket_prefix
           - --resolution
           - Ref::resolution
           - --radiometry
@@ -133,7 +139,46 @@ Resources:
           - Ref::include_dem
           - --include-inc-map
           - Ref::include_inc_map
-          - Ref::granule
+          - Ref::granules
+      Timeout:
+        AttemptDurationSeconds: 5400
+
+  InsarGammaJobDefinition:
+    Type: AWS::Batch::JobDefinition
+    Properties:
+      Type: container
+      Parameters:
+        granules: ""
+        bucket: !Ref ContentBucket
+        bucket_prefix: ""
+        username: !Ref EDLUsername
+        password: !Ref EDLPassword
+        include_inc_map: false
+        include_los_displacement: false
+        looks: 20x4
+      ContainerProperties:
+        Image: !Ref InsarGammaImage
+        Vcpus: 4
+        Memory: 30000
+        JobRoleArn: !GetAtt TaskRole.Arn
+        Command:
+          - ++entrypoint
+          - hyp3_insar_gamma_v2
+          - --username
+          - Ref::username
+          - --password
+          - Ref::password
+          - --bucket
+          - Ref::bucket
+          - --bucket-prefix
+          - Ref::bucket_prefix
+          - --include-inc-map
+          - Ref::include_inc_map
+          - --include-los-displacement
+          - Ref::include_los_displacement
+          - --looks
+          - Ref::looks
+          - Ref::granules
       Timeout:
         AttemptDurationSeconds: 5400
 

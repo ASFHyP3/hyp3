@@ -21,6 +21,10 @@ Parameters:
     Description: Link to RTC_GAMMA processing image to use when running RTC_GAMMA jobs.
     Type: String
 
+  InsarGammaImage:
+    Description: Link to INSAR_GAMMA processing image to use when running INSAR_GAMMA jobs.
+    Type: String
+
   ProductLifetimeInDays:
     Description: Number of days to keep output files before deleting them.
     Type: Number
@@ -88,6 +92,7 @@ Resources:
         EDLUsername: !Ref EDLUsername
         EDLPassword: !Ref EDLPassword
         RtcGammaImage: !Ref RtcGammaImage
+        InsarGammaImage: !Ref InsarGammaImage
         ContentBucket: !Ref ContentBucket
       TemplateURL: batch-cluster/cloudformation.yml
 
@@ -97,6 +102,7 @@ Resources:
       Parameters:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
         RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
+        InsarGammaJobDefinition: !GetAtt Cluster.Outputs.InsarGammaJobDefinition
         JobsTable: !Ref JobsTable
         Bucket: !Ref ContentBucket
       TemplateURL: step-function/cloudformation.yml

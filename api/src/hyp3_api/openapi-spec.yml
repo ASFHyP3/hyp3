@@ -136,6 +136,13 @@ components:
         - job_type
         - job_parameters
       additionalProperties: false
+      example:
+        job_parameters:
+          granules:
+            - S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+        job_type: RTC_GAMMA
+        name: Job Name
+
       properties:
         job_type:
           $ref: "#/components/schemas/job_type"
@@ -205,16 +212,39 @@ components:
       example: RTC_GAMMA
       enum:
         - RTC_GAMMA
+        - INSAR_GAMMA
 
     job_parameters:
+      oneOf:
+        - $ref: "#/components/schemas/rtc_gamma_job_parameters"
+        - $ref: "#/components/schemas/insar_gamma_job_parameters"
+
+    insar_gamma_job_parameters:
       description: Options and parameters for running the job process.
       type: object
       required:
-        - granule
+        - granules
       additionalProperties: false
       properties:
-        granule:
-          $ref: "#/components/schemas/granule"
+        granules:
+          $ref: "#/components/schemas/insar_gamma_granules"
+        include_inc_map:
+          $ref: "#/components/schemas/include_inc_map"
+        looks:
+          $ref: "#/components/schemas/looks"
+        include_los_displacement:
+          $ref: "#/components/schemas/los_displacement"
+
+
+    rtc_gamma_job_parameters:
+      description: Options and parameters for running the job process.
+      type: object
+      required:
+        - granules
+      additionalProperties: false
+      properties:
+        granules:
+          $ref: "#/components/schemas/rtc_gamma_granules"
         resolution:
           $ref: "#/components/schemas/resolution"
         radiometry:
@@ -230,10 +260,35 @@ components:
         include_inc_map:
           $ref: "#/components/schemas/include_inc_map"
 
-    granule:
-      description: The name of the Sentinel-1 granule to process.  Only SLC and GRDH products with beam mode IW are supported.
+    insar_gamma_granules:
+      type: array
+      minItems: 2
+      maxItems: 2
+      items:
+        $ref: "#/components/schemas/granule_slc"
+
+    rtc_gamma_granules:
+      type: array
+      minItems: 1
+      maxItems: 1
+      items:
+        anyOf:
+          - $ref: "#/components/schemas/granule_grdh"
+          - $ref: "#/components/schemas/granule_slc"
+
+
+    granule_grdh:
+      description: The name of the Sentinel-1 GRDH granule to process.
       type: string
-      pattern: "^S1[AB]_IW_(SLC_|GRDH)_*"
+      pattern: "^S1[AB]_IW_GRDH_*"
+      minLength: 67
+      maxLength: 67
+      example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+
+    granule_slc:
+      description: The name of the Sentinel-1 SLC granule to process.
+      type: string
+      pattern: "^S1[AB]_IW_SLC__*"
       minLength: 67
       maxLength: 67
       example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
@@ -275,6 +330,18 @@ components:
 
     include_inc_map:
       description: Include the incident angle map in the product package
+      default: false
+      type: boolean
+
+    looks:
+      description: Number of looks to take in range and azimuth
+      type: string
+      enum:
+        - 20x4
+        - 10x2
+
+    los_displacement:
+      description: Include a GeoTIFF in the product package containing the displacements along the Line-Of-Sight (LOS)
       default: false
       type: boolean
 
