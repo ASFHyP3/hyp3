@@ -1,5 +1,5 @@
 -r api/requirements.txt
-boto2
+boto3
 moto
 pytest
 PyYAML
