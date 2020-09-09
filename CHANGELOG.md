@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1]
+### Added
+- `GET /user` response now includes a `job_names` list including all distinct job names previously submitted for the current user
+
+### Changed
+- API is now deployed using Api Gateway V2 resources, resulting in lower response latency.
+
 ## [0.6.0]
 ### Added
 - Added a new `INSAR_GAMMA` job type for producing an interferogram from a pair of Sentinel-1 SLC IW scenes using [GAMMA](https://www.gamma-rs.ch/software).  For details, refer to the [hyp3-insar-gamma](https://github.com/ASFHyP3/hyp3-insar-gamma) plugin repository.
