@@ -90,6 +90,17 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None):
     return {'jobs': response['Items']}
 
 
+def get_names_for_user(user):
+    table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
+    key_expression = Key('user_id').eq(user)
+    response = table.query(
+        IndexName='user_id',
+        KeyConditionExpression=key_expression,
+    )
+    names = {record['name'] for record in response['Items'] if 'name' in record}
+    return sorted(list(names))
+
+
 def get_user(user):
     return {
         'user_id': user,
@@ -97,6 +108,7 @@ def get_user(user):
             'limit': int(environ['MONTHLY_JOB_QUOTA_PER_USER']),
             'remaining': get_remaining_jobs_for_user(user),
         },
+        'job_names': get_names_for_user(user)
     }
 
 
