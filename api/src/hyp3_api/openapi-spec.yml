@@ -101,11 +101,14 @@ components:
       required:
         - user_id
         - quota
+      additionalProperties: false
       properties:
         user_id:
           $ref: "#/components/schemas/user_id"
         quota:
           $ref: "#/components/schemas/quota"
+        job_names:
+          $ref: "#components/schemas/job_names_list"
 
     quota:
       description: Containes the limit of jobs per month and the amount remaining for a user.
@@ -113,6 +116,7 @@ components:
       required:
         - limit
         - remaining
+      additionalProperties: false
       properties:
         limit:
           type: integer
@@ -120,6 +124,11 @@ components:
         remaining:
           type: integer
           minimum: 0
+
+    job_names_list:
+      type: array
+      items:
+        $ref: "#/components/schemas/name"
 
     list_of_new_jobs:
       description: Contains a list of new job objects.
@@ -360,6 +369,7 @@ components:
         - SUCCEEDED
         - FAILED
       example: SUCCEEDED
+
 
     name:
       description: User provided text to name the job
