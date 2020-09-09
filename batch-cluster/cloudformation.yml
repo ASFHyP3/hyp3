@@ -229,14 +229,6 @@ Resources:
           Effect: Allow
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
-      Policies:
-        - PolicyName: policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action: batch:DescribeComputeEnvironments
-                Resource: "*"
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile

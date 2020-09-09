@@ -11,10 +11,10 @@ def test_get_user(client, table, monkeypatch):
     request_time = format_time(datetime.now(timezone.utc))
     user = 'user_with_jobs'
     items = [
-        make_db_record('job1', user_id=user, request_time=request_time, status_code='PENDING'),
-        make_db_record('job2', user_id=user, request_time=request_time, status_code='RUNNING'),
-        make_db_record('job3', user_id=user, request_time=request_time, status_code='FAILED'),
-        make_db_record('job4', user_id=user, request_time=request_time, status_code='SUCCEEDED')
+        make_db_record('job1', user_id=user, request_time=request_time, status_code='PENDING', name='job1'),
+        make_db_record('job2', user_id=user, request_time=request_time, status_code='RUNNING', name='job1'),
+        make_db_record('job3', user_id=user, request_time=request_time, status_code='FAILED', name='job2'),
+        make_db_record('job4', user_id=user, request_time=request_time, status_code='SUCCEEDED', name=None)
     ]
     for item in items:
         table.put_item(Item=item)
@@ -28,6 +28,10 @@ def test_get_user(client, table, monkeypatch):
             'limit': 25,
             'remaining': 21,
         },
+        'job_names': [
+            'job1',
+            'job2',
+        ],
     }
 
 
