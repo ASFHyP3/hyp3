@@ -28,7 +28,7 @@ def test_get_user(client, table, monkeypatch):
             'limit': 25,
             'remaining': 21,
         },
-        'names': [
+        'job_names': [
             'job1',
             'job2',
         ],
