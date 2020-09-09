@@ -108,7 +108,7 @@ def get_user(user):
             'limit': int(environ['MONTHLY_JOB_QUOTA_PER_USER']),
             'remaining': get_remaining_jobs_for_user(user),
         },
-        'names': get_names_for_user(user)
+        'job_names': get_names_for_user(user)
     }
 
 
