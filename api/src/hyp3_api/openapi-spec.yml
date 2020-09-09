@@ -370,7 +370,6 @@ components:
         - FAILED
       example: SUCCEEDED
 
-
     name:
       description: User provided text to name the job
       type: string
