@@ -48,6 +48,8 @@ jobs:
           python-version: 3.8
 
       - run: |
+          apt update
+          apt install libicu-dev
           python -m pip install --upgrade pip
           python -m pip install openapi-spec-validator
           python -m pip install prance
