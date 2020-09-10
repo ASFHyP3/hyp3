@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 from os import environ
+from pathlib import Path
 from uuid import uuid4
 
 import requests
@@ -11,6 +12,7 @@ from flask import jsonify, make_response
 from flask_cors import CORS
 
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
+from hyp3_api.openapi import get_spec
 from hyp3_api.util import convert_floats_to_decimals, format_time, get_granules, get_remaining_jobs_for_user, \
     get_request_time_expression
 from hyp3_api.validation import GranuleValidationError, validate_granules
@@ -112,6 +114,7 @@ def get_user(user):
     }
 
 
+api_spec_file = Path(__file__).parent.joinpath(Path('api-spec/openapi-spec.yml'))
 connexion_app.app.json_encoder = DecimalEncoder
-connexion_app.add_api('openapi-spec.yml', validate_responses=True, strict_validation=True)
+connexion_app.add_api(get_spec(api_spec_file), validate_responses=True, strict_validation=True)
 CORS(connexion_app.app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
