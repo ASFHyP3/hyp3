@@ -3,6 +3,7 @@ cryptography
 flask
 flask_api
 Flask-Cors
+prance
 PyJWT
 requests
 serverless_wsgi
