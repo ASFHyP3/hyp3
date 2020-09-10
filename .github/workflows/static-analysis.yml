@@ -49,6 +49,7 @@ jobs:
 
       - run: |
           python -m pip install --upgrade pip
-          pip install prance openapi-spec-validator
+          python -m pip install openapi-spec-validator
+          python -m pip install prance
 
       - run: prance validate --backend=openapi-spec-validator api/src/hyp3_api/openapi-spec.yml
