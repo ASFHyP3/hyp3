@@ -21,6 +21,11 @@ Resources:
 
   StepFunction:
     Type: AWS::StepFunctions::StateMachine
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - E3002
     Properties:
       RoleArn: !GetAtt StepFunctionRole.Arn
       DefinitionS3Location: step-function.json
