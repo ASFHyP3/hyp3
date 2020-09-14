@@ -4,7 +4,7 @@ components:
       anyOf:
         - $ref: "#/components/schemas/rtc_gamma_job_parameters"
         - $ref: "#/components/schemas/insar_gamma_job_parameters"
-        - $ref: "#/components/schemas/autorift_isce_job_parameters"
+        - $ref: "#/components/schemas/autorift_job_parameters"
 
     insar_gamma_job_parameters:
       description: Options and parameters for running the job process.
@@ -22,7 +22,7 @@ components:
         include_los_displacement:
           $ref: "#/components/schemas/los_displacement"
 
-    autorift_isce_job_parameters:
+    autorift_job_parameters:
       description: Options and parameters for running the job process.
       type: object
       required:
