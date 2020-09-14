@@ -35,6 +35,11 @@
         },
         {
           "Variable": "$.job_type",
+          "StringEquals": "AUTORIFT",
+          "Next": "AUTORIFT"
+        },
+        {
+          "Variable": "$.job_type",
           "StringEquals": "RTC_GAMMA",
           "Next": "RTC_GAMMA"
         }
@@ -67,6 +72,35 @@
           ],
           "Next": "JOB_FAILED",
           "ResultPath": "$.results.insar_gamma"
+        }
+      ]
+    },
+    "AUTORIFT": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::batch:submitJob.sync",
+      "Parameters": {
+        "JobDefinition": "${AutoriftJobDefinition}",
+        "JobName.$": "$.job_id",
+        "JobQueue": "${JobQueueArn}",
+        "Parameters.$": "$.job_parameters"
+      },
+      "ResultPath": "$.results.autorift",
+      "Next": "GET_FILES",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "MaxAttempts": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "JOB_FAILED",
+          "ResultPath": "$.results.autorift"
         }
       ]
     },
