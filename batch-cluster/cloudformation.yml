@@ -216,7 +216,7 @@ Resources:
           - Ref::bucket_prefix
           - Ref::granules
       Timeout:
-        AttemptDurationSeconds: 7200
+        AttemptDurationSeconds: 10800
 
   TaskRole:
     Type: AWS::IAM::Role
