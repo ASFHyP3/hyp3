@@ -61,7 +61,6 @@ components:
           - $ref: "#/components/schemas/granule_grdh"
           - $ref: "#/components/schemas/granule_slc"
 
-
     granule_grdh:
       description: The name of the Sentinel-1 GRDH granule to process.
       type: string
