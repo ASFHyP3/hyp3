@@ -5,6 +5,7 @@ import requests
 from shapely.geometry import MultiPolygon, Polygon, shape
 
 from hyp3_api import CMR_URL
+from hyp3_api.util import get_granules
 
 DEM_COVERAGE = None
 
@@ -24,7 +25,8 @@ def has_sufficient_coverage(granule: Polygon, buffer: float = 0.15, threshold: f
     return covered_area / buffered_granule.area >= threshold
 
 
-def validate_granules(granules):
+def validate_granules(jobs):
+    granules = get_granules(jobs)
     granule_metadata = get_cmr_metadata(granules)
 
     check_granules_exist(granules, granule_metadata)
