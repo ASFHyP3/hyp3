@@ -23,7 +23,7 @@ components:
           $ref: "#/components/schemas/los_displacement"
 
     autorift_job_parameters:
-      description: Options and parameters for running the job process.
+      description: Parameters for running an AUTORIFT job
       type: object
       required:
         - granules
