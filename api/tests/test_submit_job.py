@@ -30,16 +30,37 @@ def test_submit_insar_gamma(client, table):
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_submit_multiple_job_types(client, table):
+def test_submit_autorift(client, table):
     login(client)
     job = make_job(
         [
             'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
             'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E'
         ],
+        job_type='AUTORIFT'
+    )
+    response = submit_batch(client, batch=[job])
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_submit_multiple_job_types(client, table):
+    login(client)
+    rtc_gamma_job = make_job()
+    insar_gamma_job = make_job(
+        [
+            'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
+            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E'
+        ],
         job_type='INSAR_GAMMA'
     )
-    response = submit_batch(client, batch=[job, make_job()])
+    autorift_job = make_job(
+        [
+            'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
+            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E'
+        ],
+        job_type='AUTORIFT'
+    )
+    response = submit_batch(client, batch=[rtc_gamma_job, insar_gamma_job, autorift_job])
     assert response.status_code == status.HTTP_200_OK
 
 

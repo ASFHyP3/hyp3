@@ -222,6 +222,7 @@ components:
       enum:
         - RTC_GAMMA
         - INSAR_GAMMA
+        - AUTORIFT
 
     datetime:
       description: Date and time object formatted according to ISO 8601
