@@ -61,6 +61,7 @@ Resources:
                   - !Ref JobQueueArn
                   - !Ref RtcGammaJobDefinition
                   - !Ref InsarGammaJobDefinition
+                  - !Ref AutoriftJobDefinition
               - Effect: Allow
                 Action:
                   - events:PutTargets
