@@ -1,9 +1,10 @@
 components:
   schemas:
     job_parameters:
-      oneOf:
+      anyOf:
         - $ref: "#/components/schemas/rtc_gamma_job_parameters"
         - $ref: "#/components/schemas/insar_gamma_job_parameters"
+        - $ref: "#/components/schemas/autorift_job_parameters"
 
     insar_gamma_job_parameters:
       description: Parameters for running an INSAR_GAMMA job
@@ -13,13 +14,23 @@ components:
       additionalProperties: false
       properties:
         granules:
-          $ref: "#/components/schemas/insar_gamma_granules"
+          $ref: "#/components/schemas/insar_granules"
         include_inc_map:
           $ref: "#/components/schemas/include_inc_map"
         looks:
           $ref: "#/components/schemas/looks"
         include_los_displacement:
           $ref: "#/components/schemas/los_displacement"
+
+    autorift_job_parameters:
+      description: Options and parameters for running the job process.
+      type: object
+      required:
+        - granules
+      additionalProperties: false
+      properties:
+        granules:
+          $ref: "#/components/schemas/insar_granules"
 
     rtc_gamma_job_parameters:
       description: Parameters for running a RTC_GAMMA job
@@ -29,7 +40,7 @@ components:
       additionalProperties: false
       properties:
         granules:
-          $ref: "#/components/schemas/rtc_gamma_granules"
+          $ref: "#/components/schemas/rtc_granules"
         resolution:
           $ref: "#/components/schemas/resolution"
         radiometry:
@@ -45,14 +56,14 @@ components:
         include_inc_map:
           $ref: "#/components/schemas/include_inc_map"
 
-    insar_gamma_granules:
+    insar_granules:
       type: array
       minItems: 2
       maxItems: 2
       items:
         $ref: "#/components/schemas/granule_slc"
 
-    rtc_gamma_granules:
+    rtc_granules:
       type: array
       minItems: 1
       maxItems: 1

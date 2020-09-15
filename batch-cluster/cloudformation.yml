@@ -21,6 +21,9 @@ Parameters:
   InsarGammaImage:
     Type: String
 
+  AutoriftImage:
+    Type: String
+
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -38,6 +41,9 @@ Outputs:
 
   InsarGammaJobDefinition:
     Value: !Ref InsarGammaJobDefinition
+
+  AutoriftJobDefinition:
+    Value: !Ref AutoriftJobDefinition
 
 Resources:
 
@@ -181,6 +187,36 @@ Resources:
           - Ref::granules
       Timeout:
         AttemptDurationSeconds: 5400
+
+  AutoriftJobDefinition:
+    Type: AWS::Batch::JobDefinition
+    Properties:
+      Type: container
+      Parameters:
+        granules: ""
+        bucket: !Ref ContentBucket
+        bucket_prefix: ""
+        username: !Ref EDLUsername
+        password: !Ref EDLPassword
+      ContainerProperties:
+        Image: !Ref AutoriftImage
+        Vcpus: 4
+        Memory: 30000
+        JobRoleArn: !GetAtt TaskRole.Arn
+        Command:
+          - ++entrypoint
+          - hyp3_autorift_v2
+          - --username
+          - Ref::username
+          - --password
+          - Ref::password
+          - --bucket
+          - Ref::bucket
+          - --bucket-prefix
+          - Ref::bucket_prefix
+          - Ref::granules
+      Timeout:
+        AttemptDurationSeconds: 10800
 
   TaskRole:
     Type: AWS::IAM::Role

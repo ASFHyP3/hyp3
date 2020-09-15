@@ -11,6 +11,9 @@ Parameters:
   InsarGammaJobDefinition:
     Type: String
 
+  AutoriftJobDefinition:
+    Type: String
+
   JobsTable:
     Type: String
 
@@ -33,6 +36,7 @@ Resources:
         JobQueueArn: !Ref JobQueueArn
         RtcGammaJobDefinition: !Ref RtcGammaJobDefinition
         InsarGammaJobDefinition: !Ref InsarGammaJobDefinition
+        AutoriftJobDefinition: !Ref AutoriftJobDefinition
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
         GetFilesLambdaArn: !GetAtt GetFiles.Outputs.LambdaArn
 
