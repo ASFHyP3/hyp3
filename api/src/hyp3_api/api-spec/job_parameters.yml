@@ -6,7 +6,7 @@ components:
         - $ref: "#/components/schemas/insar_gamma_job_parameters"
 
     insar_gamma_job_parameters:
-      description: Options and parameters for running the job process.
+      description: Parameters for running an INSAR_GAMMA job
       type: object
       required:
         - granules
@@ -22,7 +22,7 @@ components:
           $ref: "#/components/schemas/los_displacement"
 
     rtc_gamma_job_parameters:
-      description: Options and parameters for running the job process.
+      description: Parameters for running a RTC_GAMMA job
       type: object
       required:
         - granules
@@ -62,7 +62,7 @@ components:
           - $ref: "#/components/schemas/granule_slc"
 
     granule_grdh:
-      description: The name of the Sentinel-1 GRDH granule to process.
+      description: The name of the Sentinel-1 GRDH granule to process
       type: string
       pattern: "^S1[AB]_IW_GRDH_*"
       minLength: 67
@@ -70,7 +70,7 @@ components:
       example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
 
     granule_slc:
-      description: The name of the Sentinel-1 SLC granule to process.
+      description: The name of the Sentinel-1 SLC granule to process
       type: string
       pattern: "^S1[AB]_IW_SLC__*"
       minLength: 67
@@ -78,7 +78,7 @@ components:
       example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
 
     resolution:
-      description: Desired output resolution in meters.
+      description: Desired output pixel spacing in meters
       type: number
       enum:
         - 30.0
@@ -91,29 +91,29 @@ components:
         - sigma0
 
     scale:
-      description: Output image scale
+      description: Scale of output image; either power or amplitude
       type: string
       enum:
         - power
         - amplitude
 
     speckle_filter:
-      description: Apply an enhanced lee speckle filter
+      description: Apply an Enhanced Lee speckle filter
       default: false
       type: boolean
 
     dem_matching:
-      description: Attempt to match the DEMs otherwise use dead-reckoning
+      description: Coregisters SAR data to the DEM, rather than using dead reckoning based on orbit files
       default: false
       type: boolean
 
     include_dem:
-      description: Include the DEM files in the product package
+      description: Include the DEM file in the product package
       default: false
       type: boolean
 
     include_inc_map:
-      description: Include the incident angle map in the product package
+      description: Include the incidence angle map in the product package
       default: false
       type: boolean
 
@@ -125,6 +125,6 @@ components:
         - 10x2
 
     los_displacement:
-      description: Include a GeoTIFF in the product package containing the displacements along the Line-Of-Sight (LOS)
+      description: Include a GeoTIFF in the product package containing displacement values along the Line-Of-Sight (LOS)
       default: false
       type: boolean
