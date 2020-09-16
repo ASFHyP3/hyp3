@@ -2,7 +2,7 @@ from pytest import raises
 from shapely.geometry import Polygon
 
 
-from hyp3_api.validation import GranuleValidationError, check_dem_coverage, has_sufficient_coverage
+from hyp3_api.validation import GranuleValidationError, check_granules_for_dem_coverage, has_sufficient_coverage
 
 
 def nsew(north, south, east, west):
@@ -62,7 +62,7 @@ def test_check_dem_coverage():
         },
     ]
     with raises(GranuleValidationError) as exception_info:
-        check_dem_coverage(polygons)
+        check_granules_for_dem_coverage(polygons)
     for polygon in polygons:
         assert polygon['name'].startswith('bad') == (polygon['name'] in str(exception_info))
 
