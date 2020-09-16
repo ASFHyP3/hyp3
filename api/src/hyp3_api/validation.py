@@ -93,5 +93,5 @@ def validate_jobs(jobs):
     check_granules_exist(granules, granule_metadata)
     for job in jobs:
         for validator in job_validation_map[job['job_type']]:
-            job_granule_metadata = [granule for granule in granule_metadata if granule['name'] in job]
+            job_granule_metadata = [granule for granule in granule_metadata if granule['name'] in get_granules([job])]
             validator(job_granule_metadata)
