@@ -50,22 +50,17 @@ def get_cmr_metadata(granules):
     return granules
 
 
-def check_granules_exist(job, granule_metadata):
+def check_granules_exist(granules, granule_metadata):
     found_granules = [granule['name'] for granule in granule_metadata]
-    not_found_granules = set(get_granules([job])) - set(found_granules)
+    not_found_granules = set(granules) - set(found_granules)
     if not_found_granules:
         raise GranuleValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 
 
-def check_granules_for_dem_coverage(granules):
-    bad_granules = [granule['name'] for granule in granules if not has_sufficient_coverage(granule['polygon'])]
+def check_dem_coverage(granule_metadata):
+    bad_granules = [granule['name'] for granule in granule_metadata if not has_sufficient_coverage(granule['polygon'])]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
-
-
-def check_dem_coverage(job, granule_metadata):
-    granules_to_check = [granule for granule in granule_metadata if granule['name'] in get_granules([job])]
-    check_granules_for_dem_coverage(granules_to_check)
 
 
 def format_points(point_string):
@@ -84,20 +79,19 @@ def get_coverage_shapes_from_geojson():
 def validate_jobs(jobs):
     job_validation_map = {
         'RTC_GAMMA': [
-            check_granules_exist,
             check_dem_coverage,
         ],
         'INSAR_GAMMA': [
-            check_granules_exist,
             check_dem_coverage,
         ],
         'AUTORIFT': [
-            check_granules_exist,
         ]
     }
     granules = get_granules(jobs)
     granule_metadata = get_cmr_metadata(granules)
 
+    check_granules_exist(granules, granule_metadata)
     for job in jobs:
         for validator in job_validation_map[job['job_type']]:
-            validator(job, granule_metadata)
+            job_granule_metadata = [granule for granule in granule_metadata if granule['name'] in job]
+            validator(job_granule_metadata)
