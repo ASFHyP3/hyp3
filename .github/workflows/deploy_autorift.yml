@@ -1,0 +1,70 @@
+name: Deploy to autoRIFT
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  AWS_REGION: us-west-2
+  TEMPLATE_BUCKET: cf-templates-igavixdzdy7k-us-west-2
+  RTC_GAMMA_REPOSITORY: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-rtc-gamma
+  INSAR_GAMMA_REPOSITORY: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-insar-gamma
+  AUTORIFT_REPOSITORY: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-autorift
+  STACK_NAME: hyp3-autorift
+  DOMAIN_NAME: hyp3-autorift.asf.alaska.edu
+  IMAGE_TAG: latest
+
+  VPC_ID: ${{ secrets.AUTORIFT_VPC_ID }}
+  SUBNET_IDS: ${{ secrets.AUTORIFT_SUBNET_IDS }}
+  EDL_USERNAME: ${{ secrets.AUTORIFT_EDL_USERNAME }}
+  EDL_PASSWORD: ${{ secrets.AUTORIFT_EDL_PASSWORD }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AUTORIFT_AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AUTORIFT_AWS_SECRET_ACCESS_KEY }}
+  CLOUDFORMATION_ROLE_ARN: ${{ secrets.AUTORIFT_CLOUDFORMATION_ROLE_ARN }}
+  CERTIFICATE_ARN: ${{ secrets.AUTORIFT_CERTIFICATE_ARN }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: install dependancies
+        working-directory: api
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt -t src
+          
+      - name: Package and deploy
+        run: |
+          aws cloudformation package \
+            --template-file cloudformation.yml \
+            --s3-bucket ${TEMPLATE_BUCKET} \
+            --output-template-file packaged.yml
+          aws cloudformation deploy \
+            --stack-name ${STACK_NAME} \
+            --template-file packaged.yml \
+            --role-arn ${CLOUDFORMATION_ROLE_ARN} \
+            --capabilities CAPABILITY_IAM \
+            --parameter-overrides \
+                VpcId="${VPC_ID}" \
+                SubnetIds="${SUBNET_IDS}" \
+                EDLUsername="${EDL_USERNAME}" \
+                EDLPassword="${EDL_PASSWORD}" \
+                RtcGammaImage="${RTC_GAMMA_REPOSITORY}:${IMAGE_TAG}" \
+                InsarGammaImage="${INSAR_GAMMA_REPOSITORY}:${IMAGE_TAG}" \
+                AutoriftImage="${AUTORIFT_REPOSITORY}:${IMAGE_TAG}" \
+                DomainName="${DOMAIN_NAME}" \
+                CertificateArn="${CERTIFICATE_ARN}"
