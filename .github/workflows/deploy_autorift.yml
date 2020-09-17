@@ -30,13 +30,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
+
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-          
+
       - uses: actions/setup-python@v1
         with:
           python-version: 3.8
@@ -46,7 +46,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt -t src
-          
+
       - name: Package and deploy
         run: |
           aws cloudformation package \
