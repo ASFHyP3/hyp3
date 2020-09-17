@@ -118,12 +118,13 @@ def test_check_granules_exist():
 
     with raises(GranuleValidationError) as e:
         check_granules_exist(['scene1', 'scene2', 'scene3', 'scene4'], granule_metadata)
+    assert 'scene1' not in str(e)
+    assert 'scene2' not in str(e)
     assert 'scene3' in str(e)
     assert 'scene4' in str(e)
 
 
 def test_get_cmr_metadata():
-    # TODO mock this cmr request
     granules = ['S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8', 'not a real granule']
     assert get_cmr_metadata(granules) == [
         {
@@ -140,6 +141,50 @@ def test_get_cmr_metadata():
 
 
 def test_validate_jobs():
-    # TODO add real tests
-    jobs = []
+    unknown_granule = 'unknown'
+    granule_with_dem_coverage = 'S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8'
+    granule_without_dem_coverage = 'S1A_IW_SLC__1SSH_20190326T081759_20190326T081831_026506_02F822_52F9'
+
+    jobs = [
+        {
+            'job_type': 'RTC_GAMMA',
+            'job_parameters': {
+                'granules': [granule_with_dem_coverage],
+            }
+        },
+        {
+            'job_type': 'INSAR_GAMMA',
+            'job_parameters': {
+                'granules': [granule_with_dem_coverage],
+            }
+        },
+        {
+            'job_type': 'AUTORIFT',
+            'job_parameters': {
+                'granules': [granule_with_dem_coverage, granule_without_dem_coverage],
+            }
+        },
+    ]
     validate_jobs(jobs)
+
+    jobs = [
+        {
+            'job_type': 'RTC_GAMMA',
+            'job_parameters': {
+                'granules': [unknown_granule],
+            }
+        }
+    ]
+    with raises(GranuleValidationError):
+        validate_jobs(jobs)
+
+    jobs = [
+        {
+            'job_type': 'INSAR_GAMMA',
+            'job_parameters': {
+                'granules': [granule_without_dem_coverage],
+            }
+        }
+    ]
+    with raises(GranuleValidationError):
+        validate_jobs(jobs)
