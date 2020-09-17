@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Updated readme deployment instructions.
+- Clarified job parameter descriptions in OpenAPI specification.
 - Moved step function definition into it's own file and added static analysis on step funciton definition.
 - Split OpenAPI spec into multiple files using File References to resolve, static analysis change from openapi-spec-validator to prance.
 
