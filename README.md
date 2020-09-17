@@ -56,13 +56,14 @@ aws cloudformation deploy \
             --capabilities CAPABILITY_IAM \
             --parameter-overrides \
                 "VpcId=<default vpc>" \
+                "SubnetIds=<comma separated list of subnet ids>" \
                 "EDLUsername=<EDL Username to download products>" \
                 "EDLPassword=<EDL Password to download products>" \
+                "DomainName=<Domain Name>" \
+                "CertificateArn=<arn for ssl certificate>" \
                 "RtcGammaImage=<location of RtcGammaImage to use>" \
                 "InsarGammaImage=<location of InsarGammaImage to use>" \
-                "AutoriftImage=<location of AutoriftImage to use>" \
-                "DomainName=<Domain Name>" \
-                "CertificateArn=<arn for ssl certificate>"
+                "AutoriftImage=<location of AutoriftImage to use>"
 ```
 - Check API at `https://<Domain Name>/ui`
 
