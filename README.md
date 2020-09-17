@@ -18,7 +18,6 @@ A processing environment for HyP3 Plugins in AWS.
 ### Prerequisites
 These resources are required for a successful deployment, but managed separately:
 
-- IAM role configured for API gateway access logging
 - IAM user and roles for automated CloudFormation deployments
 - HyP3 plugin container images and tags:
   - RTC-GAMMA
