@@ -18,14 +18,16 @@ A processing environment for HyP3 Plugins in AWS.
 ### Prerequisites
 These resources are required for a successful deployment, but managed separately:
 
-- IAM user and roles for automated CloudFormation deployments
 - HyP3 plugin container images and tags:
-  - RTC-GAMMA
+  - RTC_GAMMA
+  - INSAR_GAMMA
+  - AUTORIFT
 - S3 bucket for CloudFormation deployment artifacts
 - DNS record for custom API domain name
 - SSL certificate in AWS Certificate Manager for custom API domain name
 - EarthData Login account authorized to download data from ASF
 - default VPC
+- IAM user and roles for automated CloudFormation deployments (if desired)
 
 ### Stack Parameters
 Review the parameters in [cloudformation.yml](cloudformation.yml) for deploy time configuration options.
@@ -57,6 +59,8 @@ aws cloudformation deploy \
                 "EDLUsername=<EDL Username to download products>" \
                 "EDLPassword=<EDL Password to download products>" \
                 "RtcGammaImage=<location of RtcGammaImage to use>" \
+                "InsarGammaImage=<location of InsarGammaImage to use>" \
+                "AutoriftImage=<location of AutoriftImage to use>" \
                 "DomainName=<Domain Name>" \
                 "CertificateArn=<arn for ssl certificate>"
 ```
