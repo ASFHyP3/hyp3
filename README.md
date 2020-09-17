@@ -32,7 +32,7 @@ Review the parameters in [cloudformation.yml](cloudformation.yml) for deploy tim
 
 ### Deploy with CloudFormation
 
-- Install API dependencies
+- Install API dependencies (requires pip 3.8)
 ```sh
 pip install -r api/requirements.txt -t api/src
 ```
