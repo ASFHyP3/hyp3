@@ -85,8 +85,6 @@ Resources:
       Parameters:
         VpcId: !Ref VpcId
         SubnetIds: !Join [',', !Ref SubnetIds]
-        EDLUsername: !Ref EDLUsername
-        EDLPassword: !Ref EDLPassword
         ContentBucket: !Ref ContentBucket
       TemplateURL: compute-cf.yml
 
@@ -97,6 +95,8 @@ Resources:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
         TaskRoleArn: !GetAtt Cluster.Outputs.TaskRoleArn
         JobsTable: !Ref JobsTable
+        EDLUsername: !Ref EDLUsername
+        EDLPassword: !Ref EDLPassword
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
       TemplateURL: workflow-cf.yml
