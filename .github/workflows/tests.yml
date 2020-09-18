@@ -17,7 +17,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-all.txt
 
-      - name: pytest api
+      - name: pytest apps
         env:
           PYTHONPATH: apps/api/src:apps/get-files/src:apps/start-execution/src
         run: |
