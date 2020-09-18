@@ -62,7 +62,7 @@ jobs:
 
       - name: Package and deploy
         run: |
-          python apps/render_cf.yml --job-types-file job_types.yml
+          python apps/render_cf.py --job-types-file job_types.yml
           aws cloudformation package \
             --template-file apps/main-cf.yml \
             --s3-bucket ${TEMPLATE_BUCKET} \
