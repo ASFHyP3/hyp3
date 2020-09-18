@@ -15,16 +15,11 @@ jobs:
 
       - run: |
           python -m pip install --upgrade pip
-          pip install -r requirements-test.txt
+          pip install -r requirements-all.txt
 
       - name: pytest api
         env:
-          PYTHONPATH: api/src
+          PYTHONPATH: apps/api/src:apps/get-files/src:apps/start-execution/src
         run: |
-          export $(xargs < api/tests/cfg.env)
-          pytest api
-
-      - name: pyest get_files
-        env:
-          PYTHONPATH: step-function/get-files
-        run: pytest step-function/get-files
+          export $(xargs < tests/api/cfg.env)
+          pytest tests
