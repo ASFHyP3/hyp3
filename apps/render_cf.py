@@ -16,7 +16,7 @@ def render_template(template_file, job_types, env):
 
 def render_templates(job_types):
     env = get_env()
-    for template_file in Path('.').glob('*.j2'):
+    for template_file in Path('.').glob('**/*.j2'):
         render_template(template_file, job_types, env)
 
 

@@ -26,6 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - run: apps/render_cf.py --job-types-file job_types.yml
+
       - uses: scottbrenner/cfn-lint-action@master
         with:
           args: "--ignore-checks W3002 --template **/*cf.yml"
@@ -55,6 +57,8 @@ jobs:
         with:
           ruby-version: 2.7
       - run: gem install statelint
+      - run: apps/render_cf.py --job-types-file job_types.yml
+
       - run: |
           sed -i 's/"Resource": "${.*}"/"Resource": "foo:bar"/' apps/step-function.json
           statelint apps/step-function.json
