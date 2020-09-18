@@ -28,6 +28,5 @@ def main():
         f.write(workflow_cf.render(job_types=job_types))
 
 
-
 if __name__ == '__main__':
     main()
