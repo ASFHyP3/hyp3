@@ -5,7 +5,7 @@ connexion_app = connexion.App(__name__)
 DYNAMODB_RESOURCE = boto3.resource('dynamodb')
 CMR_URL = 'https://cmr.earthdata.nasa.gov/search/granules.json'
 
-from hyp3_api import auth, handlers  # noqa Has to be at end of file or will cause circular import
+from hyp3_api import auth, handlers
 
 __all__ = [
     'handlers',

@@ -1,4 +1,4 @@
-import lambda_handler
+from hyp3_api import lambda_handler
 from flask_api import status
 
 

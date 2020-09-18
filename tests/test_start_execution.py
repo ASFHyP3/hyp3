@@ -3,7 +3,7 @@ from json import dumps
 
 import pytest
 from botocore.stub import Stubber
-from src.main import STEP_FUNCTION, submit_jobs
+from start_execution import STEP_FUNCTION, submit_jobs
 
 
 @pytest.fixture(autouse=True)

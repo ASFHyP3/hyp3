@@ -29,7 +29,7 @@ These resources are required for a successful deployment, but managed separately
 - default VPC
 
 ### Stack Parameters
-Review the parameters in [cloudformation.yml](cloudformation.yml) for deploy time configuration options.
+Review the parameters in [cloudformation.yml](apps/main-cf.yml) for deploy time configuration options.
 
 ### Deploy with CloudFormation
 

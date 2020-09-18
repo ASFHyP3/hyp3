@@ -17,17 +17,9 @@ Parameters:
     Type: String
     NoEcho: true
 
-  RtcGammaImage:
-    Description: Link to RTC_GAMMA processing image to use when running RTC_GAMMA jobs.
+  ImageTag:
     Type: String
-
-  InsarGammaImage:
-    Description: Link to INSAR_GAMMA processing image to use when running INSAR_GAMMA jobs.
-    Type: String
-
-  AutoriftImage:
-    Description: Link to AUTORIFT processing image to use when running AUTORIFT jobs.
-    Type: String
+    Default: latest
 
   ProductLifetimeInDays:
     Description: Number of days to keep output files before deleting them.
@@ -85,7 +77,7 @@ Resources:
         CertificateArn: !Ref CertificateArn
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         SystemAvailable: !Ref SystemAvailable
-      TemplateURL: api/cloudformation.yml
+      TemplateURL: api/api-cf.yml
 
   Cluster:
     Type: AWS::CloudFormation::Stack
@@ -95,23 +87,19 @@ Resources:
         SubnetIds: !Join [',', !Ref SubnetIds]
         EDLUsername: !Ref EDLUsername
         EDLPassword: !Ref EDLPassword
-        RtcGammaImage: !Ref RtcGammaImage
-        InsarGammaImage: !Ref InsarGammaImage
-        AutoriftImage: !Ref AutoriftImage
         ContentBucket: !Ref ContentBucket
-      TemplateURL: batch-cluster/cloudformation.yml
+      TemplateURL: compute-cf.yml
 
   StepFunction:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
-        RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
-        InsarGammaJobDefinition: !GetAtt Cluster.Outputs.InsarGammaJobDefinition
-        AutoriftJobDefinition: !GetAtt Cluster.Outputs.AutoriftJobDefinition
+        TaskRoleArn: !GetAtt Cluster.Outputs.TaskRoleArn
         JobsTable: !Ref JobsTable
         Bucket: !Ref ContentBucket
-      TemplateURL: step-function/cloudformation.yml
+        ImageTag: !Ref ImageTag
+      TemplateURL: workflow-cf.yml
 
   LogBucket:
     Type: AWS::S3::Bucket
