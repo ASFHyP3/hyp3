@@ -58,16 +58,16 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: install dependancies
+      - name: install dependancies and render templates
         run: |
           pip install --upgrade pip
           pip install -r requirements-all.txt
+          python apps/render_cf.py --job-types-file job_types.yml
           pip install -r apps/api/requirements-api.txt -t apps/api/src
           pip install bump2version
 
       - name: Package and deploy
         run: |
-          python apps/render_cf.py --job-types-file job_types.yml
           aws cloudformation package \
             --template-file apps/main-cf.yml \
             --s3-bucket ${TEMPLATE_BUCKET} \
