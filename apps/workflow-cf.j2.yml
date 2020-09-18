@@ -99,14 +99,14 @@ Resources:
     Properties:
       Parameters:
         JobsTable: !Ref JobsTable
-      TemplateURL: update-db/cloudformation.yml
+      TemplateURL: update-db/udpate-db-cf.yml
 
   GetFiles:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
         Bucket: !Ref Bucket
-      TemplateURL: get-files/cloudformation.yml
+      TemplateURL: get-files/get-files-cf.yml
 
   StartExecution:
     Type: AWS::CloudFormation::Stack
@@ -114,4 +114,4 @@ Resources:
       Parameters:
         JobsTable: !Ref JobsTable
         StepFunctionArn: !Ref StepFunction
-      TemplateURL: start-execution/cloudformation.yml
+      TemplateURL: start-execution/start-execution-cf.yml
