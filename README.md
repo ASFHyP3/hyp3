@@ -18,15 +18,16 @@ A processing environment for HyP3 Plugins in AWS.
 ### Prerequisites
 These resources are required for a successful deployment, but managed separately:
 
-- IAM role configured for API gateway access logging
-- IAM user and roles for automated CloudFormation deployments
 - HyP3 plugin container images and tags:
-  - RTC-GAMMA
+  - RTC_GAMMA
+  - INSAR_GAMMA
+  - AUTORIFT
 - S3 bucket for CloudFormation deployment artifacts
 - DNS record for custom API domain name
 - SSL certificate in AWS Certificate Manager for custom API domain name
 - EarthData Login account authorized to download data from ASF
 - default VPC
+- IAM user and roles for automated CloudFormation deployments (if desired)
 
 ### Stack Parameters
 Review the parameters in [cloudformation.yml](apps/main-cf.yml) for deploy time configuration options.
@@ -43,7 +44,8 @@ pip install -r requirements-all.txt
 python apps/render_cf.py --job-types-file job_types.yml
 ```
 
-- Install API dependencies
+- Install API dependencies (requires pip for python 3.8)
+
 ```sh
 pip install -r apps/api/requirements-api.txt -t apps/api/src
 ```
@@ -65,11 +67,14 @@ aws cloudformation deploy \
             --capabilities CAPABILITY_IAM \
             --parameter-overrides \
                 "VpcId=<default vpc>" \
+                "SubnetIds=<comma separated list of subnet ids>" \
                 "EDLUsername=<EDL Username to download products>" \
                 "EDLPassword=<EDL Password to download products>" \
-                "RtcGammaImage=<location of RtcGammaImage to use>" \
                 "DomainName=<Domain Name>" \
-                "CertificateArn=<arn for ssl certificate>"
+                "CertificateArn=<arn for ssl certificate>" \
+                "RtcGammaImage=<location of RtcGammaImage to use>" \
+                "InsarGammaImage=<location of InsarGammaImage to use>" \
+                "AutoriftImage=<location of AutoriftImage to use>"
 ```
 - Check API at `https://<Domain Name>/ui`
 
