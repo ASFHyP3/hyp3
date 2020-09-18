@@ -23,7 +23,7 @@ def render_templates(job_types):
 def get_env():
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader('./'),
-        autoescape=jinja2.select_autoescape(),
+        autoescape=jinja2.select_autoescape(default=True, disabled_extensions=('j2',)),
         undefined=jinja2.StrictUndefined,
         trim_blocks=True,
         lstrip_blocks=True,
