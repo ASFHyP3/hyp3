@@ -28,7 +28,7 @@ jobs:
 
       - uses: scottbrenner/cfn-lint-action@master
         with:
-          args: "--ignore-checks W3002 --template *.yml **/*.yml"
+          args: "--ignore-checks W3002 --template *cf.yml **/*cf.yml"
 
   openapi-spec-validator:
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install openapi-spec-validator click prance
 
-      - run: prance validate --backend=openapi-spec-validator api/src/hyp3_api/api-spec/openapi-spec.yml
+      - run: prance validate --backend=openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
 
 
   statelint:
@@ -56,5 +56,5 @@ jobs:
           ruby-version: 2.7
       - run: gem install statelint
       - run: |
-          sed -i 's/"Resource": "${.*}"/"Resource": "foo:bar"/' step-function/step-function.json
-          statelint step-function/step-function.json
+          sed -i 's/"Resource": "${.*}"/"Resource": "foo:bar"/' apps/step-function.json
+          statelint apps/step-function.json
