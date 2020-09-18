@@ -45,7 +45,7 @@ python apps/render_cf.py --job-types-file job_types.yml
 
 - Install API dependencies
 ```sh
-pip install -r apps/api/requirements.txt -t apps/api/src
+pip install -r apps/api/requirements-api.txt -t apps/api/src
 ```
 
 - Package the CloudFormation template
