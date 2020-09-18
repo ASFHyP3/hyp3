@@ -30,7 +30,6 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.TOOLS_BOT_PAK }}
 
-
       - if: endsWith(github.ref, '/develop')
         run: |
           echo "::set-env name=STACK_NAME::hyp3-test"

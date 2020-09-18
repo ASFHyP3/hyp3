@@ -33,9 +33,14 @@ Review the parameters in [cloudformation.yml](apps/main-cf.yml) for deploy time 
 
 ### Deploy with CloudFormation
 
+- Install dependencies for build and run
+```sh
+pip install -r requirements-all.txt
+```
+
 - Render cloudformation templates
 ```sh
-python /apps/render_cf.py --job-types-file job_types.yml
+python apps/render_cf.py --job-types-file job_types.yml
 ```
 
 - Install API dependencies
@@ -46,7 +51,7 @@ pip install -r apps/api/requirements.txt -t apps/api/src
 - Package the CloudFormation template
 ```sh
 aws cloudformation package \
-            --template-file /apps/main-cf.yml \
+            --template-file apps/main-cf.yml \
             --s3-bucket <CloudFormation artifact bucket> \
             --output-template-file packaged.yml
 ```
@@ -70,7 +75,7 @@ aws cloudformation deploy \
 
 
 ## Testing the API
-The HyP3 API source contains test files in `/tests/api/`. To run them you need to do a bit of setup first.
+The HyP3 API source contains test files in `tests/api/`. To run them you need to do a bit of setup first.
 
 - Add hyp3-api to python path
 ```sh
@@ -78,16 +83,16 @@ export PYTHONPATH="${PYTHONPATH}:`pwd`apps/api/src"
 ```
 - Setup environment variables
 ```sh
-export $(cat /tests/api/cfg.env | xargs)
+export $(cat tests/api/cfg.env | xargs)
 ```
 - Install test requirements
 ```sh
-pip install -r apps/api/requirements-test.txt
+pip install -r apps/api/requirements-all.txt
 ```
 
 - Run tests
 ```sh
-pytest apps/api/
+pytest tests/api/
 ```
 
 ## Running the API Locally
@@ -101,7 +106,7 @@ The API can be run locally to verify changes, but must be connected to an existi
   - `AUTH_ALGORITHM=HS256`
 - Add hyp3-api to python path
 ```sh
-export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
+export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src"
 ```
 - run API
 ```sh
