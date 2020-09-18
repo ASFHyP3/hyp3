@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 from os import environ
+from pathlib import Path
 from uuid import uuid4
 
 import requests
@@ -11,9 +12,10 @@ from flask import jsonify, make_response
 from flask_cors import CORS
 
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
-from hyp3_api.util import convert_floats_to_decimals, format_time, get_granules, get_remaining_jobs_for_user, \
+from hyp3_api.openapi import get_spec
+from hyp3_api.util import convert_floats_to_decimals, format_time, get_remaining_jobs_for_user, \
     get_request_time_expression
-from hyp3_api.validation import GranuleValidationError, validate_granules
+from hyp3_api.validation import GranuleValidationError, validate_jobs
 
 
 class DecimalEncoder(FlaskJSONEncoder):
@@ -47,8 +49,7 @@ def post_jobs(body, user):
         return problem(400, 'Bad Request', message)
 
     try:
-        granules = get_granules(body['jobs'])
-        validate_granules(granules)
+        validate_jobs(body['jobs'])
     except requests.HTTPError as e:
         print(f'WARN: CMR search failed: {e}')
     except GranuleValidationError as e:
@@ -112,6 +113,8 @@ def get_user(user):
     }
 
 
+api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
+api_spec = get_spec(api_spec_file)
 connexion_app.app.json_encoder = DecimalEncoder
-connexion_app.add_api('openapi-spec.yml', validate_responses=True, strict_validation=True)
+connexion_app.add_api(api_spec, validate_responses=True, strict_validation=True)
 CORS(connexion_app.app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)

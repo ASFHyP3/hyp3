@@ -25,6 +25,10 @@ Parameters:
     Description: Link to INSAR_GAMMA processing image to use when running INSAR_GAMMA jobs.
     Type: String
 
+  AutoriftImage:
+    Description: Link to AUTORIFT processing image to use when running AUTORIFT jobs.
+    Type: String
+
   ProductLifetimeInDays:
     Description: Number of days to keep output files before deleting them.
     Type: Number
@@ -93,6 +97,7 @@ Resources:
         EDLPassword: !Ref EDLPassword
         RtcGammaImage: !Ref RtcGammaImage
         InsarGammaImage: !Ref InsarGammaImage
+        AutoriftImage: !Ref AutoriftImage
         ContentBucket: !Ref ContentBucket
       TemplateURL: batch-cluster/cloudformation.yml
 
@@ -103,6 +108,7 @@ Resources:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
         RtcGammaJobDefinition: !GetAtt Cluster.Outputs.RtcGammaJobDefinition
         InsarGammaJobDefinition: !GetAtt Cluster.Outputs.InsarGammaJobDefinition
+        AutoriftJobDefinition: !GetAtt Cluster.Outputs.AutoriftJobDefinition
         JobsTable: !Ref JobsTable
         Bucket: !Ref ContentBucket
       TemplateURL: step-function/cloudformation.yml

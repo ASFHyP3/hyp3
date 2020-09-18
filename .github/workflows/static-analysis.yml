@@ -26,16 +26,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v1
+      - uses: scottbrenner/cfn-lint-action@master
         with:
-          python-version: 3.8
-
-      - run: |
-          python -m pip install --upgrade pip
-          pip install cfn-lint
-
-      # ignore "W3002 This code may only work with `package` cli command" warning
-      - run: cfn-lint --ignore-checks W3002 --template `find . -name cloudformation*.yml`
+          args: "--ignore-checks W3002 --template *.yml **/*.yml"
 
   openapi-spec-validator:
     runs-on: ubuntu-latest
@@ -49,6 +42,19 @@ jobs:
 
       - run: |
           python -m pip install --upgrade pip
-          pip install openapi-spec-validator
+          python -m pip install openapi-spec-validator click prance
 
-      - run: openapi-spec-validator api/src/hyp3_api/openapi-spec.yml
+      - run: prance validate --backend=openapi-spec-validator api/src/hyp3_api/api-spec/openapi-spec.yml
+
+
+  statelint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+      - run: gem install statelint
+      - run: |
+          sed -i 's/"Resource": "${.*}"/"Resource": "foo:bar"/' step-function/step-function.json
+          statelint step-function/step-function.json
