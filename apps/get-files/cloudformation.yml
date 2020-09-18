@@ -52,7 +52,7 @@ Resources:
         Variables:
           BUCKET: !Ref Bucket
       Code: src/
-      Handler: main.lambda_handler
+      Handler: get-files.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.8
