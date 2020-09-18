@@ -1,6 +1,6 @@
 import pytest
 from botocore.stub import Stubber
-from src.start_execution import S3_CLIENT, get_download_url, get_expiration_time, get_object_file_type, lambda_handler
+from get_files import S3_CLIENT, get_download_url, get_expiration_time, get_object_file_type, lambda_handler
 
 
 @pytest.fixture(autouse=True)

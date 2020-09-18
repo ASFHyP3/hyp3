@@ -1,5 +1,6 @@
-from hyp3_api import lambda_handler
 from flask_api import status
+
+from hyp3_api import lambda_handler
 
 
 def test_404_response():
