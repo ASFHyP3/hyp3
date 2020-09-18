@@ -5,62 +5,62 @@ from hyp3_api.validation import GranuleValidationError, check_dem_coverage, chec
     get_cmr_metadata, has_sufficient_coverage, validate_jobs
 
 
-def nsew(north, south, east, west):
+def rectangle(north, south, east, west):
     return Polygon([[west, north], [east, north], [east, south], [west, south]])
 
 
 def test_has_sufficient_coverage():
     # Wyoming
-    poly = nsew(45, 41, -104, -111)
+    poly = rectangle(45, 41, -104, -111)
     assert has_sufficient_coverage(poly)
 
     # completely covered Aleutian Islands over antimeridian; should pass with fixed antimeridian
-    poly = nsew(51.7, 51.3, 179.7, -179.3)
+    poly = rectangle(51.7, 51.3, 179.7, -179.3)
     assert has_sufficient_coverage(poly)
 
     # not enough coverage of Aleutian Islands over antimeridian
     # NOTE: Passes today but should FAIL with antimeridian feature fix
-    poly = nsew(51.7, 41.3, 179.7, -179.3)
+    poly = rectangle(51.7, 41.3, 179.7, -179.3)
     assert has_sufficient_coverage(poly)
 
     # completely encloses tile over Ascension Island in the Atlantic
-    poly = nsew(-6, -9, -15, -14)
+    poly = rectangle(-6, -9, -15, -14)
     assert has_sufficient_coverage(poly)
 
     # minimum sufficient coverage off the coast of Eureka, CA
-    poly = nsew(40.1, 40, -126, -124.845)
+    poly = rectangle(40.1, 40, -126, -124.845)
     assert has_sufficient_coverage(poly)
 
     # almost minimum sufficient coverage off the coast of Eureka, CA
-    poly = nsew(40.1, 40, -126, -124.849)
+    poly = rectangle(40.1, 40, -126, -124.849)
     assert not has_sufficient_coverage(poly)
 
     # polygon in missing tile over Gulf of Californa
-    poly = nsew(26.9, 26.1, -110.1, -110.9)
+    poly = rectangle(26.9, 26.1, -110.1, -110.9)
     assert not has_sufficient_coverage(poly)
 
     # southern Greenland
-    poly = nsew(62, 61, -44, -45)
+    poly = rectangle(62, 61, -44, -45)
     assert not has_sufficient_coverage(poly)
 
     # Antarctica
-    poly = nsew(-62, -90, 180, -180)
+    poly = rectangle(-62, -90, 180, -180)
     assert not has_sufficient_coverage(poly)
 
     # ocean over antimeridian; no dem coverage and also not enough wraparound land intersection
-    poly = nsew(-40, -41, 179.7, -179.3)
+    poly = rectangle(-40, -41, 179.7, -179.3)
     assert not has_sufficient_coverage(poly)
 
 
 def test_has_sufficient_coverage_buffer():
-    needs_buffer = nsew(40.1, 40, -126, -124.845)
+    needs_buffer = rectangle(40.1, 40, -126, -124.845)
     assert has_sufficient_coverage(needs_buffer)
     assert has_sufficient_coverage(needs_buffer, buffer=0.16)
     assert not has_sufficient_coverage(needs_buffer, buffer=0.14)
 
 
 def test_has_sufficient_coverage_threshold():
-    poly = nsew(40.1, 40, -126, -124.845)
+    poly = rectangle(40.1, 40, -126, -124.845)
     assert has_sufficient_coverage(poly)
     assert has_sufficient_coverage(poly, threshold=0.19)
     assert not has_sufficient_coverage(poly, threshold=0.21)
@@ -80,12 +80,12 @@ def test_format_points():
 def test_check_dem_coverage():
     good = {
         'name': 'good',
-        'polygon': nsew(45, 41, -104, -111),
+        'polygon': rectangle(45, 41, -104, -111),
     }
 
     bad = {
         'name': 'bad',
-        'polygon': nsew(-62, -90, 180, -180),
+        'polygon': rectangle(-62, -90, 180, -180),
     }
 
     check_dem_coverage([])
