@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0]
+### Added
+- Added a new `AUTORIFT` job type for processing a pair of Sentinel-1 SLC IW scenes using [autoRIFT](https://github.com/leiyangleon/autoRIFT). For details, refer to the [hyp3-autorift](https://github.com/ASFHyP3/hyp3-autorift) plugin repository.
+
+### Changed
+- Updated readme deployment instructions.
+- Clarified job parameter descriptions in OpenAPI specification.
+- Moved step function definition into it's own file and added static analysis on step funciton definition.
+- Split OpenAPI spec into multiple files using File References to resolve, static analysis change from openapi-spec-validator to prance.
+
 ## [0.6.1]
 ### Added
 - `GET /user` response now includes a `job_names` list including all distinct job names previously submitted for the current user
