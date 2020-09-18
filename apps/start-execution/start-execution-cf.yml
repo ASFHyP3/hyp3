@@ -51,7 +51,7 @@ Resources:
           TABLE_NAME: !Ref JobsTable
           STEP_FUNCTION_ARN: !Ref StepFunctionArn
       Code: src/
-      Handler: main.lambda_handler
+      Handler: start_execution.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.8

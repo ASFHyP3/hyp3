@@ -5,14 +5,12 @@ Parameters:
   JobQueueArn:
     Type: String
 
-  RtcGammaJobDefinition:
+  EDLUsername:
     Type: String
 
-  InsarGammaJobDefinition:
+  EDLPassword:
     Type: String
-
-  AutoriftJobDefinition:
-    Type: String
+    NoEcho: true
 
   JobsTable:
     Type: String
@@ -20,7 +18,34 @@ Parameters:
   Bucket:
     Type: String
 
+  ImageTag:
+    Type: String
+
+  TaskRoleArn:
+    Type: String
+
 Resources:
+  {% for job_type, job_spec in  job_types.items() %}
+  {{ job_type }}:
+    Type: AWS::Batch::JobDefinition
+    Properties:
+      Type: container
+      Parameters:
+        {% for k, v in job_spec['parameters'].items() %}
+        {{ k }}: {{ v }}
+        {% endfor %}
+      ContainerProperties:
+        Image: !Sub "{{ job_spec['image'] }}:${ImageTag}"
+        Vcpus: 4
+        Memory: 30000
+        JobRoleArn: !Ref TaskRoleArn
+        Command:
+          {% for command in job_spec['command'] %}
+          - {{ command }}
+          {% endfor %}
+      Timeout:
+        AttemptDurationSeconds: {{ job_spec['timeout'] }}
+  {% endfor %}
 
   StepFunction:
     Type: AWS::StepFunctions::StateMachine
@@ -29,9 +54,9 @@ Resources:
       DefinitionS3Location: step-function.json
       DefinitionSubstitutions:
         JobQueueArn: !Ref JobQueueArn
-        RtcGammaJobDefinition: !Ref RtcGammaJobDefinition
-        InsarGammaJobDefinition: !Ref InsarGammaJobDefinition
-        AutoriftJobDefinition: !Ref AutoriftJobDefinition
+        {% for job_type, job_spec in job_types.items() %}
+        {{ job_type }}: !Ref {{ job_type }}
+        {% endfor %}
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
         GetFilesLambdaArn: !GetAtt GetFiles.Outputs.LambdaArn
 
@@ -54,9 +79,9 @@ Resources:
                 Action: batch:SubmitJob
                 Resource:
                   - !Ref JobQueueArn
-                  - !Ref RtcGammaJobDefinition
-                  - !Ref InsarGammaJobDefinition
-                  - !Ref AutoriftJobDefinition
+                  {% for job_type in job_types %}
+                  - !Ref {{ job_type }}
+                  {% endfor %}
               - Effect: Allow
                 Action:
                   - events:PutTargets
@@ -74,14 +99,14 @@ Resources:
     Properties:
       Parameters:
         JobsTable: !Ref JobsTable
-      TemplateURL: update-db/cloudformation.yml
+      TemplateURL: update-db/update-db-cf.yml
 
   GetFiles:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
         Bucket: !Ref Bucket
-      TemplateURL: get-files/cloudformation.yml
+      TemplateURL: get-files/get-files-cf.yml
 
   StartExecution:
     Type: AWS::CloudFormation::Stack
@@ -89,4 +114,4 @@ Resources:
       Parameters:
         JobsTable: !Ref JobsTable
         StepFunctionArn: !Ref StepFunction
-      TemplateURL: start-execution/cloudformation.yml
+      TemplateURL: start-execution/start-execution-cf.yml

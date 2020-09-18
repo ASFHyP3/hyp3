@@ -1,0 +1,86 @@
+RtcGamma:
+  image: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-rtc-gamma
+  api_job_type: RTC_GAMMA
+  parameters:
+    granules: '""'
+    bucket_prefix: '""'
+    resolution: 30.0
+    radiometry: gamma0
+    scale: power
+    dem_matching: false
+    include_dem: false
+    include_inc_map: false
+  command:
+    - ++entrypoint
+    - hyp3_rtc_gamma_v2
+    - --username
+    - '!Ref EDLUsername'
+    - --password
+    - '!Ref EDLPassword'
+    - --bucket
+    - '!Ref Bucket'
+    - --bucket-prefix
+    - Ref::bucket_prefix
+    - --resolution
+    - Ref::resolution
+    - --radiometry
+    - Ref::radiometry
+    - --scale
+    - Ref::scale
+    - --dem-matching
+    - Ref::dem_matching
+    - --include-dem
+    - Ref::include_dem
+    - --include-inc-map
+    - Ref::include_inc_map
+    - Ref::granules
+  timeout: 5400
+
+InsarGamma:
+  image: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-insar-gamma
+  api_job_type: INSAR_GAMMA
+  parameters:
+    granules: '""'
+    bucket_prefix: '""'
+    include_inc_map: false
+    include_los_displacement: false
+    looks: 20x4
+  command:
+    - ++entrypoint
+    - hyp3_insar_gamma_v2
+    - --username
+    - '!Ref EDLUsername'
+    - --password
+    - '!Ref EDLPassword'
+    - --bucket
+    - '!Ref Bucket'
+    - --bucket-prefix
+    - Ref::bucket_prefix
+    - --include-inc-map
+    - Ref::include_inc_map
+    - --include-los-displacement
+    - Ref::include_los_displacement
+    - --looks
+    - Ref::looks
+    - Ref::granules
+  timeout: 5400
+
+Autorift:
+  image: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-autorift
+  api_job_type: AUTORIFT
+  parameters:
+    granules: '""'
+    bucket_prefix: '""'
+  command:
+    - ++entrypoint
+    - hyp3_autorift_v2
+    - --username
+    - '!Ref EDLUsername'
+    - --password
+    - '!Ref EDLPassword'
+    - --bucket
+    - '!Ref Bucket'
+    - --bucket-prefix
+    - Ref::bucket_prefix
+    - Ref::granules
+  timeout: 10800
