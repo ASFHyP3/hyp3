@@ -32,7 +32,7 @@ Resources:
       Type: container
       Parameters:
         {% for k, v in job_spec['parameters'].items() %}
-        {{ k }}: {{v }}
+        {{ k }}: {{ v }}
         {% endfor %}
       ContainerProperties:
         Image: !Sub "{{ job_spec['image'] }}:${ImageTag}"

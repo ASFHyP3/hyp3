@@ -7,8 +7,7 @@ import responses
 import yaml
 from moto import mock_dynamodb2
 
-from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, connexion_app  # noqa hyp3 must be imported here
-from hyp3_api import auth
+from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, connexion_app
 from hyp3_api.util import get_granules
 
 AUTH_COOKIE = 'asf-urs'

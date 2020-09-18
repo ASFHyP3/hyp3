@@ -37,7 +37,7 @@ RtcGamma:
   timeout: 5400
 
 InsarGamma:
-  image: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-rtc-gamma
+  image: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-insar-gamma
   api_job_type: INSAR_GAMMA
   parameters:
     granules: '""'
@@ -66,7 +66,7 @@ InsarGamma:
   timeout: 5400
 
 Autorift:
-  image: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-rtc-gamma
+  image: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-autorift
   api_job_type: AUTORIFT
   parameters:
     granules: '""'
