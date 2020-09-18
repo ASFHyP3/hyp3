@@ -6,8 +6,10 @@ import yaml
 
 
 def render_template(template_file, job_types, env):
-    template = env.get_template(template_file)
     output_file = template_file.with_suffix('')
+    print(f'Rendering {template_file} to {output_file}')
+
+    template = env.get_template(str(template_file))
     with open(output_file, 'w') as f:
         f.write(template.render(job_types=job_types))
 
