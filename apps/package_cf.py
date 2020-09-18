@@ -1,17 +1,24 @@
 from argparse import ArgumentParser
+from pathlib import Path
 
 import jinja2
 import yaml
 
 
-def main():
-    parser = ArgumentParser()
-    parser.add_argument('--job-types', required=True)
-    job_types_file = parser.parse_args().job_types
+def render_template(template_file, job_types, env):
+    template = env.get_template(template_file)
+    output_file = template_file.with_suffix('')
+    with open(output_file, 'w') as f:
+        f.write(template.render(job_types=job_types))
 
-    with open(job_types_file) as f:
-        job_types = yaml.safe_load(f)
 
+def render_templates(job_types):
+    env = get_env()
+    for f in Path('.').glob('**/*.j2'):
+        render_template(f, job_types, env)
+
+
+def get_env():
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader('./'),
         autoescape=jinja2.select_autoescape(),
@@ -19,13 +26,19 @@ def main():
         trim_blocks=True,
         lstrip_blocks=True,
         keep_trailing_newline=True,
-        )
-    workflow_cf = env.get_template('workflow-cf.j2.yml')
-    stepfunction = env.get_template('step-function.j2.json')
-    with open('step-function.json', 'w') as f:
-        f.write(stepfunction.render(job_types=job_types))
-    with open('workflow-cf.yml', 'w') as f:
-        f.write(workflow_cf.render(job_types=job_types))
+    )
+    return env
+
+
+def main():
+    parser = ArgumentParser()
+    parser.add_argument('--job-types-file', required=True)
+    job_types_file = parser.parse_args().job_types_file
+
+    with open(job_types_file) as f:
+        job_types = yaml.safe_load(f)
+
+    render_templates(job_types)
 
 
 if __name__ == '__main__':
