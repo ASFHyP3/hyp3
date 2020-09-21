@@ -54,7 +54,7 @@ Resources:
       DefinitionS3Location: step-function.json
       DefinitionSubstitutions:
         JobQueueArn: !Ref JobQueueArn
-        {% for job_type, job_spec in job_types.items() %}
+        {% for job_type in job_types %}
         {{ job_type }}: !Ref {{ job_type }}
         {% endfor %}
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
