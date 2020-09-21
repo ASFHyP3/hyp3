@@ -6,9 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.1]
 ### Changed
-- Hyp3 now uses jinja templates in defining CloudFormation templates and the StepFunction definition, resolved at buildtime.
-- Jobs are now defined only in the API spec and the jobs.yml file, no job specific information needs to be added to AWS resource definitions.
-- Static Analysis now requires packaging before run.
+- Hyp3 now uses jinja templates in defining CloudFormation templates and the StepFunction definition, rendered at buildtime.
+- Job types are now defined only in the API spec and the `job_types.yml` file, no job specific information needs to be added to AWS resource definitions.
+- Static Analysis now requires rendering before run.
 
 ## [0.7.0]
 ### Added
