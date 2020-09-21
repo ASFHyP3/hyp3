@@ -26,9 +26,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - run: |
+          pip install -r requirements-all.txt
+          python apps/render_cf.py --job-types-file job_types.yml
+
       - uses: scottbrenner/cfn-lint-action@master
         with:
-          args: "--ignore-checks W3002 --template *.yml **/*.yml"
+          args: "--ignore-checks W3002 --template **/*cf.yml"
 
   openapi-spec-validator:
     runs-on: ubuntu-latest
@@ -44,7 +52,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install openapi-spec-validator click prance
 
-      - run: prance validate --backend=openapi-spec-validator api/src/hyp3_api/api-spec/openapi-spec.yml
+      - run: prance validate --backend=openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
 
 
   statelint:
@@ -55,6 +63,13 @@ jobs:
         with:
           ruby-version: 2.7
       - run: gem install statelint
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
       - run: |
-          sed -i 's/"Resource": "${.*}"/"Resource": "foo:bar"/' step-function/step-function.json
-          statelint step-function/step-function.json
+          pip install -r requirements-all.txt
+          python apps/render_cf.py --job-types-file job_types.yml
+
+      - run: |
+          sed -i 's/"Resource": "${.*}"/"Resource": "foo:bar"/' apps/step-function.json
+          statelint apps/step-function.json

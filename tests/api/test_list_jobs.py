@@ -1,4 +1,4 @@
-from conftest import JOBS_URI, login, make_db_record
+from api.conftest import JOBS_URI, login, make_db_record
 from flask_api import status
 
 

@@ -1,0 +1,134 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+
+  ContentBucket:
+    Type: String
+
+Outputs:
+
+  JobQueueArn:
+    Value: !Ref JobQueue
+
+  TaskRoleArn:
+    Value: !GetAtt TaskRole.Arn
+
+Resources:
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub "Security group for ${AWS::StackName} machines"
+      VpcId: !Ref VpcId
+
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        UserData:
+          Fn::Base64: |-
+            Content-Type: multipart/mixed; boundary="==BOUNDARY=="
+            MIME-Version: 1.0
+
+            --==BOUNDARY==
+            Content-Type: text/cloud-boothook; charset="us-ascii"
+
+            cloud-init-per instance mkfs_ssd mkfs.ext4 /dev/nvme1n1
+            cloud-init-per instance mount_ssd mount /dev/nvme1n1 /var/lib/docker
+
+            --==BOUNDARY==--
+
+  ComputeEnvironment:
+    Type: AWS::Batch::ComputeEnvironment
+    Properties:
+      ServiceRole: !GetAtt BatchServiceRole.Arn
+      Type: MANAGED
+      ComputeResources:
+        Type: SPOT
+        AllocationStrategy: SPOT_CAPACITY_OPTIMIZED
+        MinvCpus: 0
+        MaxvCpus: 400
+        InstanceTypes:
+          - r5d.xlarge
+        ImageId: !Ref AmiId
+        Subnets: !Ref SubnetIds
+        InstanceRole: !Ref InstanceProfile
+        SecurityGroupIds:
+          - !Ref SecurityGroup
+        LaunchTemplate:
+          LaunchTemplateId: !Ref LaunchTemplate
+          Version: $Latest
+        Tags:
+          Name: !Ref AWS::StackName
+
+  JobQueue:
+    Type: AWS::Batch::JobQueue
+    Properties:
+      Priority: 1
+      ComputeEnvironmentOrder:
+        - ComputeEnvironment: !Ref ComputeEnvironment
+          Order: 1
+
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+          Effect: Allow
+      Policies:
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
+              - Effect: Allow
+                Action: s3:PutObjectTagging
+                Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
+
+  BatchServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: batch.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
+
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: ec2.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref InstanceRole

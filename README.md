@@ -30,19 +30,30 @@ These resources are required for a successful deployment, but managed separately
 - IAM user and roles for automated CloudFormation deployments (if desired)
 
 ### Stack Parameters
-Review the parameters in [cloudformation.yml](cloudformation.yml) for deploy time configuration options.
+Review the parameters in [cloudformation.yml](apps/main-cf.yml) for deploy time configuration options.
 
 ### Deploy with CloudFormation
 
-- Install API dependencies (requires pip for python 3.8)
+- Install dependencies for build and run
 ```sh
-pip install -r api/requirements.txt -t api/src
+pip install -r requirements-all.txt
+```
+
+- Render cloudformation templates
+```sh
+python apps/render_cf.py --job-types-file job_types.yml
+```
+
+- Install API dependencies (requires pip for python 3.8)
+
+```sh
+pip install -r apps/api/requirements-api.txt -t apps/api/src
 ```
 
 - Package the CloudFormation template
 ```sh
 aws cloudformation package \
-            --template-file cloudformation.yml \
+            --template-file apps/main-cf.yml \
             --s3-bucket <CloudFormation artifact bucket> \
             --output-template-file packaged.yml
 ```
@@ -69,24 +80,24 @@ aws cloudformation deploy \
 
 
 ## Testing the API
-The HyP3 API source contains test files in `api/tests/`. To run them you need to do a bit of setup first.
+The HyP3 API source contains test files in `tests/api/`. To run them you need to do a bit of setup first.
 
 - Add hyp3-api to python path
 ```sh
-export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
+export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src"
 ```
 - Setup environment variables
 ```sh
-export $(cat api/tests/cfg.env | xargs)
+export $(cat tests/api/cfg.env | xargs)
 ```
 - Install test requirements
 ```sh
-pip install -r api/requirements-test.txt
+pip install -r apps/api/requirements-all.txt
 ```
 
 - Run tests
 ```sh
-pytest api/
+pytest tests/api/
 ```
 
 ## Running the API Locally
@@ -100,11 +111,11 @@ The API can be run locally to verify changes, but must be connected to an existi
   - `AUTH_ALGORITHM=HS256`
 - Add hyp3-api to python path
 ```sh
-export PYTHONPATH="${PYTHONPATH}:`pwd`/api/src"
+export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src"
 ```
 - run API
 ```sh
-python3 api/src/hyp3_api/__main__.py
+python3 apps/api/src/hyp3_api/__main__.py
 ```
 - In order to use you will need to include the following cookie
 ```

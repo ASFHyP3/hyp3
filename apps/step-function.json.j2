@@ -28,34 +28,27 @@
     "INSPECT_JOB_TYPE": {
       "Type": "Choice",
       "Choices": [
+        {% for job_type, job_spec in job_types.items() %}
         {
           "Variable": "$.job_type",
-          "StringEquals": "INSAR_GAMMA",
-          "Next": "INSAR_GAMMA"
-        },
-        {
-          "Variable": "$.job_type",
-          "StringEquals": "AUTORIFT",
-          "Next": "AUTORIFT"
-        },
-        {
-          "Variable": "$.job_type",
-          "StringEquals": "RTC_GAMMA",
-          "Next": "RTC_GAMMA"
-        }
+          "StringEquals": "{{ job_spec['api_job_type'] }}",
+          "Next": "{{ job_spec['api_job_type'] }}"
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
       ],
       "Default": "JOB_FAILED"
     },
-    "INSAR_GAMMA": {
+    {% for job_type, job_spec in job_types.items() %}
+    "{{ job_spec['api_job_type'] }}": {
       "Type": "Task",
       "Resource": "arn:aws:states:::batch:submitJob.sync",
       "Parameters": {
-        "JobDefinition": "${InsarGammaJobDefinition}",
+        "JobDefinition": "{{ '${'+ job_type + '}' }}",
         "JobName.$": "$.job_id",
         "JobQueue": "${JobQueueArn}",
         "Parameters.$": "$.job_parameters"
       },
-      "ResultPath": "$.results.insar_gamma",
+      "ResultPath": "$.results.processing_results",
       "Next": "GET_FILES",
       "Retry": [
         {
@@ -71,68 +64,11 @@
             "States.ALL"
           ],
           "Next": "JOB_FAILED",
-          "ResultPath": "$.results.insar_gamma"
+          "ResultPath": "$.results.processing_results"
         }
       ]
     },
-    "AUTORIFT": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::batch:submitJob.sync",
-      "Parameters": {
-        "JobDefinition": "${AutoriftJobDefinition}",
-        "JobName.$": "$.job_id",
-        "JobQueue": "${JobQueueArn}",
-        "Parameters.$": "$.job_parameters"
-      },
-      "ResultPath": "$.results.autorift",
-      "Next": "GET_FILES",
-      "Retry": [
-        {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "MaxAttempts": 2
-        }
-      ],
-      "Catch": [
-        {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "Next": "JOB_FAILED",
-          "ResultPath": "$.results.autorift"
-        }
-      ]
-    },
-    "RTC_GAMMA": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::batch:submitJob.sync",
-      "Parameters": {
-        "JobDefinition": "${RtcGammaJobDefinition}",
-        "JobName.$": "$.job_id",
-        "JobQueue": "${JobQueueArn}",
-        "Parameters.$": "$.job_parameters"
-      },
-      "ResultPath": "$.results.rtc_gamma",
-      "Next": "GET_FILES",
-      "Retry": [
-        {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "MaxAttempts": 2
-        }
-      ],
-      "Catch": [
-        {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "Next": "JOB_FAILED",
-          "ResultPath": "$.results.rtc_gamma"
-        }
-      ]
-    },
+    {% endfor %}
     "GET_FILES": {
       "Type": "Task",
       "Resource": "${GetFilesLambdaArn}",

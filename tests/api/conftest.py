@@ -7,7 +7,7 @@ import responses
 import yaml
 from moto import mock_dynamodb2
 
-from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, connexion_app  # noqa hyp3 must be imported here
+from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, connexion_app
 from hyp3_api.util import get_granules
 
 AUTH_COOKIE = 'asf-urs'
@@ -39,7 +39,7 @@ def table():
 
 def get_table_properties_from_template():
     yaml.SafeLoader.add_multi_constructor('!', lambda loader, suffix, node: None)
-    template_file = path.join(path.dirname(__file__), '../../cloudformation.yml')
+    template_file = path.join(path.dirname(__file__), '../../apps/main-cf.yml')
     with open(template_file, 'r') as f:
         template = yaml.safe_load(f)
     table_properties = template['Resources']['JobsTable']['Properties']

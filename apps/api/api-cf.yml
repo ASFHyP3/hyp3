@@ -129,7 +129,7 @@ Resources:
           MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
           SYSTEM_AVAILABLE: !Ref SystemAvailable
       Code: src/
-      Handler: lambda_handler.handler
+      Handler: hyp3_api.lambda_handler.handler
       MemorySize: 3008
       Role: !GetAtt LambdaRole.Arn
       Runtime: python3.8

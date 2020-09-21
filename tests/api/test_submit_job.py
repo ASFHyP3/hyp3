@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from conftest import DEFAULT_USERNAME, login, make_db_record, make_job, setup_requests_mock, submit_batch
+from api.conftest import DEFAULT_USERNAME, login, make_db_record, make_job, setup_requests_mock, submit_batch
 from flask_api import status
 
 from hyp3_api.util import format_time

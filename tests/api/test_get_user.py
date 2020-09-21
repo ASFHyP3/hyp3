@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from conftest import USER_URI, login, make_db_record
+from api.conftest import USER_URI, login, make_db_record
 from flask_api import status
 
 from hyp3_api.util import format_time
