@@ -2,60 +2,27 @@ components:
   schemas:
     job_parameters:
       anyOf:
-        - $ref: "#/components/schemas/rtc_gamma_job_parameters"
-        - $ref: "#/components/schemas/insar_gamma_job_parameters"
-        - $ref: "#/components/schemas/autorift_job_parameters"
+        {% for job_type in job_types %}
+        - $ref: "#/components/schemas/{{ job_type }}"
+        {% endfor %}
 
-    insar_gamma_job_parameters:
-      description: Parameters for running an INSAR_GAMMA job
+    {% for job_type, job_spec in job_types.items() %}
+    {{ job_type }}:
+      description: Parameters for running an {{job_spec['api_job_type']}} job
       type: object
       required:
-        - granules
+      {% for parameter in job_spec['required_parameters'] %}
+        - {{ parameter }}
+      {% endfor %}
       additionalProperties: false
       properties:
-        granules:
-          $ref: "#/components/schemas/insar_granules"
-        include_inc_map:
-          $ref: "#/components/schemas/include_inc_map"
-        looks:
-          $ref: "#/components/schemas/looks"
-        include_los_displacement:
-          $ref: "#/components/schemas/los_displacement"
-
-    autorift_job_parameters:
-      description: Parameters for running an AUTORIFT job
-      type: object
-      required:
-        - granules
-      additionalProperties: false
-      properties:
-        granules:
-          $ref: "#/components/schemas/insar_granules"
-
-    rtc_gamma_job_parameters:
-      description: Parameters for running a RTC_GAMMA job
-      type: object
-      required:
-        - granules
-      additionalProperties: false
-      properties:
-        granules:
-          $ref: "#/components/schemas/rtc_granules"
-        resolution:
-          $ref: "#/components/schemas/resolution"
-        radiometry:
-          $ref: "#/components/schemas/radiometry"
-        speckle_filter:
-          $ref: "#/components/schemas/speckle_filter"
-        scale:
-          $ref: "#/components/schemas/scale"
-        dem_matching:
-          $ref: "#/components/schemas/dem_matching"
-        include_dem:
-          $ref: "#/components/schemas/include_dem"
-        include_inc_map:
-          $ref: "#/components/schemas/include_inc_map"
-
+      {% for k, v in job_spec['parameters'].items() %}
+        {% if 'api_schema_location' in v %}
+        {{ k }}:
+          $ref: "{{ v['api_schema_location'] }}"
+        {% endif %}
+    {% endfor %}
+    {% endfor %}
     insar_granules:
       type: array
       minItems: 2
