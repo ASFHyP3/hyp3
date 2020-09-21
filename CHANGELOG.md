@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.1]
+### Changed
+- Hyp3 now uses jinja templates in defining CloudFormation templates and the StepFunction definition, resolved at buildtime.
+- Jobs are now defined only in the API spec and the jobs.yml file, no job specific information needs to be added to AWS resource definitions.
+- Static Analysis now requires packaging before run.
+
 ## [0.7.0]
 ### Added
 - Added a new `AUTORIFT` job type for processing a pair of Sentinel-1 SLC IW scenes using [autoRIFT](https://github.com/leiyangleon/autoRIFT). For details, refer to the [hyp3-autorift](https://github.com/ASFHyP3/hyp3-autorift) plugin repository.
