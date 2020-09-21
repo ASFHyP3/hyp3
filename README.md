@@ -84,7 +84,7 @@ The HyP3 API source contains test files in `tests/api/`. To run them you need to
 
 - Add hyp3-api to python path
 ```sh
-export PYTHONPATH="${PYTHONPATH}:`pwd`apps/api/src"
+export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src"
 ```
 - Setup environment variables
 ```sh
