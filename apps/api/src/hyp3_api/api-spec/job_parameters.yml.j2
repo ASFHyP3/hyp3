@@ -8,7 +8,7 @@ components:
 
     {% for job_type, job_spec in job_types.items() %}
     {{ job_type }}:
-      description: Parameters for running an {{job_spec['api_job_type']}} job
+      description: Parameters for running {{job_spec['api_job_type']}} jobs
       type: object
       required:
       {% for parameter in job_spec['required_parameters'] %}
@@ -16,9 +16,9 @@ components:
       {% endfor %}
       additionalProperties: false
       properties:
-      {% for parmaeter_name, parameter_spec in job_spec['parameters'].items() %}
+      {% for parameter, parameter_spec in job_spec['parameters'].items() %}
         {% if 'api_schema_location' in parameter_spec %}
-        {{ parmaeter_name }}:
+        {{ parameter }}:
           $ref: "{{ parameter_spec['api_schema_location'] }}"
         {% endif %}
       {% endfor %}
