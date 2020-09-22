@@ -16,10 +16,10 @@ components:
       {% endfor %}
       additionalProperties: false
       properties:
-      {% for k, v in job_spec['parameters'].items() %}
-        {% if 'api_schema_location' in v %}
-        {{ k }}:
-          $ref: "{{ v['api_schema_location'] }}"
+      {% for parmaeter_name, parameter_spec in job_spec['parameters'].items() %}
+        {% if 'api_schema_location' in parameter_spec %}
+        {{ parmaeter_name }}:
+          $ref: "{{ parameter_spec['api_schema_location'] }}"
         {% endif %}
       {% endfor %}
     {% endfor %}

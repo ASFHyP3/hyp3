@@ -17,7 +17,7 @@ class GranuleValidationError(Exception):
     pass
 
 
-with open(Path(__file__).parent / 'validation.yml') as f:
+with open(Path(__file__).parent / 'job_validation_map.yml') as f:
     JOB_VALIDATION_MAP = yaml.safe_load(f.read())
 
 
