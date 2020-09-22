@@ -21,7 +21,7 @@ components:
         {{ k }}:
           $ref: "{{ v['api_schema_location'] }}"
         {% endif %}
-    {% endfor %}
+      {% endfor %}
     {% endfor %}
     insar_granules:
       type: array
