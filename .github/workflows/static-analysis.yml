@@ -50,6 +50,7 @@ jobs:
 
       - run: |
           python -m pip install --upgrade pip
+          python -m pip install requirements-all.txt
           python -m pip install openapi-spec-validator click prance
           python apps/render_cf.py --job-types-file job_types.yml
 
