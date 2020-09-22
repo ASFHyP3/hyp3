@@ -16,6 +16,9 @@ RtcGamma:
     scale:
       default:  power
       api_schema_location: "#/components/schemas/scale"
+    speckle_filter:
+      default: false
+      api_scema_location: "#/components/schemas/speckle_filter"
     dem_matching:
       default:  false
       api_schema_location: "#/components/schemas/dem_matching"
@@ -27,6 +30,7 @@ RtcGamma:
       api_schema_location: "#/components/schemas/include_inc_map"
   required_parameters:
     - granules
+
   command:
     - ++entrypoint
     - hyp3_rtc_gamma_v2
@@ -44,6 +48,8 @@ RtcGamma:
     - Ref::radiometry
     - --scale
     - Ref::scale
+    - --speckle-filter
+    - Ref::speckle_filter
     - --dem-matching
     - Ref::dem_matching
     - --include-dem
