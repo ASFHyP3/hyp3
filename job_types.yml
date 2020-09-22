@@ -7,6 +7,7 @@ RtcGamma:
     resolution: 30.0
     radiometry: gamma0
     scale: power
+    speckle_filter: false
     dem_matching: false
     include_dem: false
     include_inc_map: false
@@ -27,6 +28,8 @@ RtcGamma:
     - Ref::radiometry
     - --scale
     - Ref::scale
+    - --speckle-filter
+    - Ref::speckle_filter
     - --dem-matching
     - Ref::dem_matching
     - --include-dem
