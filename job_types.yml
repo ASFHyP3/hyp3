@@ -51,6 +51,8 @@ RtcGamma:
     - --include-inc-map
     - Ref::include_inc_map
     - Ref::granules
+  validators:
+    - check_dem_coverage
   timeout: 5400
 
 InsarGamma:
@@ -91,6 +93,8 @@ InsarGamma:
     - --looks
     - Ref::looks
     - Ref::granules
+  validators:
+    - check_dem_coverage
   timeout: 5400
 
 Autorift:
@@ -116,4 +120,5 @@ Autorift:
     - --bucket-prefix
     - Ref::bucket_prefix
     - Ref::granules
+  validators: []
   timeout: 10800
