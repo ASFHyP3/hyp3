@@ -18,7 +18,7 @@ RtcGamma:
       api_schema_location: "#/components/schemas/scale"
     speckle_filter:
       default: false
-      api_scema_location: "#/components/schemas/speckle_filter"
+      api_schema_location: "#/components/schemas/speckle_filter"
     dem_matching:
       default:  false
       api_schema_location: "#/components/schemas/dem_matching"
