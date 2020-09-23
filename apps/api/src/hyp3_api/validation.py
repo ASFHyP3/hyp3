@@ -1,7 +1,10 @@
 import json
 import os
+import sys
+from pathlib import Path
 
 import requests
+import yaml
 from shapely.geometry import MultiPolygon, Polygon, shape
 
 from hyp3_api import CMR_URL
@@ -12,6 +15,10 @@ DEM_COVERAGE = None
 
 class GranuleValidationError(Exception):
     pass
+
+
+with open(Path(__file__).parent / 'job_validation_map.yml') as f:
+    JOB_VALIDATION_MAP = yaml.safe_load(f.read())
 
 
 def has_sufficient_coverage(granule: Polygon, buffer: float = 0.15, threshold: float = 0.2):
@@ -77,21 +84,13 @@ def get_coverage_shapes_from_geojson():
 
 
 def validate_jobs(jobs):
-    job_validation_map = {
-        'RTC_GAMMA': [
-            check_dem_coverage,
-        ],
-        'INSAR_GAMMA': [
-            check_dem_coverage,
-        ],
-        'AUTORIFT': [
-        ]
-    }
     granules = get_granules(jobs)
     granule_metadata = get_cmr_metadata(granules)
 
     check_granules_exist(granules, granule_metadata)
     for job in jobs:
-        for validator in job_validation_map[job['job_type']]:
+        for validator_name in JOB_VALIDATION_MAP[job['job_type']]:
             job_granule_metadata = [granule for granule in granule_metadata if granule['name'] in get_granules([job])]
+            module = sys.modules[__name__]
+            validator = getattr(module, validator_name)
             validator(job_granule_metadata)
