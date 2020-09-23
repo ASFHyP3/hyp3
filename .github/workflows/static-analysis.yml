@@ -50,7 +50,9 @@ jobs:
 
       - run: |
           python -m pip install --upgrade pip
+          python -m pip install -r requirements-all.txt
           python -m pip install openapi-spec-validator click prance
+          python apps/render_cf.py --job-types-file job_types.yml
 
       - run: prance validate --backend=openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
 

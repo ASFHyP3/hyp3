@@ -39,7 +39,6 @@ def main():
 
     with open(job_types_file) as f:
         job_types = yaml.safe_load(f)
-
     render_templates(job_types)
 
 

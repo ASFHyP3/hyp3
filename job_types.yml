@@ -2,15 +2,35 @@ RtcGamma:
   image: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-rtc-gamma
   api_job_type: RTC_GAMMA
   parameters:
-    granules: '""'
-    bucket_prefix: '""'
-    resolution: 30.0
-    radiometry: gamma0
-    scale: power
-    speckle_filter: false
-    dem_matching: false
-    include_dem: false
-    include_inc_map: false
+    granules:
+      default: '""'
+      api_schema_location: "#/components/schemas/rtc_granules"
+    bucket_prefix:
+      default:  '""'
+    resolution:
+      default:  30.0
+      api_schema_location: "#/components/schemas/resolution"
+    radiometry:
+      default:  gamma0
+      api_schema_location: "#/components/schemas/radiometry"
+    scale:
+      default:  power
+      api_schema_location: "#/components/schemas/scale"
+    speckle_filter:
+      default: false
+      api_schema_location: "#/components/schemas/speckle_filter"
+    dem_matching:
+      default:  false
+      api_schema_location: "#/components/schemas/dem_matching"
+    include_dem:
+      default:  false
+      api_schema_location: "#/components/schemas/include_dem"
+    include_inc_map:
+      default:  false
+      api_schema_location: "#/components/schemas/include_inc_map"
+  required_parameters:
+    - granules
+
   command:
     - ++entrypoint
     - hyp3_rtc_gamma_v2
@@ -37,17 +57,30 @@ RtcGamma:
     - --include-inc-map
     - Ref::include_inc_map
     - Ref::granules
+  validators:
+    - check_dem_coverage
   timeout: 5400
 
 InsarGamma:
   image: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-insar-gamma
   api_job_type: INSAR_GAMMA
   parameters:
-    granules: '""'
-    bucket_prefix: '""'
-    include_inc_map: false
-    include_los_displacement: false
-    looks: 20x4
+    granules:
+      default:  '""'
+      api_schema_location: "#/components/schemas/insar_granules"
+    bucket_prefix:
+      default:  '""'
+    include_inc_map:
+      default:  false
+      api_schema_location: "#/components/schemas/include_inc_map"
+    include_los_displacement:
+      default:  false
+      api_schema_location: "#/components/schemas/los_displacement"
+    looks:
+      default:  20x4
+      api_schema_location: "#/components/schemas/looks"
+  required_parameters:
+    - granules
   command:
     - ++entrypoint
     - hyp3_insar_gamma_v2
@@ -66,14 +99,21 @@ InsarGamma:
     - --looks
     - Ref::looks
     - Ref::granules
+  validators:
+    - check_dem_coverage
   timeout: 5400
 
 Autorift:
   image: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-autorift
   api_job_type: AUTORIFT
   parameters:
-    granules: '""'
-    bucket_prefix: '""'
+    granules:
+      default:  '""'
+      api_schema_location: "#/components/schemas/insar_granules"
+    bucket_prefix:
+      default:  '""'
+  required_parameters:
+    - granules
   command:
     - ++entrypoint
     - hyp3_autorift_v2
@@ -86,4 +126,5 @@ Autorift:
     - --bucket-prefix
     - Ref::bucket_prefix
     - Ref::granules
+  validators: []
   timeout: 10800

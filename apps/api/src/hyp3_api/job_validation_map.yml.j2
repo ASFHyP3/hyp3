@@ -1,0 +1,7 @@
+{% for job_spec in job_types.values() %}
+{{ job_spec['api_job_type'] }}: {% if not job_spec['validators'] %}[]{% endif %}
+
+  {% for validator in job_spec['validators'] %}
+  - {{ validator }}
+  {% endfor %}
+{% endfor %}
