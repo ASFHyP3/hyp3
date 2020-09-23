@@ -89,6 +89,8 @@ Resources:
           Principal:
             Service: ecs-tasks.amazonaws.com
           Effect: Allow
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
       Policies:
         - PolicyName: policy
           PolicyDocument:
