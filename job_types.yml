@@ -30,7 +30,6 @@ RtcGamma:
       api_schema_location: "#/components/schemas/include_inc_map"
   required_parameters:
     - granules
-
   command:
     - ++entrypoint
     - hyp3_rtc_gamma_v2
@@ -70,9 +69,9 @@ InsarGamma:
       api_schema_location: "#/components/schemas/insar_granules"
     bucket_prefix:
       default:  '""'
-    include_inc_map:
+    include_look_vectors:
       default:  false
-      api_schema_location: "#/components/schemas/include_inc_map"
+      api_schema_location: "#/components/schemas/include_look_vectors"
     include_los_displacement:
       default:  false
       api_schema_location: "#/components/schemas/los_displacement"
@@ -92,8 +91,8 @@ InsarGamma:
     - '!Ref Bucket'
     - --bucket-prefix
     - Ref::bucket_prefix
-    - --include-inc-map
-    - Ref::include_inc_map
+    - --include-look-vectors
+    - Ref::include_look_vectors
     - --include-los-displacement
     - Ref::include_los_displacement
     - --looks
