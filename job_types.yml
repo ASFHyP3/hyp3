@@ -81,8 +81,6 @@ InsarGamma:
   required_parameters:
     - granules
   command:
-    - ++entrypoint
-    - hyp3_insar_gamma_v2
     - --username
     - '!Ref EDLUsername'
     - --password
