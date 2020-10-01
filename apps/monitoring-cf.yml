@@ -23,7 +23,7 @@ Resources:
       EvaluationPeriods: 1
       Threshold: 0
       Dimensions:
-        - Name: Processing Failures
+        - Name: StateMachineArn
           Value: !Ref StepFunctionArn
       MetricName: ExecutionsFailed
       Namespace: AWS/States
@@ -42,7 +42,7 @@ Resources:
       EvaluationPeriods: 1
       Threshold: 0
       Dimensions:
-        - Name: API 500 errors
+        - Name: ApiId
           Value: !Ref ApiId
       MetricName: 5xxError
       Namespace: AWS/ApiGateway
