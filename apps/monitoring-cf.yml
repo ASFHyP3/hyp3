@@ -47,5 +47,4 @@ Resources:
       MetricName: 5xxError
       Namespace: AWS/ApiGateway
       Statistic: Sum
-      Unit: Count
       TreatMissingData: notBreaching
