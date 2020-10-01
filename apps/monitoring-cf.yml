@@ -13,7 +13,7 @@ Resources:
     Type: AWS::SNS::Topic
 
   StepFunctionAlarm:
-    Type: AWS::Cloudwatch::Alarm
+    Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmActions:
         - !Ref AlarmTopic
@@ -32,7 +32,7 @@ Resources:
       TreatMissingData: notBreaching
 
   ApiAlarm:
-    Type: AWS::Cloudwatch::Alarm
+    Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmActions:
         - !Ref AlarmTopic
