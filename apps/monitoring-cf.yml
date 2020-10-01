@@ -44,7 +44,7 @@ Resources:
       Dimensions:
         - Name: ApiId
           Value: !Ref ApiId
-      MetricName: 5xxError
+      MetricName: 5xx
       Namespace: AWS/ApiGateway
       Statistic: Sum
       TreatMissingData: notBreaching
