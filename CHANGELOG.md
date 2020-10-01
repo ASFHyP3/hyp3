@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
 ## [unreleased]
 ### Added
-- Api and processing errors will now post to a SNS topic.
+- Api and processing errors will now post to a SNS topic
+
+## [0.7.5]
+### Changed
+* Parameters for `INSAR_GAMMA` jobs have been updated to reflect hyp3-insar-gamma [v2.2.0](https://github.com/ASFHyP3/hyp3-insar-gamma/blob/develop/CHANGELOG.md#220).
 
 ## [0.7.4]
 ### Changed
