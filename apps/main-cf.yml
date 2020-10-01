@@ -101,6 +101,14 @@ Resources:
         ImageTag: !Ref ImageTag
       TemplateURL: workflow-cf.yml
 
+  Monitoring:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        StepFunctionArn: !GetAtt StepFunction.Outputs.StepFunctionArn
+        ApiId: !GetAtt Api.Outputs.ApiId
+      TemplateURL: monitoring-cf.yml
+
   LogBucket:
     Type: AWS::S3::Bucket
     Properties:

@@ -26,6 +26,9 @@ Outputs:
   Url:
     Value: !Sub "https://${CustomDomainName}/ui"
 
+  ApiId:
+    Value: !Ref Api
+
 Resources:
 
   Api:

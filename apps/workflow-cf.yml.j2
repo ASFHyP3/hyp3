@@ -24,6 +24,10 @@ Parameters:
   TaskRoleArn:
     Type: String
 
+Outputs:
+  StepFunctionArn:
+    Value: !Ref StepFunction
+
 Resources:
   {% for job_type, job_spec in  job_types.items() %}
   {{ job_type }}:

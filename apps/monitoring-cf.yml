@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  StepFunctionArn:
+    Type: String
+
+  ApiId:
+    Type: String
+
+Resources:
+
+  AlarmTopic:
+    Type: AWS::SNS::Topic
+
+  StepFunctionAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+        - !Ref AlarmTopic
+      AlarmDescription: Hyp3 processing failures
+      ComparisonOperator: GreaterThanThreshold
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 0
+      Dimensions:
+        - Name: StateMachineArn
+          Value: !Ref StepFunctionArn
+      MetricName: ExecutionsFailed
+      Namespace: AWS/States
+      Statistic: Sum
+      Unit: Count
+      TreatMissingData: notBreaching
+
+  ApiAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+        - !Ref AlarmTopic
+      AlarmDescription: Hyp3 api HTTP 500 errors
+      ComparisonOperator: GreaterThanThreshold
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 0
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref ApiId
+      MetricName: 5xx
+      Namespace: AWS/ApiGateway
+      Statistic: Sum
+      TreatMissingData: notBreaching
