@@ -32,20 +32,20 @@ Resources:
       TreatMissingData: notBreaching
 
   ApiAlarm:
-  Type: AWS::Cloudwatch::Alarm
-  Properties:
-    AlarmActions:
-      - !Ref AlarmTopic
-    AlarmDescription: Hyp3 api HTTP 500 errors
-    ComparisonOperator: GreaterThanThreshold
-    Period: 60
-    EvaluationPeriods: 1
-    Threshold: 0
-    Dimensions:
-      - Name: API 500 errors
-        Value: !Ref ApiId
-    MetricName: 5xxError
-    Namespace: AWS/ApiGateway
-    Statistic: Sum
-    Unit: Count
-    TreatMissingData: notBreaching
+    Type: AWS::Cloudwatch::Alarm
+    Properties:
+      AlarmActions:
+        - !Ref AlarmTopic
+      AlarmDescription: Hyp3 api HTTP 500 errors
+      ComparisonOperator: GreaterThanThreshold
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 0
+      Dimensions:
+        - Name: API 500 errors
+          Value: !Ref ApiId
+      MetricName: 5xxError
+      Namespace: AWS/ApiGateway
+      Statistic: Sum
+      Unit: Count
+      TreatMissingData: notBreaching
