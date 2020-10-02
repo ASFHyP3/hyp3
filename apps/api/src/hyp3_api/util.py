@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 from decimal import Decimal
-from os import environ
 
 from boto3.dynamodb.conditions import Key
 from dateutil.parser import parse
