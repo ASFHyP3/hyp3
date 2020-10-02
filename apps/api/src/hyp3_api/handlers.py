@@ -91,6 +91,14 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None):
     return {'jobs': response['Items']}
 
 
+def get_job_id(job_id):
+    table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
+    response = table.get_item(Key={'job_id': job_id})
+    if 'Item' not in response:
+        return problem(400, 'Bad Request', f'job_id does not exist: {job_id}')
+    return response['Item']
+
+
 def get_names_for_user(user):
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
     key_expression = Key('user_id').eq(user)

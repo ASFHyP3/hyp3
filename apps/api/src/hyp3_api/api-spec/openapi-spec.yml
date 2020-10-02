@@ -56,6 +56,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/jobs_response"
+
+  /jobs/{job_id}:
+    get:
+      description: Get a previously run job.
+      operationId: hyp3_api.handlers.get_job_id
+      parameters:
+        - name: job_id
+          in: path
+          schema:
+            $ref: "#/components/schemas/job_id"
+          required: true
+
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/job"
+
   /user:
     get:
       description: Get information about the logged in user.
