@@ -23,10 +23,9 @@ def format_time(time: datetime):
     return utc_time.isoformat(timespec='seconds')
 
 
-def get_remaining_jobs_for_user(user):
+def get_remaining_jobs_for_user(user, limit):
     previous_jobs = get_job_count_for_month(user)
-    quota = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
-    remaining_jobs = quota - previous_jobs
+    remaining_jobs = limit - previous_jobs
     return max(remaining_jobs, 0)
 
 

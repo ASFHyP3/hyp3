@@ -56,7 +56,7 @@ def post_jobs(body, user):
         return problem(400, 'Bad Request', str(e))
 
     request_time = format_time(datetime.now(timezone.utc))
-    table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
+    table = DYNAMODB_RESOURCE.Table(environ['JOB_TABLE_NAME'])
 
     for job in body['jobs']:
         job['job_id'] = str(uuid4())
@@ -71,7 +71,7 @@ def post_jobs(body, user):
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None):
-    table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
+    table = DYNAMODB_RESOURCE.Table(environ['JOB_TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
     if start is not None or end is not None:
@@ -92,7 +92,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None):
 
 
 def get_names_for_user(user):
-    table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
+    table = DYNAMODB_RESOURCE.Table(environ['JOB_TABLE_NAME'])
     key_expression = Key('user_id').eq(user)
     response = table.query(
         IndexName='user_id',
@@ -103,11 +103,17 @@ def get_names_for_user(user):
 
 
 def get_user(user):
+    table = DYNAMODB_RESOURCE.Table(environ['USER_TABLE_NAME'])
+    response = table.get_item(Key={'user_id': user})
+    if 'Item' in response:
+        limit = response['Item']['max_jobs_per_month']
+    else:
+        limit = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
     return {
         'user_id': user,
         'quota': {
-            'limit': int(environ['MONTHLY_JOB_QUOTA_PER_USER']),
-            'remaining': get_remaining_jobs_for_user(user),
+            'limit': limit,
+            'remaining': get_remaining_jobs_for_user(user, limit),
         },
         'job_names': get_names_for_user(user)
     }

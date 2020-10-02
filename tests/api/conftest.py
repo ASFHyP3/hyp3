@@ -1,5 +1,6 @@
 import json
 import re
+import time
 from os import environ, path
 
 import pytest
@@ -27,22 +28,25 @@ def client():
 
 
 @pytest.fixture
-def table():
-    table_properties = get_table_properties_from_template()
+def tables():
     with mock_dynamodb2():
-        table = DYNAMODB_RESOURCE.create_table(
-            TableName=environ['TABLE_NAME'],
-            **table_properties,
+        job_table = DYNAMODB_RESOURCE.create_table(
+            TableName=environ['JOB_TABLE_NAME'],
+            **get_table_properties_from_template('JobsTable'),
         )
-        yield table
+        user_table = DYNAMODB_RESOURCE.create_table(
+            TableName=environ['USER_TABLE_NAME'],
+            **get_table_properties_from_template('UserTable'),
+        )
+        yield {'job_table': job_table, 'user_table': user_table}
 
 
-def get_table_properties_from_template():
+def get_table_properties_from_template(resource_name):
     yaml.SafeLoader.add_multi_constructor('!', lambda loader, suffix, node: None)
     template_file = path.join(path.dirname(__file__), '../../apps/main-cf.yml')
     with open(template_file, 'r') as f:
         template = yaml.safe_load(f)
-    table_properties = template['Resources']['JobsTable']['Properties']
+    table_properties = template['Resources'][resource_name]['Properties']
     return table_properties
 
 
