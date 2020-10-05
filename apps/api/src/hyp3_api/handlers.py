@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from os import environ
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import requests
 from boto3.dynamodb.conditions import Attr, Key
@@ -10,6 +10,7 @@ from connexion import problem
 from connexion.apps.flask_app import FlaskJSONEncoder
 from flask import jsonify, make_response
 from flask_cors import CORS
+from jsonschema import draft4_format_checker
 
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
 from hyp3_api.openapi import get_spec
@@ -25,6 +26,15 @@ class DecimalEncoder(FlaskJSONEncoder):
                 return int(o)
             return float(o)
         return super(DecimalEncoder, self).default(o)
+
+
+@draft4_format_checker.checks('uuid')
+def is_uuid(val):
+    try:
+        UUID(val, version=4)
+    except ValueError:
+        return False
+    return True
 
 
 @connexion_app.app.before_request
@@ -91,11 +101,11 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None):
     return {'jobs': response['Items']}
 
 
-def get_job_id(job_id):
+def get_job_by_id(job_id):
     table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
     response = table.get_item(Key={'job_id': job_id})
     if 'Item' not in response:
-        return problem(400, 'Bad Request', f'job_id does not exist: {job_id}')
+        return problem(404, 'Not Found', f'job_id does not exist: {job_id}')
     return response['Item']
 
 

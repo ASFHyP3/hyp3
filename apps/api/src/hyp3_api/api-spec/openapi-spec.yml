@@ -60,7 +60,7 @@ paths:
   /jobs/{job_id}:
     get:
       description: Get a previously run job.
-      operationId: hyp3_api.handlers.get_job_id
+      operationId: hyp3_api.handlers.get_job_by_id
       parameters:
         - name: job_id
           in: path
