@@ -103,7 +103,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None):
 
 
 def get_job_by_id(job_id):
-    table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     response = table.get_item(Key={'job_id': job_id})
     if 'Item' not in response:
         return problem(404, 'Not Found', f'job_id does not exist: {job_id}')
