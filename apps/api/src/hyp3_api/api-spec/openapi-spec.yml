@@ -134,11 +134,11 @@ components:
       description: Containes the limit of jobs per month and the amount remaining for a user.
       type: object
       required:
-        - limit
+        - max_jobs_per_month
         - remaining
       additionalProperties: false
       properties:
-        limit:
+        max_jobs_per_month:
           type: integer
           minimum: 0
         remaining:

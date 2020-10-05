@@ -6,7 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 ### Added
+- User table which can be used to add custom quotas for users, users not in the table will still have the default.
 - GET /jobs/{job_id} API endpoint to search for a job by its job_id 
+
 
 ## [0.7.5]
 ### Added

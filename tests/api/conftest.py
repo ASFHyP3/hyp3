@@ -27,22 +27,25 @@ def client():
 
 
 @pytest.fixture
-def table():
-    table_properties = get_table_properties_from_template()
+def tables():
     with mock_dynamodb2():
-        table = DYNAMODB_RESOURCE.create_table(
-            TableName=environ['TABLE_NAME'],
-            **table_properties,
+        jobs_table = DYNAMODB_RESOURCE.create_table(
+            TableName=environ['JOBS_TABLE_NAME'],
+            **get_table_properties_from_template('JobsTable'),
         )
-        yield table
+        users_table = DYNAMODB_RESOURCE.create_table(
+            TableName=environ['USERS_TABLE_NAME'],
+            **get_table_properties_from_template('UsersTable'),
+        )
+        yield {'users_table': users_table, 'jobs_table': jobs_table}
 
 
-def get_table_properties_from_template():
+def get_table_properties_from_template(resource_name):
     yaml.SafeLoader.add_multi_constructor('!', lambda loader, suffix, node: None)
     template_file = path.join(path.dirname(__file__), '../../apps/main-cf.yml')
     with open(template_file, 'r') as f:
         template = yaml.safe_load(f)
-    table_properties = template['Resources']['JobsTable']['Properties']
+    table_properties = template['Resources'][resource_name]['Properties']
     return table_properties
 
 
