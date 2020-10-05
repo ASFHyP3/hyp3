@@ -45,7 +45,7 @@ def post_jobs(body, user):
 
     quota = get_user(user)['quota']
     if quota['remaining'] - len(body['jobs']) < 0:
-        message = f'Your monthly quota is {quota["limit"]} jobs. You have {quota["remaining"]} jobs remaining.'
+        message = f'Your monthly quota is {quota["max_jobs_per_month"]} jobs. You have {quota["remaining"]} jobs remaining.'
         return problem(400, 'Bad Request', message)
 
     try:
@@ -106,14 +106,14 @@ def get_user(user):
     table = DYNAMODB_RESOURCE.Table(environ['USER_TABLE_NAME'])
     response = table.get_item(Key={'user_id': user})
     if 'Item' in response:
-        limit = response['Item']['max_jobs_per_month']
+        max_jobs_per_month = response['Item']['max_jobs_per_month']
     else:
-        limit = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
+        max_jobs_per_month = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
     return {
         'user_id': user,
         'quota': {
-            'limit': limit,
-            'remaining': get_remaining_jobs_for_user(user, limit),
+            'max_jobs_per_month': max_jobs_per_month,
+            'remaining': get_remaining_jobs_for_user(user, max_jobs_per_month),
         },
         'job_names': get_names_for_user(user)
     }

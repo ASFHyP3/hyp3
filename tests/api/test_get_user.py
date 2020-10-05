@@ -25,7 +25,7 @@ def test_get_user(client, tables, monkeypatch):
     assert response.json == {
         'user_id': 'user_with_jobs',
         'quota': {
-            'limit': 25,
+            'max_jobs_per_month': 25,
             'remaining': 21,
         },
         'job_names': [
@@ -69,7 +69,7 @@ def test_get_user_custom_quota(client, tables):
     assert response.json == {
         'user_id': username,
         'quota': {
-            'limit': 50,
+            'max_jobs_per_month': 50,
             'remaining': 50,
         },
         'job_names': [],
