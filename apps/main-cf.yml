@@ -71,7 +71,7 @@ Resources:
     Properties:
       Parameters:
         JobsTable: !Ref JobsTable
-        UserTable: !Ref UserTable
+        UsersTable: !Ref UsersTable
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
         DomainName: !Ref DomainName
@@ -186,7 +186,7 @@ Resources:
           Projection:
             ProjectionType: ALL
 
-  UserTable:
+  UsersTable:
     Type: AWS::DynamoDB::Table
     Properties:
       BillingMode: PAY_PER_REQUEST

@@ -23,7 +23,7 @@ def test_list_jobs(client, tables):
                        browse_images=browse_images, thumbnail_images=thumbnail_images)
     ]
     for item in items:
-        tables['job_table'].put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     login(client, 'user_with_jobs')
     response = client.get(JOBS_URI)
@@ -42,7 +42,7 @@ def test_list_jobs_by_name(client, tables):
         make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', name='item2')
     ]
     for item in items:
-        tables['job_table'].put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     login(client)
     response = client.get(JOBS_URI, query_string={'name': 'item1'})
@@ -60,7 +60,7 @@ def test_list_jobs_by_status(client, tables):
         make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', status_code='SUCCEEDED')
     ]
     for item in items:
-        tables['job_table'].put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     login(client)
     response = client.get(JOBS_URI, query_string={'status_code': 'RUNNING'})
@@ -89,7 +89,7 @@ def test_list_jobs_date_start_and_end(client, tables):
         make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T10:00:11+00:00'),
     ]
     for item in items:
-        tables['job_table'].put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     dates = [
         '2019-12-31T10:00:10Z',

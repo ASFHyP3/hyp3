@@ -56,7 +56,7 @@ def post_jobs(body, user):
         return problem(400, 'Bad Request', str(e))
 
     request_time = format_time(datetime.now(timezone.utc))
-    table = DYNAMODB_RESOURCE.Table(environ['JOB_TABLE_NAME'])
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     for job in body['jobs']:
         job['job_id'] = str(uuid4())
@@ -71,7 +71,7 @@ def post_jobs(body, user):
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None):
-    table = DYNAMODB_RESOURCE.Table(environ['JOB_TABLE_NAME'])
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
     if start is not None or end is not None:
@@ -92,7 +92,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None):
 
 
 def get_names_for_user(user):
-    table = DYNAMODB_RESOURCE.Table(environ['JOB_TABLE_NAME'])
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     key_expression = Key('user_id').eq(user)
     response = table.query(
         IndexName='user_id',
@@ -102,18 +102,24 @@ def get_names_for_user(user):
     return sorted(list(names))
 
 
-def get_user(user):
-    table = DYNAMODB_RESOURCE.Table(environ['USER_TABLE_NAME'])
+def get_max_jobs_per_month(user):
+    table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     response = table.get_item(Key={'user_id': user})
     if 'Item' in response:
         max_jobs_per_month = response['Item']['max_jobs_per_month']
     else:
         max_jobs_per_month = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
+    return max_jobs_per_month
+
+
+def get_user(user):
+    max_jobs = get_max_jobs_per_month(user)
+
     return {
         'user_id': user,
         'quota': {
-            'max_jobs_per_month': max_jobs_per_month,
-            'remaining': get_remaining_jobs_for_user(user, max_jobs_per_month),
+            'max_jobs_per_month': max_jobs,
+            'remaining': get_remaining_jobs_for_user(user, max_jobs),
         },
         'job_names': get_names_for_user(user)
     }

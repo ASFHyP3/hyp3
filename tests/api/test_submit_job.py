@@ -88,7 +88,7 @@ def test_submit_exceeds_quota(client, tables, monkeypatch):
     time_for_previous_month = format_time(datetime.now(timezone.utc) - timedelta(days=32))
     job_from_previous_month = make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266',
                                              request_time=time_for_previous_month)
-    tables['job_table'].put_item(Item=job_from_previous_month)
+    tables['jobs_table'].put_item(Item=job_from_previous_month)
 
     monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
     batch = [make_job() for ii in range(25)]
@@ -220,15 +220,15 @@ def test_submit_validate_only(client, tables):
 
     response = submit_batch(client, validate_only=True)
     assert response.status_code == status.HTTP_200_OK
-    jobs = tables['job_table'].scan()['Items']
+    jobs = tables['jobs_table'].scan()['Items']
     assert len(jobs) == 0
 
     response = submit_batch(client, validate_only=False)
     assert response.status_code == status.HTTP_200_OK
-    jobs = tables['job_table'].scan()['Items']
+    jobs = tables['jobs_table'].scan()['Items']
     assert len(jobs) == 1
 
     response = submit_batch(client, validate_only=None)
     assert response.status_code == status.HTTP_200_OK
-    jobs = tables['job_table'].scan()['Items']
+    jobs = tables['jobs_table'].scan()['Items']
     assert len(jobs) == 2
