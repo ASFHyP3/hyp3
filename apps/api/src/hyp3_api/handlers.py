@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from os import environ
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import requests
 from boto3.dynamodb.conditions import Attr, Key
@@ -10,6 +10,7 @@ from connexion import problem
 from connexion.apps.flask_app import FlaskJSONEncoder
 from flask import jsonify, make_response
 from flask_cors import CORS
+from jsonschema import draft4_format_checker
 
 from hyp3_api import DYNAMODB_RESOURCE, connexion_app
 from hyp3_api.openapi import get_spec
@@ -25,6 +26,15 @@ class DecimalEncoder(FlaskJSONEncoder):
                 return int(o)
             return float(o)
         return super(DecimalEncoder, self).default(o)
+
+
+@draft4_format_checker.checks('uuid')
+def is_uuid(val):
+    try:
+        UUID(val, version=4)
+    except ValueError:
+        return False
+    return True
 
 
 @connexion_app.app.before_request
@@ -45,7 +55,8 @@ def post_jobs(body, user):
 
     quota = get_user(user)['quota']
     if quota['remaining'] - len(body['jobs']) < 0:
-        message = f'Your monthly quota is {quota["limit"]} jobs. You have {quota["remaining"]} jobs remaining.'
+        max_jobs = quota['max_jobs_per_month']
+        message = f'Your monthly quota is {max_jobs} jobs. You have {quota["remaining"]} jobs remaining.'
         return problem(400, 'Bad Request', message)
 
     try:
@@ -56,7 +67,7 @@ def post_jobs(body, user):
         return problem(400, 'Bad Request', str(e))
 
     request_time = format_time(datetime.now(timezone.utc))
-    table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     for job in body['jobs']:
         job['job_id'] = str(uuid4())
@@ -71,7 +82,7 @@ def post_jobs(body, user):
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None):
-    table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
     if start is not None or end is not None:
@@ -91,8 +102,16 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None):
     return {'jobs': response['Items']}
 
 
+def get_job_by_id(job_id):
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
+    response = table.get_item(Key={'job_id': job_id})
+    if 'Item' not in response:
+        return problem(404, 'Not Found', f'job_id does not exist: {job_id}')
+    return response['Item']
+
+
 def get_names_for_user(user):
-    table = DYNAMODB_RESOURCE.Table(environ['TABLE_NAME'])
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     key_expression = Key('user_id').eq(user)
     response = table.query(
         IndexName='user_id',
@@ -102,12 +121,24 @@ def get_names_for_user(user):
     return sorted(list(names))
 
 
+def get_max_jobs_per_month(user):
+    table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
+    response = table.get_item(Key={'user_id': user})
+    if 'Item' in response:
+        max_jobs_per_month = response['Item']['max_jobs_per_month']
+    else:
+        max_jobs_per_month = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
+    return max_jobs_per_month
+
+
 def get_user(user):
+    max_jobs = get_max_jobs_per_month(user)
+
     return {
         'user_id': user,
         'quota': {
-            'limit': int(environ['MONTHLY_JOB_QUOTA_PER_USER']),
-            'remaining': get_remaining_jobs_for_user(user),
+            'max_jobs_per_month': max_jobs,
+            'remaining': get_remaining_jobs_for_user(user, max_jobs),
         },
         'job_names': get_names_for_user(user)
     }

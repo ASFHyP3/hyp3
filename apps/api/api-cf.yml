@@ -3,6 +3,9 @@ Parameters:
   JobsTable:
     Type: String
 
+  UsersTable:
+    Type: String
+
   AuthPublicKey:
     Type: String
 
@@ -119,14 +122,20 @@ Resources:
                 Action:
                   - dynamodb:PutItem
                   - dynamodb:Query
+                  - dynamodb:GetItem
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UsersTable}*"
 
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
       Environment:
         Variables:
-          TABLE_NAME: !Ref JobsTable
+          JOBS_TABLE_NAME: !Ref JobsTable
+          USERS_TABLE_NAME: !Ref UsersTable
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITHM: !Ref AuthAlgorithm
           MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
