@@ -99,7 +99,15 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None):
         KeyConditionExpression=key_expression,
         FilterExpression=filter_expression,
     )
-    return {'jobs': response['Items']}
+    jobs = response['Items']
+    while 'LastEvaluatedKey' in response:
+        response = table.query(
+            IndexName='user_id',
+            KeyConditionExpression=key_expression,
+            FilterExpression=filter_expression,
+            ExclusiveStartKey=response['LastEvaluatedKey'])
+        jobs.extend(response['Items'])
+    return {'jobs': jobs}
 
 
 def get_job_by_id(job_id):
@@ -117,7 +125,15 @@ def get_names_for_user(user):
         IndexName='user_id',
         KeyConditionExpression=key_expression,
     )
-    names = {record['name'] for record in response['Items'] if 'name' in record}
+    records = response['Items']
+    while 'LastEvaluatedKey' in response:
+        response = table.query(
+            IndexName='user_id',
+            KeyConditionExpression=key_expression,
+            ExclusiveStartKey=response['LastEvaluatedKey'])
+        records.extend(response['Items'])
+
+    names = {record['name'] for record in records if 'name' in record}
     return sorted(list(names))
 
 
