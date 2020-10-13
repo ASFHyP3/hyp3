@@ -9,6 +9,7 @@ on:
 env:
   AWS_REGION: us-west-2
   TEMPLATE_BUCKET: cf-templates-aubvn3i9olmk-us-west-2
+  MONTHLY_JOB_QUOTA_PER_USER: 200
 
   VPC_ID: ${{ secrets.VPC_ID }}
   SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
@@ -79,7 +80,7 @@ jobs:
                 ImageTag="${IMAGE_TAG}" \
                 DomainName="${DOMAIN_NAME}" \
                 CertificateArn="${CERTIFICATE_ARN}" \
-                MonthlyJobQuotaPerUser=200
+                MonthlyJobQuotaPerUser="${MONTHLY_JOB_QUOTA_PER_USER}"
 
       - name: Get associated PR
         if: github.ref == 'refs/heads/master'

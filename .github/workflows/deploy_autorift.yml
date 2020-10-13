@@ -11,6 +11,7 @@ env:
   STACK_NAME: hyp3-autorift
   DOMAIN_NAME: hyp3-autorift.asf.alaska.edu
   IMAGE_TAG: latest
+  MONTHLY_JOB_QUOTA_PER_USER: 0
 
   VPC_ID: ${{ secrets.AUTORIFT_VPC_ID }}
   SUBNET_IDS: ${{ secrets.AUTORIFT_SUBNET_IDS }}
@@ -64,4 +65,4 @@ jobs:
                 ImageTag="${IMAGE_TAG}" \
                 DomainName="${DOMAIN_NAME}" \
                 CertificateArn="${CERTIFICATE_ARN}" \
-                MonthlyJobQuotaPerUser=0
+                MonthlyJobQuotaPerUser="${MONTHLY_JOB_QUOTA_PER_USER}"
