@@ -2,7 +2,7 @@ from api.conftest import JOBS_URI, login, make_db_record
 from flask_api import status
 
 
-def test_list_jobs(client, table):
+def test_list_jobs(client, tables):
     files = [
         {
             'filename': 'foo.txt',
@@ -23,7 +23,7 @@ def test_list_jobs(client, table):
                        browse_images=browse_images, thumbnail_images=thumbnail_images)
     ]
     for item in items:
-        table.put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     login(client, 'user_with_jobs')
     response = client.get(JOBS_URI)
@@ -36,13 +36,13 @@ def test_list_jobs(client, table):
     assert response.json == {'jobs': []}
 
 
-def test_list_jobs_by_name(client, table):
+def test_list_jobs_by_name(client, tables):
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', name='item1'),
         make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', name='item2')
     ]
     for item in items:
-        table.put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     login(client)
     response = client.get(JOBS_URI, query_string={'name': 'item1'})
@@ -54,13 +54,13 @@ def test_list_jobs_by_name(client, table):
     assert response.json == {'jobs': []}
 
 
-def test_list_jobs_by_status(client, table):
+def test_list_jobs_by_status(client, tables):
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', status_code='RUNNING'),
         make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', status_code='SUCCEEDED')
     ]
     for item in items:
-        table.put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     login(client)
     response = client.get(JOBS_URI, query_string={'status_code': 'RUNNING'})
@@ -82,14 +82,14 @@ def test_list_jobs_bad_status(client):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_list_jobs_date_start_and_end(client, table):
+def test_list_jobs_date_start_and_end(client, tables):
     items = [
         make_db_record('874f7533-807d-4b20-afe1-27b5b6fc9d6c', request_time='2019-12-31T10:00:09+00:00'),
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', request_time='2019-12-31T10:00:10+00:00'),
         make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T10:00:11+00:00'),
     ]
     for item in items:
-        table.put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     dates = [
         '2019-12-31T10:00:10Z',

@@ -6,7 +6,7 @@ from flask_api import status
 from hyp3_api.util import format_time
 
 
-def test_submit_one_job(client, table):
+def test_submit_one_job(client, tables):
     login(client)
     response = submit_batch(client)
     assert response.status_code == status.HTTP_200_OK
@@ -17,7 +17,7 @@ def test_submit_one_job(client, table):
     assert jobs[0]['user_id'] == DEFAULT_USERNAME
 
 
-def test_submit_insar_gamma(client, table):
+def test_submit_insar_gamma(client, tables):
     login(client)
     job = make_job(
         [
@@ -30,7 +30,7 @@ def test_submit_insar_gamma(client, table):
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_submit_autorift(client, table):
+def test_submit_autorift(client, tables):
     login(client)
     job = make_job(
         [
@@ -43,7 +43,7 @@ def test_submit_autorift(client, table):
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_submit_multiple_job_types(client, table):
+def test_submit_multiple_job_types(client, tables):
     login(client)
     rtc_gamma_job = make_job()
     insar_gamma_job = make_job(
@@ -64,7 +64,7 @@ def test_submit_multiple_job_types(client, table):
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_submit_many_jobs(client, table):
+def test_submit_many_jobs(client, tables):
     max_jobs = 25
     login(client)
 
@@ -83,12 +83,12 @@ def test_submit_many_jobs(client, table):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_submit_exceeds_quota(client, table, monkeypatch):
+def test_submit_exceeds_quota(client, tables, monkeypatch):
     login(client)
     time_for_previous_month = format_time(datetime.now(timezone.utc) - timedelta(days=32))
     job_from_previous_month = make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266',
                                              request_time=time_for_previous_month)
-    table.put_item(Item=job_from_previous_month)
+    tables['jobs_table'].put_item(Item=job_from_previous_month)
 
     monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
     batch = [make_job() for ii in range(25)]
@@ -110,7 +110,7 @@ def test_submit_without_jobs(client):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_submit_job_without_name(client, table):
+def test_submit_job_without_name(client, tables):
     login(client)
     batch = [
         make_job(name=None)
@@ -141,7 +141,7 @@ def test_submit_job_with_long_name(client):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_submit_job_granule_does_not_exist(client, table):
+def test_submit_job_granule_does_not_exist(client, tables):
     batch = [
         make_job(['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38']),
         make_job(['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B'])
@@ -157,7 +157,7 @@ def test_submit_job_granule_does_not_exist(client, table):
                                       'S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A'
 
 
-def test_submit_good_granule_names(client, table):
+def test_submit_good_granule_names(client, tables):
     login(client)
     good_granule_names = [
         'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
@@ -202,7 +202,7 @@ def test_submit_bad_granule_names(client):
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_float_input(client, table):
+def test_float_input(client, tables):
     login(client)
     job = make_job(parameters={'resolution': 30.0})
     response = submit_batch(client, batch=[job])
@@ -215,20 +215,20 @@ def test_float_input(client, table):
     assert isinstance(response.json['jobs'][0]['job_parameters']['resolution'], int)
 
 
-def test_submit_validate_only(client, table):
+def test_submit_validate_only(client, tables):
     login(client)
 
     response = submit_batch(client, validate_only=True)
     assert response.status_code == status.HTTP_200_OK
-    jobs = table.scan()['Items']
+    jobs = tables['jobs_table'].scan()['Items']
     assert len(jobs) == 0
 
     response = submit_batch(client, validate_only=False)
     assert response.status_code == status.HTTP_200_OK
-    jobs = table.scan()['Items']
+    jobs = tables['jobs_table'].scan()['Items']
     assert len(jobs) == 1
 
     response = submit_batch(client, validate_only=None)
     assert response.status_code == status.HTTP_200_OK
-    jobs = table.scan()['Items']
+    jobs = tables['jobs_table'].scan()['Items']
     assert len(jobs) == 2

@@ -70,6 +70,7 @@ Resources:
     Properties:
       Parameters:
         JobsTable: !Ref JobsTable
+        UsersTable: !Ref UsersTable
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
         DomainName: !Ref DomainName
@@ -183,3 +184,14 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
+
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: user_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
