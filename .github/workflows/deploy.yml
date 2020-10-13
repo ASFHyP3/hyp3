@@ -78,7 +78,8 @@ jobs:
                 EDLPassword="${EDL_PASSWORD}" \
                 ImageTag="${IMAGE_TAG}" \
                 DomainName="${DOMAIN_NAME}" \
-                CertificateArn="${CERTIFICATE_ARN}"
+                CertificateArn="${CERTIFICATE_ARN}" \
+                MonthlyJobQuotaPerUser=200
 
       - name: Get associated PR
         if: github.ref == 'refs/heads/master'

@@ -63,4 +63,5 @@ jobs:
                 EDLPassword="${EDL_PASSWORD}" \
                 ImageTag="${IMAGE_TAG}" \
                 DomainName="${DOMAIN_NAME}" \
-                CertificateArn="${CERTIFICATE_ARN}"
+                CertificateArn="${CERTIFICATE_ARN}" \
+                MonthlyJobQuotaPerUser=0
