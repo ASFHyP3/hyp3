@@ -1,3 +1,5 @@
+import uuid
+
 from api.conftest import JOBS_URI, login, make_db_record
 from flask_api import status
 
@@ -114,7 +116,6 @@ def test_list_jobs_date_start_and_end(client, tables):
         response = client.get(JOBS_URI, query_string={'start': date, 'end': date})
         assert response.status_code == status.HTTP_200_OK
         assert response.json == {'jobs': [items[1]]}
-
 
 def test_bad_date_formats(client):
     datetime_parameters = ['start', 'end']
