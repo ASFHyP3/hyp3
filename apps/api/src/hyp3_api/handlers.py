@@ -5,17 +5,15 @@ from pathlib import Path
 from uuid import UUID, uuid4
 
 import requests
-from boto3.dynamodb.conditions import Attr, Key
 from connexion import problem
 from connexion.apps.flask_app import FlaskJSONEncoder
 from flask import jsonify, make_response
 from flask_cors import CORS
 from jsonschema import draft4_format_checker
 
-from hyp3_api import DYNAMODB_RESOURCE, connexion_app
+from hyp3_api import connexion_app, dynamo
 from hyp3_api.openapi import get_spec
-from hyp3_api.util import convert_floats_to_decimals, format_time, get_remaining_jobs_for_user, \
-    get_request_time_expression
+from hyp3_api.util import convert_floats_to_decimals, format_time, get_remaining_jobs_for_user
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
 
@@ -67,82 +65,40 @@ def post_jobs(body, user):
         return problem(400, 'Bad Request', str(e))
 
     request_time = format_time(datetime.now(timezone.utc))
-    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
-
+    jobs = []
     for job in body['jobs']:
         job['job_id'] = str(uuid4())
         job['user_id'] = user
         job['status_code'] = 'PENDING'
         job['request_time'] = request_time
-        if not body.get('validate_only'):
-            job = convert_floats_to_decimals(job)
-            table.put_item(Item=job)
-
+        jobs.append(convert_floats_to_decimals(job))
+    if not body.get('validate_only'):
+        dynamo.insert_jobs(jobs)
     return body
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None):
-    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
-
-    key_expression = Key('user_id').eq(user)
-    if start is not None or end is not None:
-        key_expression &= get_request_time_expression(start, end)
-
-    filter_expression = Attr('job_id').exists()
-    if status_code is not None:
-        filter_expression &= Attr('status_code').eq(status_code)
-    if name is not None:
-        filter_expression &= Attr('name').eq(name)
-
-    response = table.query(
-        IndexName='user_id',
-        KeyConditionExpression=key_expression,
-        FilterExpression=filter_expression,
-    )
-    jobs = response['Items']
-    while 'LastEvaluatedKey' in response:
-        response = table.query(
-            IndexName='user_id',
-            KeyConditionExpression=key_expression,
-            FilterExpression=filter_expression,
-            ExclusiveStartKey=response['LastEvaluatedKey'],
-            )
-        jobs.extend(response['Items'])
-    return {'jobs': jobs}
+    return {'jobs': dynamo.query_jobs_by_user(user, start, end, status_code, name)}
 
 
 def get_job_by_id(job_id):
-    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
-    response = table.get_item(Key={'job_id': job_id})
-    if 'Item' not in response:
+    job = dynamo.query_jobs_by_id(job_id)
+    if job is None:
         return problem(404, 'Not Found', f'job_id does not exist: {job_id}')
-    return response['Item']
+    return job
 
 
 def get_names_for_user(user):
-    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
-    key_expression = Key('user_id').eq(user)
-    response = table.query(
-        IndexName='user_id',
-        KeyConditionExpression=key_expression,
-    )
-    records = response['Items']
-    while 'LastEvaluatedKey' in response:
-        response = table.query(
-            IndexName='user_id',
-            KeyConditionExpression=key_expression,
-            ExclusiveStartKey=response['LastEvaluatedKey'])
-        records.extend(response['Items'])
+    records = dynamo.query_jobs_by_user(user)
 
     names = {record['name'] for record in records if 'name' in record}
     return sorted(list(names))
 
 
 def get_max_jobs_per_month(user):
-    table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
-    response = table.get_item(Key={'user_id': user})
-    if 'Item' in response:
-        max_jobs_per_month = response['Item']['max_jobs_per_month']
+    user = dynamo.get_user(user)
+    if user:
+        max_jobs_per_month = user['max_jobs_per_month']
     else:
         max_jobs_per_month = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
     return max_jobs_per_month

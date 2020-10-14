@@ -1,8 +1,6 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 
-from boto3.dynamodb.conditions import Key
-from dateutil.parser import parse
 
 from hyp3_api import handlers
 
@@ -35,17 +33,7 @@ def get_job_count_for_month(user):
     return len(response['jobs'])
 
 
-def get_request_time_expression(start, end):
-    key = Key('request_time')
-    formatted_start = (format_time(parse(start)) if start else None)
-    formatted_end = (format_time(parse(end)) if end else None)
 
-    if formatted_start and formatted_end:
-        return key.between(formatted_start, formatted_end)
-    if formatted_start:
-        return key.gte(formatted_start)
-    if formatted_end:
-        return key.lte(formatted_end)
 
 
 def convert_floats_to_decimals(element):
