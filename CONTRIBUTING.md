@@ -6,7 +6,7 @@ We're excited you would like to contribute to HyP3! Whether you're finding bugs,
 
 ## Submitting an Issue
 
-If you have any questions or ideas, or notice any problems or bugs, first [search open issues](https://github.com/ASFHyP3/hyp3/issues) to see if the issue has already been submitted. We may already be working on the issue. If you think your issue is new, you're welcome to [create a new issue](https://github.com/ASFHyP3/hyp3-lib/issues/new).
+If you have any questions or ideas, or notice any problems or bugs, first [search open issues](https://github.com/ASFHyP3/hyp3/issues) to see if the issue has already been submitted. We may already be working on the issue. If you think your issue is new, you're welcome to [create a new issue](https://github.com/ASFHyP3/hyp3/issues/new).
 
 ## Pull Requests are welcome
 
@@ -24,11 +24,11 @@ The basic steps are:
 
 2. Clone your fork
    ```
-   git clone https://github.com/[OWNER]/hyp3-lib.git
+   git clone https://github.com/[OWNER]/hyp3.git
    ```
 3. Add this repository as an `upstream` remote
    ```
-   git remote add upstream https://github.com/ASFHyP3/hyp3-lib.git
+   git remote add upstream https://github.com/ASFHyP3/hyp3.git
    ```  
 4. Create a feature branch based on the upstream/develop branch
    ```
@@ -39,7 +39,7 @@ The basic steps are:
    ```
    git push -u origin [NAME]
    ```
-6. Propose your changes by opening a pull request to `ASFHyP3/hyp3-lib`'s `develop` branch
+6. Propose your changes by opening a pull request to `ASFHyP3/hyp3`'s `develop` branch
 
 ## Guidelines
 
