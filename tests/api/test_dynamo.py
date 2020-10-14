@@ -6,23 +6,20 @@ def test_query_jobs_by_user(tables):
         {
             'job_id': 'job1',
             'user_id': 'user1',
-            'job_type': 'fake job type',
-            'status_code': 'fake job stats',
-            'request_time': '2000-10-01T00:00:00+00:00'
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
         {
             'job_id': 'job2',
             'user_id': 'user1',
-            'job_type': 'fake job type',
-            'status_code': 'fake job stats',
-            'request_time': '2000-01-01T00:00:00+00:00'
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
         {
             'job_id': 'job3',
             'user_id': 'user2',
-            'job_type': 'fake job type',
-            'status_code': 'fake job stats',
-            'request_time': '2000-01-01T00:00:00+00:00'
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
     ]
     for item in table_items:
@@ -38,23 +35,20 @@ def test_query_jobs_by_time(tables):
         {
             'job_id': 'job1',
             'user_id': 'user1',
-            'job_type': 'fake job type',
-            'status_code': 'fake job stats',
-            'request_time': '2000-01-01T00:00:00+00:00'
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
         {
             'job_id': 'job2',
             'user_id': 'user1',
-            'job_type': 'fake job type',
-            'status_code': 'fake job stats',
-            'request_time': '2000-01-02T00:00:00+00:00'
+            'status_code': 'status1',
+            'request_time': '2000-01-02T00:00:00+00:00',
         },
         {
             'job_id': 'job3',
             'user_id': 'user1',
-            'job_type': 'fake job type',
-            'status_code': 'fake job stats',
-            'request_time': '2000-01-03T00:00:00+00:00'
+            'status_code': 'status1',
+            'request_time': '2000-01-03T00:00:00+00:00',
         },
     ]
     for item in table_items:
@@ -78,23 +72,20 @@ def test_query_jobs_by_status(tables):
         {
             'job_id': 'job1',
             'user_id': 'user1',
-            'job_type': 'fake job type',
             'status_code': 'status1',
-            'request_time': '2000-10-01T00:00:00+00:00'
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
         {
             'job_id': 'job2',
             'user_id': 'user1',
-            'job_type': 'fake job type',
             'status_code': 'status2',
-            'request_time': '2000-01-01T00:00:00+00:00'
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
         {
             'job_id': 'job3',
             'user_id': 'user1',
-            'job_type': 'fake job type',
             'status_code': 'status1',
-            'request_time': '2000-01-01T00:00:00+00:00'
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
     ]
     for item in table_items:
@@ -111,25 +102,22 @@ def test_query_jobs_by_name(tables):
             'job_id': 'job1',
             'name': 'name1',
             'user_id': 'user1',
-            'job_type': 'fake job type',
             'status_code': 'status1',
-            'request_time': '2000-10-01T00:00:00+00:00'
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
         {
             'job_id': 'job2',
             'name': 'name1',
             'user_id': 'user1',
-            'job_type': 'fake job type',
-            'status_code': 'status2',
-            'request_time': '2000-01-01T00:00:00+00:00'
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
         {
             'job_id': 'job3',
             'name': 'name2',
             'user_id': 'user1',
-            'job_type': 'fake job type',
             'status_code': 'status1',
-            'request_time': '2000-01-01T00:00:00+00:00'
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
     ]
     for item in table_items:
@@ -146,25 +134,21 @@ def test_put_jobs(tables):
             'job_id': 'job1',
             'name': 'name1',
             'user_id': 'user1',
-            'job_type': 'fake job type',
             'status_code': 'status1',
-            'request_time': '2000-10-01T00:00:00+00:00'
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
         {
             'job_id': 'job2',
             'name': 'name1',
-            'user_id': 'user1',
-            'job_type': 'fake job type',
-            'status_code': 'status2',
-            'request_time': '2000-01-01T00:00:00+00:00'
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
         {
             'job_id': 'job3',
             'name': 'name2',
             'user_id': 'user2',
-            'job_type': 'fake job type',
             'status_code': 'status1',
-            'request_time': '2000-01-01T00:00:00+00:00'
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
     ]
     dynamo.put_jobs(table_items)
@@ -178,25 +162,22 @@ def test_get_job(tables):
             'job_id': 'job1',
             'name': 'name1',
             'user_id': 'user1',
-            'job_type': 'fake job type',
             'status_code': 'status1',
-            'request_time': '2000-10-01T00:00:00+00:00'
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
         {
             'job_id': 'job2',
-            'name': 'name1',
+            'name': 'name2',
             'user_id': 'user1',
-            'job_type': 'fake job type',
-            'status_code': 'status2',
-            'request_time': '2000-01-01T00:00:00+00:00'
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
         {
             'job_id': 'job3',
-            'name': 'name2',
+            'name': 'name3',
             'user_id': 'user1',
-            'job_type': 'fake job type',
             'status_code': 'status1',
-            'request_time': '2000-01-01T00:00:00+00:00'
+            'request_time': '2000-01-01T00:00:00+00:00',
         },
     ]
     for item in table_items:
