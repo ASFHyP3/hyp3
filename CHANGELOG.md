@@ -4,15 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.8.1]
+## [0.8.2]
 ## Changed
-- Queries to dynamodb now page results
+- Refactored dynamodb interactions
+  - `dynomo.py` in the api code now manages all dynamodb interactions for the api
+  - added tests for new dynamo module
+  - added paging for dynamodb query calls
+
+## [0.8.1]
+### Added
+- Added Code of Conduct and Contributing Guidelines
+
+### Changed
+- `MonthlyJobQuotaPerUser` stack parameter no longer has a default, and the value can now be set to zero.
+  - Value is now set to `200` for ASF deployments.
+  - Value is now set to `0` for the autoRIFT deployment.
+- `POST /jobs` requests now allow up to 200 jobs per request, up from 25
 
 ## [0.8.0]
 ### Added
 - User table which can be used to add custom quotas for users, users not in the table will still have the default.
-- GET /jobs/{job_id} API endpoint to search for a job by its job_id 
-
+- GET /jobs/{job_id} API endpoint to search for a job by its job_id
 
 ## [0.7.5]
 ### Added
