@@ -4,9 +4,8 @@ from typing import List
 from boto3.dynamodb.conditions import Attr, Key
 from dateutil.parser import parse
 
-from hyp3_api.util import format_time
-
 from hyp3_api import DYNAMODB_RESOURCE
+from hyp3_api.util import format_time
 
 
 def get_request_time_expression(start, end):

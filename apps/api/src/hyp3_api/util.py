@@ -33,9 +33,6 @@ def get_job_count_for_month(user):
     return len(response['jobs'])
 
 
-
-
-
 def convert_floats_to_decimals(element):
     if type(element) is float:
         return Decimal(element)
