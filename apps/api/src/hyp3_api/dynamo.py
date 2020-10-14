@@ -11,7 +11,7 @@ from hyp3_api import DYNAMODB_RESOURCE
 
 def get_request_time_expression(start, end):
     key = Key('request_time')
-    formatted_start = (format_time(parse(start)) if start else None)
+    formatted_start = (format_time(parse(start))if start else None)
     formatted_end = (format_time(parse(end)) if end else None)
 
     if formatted_start and formatted_end:
@@ -22,14 +22,14 @@ def get_request_time_expression(start, end):
         return key.lte(formatted_end)
 
 
-def insert_jobs(payload: List[dict]):
+def put_jobs(payload: List[dict]):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     for item in payload:
         table.put_item(Item=item)
 
 
-def query_jobs_by_user(user, start=None, end=None, status_code=None, name=None):
+def query_jobs(user, start=None, end=None, status_code=None, name=None):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
@@ -60,7 +60,7 @@ def query_jobs_by_user(user, start=None, end=None, status_code=None, name=None):
     return jobs
 
 
-def query_jobs_by_id(job_id):
+def get_job(job_id):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     response = table.get_item(Key={'job_id': job_id})
     return response.get('Item')

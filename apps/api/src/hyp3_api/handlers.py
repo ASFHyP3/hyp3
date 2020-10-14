@@ -73,25 +73,26 @@ def post_jobs(body, user):
         job['request_time'] = request_time
         jobs.append(convert_floats_to_decimals(job))
     if not body.get('validate_only'):
-        dynamo.insert_jobs(jobs)
+        dynamo.put_jobs(jobs)
     return body
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None):
-    return {'jobs': dynamo.query_jobs_by_user(user, start, end, status_code, name)}
+    jobs = dynamo.query_jobs(user, start, end, status_code, name)
+    return {'jobs': jobs}
 
 
 def get_job_by_id(job_id):
-    job = dynamo.query_jobs_by_id(job_id)
+    job = dynamo.get_job(job_id)
     if job is None:
         return problem(404, 'Not Found', f'job_id does not exist: {job_id}')
     return job
 
 
 def get_names_for_user(user):
-    records = dynamo.query_jobs_by_user(user)
+    jobs = dynamo.query_jobs(user)
 
-    names = {record['name'] for record in records if 'name' in record}
+    names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))
 
 
