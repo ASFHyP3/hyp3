@@ -48,8 +48,7 @@ Parameters:
   MonthlyJobQuotaPerUser:
     Description: Number of jobs each user is allowed per month.
     Type: Number
-    MinValue: 1
-    Default: 25
+    MinValue: 0
 
   SystemAvailable:
     Description: Set to false to shutdown system, API will run and provide errors to users, but will not accept jobs.
