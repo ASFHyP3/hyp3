@@ -24,7 +24,14 @@ def get_pending_jobs():
         IndexName='status_code',
         KeyConditionExpression=Key('status_code').eq('PENDING'),
     )
-    return response['Items']
+    pending_jobs = response['Items']
+    while 'LastEvaluatedKey' in response:
+        response = table.query(
+            IndexName='status_code',
+            KeyConditionExpression=Key('status_code').eq('PENDING'),
+        )
+        pending_jobs.extend(response['Items'])
+    return pending_jobs
 
 
 def convert_parameters_to_strings(parameters):
