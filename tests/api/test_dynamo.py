@@ -2,7 +2,7 @@ from hyp3_api import dynamo
 
 
 def list_have_same_elements(l1, l2):
-    return [item for item in l1 if item not in l2] == []
+    return [item for item in l1 if item not in l2] == [] == [item for item in l2 if item not in l1]
 
 
 def test_query_jobs_by_user(tables):
