@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.8.2]
 ## Changed
 - Refactored dynamodb interactions
-  - `dynomo.py` in the api code now manages all dynamodb interactions for the api
+  - `dynamo.py` in the api code now manages all dynamodb interactions for the api
   - added tests for new dynamo module
   - added paging for dynamodb query calls
 
