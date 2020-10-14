@@ -205,6 +205,7 @@ def test_get_job(tables):
     assert dynamo.get_job('job1') == table_items[0]
     assert dynamo.get_job('job2') == table_items[1]
     assert dynamo.get_job('job3') == table_items[2]
+    assert dynamo.get_job('foo') is None
 
 
 def test_get_user(tables):
@@ -223,3 +224,4 @@ def test_get_user(tables):
 
     assert dynamo.get_user('user1') == table_items[0]
     assert dynamo.get_user('user2') == table_items[1]
+    assert dynamo.get_user('foo') is None
