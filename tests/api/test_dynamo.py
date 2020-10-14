@@ -1,6 +1,10 @@
 from hyp3_api import dynamo
 
 
+def list_have_same_elements(l1, l2):
+    return [item for item in l1 if item not in l2] == []
+
+
 def test_query_jobs_by_user(tables):
     table_items = [
         {
@@ -27,7 +31,7 @@ def test_query_jobs_by_user(tables):
 
     response = dynamo.query_jobs('user1')
     assert len(response) == 2
-    assert [i for i in response if i not in table_items[:2]] == []
+    assert list_have_same_elements(response, table_items[:2])
 
 
 def test_query_jobs_by_time(tables):
@@ -93,7 +97,7 @@ def test_query_jobs_by_status(tables):
 
     response = dynamo.query_jobs('user1', status_code='status1')
     assert len(response) == 2
-    assert [i for i in response if i not in table_items[0::2]] == []
+    assert list_have_same_elements(response, table_items[0::2])
 
 
 def test_query_jobs_by_name(tables):
@@ -125,7 +129,7 @@ def test_query_jobs_by_name(tables):
 
     response = dynamo.query_jobs('user1', name='name1')
     assert len(response) == 2
-    assert [i for i in response if i not in table_items[:2]] == []
+    assert list_have_same_elements(response, table_items[:2])
 
 
 def test_put_jobs(tables):
