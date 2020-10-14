@@ -29,7 +29,7 @@ def get_pending_jobs():
         response = table.query(
             IndexName='status_code',
             KeyConditionExpression=Key('status_code').eq('PENDING'),
-            )
+        )
         pending_jobs.extend(response['Items'])
     return pending_jobs
 

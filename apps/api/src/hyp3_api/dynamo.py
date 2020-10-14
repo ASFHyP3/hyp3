@@ -54,7 +54,7 @@ def query_jobs(user, start=None, end=None, status_code=None, name=None):
             KeyConditionExpression=key_expression,
             FilterExpression=filter_expression,
             ExclusiveStartKey=response['LastEvaluatedKey'],
-            )
+        )
         jobs.extend(response['Items'])
     return jobs
 
