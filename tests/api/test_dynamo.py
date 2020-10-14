@@ -68,17 +68,17 @@ def test_query_jobs_by_time(tables):
     end = '2000-01-02T00:59:59z'
     response = dynamo.query_jobs('user1', start, end)
     assert len(response) == 1
-    assert [i for i in response if i not in table_items[1:2]] == []
+    assert list_have_same_elements(response, table_items[1:2])
 
     start = '2000-01-01T00:00:01z'
     response = dynamo.query_jobs('user1', start, None)
     assert len(response) == 2
-    assert [i for i in response if i not in table_items[1:]] == []
+    assert list_have_same_elements(response, table_items[1:])
 
     end = '2000-01-02T00:59:59z'
     response = dynamo.query_jobs('user1', None, end)
     assert len(response) == 2
-    assert [i for i in response if i not in table_items[:2]] == []
+    assert list_have_same_elements(response, table_items[:2])
 
 
 def test_query_jobs_by_status(tables):
