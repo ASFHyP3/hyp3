@@ -57,7 +57,7 @@ Resources:
         Type: SPOT
         AllocationStrategy: SPOT_CAPACITY_OPTIMIZED
         MinvCpus: 0
-        MaxvCpus: 400
+        MaxvCpus: 800
         InstanceTypes:
           - r5d.xlarge
         ImageId: !Ref AmiId
