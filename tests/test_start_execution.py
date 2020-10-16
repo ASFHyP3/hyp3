@@ -6,8 +6,8 @@ import boto3
 import pytest
 from botocore.stub import Stubber
 from moto import mock_dynamodb2
-from tests.util import get_table_properties_from_template
 from start_execution import STEP_FUNCTION, get_pending_jobs, submit_jobs
+from tests.util import get_table_properties_from_template
 
 
 @pytest.fixture(autouse=True)
