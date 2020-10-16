@@ -7,7 +7,7 @@ import pytest
 import yaml
 from botocore.stub import Stubber
 from moto import mock_dynamodb2
-from start_execution import STEP_FUNCTION, submit_jobs, get_pending_jobs
+from start_execution import STEP_FUNCTION, get_pending_jobs, submit_jobs
 
 
 @pytest.fixture(autouse=True)
