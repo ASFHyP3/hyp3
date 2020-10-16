@@ -1,11 +1,11 @@
 import json
 import re
-from os import environ, path
+from os import environ
 
 import pytest
 import responses
-import yaml
 from moto import mock_dynamodb2
+from tests.util import get_table_properties_from_template
 
 from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, connexion_app
 from hyp3_api.util import get_granules
@@ -38,15 +38,6 @@ def tables():
             **get_table_properties_from_template('UsersTable'),
         )
         yield {'users_table': users_table, 'jobs_table': jobs_table}
-
-
-def get_table_properties_from_template(resource_name):
-    yaml.SafeLoader.add_multi_constructor('!', lambda loader, suffix, node: None)
-    template_file = path.join(path.dirname(__file__), '../../apps/main-cf.yml')
-    with open(template_file, 'r') as f:
-        template = yaml.safe_load(f)
-    table_properties = template['Resources'][resource_name]['Properties']
-    return table_properties
 
 
 def make_job(granules=['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'],

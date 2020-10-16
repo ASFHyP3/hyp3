@@ -1,12 +1,12 @@
 from decimal import Decimal
 from json import dumps
-from os import environ, path
+from os import environ
 
 import boto3
 import pytest
-import yaml
 from botocore.stub import Stubber
 from moto import mock_dynamodb2
+from tests.util import get_table_properties_from_template
 from start_execution import STEP_FUNCTION, get_pending_jobs, submit_jobs
 
 
@@ -25,7 +25,7 @@ def states_stubber():
 
 
 @pytest.fixture
-def job_table():
+def jobs_table():
     with mock_dynamodb2():
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.create_table(
@@ -35,16 +35,7 @@ def job_table():
         yield table
 
 
-def get_table_properties_from_template(resource_name):
-    yaml.SafeLoader.add_multi_constructor('!', lambda loader, suffix, node: None)
-    template_file = path.join(path.dirname(__file__), '../apps/main-cf.yml')
-    with open(template_file, 'r') as f:
-        template = yaml.safe_load(f)
-    table_properties = template['Resources'][resource_name]['Properties']
-    return table_properties
-
-
-def test_get_pending_jobs(job_table):
+def test_get_pending_jobs(jobs_table):
     assert get_pending_jobs() == []
 
     table_items = [
@@ -68,7 +59,7 @@ def test_get_pending_jobs(job_table):
         },
     ]
     for item in table_items:
-        job_table.put_item(Item=item)
+        jobs_table.put_item(Item=item)
     assert get_pending_jobs() == table_items[1:2]
 
 
