@@ -91,3 +91,9 @@ def test_hyp3_unavailable(client, monkeypatch):
         for method in methods:
             response = client.open(uri, method=method)
             assert response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
+
+
+def test_redirect_root(client):
+    response = client.get('/')
+    assert response.location.endswith('/ui')
+    assert response.status_code == status.HTTP_302_FOUND
