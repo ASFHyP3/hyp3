@@ -5,7 +5,7 @@ from hyp3_api import lambda_handler
 
 def test_404_response():
     event = {
-        'path': '/',
+        'path': '/foo',
         'httpMethod': 'GET',
         'body': '',
         'headers': {},
