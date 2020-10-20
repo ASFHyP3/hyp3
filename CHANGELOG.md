@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 ### Changed
-- GET `/` now redirects to `/ui`
+- `/` now redirects to `/ui`
 
 ## [0.8.2]
 ## Changed
