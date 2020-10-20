@@ -7,7 +7,7 @@ from uuid import UUID, uuid4
 import requests
 from connexion import problem
 from connexion.apps.flask_app import FlaskJSONEncoder
-from flask import jsonify, make_response
+from flask import jsonify, make_response, redirect
 from flask_cors import CORS
 from jsonschema import draft4_format_checker
 
@@ -46,6 +46,11 @@ def check_system_available():
             'type': 'about:blank'
         }
         return make_response(jsonify(error), 503)
+
+
+@connexion_app.app.route('/')
+def redirect_to_ui():
+    return redirect('/ui')
 
 
 def post_jobs(body, user):
