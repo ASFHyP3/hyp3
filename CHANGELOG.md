@@ -12,7 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Api Gateway access logs are now in JSON format for easier parsing by Cloudwatch Insights
 - Api Gateway access logs now include `responseLatency` and `userAgent` fields.  Unused `caller` and `userId` fields are no longer included.
 
-
 ## [0.8.4]
 ### Changed
 - `/` now redirects to `/ui`
