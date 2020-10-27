@@ -58,8 +58,8 @@ RtcGamma:
     - Ref::include_dem
     - --include-inc-map
     - Ref::include_inc_map
-    - --include-area-map
-    - Ref::include_area_map
+    - --include-scattering-area
+    - Ref::include_scattering_map
     - Ref::granules
   validators:
     - check_dem_coverage

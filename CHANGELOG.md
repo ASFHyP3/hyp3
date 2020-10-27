@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 ###
-- A new `include_area_map` job parameter has been added for RTC_GAMMA jobs
+- A new `include_scattering_area` job parameter has been added for RTC_GAMMA jobs
 
 ### Changed
 - Api Gateway access logs are now in JSON format for easier parsing by Cloudwatch Insights
