@@ -51,7 +51,7 @@ Resources:
       Stage:
         AccessLogSettings:
           DestinationArn: !GetAtt ApiLogGroup.Arn
-          Format: $context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.path $context.protocol" $context.status $context.responseLength $context.requestId
+          Format: '{"sourceIp":"$context.identity.sourceIp","httpMethod":"$context.httpMethod","path":"$context.path","status":"$context.status","responseLength":"$context.responseLength","responseLatency":"$context.responseLatency","requestTime":"$context.requestTime","protocol":"$context.protocol","userAgent":"$context.identity.userAgent","requestId":"$context.requestId"}'
 
   ApiLogGroup:
     Type: AWS::Logs::LogGroup
