@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 ###
-- A new `include_scattering_area` paramter has been added for `RTC_GAMMA` jobs, which includes a geotiff of scattering area in the product package. This supports creation of composites of RTC images using Local Resolution Weighting per Small (2012) https://doi.org/10.1109/IGARSS.2012.6350465.
+- A new `include_scattering_area` paramter has been added for `RTC_GAMMA` jobs, which includes a GeoTIFF of scattering area in the product package. This supports creation of composites of RTC images using Local Resolution Weighting per Small (2012) https://doi.org/10.1109/IGARSS.2012.6350465.
 
 ### Changed
 - Api Gateway access logs are now in JSON format for easier parsing by Cloudwatch Insights
