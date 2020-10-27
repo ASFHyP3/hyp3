@@ -28,9 +28,9 @@ RtcGamma:
     include_inc_map:
       default:  false
       api_schema_location: "#/components/schemas/include_inc_map"
-    include_area_map:
+    include_scattering_area:
       default: false
-      api_schema_location: "#/components/schemas/include_area_map"
+      api_schema_location: "#/components/schemas/include_scattering_area"
   required_parameters:
     - granules
   command:
