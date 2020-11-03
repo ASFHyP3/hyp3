@@ -126,7 +126,7 @@ Resources:
         DestinationBucketName: !Ref LogBucket
         LogFilePrefix: s3-access-logs/content-bucket/
       MetricsConfigurations:
-        Id: EntireBucket
+        - Id: EntireBucket
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
         IgnorePublicAcls: True
