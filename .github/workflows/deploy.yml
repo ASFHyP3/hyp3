@@ -33,15 +33,15 @@ jobs:
 
       - if: endsWith(github.ref, '/develop')
         run: |
-          echo "::set-env name=STACK_NAME::hyp3-test"
-          echo "::set-env name=DOMAIN_NAME::hyp3-test-api.asf.alaska.edu"
-          echo "::set-env name=IMAGE_TAG::test"
+          echo "STACK_NAME=hyp3-test" >> $GITHUB_ENV
+          echo "DOMAIN_NAME=hyp3-test-api.asf.alaska.edu" >> $GITHUB_ENV
+          echo "IMAGE_TAG=test" >> $GITHUB_ENV
 
       - if: endsWith(github.ref, '/master')
         run: |
-          echo "::set-env name=STACK_NAME::hyp3"
-          echo "::set-env name=DOMAIN_NAME::hyp3-api.asf.alaska.edu"
-          echo "::set-env name=IMAGE_TAG::latest"
+          echo "STACK_NAME=hyp3" >> $GITHUB_ENV
+          echo "DOMAIN_NAME=hyp3-api.asf.alaska.edu" >> $GITHUB_ENV
+          echo "IMAGE_TAG=latest" >> $GITHUB_ENV
 
       - uses: aws-actions/configure-aws-credentials@v1
         with:
