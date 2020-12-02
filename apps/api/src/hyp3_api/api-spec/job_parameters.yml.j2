@@ -23,6 +23,15 @@ components:
         {% endif %}
       {% endfor %}
     {% endfor %}
+    autorift_granules:
+      type: array
+      minItems: 2
+      maxItems: 2
+      items:
+        any-of:
+          $- ref: "#/components/schemas/granule_slc"
+          $- ref: "#/components/schemas/granul2_s2"
+
     insar_granules:
       type: array
       minItems: 2
@@ -51,6 +60,14 @@ components:
       description: The name of the Sentinel-1 SLC granule to process
       type: string
       pattern: "^S1[AB]_IW_SLC__*"
+      minLength: 67
+      maxLength: 67
+      example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+
+    granule_s2:
+      description: The name of the Sentinel-2 SLC granule to process
+      type: string
+      pattern: "^S2[AB]_.*"
       minLength: 67
       maxLength: 67
       example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
