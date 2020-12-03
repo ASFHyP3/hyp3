@@ -28,9 +28,9 @@ components:
       minItems: 2
       maxItems: 2
       items:
-        any-of:
-          $- ref: "#/components/schemas/granule_slc"
-          $- ref: "#/components/schemas/granul2_s2"
+        anyOf:
+          - $ref: "#/components/schemas/granule_slc"
+          - $ref: "#/components/schemas/granule_s2"
 
     insar_granules:
       type: array
