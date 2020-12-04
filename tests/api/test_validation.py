@@ -110,6 +110,9 @@ def test_check_granules_exist():
         {
             'name': 'scene2',
         },
+        {
+            'name': 'S2_this_should_not_be_found'
+        }
     ]
 
     check_granules_exist([], granule_metadata)
@@ -118,6 +121,7 @@ def test_check_granules_exist():
 
     with raises(GranuleValidationError) as e:
         check_granules_exist(['scene1', 'scene2', 'scene3', 'scene4'], granule_metadata)
+    assert 'S2_this_should_not_be_found' not in str(e)
     assert 'scene1' not in str(e)
     assert 'scene2' not in str(e)
     assert 'scene3' in str(e)
