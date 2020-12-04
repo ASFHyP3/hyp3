@@ -23,6 +23,16 @@ components:
         {% endif %}
       {% endfor %}
     {% endfor %}
+    autorift_granules:
+      type: array
+      minItems: 2
+      maxItems: 2
+      items:
+        anyOf:
+          - $ref: "#/components/schemas/granule_slc"
+          - $ref: "#/components/schemas/granule_s2_esa"
+          - $ref: "#/components/schemas/granule_s2_cog"
+
     insar_granules:
       type: array
       minItems: 2
@@ -54,6 +64,22 @@ components:
       minLength: 67
       maxLength: 67
       example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+
+    granule_s2_esa:
+      description: The name of the Sentinel-2 SLC granule to process
+      type: string
+      pattern: "^S2[AB]_.*"
+      minLength: 60
+      maxLength: 60
+      example: S2B_MSIL2A_20200903T151809_N0214_R068_T22WEB_20200903T194353
+
+    granule_s2_cog:
+      description: The name of the Sentinel-2 SLC granule to process
+      type: string
+      pattern: "^S2[AB]_.*"
+      minLength: 24
+      maxLength: 24
+      example: S2B_MSIL2A_20200903T151809_N0214_R068_T22WEB_20200903T194353
 
     resolution:
       description: Desired output pixel spacing in meters
