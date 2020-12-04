@@ -111,7 +111,7 @@ Autorift:
   parameters:
     granules:
       default:  '""'
-      api_schema_location: "#/components/schemas/insar_granules"
+      api_schema_location: "#/components/schemas/autorift_granules"
     bucket_prefix:
       default:  '""'
   required_parameters:
