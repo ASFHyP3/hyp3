@@ -110,9 +110,6 @@ def test_check_granules_exist():
         {
             'name': 'scene2',
         },
-        {
-            'name': 'S2_this_should_not_be_found'
-        }
     ]
 
     check_granules_exist([], granule_metadata)
