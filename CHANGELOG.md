@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.9]
 ### Changed
-- RTC_GAMMA jobs now use [hyp3-gamma](https://github.com/ASFHyP3/hyp3-gamma) plugin to do processing
+- RTC_GAMMA jobs now use the [hyp3-gamma](https://github.com/ASFHyP3/hyp3-gamma) plugin to do processing
 
 ## [0.8.7]
 ### Added
