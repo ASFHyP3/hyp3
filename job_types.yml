@@ -1,5 +1,5 @@
 RtcGamma:
-  image: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-rtc-gamma
+  image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
   api_job_type: RTC_GAMMA
   parameters:
     granules:
@@ -34,8 +34,8 @@ RtcGamma:
   required_parameters:
     - granules
   command:
-    - ++entrypoint
-    - hyp3_rtc_gamma_v2
+    - ++process
+    - rtc
     - --username
     - '!Ref EDLUsername'
     - --password
