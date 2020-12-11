@@ -66,7 +66,7 @@ RtcGamma:
   timeout: 5400
 
 InsarGamma:
-  image: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-insar-gamma
+  image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
   api_job_type: INSAR_GAMMA
   parameters:
     granules:
@@ -86,6 +86,8 @@ InsarGamma:
   required_parameters:
     - granules
   command:
+    - ++process
+    - insar
     - --username
     - '!Ref EDLUsername'
     - --password
