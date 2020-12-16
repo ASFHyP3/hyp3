@@ -108,7 +108,7 @@ InsarGamma:
   timeout: 5400
 
 Autorift:
-  image: 626226570674.dkr.ecr.us-east-1.amazonaws.com/hyp3-autorift
+  image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
   api_job_type: AUTORIFT
   parameters:
     granules:
