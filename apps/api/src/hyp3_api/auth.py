@@ -25,4 +25,4 @@ def get_mock_jwt_cookie(user, lifetime_in_seconds=100):
         key=environ['AUTH_PUBLIC_KEY'],
         algorithm=environ['AUTH_ALGORITHM'],
     )
-    return value.decode()
+    return value
