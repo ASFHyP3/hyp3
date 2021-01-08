@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.10]
 ### Added
-- AutoRIFT jobs now allow submission with Landsat Collection 2 granules
+- AutoRIFT jobs now allow submission with Landsat 8 Collection 2 granules
 
 ## [0.8.9]
 ### Changed
