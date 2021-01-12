@@ -119,8 +119,6 @@ Autorift:
   required_parameters:
     - granules
   command:
-    - ++entrypoint
-    - hyp3_autorift_v2
     - --username
     - '!Ref EDLUsername'
     - --password
