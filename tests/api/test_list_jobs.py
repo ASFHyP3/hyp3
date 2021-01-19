@@ -8,11 +8,19 @@ def test_list_jobs(client, tables):
             'filename': 'foo.txt',
             'size': 123,
             'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/foo.txt',
+            's3': {
+                'bucket': 'mybucket',
+                'key': 'prefix/foo.txt'
+            },
         },
         {
             'filename': 'bar.png',
             'size': 0,
             'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/bar.png',
+            's3': {
+                'bucket': 'mybucket',
+                'key': 'prefix/bar.png'
+            },
         },
     ]
     browse_images = ['https://mybucket.s3.us-west-2.amazonaws.com/prefix/browse/foo.png']
