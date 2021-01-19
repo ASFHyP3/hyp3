@@ -27,11 +27,15 @@ def get_object_file_type(bucket, key):
     return None
 
 
-def get_products(files):
+def get_products(files, bucket):
     return [{
         'url': item['download_url'],
         'size': item['size'],
-        'filename': item['filename']
+        'filename': item['filename'],
+        's3': {
+            'bucket': bucket,
+            'key': item['s3_key']
+        },
     } for item in files if item['file_type'] == 'product']
 
 
@@ -60,12 +64,13 @@ def organize_files(files_dict, bucket):
             'file_type': file_type,
             'size': item['Size'],
             'filename': basename(item['Key']),
+            's3_key': item['Key'],
         })
         if file_type == 'product':
             expiration = get_expiration_time(bucket, item['Key'])
 
     return {
-        'files': get_products(all_files),
+        'files': get_products(all_files, bucket),
         'browse_images': get_browse(all_files),
         'thumbnail_images': get_thumbnail(all_files),
         'expiration_time': expiration

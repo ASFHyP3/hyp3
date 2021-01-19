@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [0.8.11]
+### Added
+- Jobs now include s3 information in the files block to allow easier s3 interactions on products.
+
+
 ## [0.8.10]
 ### Added
 - AutoRIFT jobs now allow submission with Landsat 8 Collection 2 granules
