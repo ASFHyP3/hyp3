@@ -57,10 +57,14 @@ def get_cmr_metadata(granules):
     return granules
 
 
+def is_third_party_granule(granule):
+    return granule.startswith('S2') or granule.startswith('LC08')
+
+
 def check_granules_exist(granules, granule_metadata):
     found_granules = [granule['name'] for granule in granule_metadata]
     not_found_granules = set(granules) - set(found_granules)
-    not_found_granules = {granule for granule in not_found_granules if not granule.startswith('S2')}
+    not_found_granules = {granule for granule in not_found_granules if not is_third_party_granule(granule)}
     if not_found_granules:
         raise GranuleValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 

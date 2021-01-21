@@ -44,7 +44,9 @@ pip install -r requirements-all.txt
 
 - Render cloudformation templates
 ```sh
-python apps/render_cf.py --job-types-file job_types.yml
+cd apps
+python render_cf.py --job-types-file ../job_types.yml
+cd ..
 ```
 
 - Install API dependencies (requires pip for python 3.8)
@@ -85,9 +87,9 @@ aws cloudformation deploy \
 ## Testing the API
 The HyP3 API source contains test files in `tests/api/`. To run them you need to do a bit of setup first.
 
-- Add hyp3-api to python path
+- Add hyp3-api and tests to python path
 ```sh
-export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src"
+export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src:`pwd`/tests"
 ```
 - Setup environment variables
 ```sh
@@ -96,6 +98,13 @@ export $(cat tests/api/cfg.env | xargs)
 - Install test requirements
 ```sh
 pip install -r apps/api/requirements-all.txt
+```
+
+- Render cloudformation templates
+```sh
+cd apps
+python render_cf.py --job-types-file ../job_types.yml
+cd ..
 ```
 
 - Run tests
