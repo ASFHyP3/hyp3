@@ -126,5 +126,5 @@ def get_user(user):
 api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
 api_spec = get_spec(api_spec_file)
 connexion_app.app.json_encoder = DecimalEncoder
-connexion_app.add_api(api_spec, validate_responses=True, strict_validation=True)
+connexion_app.add_api(api_spec, strict_validation=True)
 CORS(connexion_app.app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)

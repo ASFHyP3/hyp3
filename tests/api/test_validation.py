@@ -2,7 +2,7 @@ from pytest import raises
 from shapely.geometry import Polygon
 
 from hyp3_api.validation import GranuleValidationError, check_dem_coverage, check_granules_exist, format_points, \
-    get_cmr_metadata, has_sufficient_coverage, validate_jobs
+    get_cmr_metadata, has_sufficient_coverage, is_third_party_granule, validate_jobs
 
 
 def rectangle(north, south, east, west):
@@ -117,12 +117,21 @@ def test_check_granules_exist():
     check_granules_exist(['scene1', 'scene2'], granule_metadata)
 
     with raises(GranuleValidationError) as e:
-        check_granules_exist(['scene1', 'scene2', 'scene3', 'scene4', 'S2_this_should_not_be_found'], granule_metadata)
-    assert 'S2_this_should_not_be_found' not in str(e)
+        check_granules_exist(['scene1', 'scene2', 'scene3', 'scene4', 'S2_foo', 'LC08_bar'], granule_metadata)
+    assert 'S2_foo' not in str(e)
+    assert 'LC08_bar' not in str(e)
     assert 'scene1' not in str(e)
     assert 'scene2' not in str(e)
     assert 'scene3' in str(e)
     assert 'scene4' in str(e)
+
+
+def test_is_third_party_granule():
+    assert is_third_party_granule('S2A_MSIL1C_20200627T150921_N0209_R025_T22WEB_20200627T170912')
+    assert is_third_party_granule('S2B_22WEB_20200612_0_L1C')
+    assert is_third_party_granule('LC08_L1TP_009011_20200820_20200905_02_T1')
+    assert not is_third_party_granule('S1A_IW_SLC__1SSH_20150608T205059_20150608T205126_006287_0083E8_C4F0')
+    assert not is_third_party_granule('foo')
 
 
 def test_get_cmr_metadata():
