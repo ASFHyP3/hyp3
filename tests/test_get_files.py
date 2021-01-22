@@ -106,10 +106,6 @@ def test_get_files(s3_stubber: Stubber):
         'files': [
             {
                 'url': 'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myProduct.zip',
-                's3': {
-                    'bucket': 'myBucket',
-                    'key': 'myJobId/myProduct.zip',
-                },
                 'size': 50,
                 'filename': 'myProduct.zip',
             }

@@ -276,7 +276,6 @@ components:
           - filename
           - size
           - url
-          - s3
         additionalProperties: False
         properties:
           filename:
@@ -286,20 +285,6 @@ components:
             minimum: 0
           url:
             type: string
-          s3:
-            $ref: "#/components/schemas/s3_info"
-
-    s3_info:
-      type: object
-      additionalProperties: false
-      required:
-        - bucket
-        - key
-      properties:
-        bucket:
-          type: string
-        key:
-          type: string
 
     list_of_urls:
       type: array
