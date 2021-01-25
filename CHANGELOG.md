@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.11]
 ### Added
-- Jobs now include s3 information in the files block to allow easier s3 interactions on products.
-
+- `GET /jobs` responses now include `s3.bucket` and `s3.key` entries for each file to facilitate interacting with
+  products using s3-aware tools.
 
 ## [0.8.10]
 ### Added
