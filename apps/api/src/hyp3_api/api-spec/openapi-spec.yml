@@ -287,9 +287,9 @@ components:
           url:
             type: string
           s3:
-            $ref: "#/components/schemas/s3_info"
+            $ref: "#/components/schemas/s3_object"
 
-    s3_info:
+    s3_object:
       type: object
       additionalProperties: false
       required:
