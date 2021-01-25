@@ -63,7 +63,7 @@ def organize_files(files_dict, bucket):
             'filename': basename(item['Key']),
             's3': {
                 'bucket': bucket,
-                'key': item['s3_key'],
+                'key': item['Key'],
             },
         })
         if file_type == 'product':
