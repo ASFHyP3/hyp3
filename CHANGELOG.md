@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `GET /jobs` responses now include `s3.bucket` and `s3.key` entries for each file to facilitate interacting with
   products using s3-aware tools.
+  
+### Fixed
+- AUTORIFT jobs now correctly accept Sentinel-2 granules using Earth Search IDs of 23 characters.
 
 ## [0.8.10]
 ### Added
