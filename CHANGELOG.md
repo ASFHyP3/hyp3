@@ -4,14 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [0.8.11]
+### Added
+- `GET /jobs` responses now include `s3.bucket` and `s3.key` entries for each file to facilitate interacting with
+  products using s3-aware tools.
+  
+### Fixed
+- AUTORIFT jobs now correctly accept Sentinel-2 granules using Earth Search IDs of 23 characters.
+
 ## [0.8.10]
 ### Added
 - AutoRIFT jobs now allow submission with Landsat 8 Collection 2 granules
 
-## Changed
+### Changed
 - AutoRIFT jobs now only accept Sentinel-2 L1C granules, rather than any Sentinel-2 granules
 
-## Removed
+### Removed
 - API responses are no longer validated against the OpenAPI schema.  `GET /jobs` requests for jobs
   with legacy parameter values (e.g. S2 L2A granules) will no longer return HTTP 500 errors.
 
