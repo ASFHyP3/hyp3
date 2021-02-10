@@ -56,10 +56,10 @@ def redirect_to_ui():
 def post_jobs(body, user):
     print(body)
 
-    quota = get_user(user)['quota']
-    if quota['remaining'] - len(body['jobs']) < 0:
-        max_jobs = quota['max_jobs_per_month']
-        message = f'Your monthly quota is {max_jobs} jobs. You have {quota["remaining"]} jobs remaining.'
+    monthly_quota = get_max_jobs_per_month(user)
+    remaining_jobs = get_remaining_jobs_for_user(user, monthly_quota)
+    if remaining_jobs - len(body['jobs']) < 0:
+        message = f'Your monthly quota is {monthly_quota} jobs. You have {remaining_jobs} jobs remaining.'
         return problem(400, 'Bad Request', message)
 
     try:
