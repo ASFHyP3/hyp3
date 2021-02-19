@@ -73,7 +73,7 @@
       "Type": "Task",
       "Resource": "${UploadLogLambdaArn}",
       "Parameters": {
-        "job_id.$": "$.job_id",
+        "prefix.$": "$.job_id",
         "log_group": "/aws/batch/job",
         "processing_results.$": "$.results.processing_results"
       },
