@@ -49,7 +49,7 @@
         "Parameters.$": "$.job_parameters"
       },
       "ResultPath": "$.results.processing_results",
-      "Next": "GET_FILES",
+      "Next": "UPLOAD_LOG",
       "Retry": [
         {
           "ErrorEquals": [
@@ -63,12 +63,40 @@
           "ErrorEquals": [
             "States.ALL"
           ],
-          "Next": "GET_FILES",
+          "Next": "UPLOAD_LOG",
           "ResultPath": "$.results.processing_results"
         }
       ]
     },
     {% endfor %}
+    "UPLOAD_LOG":{
+      "Type": "Task",
+      "Resource": "${UploadLogLambdaArn}",
+      "Parameters": {
+        "job_id.$": "$.job_id",
+        "log_group": "/aws/batch/job",
+        "processing_results.$": "$.results.processing_results"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "MaxAttempts": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "JOB_FAILED",
+          "ResultPath": "$.results.upload_log"
+        }
+      ],
+      "ResultPath": "$.results.upload_log",
+      "Next": "GET_FILES"
+    },
     "GET_FILES": {
       "Type": "Task",
       "Resource": "${GetFilesLambdaArn}",
@@ -88,7 +116,7 @@
           "ErrorEquals": [
             "States.ALL"
           ],
-          "Next": "CHECK_STATUS",
+          "Next": "JOB_FAILED",
           "ResultPath": "$.results.get_files"
         }
       ],
