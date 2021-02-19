@@ -63,7 +63,7 @@
           "ErrorEquals": [
             "States.ALL"
           ],
-          "Next": "JOB_FAILED",
+          "Next": "GET_FILES",
           "ResultPath": "$.results.processing_results"
         }
       ]
@@ -88,12 +88,21 @@
           "ErrorEquals": [
             "States.ALL"
           ],
-          "Next": "JOB_FAILED",
+          "Next": "CHECK_STATUS",
           "ResultPath": "$.results.get_files"
         }
       ],
       "ResultPath": "$.results.get_files",
-      "Next": "JOB_SUCCEEDED"
+      "Next": "CHECK_STATUS"
+    },
+    "CHECK_STATUS": {
+      "Type" : "Choice",
+      "Choices": [{
+        "Variable": "$.results.processing_results.Error",
+        "IsPresent": true,
+        "Next": "JOB_FAILED"
+      }],
+      "Default": "JOB_SUCCEEDED"
     },
     "JOB_SUCCEEDED": {
       "Type": "Task",
