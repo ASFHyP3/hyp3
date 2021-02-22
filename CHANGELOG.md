@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.13]
 ## Changed
-- Max capacity for compute environment increased.
+- Increased max capacity for compute environment to 1600vCPU's
 
 ## [0.8.12]
 ### Changed
