@@ -28,13 +28,13 @@ def get_log_content(log_group, log_stream):
 
 
 def write_log_to_s3(bucket, prefix, content):
-    key = f'{prefix}/log.txt'
+    key = f'{prefix}/{prefix}.log'
     S3.put_object(Bucket=bucket, Key=key, Body=content, ContentType='text/plain')
     tag_set = {
         'TagSet': [
             {
                 'Key': 'file_type',
-                'Value': 'product',
+                'Value': 'log',
             },
         ],
     }
