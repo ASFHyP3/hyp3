@@ -73,7 +73,7 @@ def organize_files(files_dict, bucket):
                 'key': item['Key'],
             },
         })
-        if file_type == 'product':
+        if file_type == 'log':
             expiration = get_expiration_time(bucket, item['Key'])
 
     return {
