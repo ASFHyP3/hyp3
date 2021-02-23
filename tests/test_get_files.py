@@ -125,5 +125,5 @@ def test_get_files(s3_stubber: Stubber):
             'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse_rgb.png'
         ],
         'thumbnail_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myThumbnail.png'],
-        'logs': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myJobId.log']
+        'logs': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myJobId.log'],
     }
