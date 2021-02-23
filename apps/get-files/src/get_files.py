@@ -36,24 +36,10 @@ def get_products(files):
     } for item in files if item['file_type'] == 'product']
 
 
-def get_browse(files):
-    browse = [item for item in files if 'browse' in item['file_type']]
-    sorted_files = sorted(browse, key=lambda x: x['file_type'])
+def get_file_urls_by_type(files_list, type):
+    files = [item for item in files_list if type in item['file_type']]
+    sorted_files = sorted(files, key=lambda x: x['file_type'])
     urls = [item['download_url'] for item in sorted_files]
-    return urls
-
-
-def get_thumbnail(files):
-    thumbnail = [item for item in files if 'thumbnail' in item['file_type']]
-    sorted_files = sorted(thumbnail, key=lambda x: x['file_type'])
-    urls = [item['download_url'] for item in sorted_files]
-    return urls
-
-
-def get_logs(files):
-    logs = [item for item in files if 'log' in item['file_type']]
-    sorted_logs = sorted(logs, key=lambda x: x['file_type'])
-    urls = [item['download_url'] for item in sorted_logs]
     return urls
 
 
@@ -78,9 +64,9 @@ def organize_files(files_dict, bucket):
 
     return {
         'files': get_products(all_files),
-        'browse_images': get_browse(all_files),
-        'thumbnail_images': get_thumbnail(all_files),
-        'logs': get_logs(all_files),
+        'browse_images': get_file_urls_by_type(all_files, 'browse'),
+        'thumbnail_images': get_file_urls_by_type(all_files, 'thumbnail'),
+        'logs': get_file_urls_by_type(all_files, 'log'),
         'expiration_time': expiration
     }
 
