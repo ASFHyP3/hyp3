@@ -36,8 +36,8 @@ def get_products(files):
     } for item in files if item['file_type'] == 'product']
 
 
-def get_file_urls_by_type(files_list, file_type):
-    files = [item for item in files_list if file_type in item['file_type']]
+def get_file_urls_by_type(file_list, file_type):
+    files = [item for item in file_list if file_type in item['file_type']]
     sorted_files = sorted(files, key=lambda x: x['file_type'])
     urls = [item['download_url'] for item in sorted_files]
     return urls
