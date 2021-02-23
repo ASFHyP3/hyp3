@@ -60,6 +60,7 @@ Resources:
         MaxvCpus: 1600
         InstanceTypes:
           - r5d.xlarge
+          - r5d.2xlarge
         ImageId: !Ref AmiId
         Subnets: !Ref SubnetIds
         InstanceRole: !Ref InstanceProfile
