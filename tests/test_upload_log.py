@@ -58,15 +58,15 @@ def test_upload_log_to_s3(s3_stubber):
     expected_params = {
         'Body': 'myContent',
         'Bucket': 'myBucket',
-        'Key': 'myJobId/log.txt',
+        'Key': 'myJobId/myJobId.log',
         'ContentType': 'text/plain',
     }
     tag_params = {
         'Bucket': 'myBucket',
-        'Key': 'myJobId/log.txt',
+        'Key': 'myJobId/myJobId.log',
         'Tagging': {
             'TagSet': [
-                {'Key': 'file_type', 'Value': 'product'}
+                {'Key': 'file_type', 'Value': 'log'}
             ]
         }
     }
