@@ -45,7 +45,7 @@ Resources:
                 Resource: !Sub "arn:aws:s3:::${Bucket}/*"
               - Effect: Allow
                 Action: logs:GetLogEvents
-                Resource: "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/batch/job*"
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/batch/job*"
 
   Lambda:
     Type: AWS::Lambda::Function
