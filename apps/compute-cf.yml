@@ -55,7 +55,7 @@ Resources:
       Type: MANAGED
       ComputeResources:
         Type: SPOT
-        AllocationStrategy: SPOT_CAPACITY_OPTIMIZED
+        AllocationStrategy: BEST_FIT_PROGRESSIVE
         MinvCpus: 0
         MaxvCpus: 1600
         InstanceTypes:
