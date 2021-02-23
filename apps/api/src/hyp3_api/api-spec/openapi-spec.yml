@@ -217,6 +217,8 @@ components:
           $ref: "#/components/schemas/list_of_urls"
         thumbnail_images:
           $ref: "#/components/schemas/list_of_urls"
+        logs:
+          $ref: "#/components/schemas/list_of_urls"
         expiration_time:
           $ref: "#/components/schemas/datetime"
 
