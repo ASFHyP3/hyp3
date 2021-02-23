@@ -140,6 +140,11 @@ Resources:
                 Value: product
             ExpirationInDays: !Ref ProductLifetimeInDays
           - Status: Enabled
+            TagFilters:
+              - Key: file_type
+                Value: log
+            ExpirationInDays: !Ref ProductLifetimeInDays
+          - Status: Enabled
             AbortIncompleteMultipartUpload:
               DaysAfterInitiation: 1
 
