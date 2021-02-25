@@ -42,6 +42,10 @@ Resources:
         Image: !Sub "{{ job_spec['image'] }}:${ImageTag}"
         Vcpus: 4
         Memory: 30000
+        Ulimits:
+          - Name: cpu
+            SoftLimit: 3
+            HardLimit: 3
         JobRoleArn: !Ref TaskRoleArn
         Command:
           {% for command in job_spec['command'] %}
