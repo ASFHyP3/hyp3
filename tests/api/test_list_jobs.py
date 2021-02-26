@@ -36,7 +36,7 @@ def test_list_jobs(client, tables):
     login(client, 'user_with_jobs')
     response = client.get(JOBS_URI)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json == {'jobs': [job for job in reversed(items)]}
+    assert response.json == {'jobs': list(reversed(items))}
 
     login(client, 'user_without_jobs')
     response = client.get(JOBS_URI)
@@ -113,11 +113,11 @@ def test_list_jobs_date_start_and_end(client, tables):
     for date in dates:
         response = client.get(JOBS_URI, query_string={'start': date})
         assert response.status_code == status.HTTP_200_OK
-        assert response.json == {'jobs': [job for job in reversed(items[1:])]}
+        assert response.json == {'jobs': list(reversed(items[1:]))}
 
         response = client.get(JOBS_URI, query_string={'end': date})
         assert response.status_code == status.HTTP_200_OK
-        assert response.json == {'jobs': [job for job in reversed(items[:2])]}
+        assert response.json == {'jobs': list(reversed(items[:2]))}
 
         response = client.get(JOBS_URI, query_string={'start': date, 'end': date})
         assert response.status_code == status.HTTP_200_OK
