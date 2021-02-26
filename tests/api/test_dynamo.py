@@ -62,7 +62,7 @@ def test_query_jobs_by_time(tables):
     end = '2000-01-03T00:00:00z'
     response = dynamo.query_jobs('user1', start, end)
     assert len(response) == 3
-    assert response == table_items
+    assert response == [item for item in reversed(table_items)]
 
     start = '2000-01-01T00:00:01z'
     end = '2000-01-02T00:59:59z'

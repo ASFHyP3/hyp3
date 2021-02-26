@@ -45,6 +45,7 @@ def query_jobs(user, start=None, end=None, status_code=None, name=None):
         IndexName='user_id',
         KeyConditionExpression=key_expression,
         FilterExpression=filter_expression,
+        ScanIndexForward=False,
     )
     jobs = response['Items']
 
@@ -53,6 +54,7 @@ def query_jobs(user, start=None, end=None, status_code=None, name=None):
             IndexName='user_id',
             KeyConditionExpression=key_expression,
             FilterExpression=filter_expression,
+            ScanIndexForward=False,
             ExclusiveStartKey=response['LastEvaluatedKey'],
         )
         jobs.extend(response['Items'])
