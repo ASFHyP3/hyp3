@@ -55,12 +55,11 @@ Resources:
       Type: MANAGED
       ComputeResources:
         Type: SPOT
-        AllocationStrategy: BEST_FIT_PROGRESSIVE
+        AllocationStrategy: SPOT_CAPACITY_OPTIMIZED
         MinvCpus: 0
         MaxvCpus: 1600
         InstanceTypes:
           - r5d.xlarge
-          - r5d.2xlarge
         ImageId: !Ref AmiId
         Subnets: !Ref SubnetIds
         InstanceRole: !Ref InstanceProfile
