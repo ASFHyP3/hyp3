@@ -159,6 +159,10 @@ Resources:
             Principal: "*"
             Action: s3:GetObject
             Resource: !Sub "${ContentBucket.Arn}/*"
+          - Effect: Allow
+            Principal: "*"
+            Action: s3:ListBucket
+            Resource: !GetAtt ContentBucket.Arn
 
   JobsTable:
     Type: AWS::DynamoDB::Table
