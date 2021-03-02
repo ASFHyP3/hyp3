@@ -162,7 +162,7 @@ Resources:
           - Effect: Allow
             Principal: "*"
             Action: s3:ListBucket
-            Resource: !Sub "${ContentBucket.Arn}"
+            Resource: !GetAtt ContentBucket.Arn
 
   JobsTable:
     Type: AWS::DynamoDB::Table
