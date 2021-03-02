@@ -72,11 +72,15 @@ def stub_list_files(s3_stubber: Stubber, job_id, bucket, contents):
     s3_stubber.add_response('list_objects_v2', expected_params=params, service_response=s3_response)
 
 
-def test_get_files(s3_stubber: Stubber):
+def test_get_files_zipped_product(s3_stubber: Stubber):
     files = [
         {
             'Key': 'myJobId/myProduct.zip',
             'Size': 50,
+        },
+        {
+            'Key': 'myJobId/myProduct.tif',
+            'Size': 30,
         },
         {
             'Key': 'myJobId/myThumbnail.png',
@@ -97,6 +101,7 @@ def test_get_files(s3_stubber: Stubber):
     ]
     stub_list_files(s3_stubber, 'myJobId', 'myBucket', files)
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myProduct.zip', 'product')
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myProduct.tif', 'product')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myThumbnail.png', 'amp_thumbnail')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'amp_browse')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse_rgb.png', 'rgb_browse')
@@ -123,6 +128,57 @@ def test_get_files(s3_stubber: Stubber):
         'browse_images': [
             'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse.png',
             'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse_rgb.png'
+        ],
+        'thumbnail_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myThumbnail.png'],
+        'logs': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myJobId.log'],
+    }
+
+
+def test_get_files_netcdf_product(s3_stubber: Stubber):
+    files = [
+        {
+            'Key': 'myJobId/myProduct.nc',
+            'Size': 50,
+        },
+        {
+            'Key': 'myJobId/myThumbnail.png',
+            'Size': 5,
+        },
+        {
+            'Key': 'myJobId/myBrowse.png',
+            'Size': 10,
+        },
+        {
+            'Key': 'myJobId/myJobId.log',
+            'Size': 10,
+        },
+    ]
+    stub_list_files(s3_stubber, 'myJobId', 'myBucket', files)
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myProduct.nc', 'product')
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myThumbnail.png', 'amp_thumbnail')
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'amp_browse')
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myJobId.log', 'log')
+    stub_expiration(s3_stubber, 'myBucket', 'myJobId/myJobId.log')
+
+    event = {
+        'job_id': 'myJobId'
+    }
+    response = lambda_handler(event, None)
+    assert response == {
+        'expiration_time': '2020-01-01T00:00:00+00:00',
+        'files': [
+            {
+                'url': 'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myProduct.nc',
+                's3': {
+                    'bucket': 'myBucket',
+                    'key': 'myJobId/myProduct.nc',
+                },
+                'size': 50,
+                'filename': 'myProduct.nc',
+            }
+        ],
+        'browse_images': [
+            'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse.png',
         ],
         'thumbnail_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myThumbnail.png'],
         'logs': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myJobId.log'],

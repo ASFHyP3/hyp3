@@ -1,6 +1,6 @@
 from datetime import datetime
 from os import environ
-from os.path import basename
+from os.path import basename, splitext
 
 import boto3
 
@@ -33,7 +33,7 @@ def get_products(files):
         'size': item['size'],
         'filename': item['filename'],
         's3': item['s3'],
-    } for item in files if item['file_type'] == 'product']
+    } for item in files if item['file_type'] == 'product' and splitext(item['filename'])[-1] in ('.zip', '.nc')]
 
 
 def get_file_urls_by_type(file_list, file_type):
