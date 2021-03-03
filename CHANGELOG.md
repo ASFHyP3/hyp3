@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.15]
 ### Changed
-- S3 content bucket now allows public `s3:ListBucket`
+- S3 content bucket now allows public `s3:ListBucket` and `s3:GetObjectTagging`
 
 ## [0.8.14]
 ### Added
