@@ -1,6 +1,8 @@
 from datetime import datetime
 from os import environ
-from os.path import basename, splitext
+from os.path import basename
+from pathlib import Path
+from typing import Union
 
 import boto3
 
@@ -27,13 +29,17 @@ def get_object_file_type(bucket, key):
     return None
 
 
+def visible_product(product_path: Union[str, Path]):
+    return Path(product_path).suffix in ('.zip', '.nc')
+
+
 def get_products(files):
     return [{
         'url': item['download_url'],
         'size': item['size'],
         'filename': item['filename'],
         's3': item['s3'],
-    } for item in files if item['file_type'] == 'product' and splitext(item['filename'])[-1] in ('.zip', '.nc')]
+    } for item in files if item['file_type'] == 'product' and visible_product(item['filename'])]
 
 
 def get_file_urls_by_type(file_list, file_type):
