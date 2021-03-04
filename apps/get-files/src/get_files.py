@@ -29,7 +29,7 @@ def get_object_file_type(bucket, key):
     return None
 
 
-def visible_product(product_path: Union[str, Path]):
+def visible_product(product_path: Union[str, Path]) -> bool:
     return Path(product_path).suffix in ('.zip', '.nc')
 
 
