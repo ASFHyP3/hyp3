@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.8.16]
+### Changed
+- `get_files.py` now only includes product files ending in `.zip` or `.nc` in the `files` list returned
+  in `GET /jobs` API responses
+
 ## [0.8.15]
 ### Changed
 - S3 content bucket now allows public `s3:ListBucket` and `s3:GetObjectTagging`
