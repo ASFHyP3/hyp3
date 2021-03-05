@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.16]
 ### Changed
-- `get_files.py` now only includes product files ending in `.zip` or `.nc` in the `files` list
+- `get_files.py` now only includes product files ending in `.zip` or `.nc` in the `files` list returned
+  in `GET /jobs` API responses
 
 ## [0.8.15]
 ### Changed
