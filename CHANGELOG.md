@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Exposed new `include_rgb` api parameter for RTC_GAMMA jobs
 
+## [0.8.16]
+### Changed
+- `get_files.py` now only includes product files ending in `.zip` or `.nc` in the `files` list returned
+  in `GET /jobs` API responses
+
+## [0.8.15]
+### Changed
+- S3 content bucket now allows public `s3:ListBucket` and `s3:GetObjectTagging`
+
+## [0.8.14]
+### Added
+- Jobs now include a `logs` key containing a list of log file download urls
+
+## [0.8.13]
+### Changed
+- Increased max capacity for compute environment to 1600 vCPUs
+
 ## [0.8.12]
 ### Changed
 - Improved response latency when submitting new jobs via `POST /jobs`

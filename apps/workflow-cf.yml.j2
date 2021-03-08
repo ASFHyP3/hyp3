@@ -63,6 +63,7 @@ Resources:
         {% endfor %}
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
         GetFilesLambdaArn: !GetAtt GetFiles.Outputs.LambdaArn
+        UploadLogLambdaArn: !GetAtt UploadLog.Outputs.LambdaArn
 
   StepFunctionRole:
     Type: AWS::IAM::Role
@@ -97,6 +98,7 @@ Resources:
                 Resource:
                  - !GetAtt UpdateDB.Outputs.LambdaArn
                  - !GetAtt GetFiles.Outputs.LambdaArn
+                 - !GetAtt UploadLog.Outputs.LambdaArn
 
   UpdateDB:
     Type: AWS::CloudFormation::Stack
@@ -119,3 +121,10 @@ Resources:
         JobsTable: !Ref JobsTable
         StepFunctionArn: !Ref StepFunction
       TemplateURL: start-execution/start-execution-cf.yml
+
+  UploadLog:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        Bucket: !Ref Bucket
+      TemplateURL: upload-log/upload-log-cf.yml

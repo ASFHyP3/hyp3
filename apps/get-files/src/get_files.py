@@ -1,6 +1,8 @@
 from datetime import datetime
 from os import environ
 from os.path import basename
+from pathlib import Path
+from typing import Union
 
 import boto3
 
@@ -27,25 +29,22 @@ def get_object_file_type(bucket, key):
     return None
 
 
+def visible_product(product_path: Union[str, Path]) -> bool:
+    return Path(product_path).suffix in ('.zip', '.nc')
+
+
 def get_products(files):
     return [{
         'url': item['download_url'],
         'size': item['size'],
         'filename': item['filename'],
         's3': item['s3'],
-    } for item in files if item['file_type'] == 'product']
+    } for item in files if item['file_type'] == 'product' and visible_product(item['filename'])]
 
 
-def get_browse(files):
-    browse = [item for item in files if 'browse' in item['file_type']]
-    sorted_files = sorted(browse, key=lambda x: x['file_type'])
-    urls = [item['download_url'] for item in sorted_files]
-    return urls
-
-
-def get_thumbnail(files):
-    thumbnail = [item for item in files if 'thumbnail' in item['file_type']]
-    sorted_files = sorted(thumbnail, key=lambda x: x['file_type'])
+def get_file_urls_by_type(file_list, file_type):
+    files = [item for item in file_list if file_type in item['file_type']]
+    sorted_files = sorted(files, key=lambda x: x['file_type'])
     urls = [item['download_url'] for item in sorted_files]
     return urls
 
@@ -66,13 +65,14 @@ def organize_files(files_dict, bucket):
                 'key': item['Key'],
             },
         })
-        if file_type == 'product':
+        if file_type == 'log':
             expiration = get_expiration_time(bucket, item['Key'])
 
     return {
         'files': get_products(all_files),
-        'browse_images': get_browse(all_files),
-        'thumbnail_images': get_thumbnail(all_files),
+        'browse_images': get_file_urls_by_type(all_files, 'browse'),
+        'thumbnail_images': get_file_urls_by_type(all_files, 'thumbnail'),
+        'logs': get_file_urls_by_type(all_files, 'log'),
         'expiration_time': expiration
     }
 
