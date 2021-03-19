@@ -11,10 +11,8 @@ from flask import jsonify, make_response, redirect, request
 from flask_cors import CORS
 from jsonschema import draft4_format_checker
 
-from hyp3_api import connexion_app, dynamo
+from hyp3_api import connexion_app, dynamo, util
 from hyp3_api.openapi import get_spec
-from hyp3_api.util import convert_floats_to_decimals, format_time, get_remaining_jobs_for_user, serialize, \
-    deserialize, set_start_token
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
 
@@ -58,7 +56,7 @@ def post_jobs(body, user):
     print(body)
 
     monthly_quota = get_max_jobs_per_month(user)
-    remaining_jobs = get_remaining_jobs_for_user(user, monthly_quota)
+    remaining_jobs = util.get_remaining_jobs_for_user(user, monthly_quota)
     if remaining_jobs - len(body['jobs']) < 0:
         message = f'Your monthly quota is {monthly_quota} jobs. You have {remaining_jobs} jobs remaining.'
         return problem(400, 'Bad Request', message)
@@ -70,26 +68,26 @@ def post_jobs(body, user):
     except GranuleValidationError as e:
         return problem(400, 'Bad Request', str(e))
 
-    request_time = format_time(datetime.now(timezone.utc))
+    request_time = util.format_time(datetime.now(timezone.utc))
     jobs = []
     for job in body['jobs']:
         job['job_id'] = str(uuid4())
         job['user_id'] = user
         job['status_code'] = 'PENDING'
         job['request_time'] = request_time
-        jobs.append(convert_floats_to_decimals(job))
+        jobs.append(util.convert_floats_to_decimals(job))
     if not body.get('validate_only'):
         dynamo.put_jobs(jobs)
     return body
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None, start_token=None):
-    start_key = deserialize(start_token) if start_token else None
+    start_key = util.deserialize(start_token) if start_token else None
     jobs, last_evaluated_key = dynamo.query_jobs(user, start, end, status_code, name, start_key)
     payload = {'jobs': jobs}
     if last_evaluated_key is not None:
-        next_token = serialize(last_evaluated_key)
-        payload['next'] = set_start_token(request.url, next_token)
+        next_token = util.serialize(last_evaluated_key)
+        payload['next'] = util.set_start_token(request.url, next_token)
     return payload
 
 
@@ -125,7 +123,7 @@ def get_user(user):
         'user_id': user,
         'quota': {
             'max_jobs_per_month': max_jobs,
-            'remaining': get_remaining_jobs_for_user(user, max_jobs),
+            'remaining': util.get_remaining_jobs_for_user(user, max_jobs),
         },
         'job_names': get_names_for_user(user)
     }

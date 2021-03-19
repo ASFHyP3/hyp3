@@ -1,8 +1,8 @@
 import json
-from base64 import b64encode, b64decode
+from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 from decimal import Decimal
-from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from hyp3_api import handlers
 
