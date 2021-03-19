@@ -152,6 +152,6 @@ def test_bad_date_formats(client):
 def test_list_paging(client):
     login(client)
     mock_response = ([], {'foo': 1, 'bar': 2})
-    with mock.patch('hyp3_api.dynamo.query_jobs', lambda a, b, c, d, e, f: mock_response):
+    with mock.patch('hyp3_api.dynamo.query_jobs', return_value=mock_response):
         response = client.get(JOBS_URI)
         assert unquote(response.json['next']) == 'http://localhost/jobs?start_token=eyJmb28iOiAxLCAiYmFyIjogMn0='
