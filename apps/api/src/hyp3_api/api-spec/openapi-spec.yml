@@ -276,11 +276,11 @@ components:
       example: Job Name
 
     start_token:
-      description: Token used for fetching subsequent pages for large queries
+      description: Token used for fetching subsequent results for large queries
       type: string
 
     next_url:
-      description: Url provided for large search results that require paging, url takes you to subsequent batches.
+      description: Url provided for large search results that have been truncated. Use to fetch subsequent results.
       type: string
 
     list_of_files:

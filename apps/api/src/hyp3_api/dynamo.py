@@ -28,7 +28,7 @@ def put_jobs(payload: List[dict]):
         table.put_item(Item=item)
 
 
-def query_jobs(user, start=None, end=None, status_code=None, name=None, next_token=None):
+def query_jobs(user, start=None, end=None, status_code=None, name=None, start_key=None):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
@@ -46,8 +46,8 @@ def query_jobs(user, start=None, end=None, status_code=None, name=None, next_tok
         'KeyConditionExpression': key_expression,
         'FilterExpression': filter_expression,
     }
-    if next_token is not None:
-        params['ExclusiveStartKey'] = next_token
+    if start_key is not None:
+        params['ExclusiveStartKey'] = start_key
 
     response = table.query(**params)
     jobs = response['Items']
