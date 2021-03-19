@@ -1,4 +1,4 @@
-from urllib.parse import urlparse, urlencode, urlunparse
+from urllib.parse import urlparse, urlencode, urlunparse, parse_qs
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -96,10 +96,10 @@ def decode_start_token(start_token: str):
     return json.loads(string_version)
 
 
-def build_tokenized_url(**params):
-    query = {k: v for k, v in params.items() if v is not None}
+def build_tokenized_url(start_token):
     url_parts = list(urlparse(request.url))
-    print(query)
+    query = parse_qs(url_parts[4])
+    query['start_token'] = start_token
     url_parts[4] = urlencode(query)
     return urlunparse(url_parts)
 
@@ -110,8 +110,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, start_toke
     payload = {'jobs': jobs}
     if next_token is not None:
         encoded_next_token = build_next_token(next_token)
-        payload['next'] = build_tokenized_url(start=start, end=end, status_code=status_code, name=name,
-                                              start_token=encoded_next_token)
+        payload['next'] = build_tokenized_url(encoded_next_token)
     return payload
 
 
