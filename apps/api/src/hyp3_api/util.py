@@ -45,7 +45,7 @@ def convert_floats_to_decimals(element):
     return element
 
 
-def build_next_token(next_token):
+def encode_start_token(next_token):
     string_version = json.dumps(next_token)
     base_64 = b64encode(string_version.encode())
     return base_64.decode()

@@ -1,9 +1,9 @@
 from hyp3_api import util
 
 
-def test_build_next_token():
+def test_encode_start_token():
     token = {'foo': 1, 'bar': 2}
-    assert util.build_next_token(token) == 'eyJmb28iOiAxLCAiYmFyIjogMn0='
+    assert util.encode_start_token(token) == 'eyJmb28iOiAxLCAiYmFyIjogMn0='
 
 
 def test_decode_start_token():
@@ -13,7 +13,7 @@ def test_decode_start_token():
 
 def test_token_handlers_invertable():
     token = {'foo': 1, 'bar': 2}
-    assert util.decode_start_token(util.build_next_token(token)) == token
+    assert util.decode_start_token(util.encode_start_token(token)) == token
 
 
 def test_build_tokenized_url():
