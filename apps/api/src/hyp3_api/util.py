@@ -1,3 +1,4 @@
+import binascii
 import json
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
@@ -5,6 +6,10 @@ from decimal import Decimal
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from hyp3_api import handlers
+
+
+class TokenDeserializeError(Exception):
+    pass
 
 
 def get_granules(jobs):
@@ -52,8 +57,11 @@ def serialize(payload: dict):
 
 
 def deserialize(token: str):
-    string_version = b64decode(token.encode())
-    return json.loads(string_version)
+    try:
+        string_version = b64decode(token.encode())
+        return json.loads(string_version)
+    except (json.JSONDecodeError, binascii.Error):
+        raise TokenDecodeError()
 
 
 def set_start_token(url, start_token):
