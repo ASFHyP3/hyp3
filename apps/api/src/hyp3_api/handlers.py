@@ -122,7 +122,10 @@ def get_job_by_id(job_id):
 
 
 def get_names_for_user(user):
-    jobs, _ = dynamo.query_jobs(user)  # TODO page here?
+    jobs, next_token = dynamo.query_jobs(user)
+    while next_token is not None:
+        new_jobs, next_token = dynamo.query_jobs(user)
+        jobs.extend(new_jobs)
     names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))
 
