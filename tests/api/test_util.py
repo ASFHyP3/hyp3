@@ -3,17 +3,17 @@ from hyp3_api import util
 
 def test_encode_start_token():
     token = {'foo': 1, 'bar': 2}
-    assert util.encode_token(token) == 'eyJmb28iOiAxLCAiYmFyIjogMn0='
+    assert util.serialize(token) == 'eyJmb28iOiAxLCAiYmFyIjogMn0='
 
 
 def test_decode_start_token():
     token = 'eyJmb28iOiAxLCAiYmFyIjogMn0='
-    assert util.decode_token(token) == {'foo': 1, 'bar': 2}
+    assert util.deserialize(token) == {'foo': 1, 'bar': 2}
 
 
 def test_token_handlers_invertable():
     token = {'foo': 1, 'bar': 2}
-    assert util.decode_token(util.encode_token(token)) == token
+    assert util.deserialize(util.serialize(token)) == token
 
 
 def test_build_tokenized_url():

@@ -45,14 +45,14 @@ def convert_floats_to_decimals(element):
     return element
 
 
-def encode_token(next_token):
-    string_version = json.dumps(next_token)
+def serialize(payload: dict):
+    string_version = json.dumps(payload)
     base_64 = b64encode(string_version.encode())
     return base_64.decode()
 
 
-def decode_token(start_token: str):
-    string_version = b64decode(start_token.encode())
+def deserialize(token: str):
+    string_version = b64decode(token.encode())
     return json.loads(string_version)
 
 
