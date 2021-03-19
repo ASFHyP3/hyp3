@@ -1,4 +1,4 @@
-from urllib.parse import urlparse, urlencode, urlunparse, parse_qs
+from urllib.parse import urlparse, urlencode, urlunparse, parse_qsl
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -98,8 +98,8 @@ def decode_start_token(start_token: str):
 
 def build_tokenized_url(start_token):
     url_parts = list(urlparse(request.url))
-    query = parse_qs(url_parts[4])
-    query['start_token'] = start_token
+    query = parse_qsl(url_parts[4])
+    query.append(('start_token', start_token))
     url_parts[4] = urlencode(query)
     return urlunparse(url_parts)
 
@@ -123,7 +123,6 @@ def get_job_by_id(job_id):
 
 def get_names_for_user(user):
     jobs, _ = dynamo.query_jobs(user)  # TODO page here?
-
     names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))
 

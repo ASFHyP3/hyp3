@@ -1,3 +1,5 @@
+from unittest import mock
+from urllib.parse import unquote
 from uuid import uuid4
 
 from api.conftest import JOBS_URI, login, make_db_record
@@ -146,3 +148,11 @@ def test_bad_date_formats(client):
         for bad_date in bad_dates:
             response = client.get(JOBS_URI, query_string={datetime_parameter: bad_date})
             assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_list_paging(client):
+    login(client)
+    mock_response = ([],{'foo': 1, 'bar': 2})
+    with mock.patch('hyp3_api.dynamo.query_jobs', lambda a,b,c,d,e,f: mock_response):
+        response = client.get(JOBS_URI)
+        assert unquote(response.json['next']) == 'http://localhost/jobs?start_token=eyJmb28iOiAxLCAiYmFyIjogMn0='
