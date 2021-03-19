@@ -13,8 +13,8 @@ from jsonschema import draft4_format_checker
 
 from hyp3_api import connexion_app, dynamo
 from hyp3_api.openapi import get_spec
-from hyp3_api.util import convert_floats_to_decimals, format_time, get_remaining_jobs_for_user, encode_start_token, \
-    decode_start_token, set_start_token
+from hyp3_api.util import convert_floats_to_decimals, format_time, get_remaining_jobs_for_user, encode_token, \
+    decode_token, set_start_token
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
 
@@ -84,11 +84,11 @@ def post_jobs(body, user):
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None, start_token=None):
-    start_token_decoded = decode_start_token(start_token) if start_token else None
+    start_token_decoded = decode_token(start_token) if start_token else None
     jobs, next_token = dynamo.query_jobs(user, start, end, status_code, name, start_token_decoded)
     payload = {'jobs': jobs}
     if next_token is not None:
-        encoded_next_token = encode_start_token(next_token)
+        encoded_next_token = encode_token(next_token)
         payload['next'] = set_start_token(request.url, encoded_next_token)
     return payload
 

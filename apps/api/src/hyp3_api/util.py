@@ -45,13 +45,13 @@ def convert_floats_to_decimals(element):
     return element
 
 
-def encode_start_token(next_token):
+def encode_token(next_token):
     string_version = json.dumps(next_token)
     base_64 = b64encode(string_version.encode())
     return base_64.decode()
 
 
-def decode_start_token(start_token: str):
+def decode_token(start_token: str):
     string_version = b64decode(start_token.encode())
     return json.loads(string_version)
 
