@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from unittest import mock
 
 from api.conftest import USER_URI, login, make_db_record
 from flask_api import status
