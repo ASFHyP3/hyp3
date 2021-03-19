@@ -96,7 +96,7 @@ def decode_start_token(start_token: str):
     return json.loads(string_version)
 
 
-def build_tokenized_url(url, start_token):
+def set_start_token(url, start_token):
     url_parts = list(urlparse(url))
     query = parse_qsl(url_parts[4])
     query.append(('start_token', start_token))
@@ -110,7 +110,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, start_toke
     payload = {'jobs': jobs}
     if next_token is not None:
         encoded_next_token = build_next_token(next_token)
-        payload['next'] = build_tokenized_url(request.url, encoded_next_token)
+        payload['next'] = set_start_token(request.url, encoded_next_token)
     return payload
 
 
