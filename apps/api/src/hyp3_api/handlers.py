@@ -1,3 +1,4 @@
+from urllib.parse import urlparse, urlencode, urlunparse
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -9,7 +10,7 @@ from uuid import UUID, uuid4
 import requests
 from connexion import problem
 from connexion.apps.flask_app import FlaskJSONEncoder
-from flask import jsonify, make_response, redirect
+from flask import jsonify, make_response, redirect, request
 from flask_cors import CORS
 from jsonschema import draft4_format_checker
 
@@ -95,12 +96,22 @@ def decode_start_token(start_token: str):
     return json.loads(string_version)
 
 
+def build_tokenized_url(**params):
+    query = {k: v for k, v in params.items() if v is not None}
+    url_parts = list(urlparse(request.url))
+    print(query)
+    url_parts[4] = urlencode(query)
+    return urlunparse(url_parts)
+
+
 def get_jobs(user, start=None, end=None, status_code=None, name=None, start_token=None):
     start_token_decoded = decode_start_token(start_token) if start_token else None
     jobs, next_token = dynamo.query_jobs(user, start, end, status_code, name, start_token_decoded)
     payload = {'jobs': jobs}
     if next_token is not None:
-        payload['next'] = build_next_token(next_token)  # TODO make a link?
+        encoded_next_token = build_next_token(next_token)
+        payload['next'] = build_tokenized_url(start=start, end=end, status_code=status_code, name=name,
+                                              start_token=encoded_next_token)
     return payload
 
 
