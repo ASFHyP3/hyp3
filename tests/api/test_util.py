@@ -1,5 +1,6 @@
 from hyp3_api import util
 
+
 def test_build_next_token():
     token = {'foo': 1, 'bar': 2}
     assert util.build_next_token(token) == 'eyJmb28iOiAxLCAiYmFyIjogMn0='
