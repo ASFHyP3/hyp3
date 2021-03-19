@@ -51,7 +51,7 @@ def query_jobs(user, start=None, end=None, status_code=None, name=None, next_tok
 
     response = table.query(**params)
     jobs = response['Items']
-    return jobs, response['LastEvaluatedKey']
+    return jobs, response.get('LastEvaluatedKey')
 
 
 def get_job(job_id):

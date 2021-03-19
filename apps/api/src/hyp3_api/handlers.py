@@ -1,5 +1,7 @@
+from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 from decimal import Decimal
+import json
 from os import environ
 from pathlib import Path
 from uuid import UUID, uuid4
@@ -82,11 +84,23 @@ def post_jobs(body, user):
     return body
 
 
+def build_next_token(next_token):
+    string_version = json.dumps(next_token)
+    base_64 = b64encode(string_version.encode())
+    return base_64.decode()
+
+
+def decode_start_token(start_token: str):
+    string_version = b64decode(start_token.encode())
+    return json.loads(string_version)
+
+
 def get_jobs(user, start=None, end=None, status_code=None, name=None, start_token=None):
-    jobs, next_token = dynamo.query_jobs(user, start, end, status_code, name)
+    start_token_decoded = decode_start_token(start_token) if start_token else None
+    jobs, next_token = dynamo.query_jobs(user, start, end, status_code, name, start_token_decoded)
     payload = {'jobs': jobs}
     if next_token is not None:
-        payload['next'] = next_token  # TODO make a link?
+        payload['next'] = build_next_token(next_token)  # TODO make a link?
     return payload
 
 

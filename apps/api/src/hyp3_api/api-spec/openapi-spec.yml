@@ -48,10 +48,10 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/name"
-        - name: next_token
+        - name: start_token
           in: query
           schema:
-            $ref: "#components/schemas/job_id"
+            type: string
 
       responses:
         "200":
@@ -118,6 +118,8 @@ components:
           $ref: "#/components/schemas/validate_only"
         jobs:
           $ref: "#/components/schemas/list_of_jobs"
+        next:
+          type: string
 
     user:
       description: Information about a user (quota, user id)
