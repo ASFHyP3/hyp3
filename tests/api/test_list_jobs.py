@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from api.conftest import JOBS_URI, login, make_db_record
 from flask_api import status
 

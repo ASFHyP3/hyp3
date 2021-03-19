@@ -82,9 +82,12 @@ def post_jobs(body, user):
     return body
 
 
-def get_jobs(user, start=None, end=None, status_code=None, name=None):
-    jobs = dynamo.query_jobs(user, start, end, status_code, name)
-    return {'jobs': jobs}
+def get_jobs(user, start=None, end=None, status_code=None, name=None, start_token=None):
+    jobs, next_token = dynamo.query_jobs(user, start, end, status_code, name)
+    payload = {'jobs': jobs}
+    if next_token is not None:
+        payload['next'] = next_token  # TODO make a link?
+    return payload
 
 
 def get_job_by_id(job_id):
@@ -95,7 +98,7 @@ def get_job_by_id(job_id):
 
 
 def get_names_for_user(user):
-    jobs = dynamo.query_jobs(user)
+    jobs, _ = dynamo.query_jobs(user)  # TODO page here?
 
     names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))

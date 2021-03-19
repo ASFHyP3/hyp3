@@ -28,7 +28,7 @@ def put_jobs(payload: List[dict]):
         table.put_item(Item=item)
 
 
-def query_jobs(user, start=None, end=None, status_code=None, name=None):
+def query_jobs(user, start=None, end=None, status_code=None, name=None, next_token=None):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
@@ -41,22 +41,17 @@ def query_jobs(user, start=None, end=None, status_code=None, name=None):
     if name is not None:
         filter_expression &= Attr('name').eq(name)
 
-    response = table.query(
-        IndexName='user_id',
-        KeyConditionExpression=key_expression,
-        FilterExpression=filter_expression,
-    )
-    jobs = response['Items']
+    params = {
+        'IndexName': 'user_id',
+        'KeyConditionExpression': key_expression,
+        'FilterExpression': filter_expression,
+    }
+    if next_token is not None:
+        params['ExclusiveStartKey'] = next_token
 
-    while 'LastEvaluatedKey' in response:
-        response = table.query(
-            IndexName='user_id',
-            KeyConditionExpression=key_expression,
-            FilterExpression=filter_expression,
-            ExclusiveStartKey=response['LastEvaluatedKey'],
-        )
-        jobs.extend(response['Items'])
-    return jobs
+    response = table.query(**params)
+    jobs = response['Items']
+    return jobs, response['LastEvaluatedKey']
 
 
 def get_job(job_id):
