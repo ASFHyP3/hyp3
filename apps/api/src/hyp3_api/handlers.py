@@ -84,8 +84,8 @@ def post_jobs(body, user):
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None, start_token=None):
-    start_token_decoded = deserialize(start_token) if start_token else None
-    jobs, last_evaluated_key = dynamo.query_jobs(user, start, end, status_code, name, start_token_decoded)
+    start_key = deserialize(start_token) if start_token else None
+    jobs, last_evaluated_key = dynamo.query_jobs(user, start, end, status_code, name, start_key)
     payload = {'jobs': jobs}
     if last_evaluated_key is not None:
         next_token = serialize(last_evaluated_key)
