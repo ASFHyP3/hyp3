@@ -1,10 +1,7 @@
-import json
-from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 from decimal import Decimal
 from os import environ
 from pathlib import Path
-from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from uuid import UUID, uuid4
 
 import requests
@@ -16,7 +13,8 @@ from jsonschema import draft4_format_checker
 
 from hyp3_api import connexion_app, dynamo
 from hyp3_api.openapi import get_spec
-from hyp3_api.util import convert_floats_to_decimals, format_time, get_remaining_jobs_for_user
+from hyp3_api.util import convert_floats_to_decimals, format_time, get_remaining_jobs_for_user, build_next_token, \
+    decode_start_token, set_start_token
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
 
@@ -83,25 +81,6 @@ def post_jobs(body, user):
     if not body.get('validate_only'):
         dynamo.put_jobs(jobs)
     return body
-
-
-def build_next_token(next_token):
-    string_version = json.dumps(next_token)
-    base_64 = b64encode(string_version.encode())
-    return base_64.decode()
-
-
-def decode_start_token(start_token: str):
-    string_version = b64decode(start_token.encode())
-    return json.loads(string_version)
-
-
-def set_start_token(url, start_token):
-    url_parts = list(urlparse(url))
-    query = parse_qsl(url_parts[4])
-    query.append(('start_token', start_token))
-    url_parts[4] = urlencode(query)
-    return urlunparse(url_parts)
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None, start_token=None):
