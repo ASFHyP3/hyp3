@@ -29,7 +29,9 @@ def test_query_jobs_by_user(tables):
     for item in table_items:
         tables['jobs_table'].put_item(Item=item)
 
-    response, _ = dynamo.query_jobs('user1')
+    response, next_key = dynamo.query_jobs('user1')
+
+    assert next_key is None
     assert len(response) == 2
     assert list_have_same_elements(response, table_items[:2])
 
