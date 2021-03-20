@@ -34,3 +34,5 @@ def test_token_handlers_invertable():
 def test_set_token_url():
     url = util.set_start_token('https://example.com/path?q1=foo&q2=bar', 'start_here')
     assert url == 'https://example.com/path?q1=foo&q2=bar&start_token=start_here'
+    url = util.set_start_token(url, 'now_here')
+    assert url == 'https://example.com/path?q1=foo&q2=bar&start_token=now_here'

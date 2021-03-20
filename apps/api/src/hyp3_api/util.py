@@ -66,7 +66,7 @@ def deserialize(token: str):
 
 def set_start_token(url, start_token):
     url_parts = list(urlparse(url))
-    query = parse_qsl(url_parts[4])
-    query.append(('start_token', start_token))
+    query = dict(parse_qsl(url_parts[4]))
+    query['start_token'] = start_token
     url_parts[4] = urlencode(query)
     return urlunparse(url_parts)
