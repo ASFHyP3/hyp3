@@ -81,12 +81,12 @@ def post_jobs(body, user):
     return body
 
 
-def get_jobs(user, start=None, end=None, status_code=None, name=None, start_token=None):
+def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None):
     try:
         start_key = util.deserialize(start_token) if start_token else None
     except util.TokenDeserializeError:
         return problem(400, 'Bad Request', 'Invalid start_token value')
-    jobs, last_evaluated_key = dynamo.query_jobs(user, start, end, status_code, name, start_key)
+    jobs, last_evaluated_key = dynamo.query_jobs(user, start, end, status_code, name, job_type, start_key)
     payload = {'jobs': jobs}
     if last_evaluated_key is not None:
         next_token = util.serialize(last_evaluated_key)

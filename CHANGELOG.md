@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0]
 ### Added
 - `GET /jobs` now pages results, large queries (that require paging) will contain a `next`
-  key in the root level of the json response with a URL to fetch subsequent pages.
+  key in the root level of the json response with a URL to fetch subsequent pages
+- `GET /jobs` now accepts a `job_type` query parameter
 
 ## [0.8.17]
 ### Added

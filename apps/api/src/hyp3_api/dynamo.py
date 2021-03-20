@@ -28,7 +28,7 @@ def put_jobs(payload: List[dict]):
         table.put_item(Item=item)
 
 
-def query_jobs(user, start=None, end=None, status_code=None, name=None, start_key=None):
+def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
@@ -40,6 +40,8 @@ def query_jobs(user, start=None, end=None, status_code=None, name=None, start_ke
         filter_expression &= Attr('status_code').eq(status_code)
     if name is not None:
         filter_expression &= Attr('name').eq(name)
+    if job_type is not None:
+        filter_expression &= Attr('job_type').eq(job_type)
 
     params = {
         'IndexName': 'user_id',

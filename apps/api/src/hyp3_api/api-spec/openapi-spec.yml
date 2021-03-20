@@ -48,6 +48,10 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/name"
+        - name: job_type
+          in: query
+          schema:
+            $ref: "#/components/schemas/job_type"
         - name: start_token
           in: query
           schema:
