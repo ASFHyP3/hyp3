@@ -17,13 +17,13 @@ def test_deserialize_token():
 
     with pytest.raises(util.TokenDeserializeError) as e:
         util.deserialize('foo')
-        assert e.__context__.type == binascii.Error
-    with pytest.raises(util.TokenDeserializeError):
+    assert type(e.value.__context__) == binascii.Error
+    with pytest.raises(util.TokenDeserializeError) as e:
         util.deserialize('Zm9vbw==')
-        assert e.__context__.type == json.JSONDecodeError
-    with pytest.raises(util.TokenDeserializeError):
-        util.deserialize('foo')
-        assert e.__context__.type == UnicodeDecodeError
+    assert type(e.value.__context__) == json.JSONDecodeError
+    with pytest.raises(util.TokenDeserializeError) as e:
+        util.deserialize('fooo')
+    assert type(e.value.__context__) == UnicodeDecodeError
 
 
 def test_token_handlers_invertable():
