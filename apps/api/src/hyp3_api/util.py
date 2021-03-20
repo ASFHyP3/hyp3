@@ -59,10 +59,8 @@ def serialize(payload: dict):
 def deserialize(token: str):
     try:
         string_version = b64decode(token.encode())
-        dict_version = json.loads(string_version)
-        if dict_version.keys != {'job_id', 'request_time', 'user_id'}:
-            raise TokenDeserializeError()
-    except (json.JSONDecodeError, binascii.Error):
+        return json.loads(string_version)
+    except (json.JSONDecodeError, binascii.Error, UnicodeDecodeError):
         raise TokenDeserializeError()
 
 
