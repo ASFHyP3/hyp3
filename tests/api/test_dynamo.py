@@ -1,4 +1,4 @@
-from api.conftest import list_have_same_elements, sort_by_request_time
+from api.conftest import list_have_same_elements
 
 from hyp3_api import dynamo
 
@@ -62,7 +62,7 @@ def test_query_jobs_by_time(tables):
     end = '2000-01-03T00:00:00z'
     response, _ = dynamo.query_jobs('user1', start, end)
     assert len(response) == 3
-    assert response == sort_by_request_time(table_items)
+    assert response == table_items[2::-1]
 
     start = '2000-01-01T00:00:01z'
     end = '2000-01-02T00:59:59z'
@@ -284,7 +284,7 @@ def test_query_jobs_sort_order(tables):
             'request_time': '2000-01-01T00:00:00+00:00',
         },
     ]
-    for item in table_items:
+    for item in [table_items[2], table_items[0], table_items[1]]:
         tables['jobs_table'].put_item(Item=item)
 
     response, _ = dynamo.query_jobs('user1')
