@@ -1,8 +1,15 @@
+import binascii
+import json
+from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 from decimal import Decimal
-
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from hyp3_api import handlers
+
+
+class TokenDeserializeError(Exception):
+    pass
 
 
 def get_granules(jobs):
@@ -41,3 +48,25 @@ def convert_floats_to_decimals(element):
     if type(element) is dict:
         return {key: convert_floats_to_decimals(value) for key, value in element.items()}
     return element
+
+
+def serialize(payload: dict):
+    string_version = json.dumps(payload)
+    base_64 = b64encode(string_version.encode())
+    return base_64.decode()
+
+
+def deserialize(token: str):
+    try:
+        string_version = b64decode(token.encode())
+        return json.loads(string_version)
+    except (json.JSONDecodeError, binascii.Error, UnicodeDecodeError):
+        raise TokenDeserializeError()
+
+
+def set_start_token(url, start_token):
+    url_parts = list(urlparse(url))
+    query = dict(parse_qsl(url_parts[4]))
+    query['start_token'] = start_token
+    url_parts[4] = urlencode(query)
+    return urlunparse(url_parts)
