@@ -144,6 +144,41 @@ def test_query_jobs_by_name(tables):
     assert list_have_same_elements(response, table_items[:2])
 
 
+def test_query_jobs_by_type(tables):
+    table_items = [
+        {
+            'job_id': 'job1',
+            'job_type': 'RTC_GAMMA',
+            'name': 'name1',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+        {
+            'job_id': 'job2',
+            'job_type': 'RTC_GAMMA',
+            'name': 'name1',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+        {
+            'job_id': 'job3',
+            'job_type': 'INSAR_GAMMA',
+            'name': 'name2',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+    ]
+    for item in table_items:
+        tables['jobs_table'].put_item(Item=item)
+
+    response, _ = dynamo.query_jobs('user1', job_type='RTC_GAMMA')
+    assert len(response) == 2
+    assert list_have_same_elements(response, table_items[:2])
+
+
 def test_put_jobs(tables):
     table_items = [
         {

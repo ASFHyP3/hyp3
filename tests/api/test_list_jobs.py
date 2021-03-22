@@ -65,6 +65,28 @@ def test_list_jobs_by_name(client, tables):
     assert response.json == {'jobs': []}
 
 
+def test_list_jobs_by_type(client, tables):
+    items = [
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', job_type='RTC_GAMMA'),
+        make_db_record('874f7533-807d-4b20-afe1-27b5b6fc9d6c', job_type='RTC_GAMMA'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', job_type='INSAR_GAMMA'),
+    ]
+    for item in items:
+        tables['jobs_table'].put_item(Item=item)
+
+    login(client)
+    response = client.get(JOBS_URI, query_string={'job_type': 'RTC_GAMMA'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': items[:2]}
+
+    response = client.get(JOBS_URI, query_string={'job_type': 'INSAR_GAMMA'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': [items[2]]}
+
+    response = client.get(JOBS_URI, query_string={'job_type': 'FOOBAR'})
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
 def test_list_jobs_by_status(client, tables):
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', status_code='RUNNING'),
