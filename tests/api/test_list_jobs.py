@@ -1,7 +1,7 @@
 from unittest import mock
 from urllib.parse import unquote
 
-from api.conftest import JOBS_URI, login, make_db_record, sort_by_request_time, list_have_same_elements
+from api.conftest import JOBS_URI, list_have_same_elements, login, make_db_record
 from flask_api import status
 
 

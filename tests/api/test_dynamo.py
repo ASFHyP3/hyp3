@@ -1,5 +1,6 @@
+from api.conftest import list_have_same_elements, sort_by_request_time
+
 from hyp3_api import dynamo
-from api.conftest import sort_by_request_time, list_have_same_elements
 
 
 def test_query_jobs_by_user(tables):
