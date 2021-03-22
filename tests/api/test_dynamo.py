@@ -257,7 +257,7 @@ def test_get_user(tables):
     assert dynamo.get_user('foo') is None
 
 
-def test__query_jobs_sort_order(tables):
+def test_query_jobs_sort_order(tables):
     table_items = [
         {
             'job_id': 'job1',
