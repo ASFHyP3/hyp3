@@ -1,7 +1,7 @@
 from unittest import mock
 from urllib.parse import unquote
 
-from api.conftest import JOBS_URI, login, make_db_record
+from api.conftest import JOBS_URI, login, make_db_record, sort_by_request_time, list_have_same_elements
 from flask_api import status
 
 
@@ -39,7 +39,8 @@ def test_list_jobs(client, tables):
     login(client, 'user_with_jobs')
     response = client.get(JOBS_URI)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json == {'jobs': items}
+    assert 'jobs' in response.json
+    assert list_have_same_elements(response.json['jobs'], items)
 
     login(client, 'user_without_jobs')
     response = client.get(JOBS_URI)
@@ -77,7 +78,7 @@ def test_list_jobs_by_type(client, tables):
     login(client)
     response = client.get(JOBS_URI, query_string={'job_type': 'RTC_GAMMA'})
     assert response.status_code == status.HTTP_200_OK
-    assert response.json == {'jobs': items[:2]}
+    assert list_have_same_elements(response.json['jobs'], items[:2])
 
     response = client.get(JOBS_URI, query_string={'job_type': 'INSAR_GAMMA'})
     assert response.status_code == status.HTTP_200_OK
@@ -138,11 +139,11 @@ def test_list_jobs_date_start_and_end(client, tables):
     for date in dates:
         response = client.get(JOBS_URI, query_string={'start': date})
         assert response.status_code == status.HTTP_200_OK
-        assert response.json == {'jobs': items[1:]}
+        assert list_have_same_elements(response.json['jobs'], items[1:])
 
         response = client.get(JOBS_URI, query_string={'end': date})
         assert response.status_code == status.HTTP_200_OK
-        assert response.json == {'jobs': items[:2]}
+        assert list_have_same_elements(response.json['jobs'], items[:2])
 
         response = client.get(JOBS_URI, query_string={'start': date, 'end': date})
         assert response.status_code == status.HTTP_200_OK

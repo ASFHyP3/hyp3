@@ -47,6 +47,7 @@ def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type
         'IndexName': 'user_id',
         'KeyConditionExpression': key_expression,
         'FilterExpression': filter_expression,
+        'ScanIndexForward': False,
     }
     if start_key is not None:
         params['ExclusiveStartKey'] = start_key

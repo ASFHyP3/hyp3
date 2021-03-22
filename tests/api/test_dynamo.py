@@ -1,8 +1,5 @@
 from hyp3_api import dynamo
-
-
-def list_have_same_elements(l1, l2):
-    return [item for item in l1 if item not in l2] == [] == [item for item in l2 if item not in l1]
+from api.conftest import sort_by_request_time, list_have_same_elements
 
 
 def test_query_jobs_by_user(tables):
@@ -64,7 +61,7 @@ def test_query_jobs_by_time(tables):
     end = '2000-01-03T00:00:00z'
     response, _ = dynamo.query_jobs('user1', start, end)
     assert len(response) == 3
-    assert response == table_items
+    assert response == sort_by_request_time(table_items)
 
     start = '2000-01-01T00:00:01z'
     end = '2000-01-02T00:59:59z'
@@ -257,3 +254,37 @@ def test_get_user(tables):
     assert dynamo.get_user('user1') == table_items[0]
     assert dynamo.get_user('user2') == table_items[1]
     assert dynamo.get_user('foo') is None
+
+
+def test__query_jobs_sort_order(tables):
+    table_items = [
+        {
+            'job_id': 'job1',
+            'job_type': 'RTC_GAMMA',
+            'name': 'name1',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-03T00:00:00+00:00',
+        },
+        {
+            'job_id': 'job2',
+            'job_type': 'RTC_GAMMA',
+            'name': 'name1',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-02T00:00:00+00:00',
+        },
+        {
+            'job_id': 'job3',
+            'job_type': 'INSAR_GAMMA',
+            'name': 'name2',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+    ]
+    for item in table_items:
+        tables['jobs_table'].put_item(Item=item)
+
+    response, _ = dynamo.query_jobs('user1')
+    assert response == table_items
