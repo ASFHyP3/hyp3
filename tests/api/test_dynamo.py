@@ -174,7 +174,7 @@ def test_query_jobs_by_type(tables):
 
     response, _ = dynamo.query_jobs('user1', job_type='RTC_GAMMA')
     assert len(response) == 2
-    assert list_have_same_elements(response, table_items[:2])
+    assert list_have_same_elements(response, reversed(table_items))
 
 
 def test_put_jobs(tables):
