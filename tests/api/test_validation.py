@@ -20,7 +20,7 @@ def test_has_sufficient_coverage():
     assert validation.has_sufficient_coverage(poly, legacy=True)
 
     # not enough coverage of Aleutian Islands over antimeridian
-    # NOTE: Passes today but should FAIL with legacy with antimeridian feature fix
+    # NOTE: Passes today but should FAIL legacy with antimeridian feature fix
     poly = rectangle(51.7, 41.3, 179.7, -179.3)
     assert validation.has_sufficient_coverage(poly)
     assert validation.has_sufficient_coverage(poly, legacy=True)
