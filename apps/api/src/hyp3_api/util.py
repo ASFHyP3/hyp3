@@ -9,7 +9,7 @@ from hyp3_api import handlers
 
 
 class TokenDeserializeError(Exception):
-    pass
+    """Raised when paging results and `start_token` fails to deserialize"""
 
 
 def get_granules(jobs):
@@ -61,7 +61,7 @@ def deserialize(token: str):
         string_version = b64decode(token.encode())
         return json.loads(string_version)
     except (json.JSONDecodeError, binascii.Error, UnicodeDecodeError):
-        raise TokenDeserializeError()
+        raise TokenDeserializeError
 
 
 def set_start_token(url, start_token):
