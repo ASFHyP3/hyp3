@@ -10,8 +10,8 @@ from shapely.geometry import MultiPolygon, Polygon, shape
 from hyp3_api import CMR_URL
 from hyp3_api.util import get_granules
 
+DEM_COVERAGE = None
 DEM_COVERAGE_LEGACY = None
-DEM_COVERAGE_COP30 = None
 
 
 class GranuleValidationError(Exception):
@@ -22,23 +22,22 @@ with open(Path(__file__).parent / 'job_validation_map.yml') as f:
     JOB_VALIDATION_MAP = yaml.safe_load(f.read())
 
 
-def has_sufficient_coverage_legacy(granule: Polygon, buffer: float = 0.15, threshold: float = 0.2):
-    global DEM_COVERAGE_LEGACY
-    if DEM_COVERAGE_LEGACY is None:
-        DEM_COVERAGE_LEGACY = MultiPolygon(get_coverage_shapes_from_geojson('dem_coverage_map_legacy.geojson'))
+def has_sufficient_coverage(granule: Polygon, buffer: float = 0.15, threshold: float = 0.2, legacy=False):
+    if legacy:
+        global DEM_COVERAGE_LEGACY
+        if DEM_COVERAGE_LEGACY is None:
+            DEM_COVERAGE_LEGACY = MultiPolygon(get_coverage_shapes_from_geojson('dem_coverage_map_legacy.geojson'))
 
-    buffered_granule = granule.buffer(buffer)
-    covered_area = buffered_granule.intersection(DEM_COVERAGE_LEGACY).area
+        buffered_granule = granule.buffer(buffer)
+        covered_area = buffered_granule.intersection(DEM_COVERAGE_LEGACY).area
 
-    return covered_area / buffered_granule.area >= threshold
+        return covered_area / buffered_granule.area >= threshold
+    else:
+        global DEM_COVERAGE
+        if DEM_COVERAGE is None:
+            DEM_COVERAGE = MultiPolygon(get_coverage_shapes_from_geojson('dem_coverage_map_cop30.geojson'))
 
-
-def has_sufficient_coverage_cop30(granule: Polygon):
-    global DEM_COVERAGE_COP30
-    if DEM_COVERAGE_COP30 is None:
-        DEM_COVERAGE_COP30 = MultiPolygon(get_coverage_shapes_from_geojson('dem_coverage_map_cop30.geojson'))
-
-    return granule.intersects(DEM_COVERAGE_COP30)
+        return granule.intersects(DEM_COVERAGE)
 
 
 def get_cmr_metadata(granules):
@@ -78,19 +77,14 @@ def check_granules_exist(granules, granule_metadata):
         raise GranuleValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 
 
-def check_dem_coverage(granule_metadata, dem_type='cop30'):
-    if dem_type == 'legacy':
-        has_sufficient_coverage = has_sufficient_coverage_legacy
-    else:
-        has_sufficient_coverage = has_sufficient_coverage_cop30
-
-    bad_granules = [granule['name'] for granule in granule_metadata if not has_sufficient_coverage(granule['polygon'])]
+def check_dem_coverage(granule_metadata, legacy=False):
+    bad_granules = [g['name'] for g in granule_metadata if not has_sufficient_coverage(g['polygon'], legacy=legacy)]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
 def check_dem_coverage_legacy(granule_metadata):
-    check_dem_coverage(granule_metadata, 'legacy')
+    check_dem_coverage(granule_metadata, legacy=True)
 
 
 def format_points(point_string):

@@ -8,99 +8,82 @@ def rectangle(north, south, east, west):
     return Polygon([[west, north], [east, north], [east, south], [west, south]])
 
 
-def test_has_sufficient_coverage_cop30():
+def test_has_sufficient_coverage():
     # Wyoming
     poly = rectangle(45, 41, -104, -111)
-    assert validation.has_sufficient_coverage_cop30(poly)
-
-    # completely covers Aleutian Islands over antimeridian; should pass with fixed antimeridian
-    poly = rectangle(51.7, 51.3, 179.7, -179.3)
-    assert validation.has_sufficient_coverage_cop30(poly)
-
-    # completely encloses tile over Ascension Island in the Atlantic
-    poly = rectangle(-6, -9, -15, -14)
-    assert validation.has_sufficient_coverage_cop30(poly)
-
-    # # minimum sufficient coverage off the coast of Eureka, CA
-    poly = rectangle(40.1, 40, -126, -125.000138)
-    assert validation.has_sufficient_coverage_cop30(poly)
-
-    # almost minimum sufficient coverage off the coast of Eureka, CA
-    poly = rectangle(40.1, 40, -126, -125.000139)
-    assert not validation.has_sufficient_coverage_cop30(poly)
-
-    # polygon in missing tile over Gulf of California
-    poly = rectangle(26.9, 26.1, -110.1, -110.9)
-    assert not validation.has_sufficient_coverage_cop30(poly)
-
-    # northern Greenland
-    poly = rectangle(84.5, 83.5, -39, -40)
-    assert validation.has_sufficient_coverage_cop30(poly)
-
-    # Antarctica
-    poly = rectangle(-89, -90, 180, -180)
-    assert validation.has_sufficient_coverage_cop30(poly)
-
-    # ocean over antimeridian; should FAIL with fixed antimeridian
-    poly = rectangle(-40, -41, 179.7, -179.3)
-    assert validation.has_sufficient_coverage_cop30(poly)
-
-
-def test_has_sufficient_coverage_legacy():
-    # Wyoming
-    poly = rectangle(45, 41, -104, -111)
-    assert validation.has_sufficient_coverage_legacy(poly)
+    assert validation.has_sufficient_coverage(poly)
+    assert validation.has_sufficient_coverage(poly, legacy=True)
 
     # completely covered Aleutian Islands over antimeridian; should pass with fixed antimeridian
     poly = rectangle(51.7, 51.3, 179.7, -179.3)
-    assert validation.has_sufficient_coverage_legacy(poly)
+    assert validation.has_sufficient_coverage(poly)
+    assert validation.has_sufficient_coverage(poly, legacy=True)
 
     # not enough coverage of Aleutian Islands over antimeridian
-    # NOTE: Passes today but should FAIL with antimeridian feature fix
+    # NOTE: Passes today but should FAIL with legacy with antimeridian feature fix
     poly = rectangle(51.7, 41.3, 179.7, -179.3)
-    assert validation.has_sufficient_coverage_legacy(poly)
+    assert validation.has_sufficient_coverage(poly)
+    assert validation.has_sufficient_coverage(poly, legacy=True)
 
     # completely encloses tile over Ascension Island in the Atlantic
     poly = rectangle(-6, -9, -15, -14)
-    assert validation.has_sufficient_coverage_legacy(poly)
+    assert validation.has_sufficient_coverage(poly)
+    assert validation.has_sufficient_coverage(poly, legacy=True)
 
-    # minimum sufficient coverage off the coast of Eureka, CA
-    poly = rectangle(40.1, 40, -126, -124.845)
-    assert validation.has_sufficient_coverage_legacy(poly)
+    # # minimum sufficient coverage off the coast of Eureka, CA
+    poly = rectangle(40.1, 40, -126, -125.000138)
+    assert validation.has_sufficient_coverage(poly)
+    assert not validation.has_sufficient_coverage(poly, legacy=True)
 
     # almost minimum sufficient coverage off the coast of Eureka, CA
-    poly = rectangle(40.1, 40, -126, -124.849)
-    assert not validation.has_sufficient_coverage_legacy(poly)
+    poly = rectangle(40.1, 40, -126, -125.000139)
+    assert not validation.has_sufficient_coverage(poly)
+    assert not validation.has_sufficient_coverage(poly, legacy=True)
 
-    # polygon in missing tile over Gulf of Californa
+    # minimum sufficient legacy coverage off the coast of Eureka, CA
+    poly = rectangle(40.1, 40, -126, -124.845)
+    assert validation.has_sufficient_coverage(poly)
+    assert validation.has_sufficient_coverage(poly, legacy=True)
+
+    # almost minimum sufficient legacy coverage off the coast of Eureka, CA
+    poly = rectangle(40.1, 40, -126, -124.849)
+    assert validation.has_sufficient_coverage(poly)
+    assert not validation.has_sufficient_coverage(poly, legacy=True)
+
+    # polygon in missing tile over Gulf of California
     poly = rectangle(26.9, 26.1, -110.1, -110.9)
-    assert not validation.has_sufficient_coverage_legacy(poly)
+    assert not validation.has_sufficient_coverage(poly)
+    assert not validation.has_sufficient_coverage(poly, legacy=True)
 
     # southern Greenland
     poly = rectangle(62, 61, -44, -45)
-    assert not validation.has_sufficient_coverage_legacy(poly)
+    assert validation.has_sufficient_coverage(poly)
+    assert not validation.has_sufficient_coverage(poly, legacy=True)
 
     # Antarctica
     poly = rectangle(-62, -90, 180, -180)
-    assert not validation.has_sufficient_coverage_legacy(poly)
+    assert validation.has_sufficient_coverage(poly)
+    assert not validation.has_sufficient_coverage(poly, legacy=True)
 
-    # ocean over antimeridian; no dem coverage and also not enough wraparound land intersection
+    # ocean over antimeridian; no dem coverage and also not enough legacy wraparound land intersection
+    # should FAIL with legacy with antimeridian feature fix
     poly = rectangle(-40, -41, 179.7, -179.3)
-    assert not validation.has_sufficient_coverage_legacy(poly)
+    assert validation.has_sufficient_coverage(poly)
+    assert not validation.has_sufficient_coverage(poly, legacy=True)
 
 
 def test_has_sufficient_coverage_legacy_buffer():
     needs_buffer = rectangle(40.1, 40, -126, -124.845)
-    assert validation.has_sufficient_coverage_legacy(needs_buffer)
-    assert validation.has_sufficient_coverage_legacy(needs_buffer, buffer=0.16)
-    assert not validation.has_sufficient_coverage_legacy(needs_buffer, buffer=0.14)
+    assert validation.has_sufficient_coverage(needs_buffer, legacy=True)
+    assert validation.has_sufficient_coverage(needs_buffer, buffer=0.16, legacy=True)
+    assert not validation.has_sufficient_coverage(needs_buffer, buffer=0.14, legacy=True)
 
 
 def test_has_sufficient_coverage_legacy_threshold():
     poly = rectangle(40.1, 40, -126, -124.845)
-    assert validation.has_sufficient_coverage_legacy(poly)
-    assert validation.has_sufficient_coverage_legacy(poly, threshold=0.19)
-    assert not validation.has_sufficient_coverage_legacy(poly, threshold=0.21)
+    assert validation.has_sufficient_coverage(poly, legacy=True)
+    assert validation.has_sufficient_coverage(poly, threshold=0.19, legacy=True)
+    assert not validation.has_sufficient_coverage(poly, threshold=0.21, legacy=True)
 
 
 def test_format_points():
