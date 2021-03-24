@@ -109,7 +109,7 @@ InsarGamma:
     - Ref::looks
     - Ref::granules
   validators:
-    - check_dem_coverage
+    - check_dem_coverage_legacy
   timeout: 10800
 
 Autorift:
