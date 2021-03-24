@@ -1,8 +1,6 @@
+from api.conftest import list_have_same_elements
+
 from hyp3_api import dynamo
-
-
-def list_have_same_elements(l1, l2):
-    return [item for item in l1 if item not in l2] == [] == [item for item in l2 if item not in l1]
 
 
 def test_query_jobs_by_user(tables):
@@ -29,7 +27,9 @@ def test_query_jobs_by_user(tables):
     for item in table_items:
         tables['jobs_table'].put_item(Item=item)
 
-    response = dynamo.query_jobs('user1')
+    response, next_key = dynamo.query_jobs('user1')
+
+    assert next_key is None
     assert len(response) == 2
     assert list_have_same_elements(response, table_items[:2])
 
@@ -60,23 +60,23 @@ def test_query_jobs_by_time(tables):
 
     start = '2000-01-01T00:00:00z'
     end = '2000-01-03T00:00:00z'
-    response = dynamo.query_jobs('user1', start, end)
+    response, _ = dynamo.query_jobs('user1', start, end)
     assert len(response) == 3
-    assert response == table_items
+    assert response == list(reversed(table_items))
 
     start = '2000-01-01T00:00:01z'
     end = '2000-01-02T00:59:59z'
-    response = dynamo.query_jobs('user1', start, end)
+    response, _ = dynamo.query_jobs('user1', start, end)
     assert len(response) == 1
     assert list_have_same_elements(response, table_items[1:2])
 
     start = '2000-01-01T00:00:01z'
-    response = dynamo.query_jobs('user1', start, None)
+    response, _ = dynamo.query_jobs('user1', start, None)
     assert len(response) == 2
     assert list_have_same_elements(response, table_items[1:])
 
     end = '2000-01-02T00:59:59z'
-    response = dynamo.query_jobs('user1', None, end)
+    response, _ = dynamo.query_jobs('user1', None, end)
     assert len(response) == 2
     assert list_have_same_elements(response, table_items[:2])
 
@@ -105,7 +105,7 @@ def test_query_jobs_by_status(tables):
     for item in table_items:
         tables['jobs_table'].put_item(Item=item)
 
-    response = dynamo.query_jobs('user1', status_code='status1')
+    response, _ = dynamo.query_jobs('user1', status_code='status1')
     assert len(response) == 2
     assert list_have_same_elements(response, table_items[0::2])
 
@@ -137,7 +137,42 @@ def test_query_jobs_by_name(tables):
     for item in table_items:
         tables['jobs_table'].put_item(Item=item)
 
-    response = dynamo.query_jobs('user1', name='name1')
+    response, _ = dynamo.query_jobs('user1', name='name1')
+    assert len(response) == 2
+    assert list_have_same_elements(response, table_items[:2])
+
+
+def test_query_jobs_by_type(tables):
+    table_items = [
+        {
+            'job_id': 'job1',
+            'job_type': 'RTC_GAMMA',
+            'name': 'name1',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+        {
+            'job_id': 'job2',
+            'job_type': 'RTC_GAMMA',
+            'name': 'name1',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+        {
+            'job_id': 'job3',
+            'job_type': 'INSAR_GAMMA',
+            'name': 'name2',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+    ]
+    for item in table_items:
+        tables['jobs_table'].put_item(Item=item)
+
+    response, _ = dynamo.query_jobs('user1', job_type='RTC_GAMMA')
     assert len(response) == 2
     assert list_have_same_elements(response, table_items[:2])
 
@@ -220,3 +255,37 @@ def test_get_user(tables):
     assert dynamo.get_user('user1') == table_items[0]
     assert dynamo.get_user('user2') == table_items[1]
     assert dynamo.get_user('foo') is None
+
+
+def test_query_jobs_sort_order(tables):
+    table_items = [
+        {
+            'job_id': 'job1',
+            'job_type': 'RTC_GAMMA',
+            'name': 'name1',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-03T00:00:00+00:00',
+        },
+        {
+            'job_id': 'job2',
+            'job_type': 'RTC_GAMMA',
+            'name': 'name1',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-02T00:00:00+00:00',
+        },
+        {
+            'job_id': 'job3',
+            'job_type': 'INSAR_GAMMA',
+            'name': 'name2',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+    ]
+    for item in [table_items[2], table_items[0], table_items[1]]:
+        tables['jobs_table'].put_item(Item=item)
+
+    response, _ = dynamo.query_jobs('user1')
+    assert response == table_items

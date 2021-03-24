@@ -1,4 +1,7 @@
-from api.conftest import JOBS_URI, login, make_db_record
+from unittest import mock
+from urllib.parse import unquote
+
+from api.conftest import JOBS_URI, list_have_same_elements, login, make_db_record
 from flask_api import status
 
 
@@ -36,7 +39,8 @@ def test_list_jobs(client, tables):
     login(client, 'user_with_jobs')
     response = client.get(JOBS_URI)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json == {'jobs': items}
+    assert 'jobs' in response.json
+    assert list_have_same_elements(response.json['jobs'], items)
 
     login(client, 'user_without_jobs')
     response = client.get(JOBS_URI)
@@ -60,6 +64,28 @@ def test_list_jobs_by_name(client, tables):
     response = client.get(JOBS_URI, query_string={'name': 'item does not exist'})
     assert response.status_code == status.HTTP_200_OK
     assert response.json == {'jobs': []}
+
+
+def test_list_jobs_by_type(client, tables):
+    items = [
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', job_type='RTC_GAMMA'),
+        make_db_record('874f7533-807d-4b20-afe1-27b5b6fc9d6c', job_type='RTC_GAMMA'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', job_type='INSAR_GAMMA'),
+    ]
+    for item in items:
+        tables['jobs_table'].put_item(Item=item)
+
+    login(client)
+    response = client.get(JOBS_URI, query_string={'job_type': 'RTC_GAMMA'})
+    assert response.status_code == status.HTTP_200_OK
+    assert list_have_same_elements(response.json['jobs'], items[:2])
+
+    response = client.get(JOBS_URI, query_string={'job_type': 'INSAR_GAMMA'})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json == {'jobs': [items[2]]}
+
+    response = client.get(JOBS_URI, query_string={'job_type': 'FOOBAR'})
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 def test_list_jobs_by_status(client, tables):
@@ -113,11 +139,11 @@ def test_list_jobs_date_start_and_end(client, tables):
     for date in dates:
         response = client.get(JOBS_URI, query_string={'start': date})
         assert response.status_code == status.HTTP_200_OK
-        assert response.json == {'jobs': items[1:]}
+        assert list_have_same_elements(response.json['jobs'], items[1:])
 
         response = client.get(JOBS_URI, query_string={'end': date})
         assert response.status_code == status.HTTP_200_OK
-        assert response.json == {'jobs': items[:2]}
+        assert list_have_same_elements(response.json['jobs'], items[:2])
 
         response = client.get(JOBS_URI, query_string={'start': date, 'end': date})
         assert response.status_code == status.HTTP_200_OK
@@ -144,3 +170,11 @@ def test_bad_date_formats(client):
         for bad_date in bad_dates:
             response = client.get(JOBS_URI, query_string={datetime_parameter: bad_date})
             assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_list_paging(client):
+    login(client)
+    mock_response = ([], {'foo': 1, 'bar': 2})
+    with mock.patch('hyp3_api.dynamo.query_jobs', return_value=mock_response):
+        response = client.get(JOBS_URI)
+        assert unquote(response.json['next']) == 'http://localhost/jobs?start_token=eyJmb28iOiAxLCAiYmFyIjogMn0='
