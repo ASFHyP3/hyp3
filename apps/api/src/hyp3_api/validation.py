@@ -26,7 +26,7 @@ def has_sufficient_coverage(granule: Polygon, buffer: float = 0.15, threshold: f
     if legacy:
         global DEM_COVERAGE_LEGACY
         if DEM_COVERAGE_LEGACY is None:
-            DEM_COVERAGE_LEGACY = MultiPolygon(get_coverage_shapes_from_geojson('dem_coverage_map_legacy.geojson'))
+            DEM_COVERAGE_LEGACY = get_multipolygon_from_geojson('dem_coverage_map_legacy.geojson')
 
         buffered_granule = granule.buffer(buffer)
         covered_area = buffered_granule.intersection(DEM_COVERAGE_LEGACY).area
@@ -35,7 +35,7 @@ def has_sufficient_coverage(granule: Polygon, buffer: float = 0.15, threshold: f
     else:
         global DEM_COVERAGE
         if DEM_COVERAGE is None:
-            DEM_COVERAGE = MultiPolygon(get_coverage_shapes_from_geojson('dem_coverage_map_cop30.geojson'))
+            DEM_COVERAGE = get_multipolygon_from_geojson('dem_coverage_map_cop30.geojson')
 
         return granule.intersects(DEM_COVERAGE)
 
@@ -93,11 +93,12 @@ def format_points(point_string):
     return points
 
 
-def get_coverage_shapes_from_geojson(input_file):
+def get_multipolygon_from_geojson(input_file):
     dem_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), input_file)
     with open(dem_file) as f:
         shp = json.load(f)['features'][0]['geometry']
-    return [x.buffer(0) for x in shape(shp).buffer(0).geoms]
+    polygons = [x.buffer(0) for x in shape(shp).buffer(0).geoms]
+    return MultiPolygon(polygons)
 
 
 def validate_jobs(jobs):
