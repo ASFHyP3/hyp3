@@ -8,7 +8,7 @@ def rectangle(north, south, east, west):
     return Polygon([[west, north], [east, north], [east, south], [west, south]])
 
 
-def est_has_sufficient_coverage_cop30():
+def test_has_sufficient_coverage_cop30():
     # Wyoming
     poly = rectangle(45, 41, -104, -111)
     assert validation.has_sufficient_coverage_cop30(poly)
