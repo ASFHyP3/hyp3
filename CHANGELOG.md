@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- `POST /jobs` now checks DEM coverage against the
+  [Copernicus GLO-30 Public DEM](https://registry.opendata.aws/copernicus-dem/) for `RTC_GAMMA` jobs.
+
 ## [1.0.0]
 ### Added
 - `GET /jobs` now pages results. Large queries (that require paging) will contain a `next`
