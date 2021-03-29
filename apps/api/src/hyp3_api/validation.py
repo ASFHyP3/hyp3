@@ -77,14 +77,16 @@ def check_granules_exist(granules, granule_metadata):
         raise GranuleValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 
 
-def check_dem_coverage(granule_metadata, legacy=False):
+def check_dem_coverage(job, granule_metadata, legacy=False):
+    if job.get('dem_name') == 'legacy':
+        legacy = True
     bad_granules = [g['name'] for g in granule_metadata if not has_sufficient_coverage(g['polygon'], legacy=legacy)]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
-def check_dem_coverage_legacy(granule_metadata):
-    check_dem_coverage(granule_metadata, legacy=True)
+def check_dem_coverage_legacy(job, granule_metadata):
+    check_dem_coverage(job, granule_metadata, legacy=True)
 
 
 def format_points(point_string):
@@ -111,4 +113,4 @@ def validate_jobs(jobs):
             job_granule_metadata = [granule for granule in granule_metadata if granule['name'] in get_granules([job])]
             module = sys.modules[__name__]
             validator = getattr(module, validator_name)
-            validator(job_granule_metadata)
+            validator(job, job_granule_metadata)

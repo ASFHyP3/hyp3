@@ -98,6 +98,7 @@ def test_format_points():
 
 
 def test_check_dem_coverage_legacy():
+    job = {'dem_name': 'legacy'}
     good = {
         'name': 'good',
         'polygon': rectangle(45, 41, -104, -111),
@@ -108,44 +109,47 @@ def test_check_dem_coverage_legacy():
         'polygon': rectangle(-62, -90, 180, -180),
     }
 
-    validation.check_dem_coverage_legacy([])
+    validation.check_dem_coverage_legacy(job, [])
 
-    validation.check_dem_coverage_legacy([good])
+    validation.check_dem_coverage_legacy(job, [good])
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage_legacy([bad])
+        validation.check_dem_coverage_legacy(job, [bad])
     assert 'bad' in str(e)
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage_legacy([good, bad])
+        validation.check_dem_coverage_legacy(job, [good, bad])
     assert 'bad' in str(e)
     assert 'good' not in str(e)
 
+    assert 'bad' in str(e)
+
 
 def test_check_dem_coverage():
+    job = {'dem_name': 'copernicus'}
     good = {
         'name': 'good',
         'polygon': rectangle(45, 41, -104, -111),
     }
 
+    bad_job = {'dem_name': 'legacy'}
     bad = {
         'name': 'bad',
         'polygon': rectangle(-20, -30, 70, 100),
     }
 
-    validation.check_dem_coverage([])
+    validation.check_dem_coverage(job, [])
 
-    validation.check_dem_coverage([good])
+    validation.check_dem_coverage(job, [good])
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage([bad])
+        validation.check_dem_coverage(job, [bad])
     assert 'bad' in str(e)
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage([good, bad])
+        validation.check_dem_coverage(job, [good, bad])
     assert 'bad' in str(e)
     assert 'good' not in str(e)
-
 
 def test_check_granules_exist():
     granule_metadata = [
