@@ -78,7 +78,7 @@ aws cloudformation deploy \
                 "ImageTag=<docker image tag>" \
                 "DomainName=<Domain Name>" \
                 "CertificateArn=<arn for ssl certificate>" \
-                "MonthlyJobQuotaPerUser=<quota>" \
+                "MonthlyJobQuotaPerUser=<quota>"
 ```
 - Check API at `https://<Domain Name>/ui`
 
