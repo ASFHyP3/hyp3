@@ -5,9 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Exposed new `dem_name` api parameter for RTC_GAMMA jobs
+
 ### Changed
-- `POST /jobs` now checks DEM coverage against the
-  [Copernicus GLO-30 Public DEM](https://registry.opendata.aws/copernicus-dem/) for `RTC_GAMMA` jobs.
+- Granules for RTC_GAMMA jobs are now validated against the appropriate DEM coverage map based on the value of the
+  `dem_name` job parameter
 
 ## [1.0.0]
 ### Added
