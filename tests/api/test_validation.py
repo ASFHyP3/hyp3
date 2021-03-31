@@ -98,57 +98,40 @@ def test_format_points():
 
 
 def test_check_dem_coverage():
+    both = {'name': 'both', 'polygon': rectangle(45, 41, -104, -111)}
+    copernicus_only = {'name': 'copernicus_only', 'polygon': rectangle(-62, -90, 180, -180)}
+    neither = {'name': 'neither', 'polygon': rectangle(-20, -30, 70, 100)}
+
     job = {'job_parameters': {'dem_name': 'copernicus'}}
-    good = {
-        'name': 'good',
-        'polygon': rectangle(45, 41, -104, -111),
-    }
-
-    bad = {
-        'name': 'bad',
-        'polygon': rectangle(-20, -30, 70, 100),
-    }
-
     validation.check_dem_coverage(job, [])
-
-    validation.check_dem_coverage(job, [good])
-
-    with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage(job, [bad])
-    assert 'bad' in str(e)
+    validation.check_dem_coverage(job, [both])
+    validation.check_dem_coverage(job, [copernicus_only])
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage(job, [good, bad])
-    assert 'bad' in str(e)
-    assert 'good' not in str(e)
+        validation.check_dem_coverage(job, [neither])
+    assert 'neither' in str(e)
 
+    with raises(validation.GranuleValidationError) as e:
+        validation.check_dem_coverage(job, [copernicus_only, neither])
+    assert 'neither' in str(e)
+    assert 'copernicus_only' not in str(e)
 
-def test_check_dem_coverage_legacy():
     job = {'job_parameters': {'dem_name': 'legacy'}}
-    good = {
-        'name': 'good',
-        'polygon': rectangle(45, 41, -104, -111),
-    }
-
-    bad = {
-        'name': 'bad',
-        'polygon': rectangle(-62, -90, 180, -180),
-    }
-
     validation.check_dem_coverage(job, [])
-
-    validation.check_dem_coverage(job, [good])
-
-    with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage(job, [bad])
-    assert 'bad' in str(e)
+    validation.check_dem_coverage(job, [both])
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage(job, [good, bad])
-    assert 'bad' in str(e)
-    assert 'good' not in str(e)
+        validation.check_dem_coverage(job, [copernicus_only])
+    assert 'copernicus_only' in str(e)
 
-    assert 'bad' in str(e)
+    with raises(validation.GranuleValidationError) as e:
+        validation.check_dem_coverage(job, [neither])
+    assert 'neither' in str(e)
+
+    with raises(validation.GranuleValidationError) as e:
+        validation.check_dem_coverage(job, [both, copernicus_only])
+    assert 'copernicus_only' in str(e)
+    assert 'both' not in str(e)
 
 
 def test_check_granules_exist():
