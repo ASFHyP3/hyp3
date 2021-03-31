@@ -133,6 +133,23 @@ def test_check_dem_coverage():
     assert 'copernicus_only' in str(e)
     assert 'both' not in str(e)
 
+    job = {'job_parameters': {}}
+    validation.check_dem_coverage(job, [])
+    validation.check_dem_coverage(job, [both])
+
+    with raises(validation.GranuleValidationError) as e:
+        validation.check_dem_coverage(job, [copernicus_only])
+    assert 'copernicus_only' in str(e)
+
+    with raises(validation.GranuleValidationError) as e:
+        validation.check_dem_coverage(job, [neither])
+    assert 'neither' in str(e)
+
+    with raises(validation.GranuleValidationError) as e:
+        validation.check_dem_coverage(job, [both, copernicus_only])
+    assert 'copernicus_only' in str(e)
+    assert 'both' not in str(e)
+
 
 def test_check_granules_exist():
     granule_metadata = [
