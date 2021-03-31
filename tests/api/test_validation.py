@@ -112,9 +112,9 @@ def test_check_dem_coverage():
     assert 'neither' in str(e)
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage(job, [both, neither])
+        validation.check_dem_coverage(job, [copernicus_only, neither])
     assert 'neither' in str(e)
-    assert 'both' not in str(e)
+    assert 'copernicus_only' not in str(e)
 
     job = {'job_parameters': {'dem_name': 'legacy'}}
     validation.check_dem_coverage(job, [])
@@ -129,8 +129,8 @@ def test_check_dem_coverage():
     assert 'neither' in str(e)
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage(job, [both, neither])
-    assert 'neither' in str(e)
+        validation.check_dem_coverage(job, [both, copernicus_only])
+    assert 'copernicus_only' in str(e)
     assert 'both' not in str(e)
 
 
