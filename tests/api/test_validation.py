@@ -202,7 +202,14 @@ def test_validate_jobs():
         {
             'job_type': 'RTC_GAMMA',
             'job_parameters': {
+                'granules': [granule_with_dem_coverage],
+            }
+        },
+        {
+            'job_type': 'RTC_GAMMA',
+            'job_parameters': {
                 'granules': [granule_without_legacy_dem_coverage],
+                'dem_name': 'copernicus',
             }
         },
         {
@@ -236,7 +243,6 @@ def test_validate_jobs():
             'job_type': 'INSAR_GAMMA',
             'job_parameters': {
                 'granules': [granule_without_legacy_dem_coverage],
-                'dem_name': 'legacy',
             }
         }
     ]
