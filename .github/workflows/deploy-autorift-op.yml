@@ -11,7 +11,7 @@ env:
   TEMPLATE_BUCKET: cf-templates-igavixdzdy7k-us-west-2
   STACK_NAME: hyp3-autorift-op
   DOMAIN_NAME: hyp3-autorift-op.asf.alaska.edu
-  IMAGE_TAG: latest
+  IMAGE_TAG: test
   MONTHLY_JOB_QUOTA_PER_USER: 0
 
   VPC_ID: ${{ secrets.VPC_ID }}
