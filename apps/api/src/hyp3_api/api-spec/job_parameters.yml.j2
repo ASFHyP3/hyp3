@@ -97,6 +97,13 @@ components:
       enum:
         - 30.0
 
+    dem_name:
+      description: Name of DEM dataset to use for processing
+      type: string
+      enum:
+        - copernicus
+        - legacy
+
     radiometry:
       description: Backscatter coefficient normalization, either by ground area (sigma0) or illuminated area projected into the look direction (gamma0)
       type: string
