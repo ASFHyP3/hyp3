@@ -1,5 +1,5 @@
 # TODO: Delete before merge to develop
-name: Deploy to autoRIFT
+name: Deploy autorift optimization stack
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 env:
   AWS_REGION: us-west-2
-  TEMPLATE_BUCKET: cf-templates-igavixdzdy7k-us-west-2
+  TEMPLATE_BUCKET: cf-templates-aubvn3i9olmk-us-west-2
   STACK_NAME: hyp3-autorift-op
   DOMAIN_NAME: hyp3-autorift-op.asf.alaska.edu
   IMAGE_TAG: test
