@@ -1,0 +1,68 @@
+# TODO: Delete before merge to develop
+name: Deploy to autoRIFT
+
+on:
+  push:
+    branches:
+      - autorift-optimization
+
+env:
+  AWS_REGION: us-west-2
+  TEMPLATE_BUCKET: cf-templates-igavixdzdy7k-us-west-2
+  STACK_NAME: hyp3-autorift-op
+  DOMAIN_NAME: hyp3-autorift-op.asf.alaska.edu
+  IMAGE_TAG: latest
+  MONTHLY_JOB_QUOTA_PER_USER: 0
+
+  VPC_ID: ${{ secrets.VPC_ID }}
+  SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
+  EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
+  EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
+  CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
+  CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: install dependancies and render templates
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements-all.txt
+          python apps/render_cf.py --job-types-file job_types.yml
+          pip install -r apps/api/requirements-api.txt -t apps/api/src
+
+      - name: Package and deploy
+        run: |
+          aws cloudformation package \
+            --template-file apps/main-cf.yml \
+            --s3-bucket ${TEMPLATE_BUCKET} \
+            --output-template-file packaged.yml
+          aws cloudformation deploy \
+            --stack-name ${STACK_NAME} \
+            --template-file packaged.yml \
+            --role-arn ${CLOUDFORMATION_ROLE_ARN} \
+            --capabilities CAPABILITY_IAM \
+            --parameter-overrides \
+                VpcId="${VPC_ID}" \
+                SubnetIds="${SUBNET_IDS}" \
+                EDLUsername="${EDL_USERNAME}" \
+                EDLPassword="${EDL_PASSWORD}" \
+                ImageTag="${IMAGE_TAG}" \
+                DomainName="${DOMAIN_NAME}" \
+                CertificateArn="${CERTIFICATE_ARN}" \
+                MonthlyJobQuotaPerUser="${MONTHLY_JOB_QUOTA_PER_USER}"
