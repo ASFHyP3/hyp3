@@ -28,6 +28,28 @@ def put_jobs(payload: List[dict]):
         table.put_item(Item=item)
 
 
+def count_jobs(user, start=None, end=None):
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
+    key_expression = Key('user_id').eq(user)
+    if start is not None or end is not None:
+        key_expression &= get_request_time_expression(start, None)
+
+    params = {
+        'IndexName': 'user_id',
+        'KeyConditionExpression': key_expression,
+        'Select': 'COUNT',
+    }
+    response = table.query(**params)
+    jobs = response['Count']
+    while 'LastEvaluatedKey' in response:
+        response = table.query(
+            {'ExclusiveStartKey': response['LastEvaluatedKey'],
+             **params}
+        )
+        jobs += response['Count']
+    return jobs
+
+
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 

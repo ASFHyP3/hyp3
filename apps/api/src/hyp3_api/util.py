@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
-from hyp3_api import handlers
+from hyp3_api import handlers, dynamo
 
 
 class TokenDeserializeError(Exception):
@@ -36,8 +36,8 @@ def get_remaining_jobs_for_user(user, limit):
 def get_job_count_for_month(user):
     now = datetime.now(timezone.utc)
     start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    response = handlers.get_jobs(user, format_time(start_of_month))
-    return len(response['jobs'])
+    number_of_jobs = dynamo.count_jobs(user, format_time(start_of_month))
+    return number_of_jobs
 
 
 def convert_floats_to_decimals(element):
