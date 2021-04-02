@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
-from hyp3_api import handlers, dynamo
+from hyp3_api import dynamo
 
 
 class TokenDeserializeError(Exception):

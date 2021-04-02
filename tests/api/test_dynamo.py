@@ -57,7 +57,7 @@ def test_count_jobs_by_start(tables):
 
     start = '2000-01-01T00:00:00z'
     end = '2000-01-03T00:00:00z'
-    response= dynamo.count_jobs('user1', start, end)
+    response = dynamo.count_jobs('user1', start, end)
     assert response == 3
 
 
