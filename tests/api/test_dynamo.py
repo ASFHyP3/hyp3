@@ -60,6 +60,19 @@ def test_count_jobs_by_start(tables):
     response = dynamo.count_jobs('user1', start, end)
     assert response == 3
 
+    start = '2000-01-01T00:00:01z'
+    end = '2000-01-02T00:59:59z'
+    response = dynamo.count_jobs('user1', start, end)
+    assert response == 1
+
+    start = '2000-01-01T00:00:01z'
+    response = dynamo.count_jobs('user1', start, None)
+    assert response == 2
+
+    end = '2000-01-02T00:59:59z'
+    response = dynamo.count_jobs('user1', None, end)
+    assert response == 2
+
 
 def test_query_jobs_by_user(tables):
     table_items = [

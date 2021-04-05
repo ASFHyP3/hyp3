@@ -32,7 +32,7 @@ def count_jobs(user, start=None, end=None):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     key_expression = Key('user_id').eq(user)
     if start is not None or end is not None:
-        key_expression &= get_request_time_expression(start, None)
+        key_expression &= get_request_time_expression(start, end)
 
     params = {
         'IndexName': 'user_id',
