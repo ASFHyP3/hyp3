@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0]
 ### Added
 - Exposed new `dem_name` api parameter for RTC_GAMMA jobs
+  - `dem_name="copernicus"` will use the [Copernicus GLO-30 Public DEM](https://registry.opendata.aws/copernicus-dem/)
+  - `dem_name="legacy"` will use the DEM with the best coverage from ASF's legacy SRTM/NED data sets
 
 ### Changed
 - `util.get_job_count_for_month` now uses `Select='COUNT'` for better performance querying DynamoDB
