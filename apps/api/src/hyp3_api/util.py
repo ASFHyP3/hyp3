@@ -36,8 +36,8 @@ def get_remaining_jobs_for_user(user, limit):
 def get_job_count_for_month(user):
     now = datetime.now(timezone.utc)
     start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    number_of_jobs = dynamo.count_jobs(user, format_time(start_of_month))
-    return number_of_jobs
+    job_count_for_month = dynamo.count_jobs(user, format_time(start_of_month))
+    return job_count_for_month
 
 
 def convert_floats_to_decimals(element):

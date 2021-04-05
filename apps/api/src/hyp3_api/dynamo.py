@@ -40,14 +40,14 @@ def count_jobs(user, start=None, end=None):
         'Select': 'COUNT',
     }
     response = table.query(**params)
-    jobs = response['Count']
+    job_count = response['Count']
     while 'LastEvaluatedKey' in response:
         response = table.query(
             {'ExclusiveStartKey': response['LastEvaluatedKey'],
              **params}
         )
-        jobs += response['Count']
-    return jobs
+        job_count += response['Count']
+    return job_count
 
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):

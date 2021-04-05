@@ -55,21 +55,21 @@ def test_count_jobs_by_start(tables):
     for item in table_items:
         tables['jobs_table'].put_item(Item=item)
 
-    start = '2000-01-01T00:00:00z'
-    end = '2000-01-03T00:00:00z'
+    start = '2000-01-01T00:00:00+00:00'
+    end = '2000-01-03T00:00:00+00:00'
     response = dynamo.count_jobs('user1', start, end)
     assert response == 3
 
-    start = '2000-01-01T00:00:01z'
-    end = '2000-01-02T00:59:59z'
+    start = '2000-01-01T00:00:01+00:00'
+    end = '2000-01-02T00:59:59+00:00'
     response = dynamo.count_jobs('user1', start, end)
     assert response == 1
 
-    start = '2000-01-01T00:00:01z'
+    start = '2000-01-01T00:00:01+00:00'
     response = dynamo.count_jobs('user1', start, None)
     assert response == 2
 
-    end = '2000-01-02T00:59:59z'
+    end = '2000-01-02T00:59:59+00:00'
     response = dynamo.count_jobs('user1', None, end)
     assert response == 2
 
