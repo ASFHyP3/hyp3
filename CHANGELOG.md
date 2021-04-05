@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Exposed new `dem_name` api parameter for RTC_GAMMA jobs
 
 ### Changed
+- `util.get_job_count_for_month` now uses `Select='COUNT'` for better performance querying DynamoDB
+
+### Changed
 - Granules for RTC_GAMMA jobs are now validated against the appropriate DEM coverage map based on the value of the
   `dem_name` job parameter
 
