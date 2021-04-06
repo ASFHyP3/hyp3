@@ -75,11 +75,10 @@ aws cloudformation deploy \
                 "SubnetIds=<comma separated list of subnet ids>" \
                 "EDLUsername=<EDL Username to download products>" \
                 "EDLPassword=<EDL Password to download products>" \
+                "ImageTag=<docker image tag>" \
                 "DomainName=<Domain Name>" \
                 "CertificateArn=<arn for ssl certificate>" \
-                "RtcGammaImage=<location of RtcGammaImage to use>" \
-                "InsarGammaImage=<location of InsarGammaImage to use>" \
-                "AutoriftImage=<location of AutoriftImage to use>"
+                "MonthlyJobQuotaPerUser=<quota>"
 ```
 - Check API at `https://<Domain Name>/ui`
 

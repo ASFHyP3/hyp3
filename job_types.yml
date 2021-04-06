@@ -10,6 +10,9 @@ RtcGamma:
     resolution:
       default:  30.0
       api_schema_location: "#/components/schemas/resolution"
+    dem_name:
+      default: legacy
+      api_schema_location: "#/components/schemas/dem_name"
     radiometry:
       default:  gamma0
       api_schema_location: "#/components/schemas/radiometry"
@@ -49,6 +52,8 @@ RtcGamma:
     - Ref::bucket_prefix
     - --resolution
     - Ref::resolution
+    - --dem-name
+    - Ref::dem_name
     - --radiometry
     - Ref::radiometry
     - --scale

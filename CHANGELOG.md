@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0]
+### Added
+- Exposed new `dem_name` api parameter for RTC_GAMMA jobs
+  - `dem_name="copernicus"` will use the [Copernicus GLO-30 Public DEM](https://registry.opendata.aws/copernicus-dem/)
+  - `dem_name="legacy"` will use the DEM with the best coverage from ASF's legacy SRTM/NED data sets
+
+### Changed
+- `util.get_job_count_for_month` now uses `Select='COUNT'` for better performance querying DynamoDB
+
+### Changed
+- Granules for RTC_GAMMA jobs are now validated against the appropriate DEM coverage map based on the value of the
+  `dem_name` job parameter
+
 ## [1.0.0]
 ### Added
 - `GET /jobs` now pages results. Large queries (that require paging) will contain a `next`

@@ -97,6 +97,13 @@ components:
       enum:
         - 30.0
 
+    dem_name:
+      description: Name of the DEM to use for processing. `copernicus` will use the Copernicus GLO-30 Public DEM, while `legacy` will use the DEM with the best coverage from ASF's legacy SRTM/NED datasets.
+      type: string
+      enum:
+        - copernicus
+        - legacy
+
     radiometry:
       description: Backscatter coefficient normalization, either by ground area (sigma0) or illuminated area projected into the look direction (gamma0)
       type: string
