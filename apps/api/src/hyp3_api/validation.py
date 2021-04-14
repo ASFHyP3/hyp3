@@ -78,7 +78,7 @@ def check_granules_exist(granules, granule_metadata):
 
 
 def check_dem_coverage(job, granule_metadata):
-    legacy = job['job_type'] == 'RTC_GAMMA' and job['job_parameters'].get('dem_name') != 'copernicus'
+    legacy = job['job_parameters'].get('dem_name', 'legacy') == 'legacy'
     bad_granules = [g['name'] for g in granule_metadata if not has_sufficient_coverage(g['polygon'], legacy=legacy)]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
