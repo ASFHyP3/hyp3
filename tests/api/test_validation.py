@@ -102,7 +102,7 @@ def test_check_dem_coverage():
     copernicus_only = {'name': 'copernicus_only', 'polygon': rectangle(-62, -90, 180, -180)}
     neither = {'name': 'neither', 'polygon': rectangle(-20, -30, 70, 100)}
 
-    job = {'job_type': 'RTC_GAMMA', 'job_parameters': {'dem_name': 'copernicus'}}
+    job = {'job_parameters': {'dem_name': 'copernicus'}}
     validation.check_dem_coverage(job, [])
     validation.check_dem_coverage(job, [both])
     validation.check_dem_coverage(job, [copernicus_only])
@@ -116,7 +116,8 @@ def test_check_dem_coverage():
     assert 'neither' in str(e)
     assert 'copernicus_only' not in str(e)
 
-    job = {'job_type': 'RTC_GAMMA', 'job_parameters': {'dem_name': 'legacy'}}
+    job = {'job_parameters': {'dem_name': 'legacy'}}
+    validation.check_dem_coverage(job, [])
     validation.check_dem_coverage(job, [both])
 
     with raises(validation.GranuleValidationError):
@@ -125,7 +126,11 @@ def test_check_dem_coverage():
     with raises(validation.GranuleValidationError):
         validation.check_dem_coverage(job, [neither])
 
-    job = {'job_type': 'RTC_GAMMA', 'job_parameters': {}}
+    with raises(validation.GranuleValidationError):
+        validation.check_dem_coverage(job, [both, copernicus_only])
+
+    job = {'job_parameters': {}}
+    validation.check_dem_coverage(job, [])
     validation.check_dem_coverage(job, [both])
 
     with raises(validation.GranuleValidationError):
@@ -134,12 +139,8 @@ def test_check_dem_coverage():
     with raises(validation.GranuleValidationError):
         validation.check_dem_coverage(job, [neither])
 
-    job = {'job_type': 'INSAR_GAMMA', 'job_parameters': {}}
-    validation.check_dem_coverage(job, [both])
-    validation.check_dem_coverage(job, [copernicus_only])
-
     with raises(validation.GranuleValidationError):
-        validation.check_dem_coverage(job, [neither])
+        validation.check_dem_coverage(job, [both, copernicus_only])
 
 
 def test_check_granules_exist():
@@ -214,7 +215,7 @@ def test_validate_jobs():
         {
             'job_type': 'INSAR_GAMMA',
             'job_parameters': {
-                'granules': [granule_with_dem_coverage, granule_without_legacy_dem_coverage],
+                'granules': [granule_with_dem_coverage],
             }
         },
         {
@@ -239,7 +240,7 @@ def test_validate_jobs():
 
     jobs = [
         {
-            'job_type': 'RTC_GAMMA',
+            'job_type': 'INSAR_GAMMA',
             'job_parameters': {
                 'granules': [granule_without_legacy_dem_coverage],
             }
