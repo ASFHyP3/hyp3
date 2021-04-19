@@ -43,7 +43,7 @@ def count_jobs(user, start=None, end=None):
     job_count = response['Count']
     while 'LastEvaluatedKey' in response:
         response = table.query(
-            {'ExclusiveStartKey': response['LastEvaluatedKey'],
+            **{'ExclusiveStartKey': response['LastEvaluatedKey'],
              **params}
         )
         job_count += response['Count']
