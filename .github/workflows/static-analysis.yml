@@ -34,7 +34,7 @@ jobs:
           pip install -r requirements-all.txt
           python apps/render_cf.py --job-types-file job_types.yml
 
-      - uses: scottbrenner/cfn-lint-action@master
+      - uses: scottbrenner/cfn-lint-action@v2
         with:
           args: "--ignore-checks W3002 --template **/*cf.yml"
 
