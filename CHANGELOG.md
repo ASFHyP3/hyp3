@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - resolved `handlers.get_names_for_user` error when `dynamo.query_jobs` requires paging.
+- Resolved HTTP 500 error when quota check requires paging.
 
 ## [1.1.0]
 ### Added
