@@ -25,6 +25,29 @@
       "ResultPath": "$.job_parameters.bucket_prefix",
       "Next": "INSPECT_JOB_TYPE"
     },
+    "INSPECT_GRANULE_TYPE": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.job_parameters.granules.0",
+          "StringMatches": "S1*",
+          "Next": "SET_HIGH_MEMORY"
+        }
+      ],
+      "Default": "SET_LOW_MEMORY"
+    },
+    "SET_HIGH_MEMORY": {
+      "Type": "Pass",
+      "Result": 30000,
+      "ResultPath": "$.memory",
+      "Next": "INSPECT_JOB_TYPE"
+    },
+    "SET_LOW_MEMORY": {
+      "Type": "Pass",
+      "Result": 10000,
+      "ResultPath": "$.memory",
+      "Next": "INSPECT_JOB_TYPE"
+    },
     "INSPECT_JOB_TYPE": {
       "Type": "Choice",
       "Choices": [
@@ -48,7 +71,7 @@
         "JobQueue": "${JobQueueArn}",
         "Parameters.$": "$.job_parameters",
         "ContainerOverrides": {
-          "Memory": 10000
+          "Memory": $.memory
         }
       },
       "ResultPath": "$.results.processing_results",
