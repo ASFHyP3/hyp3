@@ -74,7 +74,7 @@
         "JobName.$": "$.job_id",
         "JobQueue": "${JobQueueArn}",
         "Parameters.$": "$.job_parameters",
-        "ContainerOverrides": "$.container_overrides"
+        "ContainerOverrides.$": "$.container_overrides"
       },
       "ResultPath": "$.results.processing_results",
       "Next": "UPLOAD_LOG",
