@@ -38,14 +38,18 @@
     },
     "SET_HIGH_MEMORY": {
       "Type": "Pass",
-      "Result": 30000,
-      "ResultPath": "$.memory",
+      "Result": {
+        "Memory": 10000
+      },
+      "ResultPath": "$.container_overrides",
       "Next": "INSPECT_JOB_TYPE"
     },
     "SET_LOW_MEMORY": {
       "Type": "Pass",
-      "Result": 10000,
-      "ResultPath": "$.memory",
+      "Result": {
+        "Memory": 10000
+      },
+      "ResultPath": "$.container_overrides",
       "Next": "INSPECT_JOB_TYPE"
     },
     "INSPECT_JOB_TYPE": {
@@ -70,9 +74,7 @@
         "JobName.$": "$.job_id",
         "JobQueue": "${JobQueueArn}",
         "Parameters.$": "$.job_parameters",
-        "ContainerOverrides": {
-          "Memory": "$.memory"
-        }
+        "ContainerOverrides": "$.container_overrides"
       },
       "ResultPath": "$.results.processing_results",
       "Next": "UPLOAD_LOG",
