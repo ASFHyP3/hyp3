@@ -46,7 +46,10 @@
         "JobDefinition": "{{ '${'+ job_type + '}' }}",
         "JobName.$": "$.job_id",
         "JobQueue": "${JobQueueArn}",
-        "Parameters.$": "$.job_parameters"
+        "Parameters.$": "$.job_parameters",
+        "ContainerOverrides": {
+          "Memory": 10000
+        }
       },
       "ResultPath": "$.results.processing_results",
       "Next": "UPLOAD_LOG",
