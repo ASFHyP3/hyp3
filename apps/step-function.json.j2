@@ -23,7 +23,7 @@
       "Type": "Pass",
       "InputPath": "$.job_id",
       "ResultPath": "$.job_parameters.bucket_prefix",
-      "Next": "INSPECT_JOB_TYPE"
+      "Next": "INSPECT_GRANULE_TYPE"
     },
     "INSPECT_GRANULE_TYPE": {
       "Type": "Choice",
@@ -71,7 +71,7 @@
         "JobQueue": "${JobQueueArn}",
         "Parameters.$": "$.job_parameters",
         "ContainerOverrides": {
-          "Memory": $.memory
+          "Memory": "$.memory"
         }
       },
       "ResultPath": "$.results.processing_results",
