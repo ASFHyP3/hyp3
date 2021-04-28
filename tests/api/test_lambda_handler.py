@@ -10,8 +10,8 @@ def test_404_response():
         'headers': {},
         'requestContext': {
             'http': {
-                'method': 'POST',
-            }
+                'method': 'GET',
+            },
         },
     }
     response = lambda_handler.handler(event, None)
@@ -28,7 +28,7 @@ def test_401_response():
         'requestContext': {
             'http': {
                 'method': 'POST',
-            }
+            },
         },
     }
     response = lambda_handler.handler(event, None)
