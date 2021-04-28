@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - INSAR GAMMA jobs now expose `include_inc_map` parameter that allows users to include an incidence angle map.
 
+## Fixed
+- Updated API GATEWAY payload format to version 2.0 to support later versions of serverless wsgi
 
 ## [1.1.1]
 ### Changed
