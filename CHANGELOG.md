@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2]
+### Added
+- INSAR GAMMA jobs now expose `include_inc_map` parameter that allows users to include an incidence angle map.
+
+## Fixed
+- Updated API GATEWAY payload format to version 2.0 to support later versions of serverless wsgi
+
 ## [1.1.1]
 ### Changed
 - Granules for INSAR_GAMMA jobs are now validated against Copernicus GLO-30 Public DEM coverage

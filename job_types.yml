@@ -90,6 +90,9 @@ InsarGamma:
     include_los_displacement:
       default:  false
       api_schema_location: "#/components/schemas/los_displacement"
+    include_inc_map:
+      default: false
+      api_schema_location: "#/components/schemas/include_inc_map"
     looks:
       default:  20x4
       api_schema_location: "#/components/schemas/looks"
@@ -110,6 +113,8 @@ InsarGamma:
     - Ref::include_look_vectors
     - --include-los-displacement
     - Ref::include_los_displacement
+    - --include-inc-map
+    - Ref::include_inc_map
     - --looks
     - Ref::looks
     - Ref::granules
