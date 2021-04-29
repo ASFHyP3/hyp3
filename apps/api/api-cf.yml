@@ -46,8 +46,6 @@ Resources:
     Type: AWS::ApiGatewayV2::ApiGatewayManagedOverrides
     Properties:
       ApiId: !Ref Api
-      Integration:
-        PayloadFormatVersion: "1.0"
       Stage:
         AccessLogSettings:
           DestinationArn: !GetAtt ApiLogGroup.Arn

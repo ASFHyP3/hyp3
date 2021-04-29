@@ -5,11 +5,14 @@ from hyp3_api import lambda_handler
 
 def test_404_response():
     event = {
-        'path': '/foo',
-        'httpMethod': 'GET',
-        'body': '',
+        'version': '2.0',
+        'rawPath': '/foo',
         'headers': {},
-        'requestContext': {},
+        'requestContext': {
+            'http': {
+                'method': 'GET',
+            },
+        },
     }
     response = lambda_handler.handler(event, None)
     assert response['statusCode'] == status.HTTP_404_NOT_FOUND
@@ -19,11 +22,14 @@ def test_404_response():
 
 def test_401_response():
     event = {
-        'path': '/jobs',
-        'httpMethod': 'POST',
-        'body': '',
+        'version': '2.0',
+        'rawPath': '/jobs',
         'headers': {},
-        'requestContext': {},
+        'requestContext': {
+            'http': {
+                'method': 'POST',
+            },
+        },
     }
     response = lambda_handler.handler(event, None)
     assert response['statusCode'] == status.HTTP_401_UNAUTHORIZED
