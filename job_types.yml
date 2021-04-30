@@ -34,6 +34,9 @@ RtcGamma:
     include_scattering_area:
       default: false
       api_schema_location: "#/components/schemas/include_scattering_area"
+    apply_water_mask:
+      default: false
+      api_scema_location: ""#/components/schemas/apply_water_mask"
     include_rgb:
       default: false
       api_schema_location: "#/components/schemas/include_rgb"
@@ -68,6 +71,8 @@ RtcGamma:
     - Ref::include_inc_map
     - --include-scattering-area
     - Ref::include_scattering_area
+    - --apply-water-mask
+    - Ref::apply_water_mask
     - --include-rgb
     - Ref::include_rgb
     - Ref::granules
