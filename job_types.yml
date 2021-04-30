@@ -95,7 +95,7 @@ InsarGamma:
       api_schema_location: "#/components/schemas/include_inc_map"
     apply_water_mask:
       default: false
-      api_scema_location: ""#/components/schemas/apply_water_mask"
+      api_schema_location: "#/components/schemas/apply_water_mask"
     looks:
       default:  20x4
       api_schema_location: "#/components/schemas/looks"
