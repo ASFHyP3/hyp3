@@ -4,9 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.3]
+- INSAR GAMMA jobs now expose `apply_water_mask` parameter that allows users to apply a water mask to the DEM used in processing.
+
+## [1.1.2]
+### Added
+- INSAR GAMMA jobs now expose `include_inc_map` parameter that allows users to include an incidence angle map.
+
+## Fixed
+- Updated API GATEWAY payload format to version 2.0 to support later versions of serverless wsgi
+
+## [1.1.1]
+### Changed
+- Granules for INSAR_GAMMA jobs are now validated against Copernicus GLO-30 Public DEM coverage
+
+### Fixed
+- resolved `handlers.get_names_for_user` error when `dynamo.query_jobs` requires paging.
+- Resolved HTTP 500 error when quota check requires paging.
+
+## [1.1.0]
 ### Added
 - Exposed new `dem_name` api parameter for RTC_GAMMA jobs
+  - `dem_name="copernicus"` will use the [Copernicus GLO-30 Public DEM](https://registry.opendata.aws/copernicus-dem/)
+  - `dem_name="legacy"` will use the DEM with the best coverage from ASF's legacy SRTM/NED data sets
+
+### Changed
+- `util.get_job_count_for_month` now uses `Select='COUNT'` for better performance querying DynamoDB
 
 ### Changed
 - Granules for RTC_GAMMA jobs are now validated against the appropriate DEM coverage map based on the value of the

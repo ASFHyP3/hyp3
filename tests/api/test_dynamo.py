@@ -3,6 +3,77 @@ from api.conftest import list_have_same_elements
 from hyp3_api import dynamo
 
 
+def test_count_jobs(tables):
+    table_items = [
+        {
+            'job_id': 'job1',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+        {
+            'job_id': 'job2',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+        {
+            'job_id': 'job3',
+            'user_id': 'user2',
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+    ]
+    for item in table_items:
+        tables['jobs_table'].put_item(Item=item)
+
+    assert dynamo.count_jobs('user1') == 2
+    assert dynamo.count_jobs('user2') == 1
+
+
+def test_count_jobs_by_start(tables):
+    table_items = [
+        {
+            'job_id': 'job1',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+        {
+            'job_id': 'job2',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-02T00:00:00+00:00',
+        },
+        {
+            'job_id': 'job3',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-03T00:00:00+00:00',
+        },
+    ]
+    for item in table_items:
+        tables['jobs_table'].put_item(Item=item)
+
+    start = '2000-01-01T00:00:00+00:00'
+    end = '2000-01-03T00:00:00+00:00'
+    response = dynamo.count_jobs('user1', start, end)
+    assert response == 3
+
+    start = '2000-01-01T00:00:01+00:00'
+    end = '2000-01-02T00:59:59+00:00'
+    response = dynamo.count_jobs('user1', start, end)
+    assert response == 1
+
+    start = '2000-01-01T00:00:01+00:00'
+    response = dynamo.count_jobs('user1', start, None)
+    assert response == 2
+
+    end = '2000-01-02T00:59:59+00:00'
+    response = dynamo.count_jobs('user1', None, end)
+    assert response == 2
+
+
 def test_query_jobs_by_user(tables):
     table_items = [
         {

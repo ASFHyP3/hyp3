@@ -98,7 +98,7 @@ components:
         - 30.0
 
     dem_name:
-      description: Name of DEM dataset to use for processing
+      description: Name of the DEM to use for processing. `copernicus` will use the Copernicus GLO-30 Public DEM, while `legacy` will use the DEM with the best coverage from ASF's legacy SRTM/NED datasets.
       type: string
       enum:
         - copernicus
@@ -140,6 +140,12 @@ components:
 
     include_scattering_area:
       description: Include the scattering area in the product package
+      default: false
+      type: boolean
+
+    apply_water_mask:
+      # TODO: revisit description
+      description: Apply a water mask to the DEM used in processing
       default: false
       type: boolean
 
