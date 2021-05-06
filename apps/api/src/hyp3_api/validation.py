@@ -66,7 +66,7 @@ def get_cmr_metadata(granules):
 
 
 def is_third_party_granule(granule):
-    return granule.startswith('S2') or granule.startswith('LC08')
+    return granule.startswith('S2') or granule.startswith('L')
 
 
 def check_granules_exist(granules, granule_metadata):
