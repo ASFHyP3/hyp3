@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.3]
 ### Changed
 - RTC_GAMMA jobs now use the Copernicus DEM by default
-- INSAR GAMMA jobs now expose `apply_water_mask` parameter that allows users to apply a water mask to the DEM used in processing.
 - AUTORIFT jobs now accept Landsat 8 scenes with a sensor mode of ORI-only (`LO08`)
 
 ## [1.1.2]
