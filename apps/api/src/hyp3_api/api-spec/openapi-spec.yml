@@ -333,4 +333,3 @@ components:
       type: apiKey
       in: cookie
       name: asf-urs
-      x-apikeyInfoFunc: hyp3_api.auth.decode_token

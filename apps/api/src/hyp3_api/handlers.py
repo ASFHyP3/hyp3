@@ -1,18 +1,16 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 from os import environ
-from pathlib import Path
 from uuid import UUID, uuid4
 
 import requests
 from connexion import problem
 from connexion.apps.flask_app import FlaskJSONEncoder
-from flask import jsonify, make_response, redirect, request
-from flask_cors import CORS
+from flask import request
+
 from jsonschema import draft4_format_checker
 
-from hyp3_api import connexion_app, dynamo, util
-from hyp3_api.openapi import get_spec
+from hyp3_api import dynamo, util
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
 
@@ -32,24 +30,6 @@ def is_uuid(val):
     except ValueError:
         return False
     return True
-
-
-@connexion_app.app.before_request
-def check_system_available():
-    if environ['SYSTEM_AVAILABLE'] != "true":
-        message = 'HyP3 is currently unavailable. Please try again later.'
-        error = {
-            'detail': message,
-            'status': 503,
-            'title': 'Service Unavailable',
-            'type': 'about:blank'
-        }
-        return make_response(jsonify(error), 503)
-
-
-@connexion_app.app.route('/')
-def redirect_to_ui():
-    return redirect('/ui')
 
 
 def post_jobs(body, user):
@@ -130,10 +110,3 @@ def get_user(user):
         },
         'job_names': get_names_for_user(user)
     }
-
-
-api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
-api_spec = get_spec(api_spec_file)
-connexion_app.app.json_encoder = DecimalEncoder
-connexion_app.add_api(api_spec, strict_validation=True)
-CORS(connexion_app.app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
