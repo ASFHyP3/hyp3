@@ -93,9 +93,6 @@ InsarGamma:
     include_inc_map:
       default: false
       api_schema_location: "#/components/schemas/include_inc_map"
-    apply_water_mask:
-      default: false
-      api_schema_location: "#/components/schemas/apply_water_mask"
     looks:
       default:  20x4
       api_schema_location: "#/components/schemas/looks"
@@ -120,8 +117,6 @@ InsarGamma:
     - Ref::include_inc_map
     - --looks
     - Ref::looks
-    - --apply-water-mask
-    - Ref::apply_water_mask
     - Ref::granules
   validators:
     - check_dem_coverage
