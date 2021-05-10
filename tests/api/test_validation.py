@@ -127,9 +127,7 @@ def test_check_dem_coverage():
 
     job = {'job_type': 'RTC_GAMMA', 'job_parameters': {}}
     validation.check_dem_coverage(job, [both])
-
-    with raises(validation.GranuleValidationError):
-        validation.check_dem_coverage(job, [copernicus_only])
+    validation.check_dem_coverage(job, [copernicus_only])
 
     with raises(validation.GranuleValidationError):
         validation.check_dem_coverage(job, [neither])
@@ -203,7 +201,7 @@ def test_validate_jobs():
         {
             'job_type': 'RTC_GAMMA',
             'job_parameters': {
-                'granules': [granule_with_dem_coverage],
+                'granules': [granule_without_legacy_dem_coverage],
             }
         },
         {
@@ -211,6 +209,13 @@ def test_validate_jobs():
             'job_parameters': {
                 'granules': [granule_without_legacy_dem_coverage],
                 'dem_name': 'copernicus',
+            }
+        },
+        {
+            'job_type': 'RTC_GAMMA',
+            'job_parameters': {
+                'granules': [granule_with_dem_coverage],
+                'dem_name': 'legacy',
             }
         },
         {
@@ -243,7 +248,7 @@ def test_validate_jobs():
         {
             'job_type': 'RTC_GAMMA',
             'job_parameters': {
-                'granules': [granule_without_legacy_dem_coverage],
+                'granules': [granule_without_dem_coverage],
             }
         }
     ]

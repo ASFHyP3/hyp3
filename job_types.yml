@@ -11,7 +11,7 @@ RtcGamma:
       default:  30.0
       api_schema_location: "#/components/schemas/resolution"
     dem_name:
-      default: legacy
+      default: copernicus
       api_schema_location: "#/components/schemas/dem_name"
     radiometry:
       default:  gamma0
