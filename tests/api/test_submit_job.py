@@ -19,12 +19,27 @@ def test_submit_one_job(client, tables):
 
 def test_submit_insar_gamma(client, tables):
     login(client)
+    granules = [
+        'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
+        'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E',
+    ]
+
     job = make_job(
-        [
-            'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
-            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E'
-        ],
-        job_type='INSAR_GAMMA'
+        granules=granules,
+        job_type='INSAR_GAMMA',
+    )
+    response = submit_batch(client, batch=[job])
+    assert response.status_code == status.HTTP_200_OK
+
+    job = make_job(
+        granules=granules,
+        job_type='INSAR_GAMMA',
+        parameters={
+            'looks': '10x2',
+            'include_inc_map': True,
+            'include_look_vectors': True,
+            'include_los_displacement': True,
+        },
     )
     response = submit_batch(client, batch=[job])
     assert response.status_code == status.HTTP_200_OK
@@ -215,6 +230,7 @@ def test_submit_good_autorift_granule_names(client, tables):
         'S2A_1UCR_20210124_0_L1C',
         'S2B_22WEB_20200612_0_L1C',
         'LC08_L1TP_009011_20200820_20200905_02_T1',
+        'LO08_L1GT_043001_20201106_20201110_02_T2',
     ]
     for granule in good_granule_names:
         batch = [
@@ -245,6 +261,8 @@ def test_submit_bad_autorift_granule_names(client):
         'S1A_IW_GRDM_1SDH_20190624T101121_20190624T101221_027820_0323FF_79E4',
         'S1A_IW_GRDH_1SDV_20200604T190627_20200604T190652_032871_03CEB7_56F3',
         'S1A_IW_GRDH_1SSH_20171122T184459_20171122T184524_019381_020DD8_B825',
+        # bad L8 sensor mode
+        'LT08_L1GT_041001_20200125_20200925_02_T2',
     ]
     for granule in bad_granule_names:
         batch = [
