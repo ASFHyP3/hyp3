@@ -39,6 +39,7 @@ def test_submit_insar_gamma(client, tables):
             'include_inc_map': True,
             'include_look_vectors': True,
             'include_los_displacement': True,
+            'include_dem': True,
         },
     )
     response = submit_batch(client, batch=[job])
