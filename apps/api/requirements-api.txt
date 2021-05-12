@@ -1,7 +1,6 @@
 connexion[swagger-ui]
 cryptography
-flask>=1.1.2,<2.*
-flask_api
+flask
 Flask-Cors
 prance
 PyJWT
