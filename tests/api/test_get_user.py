@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
+from http import HTTPStatus
 
 from api.conftest import USER_URI, login, make_db_record
-from flask_api import status
 
 from hyp3_api.util import format_time
 
@@ -21,7 +21,7 @@ def test_get_user(client, tables, monkeypatch):
 
     login(client, 'user_with_jobs')
     response = client.get(USER_URI)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert response.json == {
         'user_id': 'user_with_jobs',
         'quota': {
@@ -45,17 +45,17 @@ def test_user_at_quota(client, tables, monkeypatch):
 
     login(client)
     response = client.get(USER_URI)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert response.json['quota']['remaining'] == 1
 
     tables['jobs_table'].put_item(Item=make_db_record('anotherJob', request_time=request_time))
     response = client.get(USER_URI)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert response.json['quota']['remaining'] == 0
 
     tables['jobs_table'].put_item(Item=make_db_record('yetAnotherJob', request_time=request_time))
     response = client.get(USER_URI)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert response.json['quota']['remaining'] == 0
 
 
@@ -65,7 +65,7 @@ def test_get_user_custom_quota(client, tables):
     tables['users_table'].put_item(Item={'user_id': username, 'max_jobs_per_month': 50})
 
     response = client.get(USER_URI)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert response.json == {
         'user_id': username,
         'quota': {

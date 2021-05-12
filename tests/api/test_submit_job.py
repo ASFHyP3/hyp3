@@ -1,7 +1,7 @@
+from http import HTTPStatus
 from datetime import datetime, timedelta, timezone
 
 from api.conftest import DEFAULT_USERNAME, login, make_db_record, make_job, setup_requests_mock, submit_batch
-from flask_api import status
 
 from hyp3_api.util import format_time
 
@@ -9,7 +9,7 @@ from hyp3_api.util import format_time
 def test_submit_one_job(client, tables):
     login(client)
     response = submit_batch(client)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     jobs = response.json['jobs']
     assert len(jobs) == 1
     assert jobs[0]['status_code'] == 'PENDING'
@@ -29,7 +29,7 @@ def test_submit_insar_gamma(client, tables):
         job_type='INSAR_GAMMA',
     )
     response = submit_batch(client, batch=[job])
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
 
     job = make_job(
         granules=granules,
@@ -42,7 +42,7 @@ def test_submit_insar_gamma(client, tables):
         },
     )
     response = submit_batch(client, batch=[job])
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
 
 
 def test_submit_autorift(client, tables):
@@ -55,7 +55,7 @@ def test_submit_autorift(client, tables):
         job_type='AUTORIFT'
     )
     response = submit_batch(client, batch=[job])
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
 
 
 def test_submit_multiple_job_types(client, tables):
@@ -76,7 +76,7 @@ def test_submit_multiple_job_types(client, tables):
         job_type='AUTORIFT'
     )
     response = submit_batch(client, batch=[rtc_gamma_job, insar_gamma_job, autorift_job])
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
 
 
 def test_submit_many_jobs(client, tables):
@@ -87,7 +87,7 @@ def test_submit_many_jobs(client, tables):
     setup_requests_mock(batch)
 
     response = submit_batch(client, batch)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     jobs = response.json['jobs']
     distinct_request_times = {job['request_time'] for job in jobs}
     assert len(jobs) == max_jobs
@@ -95,7 +95,7 @@ def test_submit_many_jobs(client, tables):
 
     batch.append(make_job())
     response = submit_batch(client, batch)
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_submit_exceeds_quota(client, tables, monkeypatch):
@@ -110,10 +110,10 @@ def test_submit_exceeds_quota(client, tables, monkeypatch):
     setup_requests_mock(batch)
 
     response = submit_batch(client, batch)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
 
     response = submit_batch(client)
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == HTTPStatus.BAD_REQUEST
     assert '25 jobs' in response.json['detail']
     assert '0 jobs' in response.json['detail']
 
@@ -122,7 +122,7 @@ def test_submit_without_jobs(client):
     login(client)
     batch = []
     response = submit_batch(client, batch)
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_submit_job_without_name(client, tables):
@@ -133,7 +133,7 @@ def test_submit_job_without_name(client, tables):
     setup_requests_mock(batch)
 
     response = submit_batch(client, batch)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
 
 
 def test_submit_job_with_empty_name(client):
@@ -143,7 +143,7 @@ def test_submit_job_with_empty_name(client):
     ]
     setup_requests_mock(batch)
     response = submit_batch(client, batch)
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_submit_job_with_long_name(client):
@@ -153,7 +153,7 @@ def test_submit_job_with_long_name(client):
     ]
     setup_requests_mock(batch)
     response = submit_batch(client, batch)
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_submit_job_granule_does_not_exist(client, tables):
@@ -166,7 +166,7 @@ def test_submit_job_granule_does_not_exist(client, tables):
 
     login(client)
     response = submit_batch(client, batch)
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json['title'] == 'Bad Request'
     assert response.json['detail'] == 'Some requested scenes could not be found: ' \
                                       'S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A'
@@ -186,7 +186,7 @@ def test_submit_good_rtc_granule_names(client, tables):
         ]
         setup_requests_mock(batch)
         response = submit_batch(client, batch)
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == HTTPStatus.OK
 
 
 def test_submit_bad_rtc_granule_names(client):
@@ -218,7 +218,7 @@ def test_submit_bad_rtc_granule_names(client):
         ]
         setup_requests_mock(batch)
         response = submit_batch(client, batch)
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_submit_good_autorift_granule_names(client, tables):
@@ -238,7 +238,7 @@ def test_submit_good_autorift_granule_names(client, tables):
         ]
         setup_requests_mock(batch)
         response = submit_batch(client, batch)
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == HTTPStatus.OK
 
 
 def test_submit_bad_autorift_granule_names(client):
@@ -270,19 +270,19 @@ def test_submit_bad_autorift_granule_names(client):
         ]
         setup_requests_mock(batch)
         response = submit_batch(client, batch)
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_float_input(client, tables):
     login(client)
     job = make_job(parameters={'resolution': 30.0})
     response = submit_batch(client, batch=[job])
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert isinstance(response.json['jobs'][0]['job_parameters']['resolution'], float)
 
     job = make_job(parameters={'resolution': 30})
     response = submit_batch(client, batch=[job])
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert isinstance(response.json['jobs'][0]['job_parameters']['resolution'], int)
 
 
@@ -290,16 +290,16 @@ def test_submit_validate_only(client, tables):
     login(client)
 
     response = submit_batch(client, validate_only=True)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     jobs = tables['jobs_table'].scan()['Items']
     assert len(jobs) == 0
 
     response = submit_batch(client, validate_only=False)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     jobs = tables['jobs_table'].scan()['Items']
     assert len(jobs) == 1
 
     response = submit_batch(client, validate_only=None)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     jobs = tables['jobs_table'].scan()['Items']
     assert len(jobs) == 2
