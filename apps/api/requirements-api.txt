@@ -1,7 +1,6 @@
 connexion[swagger-ui]
 cryptography
 flask
-flask_api
 Flask-Cors
 prance
 PyJWT
@@ -9,3 +8,4 @@ requests
 serverless_wsgi
 shapely
 strict-rfc3339
+Werkzeug>=1.0.1,<2.*

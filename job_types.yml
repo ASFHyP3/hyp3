@@ -93,6 +93,9 @@ InsarGamma:
     include_inc_map:
       default: false
       api_schema_location: "#/components/schemas/include_inc_map"
+    include_dem:
+      default: false
+      api_schema_location: "#/components/schemas/include_dem"
     looks:
       default:  20x4
       api_schema_location: "#/components/schemas/looks"
@@ -115,6 +118,8 @@ InsarGamma:
     - Ref::include_los_displacement
     - --include-inc-map
     - Ref::include_inc_map
+    - --include-dem
+    - Ref::include_dem
     - --looks
     - Ref::looks
     - Ref::granules

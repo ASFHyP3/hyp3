@@ -1,8 +1,8 @@
+from http import HTTPStatus
 from unittest import mock
 from urllib.parse import unquote
 
 from api.conftest import JOBS_URI, list_have_same_elements, login, make_db_record
-from flask_api import status
 
 
 def test_list_jobs(client, tables):
@@ -38,13 +38,13 @@ def test_list_jobs(client, tables):
 
     login(client, 'user_with_jobs')
     response = client.get(JOBS_URI)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert 'jobs' in response.json
     assert list_have_same_elements(response.json['jobs'], items)
 
     login(client, 'user_without_jobs')
     response = client.get(JOBS_URI)
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert response.json == {'jobs': []}
 
 
@@ -58,11 +58,11 @@ def test_list_jobs_by_name(client, tables):
 
     login(client)
     response = client.get(JOBS_URI, query_string={'name': 'item1'})
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert response.json == {'jobs': [items[0]]}
 
     response = client.get(JOBS_URI, query_string={'name': 'item does not exist'})
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert response.json == {'jobs': []}
 
 
@@ -77,15 +77,15 @@ def test_list_jobs_by_type(client, tables):
 
     login(client)
     response = client.get(JOBS_URI, query_string={'job_type': 'RTC_GAMMA'})
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert list_have_same_elements(response.json['jobs'], items[:2])
 
     response = client.get(JOBS_URI, query_string={'job_type': 'INSAR_GAMMA'})
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert response.json == {'jobs': [items[2]]}
 
     response = client.get(JOBS_URI, query_string={'job_type': 'FOOBAR'})
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_list_jobs_by_status(client, tables):
@@ -98,11 +98,11 @@ def test_list_jobs_by_status(client, tables):
 
     login(client)
     response = client.get(JOBS_URI, query_string={'status_code': 'RUNNING'})
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert response.json == {'jobs': [items[0]]}
 
     response = client.get(JOBS_URI, query_string={'status_code': 'FAILED'})
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == HTTPStatus.OK
     assert response.json == {'jobs': []}
 
 
@@ -110,10 +110,10 @@ def test_list_jobs_bad_status(client):
     login(client)
 
     response = client.get(JOBS_URI, query_string={'status_code': 'BAD'})
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
     response = client.get(JOBS_URI, query_string={'status_code': ''})
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_list_jobs_date_start_and_end(client, tables):
@@ -138,15 +138,15 @@ def test_list_jobs_date_start_and_end(client, tables):
     login(client)
     for date in dates:
         response = client.get(JOBS_URI, query_string={'start': date})
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == HTTPStatus.OK
         assert list_have_same_elements(response.json['jobs'], items[1:])
 
         response = client.get(JOBS_URI, query_string={'end': date})
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == HTTPStatus.OK
         assert list_have_same_elements(response.json['jobs'], items[:2])
 
         response = client.get(JOBS_URI, query_string={'start': date, 'end': date})
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == HTTPStatus.OK
         assert response.json == {'jobs': [items[1]]}
 
 
@@ -169,7 +169,7 @@ def test_bad_date_formats(client):
     for datetime_parameter in datetime_parameters:
         for bad_date in bad_dates:
             response = client.get(JOBS_URI, query_string={datetime_parameter: bad_date})
-            assert response.status_code == status.HTTP_400_BAD_REQUEST
+            assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_list_paging(client):

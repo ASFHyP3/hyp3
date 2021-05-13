@@ -1,4 +1,4 @@
-from flask_api import status
+from http import HTTPStatus
 
 from hyp3_api import lambda_handler
 
@@ -15,7 +15,7 @@ def test_404_response():
         },
     }
     response = lambda_handler.handler(event, None)
-    assert response['statusCode'] == status.HTTP_404_NOT_FOUND
+    assert response['statusCode'] == HTTPStatus.NOT_FOUND
     assert response['headers']['Content-Type'] == 'application/problem+json'
     assert response['isBase64Encoded'] is False
 
@@ -32,6 +32,6 @@ def test_401_response():
         },
     }
     response = lambda_handler.handler(event, None)
-    assert response['statusCode'] == status.HTTP_401_UNAUTHORIZED
+    assert response['statusCode'] == HTTPStatus.UNAUTHORIZED
     assert response['headers']['Content-Type'] == 'application/problem+json'
     assert response['isBase64Encoded'] is False
