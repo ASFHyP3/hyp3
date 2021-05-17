@@ -120,6 +120,7 @@ The API can be run locally to verify changes, but must be connected to an existi
   - `MONTHLY_JOB_QUOTA_PER_USER=25`
   - `AUTH_PUBLIC_KEY=123456789` *we use this auth config so that we can set the cookie ourselves to a known good value*
   - `AUTH_ALGORITHM=HS256`
+  - `SYSTEM_AVAILABLE=true`
 - Add hyp3-api to python path
 ```sh
 export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src"
