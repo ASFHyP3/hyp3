@@ -116,7 +116,8 @@ The API can be run locally to verify changes, but must be connected to an existi
 
 - Setup aws credentials in your environment [Documentation by AWS](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration)
 - Setup environment variables
-  - `TABLE_NAME=<jobs table id>`
+  - `JOBS_TABLE_NAME=<jobs table id>`
+  - `USERS_TABLE_NAME=<users table id>`
   - `MONTHLY_JOB_QUOTA_PER_USER=25`
   - `AUTH_PUBLIC_KEY=123456789` *we use this auth config so that we can set the cookie ourselves to a known good value*
   - `AUTH_ALGORITHM=HS256`
