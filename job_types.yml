@@ -96,6 +96,9 @@ InsarGamma:
     include_dem:
       default: false
       api_schema_location: "#/components/schemas/include_dem"
+    include_wrapped_phase:
+      default: false
+      api_schema_location: "#/components/schemas/include_wrapped_phase"
     looks:
       default:  20x4
       api_schema_location: "#/components/schemas/looks"

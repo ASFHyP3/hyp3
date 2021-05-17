@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.5]
+### Added
+- Exposed new `include_wrapped_phase` API parameter for INSAR_GAMMA jobs
+
 ## [1.1.4]
 ### Added
 - Exposed new `include_dem` API parameter for INSAR_GAMMA jobs
