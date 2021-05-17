@@ -123,6 +123,8 @@ InsarGamma:
     - Ref::include_inc_map
     - --include-dem
     - Ref::include_dem
+    - --include-wrapped-phase
+    - Ref::include_wrapped_phase
     - --looks
     - Ref::looks
     - Ref::granules
