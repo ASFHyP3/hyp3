@@ -83,32 +83,34 @@ aws cloudformation deploy \
 - Check API at `https://<Domain Name>/ui`
 
 
-## Testing the API
-The HyP3 API source contains test files in `tests/api/`. To run them you need to do a bit of setup first.
+## Running the Tests
+Tests for each HyP3 module are located in `tests/`. To run them you need to do a bit of setup first.
 
-- Add hyp3-api and tests to python path
+- Install test requirements
 ```sh
-export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src:`pwd`/tests"
+pip install -r requirements-all.txt
 ```
-- Setup environment variables
+
+- Add module source directories to your Python path
+```sh
+export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src:`pwd`/apps/get-files/src:`pwd`/apps/start-execution/src:`pwd`/apps/upload-log/src"
+```
+
+- Set environment variables needed by the API module
 ```sh
 export $(cat tests/api/cfg.env | xargs)
 ```
-- Install test requirements
-```sh
-pip install -r apps/api/requirements-all.txt
-```
 
-- Render cloudformation templates
+- Render CloudFormation templates needed by the API module
 ```sh
 cd apps
 python render_cf.py --job-types-file ../job_types.yml
 cd ..
 ```
 
-- Run tests
+- Run the tests
 ```sh
-pytest tests/api/
+pytest tests/
 ```
 
 ## Running the API Locally
@@ -116,10 +118,12 @@ The API can be run locally to verify changes, but must be connected to an existi
 
 - Setup aws credentials in your environment [Documentation by AWS](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration)
 - Setup environment variables
-  - `TABLE_NAME=<jobs table id>`
+  - `JOBS_TABLE_NAME=<jobs table id>`
+  - `USERS_TABLE_NAME=<users table id>`
   - `MONTHLY_JOB_QUOTA_PER_USER=25`
   - `AUTH_PUBLIC_KEY=123456789` *we use this auth config so that we can set the cookie ourselves to a known good value*
   - `AUTH_ALGORITHM=HS256`
+  - `SYSTEM_AVAILABLE=true`
 - Add hyp3-api to python path
 ```sh
 export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src"
