@@ -96,7 +96,7 @@ export $(cat tests/api/cfg.env | xargs)
 ```
 - Install test requirements
 ```sh
-pip install -r apps/api/requirements-all.txt
+pip install -r apps/api/requirements-api.txt
 ```
 
 - Render cloudformation templates
