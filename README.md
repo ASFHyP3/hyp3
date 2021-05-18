@@ -83,32 +83,34 @@ aws cloudformation deploy \
 - Check API at `https://<Domain Name>/ui`
 
 
-## Testing the API
-The HyP3 API source contains test files in `tests/api/`. To run them you need to do a bit of setup first.
+## Running the Tests
+Tests for each HyP3 module are located in `tests/`. To run them you need to do a bit of setup first.
 
-- Add hyp3-api and tests to python path
+- Install test requirements
 ```sh
-export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src:`pwd`/tests"
+pip install -r requirements-all.txt
 ```
-- Setup environment variables
+
+- Add module source directories to your Python path
+```sh
+export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src:`pwd`/apps/get-files/src:`pwd`/apps/start-execution/src:`pwd`/apps/upload-log/src"
+```
+
+- Set environment variables needed by the API module
 ```sh
 export $(cat tests/api/cfg.env | xargs)
 ```
-- Install test requirements
-```sh
-pip install -r apps/api/requirements-all.txt
-```
 
-- Render cloudformation templates
+- Render CloudFormation templates needed by the API module
 ```sh
 cd apps
 python render_cf.py --job-types-file ../job_types.yml
 cd ..
 ```
 
-- Run tests
+- Run the tests
 ```sh
-pytest tests/api/
+pytest tests/
 ```
 
 ## Running the API Locally
