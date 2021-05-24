@@ -98,11 +98,7 @@ export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src:`pwd`/apps/get-files/src:`pw
 
 - Set environment variables needed by the API module
 ```sh
-
-pip install -r apps/api/requirements-api.txt
-
 export $(cat tests/api/cfg.env | xargs)
-
 ```
 
 - Render CloudFormation templates needed by the API module
