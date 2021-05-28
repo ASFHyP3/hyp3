@@ -56,7 +56,7 @@ jobs:
           python-version: 3.8
 
       - uses: ./.github/actions/deploy-hyp3
-        if: github.ref == ${{ matrix.deploy_ref }}
+        if: github.ref == matrix.deploy_ref
         with:
           TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
           STACK_NAME: ${{ matrix.environment }}
