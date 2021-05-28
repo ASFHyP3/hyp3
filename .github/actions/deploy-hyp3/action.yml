@@ -1,0 +1,71 @@
+name: Deploy HyP3
+description: Deploy a HyP3 stack
+
+inputs:
+  TEMPLATE_BUCKET:
+    description: "S3 Bucket for CloudFormation deployment artifacts"
+    required: true
+  STACK_NAME:
+    description: "Name of the deployed stack"
+    required: true
+  DOMAIN_NAME:
+    description: "HyP3 API domain name"
+    required: true
+  CERTIFICATE_ARN:
+    description: "ARN for AWS Certificate Manager SSL certificate"
+    required: true
+  IMAGE_TAG:
+    description: "HyP3 plugin docker image tag to pull"
+    required: true
+  VPC_ID:
+    description: "Default VPC ID"
+    required: true
+  SUBNET_IDS:
+    description: "Comma separated list of Subnet IDs"
+    required: true
+  EDL_USERNAME:
+    description: "EarthData Login name to use when downloading data from ASF"
+    required: true
+  EDL_PASSWORD:
+    description: "EarthData Login password to use when downloading data from ASF"
+    required: true
+  CLOUDFORMATION_ROLE_ARN:
+    description: "The CloudFormation role to use for this deployment"
+    required: true
+  MONTHLY_JOB_QUOTA_PER_USER:
+    description: "The default number of jobs any user with an Earthdata Login can run per month"
+    required: false
+    default: "0"
+
+runs:
+  using: "composite"
+  steps:
+      - name: install dependancies and render templates
+        shell: bash
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements-all.txt
+          python apps/render_cf.py --job-types-file job_types.yml
+          pip install -r apps/api/requirements-api.txt -t apps/api/src
+
+      - name: Package and deploy
+        shell: bash
+        run: |
+          aws cloudformation package \
+            --template-file apps/main-cf.yml \
+            --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
+            --output-template-file packaged.yml
+          aws cloudformation deploy \
+            --stack-name ${{ inputs.STACK_NAME }} \
+            --template-file packaged.yml \
+            --role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }} \
+            --capabilities CAPABILITY_IAM \
+            --parameter-overrides \
+                VpcId="${{ inputs.VPC_ID }}" \
+                SubnetIds="${{ inputs.SUBNET_IDS }}" \
+                EDLUsername="${{ inputs.EDL_USERNAME }}" \
+                EDLPassword="${{ inputs.EDL_PASSWORD }}" \
+                ImageTag="${{ inputs.IMAGE_TAG }}" \
+                DomainName="${{ inputs.DOMAIN_NAME }}" \
+                CertificateArn="${{ inputs.CERTIFICATE_ARN }}" \
+                MonthlyJobQuotaPerUser="${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}"
