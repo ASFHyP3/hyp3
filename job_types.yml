@@ -155,3 +155,65 @@ Autorift:
     - Ref::granules
   validators: []
   timeout: 10800
+
+WaterMap:
+  image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
+  api_job_type: WATER_MAP
+  parameters:
+    granules:
+      default: '""'
+      api_schema_location: "#/components/schemas/rtc_granules"
+    bucket_prefix:
+      default:  '""'
+    resolution:
+      default:  30.0
+      api_schema_location: "#/components/schemas/resolution"
+    speckle_filter:
+      default: false
+      api_schema_location: "#/components/schemas/speckle_filter"
+    max_vv_threshold:
+      default: -17.0
+      api_schema_location: "#/components/schemas/max_vv_threshold"
+    max_vh_threshold:
+      default: -24.0
+      api_schema_location: "#/components/schemas/max_vh_threshold"
+    hand_threshold:
+      default: 15.0
+      api_schema_location: "#/components/schemas/hand_threshold"
+    hand_fraction:
+      default: 0.8
+      api_schema_location: "#/components/schemas/hand_fraction"
+    membership_threshold:
+      default: 0.45
+      api_schema_location: "#/components/schemas/membership_threshold"
+  required_parameters:
+    - granules
+  command:
+    - ++process
+      - water_map
+      - --username
+      - '!Ref EDLUsername'
+      - --password
+      - '!Ref EDLPassword'
+      - --bucket
+      - '!Ref Bucket'
+      - --bucket-prefix
+      - Ref::bucket_prefix
+      - --resolution
+      - Ref::resolution
+      - --speckle-filter
+      - Ref::speckle_filter
+      - --max-vv-threshold
+      - Ref::max_vv_threshold
+      - --max-vh-threshold
+      - Ref::max_vh_threshold
+      - --hand-threshold
+      - Ref::hand_threshold
+      - --hand-fraction
+      - Ref::hand_fraction
+      - --membership-fraction
+      - Ref::membership_fraction
+      - Ref::granules
+  validators:
+    - check_dem_coverage
+  timeout: 5400

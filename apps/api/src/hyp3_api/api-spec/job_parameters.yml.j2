@@ -169,3 +169,28 @@ components:
       description: Include a GeoTIFF in the product package containing displacement values along the Line-Of-Sight (LOS)
       default: false
       type: boolean
+
+    max_vv_threshold:
+      description: Maximum threshold value to use for VV polarized raster in decibels (dB)
+      default: 17.0
+      type: number
+
+    max_vh_threshold:
+      description: Maximum threshold value to use for VH polarized raster in decibels (dB)
+      default: 24.0
+      type: number
+
+    hand_threshold:
+      description: The maximum height above nearest drainage in meters to consider a pixel valid
+      default: 15.0
+      type: number
+
+    hand_fraction:
+      description: The minimum fraction of valid HAND pixels required in a tile for thresholding
+      default: 0.8
+      type: number
+
+    membership_threshold:
+      description: The average membership to the fuzzy indicators required for a water pixel
+      default: 0.45
+      type: number
