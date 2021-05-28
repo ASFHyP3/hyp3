@@ -255,6 +255,7 @@ components:
         - RTC_GAMMA
         - INSAR_GAMMA
         - AUTORIFT
+        - WATER_MAP
 
     datetime:
       description: Date and time object formatted according to ISO 8601
