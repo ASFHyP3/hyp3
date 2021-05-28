@@ -190,30 +190,30 @@ WaterMap:
     - granules
   command:
     - ++process
-      - water_map
-      - --username
-      - '!Ref EDLUsername'
-      - --password
-      - '!Ref EDLPassword'
-      - --bucket
-      - '!Ref Bucket'
-      - --bucket-prefix
-      - Ref::bucket_prefix
-      - --resolution
-      - Ref::resolution
-      - --speckle-filter
-      - Ref::speckle_filter
-      - --max-vv-threshold
-      - Ref::max_vv_threshold
-      - --max-vh-threshold
-      - Ref::max_vh_threshold
-      - --hand-threshold
-      - Ref::hand_threshold
-      - --hand-fraction
-      - Ref::hand_fraction
-      - --membership-fraction
-      - Ref::membership_fraction
-      - Ref::granules
+    - water_map
+    - --username
+    - '!Ref EDLUsername'
+    - --password
+    - '!Ref EDLPassword'
+    - --bucket
+    - '!Ref Bucket'
+    - --bucket-prefix
+    - Ref::bucket_prefix
+    - --resolution
+    - Ref::resolution
+    - --speckle-filter
+    - Ref::speckle_filter
+    - --max-vv-threshold
+    - Ref::max_vv_threshold
+    - --max-vh-threshold
+    - Ref::max_vh_threshold
+    - --hand-threshold
+    - Ref::hand_threshold
+    - --hand-fraction
+    - Ref::hand_fraction
+    - --membership-fraction
+    - Ref::membership_fraction
+    - Ref::granules
   validators:
     - check_dem_coverage
   timeout: 5400
