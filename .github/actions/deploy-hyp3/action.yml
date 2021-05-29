@@ -61,11 +61,11 @@ runs:
             --role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }} \
             --capabilities CAPABILITY_IAM \
             --parameter-overrides \
-                VpcId="${{ inputs.VPC_ID }}" \
-                SubnetIds="${{ inputs.SUBNET_IDS }}" \
-                EDLUsername="${{ inputs.EDL_USERNAME }}" \
-                EDLPassword="${{ inputs.EDL_PASSWORD }}" \
-                ImageTag="${{ inputs.IMAGE_TAG }}" \
-                DomainName="${{ inputs.DOMAIN_NAME }}" \
-                CertificateArn="${{ inputs.CERTIFICATE_ARN }}" \
-                MonthlyJobQuotaPerUser="${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}"
+                VpcId='${{ inputs.VPC_ID }}' \
+                SubnetIds='${{ inputs.SUBNET_IDS }}' \
+                EDLUsername='${{ inputs.EDL_USERNAME }}' \
+                EDLPassword='${{ inputs.EDL_PASSWORD }}' \
+                ImageTag='${{ inputs.IMAGE_TAG }}' \
+                DomainName='${{ inputs.DOMAIN_NAME }}' \
+                CertificateArn='${{ inputs.CERTIFICATE_ARN }}' \
+                MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}'
