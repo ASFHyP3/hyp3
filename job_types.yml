@@ -211,8 +211,8 @@ WaterMap:
     - Ref::hand_threshold
     - --hand-fraction
     - Ref::hand_fraction
-    - --membership-fraction
-    - Ref::membership_fraction
+    - --membership-threshold
+    - Ref::membership_threshold
     - Ref::granules
   validators:
     - check_dem_coverage
