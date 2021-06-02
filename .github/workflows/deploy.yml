@@ -6,24 +6,69 @@ on:
       - master
       - develop
 
-env:
-  AWS_REGION: us-west-2
-  TEMPLATE_BUCKET: cf-templates-aubvn3i9olmk-us-west-2
-  MONTHLY_JOB_QUOTA_PER_USER: 200
-
-  VPC_ID: ${{ secrets.VPC_ID }}
-  SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
-  EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
-  EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
-  CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
-  CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
-
 jobs:
-
   deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - environment: hyp3-prod
+            domain: hyp3-api.asf.alaska.edu
+            template_bucket: cf-templates-aubvn3i9olmk-us-west-2
+            image_tag: latest
+            quota: 200
+            deploy_ref: refs/heads/master
+
+          - environment: hyp3-test
+            domain: hyp3-test-api.asf.alaska.edu
+            template_bucket: cf-templates-aubvn3i9olmk-us-west-2
+            image_tag: test
+            quota: 200
+            deploy_ref: refs/heads/develop
+
+          - environment: hyp3-autorift
+            domain: hyp3-autorift.asf.alaska.edu
+            template_bucket: cf-templates-igavixdzdy7k-us-west-2
+            image_tag: latest
+            quota: 0
+            deploy_ref: refs/heads/master
+
+    environment:
+      name: ${{ matrix.environment }}
+      url: https://${{ matrix.domain }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - uses: ./.github/actions/deploy-hyp3
+        if: github.ref == matrix.deploy_ref
+        with:
+          TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
+          STACK_NAME: ${{ matrix.environment }}
+          DOMAIN_NAME: ${{ matrix.domain }}
+          CERTIFICATE_ARN:  ${{ secrets.CERTIFICATE_ARN }}
+          IMAGE_TAG: ${{ matrix.image_tag }}
+          VPC_ID: ${{ secrets.VPC_ID }}
+          SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
+          EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
+          EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
+          CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
+          MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
+
+  tag:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.ref == 'refs/heads/master'
 
     steps:
       - uses: actions/checkout@v2
@@ -31,59 +76,7 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.TOOLS_BOT_PAK }}
 
-      - if: endsWith(github.ref, '/develop')
-        run: |
-          echo "STACK_NAME=hyp3-test" >> $GITHUB_ENV
-          echo "DOMAIN_NAME=hyp3-test-api.asf.alaska.edu" >> $GITHUB_ENV
-          echo "IMAGE_TAG=test" >> $GITHUB_ENV
-
-      - if: endsWith(github.ref, '/master')
-        run: |
-          echo "STACK_NAME=hyp3" >> $GITHUB_ENV
-          echo "DOMAIN_NAME=hyp3-api.asf.alaska.edu" >> $GITHUB_ENV
-          echo "IMAGE_TAG=latest" >> $GITHUB_ENV
-
-      - uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
-
-      - name: install dependencies and render templates
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements-all.txt
-          python apps/render_cf.py --job-types-file job_types.yml
-          pip install -r apps/api/requirements-api.txt -t apps/api/src
-          pip install bump2version
-
-      - name: Package and deploy
-        run: |
-          aws cloudformation package \
-            --template-file apps/main-cf.yml \
-            --s3-bucket ${TEMPLATE_BUCKET} \
-            --output-template-file packaged.yml
-          aws cloudformation deploy \
-            --stack-name ${STACK_NAME} \
-            --template-file packaged.yml \
-            --role-arn ${CLOUDFORMATION_ROLE_ARN} \
-            --capabilities CAPABILITY_IAM \
-            --parameter-overrides \
-                VpcId="${VPC_ID}" \
-                SubnetIds="${SUBNET_IDS}" \
-                EDLUsername="${EDL_USERNAME}" \
-                EDLPassword="${EDL_PASSWORD}" \
-                ImageTag="${IMAGE_TAG}" \
-                DomainName="${DOMAIN_NAME}" \
-                CertificateArn="${CERTIFICATE_ARN}" \
-                MonthlyJobQuotaPerUser="${MONTHLY_JOB_QUOTA_PER_USER}"
-
       - name: Get associated PR
-        if: github.ref == 'refs/heads/master'
         uses: helaili/github-graphql-action@2.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
@@ -95,7 +88,6 @@ jobs:
           sha: ${{ github.sha }}
 
       - name: Get PR labels
-        if: github.ref == 'refs/heads/master'
         uses: helaili/github-graphql-action@2.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
@@ -106,7 +98,6 @@ jobs:
           name: hyp3
 
       - name: Tag version
-        if: github.ref == 'refs/heads/master'
         run: |
           git fetch origin +refs/tags/*:refs/tags/*
           git config user.email "UAF-asf-apd@alaska.edu"
@@ -120,3 +111,4 @@ jobs:
               --tag --tag-message "${TAG_MSG}" "${BUMP_PART}"
           git push --tags
           echo "Tagged version $(git describe --abbrev=0) and pushed back to repo"
+
