@@ -31,20 +31,18 @@
         {
           "Variable": "$.job_parameters.granules",
           "StringMatches": "S1*",
-          "Next": "SET_HIGH_MEMORY"
+          "Next": "USE_DEFAULT_MEMORY"
         }
       ],
-      "Default": "SET_LOW_MEMORY"
+      "Default": "USE_CUSTOM_MEMORY"
     },
-    "SET_HIGH_MEMORY": {
+    "USE_DEFAULT_MEMORY": {
       "Type": "Pass",
-      "Result": {
-        "Memory": 30000
-      },
+      "Result": {},
       "ResultPath": "$.container_overrides",
       "Next": "INSPECT_JOB_TYPE"
     },
-    "SET_LOW_MEMORY": {
+    "USE_CUSTOM_MEMORY": {
       "Type": "Pass",
       "Result": {
         "Memory": 10500
