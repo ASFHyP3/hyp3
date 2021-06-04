@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - environment: hyp3-prod
+          - environment: hyp3
             domain: hyp3-api.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: latest
@@ -83,6 +83,15 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.TOOLS_BOT_PAK }}
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: install python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install bump2version
 
       - name: Get associated PR
         uses: helaili/github-graphql-action@2.0.1
