@@ -73,7 +73,7 @@ RtcGamma:
     - Ref::granules
   validators:
     - check_dem_coverage
-  timeout: 5400
+  timeout: 10800
 
 InsarGamma:
   image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
