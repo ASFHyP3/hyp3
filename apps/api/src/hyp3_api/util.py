@@ -42,7 +42,7 @@ def get_job_count_for_month(user):
 
 def convert_floats_to_decimals(element):
     if type(element) is float:
-        return Decimal(element)
+        return Decimal(str(element))
     if type(element) is list:
         return [convert_floats_to_decimals(item) for item in element]
     if type(element) is dict:
