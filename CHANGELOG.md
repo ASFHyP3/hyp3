@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.7]
 ### Fixed
-- POST `/jobs` no longer throws 500 for`decimal.Inexact` errors
+- POST `/jobs` no longer throws 500 for`decimal.Inexact` errors, fixes [#444](https://github.com/ASFHyP3/hyp3/issues/444)
 
 ## [1.1.6]
 ### Changed
