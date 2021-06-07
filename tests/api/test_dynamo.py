@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from api.conftest import list_have_same_elements
 
 from hyp3_api import dynamo, util
@@ -396,4 +398,6 @@ def test_decimal_conversion(tables):
         tables['jobs_table'].put_item(Item=util.convert_floats_to_decimals(item))
 
     response, _ = dynamo.query_jobs('user1')
-    assert response == table_items
+    assert response[0]['float_value'] == Decimal('30.04')
+    assert response[1]['float_value'] == Decimal('0.0')
+    assert response[2]['float_value'] == Decimal('0.1')
