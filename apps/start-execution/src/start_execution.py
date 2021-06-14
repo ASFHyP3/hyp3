@@ -18,19 +18,14 @@ class DecimalEncoder(json.JSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 
-def get_pending_jobs():
+def get_pending_jobs(limit=400):
     table = DB.Table(environ['TABLE_NAME'])
     response = table.query(
         IndexName='status_code',
         KeyConditionExpression=Key('status_code').eq('PENDING'),
+        Limit=limit,
     )
     pending_jobs = response['Items']
-    while 'LastEvaluatedKey' in response:
-        response = table.query(
-            IndexName='status_code',
-            KeyConditionExpression=Key('status_code').eq('PENDING'),
-        )
-        pending_jobs.extend(response['Items'])
     return pending_jobs
 
 
@@ -45,7 +40,7 @@ def submit_jobs(jobs):
         STEP_FUNCTION.start_execution(
             stateMachineArn=environ['STEP_FUNCTION_ARN'],
             input=json.dumps(job, cls=DecimalEncoder, sort_keys=True),
-            name=job['job_id']
+            name=job['job_id'],
         )
 
 
