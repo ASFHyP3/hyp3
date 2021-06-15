@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
 ## [1.1.7]
 ### Fixed
 - POST `/jobs` no longer throws 500 for`decimal.Inexact` errors, fixes [#444](https://github.com/ASFHyP3/hyp3/issues/444)
+- `start_exectuion.py` will now submit at most 400 step function executions per run. Resolves an issue where no
+  executions would be started when many PENDING jobs were available for submission.
 
 ## [1.1.6]
 ### Changed
