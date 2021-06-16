@@ -172,10 +172,10 @@ WaterMap:
       default: false
       api_schema_location: "#/components/schemas/speckle_filter"
     max_vv_threshold:
-      default: -17.0
+      default: -15.5
       api_schema_location: "#/components/schemas/max_vv_threshold"
     max_vh_threshold:
-      default: -24.0
+      default: -23.0
       api_schema_location: "#/components/schemas/max_vh_threshold"
     hand_threshold:
       default: 15.0
