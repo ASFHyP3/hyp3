@@ -4,9 +4,8 @@ from os import environ
 from uuid import UUID, uuid4
 
 import requests
-from connexion import problem
 from connexion.apps.flask_app import FlaskJSONEncoder
-from flask import request
+from flask import request, jsonify, abort
 
 from jsonschema import draft4_format_checker
 
@@ -21,6 +20,18 @@ class DecimalEncoder(FlaskJSONEncoder):
                 return int(o)
             return float(o)
         return super(DecimalEncoder, self).default(o)
+
+
+def error(status, title, message):
+    response = jsonify({
+        'status': status,
+        'detail': message,
+        'title': title,
+        'type': 'about:blank'
+    })
+    response.content_type = 'application/json'
+    response.status_code = status
+    return response
 
 
 @draft4_format_checker.checks('uuid')
@@ -39,14 +50,14 @@ def post_jobs(body, user):
     remaining_jobs = util.get_remaining_jobs_for_user(user, monthly_quota)
     if remaining_jobs - len(body['jobs']) < 0:
         message = f'Your monthly quota is {monthly_quota} jobs. You have {remaining_jobs} jobs remaining.'
-        return problem(400, 'Bad Request', message)
+        abort(error(400, 'Bad Request', message))
 
     try:
         validate_jobs(body['jobs'])
     except requests.HTTPError as e:
         print(f'WARN: CMR search failed: {e}')
     except GranuleValidationError as e:
-        return problem(400, 'Bad Request', str(e))
+        abort(error(400, 'Bad Request', str(e)))
 
     request_time = util.format_time(datetime.now(timezone.utc))
     jobs = []
@@ -65,7 +76,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=N
     try:
         start_key = util.deserialize(start_token) if start_token else None
     except util.TokenDeserializeError:
-        return problem(400, 'Bad Request', 'Invalid start_token value')
+        abort(error(400, 'Bad Request', 'Invalid start_token value'))
     jobs, last_evaluated_key = dynamo.query_jobs(user, start, end, status_code, name, job_type, start_key)
     payload = {'jobs': jobs}
     if last_evaluated_key is not None:
@@ -77,7 +88,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=N
 def get_job_by_id(job_id):
     job = dynamo.get_job(job_id)
     if job is None:
-        return problem(404, 'Not Found', f'job_id does not exist: {job_id}')
+        abort(error(404, 'Not Found', f'job_id does not exist: {job_id}'))
     return job
 
 

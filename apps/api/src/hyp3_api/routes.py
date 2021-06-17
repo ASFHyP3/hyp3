@@ -14,6 +14,7 @@ api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
 api_spec = get_spec(api_spec_file)
 CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
 
+AUTHENTICATED_ROUTES = ['/jobs', '/user']
 
 @app.before_request
 def check_system_available():
@@ -31,11 +32,12 @@ def check_system_available():
 @app.before_request
 def authenticate_user():
     cookie = request.cookies.get('asf-urs')
-    auth_info =  auth.decode_token(cookie)
+    auth_info = auth.decode_token(cookie)
     if auth_info is not None:
         g.user = auth_info['sub']
     else:
-        abort(401)
+        if request.path in AUTHENTICATED_ROUTES:
+            abort(401)
 
 
 @app.route('/')
@@ -47,12 +49,16 @@ class Jobs(FlaskOpenAPIView):
     def post(self):
         return jsonify(handlers.post_jobs(request.get_json(), g.user))
 
-    def get(self):
+    def get(self, job_id):
+        if job_id is not None:
+            return jsonify(handlers.get_job_by_id(job_id))
         parameters = request.openapi.parameters.query
+        start = parameters.get('start')
+        end = parameters.get('end')
         return jsonify(handlers.get_jobs(
             g.user,
-            parameters.get('start'),
-            parameters.get('end'),
+            start.isoformat(timespec='seconds') if start else None,
+            end.isoformat(timespec='seconds') if end else None,
             parameters.get('status_code'),
             parameters.get('name'),
             parameters.get('job_type'),
@@ -60,4 +66,17 @@ class Jobs(FlaskOpenAPIView):
         ))
 
 
-app.add_url_rule('/jobs', view_func=Jobs.as_view('jobs', api_spec))
+class User(FlaskOpenAPIView):
+    def get(self):
+        return jsonify(handlers.get_user(g.user))
+
+
+app.json_encoder = handlers.DecimalEncoder
+
+jobs_view = Jobs.as_view('jobs', api_spec)
+app.add_url_rule('/jobs', view_func=jobs_view, methods=['GET'], defaults={'job_id': None})
+app.add_url_rule('/jobs', view_func=jobs_view, methods=['POST'])
+app.add_url_rule('/jobs/<job_id>', view_func=jobs_view, methods=['GET'])
+
+user_view = User.as_view('user', api_spec)
+app.add_url_rule('/user', view_func=user_view)
