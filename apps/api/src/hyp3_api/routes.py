@@ -1,20 +1,19 @@
 from os import environ
 from pathlib import Path
 
-from flask import make_response, jsonify, redirect, request, g, abort
+from flask import make_response, jsonify, redirect, request, g, abort, Response
 from flask_cors import CORS
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
 
-
 from hyp3_api import app, handlers, auth
 from hyp3_api.openapi import get_spec
-
 
 api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
 api_spec = get_spec(api_spec_file)
 CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
 
 AUTHENTICATED_ROUTES = ['/jobs', '/user']
+
 
 @app.before_request
 def check_system_available():
@@ -36,14 +35,20 @@ def authenticate_user():
     if auth_info is not None:
         g.user = auth_info['sub']
     else:
-        if request.path in AUTHENTICATED_ROUTES:
-            abort(401)
+        if request.path in AUTHENTICATED_ROUTES and request.method != 'OPTIONS':
+            abort(handlers.error(401, 'Unauthorized', 'No authorization token provided'))
 
 
 @app.route('/')
 def redirect_to_ui():
     return redirect('/ui')
 
+
+@app.errorhandler(404)
+def error404(e):
+    return handlers.error(404, 'Not Found',
+                          'The requested URL was not found on the server.'
+                          ' If you entered the URL manually please check your spelling and try again.')
 
 class Jobs(FlaskOpenAPIView):
     def post(self):

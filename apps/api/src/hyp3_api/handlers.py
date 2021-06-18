@@ -29,7 +29,7 @@ def error(status, title, message):
         'title': title,
         'type': 'about:blank'
     })
-    response.content_type = 'application/json'
+    response.headers['Content-Type'] = 'application/json'
     response.status_code = status
     return response
 
