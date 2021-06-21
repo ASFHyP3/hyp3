@@ -1,25 +1,13 @@
 from datetime import datetime, timezone
-from decimal import Decimal
-import json
 from os import environ
 from uuid import UUID, uuid4
 
 import requests
-from flask import request, jsonify, abort
-
+from flask import abort, jsonify, request
 from jsonschema import draft4_format_checker
 
 from hyp3_api import dynamo, util
 from hyp3_api.validation import GranuleValidationError, validate_jobs
-
-
-class DecimalEncoder(json.JSONDecoder):
-    def default(self, o):
-        if isinstance(o, Decimal):
-            if o == int(o):
-                return int(o)
-            return float(o)
-        return super(DecimalEncoder, self).default(o)
 
 
 def error(status, title, message):

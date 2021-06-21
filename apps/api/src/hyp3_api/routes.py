@@ -1,11 +1,13 @@
+import json
+from decimal import Decimal
 from os import environ
 from pathlib import Path
 
-from flask import make_response, jsonify, redirect, request, g, abort, Response
+from flask import abort, g, jsonify, make_response, redirect, request
 from flask_cors import CORS
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
 
-from hyp3_api import app, handlers, auth
+from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec
 
 api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
@@ -50,6 +52,16 @@ def error404(e):
                           'The requested URL was not found on the server.'
                           ' If you entered the URL manually please check your spelling and try again.')
 
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, Decimal):
+            if o == int(o):
+                return int(o)
+            return float(o)
+        json.JSONEncoder.default(self, o)
+
+
 class Jobs(FlaskOpenAPIView):
     def post(self):
         return jsonify(handlers.post_jobs(request.get_json(), g.user))
@@ -76,7 +88,7 @@ class User(FlaskOpenAPIView):
         return jsonify(handlers.get_user(g.user))
 
 
-app.json_encoder = handlers.DecimalEncoder
+app.json_encoder = DecimalEncoder
 
 jobs_view = Jobs.as_view('jobs', api_spec)
 app.add_url_rule('/jobs', view_func=jobs_view, methods=['GET'], defaults={'job_id': None})

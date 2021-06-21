@@ -6,7 +6,7 @@ import pytest
 import responses
 from moto import mock_dynamodb2
 
-from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, app
+from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, app, auth
 from hyp3_api.util import get_granules
 
 AUTH_COOKIE = 'asf-urs'

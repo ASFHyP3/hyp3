@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from openapi_core.spec.shortcuts import create_spec
 import prance
+from openapi_core.spec.shortcuts import create_spec
 
 
 def get_spec(path_to_spec: Path):
