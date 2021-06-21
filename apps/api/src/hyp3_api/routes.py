@@ -43,7 +43,7 @@ def authenticate_user():
         g.user = auth_info['sub']
     else:
         if request.path in AUTHENTICATED_ROUTES and request.method != 'OPTIONS':
-            abort(handlers.error(401, 'Unauthorized', 'No authorization token provided'))
+            abort(handlers.problem_format(401, 'Unauthorized', 'No authorization token provided'))
 
 
 @app.route('/')
@@ -68,7 +68,7 @@ def render_ui():
 
 @app.errorhandler(404)
 def error404(e):
-    return handlers.error(404, 'Not Found',
+    return handlers.problem_format(404, 'Not Found',
                           'The requested URL was not found on the server.'
                           ' If you entered the URL manually please check your spelling and try again.')
 

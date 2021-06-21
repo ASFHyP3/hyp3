@@ -10,7 +10,7 @@ from hyp3_api import dynamo, util
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
 
-def error(status, title, message):
+def problem_format(status, title, message):
     response = jsonify({
         'status': status,
         'detail': message,
@@ -38,14 +38,14 @@ def post_jobs(body, user):
     remaining_jobs = util.get_remaining_jobs_for_user(user, monthly_quota)
     if remaining_jobs - len(body['jobs']) < 0:
         message = f'Your monthly quota is {monthly_quota} jobs. You have {remaining_jobs} jobs remaining.'
-        abort(error(400, 'Bad Request', message))
+        abort(problem_format(400, 'Bad Request', message))
 
     try:
         validate_jobs(body['jobs'])
     except requests.HTTPError as e:
         print(f'WARN: CMR search failed: {e}')
     except GranuleValidationError as e:
-        abort(error(400, 'Bad Request', str(e)))
+        abort(problem_format(400, 'Bad Request', str(e)))
 
     request_time = util.format_time(datetime.now(timezone.utc))
     jobs = []
@@ -64,7 +64,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=N
     try:
         start_key = util.deserialize(start_token) if start_token else None
     except util.TokenDeserializeError:
-        abort(error(400, 'Bad Request', 'Invalid start_token value'))
+        abort(problem_format(400, 'Bad Request', 'Invalid start_token value'))
     jobs, last_evaluated_key = dynamo.query_jobs(user, start, end, status_code, name, job_type, start_key)
     payload = {'jobs': jobs}
     if last_evaluated_key is not None:
@@ -76,7 +76,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=N
 def get_job_by_id(job_id):
     job = dynamo.get_job(job_id)
     if job is None:
-        abort(error(404, 'Not Found', f'job_id does not exist: {job_id}'))
+        abort(problem_format(404, 'Not Found', f'job_id does not exist: {job_id}'))
     return job
 
 
