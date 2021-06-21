@@ -63,7 +63,7 @@ def get_open_api_yaml():
 
 @app.route('/ui')
 def render_ui():
-    return render_template('index.html', api_spec_url=url_for('get_open_api_json'))
+    return render_template('index.html')
 
 
 @app.errorhandler(404)

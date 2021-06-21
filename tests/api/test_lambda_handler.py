@@ -16,7 +16,7 @@ def test_404_response():
     }
     response = lambda_handler.handler(event, None)
     assert response['statusCode'] == HTTPStatus.NOT_FOUND
-    assert response['headers']['Content-Type'] == 'application/json'
+    assert response['headers']['Content-Type'] == 'application/problem+json'
     assert response['isBase64Encoded'] is False
 
 
@@ -33,5 +33,5 @@ def test_401_response():
     }
     response = lambda_handler.handler(event, None)
     assert response['statusCode'] == HTTPStatus.UNAUTHORIZED
-    assert response['headers']['Content-Type'] == 'application/json'
+    assert response['headers']['Content-Type'] == 'application/problem+json'
     assert response['isBase64Encoded'] is False
