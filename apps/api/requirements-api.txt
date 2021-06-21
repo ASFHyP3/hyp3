@@ -1,6 +1,5 @@
 cryptography
 flask
-flask_api
 Flask-Cors
 openapi-core
 prance
@@ -9,3 +8,4 @@ requests
 serverless_wsgi
 shapely
 strict-rfc3339
+Werkzeug>=1.0.1,<2.*
