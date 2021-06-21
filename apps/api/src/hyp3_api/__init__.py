@@ -1,7 +1,7 @@
 import boto3
 from flask import Flask
 
-app = Flask(__name__, template_folder='ui/', static_folder='ui/', static_url_path='/')
+app = Flask(__name__, template_folder='ui/swagger/', static_folder='ui/swagger/', static_url_path='/')
 DYNAMODB_RESOURCE = boto3.resource('dynamodb')
 CMR_URL = 'https://cmr.earthdata.nasa.gov/search/granules.json'
 
