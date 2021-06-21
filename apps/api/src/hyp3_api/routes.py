@@ -6,6 +6,7 @@ from pathlib import Path
 from flask import abort, g, jsonify, make_response, redirect, request
 from flask_cors import CORS
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
+from openapi_core.validation.response.datatypes import ResponseValidationResult
 
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec
@@ -62,7 +63,19 @@ class DecimalEncoder(json.JSONEncoder):
         json.JSONEncoder.default(self, o)
 
 
+class NonValidator():
+    def __init__(self, spec):
+        pass
+
+    def validate(self, res):
+        return ResponseValidationResult()
+
+
 class Jobs(FlaskOpenAPIView):
+    def __init__(self, spec):
+        super().__init__(spec)
+        self.response_validator = NonValidator
+
     def post(self):
         return jsonify(handlers.post_jobs(request.get_json(), g.user))
 
