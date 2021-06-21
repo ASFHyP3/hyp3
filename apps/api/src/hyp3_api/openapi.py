@@ -1,10 +1,9 @@
 from pathlib import Path
 
 import prance
-from openapi_core.spec.shortcuts import create_spec
 
 
-def get_spec(path_to_spec: Path):
+def get_spec_yaml(path_to_spec: Path):
     parser = prance.ResolvingParser(str(path_to_spec.resolve()))
     parser.parse()
-    return create_spec(parser.specification)
+    return parser.specification
