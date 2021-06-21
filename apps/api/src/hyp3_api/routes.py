@@ -5,7 +5,7 @@ from os import environ
 from pathlib import Path
 
 import yaml
-from flask import abort, g, jsonify, make_response, redirect, render_template, request, url_for
+from flask import abort, g, jsonify, make_response, redirect, render_template, request
 from flask_cors import CORS
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
 from openapi_core.spec.shortcuts import create_spec
