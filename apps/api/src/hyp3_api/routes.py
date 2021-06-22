@@ -69,8 +69,8 @@ def render_ui():
 @app.errorhandler(404)
 def error404(e):
     return handlers.problem_format(404, 'Not Found',
-                          'The requested URL was not found on the server.'
-                          ' If you entered the URL manually please check your spelling and try again.')
+                                   'The requested URL was not found on the server.'
+                                   ' If you entered the URL manually please check your spelling and try again.')
 
 
 class CustomEncoder(json.JSONEncoder):
