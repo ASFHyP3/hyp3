@@ -6,7 +6,7 @@ import pytest
 import responses
 from moto import mock_dynamodb2
 
-from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, connexion_app
+from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, app, auth
 from hyp3_api.util import get_granules
 
 AUTH_COOKIE = 'asf-urs'
@@ -21,7 +21,7 @@ CMR_URL_RE = re.compile(f'{CMR_URL}.*')
 
 @pytest.fixture
 def client():
-    with connexion_app.app.test_client() as test_client:
+    with app.test_client() as test_client:
         yield test_client
 
 

@@ -1,7 +1,7 @@
-connexion[swagger-ui]
 cryptography
 flask
 Flask-Cors
+openapi-core
 prance
 PyJWT
 requests

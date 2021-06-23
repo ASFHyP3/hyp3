@@ -4,7 +4,7 @@ from os import environ
 import jwt
 
 
-def decode_token(token, required_scopes):
+def decode_token(token):
     try:
         payload = jwt.decode(token, environ['AUTH_PUBLIC_KEY'], algorithms=environ['AUTH_ALGORITHM'])
         return {
