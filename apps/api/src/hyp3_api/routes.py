@@ -48,7 +48,7 @@ def authenticate_user():
 
 @app.route('/')
 def redirect_to_ui():
-    return redirect('/ui')
+    return redirect('/ui/')
 
 
 @app.route('/openapi.json')
