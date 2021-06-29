@@ -103,6 +103,7 @@ def test_redirect_root(client):
 def test_ui_location(client):
     response = client.get('/ui')
     assert response.status_code == HTTPStatus.PERMANENT_REDIRECT
+    assert response.location.endswith('/ui/')
 
     response = client.get('/ui/')
     assert response.status_code == HTTPStatus.OK
