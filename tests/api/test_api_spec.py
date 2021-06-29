@@ -96,7 +96,7 @@ def test_hyp3_unavailable(client, monkeypatch):
 
 def test_redirect_root(client):
     response = client.get('/')
-    assert response.location.endswith('/ui')
+    assert response.location.endswith('/ui/')
     assert response.status_code == HTTPStatus.FOUND
 
 
