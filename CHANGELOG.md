@@ -5,7 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [2.0.0](https://github.com/ASFHyP3/hyp3/compare/v1.1.6...v1.1.7)
+## [2.0.1](https://github.com/ASFHyP3/hyp3/compare/v2.0.0...v2.0.1)
+### Changed
+- Allow the UI to be accessed from `/ui/` as well as `/ui`
+
+## [2.0.0](https://github.com/ASFHyP3/hyp3/compare/v1.1.7...v2.0.0)
 ### Changed
 - Removed `connexion` library due to inactivity, replaced with `open-api-core`
 - Error messages from invalid input according to the `api-spec` are different

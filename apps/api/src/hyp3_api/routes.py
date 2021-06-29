@@ -61,7 +61,7 @@ def get_open_api_yaml():
     return yaml.dump(api_spec_dict)
 
 
-@app.route('/ui')
+@app.route('/ui/')
 def render_ui():
     return render_template('index.html')
 
