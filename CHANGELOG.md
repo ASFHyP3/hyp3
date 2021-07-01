@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.1](https://github.com/ASFHyP3/hyp3/compare/v2.0.0...v2.0.1)
 ### Changed
 - Allow the UI to be accessed from `/ui/` as well as `/ui`
+- POST `/jobs` now generates an error for Sentinel-1 granules with partial-dual polarizations,
+  fixes [#376](https://github.com/ASFHyP3/hyp3/issues/376)
 
 ## [2.0.0](https://github.com/ASFHyP3/hyp3/compare/v1.1.7...v2.0.0)
 ### Changed
