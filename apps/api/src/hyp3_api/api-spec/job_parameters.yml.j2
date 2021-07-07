@@ -1,5 +1,13 @@
 components:
   schemas:
+    job_type:
+      description: Type of process to run this job.
+      type: string
+      example: RTC_GAMMA
+      enum:
+        {% for job_type, job_spec in job_types.items() %}
+        - {{ job_spec['api_job_type'] }}
+        {% endfor %}
     job_parameters:
       anyOf:
         {% for job_type in job_types %}
