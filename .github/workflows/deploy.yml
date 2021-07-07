@@ -3,7 +3,7 @@ name: Deploy to AWS
 on:
   push:
     branches:
-      - master
+      - main
       - develop
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: latest
             quota: 200
-            deploy_ref: refs/heads/master
+            deploy_ref: refs/heads/main
 
           - environment: hyp3-test
             domain: hyp3-test-api.asf.alaska.edu
@@ -31,7 +31,7 @@ jobs:
             template_bucket: cf-templates-igavixdzdy7k-us-west-2
             image_tag: latest
             quota: 0
-            deploy_ref: refs/heads/master
+            deploy_ref: refs/heads/main
 
     environment:
       name: ${{ matrix.environment }}
@@ -68,7 +68,7 @@ jobs:
   tag:
     runs-on: ubuntu-latest
     needs: deploy
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v2
