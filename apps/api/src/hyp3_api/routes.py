@@ -19,7 +19,7 @@ api_spec_dict = get_spec_yaml(api_spec_file)
 api_spec = create_spec(api_spec_dict)
 CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
 
-AUTHENTICATED_ROUTES = ['/jobs', '/user']
+AUTHENTICATED_ROUTES = ['/jobs', '/user', '/subscriptions']
 
 
 @app.before_request
@@ -131,6 +131,13 @@ class User(FlaskOpenAPIView):
         return jsonify(handlers.get_user(g.user))
 
 
+class Subscriptions(FlaskOpenAPIView):
+    def post(self):
+        parameters = request.openapi.parameters.query
+        uuid = 'f90f6f2a-d3f4-46a0-a427-3e432f548916'
+        return jsonify(parameters)
+
+
 app.json_encoder = CustomEncoder
 
 jobs_view = Jobs.as_view('jobs', api_spec)
@@ -140,3 +147,6 @@ app.add_url_rule('/jobs/<job_id>', view_func=jobs_view, methods=['GET'])
 
 user_view = User.as_view('user', api_spec)
 app.add_url_rule('/user', view_func=user_view)
+
+subscriptions_view = Subscriptions.as_view('subscriptions', api_spec)
+app.add_url_rule('/subscriptions', view_func=subscriptions_view)

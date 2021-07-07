@@ -248,6 +248,7 @@ components:
 
     search_parameters:
       description: parameters used to find data from the ASF Search API
+      additionalProperties: true
       type: object
 
     job:
