@@ -28,7 +28,7 @@ def jobs_table(table_properties):
     with mock_dynamodb2():
         jobs_table = DB.create_table(
             TableName=environ['TABLE_NAME'],
-            **table_properties['JobsTable'],
+            **table_properties.jobs_table,
         )
         yield jobs_table
 

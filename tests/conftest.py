@@ -6,9 +6,11 @@ import yaml
 
 @pytest.fixture
 def table_properties():
-    jobs_table = get_table_properties_from_template('JobsTable')
-    users_table = get_table_properties_from_template('UsersTable')
-    return {'JobsTable': jobs_table, 'UsersTable': users_table}
+    class TableProperties:
+        jobs_table = get_table_properties_from_template('JobsTable')
+        users_table = get_table_properties_from_template('UsersTable')
+        subscriptions_table = get_table_properties_from_template('SubscriptionsTable')
+    return TableProperties()
 
 
 def get_table_properties_from_template(resource_name):

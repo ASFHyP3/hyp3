@@ -71,6 +71,7 @@ Resources:
       Parameters:
         JobsTable: !Ref JobsTable
         UsersTable: !Ref UsersTable
+        SubscriptionsTable: !Ref SubscriptionsTable
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
         DomainName: !Ref DomainName
@@ -216,10 +217,15 @@ Resources:
       AttributeDefinitions:
         - AttributeName: subscription_id
           AttributeType: S
+        - AttributeName: user_id
+          AttributeType: S
       KeySchema:
         - AttributeName: subscription_id
           KeyType: HASH
       GlobalSecondaryIndexes:
-        KeySchema:
-          - AttributeName: user_id
-            KeyType: HASH
+        - IndexName: user_id
+          KeySchema:
+            - AttributeName: user_id
+              KeyType: HASH
+          Projection:
+            ProjectionType: all

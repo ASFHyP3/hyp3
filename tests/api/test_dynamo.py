@@ -401,3 +401,16 @@ def test_decimal_conversion(tables):
     assert response[0]['float_value'] == Decimal('30.04')
     assert response[1]['float_value'] == Decimal('0.0')
     assert response[2]['float_value'] == Decimal('0.1')
+
+
+def test_put_subscription(tables):
+    table_items = [
+        {
+            'subscription_id': 'sub1',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1'
+        },
+    ]
+    dynamo.put_jobs(table_items)
+    response = tables.jobs_table.scan()
+    assert response['Items'] == table_items

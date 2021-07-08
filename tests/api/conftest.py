@@ -32,11 +32,15 @@ def tables(table_properties):
         class Tables:
             jobs_table = DYNAMODB_RESOURCE.create_table(
                 TableName=environ['JOBS_TABLE_NAME'],
-                **table_properties['JobsTable'],
+                **table_properties.jobs_table,
             )
             users_table = DYNAMODB_RESOURCE.create_table(
                 TableName=environ['USERS_TABLE_NAME'],
-                **table_properties['UsersTable'],
+                **table_properties.users_table,
+            )
+            subscriptions_table = DYNAMODB_RESOURCE.create_table(
+                TableName=environ['SUBSCRIPTIONS_TABLE_NAME'],
+                **table_properties.subscriptions_table
             )
         tables = Tables()
         yield tables

@@ -109,3 +109,13 @@ def get_user(user):
         },
         'job_names': get_names_for_user(user)
     }
+
+
+def post_subscriptions(body):
+    subscription_id = str(uuid4())
+    subscription = {
+        'subscription_id': subscription_id,
+        **body
+    }
+    dynamo.put_subscription(subscription)
+    return subscription

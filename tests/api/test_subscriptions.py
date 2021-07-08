@@ -3,7 +3,7 @@ from http import HTTPStatus
 from conftest import SUBSCRIPTIONS_URI, login
 
 
-def test_post_subscription(client):
+def test_post_subscription(client, tables):
     login(client)
     params = {
         'search_parameters': {
@@ -28,4 +28,3 @@ def test_post_subscription(client):
     assert 'subscription_id' in response.json
     del response.json['subscription_id']
     assert response.json == params
-

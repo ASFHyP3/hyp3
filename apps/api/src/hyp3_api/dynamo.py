@@ -87,3 +87,8 @@ def get_user(user):
     table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     response = table.get_item(Key={'user_id': user})
     return response.get('Item')
+
+
+def put_subscription(subscription):
+    table = DYNAMODB_RESOURCE.Table(environ['SUBSCRIPTIONS_TABLE_NAME'])
+    response = table.put_item(Item=subscription)

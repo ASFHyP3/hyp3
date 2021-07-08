@@ -6,6 +6,9 @@ Parameters:
   UsersTable:
     Type: String
 
+  SubscriptionsTable:
+    Type: String
+
   AuthPublicKey:
     Type: String
 
@@ -134,6 +137,7 @@ Resources:
         Variables:
           JOBS_TABLE_NAME: !Ref JobsTable
           USERS_TABLE_NAME: !Ref UsersTable
+          SUBSCRIPTIONS_TABLE_NAME: !Ref SubscriptionsTable
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITHM: !Ref AuthAlgorithm
           MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
