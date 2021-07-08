@@ -160,6 +160,7 @@ components:
       description: foo
       type: object
       required:
+        - subscription_id
         - search_parameters
         - job_parameters
         - job_type

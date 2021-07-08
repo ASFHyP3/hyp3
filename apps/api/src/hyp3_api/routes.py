@@ -133,9 +133,8 @@ class User(FlaskOpenAPIView):
 
 class Subscriptions(FlaskOpenAPIView):
     def post(self):
-        parameters = request.openapi.parameters.query
         uuid = 'f90f6f2a-d3f4-46a0-a427-3e432f548916'
-        return jsonify(parameters)
+        return jsonify({'subscription_id': uuid, **request.get_json()})
 
 
 app.json_encoder = CustomEncoder

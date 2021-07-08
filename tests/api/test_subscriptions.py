@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from conftest import SUBSCRIPTIONS_URI, login
 
 
@@ -22,5 +24,8 @@ def test_post_subscription(client):
     }
 
     response = client.post(SUBSCRIPTIONS_URI, json=params)
-
+    assert response.status_code == HTTPStatus.OK
+    assert 'subscription_id' in response.json
+    del response.json['subscription_id']
     assert response.json == params
+
