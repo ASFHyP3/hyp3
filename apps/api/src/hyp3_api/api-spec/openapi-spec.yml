@@ -13,7 +13,6 @@ paths:
 
     post:
       description: Submits a list of jobs for processing.
-      operationId: hyp3_api.handlers.post_jobs
       requestBody:
         content:
           application/json:
@@ -30,7 +29,6 @@ paths:
 
     get:
       description: Get list of previously run jobs.
-      operationId: hyp3_api.handlers.get_jobs
       parameters:
         - name: status_code
           in: query
@@ -68,7 +66,6 @@ paths:
   /jobs/{job_id}:
     get:
       description: Get a previously run job.
-      operationId: hyp3_api.handlers.get_job_by_id
       parameters:
         - name: job_id
           in: path
@@ -87,7 +84,6 @@ paths:
   /user:
     get:
       description: Get information about the logged in user.
-      operationId: hyp3_api.handlers.get_user
       responses:
         "200":
           description: 200 response
@@ -181,7 +177,6 @@ components:
             - S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
         job_type: RTC_GAMMA
         name: Job Name
-
       properties:
         job_type:
           $ref: "./job_parameters.yml#/components/schemas/job_type"
