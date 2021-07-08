@@ -49,7 +49,7 @@ paths:
         - name: job_type
           in: query
           schema:
-            $ref: "#/components/schemas/job_type"
+            $ref: "./job_parameters.yml#/components/schemas/job_type"
         - name: start_token
           in: query
           schema:
@@ -179,7 +179,7 @@ components:
         name: Job Name
       properties:
         job_type:
-          $ref: "#/components/schemas/job_type"
+          $ref: "./job_parameters.yml#/components/schemas/job_type"
         job_parameters:
           $ref: "./job_parameters.yml#components/schemas/job_parameters"
         name:
@@ -207,7 +207,7 @@ components:
         user_id:
           $ref: "#/components/schemas/user_id"
         job_type:
-          $ref: "#/components/schemas/job_type"
+          $ref: "./job_parameters.yml#/components/schemas/job_type"
         job_parameters:
           $ref: "./job_parameters.yml#components/schemas/job_parameters"
         request_time:
@@ -241,15 +241,6 @@ components:
       description: Username from Earthdata Login.
       type: string
       example: myUserId
-
-    job_type:
-      description: Type of process to run this job.
-      type: string
-      example: RTC_GAMMA
-      enum:
-        - RTC_GAMMA
-        - INSAR_GAMMA
-        - AUTORIFT
 
     datetime:
       description: Date and time object formatted according to ISO 8601

@@ -1,5 +1,14 @@
 components:
   schemas:
+    job_type:
+      description: Type of process to run this job.
+      type: string
+      example: {{ job_types.values() | map(attribute='api_job_type') | first }}
+      enum:
+        {% for job_spec in job_types.values() %}
+        - {{ job_spec['api_job_type'] }}
+        {% endfor %}
+
     job_parameters:
       anyOf:
         {% for job_type in job_types %}
