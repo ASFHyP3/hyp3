@@ -16,14 +16,14 @@ jobs:
             domain: hyp3-api.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: latest
-            quota: 200
+            quota: 1000
             deploy_ref: refs/heads/main
 
           - environment: hyp3-test
             domain: hyp3-test-api.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: test
-            quota: 200
+            quota: 1000
             deploy_ref: refs/heads/develop
 
           - environment: hyp3-autorift
