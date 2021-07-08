@@ -13,7 +13,6 @@ paths:
 
     post:
       description: Submits a list of jobs for processing.
-      operationId: hyp3_api.handlers.post_jobs
       requestBody:
         content:
           application/json:
@@ -30,7 +29,6 @@ paths:
 
     get:
       description: Get list of previously run jobs.
-      operationId: hyp3_api.handlers.get_jobs
       parameters:
         - name: status_code
           in: query
@@ -51,7 +49,7 @@ paths:
         - name: job_type
           in: query
           schema:
-            $ref: "#/components/schemas/job_type"
+            $ref: "./job_parameters.yml#/components/schemas/job_type"
         - name: start_token
           in: query
           schema:
@@ -68,7 +66,6 @@ paths:
   /jobs/{job_id}:
     get:
       description: Get a previously run job.
-      operationId: hyp3_api.handlers.get_job_by_id
       parameters:
         - name: job_id
           in: path
@@ -87,7 +84,6 @@ paths:
   /user:
     get:
       description: Get information about the logged in user.
-      operationId: hyp3_api.handlers.get_user
       responses:
         "200":
           description: 200 response
@@ -181,10 +177,9 @@ components:
             - S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
         job_type: RTC_GAMMA
         name: Job Name
-
       properties:
         job_type:
-          $ref: "#/components/schemas/job_type"
+          $ref: "./job_parameters.yml#/components/schemas/job_type"
         job_parameters:
           $ref: "./job_parameters.yml#components/schemas/job_parameters"
         name:
@@ -212,7 +207,7 @@ components:
         user_id:
           $ref: "#/components/schemas/user_id"
         job_type:
-          $ref: "#/components/schemas/job_type"
+          $ref: "./job_parameters.yml#/components/schemas/job_type"
         job_parameters:
           $ref: "./job_parameters.yml#components/schemas/job_parameters"
         request_time:
@@ -246,15 +241,6 @@ components:
       description: Username from Earthdata Login.
       type: string
       example: myUserId
-
-    job_type:
-      description: Type of process to run this job.
-      type: string
-      example: RTC_GAMMA
-      enum:
-        - RTC_GAMMA
-        - INSAR_GAMMA
-        - AUTORIFT
 
     datetime:
       description: Date and time object formatted according to ISO 8601
