@@ -143,18 +143,12 @@ components:
       type: object
       required:
         - search_parameters
-        - job_parameters
-        - job_type
-        - name
+        - job_specification
       properties:
         search_parameters:
           $ref: "#/components/schemas/search_parameters"
-        job_parameters:
-          $ref: "./job_parameters.yml#components/schemas/job_parameters"
-        job_type:
-          $ref: "./job_parameters.yml#components/schemas/job_type"
-        name:
-          $ref: "#/components/schemas/name"
+        job_specification:
+          $ref: "#components/schemas/subscription_job_specification"
 
     subscriptions_response:
       description: foo
@@ -162,20 +156,15 @@ components:
       required:
         - subscription_id
         - search_parameters
-        - job_parameters
-        - job_type
-        - name
+        - job_specification
       properties:
         subscription_id:
           $ref: "#/components/schemas/job_or_subscription_id"
         search_parameters:
           $ref: "#/components/schemas/search_parameters"
-        job_parameters:
-          $ref: "./job_parameters.yml#components/schemas/job_parameters"
-        job_type:
-          $ref: "./job_parameters.yml#components/schemas/job_type"
-        name:
-          $ref: "#/components/schemas/name"
+        job_specification:
+          $ref: "#components/schemas/subscription_job_specification"
+
 
     user:
       description: Information about a user (quota, user id)
@@ -220,6 +209,21 @@ components:
       items:
         $ref: "#/components/schemas/new_job"
 
+    subscription_job_specification:
+      description: Contains user provided information on running a job for a subscription.
+      type: object
+      required:
+        - job_type
+        - job_parameters
+        - name
+      properties:
+        job_type:
+          $ref: "./job_parameters.yml#components/schemas/job_type"
+        job_parameters:
+          $ref: "./job_parameters.yml#components/schemas/job_parameters"
+        name:
+          $ref: "#/components/schemas/name"
+
     new_job:
       description: Contains user provided information on runnning a new job.
       type: object
@@ -233,7 +237,6 @@ components:
             - S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
         job_type: RTC_GAMMA
         name: Job Name
-
       properties:
         job_type:
           $ref: "./job_parameters.yml#components/schemas/job_type"
@@ -241,6 +244,7 @@ components:
           $ref: "./job_parameters.yml#components/schemas/job_parameters"
         name:
           $ref: "#/components/schemas/name"
+
 
     list_of_jobs:
       type: array
@@ -251,6 +255,7 @@ components:
       description: parameters used to find data from the ASF Search API
       additionalProperties: true
       type: object
+
 
     job:
       description: Contains information about a submitted job.

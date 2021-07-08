@@ -411,6 +411,6 @@ def test_put_subscription(tables):
             'user_id': 'user1'
         },
     ]
-    dynamo.put_jobs(table_items)
-    response = tables.jobs_table.scan()
+    dynamo.put_subscription(table_items[0])
+    response = tables.subscriptions_table.scan()
     assert response['Items'] == table_items
