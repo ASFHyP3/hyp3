@@ -30,23 +30,36 @@
       "Choices": [
         {
           "Variable": "$.job_parameters.granules",
-          "StringMatches": "S1*",
-          "Next": "USE_DEFAULT_MEMORY"
-        }
+          "StringMatches": "S2*",
+          "Next": "USE_SENTINEL2_MEMORY"
+        },
+        {
+          "Variable": "$.job_parameters.granules",
+          "StringMatches": "L*",
+          "Next": "USE_LANDSAT_MEMORY"
+        },
       ],
-      "Default": "USE_CUSTOM_MEMORY"
+      "Default": "USE_DEFAULT_MEMORY"
     },
-    "USE_DEFAULT_MEMORY": {
+    "USE_SENTINEL2_MEMORY": {
       "Type": "Pass",
-      "Result": {},
+      "Result": {
+        "Memory": 4500
+      },
       "ResultPath": "$.container_overrides",
       "Next": "INSPECT_JOB_TYPE"
     },
-    "USE_CUSTOM_MEMORY": {
+    "USE_LANDSAT_MEMORY": {
       "Type": "Pass",
       "Result": {
         "Memory": 10500
       },
+      "ResultPath": "$.container_overrides",
+      "Next": "INSPECT_JOB_TYPE"
+    },
+    "USE_DEFAULT_MEMORY": {
+      "Type": "Pass",
+      "Result": {},
       "ResultPath": "$.container_overrides",
       "Next": "INSPECT_JOB_TYPE"
     },
