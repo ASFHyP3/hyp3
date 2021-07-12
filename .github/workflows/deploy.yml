@@ -120,4 +120,3 @@ jobs:
               --tag --tag-message "${TAG_MSG}" "${BUMP_PART}"
           git push --tags
           echo "Tagged version $(git describe --abbrev=0) and pushed back to repo"
-
