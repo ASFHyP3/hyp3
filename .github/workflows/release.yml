@@ -12,11 +12,29 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Release
-        uses: docker://antonyurchenko/git-release:latest
+        uses: docker://antonyurchenko/git-release:v3.5.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DRAFT_RELEASE: "false"
-          PRE_RELEASE: "false"
-          ALLOW_EMPTY_CHANGELOG: "false"
           ALLOW_TAG_PREFIX: "true"
-          RELEASE_NAME_PREFIX: HyP3-
+          RELEASE_NAME_PREFIX: "HyP3 "
+
+      - name: Attempt fast-forward develop from main
+        run: |
+          git fetch --prune
+          git checkout develop && git pull --ff-only
+          git merge --ff-only origin/main
+          git push
+
+      - name: Open PR to bring main back to develop
+        if: ${{ failure() }}
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: main
+          destination_branch: develop
+          pr_title: Pulling ${{ github.ref }} into default
+          pr_body: Fast-forward of main to default failed!
+          pr_assignee: ${{ github.actor }}
+          pr_label: tools-bot
+          pr_draft: false
+          pr_allow_empty: true
+          github_token: ${{ secrets.TOOLS_BOT_PAK }}
