@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - autorift-op
 
 jobs:
   deploy:
@@ -32,6 +33,13 @@ jobs:
             image_tag: latest
             quota: 0
             deploy_ref: refs/heads/main
+
+          - environment: autorift-op
+            domain: autorift-op.asf.alaska.edu
+            template_bucket: cf-templates-aubvn3i9olmk-us-west-2
+            image_tag: latest
+            quota: 0
+            deploy_ref: refs/heads/autorift-op
 
     environment:
       name: ${{ matrix.environment }}
