@@ -42,7 +42,7 @@ Resources:
         Image: !Sub "{{ job_spec['image'] }}:${ImageTag}"
         ResourceRequirements:
         - Type: VCPU
-          Value: 0.5
+          Value: !!number 0.5
         - Type: MEMORY
           Value: 30000
         JobRoleArn: !Ref TaskRoleArn
