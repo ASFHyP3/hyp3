@@ -91,7 +91,7 @@ def get_user(user):
 
 def put_subscription(subscription):
     table = DYNAMODB_RESOURCE.Table(environ['SUBSCRIPTIONS_TABLE_NAME'])
-    response = table.put_item(Item=subscription)
+    table.put_item(Item=subscription)
 
 
 def get_subscriptions(user):

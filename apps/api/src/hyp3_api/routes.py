@@ -4,15 +4,15 @@ from decimal import Decimal
 from os import environ
 from pathlib import Path
 
+import shapely.errors
+import shapely.wkt
 import yaml
 from flask import abort, g, jsonify, make_response, redirect, render_template, request
 from flask_cors import CORS
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
 from openapi_core.spec.shortcuts import create_spec
-from openapi_core.validation.response.datatypes import ResponseValidationResult
 from openapi_core.validation.request.validators import RequestValidator
-import shapely.errors
-import shapely.wkt
+from openapi_core.validation.response.datatypes import ResponseValidationResult
 
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
