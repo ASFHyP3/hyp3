@@ -7,7 +7,8 @@ def test_post_subscription(client, tables):
     login(client)
     params = {
         'search_parameters': {
-            'foo': 'bar',
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-01T00:00:00+00:00',
         },
         'job_specification': {
             'job_parameters': {
@@ -30,3 +31,73 @@ def test_post_subscription(client, tables):
     assert 'subscription_id' in response.json
     del response.json['subscription_id']
     assert response.json == params
+
+
+def test_submit_subscriptions_missing_fields(client, tables):
+    login(client)
+    params = {}
+    response = client.post(SUBSCRIPTIONS_URI, json=params)
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    params = {
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-01T00:00:00+00:00',
+        },
+    }
+    response = client.post(SUBSCRIPTIONS_URI, json=params)
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    params = {
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-01T00:00:00+00:00',
+        },
+        'job_specification': {
+            'job_type': 'INSAR_GAMMA',
+            'name': 'SubscriptionName'
+        }
+    }
+    response = client.post(SUBSCRIPTIONS_URI, json=params)
+    assert response.status_code == HTTPStatus.OK
+
+
+def test_search_criteria(client, tables):
+    login(client)
+    params = {
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-01T00:00:00+00:00',
+            'asfframe': 50,
+            'beamMode': 'IW',
+            'flightDirection': 'ASCENDING',
+            'intersectsWith': 'POLYGON((-5 2, -3 2, -3 5, -5 5, -5 2))',
+            'processingLevel': 'GRD_HD',
+            'polorization': 'VV',
+        },
+        'job_specification': {
+            'job_type': 'INSAR_GAMMA',
+            'name': 'SubscriptionName'
+        }
+    }
+    response = client.post(SUBSCRIPTIONS_URI, json=params)
+    assert response.status_code == HTTPStatus.OK
+
+    bad_params = {
+        'asfframe': 99999,
+        'beamMode': 'EW',
+        'flightDirection': 'Foo',
+        'intersectsWith': '-190,400,200,90',
+        'processingLevel': 'OCN',
+        'polorization': 'DUAL VV',
+    }
+    for k, v in bad_params.items():
+        params = {
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-01T00:00:00+00:00',
+                k: v,
+            },
+        }
+        response = client.post(SUBSCRIPTIONS_URI, json=params)
+        assert response.status_code == HTTPStatus.BAD_REQUEST

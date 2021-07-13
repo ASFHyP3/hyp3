@@ -10,6 +10,9 @@ from flask_cors import CORS
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
 from openapi_core.spec.shortcuts import create_spec
 from openapi_core.validation.response.datatypes import ResponseValidationResult
+from openapi_core.validation.request.validators import RequestValidator
+import shapely.errors
+import shapely.wkt
 
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
@@ -93,12 +96,24 @@ class CustomEncoder(json.JSONEncoder):
         json.JSONEncoder.default(self, o)
 
 
-class NonValidator():
+class NonValidator:
     def __init__(self, spec):
         pass
 
     def validate(self, res):
         return ResponseValidationResult()
+
+
+class WKTValidator:
+    def validate(self, value):
+        try:
+            shapely.wkt.loads(value)
+        except shapely.errors.WKTReadingError:
+            return False
+        return True
+
+    def unmarshal(self, value):
+        return value
 
 
 class Jobs(FlaskOpenAPIView):
@@ -127,11 +142,20 @@ class Jobs(FlaskOpenAPIView):
 
 
 class User(FlaskOpenAPIView):
+    def __init__(self, spec):
+        super().__init__(spec)
+        self.response_validator = NonValidator
+
     def get(self):
         return jsonify(handlers.get_user(g.user))
 
 
 class Subscriptions(FlaskOpenAPIView):
+    def __init__(self, spec):
+        super().__init__(spec)
+        self.request_validator = RequestValidator(spec, custom_formatters={'wkt': WKTValidator()})
+        self.response_validator = NonValidator
+
     def post(self):
         body = request.get_json()
         return jsonify(handlers.post_subscriptions(body))

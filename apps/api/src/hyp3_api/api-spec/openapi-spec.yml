@@ -214,7 +214,6 @@ components:
       type: object
       required:
         - job_type
-        - job_parameters
         - name
       properties:
         job_type:
@@ -255,7 +254,44 @@ components:
       description: parameters used to find data from the ASF Search API
       additionalProperties: true
       type: object
-
+      required:
+        - start
+        - end
+      properties:
+        asfframe:
+          type: integer
+          minimum: 0
+          maximum: 1184
+        beamMode:
+          type: string
+          enum:
+            - IW
+        flightDirection:
+          type: string
+          enum:
+            - ASCENDING
+            - DECENDING
+        intersectsWith:
+          type: string
+          format: wkt
+        processingLevel:
+          type: string
+          enum:
+            - GRD_HD
+            - SLC
+        polorization:
+          type: string
+          enum:
+            - VV
+            - VV+VH
+            - HH
+            - HH+HV
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
 
     job:
       description: Contains information about a submitted job.
