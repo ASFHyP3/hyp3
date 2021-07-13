@@ -40,7 +40,9 @@ Resources:
         {% endfor %}
       ContainerProperties:
         Image: !Sub "{{ job_spec['image'] }}:${ImageTag}"
-        Vcpus: 0
+        ResourceRequirements:
+        - Type: VCPU
+          Value: 0.5
         Memory: 30000
         JobRoleArn: !Ref TaskRoleArn
         Command:
