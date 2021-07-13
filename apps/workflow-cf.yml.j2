@@ -43,7 +43,8 @@ Resources:
         ResourceRequirements:
         - Type: VCPU
           Value: 0.5
-        Memory: 30000
+        - Type: MEMORY
+          Value: 30000
         JobRoleArn: !Ref TaskRoleArn
         Command:
           {% for command in job_spec['command'] %}
