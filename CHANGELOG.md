@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.0.3](https://github.com/ASFHyP3/hyp3/compare/v2.0.2...v2.0.3)
+### Changed
+- Sentinel-2 autoRIFT jobs will utilize 3/4 less memory
+
 ## [2.0.2](https://github.com/ASFHyP3/hyp3/compare/v2.0.1...v2.0.2)
 ### Changed
 - Increased default job quota to 1,000 jobs per user per month
