@@ -111,11 +111,16 @@ def get_user(user):
     }
 
 
-def post_subscriptions(body):
+def post_subscriptions(body, user):
     subscription_id = str(uuid4())
     subscription = {
         'subscription_id': subscription_id,
+        'user_id': user,
         **body
     }
     dynamo.put_subscription(subscription)
     return subscription
+
+
+def get_subscriptions(user):
+    return dynamo.get_subscriptions(user)

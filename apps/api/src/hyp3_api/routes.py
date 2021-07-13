@@ -158,7 +158,10 @@ class Subscriptions(FlaskOpenAPIView):
 
     def post(self):
         body = request.get_json()
-        return jsonify(handlers.post_subscriptions(body))
+        return jsonify(handlers.post_subscriptions(body, g.user))
+
+    def get(self):
+        return jsonify(handlers.get_subscriptions(g.user))
 
 
 app.json_encoder = CustomEncoder

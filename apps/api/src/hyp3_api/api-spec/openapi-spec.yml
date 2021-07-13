@@ -108,6 +108,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/subscriptions_response"
+    get:
+      description: Get information about subscriptions for the logged in user
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/subscriptions_response"
 
 components:
   schemas:

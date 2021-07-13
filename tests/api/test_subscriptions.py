@@ -30,6 +30,8 @@ def test_post_subscription(client, tables):
     assert response.status_code == HTTPStatus.OK
     assert 'subscription_id' in response.json
     del response.json['subscription_id']
+    assert 'user_id' in response.json
+    del response.json['user_id']
     assert response.json == params
 
 
@@ -101,3 +103,54 @@ def test_search_criteria(client, tables):
         }
         response = client.post(SUBSCRIPTIONS_URI, json=params)
         assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
+def test_get_subscriptions(client, tables):
+    login(client, username='subscriptionsUser')
+    response = client.get(SUBSCRIPTIONS_URI)
+    assert response.status_code == HTTPStatus.OK
+    assert response.json == []
+
+    items = [
+        {
+            'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
+            'user_id': 'subscriptionsUser',
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-01T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'INSAR_GAMMA',
+                'name': 'SubscriptionName'
+            }
+        },
+        {
+            'subscription_id': '140191ab-486b-4080-ab1b-3e2c40aab6b8',
+            'user_id': 'subscriptionsUser',
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-01T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'INSAR_GAMMA',
+                'name': 'SubscriptionName'
+            }
+        },
+        {
+            'subscription_id': '92da7534-1896-410a-99e4-d16a20c71861',
+            'user_id': 'subscriptionsUser',
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-01T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'INSAR_GAMMA',
+                'name': 'SubscriptionName'
+            }
+        }
+    ]
+    for item in items:
+        tables.subscriptions_table.put_item(Item=item)
+    response = client.get(SUBSCRIPTIONS_URI)
+    assert response.json == items
+    assert response.status_code == HTTPStatus.OK
