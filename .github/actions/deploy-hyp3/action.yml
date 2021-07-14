@@ -47,6 +47,7 @@ runs:
           pip install -r requirements-all.txt
           python apps/render_cf.py --job-types-file job_types.yml
           pip install -r apps/api/requirements-api.txt -t apps/api/src
+          pip install -r apps/process-new-granules/requirements-process-new-granules.txt -t apps/process-new-granules/src
 
       - name: Package and deploy
         shell: bash

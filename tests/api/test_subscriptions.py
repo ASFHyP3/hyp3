@@ -21,7 +21,7 @@ def test_post_subscription(client, tables):
                 'include_dem': True,
                 'include_wrapped_phase': True,
             },
-            'job_type': 'INSAR_GAMMA',
+            'job_type': 'RTC_GAMMA',
             'name': 'SubscriptionName'
         }
     }
@@ -120,7 +120,7 @@ def test_get_subscriptions(client, tables):
                 'end': '2020-01-01T00:00:00+00:00',
             },
             'job_specification': {
-                'job_type': 'INSAR_GAMMA',
+                'job_type': 'RTC_GAMMA',
                 'name': 'SubscriptionName'
             }
         },
@@ -132,7 +132,7 @@ def test_get_subscriptions(client, tables):
                 'end': '2020-01-01T00:00:00+00:00',
             },
             'job_specification': {
-                'job_type': 'INSAR_GAMMA',
+                'job_type': 'RTC_GAMMA',
                 'name': 'SubscriptionName'
             }
         },
@@ -144,7 +144,7 @@ def test_get_subscriptions(client, tables):
                 'end': '2020-01-01T00:00:00+00:00',
             },
             'job_specification': {
-                'job_type': 'INSAR_GAMMA',
+                'job_type': 'RTC_GAMMA',
                 'name': 'SubscriptionName'
             }
         }

@@ -1,4 +1,5 @@
 -r apps/api/requirements-api.txt
+-r apps/process-new-granules/requirements-process-new-granules.txt
 boto3
 jinja2
 moto==1.3.14
