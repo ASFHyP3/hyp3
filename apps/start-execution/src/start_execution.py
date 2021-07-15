@@ -2,6 +2,7 @@ import json
 from decimal import Decimal
 from os import environ
 
+
 import boto3
 from boto3.dynamodb.conditions import Key
 

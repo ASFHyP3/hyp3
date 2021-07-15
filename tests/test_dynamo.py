@@ -2,7 +2,8 @@ from decimal import Decimal
 
 from api.conftest import list_have_same_elements
 
-from hyp3_api import dynamo, util
+import dynamo
+from hyp3_api.util import convert_floats_to_decimals
 
 
 def test_count_jobs(tables):
@@ -29,8 +30,8 @@ def test_count_jobs(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    assert dynamo.count_jobs('user1') == 2
-    assert dynamo.count_jobs('user2') == 1
+    assert dynamo.jobs.count_jobs('user1') == 2
+    assert dynamo.jobs.count_jobs('user2') == 1
 
 
 def test_count_jobs_by_start(tables):
@@ -59,20 +60,20 @@ def test_count_jobs_by_start(tables):
 
     start = '2000-01-01T00:00:00+00:00'
     end = '2000-01-03T00:00:00+00:00'
-    response = dynamo.count_jobs('user1', start, end)
+    response = dynamo.jobs.count_jobs('user1', start, end)
     assert response == 3
 
     start = '2000-01-01T00:00:01+00:00'
     end = '2000-01-02T00:59:59+00:00'
-    response = dynamo.count_jobs('user1', start, end)
+    response = dynamo.jobs.count_jobs('user1', start, end)
     assert response == 1
 
     start = '2000-01-01T00:00:01+00:00'
-    response = dynamo.count_jobs('user1', start, None)
+    response = dynamo.jobs.count_jobs('user1', start, None)
     assert response == 2
 
     end = '2000-01-02T00:59:59+00:00'
-    response = dynamo.count_jobs('user1', None, end)
+    response = dynamo.jobs.count_jobs('user1', None, end)
     assert response == 2
 
 
@@ -100,7 +101,7 @@ def test_query_jobs_by_user(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    response, next_key = dynamo.query_jobs('user1')
+    response, next_key = dynamo.jobs.query_jobs('user1')
 
     assert next_key is None
     assert len(response) == 2
@@ -133,23 +134,23 @@ def test_query_jobs_by_time(tables):
 
     start = '2000-01-01T00:00:00z'
     end = '2000-01-03T00:00:00z'
-    response, _ = dynamo.query_jobs('user1', start, end)
+    response, _ = dynamo.jobs.query_jobs('user1', start, end)
     assert len(response) == 3
     assert response == list(reversed(table_items))
 
     start = '2000-01-01T00:00:01z'
     end = '2000-01-02T00:59:59z'
-    response, _ = dynamo.query_jobs('user1', start, end)
+    response, _ = dynamo.jobs.query_jobs('user1', start, end)
     assert len(response) == 1
     assert list_have_same_elements(response, table_items[1:2])
 
     start = '2000-01-01T00:00:01z'
-    response, _ = dynamo.query_jobs('user1', start, None)
+    response, _ = dynamo.jobs.query_jobs('user1', start, None)
     assert len(response) == 2
     assert list_have_same_elements(response, table_items[1:])
 
     end = '2000-01-02T00:59:59z'
-    response, _ = dynamo.query_jobs('user1', None, end)
+    response, _ = dynamo.jobs.query_jobs('user1', None, end)
     assert len(response) == 2
     assert list_have_same_elements(response, table_items[:2])
 
@@ -178,7 +179,7 @@ def test_query_jobs_by_status(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    response, _ = dynamo.query_jobs('user1', status_code='status1')
+    response, _ = dynamo.jobs.query_jobs('user1', status_code='status1')
     assert len(response) == 2
     assert list_have_same_elements(response, table_items[0::2])
 
@@ -210,7 +211,7 @@ def test_query_jobs_by_name(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    response, _ = dynamo.query_jobs('user1', name='name1')
+    response, _ = dynamo.jobs.query_jobs('user1', name='name1')
     assert len(response) == 2
     assert list_have_same_elements(response, table_items[:2])
 
@@ -245,7 +246,7 @@ def test_query_jobs_by_type(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    response, _ = dynamo.query_jobs('user1', job_type='RTC_GAMMA')
+    response, _ = dynamo.jobs.query_jobs('user1', job_type='RTC_GAMMA')
     assert len(response) == 2
     assert list_have_same_elements(response, table_items[:2])
 
@@ -273,7 +274,7 @@ def test_put_jobs(tables):
             'request_time': '2000-01-01T00:00:00+00:00',
         },
     ]
-    dynamo.put_jobs(table_items)
+    dynamo.jobs.put_jobs(table_items)
     response = tables.jobs_table.scan()
     assert response['Items'] == table_items
 
@@ -305,10 +306,10 @@ def test_get_job(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    assert dynamo.get_job('job1') == table_items[0]
-    assert dynamo.get_job('job2') == table_items[1]
-    assert dynamo.get_job('job3') == table_items[2]
-    assert dynamo.get_job('foo') is None
+    assert dynamo.jobs.get_job('job1') == table_items[0]
+    assert dynamo.jobs.get_job('job2') == table_items[1]
+    assert dynamo.jobs.get_job('job3') == table_items[2]
+    assert dynamo.jobs.get_job('foo') is None
 
 
 def test_get_user(tables):
@@ -325,9 +326,9 @@ def test_get_user(tables):
     for item in table_items:
         tables.users_table.put_item(Item=item)
 
-    assert dynamo.get_user('user1') == table_items[0]
-    assert dynamo.get_user('user2') == table_items[1]
-    assert dynamo.get_user('foo') is None
+    assert dynamo.user.get_user('user1') == table_items[0]
+    assert dynamo.user.get_user('user2') == table_items[1]
+    assert dynamo.user.get_user('foo') is None
 
 
 def test_query_jobs_sort_order(tables):
@@ -360,7 +361,7 @@ def test_query_jobs_sort_order(tables):
     for item in [table_items[2], table_items[0], table_items[1]]:
         tables.jobs_table.put_item(Item=item)
 
-    response, _ = dynamo.query_jobs('user1')
+    response, _ = dynamo.jobs.query_jobs('user1')
     assert response == table_items
 
 
@@ -395,9 +396,9 @@ def test_decimal_conversion(tables):
         },
     ]
     for item in table_items:
-        tables.jobs_table.put_item(Item=util.convert_floats_to_decimals(item))
+        tables.jobs_table.put_item(Item=convert_floats_to_decimals(item))
 
-    response, _ = dynamo.query_jobs('user1')
+    response, _ = dynamo.jobs.query_jobs('user1')
     assert response[0]['float_value'] == Decimal('30.04')
     assert response[1]['float_value'] == Decimal('0.0')
     assert response[2]['float_value'] == Decimal('0.1')
@@ -411,6 +412,6 @@ def test_put_subscription(tables):
             'user_id': 'user1'
         },
     ]
-    dynamo.put_subscription(table_items[0])
+    dynamo.subscriptions.put_subscription(table_items[0])
     response = tables.subscriptions_table.scan()
     assert response['Items'] == table_items
