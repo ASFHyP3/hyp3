@@ -22,5 +22,5 @@ jobs:
         env:
           PYTHONPATH: apps/api/src:apps/get-files/src:apps/start-execution/src:apps/upload-log/src
         run: |
-          export $(xargs < tests/api/cfg.env)
+          export $(xargs < tests/cfg.env)
           pytest tests
