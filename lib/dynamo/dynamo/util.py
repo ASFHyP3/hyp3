@@ -1,0 +1,24 @@
+from datetime import datetime, timezone
+
+from boto3.dynamodb.conditions import Key
+from dateutil.parser import parse
+
+
+def get_request_time_expression(start, end):
+    key = Key('request_time')
+    formatted_start = (format_time(parse(start))if start else None)
+    formatted_end = (format_time(parse(end)) if end else None)
+
+    if formatted_start and formatted_end:
+        return key.between(formatted_start, formatted_end)
+    if formatted_start:
+        return key.gte(formatted_start)
+    if formatted_end:
+        return key.lte(formatted_end)
+
+
+def format_time(time: datetime):
+    if time.tzinfo is None:
+        raise ValueError(f'missing tzinfo for datetime {time}')
+    utc_time = time.astimezone(timezone.utc)
+    return utc_time.isoformat(timespec='seconds')
