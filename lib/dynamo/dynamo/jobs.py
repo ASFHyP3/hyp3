@@ -1,10 +1,9 @@
 from os import environ
 from typing import List
 
-from boto3.dynamodb.conditions import Key, Attr
+from boto3.dynamodb.conditions import Attr, Key
 
-from dynamo import DYNAMODB_RESOURCE
-from dynamo.util import get_request_time_expression
+from dynamo.util import DYNAMODB_RESOURCE, get_request_time_expression
 
 
 def put_jobs(payload: List[dict]):

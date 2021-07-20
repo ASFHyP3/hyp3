@@ -1,7 +1,10 @@
 from datetime import datetime, timezone
 
+import boto3
 from boto3.dynamodb.conditions import Key
 from dateutil.parser import parse
+
+DYNAMODB_RESOURCE = boto3.resource('dynamodb')
 
 
 def get_request_time_expression(start, end):

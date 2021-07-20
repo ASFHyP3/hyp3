@@ -393,7 +393,6 @@ def test_update_job(tables):
     assert response['Items'] == expected_response
 
 
-
 def test_decimal_conversion(tables):
     table_items = [
         {

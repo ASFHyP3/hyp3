@@ -1,6 +1,6 @@
 from os import environ
 
-from dynamo import DYNAMODB_RESOURCE
+from dynamo.util import DYNAMODB_RESOURCE
 
 
 def get_user(user):

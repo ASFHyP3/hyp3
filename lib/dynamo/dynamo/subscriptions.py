@@ -2,7 +2,7 @@ from os import environ
 
 from boto3.dynamodb.conditions import Key
 
-from dynamo import DYNAMODB_RESOURCE
+from dynamo.util import DYNAMODB_RESOURCE
 
 
 def put_subscription(subscription):

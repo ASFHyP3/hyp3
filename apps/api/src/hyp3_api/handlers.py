@@ -6,8 +6,8 @@ import requests
 from flask import abort, jsonify, request
 from jsonschema import draft4_format_checker
 
-from hyp3_api import util
 import dynamo
+from hyp3_api import util
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
 

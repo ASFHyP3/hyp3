@@ -3,6 +3,7 @@ import re
 
 import pytest
 import responses
+
 from hyp3_api import CMR_URL, app, auth
 from hyp3_api.util import get_granules
 
