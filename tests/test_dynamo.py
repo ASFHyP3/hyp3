@@ -365,6 +365,35 @@ def test_query_jobs_sort_order(tables):
     assert response == table_items
 
 
+def test_update_job(tables):
+    table_items = [
+        {
+            'job_id': 'job1',
+            'name': 'name1',
+            'user_id': 'user1',
+            'status_code': 'status1',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+    ]
+    for item in table_items:
+        tables.jobs_table.put_item(Item=item)
+
+    dynamo.jobs.update_job('job1', {'status_code': 'status2'})
+
+    response = tables.jobs_table.scan()
+    expected_response = [
+        {
+            'job_id': 'job1',
+            'name': 'name1',
+            'user_id': 'user1',
+            'status_code': 'status2',
+            'request_time': '2000-01-01T00:00:00+00:00',
+        },
+    ]
+    assert response['Items'] == expected_response
+
+
+
 def test_decimal_conversion(tables):
     table_items = [
         {
