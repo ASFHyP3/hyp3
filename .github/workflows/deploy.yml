@@ -34,7 +34,7 @@ jobs:
             quota: 0
             deploy_ref: refs/heads/main
 
-          - environment: hyp3-test
+          - environment: hyp3-subscriptions
             domain: hyp3-subscriptions.asf.alaska.edu
             template_bucket: cf-templates-igavixdzdy7k-us-west-2
             image_tag: latest
