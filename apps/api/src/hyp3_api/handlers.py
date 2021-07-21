@@ -124,4 +124,4 @@ def post_subscriptions(body, user):
 
 
 def get_subscriptions(user):
-    return dynamo.subscriptions.get_subscriptions(user)
+    return dynamo.subscriptions.get_subscriptions_for_user(user)
