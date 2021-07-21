@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - subscriptions
 
 jobs:
   deploy:
@@ -32,6 +33,13 @@ jobs:
             image_tag: latest
             quota: 0
             deploy_ref: refs/heads/main
+
+          - environment: hyp3-test
+            domain: hyp3-subscriptions.asf.alaska.edu
+            template_bucket: cf-templates-igavixdzdy7k-us-west-2
+            image_tag: latest
+            quota: 0
+            deploy_ref: refs/heads/subscriptions
 
     environment:
       name: ${{ matrix.environment }}
