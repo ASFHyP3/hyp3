@@ -13,7 +13,7 @@ jobs:
         include:
           - environment: hyp3-subscriptions
             domain: hyp3-subscriptions.asf.alaska.edu
-            template_bucket: cf-templates-igavixdzdy7k-us-west-2
+            template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: latest
             quota: 0
             deploy_ref: refs/heads/subscriptions
