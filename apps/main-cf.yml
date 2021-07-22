@@ -228,4 +228,4 @@ Resources:
             - AttributeName: user_id
               KeyType: HASH
           Projection:
-            ProjectionType: all
+            ProjectionType: ALL
