@@ -93,9 +93,9 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        VpcId: !Ref VpcId
-        SubnetIds: !Join [',', !Ref SubnetIds]
-        ContentBucket: !Ref ContentBucket
+        JobsTable: !Ref JobsTable
+        UsersTable: !Ref UsersTable
+        SubscriptionsTable: !Ref SubscriptionsTable
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
 
