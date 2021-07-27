@@ -208,18 +208,3 @@ Resources:
       KeySchema:
         - AttributeName: user_id
           KeyType: HASH
-
-  SubscriptionsTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      BillingMode: PAY_PER_REQUEST
-      AttributeDefinitions:
-        - AttributeName: subscription_id
-          AttributeType: S
-      KeySchema:
-        - AttributeName: subscription_id
-          KeyType: HASH
-      GlobalSecondaryIndexes:
-        KeySchema:
-          - AttributeName: user_id
-            KeyType: HASH
