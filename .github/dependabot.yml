@@ -12,7 +12,4 @@ updates:
     ignore:
       - dependency-name: "moto"
       - dependency-name: "Jinja2"
-  - package-ecosystem: "pip"
-    directory: "/apps/api/"
-    schedule:
-      interval: "daily"
+      - dependency-name: "flask"
