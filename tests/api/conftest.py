@@ -28,17 +28,15 @@ def client():
 @pytest.fixture
 def tables(table_properties):
     with mock_dynamodb2():
-        class Tables:
-            jobs_table = DYNAMODB_RESOURCE.create_table(
-                TableName=environ['JOBS_TABLE_NAME'],
-                **table_properties['JobsTable'],
-            )
-            users_table = DYNAMODB_RESOURCE.create_table(
-                TableName=environ['USERS_TABLE_NAME'],
-                **table_properties['UsersTable'],
-            )
-        tables = Tables()
-        yield tables
+        jobs_table = DYNAMODB_RESOURCE.create_table(
+            TableName=environ['JOBS_TABLE_NAME'],
+            **table_properties['JobsTable'],
+        )
+        users_table = DYNAMODB_RESOURCE.create_table(
+            TableName=environ['USERS_TABLE_NAME'],
+            **table_properties['UsersTable'],
+        )
+        yield {'users_table': users_table, 'jobs_table': jobs_table}
 
 
 def make_job(granules=['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'],

@@ -27,7 +27,7 @@ def test_count_jobs(tables):
         },
     ]
     for item in table_items:
-        tables.jobs_table.put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     assert dynamo.count_jobs('user1') == 2
     assert dynamo.count_jobs('user2') == 1
@@ -55,7 +55,7 @@ def test_count_jobs_by_start(tables):
         },
     ]
     for item in table_items:
-        tables.jobs_table.put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     start = '2000-01-01T00:00:00+00:00'
     end = '2000-01-03T00:00:00+00:00'
@@ -98,7 +98,7 @@ def test_query_jobs_by_user(tables):
         },
     ]
     for item in table_items:
-        tables.jobs_table.put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     response, next_key = dynamo.query_jobs('user1')
 
@@ -129,7 +129,7 @@ def test_query_jobs_by_time(tables):
         },
     ]
     for item in table_items:
-        tables.jobs_table.put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     start = '2000-01-01T00:00:00z'
     end = '2000-01-03T00:00:00z'
@@ -176,7 +176,7 @@ def test_query_jobs_by_status(tables):
         },
     ]
     for item in table_items:
-        tables.jobs_table.put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     response, _ = dynamo.query_jobs('user1', status_code='status1')
     assert len(response) == 2
@@ -208,7 +208,7 @@ def test_query_jobs_by_name(tables):
         },
     ]
     for item in table_items:
-        tables.jobs_table.put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     response, _ = dynamo.query_jobs('user1', name='name1')
     assert len(response) == 2
@@ -243,7 +243,7 @@ def test_query_jobs_by_type(tables):
         },
     ]
     for item in table_items:
-        tables.jobs_table.put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     response, _ = dynamo.query_jobs('user1', job_type='RTC_GAMMA')
     assert len(response) == 2
@@ -274,7 +274,7 @@ def test_put_jobs(tables):
         },
     ]
     dynamo.put_jobs(table_items)
-    response = tables.jobs_table.scan()
+    response = tables['jobs_table'].scan()
     assert response['Items'] == table_items
 
 
@@ -303,7 +303,7 @@ def test_get_job(tables):
         },
     ]
     for item in table_items:
-        tables.jobs_table.put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     assert dynamo.get_job('job1') == table_items[0]
     assert dynamo.get_job('job2') == table_items[1]
@@ -323,7 +323,7 @@ def test_get_user(tables):
         },
     ]
     for item in table_items:
-        tables.users_table.put_item(Item=item)
+        tables['users_table'].put_item(Item=item)
 
     assert dynamo.get_user('user1') == table_items[0]
     assert dynamo.get_user('user2') == table_items[1]
@@ -358,7 +358,7 @@ def test_query_jobs_sort_order(tables):
         },
     ]
     for item in [table_items[2], table_items[0], table_items[1]]:
-        tables.jobs_table.put_item(Item=item)
+        tables['jobs_table'].put_item(Item=item)
 
     response, _ = dynamo.query_jobs('user1')
     assert response == table_items
@@ -395,7 +395,7 @@ def test_decimal_conversion(tables):
         },
     ]
     for item in table_items:
-        tables.jobs_table.put_item(Item=util.convert_floats_to_decimals(item))
+        tables['jobs_table'].put_item(Item=util.convert_floats_to_decimals(item))
 
     response, _ = dynamo.query_jobs('user1')
     assert response[0]['float_value'] == Decimal('30.04')
