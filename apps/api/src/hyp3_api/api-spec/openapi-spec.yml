@@ -49,11 +49,7 @@ paths:
         - name: job_type
           in: query
           schema:
-<<<<<<< HEAD
-            $ref: "./job_parameters.yml#components/schemas/job_type"
-=======
             $ref: "./job_parameters.yml#/components/schemas/job_type"
->>>>>>> 801a4425636a434ad813fb6f29a7893d0a348f67
         - name: start_token
           in: query
           schema:
@@ -270,11 +266,7 @@ components:
         user_id:
           $ref: "#/components/schemas/user_id"
         job_type:
-<<<<<<< HEAD
-          $ref: "./job_parameters.yml#components/schemas/job_type"
-=======
           $ref: "./job_parameters.yml#/components/schemas/job_type"
->>>>>>> 801a4425636a434ad813fb6f29a7893d0a348f67
         job_parameters:
           $ref: "./job_parameters.yml#components/schemas/job_parameters"
         request_time:
