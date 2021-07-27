@@ -13,6 +13,7 @@ paths:
 
     post:
       description: Submits a list of jobs for processing.
+      operationId: hyp3_api.handlers.post_jobs
       requestBody:
         content:
           application/json:
@@ -29,6 +30,7 @@ paths:
 
     get:
       description: Get list of previously run jobs.
+      operationId: hyp3_api.handlers.get_jobs
       parameters:
         - name: status_code
           in: query
@@ -49,7 +51,7 @@ paths:
         - name: job_type
           in: query
           schema:
-            $ref: "./job_parameters.yml#/components/schemas/job_type"
+            $ref: "#/components/schemas/job_type"
         - name: start_token
           in: query
           schema:
@@ -66,11 +68,12 @@ paths:
   /jobs/{job_id}:
     get:
       description: Get a previously run job.
+      operationId: hyp3_api.handlers.get_job_by_id
       parameters:
         - name: job_id
           in: path
           schema:
-            $ref: "#/components/schemas/job_or_subscription_id"
+            $ref: "#/components/schemas/job_id"
           required: true
 
       responses:
@@ -84,6 +87,7 @@ paths:
   /user:
     get:
       description: Get information about the logged in user.
+      operationId: hyp3_api.handlers.get_user
       responses:
         "200":
           description: 200 response
@@ -91,23 +95,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/user"
-
-  /subscriptions:
-    post:
-      description: Adds a subscription with seach criteria and processing parameters to use to process data as it becomes available
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/subscriptions_body"
-        required: true
-      responses:
-        "200":
-          description: 200 response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/subscriptions_response"
 
 components:
   schemas:
@@ -137,44 +124,6 @@ components:
           $ref: "#/components/schemas/list_of_jobs"
         next:
           $ref: "#/components/schemas/next_url"
-
-    subscriptions_body:
-      description: foo
-      type: object
-      required:
-        - search_parameters
-        - job_parameters
-        - job_type
-        - name
-      properties:
-        search_parameters:
-          $ref: "#/components/schemas/search_parameters"
-        job_parameters:
-          $ref: "./job_parameters.yml#components/schemas/job_parameters"
-        job_type:
-          $ref: "./job_parameters.yml#components/schemas/job_type"
-        name:
-          $ref: "#/components/schemas/name"
-
-    subscriptions_response:
-      description: foo
-      type: object
-      required:
-        - search_parameters
-        - job_parameters
-        - job_type
-        - name
-      properties:
-        subscription_id:
-          $ref: "#/components/schemas/job_or_subscription_id"
-        search_parameters:
-          $ref: "#/components/schemas/search_parameters"
-        job_parameters:
-          $ref: "./job_parameters.yml#components/schemas/job_parameters"
-        job_type:
-          $ref: "./job_parameters.yml#components/schemas/job_type"
-        name:
-          $ref: "#/components/schemas/name"
 
     user:
       description: Information about a user (quota, user id)
@@ -232,9 +181,10 @@ components:
             - S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
         job_type: RTC_GAMMA
         name: Job Name
+
       properties:
         job_type:
-          $ref: "./job_parameters.yml#/components/schemas/job_type"
+          $ref: "#/components/schemas/job_type"
         job_parameters:
           $ref: "./job_parameters.yml#components/schemas/job_parameters"
         name:
@@ -244,10 +194,6 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/job"
-
-    search_parameters:
-      description: parameters used to find data from the ASF Search API
-      type: object
 
     job:
       description: Contains information about a submitted job.
@@ -262,11 +208,11 @@ components:
       additionalProperties: false
       properties:
         job_id:
-          $ref: "#/components/schemas/job_or_subscription_id"
+          $ref: "#/components/schemas/job_id"
         user_id:
           $ref: "#/components/schemas/user_id"
         job_type:
-          $ref: "./job_parameters.yml#/components/schemas/job_type"
+          $ref: "#/components/schemas/job_type"
         job_parameters:
           $ref: "./job_parameters.yml#components/schemas/job_parameters"
         request_time:
@@ -290,8 +236,8 @@ components:
       type: boolean
       default: false
 
-    job_or_subscription_id:
-      description: Unique identifier for a job or subscription
+    job_id:
+      description: Unique identifier for a job
       type: string
       format: uuid
       example: 27836b79-e5b2-4d8f-932f-659724ea02c3
@@ -300,6 +246,15 @@ components:
       description: Username from Earthdata Login.
       type: string
       example: myUserId
+
+    job_type:
+      description: Type of process to run this job.
+      type: string
+      example: RTC_GAMMA
+      enum:
+        - RTC_GAMMA
+        - INSAR_GAMMA
+        - AUTORIFT
 
     datetime:
       description: Date and time object formatted according to ISO 8601
