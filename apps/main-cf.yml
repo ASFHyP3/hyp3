@@ -58,6 +58,13 @@ Parameters:
       - false
       - true
 
+  AutoriftNamingScheme:
+    Type: String
+    Default: ITS_LIVE_OD
+    AllowedValues:
+      - ITS_LIVE_OD
+      - ITS_LIVE_PROD
+
 Outputs:
 
   ApiUrl:
@@ -99,6 +106,7 @@ Resources:
         EDLPassword: !Ref EDLPassword
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
+        AutoriftNamingScheme: !Ref AutoriftNamingScheme
       TemplateURL: workflow-cf.yml
 
   Monitoring:
