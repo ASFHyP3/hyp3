@@ -37,7 +37,7 @@ inputs:
     required: false
     default: "0"
   AUTORIFT_NAMING_SCHEME:
-    description: ""
+    description: "Naming scheme for autoRIFT products, On Demand (ITS_LIVE_OD) or Production (ITS_LIVE_PROD)"
     required: false
     default: "ITS_LIVE_OD"
 
@@ -73,4 +73,4 @@ runs:
                 DomainName='${{ inputs.DOMAIN_NAME }}' \
                 CertificateArn='${{ inputs.CERTIFICATE_ARN }}' \
                 MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \
-                AutoriftnamingScheme='${{ inputs.AUTORIFT_NAMING_SCHEME }}'
+                AutoriftNamingScheme='${{ inputs.AUTORIFT_NAMING_SCHEME }}'
