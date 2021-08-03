@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 import jinja2
-import yaml
+from pyaml_env import parse_config
 
 
 def render_template(template_file, job_types, env):
@@ -37,8 +37,7 @@ def main():
     parser.add_argument('--job-types-file', required=True)
     job_types_file = parser.parse_args().job_types_file
 
-    with open(job_types_file) as f:
-        job_types = yaml.safe_load(f)
+    job_types = parse_config(job_types_file)
     render_templates(job_types)
 
 

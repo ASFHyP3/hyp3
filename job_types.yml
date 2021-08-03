@@ -152,6 +152,8 @@ Autorift:
     - '!Ref Bucket'
     - --bucket-prefix
     - Ref::bucket_prefix
+    - --naming-scheme
+    - !ENV ${AUTORIFT_NAMING_SHEME:ITS_LIVE_OD}
     - Ref::granules
   validators: []
   timeout: 10800
