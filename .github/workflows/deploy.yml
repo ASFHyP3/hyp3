@@ -31,6 +31,7 @@ jobs:
             template_bucket: cf-templates-igavixdzdy7k-us-west-2
             image_tag: latest
             quota: 0
+            custom_env_vars: AUTORIFT_NAMING_SCHEME=ITS_LIVE_PROD
             deploy_ref: refs/heads/main
 
     environment:
@@ -64,6 +65,7 @@ jobs:
           EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
+          CUSTOM_ENV_VARS: ${{ matrix.custom_env_vars }}
 
   tag:
     runs-on: ubuntu-latest

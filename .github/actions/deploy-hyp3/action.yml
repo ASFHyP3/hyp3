@@ -36,15 +36,28 @@ inputs:
     description: "The default number of jobs any user with an Earthdata Login can run per month"
     required: false
     default: "0"
+  CUSTOM_ENV_VARS:
+    description: "Space seperated list of key=value pairs to set as custom environment variables"
+    required: false
+    default: ""
 
 runs:
   using: "composite"
   steps:
-      - name: install dependancies and render templates
+      - name: install dependancies
         shell: bash
         run: |
           pip install --upgrade pip
           pip install -r requirements-all.txt
+
+      - name: setup environment
+        shell: bash
+        run: |
+          echo "${{ inputs.CUSTOM_ENV_VARS }}" >> $GITHUB_ENV
+
+      - name: render templates
+        shell: bash
+        run: |
           python apps/render_cf.py --job-types-file job_types.yml
           pip install -r apps/api/requirements-api.txt -t apps/api/src
 
