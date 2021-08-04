@@ -49,6 +49,7 @@ jobs:
           EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
+          AUTORIFT_NAMING_SCHEME: ${{ matrix.autorift_naming_scheme }}
 
   tag:
     runs-on: ubuntu-latest
@@ -105,4 +106,3 @@ jobs:
               --tag --tag-message "${TAG_MSG}" "${BUMP_PART}"
           git push --tags
           echo "Tagged version $(git describe --abbrev=0) and pushed back to repo"
-

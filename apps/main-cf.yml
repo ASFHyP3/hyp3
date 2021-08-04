@@ -58,6 +58,14 @@ Parameters:
       - false
       - true
 
+  AutoriftNamingScheme:
+    Description: Naming scheme for autoRIFT products, On Demand (ITS_LIVE_OD) or Production (ITS_LIVE_PROD)
+    Type: String
+    Default: ITS_LIVE_OD
+    AllowedValues:
+      - ITS_LIVE_OD
+      - ITS_LIVE_PROD
+
 Outputs:
 
   ApiUrl:
@@ -110,6 +118,7 @@ Resources:
         EDLPassword: !Ref EDLPassword
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
+        AutoriftNamingScheme: !Ref AutoriftNamingScheme
       TemplateURL: workflow-cf.yml
 
   Monitoring:
