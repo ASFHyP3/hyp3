@@ -14,8 +14,8 @@ def get_unprocessed_granules(subscription):
     search_results = asf_search.search(**subscription['search_parameters'])
     all_granules = [product.properties['sceneName'] for product in search_results]
 
-    processed_jobs = dynamo.jobs.query_jobs(
-        subscription['user_id'],
+    processed_jobs, _ = dynamo.jobs.query_jobs(
+        user=subscription['user_id'],
         job_type=subscription['job_specification']['job_type'],
         name=subscription['job_specification']['name']
     )
