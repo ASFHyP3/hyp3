@@ -65,7 +65,7 @@ Resources:
           USERS_TABLE_NAME: !Ref UsersTable
           SUBSCRIPTIONS_TABLE_NAME: !Ref SubscriptionsTable
       Code: src/
-      Handler: process-new-granules.lambda_handler
+      Handler: process_new_granules.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.8

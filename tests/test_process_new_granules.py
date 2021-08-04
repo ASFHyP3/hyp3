@@ -1,4 +1,4 @@
-import process_new_granuels
+import process_new_granules
 
 
 def test_submit_jobs_for_granule(tables):
@@ -16,7 +16,7 @@ def test_submit_jobs_for_granule(tables):
     }
     granule = 'granule1'
 
-    process_new_granuels.submit_jobs_for_granule(subscription, granule)
+    process_new_granules.submit_jobs_for_granule(subscription, granule)
 
     response = tables.jobs_table.scan()['Items']
     assert 'job_id' in response[0]
