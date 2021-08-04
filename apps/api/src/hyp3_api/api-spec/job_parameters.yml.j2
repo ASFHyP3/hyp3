@@ -8,14 +8,20 @@ components:
         {% for job_type, job_spec in job_types.items() %}
         - {{ job_spec['api_job_type'] }}
         {% endfor %}
+    job_definitions:
+      anyOf:
+        {% for job_type in job_types %}
+        - $ref: "#/components/schemas/{{ job_type }}JobDefinition"
+        {% endfor %}
+
     job_parameters:
       anyOf:
         {% for job_type in job_types %}
-        - $ref: "#/components/schemas/{{ job_type }}JobParameters"
+        - $ref: "#/components/schemas/{{ job_type }}"
         {% endfor %}
 
     {% for job_type, job_spec in job_types.items() %}
-    {{ job_type }}JobParameters:
+    {{ job_type }}JobDefinition:
       allOf:
         - $ref: "#/components/schemas/{{ job_type }}"
         - type: object

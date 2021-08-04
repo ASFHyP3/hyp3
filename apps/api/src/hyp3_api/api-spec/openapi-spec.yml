@@ -251,7 +251,7 @@ components:
         job_type:
           $ref: "./job_parameters.yml#components/schemas/job_type"
         job_parameters:
-          $ref: "./job_parameters.yml#components/schemas/job_parameters"
+          $ref: "./job_parameters.yml#components/schemas/job_definitions"
         name:
           $ref: "#/components/schemas/name"
 
