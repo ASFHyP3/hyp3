@@ -17,6 +17,7 @@ jobs:
             image_tag: latest
             quota: 0
             deploy_ref: refs/heads/subscriptions
+            autorift_naming_scheme: ITS_LIVE_OD
 
     environment:
       name: ${{ matrix.environment }}
