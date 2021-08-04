@@ -51,9 +51,7 @@ Resources:
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UsersTable}*"
               - Effect: Allow
                 Action:
-                  - dynamodb:Query
-                  - dynamodb:GetItem
-                  - dynamodb:PutItem
+                  - dynamodb:Scan
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SubscriptionsTable}*"
 
   Lambda:
