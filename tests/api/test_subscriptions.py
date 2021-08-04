@@ -29,10 +29,9 @@ def test_post_subscription(client, tables):
     response = client.post(SUBSCRIPTIONS_URI, json=params)
     assert response.status_code == HTTPStatus.OK
     assert 'subscription_id' in response.json
-    del response.json['subscription_id']
     assert 'user_id' in response.json
-    del response.json['user_id']
-    assert response.json == params
+    for k, v in params.items():
+        assert response.json[k] == v
 
 
 def test_submit_subscriptions_missing_fields(client, tables):
