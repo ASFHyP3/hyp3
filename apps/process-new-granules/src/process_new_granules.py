@@ -16,8 +16,8 @@ def get_unprocessed_granules(subscription):
 
     processed_jobs, _ = dynamo.jobs.query_jobs(
         user=subscription['user_id'],
+        name=subscription['job_specification']['name'],
         job_type=subscription['job_specification']['job_type'],
-        name=subscription['job_specification']['name']
     )
     processed_granules = itertools.chain([job['job_parameters']['granules'] for job in processed_jobs])
     return list(set(all_granules) - set(processed_granules))
