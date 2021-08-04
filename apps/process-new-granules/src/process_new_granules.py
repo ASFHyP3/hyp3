@@ -50,7 +50,7 @@ def handle_subscription(subscription):
             break
 
 
-def lambda_handler(event, contect):
+def lambda_handler(event, context):
     subscriptions = dynamo.subscriptions.get_all_subscriptions()
     for subscription in subscriptions:
         handle_subscription(subscription)
