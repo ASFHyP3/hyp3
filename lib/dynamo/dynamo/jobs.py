@@ -2,23 +2,8 @@ from os import environ
 from typing import List
 
 from boto3.dynamodb.conditions import Attr, Key
-from dateutil.parser import parse
 
-from hyp3_api import DYNAMODB_RESOURCE
-from hyp3_api.util import format_time
-
-
-def get_request_time_expression(start, end):
-    key = Key('request_time')
-    formatted_start = (format_time(parse(start))if start else None)
-    formatted_end = (format_time(parse(end)) if end else None)
-
-    if formatted_start and formatted_end:
-        return key.between(formatted_start, formatted_end)
-    if formatted_start:
-        return key.gte(formatted_start)
-    if formatted_end:
-        return key.lte(formatted_end)
+from dynamo.util import DYNAMODB_RESOURCE, get_request_time_expression
 
 
 def put_jobs(payload: List[dict]):
@@ -83,7 +68,14 @@ def get_job(job_id):
     return response.get('Item')
 
 
-def get_user(user):
-    table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
-    response = table.get_item(Key={'user_id': user})
-    return response.get('Item')
+def update_job(job):
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
+    primary_key = 'job_id'
+    key = {'job_id': job[primary_key]}
+    update_expression = 'SET {}'.format(','.join(f'{k}=:{k}' for k in job if k != primary_key))
+    expression_attribute_values = {f':{k}': v for k, v in job.items() if k != primary_key}
+    table.update_item(
+        Key=key,
+        UpdateExpression=update_expression,
+        ExpressionAttributeValues=expression_attribute_values,
+    )
