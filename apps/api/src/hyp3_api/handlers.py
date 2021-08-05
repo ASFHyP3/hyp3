@@ -1,6 +1,5 @@
-from datetime import datetime, timezone
 from os import environ
-from uuid import UUID, uuid4
+from uuid import UUID
 
 import requests
 from flask import abort, jsonify, request
@@ -48,16 +47,8 @@ def post_jobs(body, user):
     except GranuleValidationError as e:
         abort(problem_format(400, 'Bad Request', str(e)))
 
-    request_time = util.format_time(datetime.now(timezone.utc))
-    jobs = []
-    for job in body['jobs']:
-        job['job_id'] = str(uuid4())
-        job['user_id'] = user
-        job['status_code'] = 'PENDING'
-        job['request_time'] = request_time
-        jobs.append(util.convert_floats_to_decimals(job))
     if not body.get('validate_only'):
-        dynamo.jobs.put_jobs(jobs)
+        body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'])
     return body
 
 

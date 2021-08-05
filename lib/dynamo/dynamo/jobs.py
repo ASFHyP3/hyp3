@@ -1,16 +1,28 @@
+from datetime import datetime, timezone
 from os import environ
 from typing import List
+from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
 
-from dynamo.util import DYNAMODB_RESOURCE, get_request_time_expression
+from dynamo.util import DYNAMODB_RESOURCE, get_request_time_expression, format_time, convert_floats_to_decimals
 
 
-def put_jobs(payload: List[dict]):
+def put_jobs(user: str, payload: List[dict]):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
+    request_time = format_time(datetime.now(timezone.utc))
 
-    for item in payload:
+    jobs = []
+    for job in payload:
+        job['job_id'] = str(uuid4())
+        job['user_id'] = user
+        job['status_code'] = 'PENDING'
+        job['request_time'] = request_time
+        jobs.append(convert_floats_to_decimals(job))
+
+    for item in jobs:
         table.put_item(Item=item)
+    return jobs
 
 
 def count_jobs(user, start=None, end=None):
