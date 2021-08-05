@@ -8,20 +8,20 @@ from boto3.dynamodb.conditions import Attr, Key
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, get_request_time_expression, format_time
 
 
-def put_jobs(user: str, payload: List[dict]):
+def put_jobs(user_id: str, payload: List[dict]) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
     jobs = []
     for job in payload:
         job['job_id'] = str(uuid4())
-        job['user_id'] = user
+        job['user_id'] = user_id
         job['status_code'] = 'PENDING'
         job['request_time'] = request_time
-        jobs.append(convert_floats_to_decimals(job))
+        jobs.append(job)
 
     for item in jobs:
-        table.put_item(Item=item)
+        table.put_item(Item=convert_floats_to_decimals(item))
     return jobs
 
 
