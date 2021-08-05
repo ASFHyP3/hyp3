@@ -378,7 +378,8 @@ def test_update_job(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    dynamo.jobs.update_job('job1', {'status_code': 'status2'})
+    job = {'job_id': 'job1', 'status_code': 'status2'}
+    dynamo.jobs.update_job(job)
 
     response = tables.jobs_table.scan()
     expected_response = [

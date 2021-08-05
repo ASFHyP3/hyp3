@@ -68,11 +68,12 @@ def get_job(job_id):
     return response.get('Item')
 
 
-def update_job(job_id, update_dict):
+def update_job(job):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
-    key = {'job_id': job_id}
-    update_expression = 'SET {}'.format(','.join(f'{k}=:{k}' for k in update_dict))
-    expression_attribute_values = {f':{k}': v for k, v in update_dict.items()}
+    primary_key = 'job_id'
+    key = {'job_id': job[primary_key]}
+    update_expression = 'SET {}'.format(','.join(f'{k}=:{k}' for k in job if k != primary_key))
+    expression_attribute_values = {f':{k}': v for k, v in job.items() if k != primary_key}
     table.update_item(
         Key=key,
         UpdateExpression=update_expression,
