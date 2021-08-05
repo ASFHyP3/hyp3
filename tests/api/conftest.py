@@ -10,7 +10,6 @@ from hyp3_api.util import get_granules
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 USER_URI = '/user'
-SUBSCRIPTIONS_URI = '/subscriptions'
 
 DEFAULT_JOB_ID = 'myJobId'
 DEFAULT_USERNAME = 'test_username'
