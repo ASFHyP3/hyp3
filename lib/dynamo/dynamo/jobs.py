@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
 
-from dynamo.util import DYNAMODB_RESOURCE, get_request_time_expression, format_time, convert_floats_to_decimals
+from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, get_request_time_expression, format_time
 
 
 def put_jobs(user: str, payload: List[dict]):
