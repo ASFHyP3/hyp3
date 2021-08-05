@@ -30,6 +30,7 @@ def get_payload_for_job(subscription, granule):
     payload['job_id'] = str(uuid.uuid4())
     payload['user_id'] = subscription['user_id']
     payload['status_code'] = 'PENDING'
+    payload['request_time'] = '2021-08-04T00:00:00+00:00'  # TODO fix me
     payload['job_parameters']['granules'] = [granule]
     return payload
 
