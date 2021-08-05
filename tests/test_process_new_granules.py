@@ -28,6 +28,7 @@ def test_get_payload_for_job():
             'granules': ['GranuleName'],
         },
         'status_code': 'PENDING',
+        'request_time': '2021-08-04T00:00:00+00:00',  # TODO fix me
     }
 
 
@@ -57,6 +58,7 @@ def test_submit_jobs_for_granule(tables):
             'name': 'SubscriptionName',
             'user_id': 'subscriptionsUser',
             'status_code': 'PENDING',
+            'request_time': '2021-08-04T00:00:00+00:00',  # TODO fix me
             'job_parameters': {
                 'granules': ['granule1'],
             }
