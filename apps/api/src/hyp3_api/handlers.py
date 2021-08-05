@@ -110,4 +110,3 @@ def get_user(user):
         },
         'job_names': get_names_for_user(user)
     }
-
