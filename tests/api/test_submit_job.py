@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 from api.conftest import DEFAULT_USERNAME, login, make_db_record, make_job, setup_requests_mock, submit_batch
 
-from hyp3_api.util import format_time
+from dynamo.util import format_time
 
 
 def test_submit_one_job(client, tables):

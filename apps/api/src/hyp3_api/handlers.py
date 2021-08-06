@@ -1,12 +1,12 @@
-from datetime import datetime, timezone
 from os import environ
-from uuid import UUID, uuid4
+from uuid import UUID
 
 import requests
 from flask import abort, jsonify, request
 from jsonschema import draft4_format_checker
 
-from hyp3_api import dynamo, util
+import dynamo
+from hyp3_api import util
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
 
@@ -47,16 +47,8 @@ def post_jobs(body, user):
     except GranuleValidationError as e:
         abort(problem_format(400, 'Bad Request', str(e)))
 
-    request_time = util.format_time(datetime.now(timezone.utc))
-    jobs = []
-    for job in body['jobs']:
-        job['job_id'] = str(uuid4())
-        job['user_id'] = user
-        job['status_code'] = 'PENDING'
-        job['request_time'] = request_time
-        jobs.append(util.convert_floats_to_decimals(job))
     if not body.get('validate_only'):
-        dynamo.put_jobs(jobs)
+        body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'])
     return body
 
 
@@ -65,7 +57,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=N
         start_key = util.deserialize(start_token) if start_token else None
     except util.TokenDeserializeError:
         abort(problem_format(400, 'Bad Request', 'Invalid start_token value'))
-    jobs, last_evaluated_key = dynamo.query_jobs(user, start, end, status_code, name, job_type, start_key)
+    jobs, last_evaluated_key = dynamo.jobs.query_jobs(user, start, end, status_code, name, job_type, start_key)
     payload = {'jobs': jobs}
     if last_evaluated_key is not None:
         next_token = util.serialize(last_evaluated_key)
@@ -74,23 +66,23 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=N
 
 
 def get_job_by_id(job_id):
-    job = dynamo.get_job(job_id)
+    job = dynamo.jobs.get_job(job_id)
     if job is None:
         abort(problem_format(404, 'Not Found', f'job_id does not exist: {job_id}'))
     return job
 
 
 def get_names_for_user(user):
-    jobs, next_key = dynamo.query_jobs(user)
+    jobs, next_key = dynamo.jobs.query_jobs(user)
     while next_key is not None:
-        new_jobs, next_key = dynamo.query_jobs(user, start_key=next_key)
+        new_jobs, next_key = dynamo.jobs.query_jobs(user, start_key=next_key)
         jobs.extend(new_jobs)
     names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))
 
 
 def get_max_jobs_per_month(user):
-    user = dynamo.get_user(user)
+    user = dynamo.user.get_user(user)
     if user:
         max_jobs_per_month = user['max_jobs_per_month']
     else:

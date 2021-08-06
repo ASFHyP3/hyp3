@@ -1,14 +1,18 @@
-from os import path
+from os import environ, path
 
 import pytest
 import yaml
+from moto import mock_dynamodb2
+
+from dynamo import DYNAMODB_RESOURCE
 
 
 @pytest.fixture
 def table_properties():
-    jobs_table = get_table_properties_from_template('JobsTable')
-    users_table = get_table_properties_from_template('UsersTable')
-    return {'JobsTable': jobs_table, 'UsersTable': users_table}
+    class TableProperties:
+        jobs_table = get_table_properties_from_template('JobsTable')
+        users_table = get_table_properties_from_template('UsersTable')
+    return TableProperties()
 
 
 def get_table_properties_from_template(resource_name):
@@ -18,3 +22,19 @@ def get_table_properties_from_template(resource_name):
         template = yaml.safe_load(f)
     table_properties = template['Resources'][resource_name]['Properties']
     return table_properties
+
+
+@pytest.fixture
+def tables(table_properties):
+    with mock_dynamodb2():
+        class Tables:
+            jobs_table = DYNAMODB_RESOURCE.create_table(
+                TableName=environ['JOBS_TABLE_NAME'],
+                **table_properties.jobs_table,
+            )
+            users_table = DYNAMODB_RESOURCE.create_table(
+                TableName=environ['USERS_TABLE_NAME'],
+                **table_properties.users_table,
+            )
+        tables = Tables()
+        yield tables
