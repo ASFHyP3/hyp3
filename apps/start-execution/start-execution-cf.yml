@@ -48,7 +48,7 @@ Resources:
     Properties:
       Environment:
         Variables:
-          TABLE_NAME: !Ref JobsTable
+          JOBS_TABLE_NAME: !Ref JobsTable
           STEP_FUNCTION_ARN: !Ref StepFunctionArn
       Code: src/
       Handler: start_execution.lambda_handler
