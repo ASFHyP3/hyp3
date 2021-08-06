@@ -427,3 +427,38 @@ def test_decimal_conversion(tables):
     assert response[0]['float_value'] == Decimal('30.04')
     assert response[1]['float_value'] == Decimal('0.0')
     assert response[2]['float_value'] == Decimal('0.1')
+
+
+def test_get_pending_jobs(tables):
+    items = [
+        {
+            'job_id': 'job1',
+            'status_code': 'RUNNING',
+        },
+        {
+            'job_id': 'job2',
+            'status_code': 'PENDING',
+        },
+        {
+            'job_id': 'job3',
+            'status_code': 'PENDING',
+        },
+        {
+            'job_id': 'job4',
+            'status_code': 'FAILED',
+        },
+    ]
+    for item in items:
+        tables.jobs_table.put_item(Item=item)
+
+    pending_jobs = dynamo.jobs.get_jobs_by_status_code('RUNNING', limit=1)
+    assert pending_jobs == items[0:1]
+
+    pending_jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=1)
+    assert pending_jobs == items[1:2]
+
+    pending_jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=2)
+    assert pending_jobs == items[1:3]
+
+    pending_jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=3)
+    assert pending_jobs == items[1:3]

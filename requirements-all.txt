@@ -1,4 +1,6 @@
 -r apps/api/requirements-api.txt
+-r apps/start-execution/start-execution-requirements.txt
+-r apps/update-db/update-db-requirements.txt
 boto3==1.18.15
 jinja2==3.0.1
 moto==1.3.14
