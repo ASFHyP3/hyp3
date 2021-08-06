@@ -266,7 +266,7 @@ def test_put_jobs(tables):
     jobs = dynamo.jobs.put_jobs('user1', payload)
     assert len(jobs) == 3
     for job in jobs:
-        assert list(job.keys()) == ['name', 'job_id', 'user_id', 'status_code', 'request_time']
+        assert set(job.keys()) == {'name', 'job_id', 'user_id', 'status_code', 'request_time'}
         assert job['request_time'] <= dynamo.util.format_time(datetime.now(timezone.utc))
         assert job['user_id'] == 'user1'
         assert job['status_code'] == 'PENDING'
@@ -472,3 +472,38 @@ def test_get_subscriptions_for_user(tables):
     assert response == table_items[:3]
     response = dynamo.subscriptions.get_subscriptions_for_user('user2')
     assert response == [table_items[3]]
+
+
+def test_get_jobs_by_status_code(tables):
+    items = [
+        {
+            'job_id': 'job1',
+            'status_code': 'RUNNING',
+        },
+        {
+            'job_id': 'job2',
+            'status_code': 'PENDING',
+        },
+        {
+            'job_id': 'job3',
+            'status_code': 'PENDING',
+        },
+        {
+            'job_id': 'job4',
+            'status_code': 'FAILED',
+        },
+    ]
+    for item in items:
+        tables.jobs_table.put_item(Item=item)
+
+    jobs = dynamo.jobs.get_jobs_by_status_code('RUNNING', limit=1)
+    assert jobs == items[0:1]
+
+    jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=1)
+    assert jobs == items[1:2]
+
+    jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=2)
+    assert jobs == items[1:3]
+
+    jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=3)
+    assert jobs == items[1:3]

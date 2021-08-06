@@ -8,21 +8,23 @@ from boto3.dynamodb.conditions import Attr, Key
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
 
-def put_jobs(user_id: str, payload: List[dict]) -> List[dict]:
+def put_jobs(user_id: str, jobs: List[dict]) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
-    jobs = []
-    for job in payload:
-        job['job_id'] = str(uuid4())
-        job['user_id'] = user_id
-        job['status_code'] = 'PENDING'
-        job['request_time'] = request_time
-        jobs.append(job)
+    prepared_jobs = [
+        {
+            'job_id': str(uuid4()),
+            'user_id': user_id,
+            'status_code': 'PENDING',
+            'request_time': request_time,
+            **job,
+        } for job in jobs
+    ]
 
-    for item in jobs:
-        table.put_item(Item=convert_floats_to_decimals(item))
-    return jobs
+    for prepared_job in prepared_jobs:
+        table.put_item(Item=convert_floats_to_decimals(prepared_job))
+    return prepared_jobs
 
 
 def count_jobs(user, start=None, end=None):
@@ -91,3 +93,14 @@ def update_job(job):
         UpdateExpression=update_expression,
         ExpressionAttributeValues=expression_attribute_values,
     )
+
+
+def get_jobs_by_status_code(status_code: str, limit: int) -> List[dict]:
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
+    response = table.query(
+        IndexName='status_code',
+        KeyConditionExpression=Key('status_code').eq(status_code),
+        Limit=limit,
+    )
+    jobs = response['Items']
+    return jobs

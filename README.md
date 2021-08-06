@@ -54,6 +54,7 @@ cd ..
 ```sh
 pip install -r apps/api/requirements-api.txt -t apps/api/src
 pip install -r apps/update-db/update-db-requirements.txt -t apps/update-db/src
+pip install -r apps/start-execution/start-execution-requirements.txt -t apps/start-execution/src
 ```
 
 - Package the CloudFormation template
