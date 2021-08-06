@@ -266,7 +266,7 @@ def test_put_jobs(tables):
     jobs = dynamo.jobs.put_jobs('user1', payload)
     assert len(jobs) == 3
     for job in jobs:
-        assert list(job.keys()) == ['name', 'job_id', 'user_id', 'status_code', 'request_time']
+        assert set(job.keys()) == {'name', 'job_id', 'user_id', 'status_code', 'request_time'}
         assert job['request_time'] <= dynamo.util.format_time(datetime.now(timezone.utc))
         assert job['user_id'] == 'user1'
         assert job['status_code'] == 'PENDING'
