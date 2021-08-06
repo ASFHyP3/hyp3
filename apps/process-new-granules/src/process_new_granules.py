@@ -27,10 +27,6 @@ def get_payload_for_job(subscription, granule):
     payload = subscription['job_specification']
     if 'job_parameters' not in payload:
         payload['job_parameters'] = {}
-    payload['job_id'] = str(uuid.uuid4())
-    payload['user_id'] = subscription['user_id']
-    payload['status_code'] = 'PENDING'
-    payload['request_time'] = '2021-08-04T00:00:00+00:00'  # TODO fix me
     payload['job_parameters']['granules'] = [granule]
     return payload
 
@@ -39,7 +35,7 @@ def submit_jobs_for_granule(subscription, granule):
     payload = [
         get_payload_for_job(subscription, granule)
     ]
-    dynamo.jobs.put_jobs(payload)
+    dynamo.jobs.put_jobs(subscription['user_id'], payload)
 
 
 def handle_subscription(subscription):

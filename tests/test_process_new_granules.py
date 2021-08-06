@@ -17,18 +17,12 @@ def test_get_payload_for_job():
     granule = 'GranuleName'
 
     payload = process_new_granules.get_payload_for_job(subscription, granule)
-    assert 'job_id' in payload
-    assert isinstance(payload['job_id'], str)
-    del payload['job_id']
     assert payload == {
-        'user_id': 'subscriptionsUser',
         'job_type': 'RTC_GAMMA',
         'name': 'SubscriptionName',
         'job_parameters': {
             'granules': ['GranuleName'],
         },
-        'status_code': 'PENDING',
-        'request_time': '2021-08-04T00:00:00+00:00',  # TODO fix me
     }
 
 
@@ -52,13 +46,15 @@ def test_submit_jobs_for_granule(tables):
     response = tables.jobs_table.scan()['Items']
     assert 'job_id' in response[0]
     del response[0]['job_id']
+    assert 'request_time' in response[0]
+    assert isinstance(response[0]['request_time'], str)
+    del response[0]['request_time']
     assert response == [
         {
             'job_type': 'RTC_GAMMA',
             'name': 'SubscriptionName',
             'user_id': 'subscriptionsUser',
             'status_code': 'PENDING',
-            'request_time': '2021-08-04T00:00:00+00:00',  # TODO fix me
             'job_parameters': {
                 'granules': ['granule1'],
             }

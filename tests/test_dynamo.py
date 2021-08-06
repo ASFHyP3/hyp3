@@ -430,16 +430,17 @@ def test_decimal_conversion(tables):
 
 
 def test_put_subscription(tables):
-    table_items = [
-        {
-            'subscription_id': 'sub1',
-            'job_type': 'INSAR_GAMMA',
-            'user_id': 'user1'
-        },
-    ]
-    dynamo.subscriptions.put_subscription(table_items[0])
-    response = tables.subscriptions_table.scan()
-    assert response['Items'] == table_items
+    subscription = {
+        'job_type': 'RTC_GAMMA',
+        'name': 'sub1',
+    }
+    dynamo.subscriptions.put_subscription('user1', subscription)
+    items = tables.subscriptions_table.scan()['Items']
+    assert 'subscription_id' in items[0]
+    assert isinstance(items[0]['subscription_id'], str)
+    del items[0]['subscription_id']
+    subscription['user_id'] = 'user1'
+    assert items == [subscription]
 
 
 def test_get_subscriptions_for_user(tables):
