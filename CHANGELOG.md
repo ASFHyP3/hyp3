@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0](https://github.com/ASFHyP3/hyp3/compare/v2.0.4...v2.1.0)
+### Added
+- `lib/dynamo` library to allow sharing common code among different apps.
+
+## Changed
+- `POST /jobs` responses no longer include the `job_id`, `request_time`, `status_code`, or `user_id` fields when `validate_only=true` 
+- moved dynamodb functionality from `hyp3_api/dynamo` to `lib/dynamo`
+- moved job creation buisness logic from `hyp3_api/handlers` to `lib/dynamo`
 
 ## [2.0.4](https://github.com/ASFHyP3/hyp3/compare/v2.0.3...v2.0.4)
 ### Added
