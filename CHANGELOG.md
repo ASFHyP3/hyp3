@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `lib/dynamo` library to allow sharing common code among different apps.
 
 ## Changed
-- moved dynamodb functinoality from `hyp3_api/dynamo` to `lib/dynamo`
+- moved dynamodb functionality from `hyp3_api/dynamo` to `lib/dynamo`
 - moved job creation buisness logic from `hyp3_api/handlers` to `lib/dynamo`
 
 ## [2.0.4](https://github.com/ASFHyP3/hyp3/compare/v2.0.3...v2.0.4)
