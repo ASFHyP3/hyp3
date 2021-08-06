@@ -1,9 +1,9 @@
+from datetime import datetime, timezone
 from decimal import Decimal
 
 from api.conftest import list_have_same_elements
 
 import dynamo
-from hyp3_api.util import convert_floats_to_decimals
 
 
 def test_count_jobs(tables):
@@ -252,31 +252,27 @@ def test_query_jobs_by_type(tables):
 
 
 def test_put_jobs(tables):
-    table_items = [
+    payload = [
         {
-            'job_id': 'job1',
             'name': 'name1',
-            'user_id': 'user1',
-            'status_code': 'status1',
-            'request_time': '2000-01-01T00:00:00+00:00',
         },
         {
-            'job_id': 'job2',
             'name': 'name1',
-            'status_code': 'status1',
-            'request_time': '2000-01-01T00:00:00+00:00',
         },
         {
-            'job_id': 'job3',
             'name': 'name2',
-            'user_id': 'user2',
-            'status_code': 'status1',
-            'request_time': '2000-01-01T00:00:00+00:00',
         },
     ]
-    dynamo.jobs.put_jobs(table_items)
+    jobs = dynamo.jobs.put_jobs('user1', payload)
+    assert len(jobs) == 3
+    for job in jobs:
+        assert list(job.keys()) == ['name', 'job_id', 'user_id', 'status_code', 'request_time']
+        assert job['request_time'] <= dynamo.util.format_time(datetime.now(timezone.utc))
+        assert job['user_id'] == 'user1'
+        assert job['status_code'] == 'PENDING'
+
     response = tables.jobs_table.scan()
-    assert response['Items'] == table_items
+    assert response['Items'] == jobs
 
 
 def test_get_job(tables):
@@ -425,7 +421,7 @@ def test_decimal_conversion(tables):
         },
     ]
     for item in table_items:
-        tables.jobs_table.put_item(Item=convert_floats_to_decimals(item))
+        tables.jobs_table.put_item(Item=dynamo.util.convert_floats_to_decimals(item))
 
     response, _ = dynamo.jobs.query_jobs('user1')
     assert response[0]['float_value'] == Decimal('30.04')

@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from decimal import Decimal
 
 import boto3
 from boto3.dynamodb.conditions import Key
@@ -25,3 +26,13 @@ def format_time(time: datetime):
         raise ValueError(f'missing tzinfo for datetime {time}')
     utc_time = time.astimezone(timezone.utc)
     return utc_time.isoformat(timespec='seconds')
+
+
+def convert_floats_to_decimals(element):
+    if type(element) is float:
+        return Decimal(str(element))
+    if type(element) is list:
+        return [convert_floats_to_decimals(item) for item in element]
+    if type(element) is dict:
+        return {key: convert_floats_to_decimals(value) for key, value in element.items()}
+    return element
