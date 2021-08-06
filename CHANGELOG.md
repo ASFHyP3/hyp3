@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `lib/dynamo` library to allow sharing common code among different apps.
 
 ## Changed
+- `POST /jobs` responses no longer include the `job_id`, `request_time`, `status_code`, or `user_id` fields when `validate_only=true` 
 - moved dynamodb functionality from `hyp3_api/dynamo` to `lib/dynamo`
 - moved job creation buisness logic from `hyp3_api/handlers` to `lib/dynamo`
 
