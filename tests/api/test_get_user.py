@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 from api.conftest import USER_URI, login, make_db_record
 
-from hyp3_api.util import format_time
+from dynamo.util import format_time
 
 
 def test_get_user(client, tables, monkeypatch):

@@ -1,12 +1,10 @@
 import json
 import re
-from os import environ
 
 import pytest
 import responses
-from moto import mock_dynamodb2
 
-from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, app, auth
+from hyp3_api import CMR_URL, app, auth
 from hyp3_api.util import get_granules
 
 AUTH_COOKIE = 'asf-urs'
@@ -23,22 +21,6 @@ CMR_URL_RE = re.compile(f'{CMR_URL}.*')
 def client():
     with app.test_client() as test_client:
         yield test_client
-
-
-@pytest.fixture
-def tables(table_properties):
-    with mock_dynamodb2():
-        class Tables:
-            jobs_table = DYNAMODB_RESOURCE.create_table(
-                TableName=environ['JOBS_TABLE_NAME'],
-                **table_properties['JobsTable'],
-            )
-            users_table = DYNAMODB_RESOURCE.create_table(
-                TableName=environ['USERS_TABLE_NAME'],
-                **table_properties['UsersTable'],
-            )
-        tables = Tables()
-        yield tables
 
 
 def make_job(granules=['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'],

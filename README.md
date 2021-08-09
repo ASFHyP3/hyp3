@@ -49,10 +49,12 @@ python render_cf.py --job-types-file ../job_types.yml
 cd ..
 ```
 
-- Install API dependencies (requires pip for python 3.8)
+- Install Python dependencies for AWS Lambda functions (requires pip for python 3.8)
 
 ```sh
 pip install -r apps/api/requirements-api.txt -t apps/api/src
+pip install -r apps/update-db/update-db-requirements.txt -t apps/update-db/src
+pip install -r apps/start-execution/start-execution-requirements.txt -t apps/start-execution/src
 ```
 
 - Package the CloudFormation template
@@ -98,7 +100,7 @@ export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src:`pwd`/apps/get-files/src:`pw
 
 - Set environment variables needed by the API module
 ```sh
-export $(cat tests/api/cfg.env | xargs)
+export $(cat tests/cfg.env | xargs)
 ```
 
 - Render CloudFormation templates needed by the API module
