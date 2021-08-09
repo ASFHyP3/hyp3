@@ -85,7 +85,10 @@
         "JobName.$": "$.job_id",
         "JobQueue": "${JobQueueArn}",
         "Parameters.$": "$.job_parameters",
-        "ContainerOverrides.$": "$.container_overrides"
+        "ContainerOverrides.$": "$.container_overrides",
+        "RetryStrategy": {
+          "Attempts": 2
+        }
       },
       "ResultPath": "$.results.processing_results",
       "Next": "UPLOAD_LOG",
@@ -94,7 +97,7 @@
           "ErrorEquals": [
             "States.ALL"
           ],
-          "MaxAttempts": 2
+          "MaxAttempts": 0
         }
       ],
       "Catch": [
