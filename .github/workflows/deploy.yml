@@ -28,13 +28,13 @@ jobs:
             deploy_ref: refs/heads/develop
             autorift_naming_scheme: ITS_LIVE_OD
 
-#          - environment: hyp3-autorift
-#            domain: hyp3-autorift.asf.alaska.edu
-#            template_bucket: cf-templates-igavixdzdy7k-us-west-2
-#            image_tag: latest
-#            quota: 0
-#            deploy_ref: refs/heads/main
-#            autorift_naming_scheme: ITS_LIVE_PROD
+          - environment: hyp3-autorift
+            domain: hyp3-autorift.asf.alaska.edu
+            template_bucket: cf-templates-igavixdzdy7k-us-west-2
+            image_tag: latest
+            quota: 0
+            deploy_ref: refs/heads/main
+            autorift_naming_scheme: ITS_LIVE_PROD
 
     environment:
       name: ${{ matrix.environment }}
