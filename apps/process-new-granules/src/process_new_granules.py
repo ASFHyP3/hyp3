@@ -1,5 +1,4 @@
 import itertools
-import uuid
 
 import asf_search
 
