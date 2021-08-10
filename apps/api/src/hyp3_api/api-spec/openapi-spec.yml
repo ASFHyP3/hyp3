@@ -255,7 +255,6 @@ components:
         name:
           $ref: "#/components/schemas/name"
 
-
     list_of_jobs:
       type: array
       items:
@@ -269,40 +268,60 @@ components:
         - start
         - end
       properties:
-        asfframe:
-          type: integer
-          minimum: 0
-          maximum: 1184
-        beamMode:
+        start:
+          $ref: "#/components/schemas/datetime"
+        end:
+          $ref: "#/components/schemas/datetime"
+        platform:
           type: string
           enum:
-            - IW
-        flightDirection:
-          type: string
-          enum:
-            - ASCENDING
-            - DECENDING
-        intersectsWith:
-          type: string
-          format: wkt
+            - S1
+            - SA
+            - SB
         processingLevel:
           type: string
           enum:
             - GRD_HD
             - SLC
+        beamMode:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum:
+              - IW
+        intersectsWith:
+          type: string
+          format: wkt
+        frame:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+            minimum: 1
+            maximum: 1360
+        relativeOrbit:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+            minimum: 1
+            maximum: 175
         polorization:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum:
+              - VV
+              - VV+VH
+              - HH
+              - HH+HV
+        flightDirection:
           type: string
           enum:
-            - VV
-            - VV+VH
-            - HH
-            - HH+HV
-        start:
-          type: string
-          format: date-time
-        end:
-          type: string
-          format: date-time
+            - ASCENDING
+            - DECENDING
 
     job:
       description: Contains information about a submitted job.

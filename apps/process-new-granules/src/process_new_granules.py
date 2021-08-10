@@ -11,7 +11,8 @@ class QuotaError(Exception):
 
 
 def get_unprocessed_granules(subscription):
-    search_results = asf_search.search(**subscription['search_parameters'])
+    search_parameters = subscription['search_parameters']
+    search_results = asf_search.search(**search_parameters)
     all_granules = [product.properties['sceneName'] for product in search_results]
 
     processed_jobs, _ = dynamo.jobs.query_jobs(

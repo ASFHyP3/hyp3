@@ -431,16 +431,37 @@ def test_decimal_conversion(tables):
 
 def test_put_subscription(tables):
     subscription = {
-        'job_type': 'RTC_GAMMA',
-        'name': 'sub1',
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': 'asdf',
+            'end': 'asdf',
+        }
     }
-    dynamo.subscriptions.put_subscription('user1', subscription)
-    items = tables.subscriptions_table.scan()['Items']
-    assert 'subscription_id' in items[0]
-    assert isinstance(items[0]['subscription_id'], str)
-    del items[0]['subscription_id']
-    subscription['user_id'] = 'user1'
-    assert items == [subscription]
+    response = dynamo.subscriptions.put_subscription('user1', subscription)
+    assert [response] == tables.subscriptions_table.scan()['Items']
+
+    assert 'subscription_id' in response
+    assert isinstance(response['subscription_id'], str)
+    del response['subscription_id']
+
+    assert response == {
+        'user_id': 'user1',
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': 'asdf',
+            'end': 'asdf',
+            'beamMode': ['IW'],
+            'platform': 'S1',
+            'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
+            'processingLevel': 'SLC',
+        }
+    }
 
 
 def test_get_subscriptions_for_user(tables):
