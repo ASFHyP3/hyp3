@@ -27,13 +27,13 @@ def validate_subscription(subscription):
 
 
 def put_subscription(user, subscription):
+    validate_subscription(subscription)
+
     subscription = {
         'subscription_id': str(uuid4()),
         'user_id': user,
         **subscription
     }
-
-    validate_subscription(subscription)
 
     defaults = {
         'platform': 'S1',
