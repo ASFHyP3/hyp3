@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from http import HTTPStatus
 
-from api.conftest import USER_URI, login, make_db_record
+from test_api.conftest import USER_URI, login, make_db_record
 
 from dynamo.util import format_time
 

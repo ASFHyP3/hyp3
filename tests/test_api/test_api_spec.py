@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login
+from test_api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login
 
 from hyp3_api import auth, routes
 

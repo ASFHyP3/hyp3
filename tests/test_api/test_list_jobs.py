@@ -2,7 +2,7 @@ from http import HTTPStatus
 from unittest import mock
 from urllib.parse import unquote
 
-from api.conftest import JOBS_URI, list_have_same_elements, login, make_db_record
+from test_api.conftest import JOBS_URI, list_have_same_elements, login, make_db_record
 
 
 def test_list_jobs(client, tables):

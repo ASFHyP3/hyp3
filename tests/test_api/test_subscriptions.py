@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from conftest import SUBSCRIPTIONS_URI, login
+from .conftest import SUBSCRIPTIONS_URI, login
 
 
 def test_post_subscription(client, tables):
