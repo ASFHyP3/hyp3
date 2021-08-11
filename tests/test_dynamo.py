@@ -436,8 +436,8 @@ def test_put_subscription(tables):
             'name': 'sub1',
         },
         'search_parameters': {
-            'start': 'asdf',
-            'end': 'asdf',
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-01T00:00:00+00:00',
         }
     }
     response = dynamo.subscriptions.put_subscription('user1', subscription)
@@ -454,8 +454,8 @@ def test_put_subscription(tables):
             'name': 'sub1',
         },
         'search_parameters': {
-            'start': 'asdf',
-            'end': 'asdf',
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-01T00:00:00+00:00',
             'beamMode': ['IW'],
             'platform': 'S1',
             'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
