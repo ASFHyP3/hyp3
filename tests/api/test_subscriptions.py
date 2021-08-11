@@ -8,7 +8,7 @@ def test_post_subscription(client, tables):
     params = {
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
-            'end': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-02T00:00:00+00:00',
             'platform': 'S1',
             'beamMode': ['IW'],
             'polarization': ['VV'],
@@ -45,7 +45,7 @@ def test_submit_subscriptions_missing_fields(client, tables):
     params = {
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
-            'end': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-02T00:00:00+00:00',
         },
     }
     response = client.post(SUBSCRIPTIONS_URI, json=params)
@@ -54,7 +54,7 @@ def test_submit_subscriptions_missing_fields(client, tables):
     params = {
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
-            'end': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-02T00:00:00+00:00',
         },
         'job_specification': {
             'job_type': 'INSAR_GAMMA',
@@ -70,7 +70,7 @@ def test_search_criteria(client, tables):
     params = {
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
-            'end': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-02T00:00:00+00:00',
             'frame': [50],
             'relativeOrbit': [1, 5],
             'flightDirection': 'ASCENDING',

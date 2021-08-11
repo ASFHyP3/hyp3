@@ -6,19 +6,20 @@ from uuid import uuid4
 
 from boto3.dynamodb.conditions import Key
 
-from dynamo.util import DYNAMODB_RESOURCE
+from dynamo.util import DYNAMODB_RESOURCE, format_time
 
 
 def validate_subscription(subscription):
     start = dateutil.parser.parse(subscription['search_parameters']['start'])
     end = dateutil.parser.parse(subscription['search_parameters']['end'])
     if end <= start:
-        raise ValueError(f'End date: {end} must be after start date: {start}')
+        raise ValueError(f'End date: {format_time(end)} must be after start date: {format_time(start)}')
 
     end_threshold_in_days = 180
     max_end = datetime.now(tz=timezone.utc) + timedelta(days=end_threshold_in_days)
     if max_end <= end:
-        raise ValueError(f'End date: {end} must be within {end_threshold_in_days} days: {max_end}')
+        raise ValueError(f'End date: {format_time(end)} must be within {end_threshold_in_days} days: '
+                         f'{format_time(max_end)}')
 
 
 def put_subscription(user, subscription):
