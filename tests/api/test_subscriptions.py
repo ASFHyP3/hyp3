@@ -99,12 +99,31 @@ def test_search_criteria(client, tables):
         params = {
             'search_parameters': {
                 'start': '2020-01-01T00:00:00+00:00',
-                'end': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-02T00:00:00+00:00',
                 k: v,
             },
+            'job_specification': {
+                'job_type': 'INSAR_GAMMA',
+                'name': 'SubscriptionName'
+            }
         }
         response = client.post(SUBSCRIPTIONS_URI, json=params)
         assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    params = {
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-01T00:00:00+00:00',
+        },
+        'job_specification': {
+            'job_type': 'INSAR_GAMMA',
+            'name': 'SubscriptionName'
+        }
+    }
+    response = client.post(SUBSCRIPTIONS_URI, json=params)
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
 
 
 def test_get_subscriptions(client, tables):
