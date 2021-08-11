@@ -8,6 +8,7 @@ components:
         {% for job_type, job_spec in job_types.items() %}
         - {{ job_spec['api_job_type'] }}
         {% endfor %}
+
     job_definitions:
       anyOf:
         {% for job_type in job_types %}
