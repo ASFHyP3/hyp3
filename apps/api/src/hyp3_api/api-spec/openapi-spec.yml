@@ -162,7 +162,11 @@ components:
           $ref: "#components/schemas/subscription_job_specification"
 
     subscriptions_response:
-      description: foo
+      type: array
+      items:
+        $ref: "#/components/schemas/subscription"
+
+    subscription:
       type: object
       required:
         - subscription_id
