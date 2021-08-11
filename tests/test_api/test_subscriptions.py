@@ -79,7 +79,7 @@ def test_search_criteria(client, tables):
             'polarization': ['VV'],
         },
         'job_specification': {
-            'job_type': 'INSAR_GAMMA',
+            'job_type': 'RTC_GAMMA',
             'name': 'SubscriptionName'
         }
     }
@@ -103,7 +103,7 @@ def test_search_criteria(client, tables):
                 k: v,
             },
             'job_specification': {
-                'job_type': 'INSAR_GAMMA',
+                'job_type': 'RTC_GAMMA',
                 'name': 'SubscriptionName'
             }
         }
@@ -116,7 +116,7 @@ def test_search_criteria(client, tables):
             'end': '2020-01-01T00:00:00+00:00',
         },
         'job_specification': {
-            'job_type': 'INSAR_GAMMA',
+            'job_type': 'RTC_GAMMA',
             'name': 'SubscriptionName'
         }
     }
