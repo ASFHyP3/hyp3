@@ -23,7 +23,7 @@ def validate_subscription(subscription):
     job_type = subscription.get('job_specification', {}).get('job_type')
     processing_level = subscription.get('search_parameters', {}).get('processingLevel', 'SLC')
     if job_type == 'INSAR_GAMMA' and processing_level != 'SLC':
-        raise ValueError(f'processingLevel must be SLC when job_type is INSAR_GAMMA')
+        raise ValueError('processingLevel must be SLC when job_type is INSAR_GAMMA')
 
 
 def put_subscription(user, subscription):

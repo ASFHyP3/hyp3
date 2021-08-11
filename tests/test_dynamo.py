@@ -513,7 +513,6 @@ def test_validate_subscription():
         dynamo.subscriptions.validate_subscription(subscription)
 
 
-
 def test_get_subscriptions_for_user(tables):
     table_items = [
         {
