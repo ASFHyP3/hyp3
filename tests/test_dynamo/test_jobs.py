@@ -1,7 +1,5 @@
-from datetime import datetime, timedelta, timezone
-from decimal import Decimal
+from datetime import datetime, timezone
 
-import pytest
 from conftest import list_have_same_elements
 
 import dynamo
@@ -309,25 +307,6 @@ def test_get_job(tables):
     assert dynamo.jobs.get_job('foo') is None
 
 
-def test_get_user(tables):
-    table_items = [
-        {
-            'user_id': 'user1',
-            'max_jobs_per_user': 5
-        },
-        {
-            'user_id': 'user2',
-            'max_jobs_per_user': 15
-        },
-    ]
-    for item in table_items:
-        tables.users_table.put_item(Item=item)
-
-    assert dynamo.user.get_user('user1') == table_items[0]
-    assert dynamo.user.get_user('user2') == table_items[1]
-    assert dynamo.user.get_user('foo') is None
-
-
 def test_query_jobs_sort_order(tables):
     table_items = [
         {
@@ -389,140 +368,6 @@ def test_update_job(tables):
         },
     ]
     assert response['Items'] == expected_response
-
-
-def test_decimal_conversion(tables):
-    table_items = [
-        {
-            'job_id': 'job1',
-            'job_type': 'RTC_GAMMA',
-            'name': 'name1',
-            'user_id': 'user1',
-            'status_code': 'status1',
-            'request_time': '2000-01-03T00:00:00+00:00',
-            'float_value': 30.04,
-        },
-        {
-            'job_id': 'job2',
-            'job_type': 'RTC_GAMMA',
-            'name': 'name1',
-            'user_id': 'user1',
-            'status_code': 'status1',
-            'request_time': '2000-01-02T00:00:00+00:00',
-            'float_value': 0.0,
-        },
-        {
-            'job_id': 'job3',
-            'job_type': 'INSAR_GAMMA',
-            'name': 'name2',
-            'user_id': 'user1',
-            'status_code': 'status1',
-            'request_time': '2000-01-01T00:00:00+00:00',
-            'float_value': 0.1,
-        },
-    ]
-    for item in table_items:
-        tables.jobs_table.put_item(Item=dynamo.util.convert_floats_to_decimals(item))
-
-    response, _ = dynamo.jobs.query_jobs('user1')
-    assert response[0]['float_value'] == Decimal('30.04')
-    assert response[1]['float_value'] == Decimal('0.0')
-    assert response[2]['float_value'] == Decimal('0.1')
-
-
-def test_put_subscription(tables):
-    subscription = {
-        'job_definition': {
-            'job_type': 'RTC_GAMMA',
-            'name': 'sub1',
-        },
-        'search_parameters': {
-            'start': '2020-01-01T00:00:00+00:00',
-            'end': '2020-01-02T00:00:00+00:00',
-        }
-    }
-    response = dynamo.subscriptions.put_subscription('user1', subscription)
-    assert [response] == tables.subscriptions_table.scan()['Items']
-
-    assert 'subscription_id' in response
-    assert isinstance(response['subscription_id'], str)
-    del response['subscription_id']
-
-    assert response == {
-        'user_id': 'user1',
-        'job_definition': {
-            'job_type': 'RTC_GAMMA',
-            'name': 'sub1',
-        },
-        'search_parameters': {
-            'start': '2020-01-01T00:00:00+00:00',
-            'end': '2020-01-02T00:00:00+00:00',
-            'beamMode': ['IW'],
-            'platform': 'S1',
-            'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
-            'processingLevel': 'SLC',
-        }
-    }
-
-
-def test_validate_subscription():
-    subscription = {
-        'search_parameters': {
-            'start': '2021-01-01T00:00:00+00:00',
-        }
-    }
-
-    good_end_dates = [
-        '2021-01-01T00:00:00-00:01',
-        '2021-01-01T00:01:00+00:00',
-        dynamo.util.format_time(datetime.now(tz=timezone.utc) + timedelta(days=180)),
-    ]
-
-    bad_end_dates = [
-        '2021-01-01T00:00:00+00:00',
-        '2021-01-01T00:00:00+00:01',
-        dynamo.util.format_time(datetime.now(tz=timezone.utc) + timedelta(days=180, seconds=1)),
-    ]
-
-    for end in bad_end_dates:
-        subscription['search_parameters']['end'] = end
-        with pytest.raises(ValueError):
-            dynamo.subscriptions.validate_subscription(subscription)
-
-    for end in good_end_dates:
-        subscription['search_parameters']['end'] = end
-        dynamo.subscriptions.validate_subscription(subscription)
-
-
-def test_get_subscriptions_for_user(tables):
-    table_items = [
-        {
-            'subscription_id': 'sub1',
-            'job_type': 'INSAR_GAMMA',
-            'user_id': 'user1'
-        },
-        {
-            'subscription_id': 'sub2',
-            'job_type': 'INSAR_GAMMA',
-            'user_id': 'user1'
-        },
-        {
-            'subscription_id': 'sub3',
-            'job_type': 'INSAR_GAMMA',
-            'user_id': 'user1'
-        },
-        {
-            'subscription_id': 'sub4',
-            'job_type': 'INSAR_GAMMA',
-            'user_id': 'user2'
-        },
-    ]
-    for item in table_items:
-        tables.subscriptions_table.put_item(Item=item)
-    response = dynamo.subscriptions.get_subscriptions_for_user('user1')
-    assert response == table_items[:3]
-    response = dynamo.subscriptions.get_subscriptions_for_user('user2')
-    assert response == [table_items[3]]
 
 
 def test_get_jobs_by_status_code(tables):

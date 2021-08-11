@@ -2,8 +2,8 @@ from http import HTTPStatus
 from unittest import mock
 from urllib.parse import unquote
 
-from test_api.conftest import JOBS_URI, login, make_db_record
 from conftest import list_have_same_elements
+from test_api.conftest import JOBS_URI, login, make_db_record
 
 
 def test_list_jobs(client, tables):
