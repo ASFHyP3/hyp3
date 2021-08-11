@@ -484,14 +484,34 @@ def test_validate_subscription():
         dynamo.util.format_time(datetime.now(tz=timezone.utc) + timedelta(days=180, seconds=1)),
     ]
 
-    for end in bad_end_dates:
-        subscription['search_parameters']['end'] = end
+    for bad_end_date in bad_end_dates:
+        subscription['search_parameters']['end'] = bad_end_date
         with pytest.raises(ValueError):
             dynamo.subscriptions.validate_subscription(subscription)
 
-    for end in good_end_dates:
-        subscription['search_parameters']['end'] = end
+    for good_end_date in good_end_dates:
+        subscription['search_parameters']['end'] = good_end_date
         dynamo.subscriptions.validate_subscription(subscription)
+
+    subscription = {
+        'job_specification': {
+            'job_type': 'INSAR_GAMMA',
+            'name': 'foo',
+        },
+        'search_parameters': {
+            'start': '2021-01-01T00:00:00+00:00',
+            'end': '2021-01-02T00:00:00+00:00',
+        },
+    }
+    dynamo.subscriptions.validate_subscription(subscription)
+
+    subscription['search_parameters']['processingLevel'] = 'SLC'
+    dynamo.subscriptions.validate_subscription(subscription)
+
+    subscription['search_parameters']['processingLevel'] = 'GRD_HD'
+    with pytest.raises(ValueError):
+        dynamo.subscriptions.validate_subscription(subscription)
+
 
 
 def test_get_subscriptions_for_user(tables):
