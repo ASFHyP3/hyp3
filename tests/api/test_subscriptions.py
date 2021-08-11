@@ -9,6 +9,10 @@ def test_post_subscription(client, tables):
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
             'end': '2020-01-01T00:00:00+00:00',
+            'platform': 'S1',
+            'beamMode': ['IW'],
+            'polarization': ['VV'],
+            'processingLevel': 'SLC',
         },
         'job_specification': {
             'job_parameters': {
@@ -67,12 +71,12 @@ def test_search_criteria(client, tables):
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
             'end': '2020-01-01T00:00:00+00:00',
-            'asfframe': 50,
-            'beamMode': 'IW',
+            'frame': [50],
+            'relativeOrbit': [1, 5],
             'flightDirection': 'ASCENDING',
             'intersectsWith': 'POLYGON((-5 2, -3 2, -3 5, -5 5, -5 2))',
             'processingLevel': 'GRD_HD',
-            'polorization': 'VV',
+            'polarization': ['VV'],
         },
         'job_specification': {
             'job_type': 'INSAR_GAMMA',
@@ -83,12 +87,13 @@ def test_search_criteria(client, tables):
     assert response.status_code == HTTPStatus.OK
 
     bad_params = {
-        'asfframe': 99999,
-        'beamMode': 'EW',
+        'frame': [99999],
+        'relativeOrbit': 123,
         'flightDirection': 'Foo',
         'intersectsWith': '-190,400,200,90',
         'processingLevel': 'OCN',
-        'polorization': 'DUAL VV',
+        'polarization': ['DUAL VV'],
+        'undefined': 'foo',
     }
     for k, v in bad_params.items():
         params = {
