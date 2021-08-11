@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 import pytest
-from test_api.conftest import list_have_same_elements
+from conftest import list_have_same_elements
 
 import dynamo
 

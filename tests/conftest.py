@@ -43,3 +43,7 @@ def tables(table_properties):
             )
         tables = Tables()
         yield tables
+
+
+def list_have_same_elements(l1, l2):
+    return [item for item in l1 if item not in l2] == [] == [item for item in l2 if item not in l1]
