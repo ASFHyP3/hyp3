@@ -9,6 +9,10 @@ def test_post_subscription(client, tables):
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
             'end': '2020-01-01T00:00:00+00:00',
+            'platform': 'S1',
+            'beamMode': ['IW'],
+            'polarization': ['VV'],
+            'processingLevel': 'SLC',
         },
         'job_specification': {
             'job_parameters': {
@@ -72,7 +76,7 @@ def test_search_criteria(client, tables):
             'flightDirection': 'ASCENDING',
             'intersectsWith': 'POLYGON((-5 2, -3 2, -3 5, -5 5, -5 2))',
             'processingLevel': 'GRD_HD',
-            'polorization': ['VV'],
+            'polarization': ['VV'],
         },
         'job_specification': {
             'job_type': 'INSAR_GAMMA',

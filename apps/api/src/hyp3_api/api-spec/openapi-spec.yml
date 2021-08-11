@@ -307,7 +307,7 @@ components:
             type: integer
             minimum: 1
             maximum: 175
-        polorization:
+        polarization:
           type: array
           minItems: 1
           items:
