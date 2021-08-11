@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta, timezone
-
-import dateutil.parser
 from os import environ
 from uuid import uuid4
 
+import dateutil.parser
 from boto3.dynamodb.conditions import Key
 
 from dynamo.util import DYNAMODB_RESOURCE, format_time
