@@ -104,7 +104,10 @@ def get_user(user):
 
 
 def post_subscriptions(body, user):
-    return dynamo.subscriptions.put_subscription(user, body)
+    try:
+        return dynamo.subscriptions.put_subscription(user, body)
+    except ValueError as e:
+        abort(problem_format(400, 'Bad Request', str(e)))
 
 
 def get_subscriptions(user):
