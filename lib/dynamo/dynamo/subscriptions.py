@@ -20,6 +20,11 @@ def validate_subscription(subscription):
         raise ValueError(f'End date: {format_time(end)} must be within {end_threshold_in_days} days: '
                          f'{format_time(max_end)}')
 
+    job_type = subscription.get('job_specification', {}).get('job_type')
+    processing_level = subscription.get('search_parameters', {}).get('processingLevel', 'SLC')
+    if job_type == 'INSAR_GAMMA' and processing_level != 'SLC':
+        raise ValueError('processingLevel must be SLC when job_type is INSAR_GAMMA')
+
 
 def put_subscription(user, subscription):
     subscription = {
