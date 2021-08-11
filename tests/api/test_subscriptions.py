@@ -124,8 +124,6 @@ def test_search_criteria(client, tables):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-
-
 def test_get_subscriptions(client, tables):
     login(client, username='subscriptionsUser')
     response = client.get(SUBSCRIPTIONS_URI)
