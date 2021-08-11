@@ -121,3 +121,32 @@ def test_get_subscriptions_for_user(tables):
     assert response == table_items[:3]
     response = dynamo.subscriptions.get_subscriptions_for_user('user2')
     assert response == [table_items[3]]
+
+
+def test_get_all_subscriptions(tables):
+    table_items = [
+        {
+            'subscription_id': 'sub1',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1'
+        },
+        {
+            'subscription_id': 'sub2',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1'
+        },
+        {
+            'subscription_id': 'sub3',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1'
+        },
+        {
+            'subscription_id': 'sub4',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user2'
+        },
+    ]
+    for item in table_items:
+        tables.subscriptions_table.put_item(Item=item)
+    response = dynamo.subscriptions.get_all_subscriptions()
+    assert response == table_items
