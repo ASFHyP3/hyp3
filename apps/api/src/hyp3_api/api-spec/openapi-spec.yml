@@ -179,7 +179,8 @@ components:
           $ref: "#/components/schemas/search_parameters"
         job_specification:
           $ref: "#components/schemas/subscription_job_specification"
-
+        user_id:
+          $ref: "#/components/schemas/user_id"
 
     user:
       description: Information about a user (quota, user id)
