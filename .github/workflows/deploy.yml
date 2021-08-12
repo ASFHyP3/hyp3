@@ -3,7 +3,8 @@ name: Deploy to AWS
 on:
   push:
     branches:
-      - subscriptions
+      - main
+      - develop
 
 jobs:
   deploy:
