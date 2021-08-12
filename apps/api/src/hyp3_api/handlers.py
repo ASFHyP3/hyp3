@@ -101,3 +101,14 @@ def get_user(user):
         },
         'job_names': get_names_for_user(user)
     }
+
+
+def post_subscriptions(body, user):
+    try:
+        return dynamo.subscriptions.put_subscription(user, body)
+    except ValueError as e:
+        abort(problem_format(400, 'Bad Request', str(e)))
+
+
+def get_subscriptions(user):
+    return dynamo.subscriptions.get_subscriptions_for_user(user)

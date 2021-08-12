@@ -4,11 +4,14 @@ from decimal import Decimal
 from os import environ
 from pathlib import Path
 
+import shapely.errors
+import shapely.wkt
 import yaml
 from flask import abort, g, jsonify, make_response, redirect, render_template, request
 from flask_cors import CORS
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
 from openapi_core.spec.shortcuts import create_spec
+from openapi_core.validation.request.validators import RequestValidator
 from openapi_core.validation.response.datatypes import ResponseValidationResult
 
 from hyp3_api import app, auth, handlers
@@ -19,7 +22,7 @@ api_spec_dict = get_spec_yaml(api_spec_file)
 api_spec = create_spec(api_spec_dict)
 CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
 
-AUTHENTICATED_ROUTES = ['/jobs', '/user']
+AUTHENTICATED_ROUTES = ['/jobs', '/user', '/subscriptions']
 
 
 @app.before_request
@@ -93,12 +96,24 @@ class CustomEncoder(json.JSONEncoder):
         json.JSONEncoder.default(self, o)
 
 
-class NonValidator():
+class NonValidator:
     def __init__(self, spec):
         pass
 
     def validate(self, res):
         return ResponseValidationResult()
+
+
+class WKTValidator:
+    def validate(self, value):
+        try:
+            shapely.wkt.loads(value)
+        except shapely.errors.WKTReadingError:
+            return False
+        return True
+
+    def unmarshal(self, value):
+        return value
 
 
 class Jobs(FlaskOpenAPIView):
@@ -127,8 +142,26 @@ class Jobs(FlaskOpenAPIView):
 
 
 class User(FlaskOpenAPIView):
+    def __init__(self, spec):
+        super().__init__(spec)
+        self.response_validator = NonValidator
+
     def get(self):
         return jsonify(handlers.get_user(g.user))
+
+
+class Subscriptions(FlaskOpenAPIView):
+    def __init__(self, spec):
+        super().__init__(spec)
+        self.request_validator = RequestValidator(spec, custom_formatters={'wkt': WKTValidator()})
+        self.response_validator = NonValidator
+
+    def post(self):
+        body = request.get_json()
+        return jsonify(handlers.post_subscriptions(body, g.user))
+
+    def get(self):
+        return jsonify(handlers.get_subscriptions(g.user))
 
 
 app.json_encoder = CustomEncoder
@@ -140,3 +173,6 @@ app.add_url_rule('/jobs/<job_id>', view_func=jobs_view, methods=['GET'])
 
 user_view = User.as_view('user', api_spec)
 app.add_url_rule('/user', view_func=user_view)
+
+subscriptions_view = Subscriptions.as_view('subscriptions', api_spec)
+app.add_url_rule('/subscriptions', view_func=subscriptions_view)

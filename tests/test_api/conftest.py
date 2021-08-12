@@ -10,6 +10,7 @@ from hyp3_api.util import get_granules
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 USER_URI = '/user'
+SUBSCRIPTIONS_URI = '/subscriptions'
 
 DEFAULT_JOB_ID = 'myJobId'
 DEFAULT_USERNAME = 'test_username'
@@ -106,7 +107,3 @@ def setup_requests_mock(batch):
 
 def login(client, username=DEFAULT_USERNAME):
     client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username))
-
-
-def list_have_same_elements(l1, l2):
-    return [item for item in l1 if item not in l2] == [] == [item for item in l2 if item not in l1]

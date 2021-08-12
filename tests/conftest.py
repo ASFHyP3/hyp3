@@ -12,6 +12,7 @@ def table_properties():
     class TableProperties:
         jobs_table = get_table_properties_from_template('JobsTable')
         users_table = get_table_properties_from_template('UsersTable')
+        subscriptions_table = get_table_properties_from_template('SubscriptionsTable')
     return TableProperties()
 
 
@@ -36,5 +37,13 @@ def tables(table_properties):
                 TableName=environ['USERS_TABLE_NAME'],
                 **table_properties.users_table,
             )
+            subscriptions_table = DYNAMODB_RESOURCE.create_table(
+                TableName=environ['SUBSCRIPTIONS_TABLE_NAME'],
+                **table_properties.subscriptions_table
+            )
         tables = Tables()
         yield tables
+
+
+def list_have_same_elements(l1, l2):
+    return [item for item in l1 if item not in l2] == [] == [item for item in l2 if item not in l1]
