@@ -128,7 +128,7 @@ def test_get_subscriptions(client, tables):
     login(client, username='subscriptionsUser')
     response = client.get(SUBSCRIPTIONS_URI)
     assert response.status_code == HTTPStatus.OK
-    assert response.json == []
+    assert response.json == {'subscriptions': []}
 
     items = [
         {
@@ -171,5 +171,5 @@ def test_get_subscriptions(client, tables):
     for item in items:
         tables.subscriptions_table.put_item(Item=item)
     response = client.get(SUBSCRIPTIONS_URI)
-    assert response.json == items
+    assert response.json == {'subscriptions': items}
     assert response.status_code == HTTPStatus.OK
