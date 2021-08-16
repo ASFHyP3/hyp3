@@ -27,7 +27,10 @@ def get_unprocessed_granules(subscription):
 
 
 def get_neighbors(granule, depth):
-    return []
+    reference = asf_search.search(granule_list=granule, processingLevel='SLC')[0]
+    stack = asf_search.baseline_search.stack_from_product(reference)
+    neighbors = [item['sceneName'] for item in neighbors[-depth-1:-1]]
+    return neighbors
 
 
 def get_payload_for_job(subscription, granule):
