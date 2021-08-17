@@ -191,6 +191,8 @@ components:
     subscriptions_update_expression:
       description: Change/update a subscription
       type: object
+      required:
+        - end
       properties:
         end:
           $ref: "#/components/schemas/datetime"

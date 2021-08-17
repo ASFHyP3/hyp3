@@ -185,6 +185,11 @@ def test_update_subscription(client, tables):
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
             'end': '2020-01-02T00:00:00+00:00',
+
+            'beamMode': ['IW'],
+            'platform': 'S1',
+            'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
+            'processingLevel': 'SLC',
         },
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
@@ -192,7 +197,7 @@ def test_update_subscription(client, tables):
     }
     tables.subscriptions_table.put_item(Item=subscription)
 
-    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621', json={'end': '2021-01-02T00:00:00+00:00'})
+    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621', json={'end': '2020-02-02T00:00:00+00:00'})
     assert api_response.status_code == HTTPStatus.OK
     assert api_response.json == {
         'job_definition': {
@@ -201,7 +206,12 @@ def test_update_subscription(client, tables):
         },
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
-            'end': '2021-01-02T00:00:00+00:00',
+            'end': '2020-02-02T00:00:00+00:00',
+
+            'beamMode': ['IW'],
+            'platform': 'S1',
+            'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
+            'processingLevel': 'SLC',
         },
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
@@ -217,25 +227,12 @@ def test_update_subscription(client, tables):
         },
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
-            'end': '2021-01-02T00:00:00+00:00',
-        },
-        'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
-        'job_type': 'INSAR_GAMMA',
-        'user_id': 'user1',
-    }
+            'end': '2020-02-02T00:00:00+00:00',
 
-    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621', json={})
-    assert api_response.status_code == HTTPStatus.OK
-    response = tables.subscriptions_table.scan()
-
-    assert response['Items'][0] == {
-        'job_definition': {
-            'job_type': 'RTC_GAMMA',
-            'name': 'sub1',
-        },
-        'search_parameters': {
-            'start': '2020-01-01T00:00:00+00:00',
-            'end': '2021-01-02T00:00:00+00:00',
+            'beamMode': ['IW'],
+            'platform': 'S1',
+            'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
+            'processingLevel': 'SLC',
         },
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
@@ -254,11 +251,16 @@ def test_update_subscription_wrong_user(client, tables):
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
             'end': '2020-01-02T00:00:00+00:00',
+
+            'beamMode': ['IW'],
+            'platform': 'S1',
+            'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
+            'processingLevel': 'SLC',
         },
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user2',
     }
     tables.subscriptions_table.put_item(Item=subscription)
-    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621', json={})
+    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621', json={'end': '2020-02-02T00:00:00+00:00'})
     assert api_response.status_code == HTTPStatus.FORBIDDEN
