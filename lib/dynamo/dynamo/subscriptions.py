@@ -65,6 +65,25 @@ def get_subscriptions_for_user(user):
     return subscriptions
 
 
+def get_subscription_by_id(subscription_id):
+    table = DYNAMODB_RESOURCE.Table(environ['SUBSCRIPTIONS_TABLE_NAME'])
+    response = table.get_item(Key={'subscription_id': subscription_id})
+    return response.get('Item')
+
+
+def update_subscription(subscription):
+    table = DYNAMODB_RESOURCE.Table(environ['SUBSCRIPTIONS_TABLE_NAME'])
+    primary_key = 'subscription_id'
+    key = {primary_key: subscription[primary_key]}
+    update_expression = 'SET {}'.format(','.join(f'{k}=:{k}' for k in subscription if k != primary_key))
+    expression_attribute_values = {f':{k}': v for k, v in subscription.items() if k != primary_key}
+    table.update_item(
+        Key=key,
+        UpdateExpression=update_expression,
+        ExpressionAttributeValues=expression_attribute_values,
+    )
+
+
 def get_all_subscriptions():
     table = DYNAMODB_RESOURCE.Table(environ['SUBSCRIPTIONS_TABLE_NAME'])
 

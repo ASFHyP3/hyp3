@@ -124,16 +124,14 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/subscriptions_response"
+  /subscriptions/{subscription_id}:
     patch:
       description: Change information about the given subscription
       requestBody:
         content:
           application/json:
             schema:
-              type:
-                array
-              items:
-                $ref: '#/components/schemas/subscriptions_update_expression'
+              $ref: '#/components/schemas/subscriptions_update_expression'
         required: true
       responses:
         "200":
