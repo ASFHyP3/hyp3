@@ -74,6 +74,6 @@ def handle_subscription(subscription):
 def lambda_handler(event, context):
     subscriptions = dynamo.subscriptions.get_all_subscriptions()
     for subscription in subscriptions:
-        end_filter = datetime.now(tzinfo=timezone.utc) + timedelta(days=5)
+        end_filter = datetime.now(tzinfo=timezone.utc) - timedelta(days=5)
         if end_filter <= dateutil.parser.parse(subscription['search_parameters']['end']):
             handle_subscription(subscription)
