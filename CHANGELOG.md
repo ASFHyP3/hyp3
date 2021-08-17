@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.2.0](https://github.com/ASFHyP3/hyp3/compare/v2.1.1...v2.2.0)
 ### Added
+- HyP3 content bucket now allows Cross Origin Resource Headers
 - Exposed new `apply_water_mask` API parameter for INSAR_GAMMA jobs, which sets pixels
   over coastal and large inland waterbodies as invalid for phase unwrapping.
 
