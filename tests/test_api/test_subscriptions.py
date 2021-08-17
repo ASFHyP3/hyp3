@@ -1,4 +1,3 @@
-import http
 from http import HTTPStatus
 
 from .conftest import SUBSCRIPTIONS_URI, login
