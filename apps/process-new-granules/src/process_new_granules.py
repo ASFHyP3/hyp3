@@ -29,7 +29,8 @@ def get_unprocessed_granules(subscription):
 def get_neighbors(granule, depth):
     reference = asf_search.search(granule_list=granule, processingLevel='SLC')[0]
     stack = asf_search.baseline_search.stack_from_product(reference)
-    neighbors = [item['sceneName'] for item in stack[-depth-1:-1]]
+    stack = [item for item in stack if item['temporalBaseline'] < 0]
+    neighbors = [item['sceneName'] for item in stack[-depth:]]
     return neighbors
 
 
@@ -44,10 +45,12 @@ def get_payload_for_job(subscription, granule):
         job_specification['job_parameters']['granules'] = [granule]
         payload = [job_specification]
     elif job_type in ['AUTORIFT', 'INSAR_GAMMA']:
-        payload = [deepcopy(job_specification), deepcopy(job_specification)]
+        payload = []
         neighbors = get_neighbors(granule, 2)
-        payload[0]['job_parameters']['granules'] = [granule, neighbors[0]]
-        payload[1]['job_parameters']['granules'] = [granule, neighbors[1]]
+        for neighbor in neighbors:
+            job = deepcopy(job_specification)
+            job['job_parameters']['granules'] = [granule, neighbor]
+            payload.append(job)
     else:
         raise ValueError(f'Subscription job type {job_type} not supported')
     return payload
