@@ -123,6 +123,28 @@ def test_get_subscriptions_for_user(tables):
     assert response == [table_items[3]]
 
 
+def test_get_subscription_by_id(tables):
+    assert dynamo.subscriptions.get_subscription_by_id('sub1') is None
+
+    table_items = [
+        {
+            'subscription_id': 'sub1',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1'
+        },
+        {
+            'subscription_id': 'sub2',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user2'
+        },
+    ]
+    for item in table_items:
+        tables.subscriptions_table.put_item(Item=item)
+
+    assert dynamo.subscriptions.get_subscription_by_id('sub1') == table_items[0]
+    assert dynamo.subscriptions.get_subscription_by_id('sub2') == table_items[1]
+
+
 def test_get_all_subscriptions(tables):
     table_items = [
         {
