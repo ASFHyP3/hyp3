@@ -182,6 +182,7 @@ components:
       required:
         - search_parameters
         - job_specification
+      additionalProperties: false
       properties:
         search_parameters:
           $ref: "#/components/schemas/search_parameters"
@@ -193,6 +194,7 @@ components:
       type: object
       required:
         - end
+      additionalProperties: false
       properties:
         end:
           $ref: "#/components/schemas/datetime"
@@ -208,6 +210,7 @@ components:
         - subscription_id
         - search_parameters
         - job_specification
+      additionalProperties: false
       properties:
         subscription_id:
           $ref: "#/components/schemas/job_or_subscription_id"
@@ -267,6 +270,7 @@ components:
       required:
         - job_type
         - name
+      additionalProperties: false
       properties:
         job_type:
           $ref: "./job_parameters.yml#components/schemas/job_type"
@@ -308,6 +312,7 @@ components:
       required:
         - start
         - end
+      additionalProperties: false
       properties:
         start:
           $ref: "#/components/schemas/datetime"
