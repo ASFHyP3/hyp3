@@ -26,11 +26,12 @@ def get_unprocessed_granules(subscription):
     return list(set(all_granules) - set(processed_granules))
 
 
-def get_neighbors(granule, depth):
+def get_neighbors(granule, depth, platform):
     reference = asf_search.search(granule_list=granule, processingLevel='SLC')[0]
     stack = asf_search.baseline_search.stack_from_product(reference)
-    stack = [item for item in stack if item['temporalBaseline'] < 0]
-    neighbors = [item['sceneName'] for item in stack[-depth:]]
+    stack = [item for item in stack if
+             item.properties['temporalBaseline'] < 0 and item.properties['sceneName'].startwith(platform)]
+    neighbors = [item.properties['sceneName'] for item in stack[-depth:]]
     return neighbors
 
 
@@ -46,7 +47,7 @@ def get_payload_for_job(subscription, granule):
         payload = [job_specification]
     elif job_type in ['AUTORIFT', 'INSAR_GAMMA']:
         payload = []
-        neighbors = get_neighbors(granule, 2)
+        neighbors = get_neighbors(granule, 2, subscription['search_parameters']['platform'])
         for neighbor in neighbors:
             job = deepcopy(job_specification)
             job['job_parameters']['granules'] = [granule, neighbor]
