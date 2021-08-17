@@ -1,3 +1,4 @@
+import http
 from http import HTTPStatus
 
 from .conftest import SUBSCRIPTIONS_URI, login
@@ -173,3 +174,92 @@ def test_get_subscriptions(client, tables):
     response = client.get(SUBSCRIPTIONS_URI)
     assert response.json == {'subscriptions': items}
     assert response.status_code == HTTPStatus.OK
+
+
+def test_update_subscription(client, tables):
+    login(client, 'user1')
+    subscription = {
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-02T00:00:00+00:00',
+        },
+        'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
+        'job_type': 'INSAR_GAMMA',
+        'user_id': 'user1',
+    }
+    tables.subscriptions_table.put_item(Item=subscription)
+
+    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621', json={'end': '2021-01-02T00:00:00+00:00'})
+    assert api_response.status_code == HTTPStatus.OK
+    assert api_response.json == {
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2021-01-02T00:00:00+00:00',
+        },
+        'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
+        'job_type': 'INSAR_GAMMA',
+        'user_id': 'user1',
+    }
+
+    response = tables.subscriptions_table.scan()
+
+    assert response['Items'][0] == {
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2021-01-02T00:00:00+00:00',
+        },
+        'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
+        'job_type': 'INSAR_GAMMA',
+        'user_id': 'user1',
+    }
+
+    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621', json={})
+    assert api_response.status_code == HTTPStatus.OK
+    response = tables.subscriptions_table.scan()
+
+    assert response['Items'][0] == {
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2021-01-02T00:00:00+00:00',
+        },
+        'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
+        'job_type': 'INSAR_GAMMA',
+        'user_id': 'user1',
+    }
+
+
+def test_update_subscription_wrong_user(client, tables):
+    login(client, 'user1')
+
+    subscription = {
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-02T00:00:00+00:00',
+        },
+        'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
+        'job_type': 'INSAR_GAMMA',
+        'user_id': 'user2',
+    }
+    tables.subscriptions_table.put_item(Item=subscription)
+    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621', json={})
+    assert api_response.status_code == HTTPStatus.FORBIDDEN

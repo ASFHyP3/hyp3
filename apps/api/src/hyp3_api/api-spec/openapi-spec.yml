@@ -127,6 +127,12 @@ paths:
   /subscriptions/{subscription_id}:
     patch:
       description: Change information about the given subscription
+      parameters:
+        - name: subscription_id
+          in: path
+          schema:
+            $ref: "#/components/schemas/job_or_subscription_id"
+          required: true
       requestBody:
         content:
           application/json:
@@ -185,11 +191,7 @@ components:
     subscriptions_update_expression:
       description: Change/update a subscription
       type: object
-      required:
-        - subscription_id
       properties:
-        subscription_id:
-          $ref: "#/components/schemas/job_or_subscription_id"
         end:
           $ref: "#/components/schemas/datetime"
 
