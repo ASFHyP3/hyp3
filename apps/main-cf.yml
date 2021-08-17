@@ -169,15 +169,11 @@ Resources:
               DaysAfterInitiation: 1
       CorsConfiguration:
         CorsRules:
-          - AllowedHeaders:
-              - '*'
-            AllowedMethods:
+          - AllowedMethods:
               - GET
               - HEAD
             AllowedOrigins:
-              - null
-            ExposeHeaders: []
-            MaxAge: 3000
+              - "*.asf.alaska.edu"
 
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
