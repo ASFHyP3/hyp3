@@ -1,6 +1,6 @@
+import itertools
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
-import itertools
 
 import asf_search
 import dateutil.parser
@@ -29,7 +29,7 @@ def get_unprocessed_granules(subscription):
 def get_neighbors(granule, depth):
     reference = asf_search.search(granule_list=granule, processingLevel='SLC')[0]
     stack = asf_search.baseline_search.stack_from_product(reference)
-    neighbors = [item['sceneName'] for item in neighbors[-depth-1:-1]]
+    neighbors = [item['sceneName'] for item in stack[-depth-1:-1]]
     return neighbors
 
 
@@ -70,6 +70,6 @@ def handle_subscription(subscription):
 def lambda_handler(event, context):
     subscriptions = dynamo.subscriptions.get_all_subscriptions()
     for subscription in subscriptions:
-        end_filter = datetime.now(tzinfo=timezone.utc) + timedelta(days = 5)
+        end_filter = datetime.now(tzinfo=timezone.utc) + timedelta(days=5)
         if end_filter <= dateutil.parser.parse(subscription['search_parameters']['end']):
             handle_subscription(subscription)
