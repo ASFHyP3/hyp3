@@ -150,3 +150,44 @@ def test_get_all_subscriptions(tables):
         tables.subscriptions_table.put_item(Item=item)
     response = dynamo.subscriptions.get_all_subscriptions()
     assert response == table_items
+
+
+def test_put_subscription_update(tables):
+    subscription =  {
+        'user_id': 'user1',
+        'subscription_id': 'sub1',
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-02T00:00:00+00:00',
+            'beamMode': ['IW'],
+            'platform': 'S1',
+            'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
+            'processingLevel': 'SLC',
+        }
+    }
+    tables.subscriptions_table.put_item(Item=subscription)
+
+    updated_subscription = {
+        'user_id': 'user1',
+        'subscription_id': 'sub1',
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-06-02T00:00:00+00:00',
+            'beamMode': ['IW'],
+            'platform': 'S1',
+            'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
+            'processingLevel': 'SLC',
+        }
+    }
+    dynamo.subscriptions.put_subscription('user1', updated_subscription)
+
+    response = tables.subscriptions_table.scan()
+    assert response['Items'] == [updated_subscription]
