@@ -29,19 +29,21 @@ def validate_subscription(subscription):
 def put_subscription(user, subscription):
     validate_subscription(subscription)
 
-    subscription = {
+    defaults = {
         'subscription_id': str(uuid4()),
         'user_id': user,
-        **subscription
     }
+    for key, value in defaults.items():
+        if key not in subscription:
+            subscription[key] = value
 
-    defaults = {
+    search_defaults = {
         'platform': 'S1',
         'processingLevel': 'SLC',
         'beamMode': ['IW'],
         'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
     }
-    for key, value in defaults.items():
+    for key, value in search_defaults.items():
         if key not in subscription['search_parameters']:
             subscription['search_parameters'][key] = value
 
@@ -63,6 +65,12 @@ def get_subscriptions_for_user(user):
         response = table.query(**params)
         subscriptions.extend(response['Items'])
     return subscriptions
+
+
+def get_subscription_by_id(subscription_id):
+    table = DYNAMODB_RESOURCE.Table(environ['SUBSCRIPTIONS_TABLE_NAME'])
+    response = table.get_item(Key={'subscription_id': subscription_id})
+    return response.get('Item')
 
 
 def get_all_subscriptions():

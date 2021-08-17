@@ -116,9 +116,36 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/subscriptions_response"
+                type: object
+                required:
+                  - subscriptions
+                properties:
+                  subscriptions:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/subscriptions_response"
+  /subscriptions/{subscription_id}:
+    patch:
+      description: Change information about the given subscription
+      parameters:
+        - name: subscription_id
+          in: path
+          schema:
+            $ref: "#/components/schemas/job_or_subscription_id"
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/subscriptions_update_expression'
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/subscriptions_response"
 
 components:
   schemas:
@@ -150,16 +177,27 @@ components:
           $ref: "#/components/schemas/next_url"
 
     subscriptions_body:
-      description: foo
+      description: Information about a subscription
       type: object
       required:
         - search_parameters
         - job_specification
+      additionalProperties: false
       properties:
         search_parameters:
           $ref: "#/components/schemas/search_parameters"
         job_specification:
           $ref: "#components/schemas/subscription_job_specification"
+
+    subscriptions_update_expression:
+      description: Change/update a subscription
+      type: object
+      required:
+        - end
+      additionalProperties: false
+      properties:
+        end:
+          $ref: "#/components/schemas/datetime"
 
     subscriptions_response:
       type: array
@@ -172,6 +210,7 @@ components:
         - subscription_id
         - search_parameters
         - job_specification
+      additionalProperties: false
       properties:
         subscription_id:
           $ref: "#/components/schemas/job_or_subscription_id"
@@ -231,6 +270,7 @@ components:
       required:
         - job_type
         - name
+      additionalProperties: false
       properties:
         job_type:
           $ref: "./job_parameters.yml#components/schemas/job_type"
@@ -272,6 +312,7 @@ components:
       required:
         - start
         - end
+      additionalProperties: false
       properties:
         start:
           $ref: "#/components/schemas/datetime"

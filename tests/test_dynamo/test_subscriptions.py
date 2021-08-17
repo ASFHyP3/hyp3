@@ -123,6 +123,28 @@ def test_get_subscriptions_for_user(tables):
     assert response == [table_items[3]]
 
 
+def test_get_subscription_by_id(tables):
+    assert dynamo.subscriptions.get_subscription_by_id('sub1') is None
+
+    table_items = [
+        {
+            'subscription_id': 'sub1',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1'
+        },
+        {
+            'subscription_id': 'sub2',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user2'
+        },
+    ]
+    for item in table_items:
+        tables.subscriptions_table.put_item(Item=item)
+
+    assert dynamo.subscriptions.get_subscription_by_id('sub1') == table_items[0]
+    assert dynamo.subscriptions.get_subscription_by_id('sub2') == table_items[1]
+
+
 def test_get_all_subscriptions(tables):
     table_items = [
         {
@@ -150,3 +172,44 @@ def test_get_all_subscriptions(tables):
         tables.subscriptions_table.put_item(Item=item)
     response = dynamo.subscriptions.get_all_subscriptions()
     assert response == table_items
+
+
+def test_put_subscription_update(tables):
+    subscription = {
+        'user_id': 'user1',
+        'subscription_id': 'sub1',
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-02T00:00:00+00:00',
+            'beamMode': ['IW'],
+            'platform': 'S1',
+            'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
+            'processingLevel': 'SLC',
+        }
+    }
+    tables.subscriptions_table.put_item(Item=subscription)
+
+    updated_subscription = {
+        'user_id': 'user1',
+        'subscription_id': 'sub1',
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-06-02T00:00:00+00:00',
+            'beamMode': ['IW'],
+            'platform': 'S1',
+            'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
+            'processingLevel': 'SLC',
+        }
+    }
+    dynamo.subscriptions.put_subscription('user1', updated_subscription)
+
+    response = tables.subscriptions_table.scan()
+    assert response['Items'] == [updated_subscription]

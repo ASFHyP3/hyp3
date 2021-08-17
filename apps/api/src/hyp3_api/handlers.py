@@ -112,3 +112,13 @@ def post_subscriptions(body, user):
 
 def get_subscriptions(user):
     return {'subscriptions': dynamo.subscriptions.get_subscriptions_for_user(user)}
+
+
+def patch_subscriptions(subscription_id, body, user):
+    subscription = dynamo.subscriptions.get_subscription_by_id(subscription_id)
+    if subscription['user_id'] != user:
+        abort(problem_format(403, 'Forbidden', 'You may not update subscriptions created by a different user'))
+    if 'end' in body:
+        subscription['search_parameters']['end'] = body['end']
+    dynamo.subscriptions.put_subscription(user, subscription)
+    return subscription
