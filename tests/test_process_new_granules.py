@@ -35,6 +35,7 @@ def test_get_payload_for_job():
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
             'end': '2020-01-01T00:00:00+00:00',
+            'platform': 'foo',
         },
         'job_specification': {
             'job_type': 'INSAR_GAMMA',
@@ -44,7 +45,7 @@ def test_get_payload_for_job():
     granule = 'granule1'
 
     mock_granules = ['granule2', 'granule3']
-    with patch('process_new_granules.get_neighbors', lambda x, y: mock_granules):
+    with patch('process_new_granules.get_neighbors', lambda x, y, z: mock_granules):
         payload = process_new_granules.get_payload_for_job(subscription, granule)
         assert payload == [
             {
