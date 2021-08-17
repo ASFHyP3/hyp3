@@ -167,6 +167,17 @@ Resources:
           - Status: Enabled
             AbortIncompleteMultipartUpload:
               DaysAfterInitiation: 1
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - *
+            AllowedMethods:
+              - GET
+              - HEAD
+            AllowedOrigins:
+              - null
+            ExposeHeaders: []
+            MaxAge: 3000
 
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
