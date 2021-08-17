@@ -175,7 +175,7 @@ def test_get_all_subscriptions(tables):
 
 
 def test_put_subscription_update(tables):
-    subscription =  {
+    subscription = {
         'user_id': 'user1',
         'subscription_id': 'sub1',
         'job_definition': {

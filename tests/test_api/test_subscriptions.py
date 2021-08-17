@@ -197,7 +197,8 @@ def test_update_subscription(client, tables):
     }
     tables.subscriptions_table.put_item(Item=subscription)
 
-    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621', json={'end': '2020-02-02T00:00:00+00:00'})
+    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
+                                json={'end': '2020-02-02T00:00:00+00:00'})
     assert api_response.status_code == HTTPStatus.OK
     assert api_response.json == {
         'job_definition': {
@@ -262,5 +263,6 @@ def test_update_subscription_wrong_user(client, tables):
         'user_id': 'user2',
     }
     tables.subscriptions_table.put_item(Item=subscription)
-    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621', json={'end': '2020-02-02T00:00:00+00:00'})
+    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
+                                json={'end': '2020-02-02T00:00:00+00:00'})
     assert api_response.status_code == HTTPStatus.FORBIDDEN
