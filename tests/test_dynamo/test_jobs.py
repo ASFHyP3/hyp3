@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 
+import pytest
+
 from conftest import list_have_same_elements
 
 import dynamo
@@ -405,6 +407,19 @@ def test_get_jobs_by_status_code(tables):
     jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=3)
     assert jobs == items[1:3]
 
+
+def test_put_jobs_exceeds_quota(tables):
+    tables.users_table.put_item(Item={'user_id': 'user1', 'max_jobs_per_month': 3})
+
+    dynamo.jobs.put_jobs('user1', [{}, {}, {}])
+    with pytest.raises(dynamo.jobs.QuotaError) as e:
+        dynamo.jobs.put_jobs('user1', [{}])
+        assert isinstance(e, dynamo.jobs.QuotaError)
+
+    dynamo.jobs.put_jobs('user2', [{} for i in range(25)])
+    with pytest.raises(dynamo.jobs.QuotaError) as e:
+        dynamo.jobs.put_jobs('user3', [{} for i in range(26)])
+        assert isinstance(e, dynamo.jobs.QuotaError)
 
 def test_decimal_conversion(tables):
     table_items = [

@@ -36,9 +36,6 @@ def post_jobs(body, user):
 
     monthly_quota = get_max_jobs_per_month(user)
     remaining_jobs = util.get_remaining_jobs_for_user(user, monthly_quota)
-    if remaining_jobs - len(body['jobs']) < 0:
-        message = f'Your monthly quota is {monthly_quota} jobs. You have {remaining_jobs} jobs remaining.'
-        abort(problem_format(400, 'Bad Request', message))
 
     try:
         validate_jobs(body['jobs'])
@@ -48,8 +45,11 @@ def post_jobs(body, user):
         abort(problem_format(400, 'Bad Request', str(e)))
 
     if not body.get('validate_only'):
-        body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'])
-    return body
+        try:
+            body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'])
+        except dynamo.jobs.QuotaError as e:
+            abort(problem_format(400, 'Bad Request', str(e)))
+        return body
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None):
