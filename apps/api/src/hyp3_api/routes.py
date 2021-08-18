@@ -46,7 +46,7 @@ def authenticate_user():
     if auth_info is not None:
         g.user = auth_info['sub']
         # disallow subscriptions for non approved users
-        if request.path.startswith('subscriptions'):
+        if request.path.startswith('/subscriptions'):
             if dynamo.user.get_user(g.user) is None:
                 abort(handlers.problem_format(403, 'Forbidden',
                                               f'user {g.user} is not authorized to submit subscriptions at this time.'))
