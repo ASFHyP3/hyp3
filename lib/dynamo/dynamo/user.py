@@ -12,7 +12,7 @@ def get_user(user):
 def get_max_jobs_per_month(user):
     user = get_user(user)
     if user:
-        max_jobs_per_month = user['max_jobs_per_month']
+        max_jobs_per_month = int(user['max_jobs_per_month'])
     else:
         max_jobs_per_month = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
     return max_jobs_per_month

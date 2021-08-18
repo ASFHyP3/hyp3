@@ -412,14 +412,22 @@ def test_put_jobs_exceeds_quota(tables):
     tables.users_table.put_item(Item={'user_id': 'user1', 'max_jobs_per_month': 3})
 
     dynamo.jobs.put_jobs('user1', [{}, {}, {}])
+    assert dynamo.jobs.count_jobs('user1') == 3
+
     with pytest.raises(dynamo.jobs.QuotaError) as e:
         dynamo.jobs.put_jobs('user1', [{}])
-        assert isinstance(e, dynamo.jobs.QuotaError)
+    assert dynamo.jobs.count_jobs('user1') == 3
 
     dynamo.jobs.put_jobs('user2', [{} for i in range(25)])
+    assert dynamo.jobs.count_jobs('user2') == 25
+
     with pytest.raises(dynamo.jobs.QuotaError) as e:
         dynamo.jobs.put_jobs('user3', [{} for i in range(26)])
-        assert isinstance(e, dynamo.jobs.QuotaError)
+
+    results = dynamo.jobs.put_jobs('user4', [{} for i in range(26)], fail_when_over_quota=False)
+    assert dynamo.jobs.count_jobs('user4') == 25
+    assert len(results) == 25
+
 
 def test_decimal_conversion(tables):
     table_items = [

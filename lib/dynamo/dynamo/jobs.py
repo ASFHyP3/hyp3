@@ -25,7 +25,7 @@ def get_remaining_jobs_for_user(user, limit):
     return max(remaining_jobs, 0)
 
 
-def put_jobs(user_id: str, jobs: List[dict]) -> List[dict]:
+def put_jobs(user_id: str, jobs: List[dict], fail_when_over_quota=True) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
@@ -33,7 +33,9 @@ def put_jobs(user_id: str, jobs: List[dict]) -> List[dict]:
     number_of_jobs = len(jobs)
     remaining_jobs = get_remaining_jobs_for_user(user_id, job_limit)
     if number_of_jobs > remaining_jobs:
-        raise QuotaError(f'Your monthly quota is {job_limit} jobs. You have {remaining_jobs} jobs remaining.')
+        if fail_when_over_quota:
+            raise QuotaError(f'Your monthly quota is {job_limit} jobs. You have {remaining_jobs} jobs remaining.')
+        jobs = jobs[:remaining_jobs]
 
     prepared_jobs = [
         {
