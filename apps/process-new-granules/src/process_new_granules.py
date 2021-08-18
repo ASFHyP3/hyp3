@@ -7,8 +7,6 @@ import dateutil.parser
 import dynamo
 
 
-class QuotaError(Exception):
-    """User is at quota and cannot submit more jobs'"""
 
 
 def get_unprocessed_granules(subscription):
@@ -65,7 +63,7 @@ def handle_subscription(subscription):
     for granule in granules:
         try:
             submit_jobs_for_granule(subscription, granule)
-        except QuotaError:
+        except dynamo.jobs.QuotaError:
             break
 
 
