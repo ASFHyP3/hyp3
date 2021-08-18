@@ -360,3 +360,6 @@ def test_get_subscription_by_id(client, tables):
             'name': 'SubscriptionName'
         }
     }
+
+    response = client.get(SUBSCRIPTIONS_URI + '/140191ab-486b-4080-ab1b-3e2c40aab6b7')
+    assert response.status_code == HTTPStatus.NOT_FOUND
