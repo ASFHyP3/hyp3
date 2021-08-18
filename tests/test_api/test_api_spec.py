@@ -1,17 +1,20 @@
 from http import HTTPStatus
 
-from test_api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login
+from test_api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, SUBSCRIPTIONS_URI, login
 
 from hyp3_api import auth, routes
 
 ENDPOINTS = {
     JOBS_URI: {'GET', 'HEAD', 'OPTIONS', 'POST'},
+    JOBS_URI + '/foo': {'GET', 'HEAD', 'OPTIONS'},
     USER_URI: {'GET', 'HEAD', 'OPTIONS'},
+    SUBSCRIPTIONS_URI: {'GET', 'HEAD', 'OPTIONS', 'POST'},
+    SUBSCRIPTIONS_URI + '/foo': {'GET', 'HEAD', 'OPTIONS', 'PATCH'},
 }
 
 
 def test_options(client):
-    all_methods = {'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE'}
+    all_methods = {'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE', 'PATCH'}
 
     login(client)
     for uri, good_methods in ENDPOINTS.items():
