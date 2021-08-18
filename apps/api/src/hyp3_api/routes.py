@@ -182,5 +182,5 @@ app.add_url_rule('/user', view_func=user_view)
 
 subscriptions_view = Subscriptions.as_view('subscriptions', api_spec)
 app.add_url_rule('/subscriptions/<subscription_id>', view_func=subscriptions_view, methods=['PATCH', 'GET'])
-app.add_url_rule('/subscriptions', view_func=subscriptions_view, defaults={'subscription_id': None})
+app.add_url_rule('/subscriptions', view_func=subscriptions_view, methods=['GET'], defaults={'subscription_id': None})
 app.add_url_rule('/subscriptions', view_func=subscriptions_view, methods=['POST'])
