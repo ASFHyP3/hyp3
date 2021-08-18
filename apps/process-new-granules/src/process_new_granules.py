@@ -1,4 +1,3 @@
-import itertools
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 
@@ -21,8 +20,7 @@ def get_unprocessed_granules(subscription):
         name=subscription['job_specification']['name'],
         job_type=subscription['job_specification']['job_type'],
     )
-    #  TODO This line could be made a lot clearer.
-    processed_granules = itertools.chain(*[job['job_parameters']['granules'][0] for job in processed_jobs])
+    processed_granules = [job['job_parameters']['granules'][0] for job in processed_jobs]
     return list(set(all_granules) - set(processed_granules))
 
 
