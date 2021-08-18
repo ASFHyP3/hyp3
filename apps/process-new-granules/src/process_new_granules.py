@@ -7,8 +7,6 @@ import dateutil.parser
 import dynamo
 
 
-
-
 def get_unprocessed_granules(subscription):
     search_results = asf_search.search(**subscription['search_parameters'])
     all_granules = [product.properties['sceneName'] for product in search_results]

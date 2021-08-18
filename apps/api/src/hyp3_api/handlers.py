@@ -34,9 +34,6 @@ def is_uuid(val):
 def post_jobs(body, user):
     print(body)
 
-    monthly_quota = get_max_jobs_per_month(user)
-    remaining_jobs = util.get_remaining_jobs_for_user(user, monthly_quota)
-
     try:
         validate_jobs(body['jobs'])
     except requests.HTTPError as e:

@@ -5,8 +5,9 @@ from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
 
-from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 from dynamo.user import get_max_jobs_per_month
+from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
+
 
 class QuotaError(Exception):
     """Raised when trying to submit more jobs that user has remaining"""
