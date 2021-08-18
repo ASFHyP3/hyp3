@@ -45,7 +45,7 @@ def authenticate_user():
     if auth_info is not None:
         g.user = auth_info['sub']
     else:
-        if request.path in AUTHENTICATED_ROUTES and request.method != 'OPTIONS':
+        if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
             abort(handlers.problem_format(401, 'Unauthorized', 'No authorization token provided'))
 
 
