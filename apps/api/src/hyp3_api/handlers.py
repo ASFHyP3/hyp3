@@ -114,8 +114,17 @@ def get_subscriptions(user):
     return {'subscriptions': dynamo.subscriptions.get_subscriptions_for_user(user)}
 
 
+def get_subscription_by_id(subscription_id):
+    subscription = dynamo.subscriptions.get_subscription_by_id(subscription_id)
+    if subscription is None:
+        abort(problem_format(404, 'Not Found', f'subscription_id does not exist: {subscription_id}'))
+    return subscription
+
+
 def patch_subscriptions(subscription_id, body, user):
     subscription = dynamo.subscriptions.get_subscription_by_id(subscription_id)
+    if subscription is None:
+        abort(problem_format(404, 'Not Found', f'subscription_id does not exist: {subscription_id}'))
     if subscription['user_id'] != user:
         abort(problem_format(403, 'Forbidden', 'You may not update subscriptions created by a different user'))
     if 'end' in body:

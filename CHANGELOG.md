@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `POST /subscriptions` to create a subscription
   - `GET /subscriptions` to list all subscriptions for the user
   - `PATCH /subscriptions/<subscription_id>` to update the end date of a subscription
+  - `GET /subscriptions/<subscription_id>` to list the information for a specific subscription
 - `process_new_granules` app which searches for unprocessed granules related to subscriptions and automatically starts
   jobs for them as they become available.
 - HyP3 content bucket now allows Cross Origin Resource Headers

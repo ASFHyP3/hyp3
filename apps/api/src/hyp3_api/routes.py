@@ -160,7 +160,9 @@ class Subscriptions(FlaskOpenAPIView):
         body = request.get_json()
         return jsonify(handlers.post_subscriptions(body, g.user))
 
-    def get(self):
+    def get(self, subscription_id):
+        if subscription_id is not None:
+            return jsonify(handlers.get_subscription_by_id(subscription_id))
         return jsonify(handlers.get_subscriptions(g.user))
 
     def patch(self, subscription_id):
@@ -179,5 +181,6 @@ user_view = User.as_view('user', api_spec)
 app.add_url_rule('/user', view_func=user_view)
 
 subscriptions_view = Subscriptions.as_view('subscriptions', api_spec)
-app.add_url_rule('/subscriptions/<subscription_id>', view_func=subscriptions_view, methods=['PATCH'])
-app.add_url_rule('/subscriptions', view_func=subscriptions_view, methods=['GET', 'POST'])
+app.add_url_rule('/subscriptions/<subscription_id>', view_func=subscriptions_view, methods=['PATCH', 'GET'])
+app.add_url_rule('/subscriptions', view_func=subscriptions_view, methods=['GET'], defaults={'subscription_id': None})
+app.add_url_rule('/subscriptions', view_func=subscriptions_view, methods=['POST'])
