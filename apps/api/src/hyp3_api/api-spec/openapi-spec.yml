@@ -146,6 +146,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/subscriptions_response"
+    get:
+      description: Get information about a specific subscription
+      parameters:
+        - name: subscription_id
+          in: path
+          schema:
+            $ref: "#/components/schemas/job_or_subscription_id"
+          required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/subscriptions_response"
 
 components:
   schemas:

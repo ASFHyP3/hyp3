@@ -297,3 +297,66 @@ def test_update_subscription_date_too_far_out(client, tables):
                                 json={'end': end})
     assert api_response.status_code == HTTPStatus.BAD_REQUEST
     assert f'End date: {end.isoformat(timespec="seconds")} must be within 180 days' in api_response.json['detail']
+
+
+def test_get_subscription_by_id(client, tables):
+    login(client, 'subscriptionsUser1')
+    items = [
+        {
+            'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
+            'user_id': 'subscriptionsUser1',
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-01T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'RTC_GAMMA',
+                'name': 'SubscriptionName'
+            }
+        },
+        {
+            'subscription_id': '140191ab-486b-4080-ab1b-3e2c40aab6b8',
+            'user_id': 'subscriptionsUser2',
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-01T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'RTC_GAMMA',
+                'name': 'SubscriptionName'
+            }
+        }
+    ]
+
+    for item in items:
+        tables.subscriptions_table.put_item(Item=item)
+
+    response = client.get(SUBSCRIPTIONS_URI + '/f00b731f-121d-44dc-abfa-c24afd8ad542')
+
+    assert response.json == {
+        'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
+        'user_id': 'subscriptionsUser1',
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-01T00:00:00+00:00',
+        },
+        'job_specification': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'SubscriptionName'
+        }
+    }
+
+    response = client.get(SUBSCRIPTIONS_URI + '/140191ab-486b-4080-ab1b-3e2c40aab6b8')
+
+    assert response.json == {
+        'subscription_id': '140191ab-486b-4080-ab1b-3e2c40aab6b8',
+        'user_id': 'subscriptionsUser2',
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-01T00:00:00+00:00',
+        },
+        'job_specification': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'SubscriptionName'
+        }
+    }
