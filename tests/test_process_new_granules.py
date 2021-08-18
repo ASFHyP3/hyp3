@@ -1,11 +1,14 @@
 from unittest.mock import patch
 
+import asf_search
 import pytest
 
 import process_new_granules
 
 
 def test_get_jobs_for_granule():
+    granule = asf_search.ASFProduct({'properties': {'sceneName': 'GranuleName'}, 'geometry': {}})
+
     subscription = {
         'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
         'user_id': 'subscriptionsUser',
@@ -21,8 +24,7 @@ def test_get_jobs_for_granule():
             }
         }
     }
-
-    payload = process_new_granules.get_jobs_for_granule(subscription, 'GranuleName')
+    payload = process_new_granules.get_jobs_for_granule(subscription, granule)
     assert payload == [
         {
             'job_type': 'RTC_GAMMA',
@@ -47,23 +49,22 @@ def test_get_jobs_for_granule():
             'name': 'SubscriptionName'
         }
     }
-
     mock_granules = ['granule2', 'granule3']
     with patch('process_new_granules.get_neighbors', lambda x, y, z: mock_granules):
-        payload = process_new_granules.get_jobs_for_granule(subscription, 'granule1')
+        payload = process_new_granules.get_jobs_for_granule(subscription, granule)
         assert payload == [
             {
                 'job_type': 'INSAR_GAMMA',
                 'name': 'SubscriptionName',
                 'job_parameters': {
-                    'granules': ['granule1', 'granule2'],
+                    'granules': ['GranuleName', 'granule2'],
                 }
             },
             {
                 'job_type': 'INSAR_GAMMA',
                 'name': 'SubscriptionName',
                 'job_parameters': {
-                    'granules': ['granule1', 'granule3'],
+                    'granules': ['GranuleName', 'granule3'],
                 },
             }
         ]
@@ -74,4 +75,4 @@ def test_get_jobs_for_granule():
         }
     }
     with pytest.raises(ValueError):
-        process_new_granules.get_jobs_for_granule(subscription, 'granule')
+        process_new_granules.get_jobs_for_granule(subscription, granule)

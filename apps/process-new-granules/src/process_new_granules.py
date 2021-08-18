@@ -8,21 +8,19 @@ import dynamo
 
 
 def get_unprocessed_granules(subscription):
-    search_results = asf_search.search(**subscription['search_parameters'])
-    all_granules = [product.properties['sceneName'] for product in search_results]
-
     processed_jobs, _ = dynamo.jobs.query_jobs(
         user=subscription['user_id'],
         name=subscription['job_specification']['name'],
         job_type=subscription['job_specification']['job_type'],
     )
     processed_granules = [job['job_parameters']['granules'][0] for job in processed_jobs]
-    return list(set(all_granules) - set(processed_granules))
+
+    search_results = asf_search.search(**subscription['search_parameters'])
+    return [result for result in search_results if result.properties['sceneName'] not in processed_granules]
 
 
 def get_neighbors(granule, depth, platform):
-    reference = asf_search.search(granule_list=granule, processingLevel='SLC')[0]
-    stack = asf_search.baseline_search.stack_from_product(reference)
+    stack = asf_search.baseline_search.stack_from_product(granule)
     stack = [item for item in stack if
              item.properties['temporalBaseline'] < 0 and item.properties['sceneName'].startswith(platform)]
     neighbors = [item.properties['sceneName'] for item in stack[-depth:]]
@@ -37,14 +35,14 @@ def get_jobs_for_granule(subscription, granule):
     job_type = job_specification['job_type']
 
     if job_type in ['RTC_GAMMA']:
-        job_specification['job_parameters']['granules'] = [granule]
+        job_specification['job_parameters']['granules'] = [granule.properties['sceneName']]
         payload = [job_specification]
     elif job_type in ['AUTORIFT', 'INSAR_GAMMA']:
         payload = []
         neighbors = get_neighbors(granule, 2, subscription['search_parameters']['platform'])
         for neighbor in neighbors:
             job = deepcopy(job_specification)
-            job['job_parameters']['granules'] = [granule, neighbor]
+            job['job_parameters']['granules'] = [granule.properties['sceneName'], neighbor]
             payload.append(job)
     else:
         raise ValueError(f'Subscription job type {job_type} not supported')
