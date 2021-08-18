@@ -7,6 +7,8 @@ Parameters:
     Type: String
   UsersTable:
     Type: String
+  MonthlyJobQuotaPerUser:
+    Type: Number
 
 Outputs:
   LambdaArn:
@@ -59,6 +61,7 @@ Resources:
           JOBS_TABLE_NAME: !Ref JobsTable
           USERS_TABLE_NAME: !Ref UsersTable
           SUBSCRIPTIONS_TABLE_NAME: !Ref SubscriptionsTable
+          MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
       Code: src/
       Handler: process_new_granules.lambda_handler
       MemorySize: 128

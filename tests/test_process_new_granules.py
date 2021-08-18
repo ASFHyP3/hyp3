@@ -18,7 +18,7 @@ def test_get_payload_for_job():
     }
     granule = 'GranuleName'
 
-    payload = process_new_granules.get_payload_for_job(subscription, granule)
+    payload = process_new_granules.get_jobs_for_granule(subscription, granule)
     assert payload == [
         {
             'job_type': 'RTC_GAMMA',
@@ -46,7 +46,7 @@ def test_get_payload_for_job():
 
     mock_granules = ['granule2', 'granule3']
     with patch('process_new_granules.get_neighbors', lambda x, y, z: mock_granules):
-        payload = process_new_granules.get_payload_for_job(subscription, granule)
+        payload = process_new_granules.get_jobs_for_granule(subscription, granule)
         assert payload == [
             {
                 'job_type': 'INSAR_GAMMA',
@@ -63,39 +63,3 @@ def test_get_payload_for_job():
                 },
             }
         ]
-
-
-def test_submit_jobs_for_granule(tables):
-    subscription = {
-        'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
-        'user_id': 'subscriptionsUser',
-        'search_parameters': {
-            'start': '2020-01-01T00:00:00+00:00',
-            'end': '2020-01-01T00:00:00+00:00',
-        },
-        'job_specification': {
-            'job_type': 'RTC_GAMMA',
-            'name': 'SubscriptionName'
-        }
-    }
-    granule = 'granule1'
-
-    process_new_granules.submit_jobs_for_granule(subscription, granule)
-
-    response = tables.jobs_table.scan()['Items']
-    assert 'job_id' in response[0]
-    del response[0]['job_id']
-    assert 'request_time' in response[0]
-    assert isinstance(response[0]['request_time'], str)
-    del response[0]['request_time']
-    assert response == [
-        {
-            'job_type': 'RTC_GAMMA',
-            'name': 'SubscriptionName',
-            'user_id': 'subscriptionsUser',
-            'status_code': 'PENDING',
-            'job_parameters': {
-                'granules': ['granule1'],
-            }
-        }
-    ]

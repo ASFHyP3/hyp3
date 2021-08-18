@@ -104,6 +104,7 @@ Resources:
         JobsTable: !Ref JobsTable
         UsersTable: !Ref UsersTable
         SubscriptionsTable: !Ref SubscriptionsTable
+        MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
 

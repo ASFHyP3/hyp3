@@ -7,10 +7,6 @@ import dateutil.parser
 import dynamo
 
 
-class QuotaError(Exception):
-    """User is at quota and cannot submit more jobs'"""
-
-
 def get_unprocessed_granules(subscription):
     search_results = asf_search.search(**subscription['search_parameters'])
     all_granules = [product.properties['sceneName'] for product in search_results]
@@ -33,7 +29,7 @@ def get_neighbors(granule, depth, platform):
     return neighbors
 
 
-def get_payload_for_job(subscription, granule):
+def get_jobs_for_granule(subscription, granule):
     job_specification = subscription['job_specification']
     if 'job_parameters' not in job_specification:
         job_specification['job_parameters'] = {}
@@ -55,18 +51,17 @@ def get_payload_for_job(subscription, granule):
     return payload
 
 
-def submit_jobs_for_granule(subscription, granule):
-    payload = get_payload_for_job(subscription, granule)
-    dynamo.jobs.put_jobs(subscription['user_id'], payload)
+def get_jobs_for_subscription(subscription):
+    granules = get_unprocessed_granules(subscription)
+    jobs = []
+    for granule in granules:
+        jobs.extend(get_jobs_for_granule(subscription, granule))
+    return jobs
 
 
 def handle_subscription(subscription):
-    granules = get_unprocessed_granules(subscription)
-    for granule in granules:
-        try:
-            submit_jobs_for_granule(subscription, granule)
-        except QuotaError:
-            break
+    jobs = get_jobs_for_subscription(subscription)
+    dynamo.jobs.put_jobs(subscription['user_id'], jobs, fail_when_over_quota=False)
 
 
 def lambda_handler(event, context):
