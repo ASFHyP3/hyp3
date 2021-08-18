@@ -30,7 +30,7 @@ def get_neighbors(granule, depth, platform):
     reference = asf_search.search(granule_list=granule, processingLevel='SLC')[0]
     stack = asf_search.baseline_search.stack_from_product(reference)
     stack = [item for item in stack if
-             item.properties['temporalBaseline'] < 0 and item.properties['sceneName'].startwith(platform)]
+             item.properties['temporalBaseline'] < 0 and item.properties['sceneName'].startswith(platform)]
     neighbors = [item.properties['sceneName'] for item in stack[-depth:]]
     return neighbors
 
