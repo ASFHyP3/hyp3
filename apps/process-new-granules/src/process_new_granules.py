@@ -61,7 +61,8 @@ def get_jobs_for_subscription(subscription):
 
 def handle_subscription(subscription):
     jobs = get_jobs_for_subscription(subscription)
-    dynamo.jobs.put_jobs(subscription['user_id'], jobs, fail_when_over_quota=False)
+    if jobs:
+        dynamo.jobs.put_jobs(subscription['user_id'], jobs, fail_when_over_quota=False)
 
 
 def lambda_handler(event, context):
