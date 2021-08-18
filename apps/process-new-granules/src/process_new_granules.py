@@ -34,7 +34,7 @@ def get_jobs_for_granule(subscription, granule):
     if 'job_parameters' not in job_specification:
         job_specification['job_parameters'] = {}
 
-    job_type = subscription['job_specification']['job_type']
+    job_type = job_specification['job_type']
 
     if job_type in ['RTC_GAMMA']:
         job_specification['job_parameters']['granules'] = [granule]

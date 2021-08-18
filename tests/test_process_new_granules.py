@@ -1,9 +1,11 @@
 from unittest.mock import patch
 
+import pytest
+
 import process_new_granules
 
 
-def test_get_payload_for_job():
+def test_get_jobs_for_granule():
     subscription = {
         'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
         'user_id': 'subscriptionsUser',
@@ -13,18 +15,21 @@ def test_get_payload_for_job():
         },
         'job_specification': {
             'job_type': 'RTC_GAMMA',
-            'name': 'SubscriptionName'
+            'name': 'SubscriptionName',
+            'job_parameters': {
+                'speckle_filter': True,
+            }
         }
     }
-    granule = 'GranuleName'
 
-    payload = process_new_granules.get_jobs_for_granule(subscription, granule)
+    payload = process_new_granules.get_jobs_for_granule(subscription, 'GranuleName')
     assert payload == [
         {
             'job_type': 'RTC_GAMMA',
             'name': 'SubscriptionName',
             'job_parameters': {
                 'granules': ['GranuleName'],
+                'speckle_filter': True,
             },
         }
     ]
@@ -42,11 +47,10 @@ def test_get_payload_for_job():
             'name': 'SubscriptionName'
         }
     }
-    granule = 'granule1'
 
     mock_granules = ['granule2', 'granule3']
     with patch('process_new_granules.get_neighbors', lambda x, y, z: mock_granules):
-        payload = process_new_granules.get_jobs_for_granule(subscription, granule)
+        payload = process_new_granules.get_jobs_for_granule(subscription, 'granule1')
         assert payload == [
             {
                 'job_type': 'INSAR_GAMMA',
@@ -63,3 +67,11 @@ def test_get_payload_for_job():
                 },
             }
         ]
+
+    subscription = {
+        'job_specification': {
+            'job_type': 'FOO',
+        }
+    }
+    with pytest.raises(ValueError):
+        process_new_granules.get_jobs_for_granule(subscription, 'granule')
