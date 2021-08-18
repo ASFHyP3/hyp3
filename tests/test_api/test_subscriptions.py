@@ -300,6 +300,7 @@ def test_update_subscription_date_too_far_out(client, tables):
 
 
 def test_update_subscription_not_found(client, tables):
+    login(client, 'subscriptionsUser1')
     api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
                                 json={'end': '2020-01-02T00:00:00+00:00'})
     assert api_response.status_code == HTTPStatus.NOT_FOUND
