@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 
 from .conftest import SUBSCRIPTIONS_URI, login
@@ -266,3 +267,33 @@ def test_update_subscription_wrong_user(client, tables):
     api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
                                 json={'end': '2020-02-02T00:00:00+00:00'})
     assert api_response.status_code == HTTPStatus.FORBIDDEN
+
+
+def test_update_subscription_date_too_far_out(client, tables):
+    login(client, 'user1')
+
+    subscription = {
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-02T00:00:00+00:00',
+
+            'beamMode': ['IW'],
+            'platform': 'S1',
+            'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
+            'processingLevel': 'SLC',
+        },
+        'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
+        'job_type': 'INSAR_GAMMA',
+        'user_id': 'user1',
+    }
+    tables.subscriptions_table.put_item(Item=subscription)
+
+    end = datetime.now(tz=timezone.utc) + timedelta(days=181)
+    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
+                                json={'end': end})
+    assert api_response.status_code == HTTPStatus.BAD_REQUEST
+    assert f'End date: {end.isoformat(timespec="seconds")} must be within 180 days' in api_response.json['detail']
