@@ -1,9 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 
-from unittest.mock import patch
-import pytest
-
 from .conftest import SUBSCRIPTIONS_URI, login
 
 
