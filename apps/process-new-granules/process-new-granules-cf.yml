@@ -64,7 +64,7 @@ Resources:
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.8
-      Timeout: 30
+      Timeout: 900
 
   EventInvokeConfig:
     Type: AWS::Lambda::EventInvokeConfig
