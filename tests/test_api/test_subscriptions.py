@@ -299,6 +299,13 @@ def test_update_subscription_date_too_far_out(client, tables):
     assert f'End date: {end.isoformat(timespec="seconds")} must be within 180 days' in api_response.json['detail']
 
 
+def test_update_subscription_not_found(client, tables):
+    login(client, 'subscriptionsUser1')
+    api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
+                                json={'end': '2020-01-02T00:00:00+00:00'})
+    assert api_response.status_code == HTTPStatus.NOT_FOUND
+
+
 def test_get_subscription_by_id(client, tables):
     login(client, 'subscriptionsUser1')
     items = [
@@ -332,11 +339,9 @@ def test_get_subscription_by_id(client, tables):
         tables.subscriptions_table.put_item(Item=item)
 
     response = client.get(SUBSCRIPTIONS_URI + '/f00b731f-121d-44dc-abfa-c24afd8ad542')
-
     assert response.json == items[0]
 
     response = client.get(SUBSCRIPTIONS_URI + '/140191ab-486b-4080-ab1b-3e2c40aab6b8')
-
     assert response.json == items[1]
 
     response = client.get(SUBSCRIPTIONS_URI + '/140191ab-486b-4080-ab1b-3e2c40aab6b7')
