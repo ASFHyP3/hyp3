@@ -14,6 +14,7 @@ from openapi_core.spec.shortcuts import create_spec
 from openapi_core.validation.request.validators import RequestValidator
 from openapi_core.validation.response.datatypes import ResponseValidationResult
 
+import dynamo
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
 
@@ -44,8 +45,13 @@ def authenticate_user():
     auth_info = auth.decode_token(cookie)
     if auth_info is not None:
         g.user = auth_info['sub']
+        # disallow subscriptions for non approved users
+        if request.path.startswith('subscriptions'):
+            if dynamo.user.get_user(g.user) is None:
+                abort(handlers.problem_format(403, 'Forbidden',
+                                              f'user {g.user} is not authorized to submit subscriptions at this time.'))
     else:
-        if request.path in AUTHENTICATED_ROUTES and request.method != 'OPTIONS':
+        if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
             abort(handlers.problem_format(401, 'Unauthorized', 'No authorization token provided'))
 
 
