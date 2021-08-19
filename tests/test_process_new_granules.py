@@ -6,10 +6,81 @@ import pytest
 import process_new_granules
 
 
+def test_get_unprocessed_granules(tables):
+    items = [
+        {
+            'job_id': 'job1',
+            'request_time': '2021-01-01T00:00:00+00:00',
+            'user_id': 'my_user',
+            'job_type': 'INSAR_GAMMA',
+            'name': 'my_name',
+            'job_parameters': {
+                'granules': ['processed', 'not_processed'],
+            },
+        },
+        {
+            'job_id': 'job2',
+            'request_time': '2021-01-01T00:00:00+00:00',
+            'user_id': 'different_user',
+            'job_type': 'INSAR_GAMMA',
+            'name': 'subscription1',
+            'job_parameters': {
+                'granules': ['not_processed', 'not_processed'],
+            },
+        },
+        {
+            'job_id': 'job3',
+            'request_time': '2021-01-01T00:00:00+00:00',
+            'user_id': 'user1',
+            'job_type': 'INSAR_GAMMA',
+            'name': 'different_name',
+            'job_parameters': {
+                'granules': ['not_processed', 'not_processed'],
+            },
+        },
+        {
+            'job_id': 'job4',
+            'request_time': '2021-01-01T00:00:00+00:00',
+            'user_id': 'my_user',
+            'job_type': 'RTC_GAMMA',
+            'name': 'my_name',
+            'job_parameters': {
+                'granules': ['not_processed'],
+            },
+        },
+    ]
+    for item in items:
+        tables.jobs_table.put_item(Item=item)
+
+    subscription = {
+        'user_id': 'my_user',
+        'job_specification': {
+            'job_type': 'INSAR_GAMMA',
+            'name': 'my_name',
+        },
+        'search_parameters': {
+            'foo': 'bar',
+        },
+    }
+
+    search_results = [
+        asf_search.ASFProduct({'properties': {'sceneName': 'processed'}, 'geometry': {}}),
+        asf_search.ASFProduct({'properties': {'sceneName': 'not_processed'}, 'geometry': {}}),
+    ]
+
+    def mock_search(**kwargs):
+        assert kwargs == subscription['search_parameters']
+        return asf_search.ASFSearchResults(search_results)
+
+    with patch('asf_search.search', mock_search):
+        results = process_new_granules.get_unprocessed_granules(subscription)
+        assert results == search_results[1:]
+
+
 def test_get_neighbors():
     granule = asf_search.ASFProduct({'properties': {'sceneName': 'granule'}, 'geometry': {}}),
 
-    def mock(payload):
+    def mock_stack_from_product(payload):
         assert payload == granule
         return asf_search.ASFSearchResults([
             asf_search.ASFProduct({'properties': {'sceneName': 'S1A_A', 'temporalBaseline': -3}, 'geometry': {}}),
@@ -21,7 +92,7 @@ def test_get_neighbors():
             asf_search.ASFProduct({'properties': {'sceneName': 'S1A_G', 'temporalBaseline': 3}, 'geometry': {}}),
         ])
 
-    with patch('asf_search.baseline_search.stack_from_product', mock):
+    with patch('asf_search.baseline_search.stack_from_product', mock_stack_from_product):
         neighbors = process_new_granules.get_neighbors(granule, 1, 'S1')
         assert neighbors == ['S1A_C']
 
