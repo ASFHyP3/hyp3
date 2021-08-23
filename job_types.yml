@@ -97,6 +97,9 @@ InsarGamma:
     include_wrapped_phase:
       default: false
       api_schema_location: "#/components/schemas/include_wrapped_phase"
+    apply_water_mask:
+      default: false
+      api_schema_location: "#/components/schemas/apply_water_mask"
     looks:
       default:  20x4
       api_schema_location: "#/components/schemas/looks"
@@ -121,6 +124,8 @@ InsarGamma:
     - Ref::include_dem
     - --include-wrapped-phase
     - Ref::include_wrapped_phase
+    - --apply-water-mask
+    - Ref::apply_water_mask
     - --looks
     - Ref::looks
     - Ref::granules

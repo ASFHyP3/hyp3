@@ -23,6 +23,7 @@ def test_post_subscription(client, tables):
                 'include_los_displacement': True,
                 'include_dem': True,
                 'include_wrapped_phase': True,
+                'apply_water_mask': True,
             },
             'job_type': 'RTC_GAMMA',
             'name': 'SubscriptionName'
