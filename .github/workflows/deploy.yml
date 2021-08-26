@@ -37,7 +37,7 @@ jobs:
           - environment: hyp3-watermap
             domain: hyp3-watermap.asf.alaska.edu
             template_bucket: cf-templates-1217di08q7vwl-us-west-2
-            image_tag: test
+            image_tag: 4.6.3
             quota: 0
             deploy_ref: refs/heads/watermap
 
