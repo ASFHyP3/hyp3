@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0](https://github.com/ASFHyP3/hyp3/compare/v2.1.1...v2.2.0)
+### Added
+- HyP3 content bucket now allows Cross Origin Resource Headers
+- Exposed new `apply_water_mask` API parameter for INSAR_GAMMA jobs, which sets pixels
+  over coastal and large inland waterbodies as invalid for phase unwrapping.
+
 ## [2.1.1](https://github.com/ASFHyP3/hyp3/compare/v2.1.0...v2.1.1)
 ### Changed
 - Modified retry strategies for Batch jobs and UploadLog lambda to address scaling errors
