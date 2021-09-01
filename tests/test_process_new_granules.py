@@ -217,4 +217,4 @@ def test_lambda_handler(tables):
 
     response = tables.subscriptions_table.scan()['Items']
     sub3 = [sub for sub in response if sub['subscription_id'] == 'sub3'][0]
-    assert sub3['enabled'] == False
+    assert sub3['enabled'] is False
