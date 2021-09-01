@@ -196,6 +196,7 @@ def test_update_subscription(client, tables):
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user1',
+        'enabled': True,
     }
     tables.subscriptions_table.put_item(Item=subscription)
 
@@ -219,6 +220,7 @@ def test_update_subscription(client, tables):
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user1',
+        'enabled': True,
     }
 
     response = tables.subscriptions_table.scan()
@@ -240,6 +242,7 @@ def test_update_subscription(client, tables):
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user1',
+        'enabled': True,
     }
 
 

@@ -57,6 +57,11 @@ def get_jobs_for_subscription(subscription):
     return jobs
 
 
+def disable_subscription(subscription):
+    subscription['enabled'] = False
+    dynamo.subscriptions.put_subscription(subscription['user_id'], subscription)
+
+
 def handle_subscription(subscription):
     jobs = get_jobs_for_subscription(subscription)
     if jobs:
@@ -67,5 +72,8 @@ def lambda_handler(event, context):
     subscriptions = dynamo.subscriptions.get_all_subscriptions()
     for subscription in subscriptions:
         end_filter = datetime.now(tz=timezone.utc) - timedelta(days=5)
-        if end_filter <= dateutil.parser.parse(subscription['search_parameters']['end']):
+        if subscription['enabled']:
             handle_subscription(subscription)
+
+            if end_filter > dateutil.parser.parse(subscription['search_parameters']['end']):
+                disable_subscription(subscription)

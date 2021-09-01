@@ -233,6 +233,9 @@ components:
           $ref: "#components/schemas/subscription_job_specification"
         user_id:
           $ref: "#/components/schemas/user_id"
+        enabled:
+          description: Set to False to pause/disable the processing of new data.
+          type: boolean
 
     user:
       description: Information about a user (quota, user id)

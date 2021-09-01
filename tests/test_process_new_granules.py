@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 import asf_search
@@ -176,3 +177,44 @@ def test_get_jobs_for_granule():
     }
     with pytest.raises(ValueError):
         process_new_granules.get_jobs_for_granule(subscription, granule)
+
+
+def test_lambda_handler(tables):
+    items = [
+        {
+            'subscription_id': 'sub1',
+            'job_type': 'INSAR_GAMMA',
+            'search_parameters': {
+                'start': datetime.now(tz=timezone.utc).isoformat(timespec='seconds'),
+                'end': (datetime.now(tz=timezone.utc) + timedelta(days=5)).isoformat(timespec='seconds'),
+            },
+            'user_id': 'user1',
+            'enabled': True,
+        },
+        {
+            'subscription_id': 'sub2',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1',
+            'enabled': False
+        },
+        {
+            'subscription_id': 'sub3',
+            'job_type': 'INSAR_GAMMA',
+            'search_parameters': {
+                'start': (datetime.now(tz=timezone.utc) - timedelta(days=15)).isoformat(timespec='seconds'),
+                'end': (datetime.now(tz=timezone.utc) - timedelta(days=5)).isoformat(timespec='seconds'),
+            },
+            'user_id': 'user1',
+            'enabled': True,
+        },
+    ]
+    for item in items:
+        tables.subscriptions_table.put_item(Item=item)
+
+    with patch('process_new_granules.handle_subscription') as p:
+        process_new_granules.lambda_handler(1, 1)
+        assert p.call_count == 2
+
+    response = tables.subscriptions_table.scan()['Items']
+    sub3 = [sub for sub in response if sub['subscription_id'] == 'sub3'][0]
+    assert sub3['enabled'] is False

@@ -32,6 +32,7 @@ def put_subscription(user, subscription):
     defaults = {
         'subscription_id': str(uuid4()),
         'user_id': user,
+        'enabled': True,
     }
     for key, value in defaults.items():
         if key not in subscription:
