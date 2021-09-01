@@ -3,9 +3,9 @@ components:
     job_type:
       description: Type of process to run this job.
       type: string
-      example: RTC_GAMMA
+      example: {{ job_types.values() | map(attribute='api_job_type') | first }}
       enum:
-        {% for job_type, job_spec in job_types.items() %}
+        {% for job_spec in job_types.values() %}
         - {{ job_spec['api_job_type'] }}
         {% endfor %}
 
@@ -38,15 +38,13 @@ components:
     {{ job_type }}:
       description: Parameters for running {{job_spec['api_job_type']}} jobs
       type: object
-    {% if job_spec['parameters'].__len__() > 2 %}
+      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema_location' in parameter_spec and parameter != 'granules' %}
+      {% if loop.first %}
       properties:
-      {% for parameter, parameter_spec in job_spec['parameters'].items() %}
-        {% if 'api_schema_location' in parameter_spec and parameter != 'granules'%}
+      {% endif %}
         {{ parameter }}:
           $ref: "{{ parameter_spec['api_schema_location'] }}"
-        {% endif %}
       {% endfor %}
-    {% endif %}
     {% endfor %}
 
     autorift_granules:
