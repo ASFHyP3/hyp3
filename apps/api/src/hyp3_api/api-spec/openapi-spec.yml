@@ -328,7 +328,6 @@ components:
       required:
         - start
         - end
-      additionalProperties: false
       properties:
         start:
           $ref: "#/components/schemas/datetime"
