@@ -14,11 +14,12 @@ def validate_subscription(subscription):
     if end <= start:
         raise ValueError(f'End date: {format_time(end)} must be after start date: {format_time(start)}')
 
-    end_threshold_in_days = 180
-    max_end = datetime.now(tz=timezone.utc) + timedelta(days=end_threshold_in_days)
-    if max_end <= end:
-        raise ValueError(f'End date: {format_time(end)} must be within {end_threshold_in_days} days: '
-                         f'{format_time(max_end)}')
+    if subscription['enabled']:
+        end_threshold_in_days = 180
+        max_end = datetime.now(tz=timezone.utc) + timedelta(days=end_threshold_in_days)
+        if max_end <= end:
+            raise ValueError(f'End date: {format_time(end)} must be within {end_threshold_in_days} days: '
+                             f'{format_time(max_end)}')
 
     job_type = subscription.get('job_specification', {}).get('job_type')
     processing_level = subscription.get('search_parameters', {}).get('processingLevel', 'SLC')
@@ -27,8 +28,6 @@ def validate_subscription(subscription):
 
 
 def put_subscription(user, subscription):
-    validate_subscription(subscription)
-
     defaults = {
         'subscription_id': str(uuid4()),
         'user_id': user,
@@ -47,6 +46,8 @@ def put_subscription(user, subscription):
     for key, value in search_defaults.items():
         if key not in subscription['search_parameters']:
             subscription['search_parameters'][key] = value
+
+    validate_subscription(subscription)
 
     table = DYNAMODB_RESOURCE.Table(environ['SUBSCRIPTIONS_TABLE_NAME'])
     table.put_item(Item=subscription)

@@ -36,8 +36,7 @@ def test_put_subscription(tables):
             'platform': 'S1',
             'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
             'processingLevel': 'SLC',
-        },
-        'enabled': True,
+        }
     }
 
 
