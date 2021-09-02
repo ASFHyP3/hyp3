@@ -5,12 +5,38 @@ from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
 
+from dynamo.user import get_max_jobs_per_month
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
 
-def put_jobs(user_id: str, jobs: List[dict]) -> List[dict]:
+class QuotaError(Exception):
+    """Raised when trying to submit more jobs that user has remaining"""
+
+
+def _get_job_count_for_month(user):
+    now = datetime.now(timezone.utc)
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    job_count_for_month = count_jobs(user, format_time(start_of_month))
+    return job_count_for_month
+
+
+def get_remaining_jobs_for_user(user, limit):
+    previous_jobs = _get_job_count_for_month(user)
+    remaining_jobs = limit - previous_jobs
+    return max(remaining_jobs, 0)
+
+
+def put_jobs(user_id: str, jobs: List[dict], fail_when_over_quota=True) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
+
+    job_limit = get_max_jobs_per_month(user_id)
+    number_of_jobs = len(jobs)
+    remaining_jobs = get_remaining_jobs_for_user(user_id, job_limit)
+    if number_of_jobs > remaining_jobs:
+        if fail_when_over_quota:
+            raise QuotaError(f'Your monthly quota is {job_limit} jobs. You have {remaining_jobs} jobs remaining.')
+        jobs = jobs[:remaining_jobs]
 
     prepared_jobs = [
         {

@@ -88,7 +88,7 @@ aws cloudformation deploy \
 ## Running the Tests
 Tests for each HyP3 module are located in `tests/`. To run them you need to do a bit of setup first.
 
-- Install test requirements
+- Install test requirements (this must be done from the root of the repo for libraries to resolve correctly)
 ```sh
 pip install -r requirements-all.txt
 ```

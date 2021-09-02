@@ -9,6 +9,12 @@ components:
         - {{ job_spec['api_job_type'] }}
         {% endfor %}
 
+    job_definitions:
+      anyOf:
+        {% for job_type in job_types %}
+        - $ref: "#/components/schemas/{{ job_type }}JobDefinition"
+        {% endfor %}
+
     job_parameters:
       anyOf:
         {% for job_type in job_types %}
@@ -16,20 +22,28 @@ components:
         {% endfor %}
 
     {% for job_type, job_spec in job_types.items() %}
+    {{ job_type }}JobDefinition:
+      allOf:
+        - $ref: "#/components/schemas/{{ job_type }}"
+        - type: object
+          required:
+            - granules
+          properties:
+            granules:
+              $ref: "{{ job_spec['parameters']['granules']['api_schema_location'] }}"
+    {% endfor %}
+
+
+    {% for job_type, job_spec in job_types.items() %}
     {{ job_type }}:
       description: Parameters for running {{job_spec['api_job_type']}} jobs
       type: object
-      required:
-      {% for parameter in job_spec['required_parameters'] %}
-        - {{ parameter }}
-      {% endfor %}
-      additionalProperties: false
+      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema_location' in parameter_spec and parameter != 'granules' %}
+      {% if loop.first %}
       properties:
-      {% for parameter, parameter_spec in job_spec['parameters'].items() %}
-        {% if 'api_schema_location' in parameter_spec %}
+      {% endif %}
         {{ parameter }}:
           $ref: "{{ parameter_spec['api_schema_location'] }}"
-        {% endif %}
       {% endfor %}
     {% endfor %}
 

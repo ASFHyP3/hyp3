@@ -1,4 +1,5 @@
 -r apps/api/requirements-api.txt
+-r apps/process-new-granules/requirements-process-new-granules.txt
 -r apps/start-execution/start-execution-requirements.txt
 -r apps/update-db/update-db-requirements.txt
 boto3==1.18.15

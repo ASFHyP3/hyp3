@@ -37,8 +37,6 @@ RtcGamma:
     include_rgb:
       default: false
       api_schema_location: "#/components/schemas/include_rgb"
-  required_parameters:
-    - granules
   command:
     - ++process
     - rtc
@@ -105,8 +103,6 @@ InsarGamma:
     looks:
       default:  20x4
       api_schema_location: "#/components/schemas/looks"
-  required_parameters:
-    - granules
   command:
     - ++process
     - insar
@@ -146,8 +142,6 @@ Autorift:
       api_schema_location: "#/components/schemas/autorift_granules"
     bucket_prefix:
       default:  '""'
-  required_parameters:
-    - granules
   command:
     - --username
     - '!Ref EDLUsername'

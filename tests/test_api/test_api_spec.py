@@ -1,17 +1,20 @@
 from http import HTTPStatus
 
-from api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login
+from test_api.conftest import AUTH_COOKIE, JOBS_URI, SUBSCRIPTIONS_URI, USER_URI, login
 
-from hyp3_api import auth
+from hyp3_api import auth, routes
 
 ENDPOINTS = {
     JOBS_URI: {'GET', 'HEAD', 'OPTIONS', 'POST'},
+    JOBS_URI + '/foo': {'GET', 'HEAD', 'OPTIONS'},
     USER_URI: {'GET', 'HEAD', 'OPTIONS'},
+    SUBSCRIPTIONS_URI: {'GET', 'HEAD', 'OPTIONS', 'POST'},
+    SUBSCRIPTIONS_URI + '/foo': {'GET', 'HEAD', 'OPTIONS', 'PATCH'},
 }
 
 
 def test_options(client):
-    all_methods = {'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE'}
+    all_methods = {'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE', 'PATCH'}
 
     login(client)
     for uri, good_methods in ENDPOINTS.items():
@@ -107,3 +110,10 @@ def test_ui_location(client):
 
     response = client.get('/ui/')
     assert response.status_code == HTTPStatus.OK
+
+
+def test_wkt_validator(client):
+    validator = routes.WKTValidator()
+
+    assert not validator.validate('foo')
+    assert validator.validate('POLYGON((-5 2, -3 2, -3 5, -5 5, -5 2))')

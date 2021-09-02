@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from api.conftest import JOBS_URI, login, make_db_record
+from test_api.conftest import JOBS_URI, login, make_db_record
 
 
 def test_get_job_by_id(client, tables):

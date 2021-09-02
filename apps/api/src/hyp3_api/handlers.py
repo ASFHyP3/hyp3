@@ -34,12 +34,6 @@ def is_uuid(val):
 def post_jobs(body, user):
     print(body)
 
-    monthly_quota = get_max_jobs_per_month(user)
-    remaining_jobs = util.get_remaining_jobs_for_user(user, monthly_quota)
-    if remaining_jobs - len(body['jobs']) < 0:
-        message = f'Your monthly quota is {monthly_quota} jobs. You have {remaining_jobs} jobs remaining.'
-        abort(problem_format(400, 'Bad Request', message))
-
     try:
         validate_jobs(body['jobs'])
     except requests.HTTPError as e:
@@ -48,8 +42,11 @@ def post_jobs(body, user):
         abort(problem_format(400, 'Bad Request', str(e)))
 
     if not body.get('validate_only'):
-        body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'])
-    return body
+        try:
+            body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'])
+        except dynamo.jobs.QuotaError as e:
+            abort(problem_format(400, 'Bad Request', str(e)))
+        return body
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None):
@@ -101,3 +98,36 @@ def get_user(user):
         },
         'job_names': get_names_for_user(user)
     }
+
+
+def post_subscriptions(body, user):
+    try:
+        return dynamo.subscriptions.put_subscription(user, body)
+    except ValueError as e:
+        abort(problem_format(400, 'Bad Request', str(e)))
+
+
+def get_subscriptions(user):
+    return {'subscriptions': dynamo.subscriptions.get_subscriptions_for_user(user)}
+
+
+def get_subscription_by_id(subscription_id):
+    subscription = dynamo.subscriptions.get_subscription_by_id(subscription_id)
+    if subscription is None:
+        abort(problem_format(404, 'Not Found', f'subscription_id does not exist: {subscription_id}'))
+    return subscription
+
+
+def patch_subscriptions(subscription_id, body, user):
+    subscription = dynamo.subscriptions.get_subscription_by_id(subscription_id)
+    if subscription is None:
+        abort(problem_format(404, 'Not Found', f'subscription_id does not exist: {subscription_id}'))
+    if subscription['user_id'] != user:
+        abort(problem_format(403, 'Forbidden', 'You may not update subscriptions created by a different user'))
+    if 'end' in body:
+        subscription['search_parameters']['end'] = body['end']
+    try:
+        dynamo.subscriptions.put_subscription(user, subscription)
+    except ValueError as e:
+        abort(problem_format(400, 'Bad Request', str(e)))
+    return subscription

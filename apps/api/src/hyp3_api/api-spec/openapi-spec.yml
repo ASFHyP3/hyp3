@@ -49,7 +49,7 @@ paths:
         - name: job_type
           in: query
           schema:
-            $ref: "./job_parameters.yml#/components/schemas/job_type"
+            $ref: "./job_parameters.yml#components/schemas/job_type"
         - name: start_token
           in: query
           schema:
@@ -70,7 +70,7 @@ paths:
         - name: job_id
           in: path
           schema:
-            $ref: "#/components/schemas/job_id"
+            $ref: "#/components/schemas/job_or_subscription_id"
           required: true
 
       responses:
@@ -91,6 +91,74 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/user"
+
+  /subscriptions:
+    post:
+      description: Adds a subscription with seach criteria and processing parameters to use to process data as it becomes available
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/subscriptions_body"
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/subscription"
+    get:
+      description: Get information about subscriptions for the logged in user
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - subscriptions
+                properties:
+                  subscriptions:
+                    $ref: "#/components/schemas/list_of_subscriptions"
+  /subscriptions/{subscription_id}:
+    patch:
+      description: Change information about the given subscription
+      parameters:
+        - name: subscription_id
+          in: path
+          schema:
+            $ref: "#/components/schemas/job_or_subscription_id"
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/subscriptions_update_expression'
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/subscription"
+    get:
+      description: Get information about a specific subscription
+      parameters:
+        - name: subscription_id
+          in: path
+          schema:
+            $ref: "#/components/schemas/job_or_subscription_id"
+          required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/subscription"
 
 components:
   schemas:
@@ -120,6 +188,54 @@ components:
           $ref: "#/components/schemas/list_of_jobs"
         next:
           $ref: "#/components/schemas/next_url"
+
+    subscriptions_body:
+      description: Information about a subscription
+      type: object
+      required:
+        - search_parameters
+        - job_specification
+      additionalProperties: false
+      properties:
+        search_parameters:
+          $ref: "#/components/schemas/search_parameters"
+        job_specification:
+          $ref: "#components/schemas/subscription_job_specification"
+
+    subscriptions_update_expression:
+      description: Change/update a subscription
+      type: object
+      required:
+        - end
+      additionalProperties: false
+      properties:
+        end:
+          $ref: "#/components/schemas/datetime"
+
+    list_of_subscriptions:
+      type: array
+      items:
+        $ref: "#/components/schemas/subscription"
+
+    subscription:
+      type: object
+      required:
+        - subscription_id
+        - search_parameters
+        - job_specification
+      additionalProperties: false
+      properties:
+        subscription_id:
+          $ref: "#/components/schemas/job_or_subscription_id"
+        search_parameters:
+          $ref: "#/components/schemas/search_parameters"
+        job_specification:
+          $ref: "#components/schemas/subscription_job_specification"
+        user_id:
+          $ref: "#/components/schemas/user_id"
+        enabled:
+          description: Set to False to pause/disable the processing of new data.
+          type: boolean
 
     user:
       description: Information about a user (quota, user id)
@@ -164,6 +280,21 @@ components:
       items:
         $ref: "#/components/schemas/new_job"
 
+    subscription_job_specification:
+      description: Contains user provided information on running a job for a subscription.
+      type: object
+      required:
+        - job_type
+        - name
+      additionalProperties: false
+      properties:
+        job_type:
+          $ref: "./job_parameters.yml#components/schemas/job_type"
+        job_parameters:
+          $ref: "./job_parameters.yml#components/schemas/job_parameters"
+        name:
+          $ref: "#/components/schemas/name"
+
     new_job:
       description: Contains user provided information on runnning a new job.
       type: object
@@ -179,9 +310,9 @@ components:
         name: Job Name
       properties:
         job_type:
-          $ref: "./job_parameters.yml#/components/schemas/job_type"
+          $ref: "./job_parameters.yml#components/schemas/job_type"
         job_parameters:
-          $ref: "./job_parameters.yml#components/schemas/job_parameters"
+          $ref: "./job_parameters.yml#components/schemas/job_definitions"
         name:
           $ref: "#/components/schemas/name"
 
@@ -189,6 +320,69 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/job"
+
+    search_parameters:
+      description: parameters used to find data from the ASF Search API
+      additionalProperties: false
+      type: object
+      required:
+        - start
+        - end
+      properties:
+        start:
+          $ref: "#/components/schemas/datetime"
+        end:
+          $ref: "#/components/schemas/datetime"
+        platform:
+          type: string
+          enum:
+            - S1
+            - SA
+            - SB
+        processingLevel:
+          type: string
+          enum:
+            - GRD_HD
+            - SLC
+        beamMode:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum:
+              - IW
+        intersectsWith:
+          type: string
+          format: wkt
+        frame:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+            minimum: 1
+            maximum: 1360
+        relativeOrbit:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+            minimum: 1
+            maximum: 175
+        polarization:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum:
+              - VV
+              - VV+VH
+              - HH
+              - HH+HV
+        flightDirection:
+          type: string
+          enum:
+            - ASCENDING
+            - DECENDING
 
     job:
       description: Contains information about a submitted job.
@@ -203,11 +397,11 @@ components:
       additionalProperties: false
       properties:
         job_id:
-          $ref: "#/components/schemas/job_id"
+          $ref: "#/components/schemas/job_or_subscription_id"
         user_id:
           $ref: "#/components/schemas/user_id"
         job_type:
-          $ref: "./job_parameters.yml#/components/schemas/job_type"
+          $ref: "./job_parameters.yml#components/schemas/job_type"
         job_parameters:
           $ref: "./job_parameters.yml#components/schemas/job_parameters"
         request_time:
@@ -231,8 +425,8 @@ components:
       type: boolean
       default: false
 
-    job_id:
-      description: Unique identifier for a job
+    job_or_subscription_id:
+      description: Unique identifier for a job or subscription
       type: string
       format: uuid
       example: 27836b79-e5b2-4d8f-932f-659724ea02c3

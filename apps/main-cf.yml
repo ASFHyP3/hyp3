@@ -79,6 +79,7 @@ Resources:
       Parameters:
         JobsTable: !Ref JobsTable
         UsersTable: !Ref UsersTable
+        SubscriptionsTable: !Ref SubscriptionsTable
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
         DomainName: !Ref DomainName
@@ -95,6 +96,17 @@ Resources:
         SubnetIds: !Join [',', !Ref SubnetIds]
         ContentBucket: !Ref ContentBucket
       TemplateURL: compute-cf.yml
+
+  ProcessNewGranules:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        JobsTable: !Ref JobsTable
+        UsersTable: !Ref UsersTable
+        SubscriptionsTable: !Ref SubscriptionsTable
+        MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
+      TemplateURL: process-new-granules/process-new-granules-cf.yml
+
 
   StepFunction:
     Type: AWS::CloudFormation::Stack
@@ -224,3 +236,23 @@ Resources:
       KeySchema:
         - AttributeName: user_id
           KeyType: HASH
+
+  SubscriptionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: subscription_id
+          AttributeType: S
+        - AttributeName: user_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: subscription_id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: user_id
+          KeySchema:
+            - AttributeName: user_id
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL

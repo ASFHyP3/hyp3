@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 
-from api.conftest import list_have_same_elements
+import pytest
+from conftest import list_have_same_elements
 
 import dynamo
 
@@ -308,25 +309,6 @@ def test_get_job(tables):
     assert dynamo.jobs.get_job('foo') is None
 
 
-def test_get_user(tables):
-    table_items = [
-        {
-            'user_id': 'user1',
-            'max_jobs_per_user': 5
-        },
-        {
-            'user_id': 'user2',
-            'max_jobs_per_user': 15
-        },
-    ]
-    for item in table_items:
-        tables.users_table.put_item(Item=item)
-
-    assert dynamo.user.get_user('user1') == table_items[0]
-    assert dynamo.user.get_user('user2') == table_items[1]
-    assert dynamo.user.get_user('foo') is None
-
-
 def test_query_jobs_sort_order(tables):
     table_items = [
         {
@@ -390,6 +372,62 @@ def test_update_job(tables):
     assert response['Items'] == expected_response
 
 
+def test_get_jobs_by_status_code(tables):
+    items = [
+        {
+            'job_id': 'job1',
+            'status_code': 'RUNNING',
+        },
+        {
+            'job_id': 'job2',
+            'status_code': 'PENDING',
+        },
+        {
+            'job_id': 'job3',
+            'status_code': 'PENDING',
+        },
+        {
+            'job_id': 'job4',
+            'status_code': 'FAILED',
+        },
+    ]
+    for item in items:
+        tables.jobs_table.put_item(Item=item)
+
+    jobs = dynamo.jobs.get_jobs_by_status_code('RUNNING', limit=1)
+    assert jobs == items[0:1]
+
+    jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=1)
+    assert jobs == items[1:2]
+
+    jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=2)
+    assert jobs == items[1:3]
+
+    jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=3)
+    assert jobs == items[1:3]
+
+
+def test_put_jobs_exceeds_quota(tables):
+    tables.users_table.put_item(Item={'user_id': 'user1', 'max_jobs_per_month': 3})
+
+    dynamo.jobs.put_jobs('user1', [{}, {}, {}])
+    assert dynamo.jobs.count_jobs('user1') == 3
+
+    with pytest.raises(dynamo.jobs.QuotaError):
+        dynamo.jobs.put_jobs('user1', [{}])
+    assert dynamo.jobs.count_jobs('user1') == 3
+
+    dynamo.jobs.put_jobs('user2', [{} for i in range(25)])
+    assert dynamo.jobs.count_jobs('user2') == 25
+
+    with pytest.raises(dynamo.jobs.QuotaError):
+        dynamo.jobs.put_jobs('user3', [{} for i in range(26)])
+
+    results = dynamo.jobs.put_jobs('user4', [{} for i in range(26)], fail_when_over_quota=False)
+    assert dynamo.jobs.count_jobs('user4') == 25
+    assert len(results) == 25
+
+
 def test_decimal_conversion(tables):
     table_items = [
         {
@@ -427,38 +465,3 @@ def test_decimal_conversion(tables):
     assert response[0]['float_value'] == Decimal('30.04')
     assert response[1]['float_value'] == Decimal('0.0')
     assert response[2]['float_value'] == Decimal('0.1')
-
-
-def test_get_jobs_by_status_code(tables):
-    items = [
-        {
-            'job_id': 'job1',
-            'status_code': 'RUNNING',
-        },
-        {
-            'job_id': 'job2',
-            'status_code': 'PENDING',
-        },
-        {
-            'job_id': 'job3',
-            'status_code': 'PENDING',
-        },
-        {
-            'job_id': 'job4',
-            'status_code': 'FAILED',
-        },
-    ]
-    for item in items:
-        tables.jobs_table.put_item(Item=item)
-
-    jobs = dynamo.jobs.get_jobs_by_status_code('RUNNING', limit=1)
-    assert jobs == items[0:1]
-
-    jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=1)
-    assert jobs == items[1:2]
-
-    jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=2)
-    assert jobs == items[1:3]
-
-    jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=3)
-    assert jobs == items[1:3]
