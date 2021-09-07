@@ -128,6 +128,7 @@ def test_get_jobs_for_granule():
     payload = process_new_granules.get_jobs_for_granule(subscription, granule)
     assert payload == [
         {
+            'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
             'job_type': 'RTC_GAMMA',
             'name': 'SubscriptionName',
             'job_parameters': {
@@ -155,6 +156,7 @@ def test_get_jobs_for_granule():
         payload = process_new_granules.get_jobs_for_granule(subscription, granule)
         assert payload == [
             {
+                'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
                 'job_type': 'INSAR_GAMMA',
                 'name': 'SubscriptionName',
                 'job_parameters': {
@@ -162,6 +164,7 @@ def test_get_jobs_for_granule():
                 }
             },
             {
+                'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
                 'job_type': 'INSAR_GAMMA',
                 'name': 'SubscriptionName',
                 'job_parameters': {

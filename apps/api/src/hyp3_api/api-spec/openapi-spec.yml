@@ -398,6 +398,8 @@ components:
       properties:
         job_id:
           $ref: "#/components/schemas/job_or_subscription_id"
+        subscription_id:
+          $ref: "#/components/schemas/job_or_subscription_id"
         user_id:
           $ref: "#/components/schemas/user_id"
         job_type:

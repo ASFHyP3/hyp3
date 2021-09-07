@@ -46,6 +46,8 @@ def get_jobs_for_granule(subscription, granule):
             payload.append(job)
     else:
         raise ValueError(f'Subscription job type {job_type} not supported')
+    for job in payload:
+        job['subscription_id'] = subscription['subscription_id']
     return payload
 
 
