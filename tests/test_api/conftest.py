@@ -66,7 +66,6 @@ def make_db_record(job_id,
                    thumbnail_images=None):
     record = {
         'job_id': job_id,
-        'subscription_id': subscription_id,
         'user_id': user_id,
         'job_type': job_type,
         'job_parameters': {
@@ -75,6 +74,8 @@ def make_db_record(job_id,
         'request_time': request_time,
         'status_code': status_code,
     }
+    if subscription_id is not None:
+        record['subscription_id'] = subscription_id
     if name is not None:
         record['name'] = name
     if files is not None:

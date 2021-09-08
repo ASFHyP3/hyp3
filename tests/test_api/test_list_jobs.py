@@ -170,6 +170,17 @@ def test_list_jobs_subscription_id(client, tables):
     assert response.status_code == HTTPStatus.OK
     assert response.json['jobs'] == [items[2]]
 
+    response = client.get(JOBS_URI, query_string={'subscription_id': '55c6981e-c33a-4086-b20b-661ee6f592a9'})
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['jobs'] == []
+
+    response = client.get(JOBS_URI)
+    assert response.status_code == HTTPStatus.OK
+    assert list_have_same_elements(response.json['jobs'], items)
+
+    response = client.get(JOBS_URI, query_string={'subscription_id': 'not a uuid'})
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
 
 def test_bad_date_formats(client):
     datetime_parameters = ['start', 'end']
