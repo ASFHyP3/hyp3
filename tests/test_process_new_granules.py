@@ -174,7 +174,6 @@ def test_get_jobs_for_granule():
         ]
 
     subscription = {
-
         'subscription_id': '51b576b0-a89b-4108-a9d8-7ecb52aee950',
         'job_specification': {
             'job_type': 'FOO',
