@@ -54,6 +54,10 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/start_token"
+        - name: subscription_id
+          in: query
+          schema:
+            $ref: "#/components/schemas/job_or_subscription_id"
 
       responses:
         "200":

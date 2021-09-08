@@ -53,6 +53,7 @@ def submit_batch(client, batch=None, validate_only=None):
 
 
 def make_db_record(job_id,
+                   subscription_id=None,
                    granules=['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B'],
                    job_type='RTC_GAMMA',
                    user_id=DEFAULT_USERNAME,
@@ -65,6 +66,7 @@ def make_db_record(job_id,
                    thumbnail_images=None):
     record = {
         'job_id': job_id,
+        'subscription_id': subscription_id,
         'user_id': user_id,
         'job_type': job_type,
         'job_parameters': {
