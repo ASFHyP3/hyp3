@@ -31,6 +31,7 @@ def get_jobs_for_granule(subscription, granule):
     job_specification = subscription['job_specification']
     if 'job_parameters' not in job_specification:
         job_specification['job_parameters'] = {}
+    job_specification['subscription_id'] = subscription['subscription_id']
 
     job_type = job_specification['job_type']
 
