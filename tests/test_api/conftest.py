@@ -53,6 +53,7 @@ def submit_batch(client, batch=None, validate_only=None):
 
 
 def make_db_record(job_id,
+                   subscription_id=None,
                    granules=['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B'],
                    job_type='RTC_GAMMA',
                    user_id=DEFAULT_USERNAME,
@@ -73,6 +74,8 @@ def make_db_record(job_id,
         'request_time': request_time,
         'status_code': status_code,
     }
+    if subscription_id is not None:
+        record['subscription_id'] = subscription_id
     if name is not None:
         record['name'] = name
     if files is not None:
