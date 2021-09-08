@@ -73,7 +73,8 @@ def count_jobs(user, start=None, end=None):
     return job_count
 
 
-def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None, subscription_id=None):
+def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None,
+               subscription_id=None):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
