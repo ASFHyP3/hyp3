@@ -79,7 +79,7 @@ Resources:
   Schedule:
     Type: AWS::Events::Rule
     Properties:
-      ScheduleExpression: "rate(1 hour)"
+      ScheduleExpression: "rate(16 minutes)"
       Targets:
         - Arn: !GetAtt Lambda.Arn
           Id: lambda
