@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `GET /jobs` responses now include a `subscription_id` field for jobs created by subscriptions
 - `GET /jobs` requests now may include a `subscription_id` query parameter to limit jobs based on subscription_id
+- Subscription are now evaluated every 20 minutes
 
 ## [2.3.0](https://github.com/ASFHyP3/hyp3/compare/v2.2.0...v2.3.0)
 ### Added
