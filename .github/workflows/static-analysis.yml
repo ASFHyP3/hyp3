@@ -36,7 +36,7 @@ jobs:
 
       - uses: scottbrenner/cfn-lint-action@v2
         with:
-          args: "--ignore-checks W3002 --template **/*cf.yml"
+          command: cfn-lint --info --ignore-checks W3002 --template **/*cf.yml
 
   openapi-spec-validator:
     runs-on: ubuntu-latest

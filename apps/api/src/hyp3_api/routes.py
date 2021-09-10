@@ -130,6 +130,9 @@ class Jobs(FlaskOpenAPIView):
         parameters = request.openapi.parameters.query
         start = parameters.get('start')
         end = parameters.get('end')
+        subscription_id = parameters.get('subscription_id')
+        if subscription_id is not None:
+            subscription_id = str(subscription_id)
         return jsonify(handlers.get_jobs(
             g.user,
             start.isoformat(timespec='seconds') if start else None,
@@ -137,7 +140,8 @@ class Jobs(FlaskOpenAPIView):
             parameters.get('status_code'),
             parameters.get('name'),
             parameters.get('job_type'),
-            parameters.get('start_token')
+            parameters.get('start_token'),
+            subscription_id,
         ))
 
 
