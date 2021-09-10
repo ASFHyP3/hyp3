@@ -333,14 +333,20 @@ def test_update_enabled(client, tables):
 
     response = client.patch(SUBSCRIPTIONS_URI + '/f00b731f-121d-44dc-abfa-c24afd8ad542', json={})
     assert response.json == {'enabled': True, **subscription}
+    response = tables.subscriptions_table.scan()['Items'][0]
+    assert response == {'enabled': True, **subscription}
 
     response = client.patch(SUBSCRIPTIONS_URI + '/f00b731f-121d-44dc-abfa-c24afd8ad542',
                             json={'enabled': False})
     assert response.json == {'enabled': False, **subscription}
+    response = tables.subscriptions_table.scan()['Items'][0]
+    assert response == {'enabled': False, **subscription}
 
     response = client.patch(SUBSCRIPTIONS_URI + '/f00b731f-121d-44dc-abfa-c24afd8ad542',
                             json={'enabled': True})
     assert response.json == {'enabled': True, **subscription}
+    response = tables.subscriptions_table.scan()['Items'][0]
+    assert response == {'enabled': True, **subscription}
 
 
 def test_get_subscription_by_id(client, tables):
