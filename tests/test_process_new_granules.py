@@ -109,6 +109,7 @@ def test_get_neighbors():
 
 def test_get_jobs_for_granule():
     granule = asf_search.ASFProduct({'properties': {'sceneName': 'GranuleName'}, 'geometry': {}})
+    granule2 = asf_search.ASFProduct({'properties': {'sceneName': 'GranuleName2'}, 'geometry': {}})
 
     subscription = {
         'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
@@ -126,6 +127,7 @@ def test_get_jobs_for_granule():
         }
     }
     payload = process_new_granules.get_jobs_for_granule(subscription, granule)
+    payload2 = process_new_granules.get_jobs_for_granule(subscription, granule2)
     assert payload == [
         {
             'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
@@ -133,6 +135,17 @@ def test_get_jobs_for_granule():
             'name': 'SubscriptionName',
             'job_parameters': {
                 'granules': ['GranuleName'],
+                'speckle_filter': True,
+            },
+        }
+    ]
+    assert payload2 == [
+        {
+            'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
+            'job_type': 'RTC_GAMMA',
+            'name': 'SubscriptionName',
+            'job_parameters': {
+                'granules': ['GranuleName2'],
                 'speckle_filter': True,
             },
         }
