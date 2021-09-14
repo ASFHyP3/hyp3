@@ -201,6 +201,8 @@ components:
         - job_specification
       additionalProperties: false
       properties:
+        validate_only:
+          $ref: "#/components/schemas/validate_only"
         search_parameters:
           $ref: "#/components/schemas/search_parameters"
         job_specification:

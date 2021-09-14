@@ -102,9 +102,9 @@ def get_user(user):
     }
 
 
-def post_subscriptions(body, user):
+def post_subscriptions(body, user, validate_only):
     try:
-        return dynamo.subscriptions.put_subscription(user, body)
+        return dynamo.subscriptions.put_subscription(user, body, validate_only)
     except ValueError as e:
         abort(problem_format(400, 'Bad Request', str(e)))
 
