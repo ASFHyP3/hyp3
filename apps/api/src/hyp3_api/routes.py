@@ -1,5 +1,6 @@
 import datetime
 import json
+from copy import deepcopy
 from decimal import Decimal
 from os import environ
 from pathlib import Path
@@ -162,7 +163,7 @@ class Subscriptions(FlaskOpenAPIView):
 
     def post(self):
         body = request.get_json()
-        validate_only = body.get('validate_only')
+        validate_only = deepcopy(body.get('validate_only'))
         if validate_only is not None:
             del body['validate_only']
         return jsonify(handlers.post_subscriptions(body, g.user, validate_only))

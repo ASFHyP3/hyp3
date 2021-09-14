@@ -389,3 +389,35 @@ def test_get_subscription_by_id(client, tables):
 
     response = client.get(SUBSCRIPTIONS_URI + '/140191ab-486b-4080-ab1b-3e2c40aab6b7')
     assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+def test_post_subscriptions_validate_only(client, tables):
+    login(client, 'subscriptionsUser')
+    subscription = {
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-02T00:00:00+00:00',
+        },
+        'job_specification': {
+            'job_type': 'INSAR_GAMMA',
+            'name': 'SubscriptionName'
+        }
+    }
+    params = {
+        'validate_only': True,
+        **subscription
+    }
+    response = client.post(SUBSCRIPTIONS_URI, json=params)
+
+    assert response.status_code == HTTPStatus.OK
+
+    assert tables.subscriptions_table.scan()['Items'] == []
+
+    params = {
+        'validate_only': False,
+        **subscription
+    }
+    response = client.post(SUBSCRIPTIONS_URI, json=params)
+
+    assert response.status_code == HTTPStatus.OK
+    assert len(tables.subscriptions_table.scan()['Items']) == 1
