@@ -310,6 +310,45 @@ def test_update_subscription_not_found(client, tables):
     assert api_response.status_code == HTTPStatus.NOT_FOUND
 
 
+def test_update_enabled(client, tables):
+    login(client, 'subscriptionsUser')
+    subscription = {
+        'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
+        'user_id': 'subscriptionsUser',
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-02T00:00:00+00:00',
+
+            'beamMode': ['IW'],
+            'platform': 'S1',
+            'polarization': ['VV', 'VV+VH', 'HH', 'HH+HV'],
+            'processingLevel': 'SLC',
+        },
+        'job_specification': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'SubscriptionName'
+        }
+    }
+    tables.subscriptions_table.put_item(Item=subscription)
+
+    response = client.patch(SUBSCRIPTIONS_URI + '/f00b731f-121d-44dc-abfa-c24afd8ad542', json={})
+    assert response.json == {'enabled': True, **subscription}
+    response = tables.subscriptions_table.scan()['Items'][0]
+    assert response == {'enabled': True, **subscription}
+
+    response = client.patch(SUBSCRIPTIONS_URI + '/f00b731f-121d-44dc-abfa-c24afd8ad542',
+                            json={'enabled': False})
+    assert response.json == {'enabled': False, **subscription}
+    response = tables.subscriptions_table.scan()['Items'][0]
+    assert response == {'enabled': False, **subscription}
+
+    response = client.patch(SUBSCRIPTIONS_URI + '/f00b731f-121d-44dc-abfa-c24afd8ad542',
+                            json={'enabled': True})
+    assert response.json == {'enabled': True, **subscription}
+    response = tables.subscriptions_table.scan()['Items'][0]
+    assert response == {'enabled': True, **subscription}
+
+
 def test_get_subscription_by_id(client, tables):
     login(client, 'subscriptionsUser1')
     items = [
