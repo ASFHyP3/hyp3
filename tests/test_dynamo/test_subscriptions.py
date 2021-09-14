@@ -214,3 +214,38 @@ def test_put_subscription_update(tables):
 
     response = tables.subscriptions_table.scan()
     assert response['Items'] == [updated_subscription]
+
+
+def test_put_subscription_validate_only(tables):
+    subscription = {
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-01T00:00:00+00:00',
+        }
+    }
+    with pytest.raises(ValueError):
+        dynamo.subscriptions.put_subscription('user1', subscription, validate_only=True)
+
+    subscription = {
+        'job_definition': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'sub1',
+        },
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-02T00:00:00+00:00',
+        }
+    }
+    dynamo.subscriptions.put_subscription('user1', subscription, validate_only=True)
+    assert tables.subscriptions_table.scan()['Items'] == []
+
+    dynamo.subscriptions.put_subscription('user1', subscription, validate_only=False)
+    assert tables.subscriptions_table.scan()['Items'] == [subscription]
+
+    tables.subscriptions_table.delete_item(Key={'subscription_id': subscription['subscription_id']})
+    dynamo.subscriptions.put_subscription('user1', subscription, validate_only=None)
+    assert tables.subscriptions_table.scan()['Items'] == [subscription]

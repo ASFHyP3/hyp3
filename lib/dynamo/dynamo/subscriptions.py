@@ -26,7 +26,7 @@ def validate_subscription(subscription):
         raise ValueError('processingLevel must be SLC when job_type is INSAR_GAMMA')
 
 
-def put_subscription(user, subscription, validate_only):
+def put_subscription(user, subscription, validate_only=False):
     validate_subscription(subscription)
 
     defaults = {
