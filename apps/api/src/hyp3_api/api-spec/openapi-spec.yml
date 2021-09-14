@@ -209,12 +209,12 @@ components:
     subscriptions_update_expression:
       description: Change/update a subscription
       type: object
-      required:
-        - end
       additionalProperties: false
       properties:
         end:
           $ref: "#/components/schemas/datetime"
+        enabled:
+          $ref: "#/components/schemas/subscription_enabled"
 
     list_of_subscriptions:
       type: array
@@ -238,8 +238,7 @@ components:
         user_id:
           $ref: "#/components/schemas/user_id"
         enabled:
-          description: Set to False to pause/disable the processing of new data.
-          type: boolean
+          $ref: "#/components/schemas/subscription_enabled"
 
     user:
       description: Information about a user (quota, user id)
@@ -441,6 +440,10 @@ components:
       description: Username from Earthdata Login.
       type: string
       example: myUserId
+
+    subscription_enabled:
+      description: Set to False to pause/disable the processing of new data.
+      type: boolean
 
     datetime:
       description: Date and time object formatted according to ISO 8601

@@ -128,6 +128,8 @@ def patch_subscriptions(subscription_id, body, user):
         abort(problem_format(403, 'Forbidden', 'You may not update subscriptions created by a different user'))
     if 'end' in body:
         subscription['search_parameters']['end'] = body['end']
+    if 'enabled' in body:
+        subscription['enabled'] = body['enabled']
     try:
         dynamo.subscriptions.put_subscription(user, subscription)
     except ValueError as e:

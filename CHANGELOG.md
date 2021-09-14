@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.3.1](https://github.com/ASFHyP3/hyp3/compare/v2.3.0...v2.3.1)
+## [2.4.1](https://github.com/ASFHyP3/hyp3/compare/v2.4.0...v2.4.1)
+### Added
+- `PATCH /subscriptions` requests may now update a subscription's `enabled` attribute in addition to `end_date`
+
+## [2.4.0](https://github.com/ASFHyP3/hyp3/compare/v2.3.0...v2.4.0)
 ### Added
 - `GET /jobs` responses now include a `subscription_id` field for jobs created by subscriptions
 - `GET /jobs` requests now may include a `subscription_id` query parameter to limit jobs based on subscription_id
