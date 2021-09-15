@@ -208,6 +208,7 @@ def test_update_subscription(client, tables):
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user1',
+        'creation_date': '2020-01-01T00:00:00+00:00',
         'enabled': True,
     }
     tables.subscriptions_table.put_item(Item=subscription)
@@ -232,6 +233,7 @@ def test_update_subscription(client, tables):
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user1',
+        'creation_date': '2020-01-01T00:00:00+00:00',
         'enabled': True,
     }
 
@@ -254,6 +256,7 @@ def test_update_subscription(client, tables):
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user1',
+        'creation_date': '2020-01-01T00:00:00+00:00',
         'enabled': True,
     }
 
@@ -327,6 +330,7 @@ def test_update_enabled(client, tables):
     subscription = {
         'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
         'user_id': 'subscriptionsUser',
+        'creation_date': '2020-01-01T00:00:00+00:00',
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
             'end': '2020-01-02T00:00:00+00:00',

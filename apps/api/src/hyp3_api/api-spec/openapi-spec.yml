@@ -256,6 +256,8 @@ components:
           $ref: "#components/schemas/subscription_job_specification"
         user_id:
           $ref: "#/components/schemas/user_id"
+        creation_date:
+          $ref: "#/components/schemas/datetime"
         enabled:
           $ref: "#/components/schemas/subscription_enabled"
 

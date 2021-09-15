@@ -23,6 +23,10 @@ def test_put_subscription(tables):
     assert isinstance(response['subscription_id'], str)
     del response['subscription_id']
 
+    assert 'creation_date' in response
+    assert isinstance(response['creation_date'], str)
+    del response['creation_date']
+
     assert response == {
         'user_id': 'user1',
         'job_definition': {

@@ -31,6 +31,7 @@ def put_subscription(user, subscription, validate_only=False):
 
     defaults = {
         'subscription_id': str(uuid4()),
+        'creation_date': format_time(datetime.now(tz=timezone.utc)),
         'user_id': user,
         'enabled': True,
     }
