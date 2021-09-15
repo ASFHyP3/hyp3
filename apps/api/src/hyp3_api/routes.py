@@ -1,6 +1,5 @@
 import datetime
 import json
-from copy import deepcopy
 from decimal import Decimal
 from os import environ
 from pathlib import Path

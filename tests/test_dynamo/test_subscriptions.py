@@ -247,4 +247,3 @@ def test_put_subscription_validate_only(tables):
 
     dynamo.subscriptions.put_subscription('user1', good_subscription, validate_only=False)
     assert tables.subscriptions_table.scan()['Items'] == [good_subscription]
-
