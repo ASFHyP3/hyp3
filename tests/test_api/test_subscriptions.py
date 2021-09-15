@@ -7,35 +7,37 @@ from .conftest import SUBSCRIPTIONS_URI, login
 def test_post_subscription(client, tables):
     login(client)
     params = {
-        'search_parameters': {
-            'start': '2020-01-01T00:00:00+00:00',
-            'end': '2020-01-02T00:00:00+00:00',
-            'platform': 'S1',
-            'beamMode': ['IW'],
-            'polarization': ['VV'],
-            'processingLevel': 'SLC',
-        },
-        'job_specification': {
-            'job_parameters': {
-                'looks': '10x2',
-                'include_inc_map': True,
-                'include_look_vectors': True,
-                'include_los_displacement': True,
-                'include_dem': True,
-                'include_wrapped_phase': True,
-                'apply_water_mask': True,
+        'subscription': {
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-02T00:00:00+00:00',
+                'platform': 'S1',
+                'beamMode': ['IW'],
+                'polarization': ['VV'],
+                'processingLevel': 'SLC',
             },
-            'job_type': 'RTC_GAMMA',
-            'name': 'SubscriptionName'
+            'job_specification': {
+                'job_parameters': {
+                    'looks': '10x2',
+                    'include_inc_map': True,
+                    'include_look_vectors': True,
+                    'include_los_displacement': True,
+                    'include_dem': True,
+                    'include_wrapped_phase': True,
+                    'apply_water_mask': True,
+                },
+                'job_type': 'RTC_GAMMA',
+                'name': 'SubscriptionName'
+            }
         }
     }
 
     response = client.post(SUBSCRIPTIONS_URI, json=params)
     assert response.status_code == HTTPStatus.OK
-    assert 'subscription_id' in response.json
-    assert 'user_id' in response.json
-    for k, v in params.items():
-        assert response.json[k] == v
+    assert 'subscription_id' in response.json['subscription']
+    assert 'user_id' in response.json['subscription']
+    for k, v in params['subscription'].items():
+        assert response.json['subscription'][k] == v
 
 
 def test_submit_subscriptions_missing_fields(client, tables):
@@ -45,22 +47,26 @@ def test_submit_subscriptions_missing_fields(client, tables):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
     params = {
-        'search_parameters': {
-            'start': '2020-01-01T00:00:00+00:00',
-            'end': '2020-01-02T00:00:00+00:00',
-        },
+        'subscription': {
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-02T00:00:00+00:00',
+            },
+        }
     }
     response = client.post(SUBSCRIPTIONS_URI, json=params)
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
     params = {
-        'search_parameters': {
-            'start': '2020-01-01T00:00:00+00:00',
-            'end': '2020-01-02T00:00:00+00:00',
-        },
-        'job_specification': {
-            'job_type': 'INSAR_GAMMA',
-            'name': 'SubscriptionName'
+        'subscription': {
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-02T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'INSAR_GAMMA',
+                'name': 'SubscriptionName'
+            }
         }
     }
     response = client.post(SUBSCRIPTIONS_URI, json=params)
@@ -70,19 +76,21 @@ def test_submit_subscriptions_missing_fields(client, tables):
 def test_search_criteria(client, tables):
     login(client)
     params = {
-        'search_parameters': {
-            'start': '2020-01-01T00:00:00+00:00',
-            'end': '2020-01-02T00:00:00+00:00',
-            'frame': [50],
-            'relativeOrbit': [1, 5],
-            'flightDirection': 'ASCENDING',
-            'intersectsWith': 'POLYGON((-5 2, -3 2, -3 5, -5 5, -5 2))',
-            'processingLevel': 'GRD_HD',
-            'polarization': ['VV'],
-        },
-        'job_specification': {
-            'job_type': 'RTC_GAMMA',
-            'name': 'SubscriptionName'
+        'subscription': {
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-02T00:00:00+00:00',
+                'frame': [50],
+                'relativeOrbit': [1, 5],
+                'flightDirection': 'ASCENDING',
+                'intersectsWith': 'POLYGON((-5 2, -3 2, -3 5, -5 5, -5 2))',
+                'processingLevel': 'GRD_HD',
+                'polarization': ['VV'],
+            },
+            'job_specification': {
+                'job_type': 'RTC_GAMMA',
+                'name': 'SubscriptionName'
+            }
         }
     }
     response = client.post(SUBSCRIPTIONS_URI, json=params)
@@ -99,27 +107,31 @@ def test_search_criteria(client, tables):
     }
     for k, v in bad_params.items():
         params = {
-            'search_parameters': {
-                'start': '2020-01-01T00:00:00+00:00',
-                'end': '2020-01-02T00:00:00+00:00',
-                k: v,
-            },
-            'job_specification': {
-                'job_type': 'RTC_GAMMA',
-                'name': 'SubscriptionName'
+            'subscription': {
+                'search_parameters': {
+                    'start': '2020-01-01T00:00:00+00:00',
+                    'end': '2020-01-02T00:00:00+00:00',
+                    k: v,
+                },
+                'job_specification': {
+                    'job_type': 'RTC_GAMMA',
+                    'name': 'SubscriptionName'
+                }
             }
         }
         response = client.post(SUBSCRIPTIONS_URI, json=params)
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
     params = {
-        'search_parameters': {
-            'start': '2020-01-01T00:00:00+00:00',
-            'end': '2020-01-01T00:00:00+00:00',
-        },
-        'job_specification': {
-            'job_type': 'RTC_GAMMA',
-            'name': 'SubscriptionName'
+        'subscription': {
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-01T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'RTC_GAMMA',
+                'name': 'SubscriptionName'
+            }
         }
     }
     response = client.post(SUBSCRIPTIONS_URI, json=params)
@@ -389,3 +401,39 @@ def test_get_subscription_by_id(client, tables):
 
     response = client.get(SUBSCRIPTIONS_URI + '/140191ab-486b-4080-ab1b-3e2c40aab6b7')
     assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+def test_post_subscriptions_validate_only(client, tables):
+    login(client, 'subscriptionsUser')
+    subscription = {
+        'search_parameters': {
+            'start': '2020-01-01T00:00:00+00:00',
+            'end': '2020-01-02T00:00:00+00:00',
+        },
+        'job_specification': {
+            'job_type': 'INSAR_GAMMA',
+            'name': 'SubscriptionName'
+        }
+    }
+    params = {
+        'subscription': {
+            **subscription
+        },
+        'validate_only': True,
+    }
+    response = client.post(SUBSCRIPTIONS_URI, json=params)
+
+    assert response.status_code == HTTPStatus.OK
+
+    assert tables.subscriptions_table.scan()['Items'] == []
+
+    params = {
+        'subscription': {
+            **subscription
+        },
+        'validate_only': False,
+    }
+    response = client.post(SUBSCRIPTIONS_URI, json=params)
+
+    assert response.status_code == HTTPStatus.OK
+    assert len(tables.subscriptions_table.scan()['Items']) == 1

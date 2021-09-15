@@ -111,7 +111,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/subscription"
+                type: object
+                properties:
+                  subscription:
+                    $ref: "#/components/schemas/subscription"
+                  validate_only:
+                    $ref: "#/components/schemas/validate_only"
+
+
     get:
       description: Get information about subscriptions for the logged in user
       responses:
@@ -195,6 +202,18 @@ components:
 
     subscriptions_body:
       description: Information about a subscription
+      type: object
+      required:
+        - subscription
+      additionalProperties: false
+      properties:
+        validate_only:
+          $ref: "#/components/schemas/validate_only"
+        subscription:
+          $ref: "#/components/schemas/new_subscription"
+
+    new_subscription:
+      description: Contains user provided information about a new subscription
       type: object
       required:
         - search_parameters

@@ -103,8 +103,16 @@ def get_user(user):
 
 
 def post_subscriptions(body, user):
+    subscription = body['subscription']
+    validate_only = body.get('validate_only')
     try:
-        return dynamo.subscriptions.put_subscription(user, body)
+        subscription = dynamo.subscriptions.put_subscription(user, subscription, validate_only)
+        response = {
+            'subscription': subscription
+        }
+        if validate_only is not None:
+            response['validate_only'] = validate_only
+        return response
     except ValueError as e:
         abort(problem_format(400, 'Bad Request', str(e)))
 

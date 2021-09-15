@@ -26,7 +26,7 @@ def validate_subscription(subscription):
         raise ValueError('processingLevel must be SLC when job_type is INSAR_GAMMA')
 
 
-def put_subscription(user, subscription):
+def put_subscription(user, subscription, validate_only=False):
     validate_subscription(subscription)
 
     defaults = {
@@ -49,7 +49,8 @@ def put_subscription(user, subscription):
             subscription['search_parameters'][key] = value
 
     table = DYNAMODB_RESOURCE.Table(environ['SUBSCRIPTIONS_TABLE_NAME'])
-    table.put_item(Item=subscription)
+    if not validate_only:
+        table.put_item(Item=subscription)
     return subscription
 
 
