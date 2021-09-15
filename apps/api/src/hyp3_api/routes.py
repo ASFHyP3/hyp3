@@ -163,9 +163,7 @@ class Subscriptions(FlaskOpenAPIView):
 
     def post(self):
         body = request.get_json()
-        validate_only = deepcopy(body.get('validate_only'))
-        if validate_only is not None:
-            del body['validate_only']
+        validate_only = body.pop('validate_only', False)
         return jsonify(handlers.post_subscriptions(body, g.user, validate_only))
 
     def get(self, subscription_id):

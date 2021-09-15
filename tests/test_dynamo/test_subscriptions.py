@@ -217,7 +217,7 @@ def test_put_subscription_update(tables):
 
 
 def test_put_subscription_validate_only(tables):
-    subscription = {
+    bad_subscription = {
         'job_definition': {
             'job_type': 'RTC_GAMMA',
             'name': 'sub1',
@@ -228,9 +228,11 @@ def test_put_subscription_validate_only(tables):
         }
     }
     with pytest.raises(ValueError):
-        dynamo.subscriptions.put_subscription('user1', subscription, validate_only=True)
+        dynamo.subscriptions.put_subscription('user1', bad_subscription, validate_only=True)
+    with pytest.raises(ValueError):
+        dynamo.subscriptions.put_subscription('user1', bad_subscription, validate_only=False)
 
-    subscription = {
+    good_subscription = {
         'job_definition': {
             'job_type': 'RTC_GAMMA',
             'name': 'sub1',
@@ -240,12 +242,9 @@ def test_put_subscription_validate_only(tables):
             'end': '2020-01-02T00:00:00+00:00',
         }
     }
-    dynamo.subscriptions.put_subscription('user1', subscription, validate_only=True)
+    dynamo.subscriptions.put_subscription('user1', good_subscription, validate_only=True)
     assert tables.subscriptions_table.scan()['Items'] == []
 
-    dynamo.subscriptions.put_subscription('user1', subscription, validate_only=False)
-    assert tables.subscriptions_table.scan()['Items'] == [subscription]
+    dynamo.subscriptions.put_subscription('user1', good_subscription, validate_only=False)
+    assert tables.subscriptions_table.scan()['Items'] == [good_subscription]
 
-    tables.subscriptions_table.delete_item(Key={'subscription_id': subscription['subscription_id']})
-    dynamo.subscriptions.put_subscription('user1', subscription, validate_only=None)
-    assert tables.subscriptions_table.scan()['Items'] == [subscription]
