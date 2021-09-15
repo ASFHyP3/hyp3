@@ -117,8 +117,12 @@ def post_subscriptions(body, user):
         abort(problem_format(400, 'Bad Request', str(e)))
 
 
-def get_subscriptions(user):
-    return {'subscriptions': dynamo.subscriptions.get_subscriptions_for_user(user)}
+def get_subscriptions(user, name=None, job_type=None, enabled=None):
+    subscriptions = dynamo.subscriptions.get_subscriptions_for_user(user, name, job_type, enabled)
+    payload = {
+        'subscriptions': subscriptions
+    }
+    return payload
 
 
 def get_subscription_by_id(subscription_id):

@@ -148,6 +148,7 @@ def test_get_subscriptions(client, tables):
         {
             'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
             'user_id': 'subscriptionsUser',
+            'creation_date': '2020-01-04T00:00:00+00:00',
             'search_parameters': {
                 'start': '2020-01-01T00:00:00+00:00',
                 'end': '2020-01-01T00:00:00+00:00',
@@ -160,6 +161,7 @@ def test_get_subscriptions(client, tables):
         {
             'subscription_id': '140191ab-486b-4080-ab1b-3e2c40aab6b8',
             'user_id': 'subscriptionsUser',
+            'creation_date': '2020-01-03T00:00:00+00:00',
             'search_parameters': {
                 'start': '2020-01-01T00:00:00+00:00',
                 'end': '2020-01-01T00:00:00+00:00',
@@ -172,6 +174,7 @@ def test_get_subscriptions(client, tables):
         {
             'subscription_id': '92da7534-1896-410a-99e4-d16a20c71861',
             'user_id': 'subscriptionsUser',
+            'creation_date': '2020-01-02T00:00:00+00:00',
             'search_parameters': {
                 'start': '2020-01-01T00:00:00+00:00',
                 'end': '2020-01-01T00:00:00+00:00',
@@ -281,6 +284,7 @@ def test_update_subscription_wrong_user(client, tables):
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user2',
+        'creation_date': '2020-01-01T00:00:00+00:00',
     }
     tables.subscriptions_table.put_item(Item=subscription)
     api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
@@ -308,6 +312,7 @@ def test_update_subscription_date_too_far_out(client, tables):
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user1',
+        'creation_date': '2020-01-01T00:00:00+00:00',
     }
     tables.subscriptions_table.put_item(Item=subscription)
 
@@ -371,6 +376,7 @@ def test_get_subscription_by_id(client, tables):
         {
             'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
             'user_id': 'subscriptionsUser1',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'search_parameters': {
                 'start': '2020-01-01T00:00:00+00:00',
                 'end': '2020-01-01T00:00:00+00:00',

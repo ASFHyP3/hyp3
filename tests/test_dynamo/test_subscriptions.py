@@ -101,21 +101,25 @@ def test_get_subscriptions_for_user(tables):
     table_items = [
         {
             'subscription_id': 'sub1',
+            'creation_date': '2020-01-04T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
             'user_id': 'user1'
         },
         {
             'subscription_id': 'sub2',
+            'creation_date': '2020-01-03T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
             'user_id': 'user1'
         },
         {
             'subscription_id': 'sub3',
+            'creation_date': '2020-01-02T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
             'user_id': 'user1'
         },
         {
             'subscription_id': 'sub4',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
             'user_id': 'user2'
         },
@@ -134,11 +138,13 @@ def test_get_subscription_by_id(tables):
     table_items = [
         {
             'subscription_id': 'sub1',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
             'user_id': 'user1'
         },
         {
             'subscription_id': 'sub2',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
             'user_id': 'user2'
         },
@@ -154,21 +160,25 @@ def test_get_all_subscriptions(tables):
     table_items = [
         {
             'subscription_id': 'sub1',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
             'user_id': 'user1'
         },
         {
             'subscription_id': 'sub2',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
             'user_id': 'user1'
         },
         {
             'subscription_id': 'sub3',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
             'user_id': 'user1'
         },
         {
             'subscription_id': 'sub4',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
             'user_id': 'user2'
         },
@@ -183,6 +193,7 @@ def test_put_subscription_update(tables):
     subscription = {
         'user_id': 'user1',
         'subscription_id': 'sub1',
+        'creation_date': '2020-01-01T00:00:00+00:00',
         'job_definition': {
             'job_type': 'RTC_GAMMA',
             'name': 'sub1',
@@ -199,6 +210,7 @@ def test_put_subscription_update(tables):
     tables.subscriptions_table.put_item(Item=subscription)
 
     updated_subscription = {
+        'creation_date': '2020-01-01T00:00:00+00:00',
         'user_id': 'user1',
         'subscription_id': 'sub1',
         'job_definition': {
@@ -251,3 +263,145 @@ def test_put_subscription_validate_only(tables):
 
     dynamo.subscriptions.put_subscription('user1', good_subscription, validate_only=False)
     assert tables.subscriptions_table.scan()['Items'] == [good_subscription]
+
+
+def test_query_subscriptions_by_name(tables):
+    table_items = [
+        {
+            'job_specification': {'name': 'name1'},
+            'creation_date': '2020-01-04T00:00:00+00:00',
+            'subscription_id': 'sub1',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1'
+        },
+        {
+            'job_specification': {'name': 'name1'},
+            'creation_date': '2020-01-03T00:00:00+00:00',
+            'subscription_id': 'sub2',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1'
+        },
+        {
+            'job_specification': {'name': 'name2'},
+            'creation_date': '2020-01-02T00:00:00+00:00',
+            'subscription_id': 'sub3',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1'
+        },
+        {
+            'job_specification': {'name': 'name1'},
+            'creation_date': '2020-01-01T00:00:00+00:00',
+            'subscription_id': 'sub4',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user2'
+        },
+    ]
+    for item in table_items:
+        tables.subscriptions_table.put_item(Item=item)
+
+    response = dynamo.subscriptions.get_subscriptions_for_user('user1', name='name1')
+    assert response == table_items[:2]
+
+
+def test_query_by_active_status(tables):
+    table_items = [
+        {
+            'enabled': True,
+            'subscription_id': 'sub1',
+            'job_type': 'INSAR_GAMMA',
+            'creation_date': '2020-01-04T00:00:00+00:00',
+            'user_id': 'user1'
+        },
+        {
+            'enabled': True,
+            'subscription_id': 'sub2',
+            'job_type': 'INSAR_GAMMA',
+            'creation_date': '2020-01-03T00:00:00+00:00',
+            'user_id': 'user1'
+        },
+        {
+            'enabled': False,
+            'subscription_id': 'sub3',
+            'job_type': 'INSAR_GAMMA',
+            'creation_date': '2020-01-02T00:00:00+00:00',
+            'user_id': 'user1'
+        }
+    ]
+    for item in table_items:
+        tables.subscriptions_table.put_item(Item=item)
+
+    response = dynamo.subscriptions.get_subscriptions_for_user('user1', enabled=True)
+    assert response == table_items[:2]
+
+    response = dynamo.subscriptions.get_subscriptions_for_user('user1', enabled=False)
+    assert response == [table_items[-1]]
+
+
+def test_query_subscriptions_by_job_type(tables):
+    table_items = [
+        {
+            'job_specification': {'job_type': 'RTC_GAMMA'},
+            'subscription_id': 'sub1',
+            'job_type': 'INSAR_GAMMA',
+            'creation_date': '2020-01-04T00:00:00+00:00',
+            'user_id': 'user1'
+        },
+        {
+            'job_specification': {'job_type': 'RTC_GAMMA'},
+            'subscription_id': 'sub2',
+            'job_type': 'INSAR_GAMMA',
+            'creation_date': '2020-01-03T00:00:00+00:00',
+            'user_id': 'user1'
+        },
+        {
+            'job_specification': {'job_type': 'INSAR_GAMMA'},
+            'subscription_id': 'sub3',
+            'job_type': 'INSAR_GAMMA',
+            'creation_date': '2020-01-02T00:00:00+00:00',
+            'user_id': 'user1'
+        },
+        {
+            'job_specification': {'job_type': 'AUTORIFT'},
+            'subscription_id': 'sub4',
+            'job_type': 'INSAR_GAMMA',
+            'creation_date': '2020-01-01T00:00:00+00:00',
+            'user_id': 'user2'
+        },
+    ]
+    for item in table_items:
+        tables.subscriptions_table.put_item(Item=item)
+
+    response = dynamo.subscriptions.get_subscriptions_for_user('user1', job_type='RTC_GAMMA')
+    assert response == table_items[:2]
+
+    response = dynamo.subscriptions.get_subscriptions_for_user('user1', job_type='INSAR_GAMMA')
+    assert response == [table_items[2]]
+
+
+def test_query_subscriptions_sort_order(tables):
+    table_items = [
+        {
+            'subscription_id': 'sub1',
+            'creation_date': '2020-01-03T00:00:00+00:00',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1'
+        },
+        {
+            'subscription_id': 'sub2',
+            'creation_date': '2020-01-02T00:00:00+00:00',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1'
+        },
+        {
+            'subscription_id': 'sub3',
+            'creation_date': '2020-01-01T00:00:00+00:00',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1'
+        },
+    ]
+    for item in [table_items[1], table_items[2], table_items[0]]:
+        tables.subscriptions_table.put_item(Item=item)
+
+    response = dynamo.subscriptions.get_subscriptions_for_user('user1')
+
+    assert response == table_items

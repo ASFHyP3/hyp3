@@ -3,7 +3,7 @@ from os import environ
 from uuid import uuid4
 
 import dateutil.parser
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Key, Attr
 
 from dynamo.util import DYNAMODB_RESOURCE, format_time
 
@@ -55,11 +55,23 @@ def put_subscription(user, subscription, validate_only=False):
     return subscription
 
 
-def get_subscriptions_for_user(user):
+def get_subscriptions_for_user(user, name=None, job_type=None, enabled=None):
     table = DYNAMODB_RESOURCE.Table(environ['SUBSCRIPTIONS_TABLE_NAME'])
+
+    filter_expression = Attr('subscription_id').exists()
+
+    if name is not None:
+        filter_expression &= Attr('job_specification.name').eq(name)
+    if job_type is not None:
+        filter_expression &= Attr('job_specification.job_type').eq(job_type)
+    if enabled is not None:
+        filter_expression &= Attr('enabled').eq(enabled)
+
     params = {
         'IndexName': 'user_id',
         'KeyConditionExpression': Key('user_id').eq(user),
+        'FilterExpression': filter_expression,
+        'ScanIndexForward': False
     }
     response = table.query(**params)
     subscriptions = response['Items']

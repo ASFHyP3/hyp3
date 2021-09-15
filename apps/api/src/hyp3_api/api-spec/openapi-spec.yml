@@ -121,6 +121,19 @@ paths:
 
     get:
       description: Get information about subscriptions for the logged in user
+      parameters:
+        - name: name
+          in: query
+          schema:
+            $ref: "#/components/schemas/name"
+        - name: job_type
+          in: query
+          schema:
+            $ref: "./job_parameters.yml#components/schemas/job_type"
+        - name: enabled
+          in: query
+          schema:
+            $ref: "#/components/schemas/subscription_enabled"
       responses:
         "200":
           description: 200 response
