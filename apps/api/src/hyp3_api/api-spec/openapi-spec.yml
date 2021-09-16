@@ -476,7 +476,7 @@ components:
       example: myUserId
 
     subscription_enabled:
-      description: Set to False to pause/disable the processing of new data.
+      description: Set to false to pause/disable the processing of new data.
       type: boolean
 
     datetime:

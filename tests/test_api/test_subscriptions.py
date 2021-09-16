@@ -468,6 +468,7 @@ def test_query_subscription_by_name(client, tables):
         {
             'subscription_id': '140191ab-486b-4080-ab1b-3e2c40aab6b8',
             'user_id': 'subscriptionsUser',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'search_parameters': {
                 'start': '2020-01-01T00:00:00+00:00',
                 'end': '2020-01-01T00:00:00+00:00',
@@ -524,6 +525,7 @@ def test_query_jobs_by_job_type(client, tables):
     assert response.status_code == HTTPStatus.OK
     assert response.json['subscriptions'] == [items[0]]
 
+
 def test_query_jobs_by_enabled(client, tables):
     login(client, 'subscriptionsUser')
     items = [
@@ -544,6 +546,7 @@ def test_query_jobs_by_enabled(client, tables):
         {
             'subscription_id': '140191ab-486b-4080-ab1b-3e2c40aab6b8',
             'user_id': 'subscriptionsUser',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'enabled': False,
             'search_parameters': {
                 'start': '2020-01-01T00:00:00+00:00',
@@ -562,3 +565,7 @@ def test_query_jobs_by_enabled(client, tables):
     response = client.get(SUBSCRIPTIONS_URI, query_string={'enabled': True})
     assert response.status_code == HTTPStatus.OK
     assert response.json['subscriptions'] == [items[0]]
+
+    response = client.get(SUBSCRIPTIONS_URI, query_string={'enabled': False})
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['subscriptions'] == [items[1]]
