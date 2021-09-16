@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `POST /subscriptions` requests may now include a `validate_only` key which when set to `true` will not add the subscription
 to the database but still validate it.
 - in `POST /subscriptions` requests, `search_parameters` and `job_specification` are now included under `subscription`
+- `GET /subscriptions` requests now include query parameters
+  - `name` gets only subscriptions with the given name
+  - `job_type` gets only subscriptions with the given job type
+  - `enabled` gets only subscriptions where `enabled` matches
+- subscriptions now include `creation_date` which indicates date and time of subscription creation, responses from 
+`GET /subscriptions` are sorted by `creation_date` decending
+
 
 ## [2.4.1](https://github.com/ASFHyP3/hyp3/compare/v2.4.0...v2.4.1)
 ### Added

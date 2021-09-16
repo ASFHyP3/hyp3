@@ -167,7 +167,13 @@ class Subscriptions(FlaskOpenAPIView):
     def get(self, subscription_id):
         if subscription_id is not None:
             return jsonify(handlers.get_subscription_by_id(subscription_id))
-        return jsonify(handlers.get_subscriptions(g.user))
+        parameters = request.openapi.parameters.query
+        return jsonify(handlers.get_subscriptions(
+            g.user,
+            parameters.get('name'),
+            parameters.get('job_type'),
+            parameters.get('enabled'),
+        ))
 
     def patch(self, subscription_id):
         body = request.get_json()

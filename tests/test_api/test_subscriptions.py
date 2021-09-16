@@ -148,6 +148,7 @@ def test_get_subscriptions(client, tables):
         {
             'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
             'user_id': 'subscriptionsUser',
+            'creation_date': '2020-01-04T00:00:00+00:00',
             'search_parameters': {
                 'start': '2020-01-01T00:00:00+00:00',
                 'end': '2020-01-01T00:00:00+00:00',
@@ -160,6 +161,7 @@ def test_get_subscriptions(client, tables):
         {
             'subscription_id': '140191ab-486b-4080-ab1b-3e2c40aab6b8',
             'user_id': 'subscriptionsUser',
+            'creation_date': '2020-01-03T00:00:00+00:00',
             'search_parameters': {
                 'start': '2020-01-01T00:00:00+00:00',
                 'end': '2020-01-01T00:00:00+00:00',
@@ -172,6 +174,7 @@ def test_get_subscriptions(client, tables):
         {
             'subscription_id': '92da7534-1896-410a-99e4-d16a20c71861',
             'user_id': 'subscriptionsUser',
+            'creation_date': '2020-01-02T00:00:00+00:00',
             'search_parameters': {
                 'start': '2020-01-01T00:00:00+00:00',
                 'end': '2020-01-01T00:00:00+00:00',
@@ -208,6 +211,7 @@ def test_update_subscription(client, tables):
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user1',
+        'creation_date': '2020-01-01T00:00:00+00:00',
         'enabled': True,
     }
     tables.subscriptions_table.put_item(Item=subscription)
@@ -232,6 +236,7 @@ def test_update_subscription(client, tables):
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user1',
+        'creation_date': '2020-01-01T00:00:00+00:00',
         'enabled': True,
     }
 
@@ -254,6 +259,7 @@ def test_update_subscription(client, tables):
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user1',
+        'creation_date': '2020-01-01T00:00:00+00:00',
         'enabled': True,
     }
 
@@ -278,6 +284,7 @@ def test_update_subscription_wrong_user(client, tables):
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user2',
+        'creation_date': '2020-01-01T00:00:00+00:00',
     }
     tables.subscriptions_table.put_item(Item=subscription)
     api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
@@ -305,6 +312,7 @@ def test_update_subscription_date_too_far_out(client, tables):
         'subscription_id': 'a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
         'job_type': 'INSAR_GAMMA',
         'user_id': 'user1',
+        'creation_date': '2020-01-01T00:00:00+00:00',
     }
     tables.subscriptions_table.put_item(Item=subscription)
 
@@ -327,6 +335,7 @@ def test_update_enabled(client, tables):
     subscription = {
         'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
         'user_id': 'subscriptionsUser',
+        'creation_date': '2020-01-01T00:00:00+00:00',
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
             'end': '2020-01-02T00:00:00+00:00',
@@ -367,6 +376,7 @@ def test_get_subscription_by_id(client, tables):
         {
             'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
             'user_id': 'subscriptionsUser1',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'search_parameters': {
                 'start': '2020-01-01T00:00:00+00:00',
                 'end': '2020-01-01T00:00:00+00:00',
@@ -437,3 +447,125 @@ def test_post_subscriptions_validate_only(client, tables):
 
     assert response.status_code == HTTPStatus.OK
     assert len(tables.subscriptions_table.scan()['Items']) == 1
+
+
+def test_query_subscription_by_name(client, tables):
+    login(client, 'subscriptionsUser')
+    items = [
+        {
+            'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
+            'user_id': 'subscriptionsUser',
+            'creation_date': '2020-01-01T00:00:00+00:00',
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-01T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'RTC_GAMMA',
+                'name': 'SubscriptionName1'
+            }
+        },
+        {
+            'subscription_id': '140191ab-486b-4080-ab1b-3e2c40aab6b8',
+            'user_id': 'subscriptionsUser',
+            'creation_date': '2020-01-01T00:00:00+00:00',
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-01T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'RTC_GAMMA',
+                'name': 'SubscriptionName2'
+            }
+        }
+    ]
+
+    for item in items:
+        tables.subscriptions_table.put_item(Item=item)
+
+    response = client.get(SUBSCRIPTIONS_URI, query_string={'name': 'SubscriptionName1'})
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['subscriptions'] == [items[0]]
+
+
+def test_query_jobs_by_job_type(client, tables):
+    login(client, 'subscriptionsUser')
+    items = [
+        {
+            'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
+            'user_id': 'subscriptionsUser',
+            'creation_date': '2020-01-01T00:00:00+00:00',
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-01T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'RTC_GAMMA',
+                'name': 'SubscriptionName1'
+            }
+        },
+        {
+            'subscription_id': '140191ab-486b-4080-ab1b-3e2c40aab6b8',
+            'user_id': 'subscriptionsUser',
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-01T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'INSAR_GAMMA',
+                'name': 'SubscriptionName1'
+            }
+        }
+    ]
+
+    for item in items:
+        tables.subscriptions_table.put_item(Item=item)
+
+    response = client.get(SUBSCRIPTIONS_URI, query_string={'job_type': 'RTC_GAMMA'})
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['subscriptions'] == [items[0]]
+
+
+def test_query_jobs_by_enabled(client, tables):
+    login(client, 'subscriptionsUser')
+    items = [
+        {
+            'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
+            'user_id': 'subscriptionsUser',
+            'creation_date': '2020-01-01T00:00:00+00:00',
+            'enabled': True,
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-01T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'RTC_GAMMA',
+                'name': 'SubscriptionName1'
+            }
+        },
+        {
+            'subscription_id': '140191ab-486b-4080-ab1b-3e2c40aab6b8',
+            'user_id': 'subscriptionsUser',
+            'creation_date': '2020-01-01T00:00:00+00:00',
+            'enabled': False,
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-01T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'INSAR_GAMMA',
+                'name': 'SubscriptionName1'
+            }
+        }
+    ]
+
+    for item in items:
+        tables.subscriptions_table.put_item(Item=item)
+
+    response = client.get(SUBSCRIPTIONS_URI, query_string={'enabled': True})
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['subscriptions'] == [items[0]]
+
+    response = client.get(SUBSCRIPTIONS_URI, query_string={'enabled': False})
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['subscriptions'] == [items[1]]
