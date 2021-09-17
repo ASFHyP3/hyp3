@@ -68,7 +68,7 @@ def get_subscriptions_for_user(user, name=None, job_type=None, enabled=None):
         filter_expression &= Attr('enabled').eq(enabled)
 
     params = {
-        'IndexName': 'user_id',
+        'IndexName': 'user_id_by_creation_date',
         'KeyConditionExpression': Key('user_id').eq(user),
         'FilterExpression': filter_expression,
         'ScanIndexForward': False
