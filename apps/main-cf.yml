@@ -258,6 +258,7 @@ Resources:
               KeyType: HASH
             - AttributeName: creation_date
               KeyType: RANGE
+          ProjectionType: ALL
         - IndexName: user_id_by_creation_date
           KeySchema:
             - AttributeName: user_id
