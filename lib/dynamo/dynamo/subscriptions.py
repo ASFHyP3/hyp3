@@ -3,7 +3,7 @@ from os import environ
 from uuid import uuid4
 
 import dateutil.parser
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Attr, Key
 
 from dynamo.util import DYNAMODB_RESOURCE, format_time
 
@@ -26,11 +26,12 @@ def validate_subscription(subscription):
         raise ValueError('processingLevel must be SLC when job_type is INSAR_GAMMA')
 
 
-def put_subscription(user, subscription):
+def put_subscription(user, subscription, validate_only=False):
     validate_subscription(subscription)
 
     defaults = {
         'subscription_id': str(uuid4()),
+        'creation_date': format_time(datetime.now(tz=timezone.utc)),
         'user_id': user,
         'enabled': True,
     }
@@ -49,15 +50,28 @@ def put_subscription(user, subscription):
             subscription['search_parameters'][key] = value
 
     table = DYNAMODB_RESOURCE.Table(environ['SUBSCRIPTIONS_TABLE_NAME'])
-    table.put_item(Item=subscription)
+    if not validate_only:
+        table.put_item(Item=subscription)
     return subscription
 
 
-def get_subscriptions_for_user(user):
+def get_subscriptions_for_user(user, name=None, job_type=None, enabled=None):
     table = DYNAMODB_RESOURCE.Table(environ['SUBSCRIPTIONS_TABLE_NAME'])
+
+    filter_expression = Attr('subscription_id').exists()
+
+    if name is not None:
+        filter_expression &= Attr('job_specification.name').eq(name)
+    if job_type is not None:
+        filter_expression &= Attr('job_specification.job_type').eq(job_type)
+    if enabled is not None:
+        filter_expression &= Attr('enabled').eq(enabled)
+
     params = {
-        'IndexName': 'user_id',
+        'IndexName': 'user_id_by_creation_date',
         'KeyConditionExpression': Key('user_id').eq(user),
+        'FilterExpression': filter_expression,
+        'ScanIndexForward': False
     }
     response = table.query(**params)
     subscriptions = response['Items']

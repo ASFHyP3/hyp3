@@ -200,6 +200,7 @@ def test_lambda_handler(tables):
     items = [
         {
             'subscription_id': 'sub1',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
             'search_parameters': {
                 'start': datetime.now(tz=timezone.utc).isoformat(timespec='seconds'),
@@ -210,12 +211,14 @@ def test_lambda_handler(tables):
         },
         {
             'subscription_id': 'sub2',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
             'user_id': 'user1',
             'enabled': False
         },
         {
             'subscription_id': 'sub3',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
             'search_parameters': {
                 'start': (datetime.now(tz=timezone.utc) - timedelta(days=15)).isoformat(timespec='seconds'),

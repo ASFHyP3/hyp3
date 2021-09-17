@@ -111,9 +111,29 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/subscription"
+                type: object
+                properties:
+                  subscription:
+                    $ref: "#/components/schemas/subscription"
+                  validate_only:
+                    $ref: "#/components/schemas/validate_only"
+
+
     get:
       description: Get information about subscriptions for the logged in user
+      parameters:
+        - name: name
+          in: query
+          schema:
+            $ref: "#/components/schemas/name"
+        - name: job_type
+          in: query
+          schema:
+            $ref: "./job_parameters.yml#components/schemas/job_type"
+        - name: enabled
+          in: query
+          schema:
+            $ref: "#/components/schemas/subscription_enabled"
       responses:
         "200":
           description: 200 response
@@ -197,6 +217,18 @@ components:
       description: Information about a subscription
       type: object
       required:
+        - subscription
+      additionalProperties: false
+      properties:
+        validate_only:
+          $ref: "#/components/schemas/validate_only"
+        subscription:
+          $ref: "#/components/schemas/new_subscription"
+
+    new_subscription:
+      description: Contains user provided information about a new subscription
+      type: object
+      required:
         - search_parameters
         - job_specification
       additionalProperties: false
@@ -237,6 +269,8 @@ components:
           $ref: "#components/schemas/subscription_job_specification"
         user_id:
           $ref: "#/components/schemas/user_id"
+        creation_date:
+          $ref: "#/components/schemas/datetime"
         enabled:
           $ref: "#/components/schemas/subscription_enabled"
 
@@ -442,7 +476,7 @@ components:
       example: myUserId
 
     subscription_enabled:
-      description: Set to False to pause/disable the processing of new data.
+      description: Set to false to pause/disable the processing of new data.
       type: boolean
 
     datetime:

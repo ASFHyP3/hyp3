@@ -246,6 +246,8 @@ Resources:
           AttributeType: S
         - AttributeName: user_id
           AttributeType: S
+        - AttributeName: creation_date
+          AttributeType: S
       KeySchema:
         - AttributeName: subscription_id
           KeyType: HASH
@@ -254,5 +256,13 @@ Resources:
           KeySchema:
             - AttributeName: user_id
               KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: user_id_by_creation_date
+          KeySchema:
+            - AttributeName: user_id
+              KeyType: HASH
+            - AttributeName: creation_date
+              KeyType: RANGE
           Projection:
             ProjectionType: ALL
