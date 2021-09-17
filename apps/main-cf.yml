@@ -252,7 +252,7 @@ Resources:
         - AttributeName: subscription_id
           KeyType: HASH
       GlobalSecondaryIndexes:
-        - IndexName: user_id
+        - IndexName: user_id_by_creation_date
           KeySchema:
             - AttributeName: user_id
               KeyType: HASH
