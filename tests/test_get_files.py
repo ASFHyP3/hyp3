@@ -117,12 +117,12 @@ def test_get_files_zipped_product(s3_stubber: Stubber):
     ]
     stub_list_files(s3_stubber, 'myJobId', 'myBucket', files)
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myProduct.zip', 'product')
+    stub_expiration(s3_stubber, 'myBucket', 'myJobId/myProduct.zip')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myProduct.tif', 'product')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myThumbnail.png', 'amp_thumbnail')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'amp_browse')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse_rgb.png', 'rgb_browse')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myJobId.log', 'log')
-    stub_expiration(s3_stubber, 'myBucket', 'myJobId/myJobId.log')
 
     event = {
         'job_id': 'myJobId'
@@ -171,10 +171,10 @@ def test_get_files_netcdf_product(s3_stubber: Stubber):
     ]
     stub_list_files(s3_stubber, 'myJobId', 'myBucket', files)
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myProduct.nc', 'product')
+    stub_expiration(s3_stubber, 'myBucket', 'myJobId/myProduct.nc')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myThumbnail.png', 'amp_thumbnail')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'amp_browse')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myJobId.log', 'log')
-    stub_expiration(s3_stubber, 'myBucket', 'myJobId/myJobId.log')
 
     event = {
         'job_id': 'myJobId'
