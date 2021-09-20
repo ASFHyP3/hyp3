@@ -3,7 +3,6 @@ import json
 import pytest
 from botocore.stub import Stubber
 
-import daemon
 import upload_log
 
 
@@ -28,7 +27,7 @@ def s3_stubber():
 
 @pytest.fixture
 def sfn_stubber():
-    with Stubber(daemon.SFN_CLIENT) as stubber:
+    with Stubber(upload_log.SFN_CLIENT) as stubber:
         yield stubber
         stubber.assert_no_pending_responses()
 
@@ -100,14 +99,14 @@ def test_get_task(sfn_stubber):
     sfn_stubber.add_response(method='get_activity_task', expected_params=expected_params,
                              service_response=response)
 
-    task = daemon.get_task()
+    task = upload_log.get_task()
     assert json.loads(task['input']) == expected_input
     assert task['taskToken'] == 'myTask'
 
     sfn_stubber.add_response(method='get_activity_task', expected_params=expected_params,
                              service_response={})
 
-    task = daemon.get_task()
+    task = upload_log.get_task()
     assert task == {}
 
 
@@ -117,7 +116,7 @@ def test_send_task_response(sfn_stubber):
         'taskToken': 'myTask'
     }
     sfn_stubber.add_response('send_task_success', expected_params=expected_params, service_response={})
-    daemon.send_task_response({'taskToken': 'myTask'})
+    upload_log.send_task_response({'taskToken': 'myTask'})
 
     expected_params = {
         'error': 'MyError',
@@ -129,4 +128,4 @@ def test_send_task_response(sfn_stubber):
     class MyError(Exception):
         pass
 
-    daemon.send_task_response({'taskToken': 'myTask'}, error=MyError('myCause'))
+    upload_log.send_task_response({'taskToken': 'myTask'}, error=MyError('myCause'))
