@@ -15,7 +15,7 @@ Resources:
   UploadLogActivity:
     Type: AWS::StepFunctions::Activity
     Properties:
-      Name: !Sub "${AWS::StackName}-upload-log-activity"
+      Name: !Sub "${AWS::StackName}-activity"
 
   LogGroup:
     Type: AWS::Logs::LogGroup
