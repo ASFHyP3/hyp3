@@ -9,16 +9,16 @@ SFN_CLIENT = boto3.client('stepfunctions')
 
 
 def get_task():
-    return SFN_CLIENT.get_activity_task(os.environ['ACTIVITY_ARN'])
+    return SFN_CLIENT.get_activity_task(activityArn=os.environ['ACTIVITY_ARN'])
 
 
 def send_task_response(task, error=None):
     try:
-        if error is not None:
-            SFN_CLIENT.send_task_success(task['taskToken'])
+        if error is None:
+            SFN_CLIENT.send_task_success(taskToken=task['taskToken'], output='{}')
         else:
-            SFN_CLIENT.send_task_failure(task['taskToken'], error=type(error).__name__, cause=str(error))
-    except SFN_CLIENT.exceptions.TaskTimedOut as e:
+            SFN_CLIENT.send_task_failure(taskToken=task['taskToken'], error=type(error).__name__, cause=str(error))
+    except SFN_CLIENT.exceptions.TaskTimedOut:
         print('Failed to send response. Task timed out.')
 
 

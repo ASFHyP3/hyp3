@@ -70,7 +70,7 @@ Resources:
         {% endfor %}
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
         GetFilesLambdaArn: !GetAtt GetFiles.Outputs.LambdaArn
-        UploadLogActivityArn: !GetAtt UploadLog.Outputs.UploadLogActivity
+        UploadLogActivityArn: !GetAtt UploadLog.Outputs.ActivityArn
 
   StepFunctionRole:
     Type: AWS::IAM::Role
