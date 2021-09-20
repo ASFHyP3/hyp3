@@ -113,7 +113,7 @@
     {% endfor %}
     "UPLOAD_LOG":{
       "Type": "Task",
-      "Resource": "${UploadLogLambdaArn}",
+      "Resource": "${UploadLogActivityArn}",
       "Parameters": {
         "prefix.$": "$.job_id",
         "log_group": "/aws/batch/job",

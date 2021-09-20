@@ -7,10 +7,15 @@ Parameters:
 
 Outputs:
 
-  LambdaArn:
-    Value: !GetAtt Lambda.Arn
+  UploadLogActivity:
+    Value: !Ref UploadLogActivity
 
 Resources:
+
+  UploadLogActivity:
+    Type: AWS::StepFunctions::Activity
+    Properties:
+      Name: !Sub "${AWS::StackName}-upload-log-activity"
 
   LogGroup:
     Type: AWS::Logs::LogGroup
@@ -53,6 +58,7 @@ Resources:
       Environment:
         Variables:
           BUCKET: !Ref Bucket
+          ACTIVITY_ARN: !Ref UploadLogActivity
       Code: src/
       Handler: upload_log.lambda_handler
       MemorySize: 128

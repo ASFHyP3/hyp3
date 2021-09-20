@@ -43,7 +43,7 @@ def write_log_to_s3(bucket, prefix, content):
     S3.put_object_tagging(Bucket=bucket, Key=key, Tagging=tag_set)
 
 
-def lambda_handler(event, context):
-    log_stream = get_log_stream(event['processing_results'])
-    log_content = get_log_content(event['log_group'], log_stream)
-    write_log_to_s3(environ['BUCKET'], event['prefix'], log_content)
+def upload_log(task_input):
+    log_stream = get_log_stream(task_input['processing_results'])
+    log_content = get_log_content(task_input['log_group'], log_stream)
+    write_log_to_s3(environ['BUCKET'], task_input['prefix'], log_content)
