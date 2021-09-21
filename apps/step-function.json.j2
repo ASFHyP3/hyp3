@@ -43,24 +43,30 @@
     },
     "USE_SENTINEL2_MEMORY": {
       "Type": "Pass",
-      "Result": {
-        "Memory": 7900
-      },
-      "ResultPath": "$.container_overrides",
+      "Result": [
+        {
+          "type": "MEMORY",
+          "value": 7900
+        }
+      ],
+      "ResultPath": "$.resource_requirements",
       "Next": "INSPECT_JOB_TYPE"
     },
     "USE_LANDSAT_MEMORY": {
       "Type": "Pass",
-      "Result": {
-        "Memory": 10500
-      },
-      "ResultPath": "$.container_overrides",
+      "Result": [
+        {
+          "type": "MEMORY",
+          "value": 10500
+        }
+      ],
+      "ResultPath": "$.resource_requirements",
       "Next": "INSPECT_JOB_TYPE"
     },
     "USE_DEFAULT_MEMORY": {
       "Type": "Pass",
-      "Result": {},
-      "ResultPath": "$.container_overrides",
+      "Result": [],
+      "ResultPath": "$.resource_requirements",
       "Next": "INSPECT_JOB_TYPE"
     },
     "INSPECT_JOB_TYPE": {
@@ -85,7 +91,7 @@
         "JobName.$": "$.job_id",
         "JobQueue": "${JobQueueArn}",
         "Parameters.$": "$.job_parameters",
-        "ContainerOverrides.$": "$.container_overrides",
+        "ResourceRequirements.$": "$.resource_requirements",
         "RetryStrategy": {
           "Attempts": 3
         }
