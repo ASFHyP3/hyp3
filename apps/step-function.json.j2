@@ -43,30 +43,34 @@
     },
     "USE_SENTINEL2_MEMORY": {
       "Type": "Pass",
-      "Result": [
-        {
-          "type": "MEMORY",
-          "value": 7900
-        }
-      ],
-      "ResultPath": "$.resource_requirements",
+      "Result": {
+        "ResourceRequirements": [
+          {
+            "type": "MEMORY",
+            "value": 7900
+          }
+        ]
+      },
+      "ResultPath": "$.container_overrides",
       "Next": "INSPECT_JOB_TYPE"
     },
     "USE_LANDSAT_MEMORY": {
       "Type": "Pass",
-      "Result": [
-        {
-          "type": "MEMORY",
-          "value": 10500
-        }
-      ],
-      "ResultPath": "$.resource_requirements",
+      "Result": {
+        "ResourceRequirements": [
+          {
+            "type": "MEMORY",
+            "value": 10500
+          }
+        ]
+      },
+      "ResultPath": "$.container_overrides",
       "Next": "INSPECT_JOB_TYPE"
     },
     "USE_DEFAULT_MEMORY": {
       "Type": "Pass",
-      "Result": [],
-      "ResultPath": "$.resource_requirements",
+      "Result": {},
+      "ResultPath": "$.container_overrides",
       "Next": "INSPECT_JOB_TYPE"
     },
     "INSPECT_JOB_TYPE": {
@@ -91,7 +95,7 @@
         "JobName.$": "$.job_id",
         "JobQueue": "${JobQueueArn}",
         "Parameters.$": "$.job_parameters",
-        "ResourceRequirements.$": "$.resource_requirements",
+        "ContainerOverrides.$": "$.container_overrides",
         "RetryStrategy": {
           "Attempts": 3
         }
