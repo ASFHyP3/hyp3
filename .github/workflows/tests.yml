@@ -13,14 +13,4 @@ jobs:
         with:
           python-version: 3.8
 
-      - run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements-all.txt
-          python apps/render_cf.py --job-types-file job_types.yml
-
-      - name: run pytest
-        env:
-          PYTHONPATH: apps/api/src:apps/get-files/src:apps/start-execution/src:apps/upload-log/src:apps/process-new-granules/src
-        run: |
-          export $(xargs < tests/cfg.env)
-          pytest tests
+      - run: make test
