@@ -1,9 +1,9 @@
-export API = ${PWD}/apps/api/src
-export GET_FILES = ${PWD}/apps/get-files/src
-export START_EXECUTION = ${PWD}/apps/start-execution/src
-export UPLOAD_LOG = ${PWD}/apps/upload-log/src
-export PROCESS_NEW_GRANULES = ${PWD}/apps/process-new-granules/src
-export DYNAMO = ${PWD}/lib/dynamo
+API = ${PWD}/apps/api/src
+GET_FILES = ${PWD}/apps/get-files/src
+START_EXECUTION = ${PWD}/apps/start-execution/src
+UPLOAD_LOG = ${PWD}/apps/upload-log/src
+PROCESS_NEW_GRANULES = ${PWD}/apps/process-new-granules/src
+DYNAMO = ${PWD}/lib/dynamo
 export PYTHONPATH := ${API}:${GET_FILES}:${START_EXECUTION}:${UPLOAD_LOG}:${PROCESS_NEW_GRANULES}:${DYNAMO}
 
 tests: install render
