@@ -8,7 +8,7 @@ export PYTHONPATH = ${API}:${GET_FILES}:${START_EXECUTION}:${UPLOAD_LOG}:${PROCE
 
 tests: render
 	export $$(xargs < tests/cfg.env); \
-	pytest tests/test_api
+	pytest tests
 
 run: render
 	export $$(xargs < tests/cfg.env); \
