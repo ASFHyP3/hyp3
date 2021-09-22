@@ -6,7 +6,7 @@ export PROCESS_NEW_GRANULES = ${PWD}/apps/process-new-granules/src
 export DYNAMO = ${PWD}/lib/dynamo
 export PYTHONPATH := ${API}:${GET_FILES}:${START_EXECUTION}:${UPLOAD_LOG}:${PROCESS_NEW_GRANULES}:${DYNAMO}
 
-test: install render
+tests: install render
 	export $$(xargs < tests/cfg.env); \
 	pytest tests/test_api
 

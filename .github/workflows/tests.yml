@@ -13,4 +13,4 @@ jobs:
         with:
           python-version: 3.8
 
-      - run: make test
+      - run: make tests
