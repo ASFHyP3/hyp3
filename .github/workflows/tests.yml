@@ -13,4 +13,8 @@ jobs:
         with:
           python-version: 3.8
 
-      - run: make tests
+      - run: python -m pip install --upgrade pip
+
+      - name: run pytest
+        run: make tests
+
