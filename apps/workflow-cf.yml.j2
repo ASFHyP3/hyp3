@@ -123,6 +123,7 @@ Resources:
     Properties:
       Parameters:
         JobsTable: !Ref JobsTable
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: update-db/update-db-cf.yml
 
   GetFiles:
@@ -130,6 +131,7 @@ Resources:
     Properties:
       Parameters:
         Bucket: !Ref Bucket
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: get-files/get-files-cf.yml
 
   StartExecution:
@@ -138,6 +140,7 @@ Resources:
       Parameters:
         JobsTable: !Ref JobsTable
         StepFunctionArn: !Ref StepFunction
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: start-execution/start-execution-cf.yml
 
   UploadLog:
@@ -145,4 +148,5 @@ Resources:
     Properties:
       Parameters:
         Bucket: !Ref Bucket
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: upload-log/upload-log-cf.yml
