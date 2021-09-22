@@ -50,7 +50,7 @@ Resources:
         JobRoleArn: !Ref TaskRoleArn
         ResourceRequirements:
           - Type: MEMORY
-            Value: "30000"
+            Value: "31672"
         Command:
           {% for command in job_spec['command'] %}
           - {{ command }}
