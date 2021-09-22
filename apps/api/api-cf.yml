@@ -27,6 +27,13 @@ Parameters:
   SystemAvailable:
     Type: String
 
+  PermissionsBoundaryPolicyArn:
+    Type: String
+    Default: ""
+
+Conditions:
+  UsePermissionsBoundary: !Not [ !Equals [ !Ref PermissionsBoundaryPolicyArn, "" ] ]
+
 Outputs:
 
   Url:
@@ -84,6 +91,7 @@ Resources:
           Principal:
             Service: apigateway.amazonaws.com
           Effect: Allow
+      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       Policies:
         - PolicyName: policy
           PolicyDocument:
@@ -109,6 +117,7 @@ Resources:
           Principal:
             Service: lambda.amazonaws.com
           Effect: Allow
+      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       Policies:
         - PolicyName: policy
           PolicyDocument:

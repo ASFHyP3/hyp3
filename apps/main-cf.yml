@@ -66,6 +66,10 @@ Parameters:
       - ITS_LIVE_OD
       - ITS_LIVE_PROD
 
+  PermissionsBoundaryPolicyArn:
+    Type: String
+    Default: ""
+
 Outputs:
 
   ApiUrl:
@@ -86,6 +90,7 @@ Resources:
         CertificateArn: !Ref CertificateArn
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         SystemAvailable: !Ref SystemAvailable
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: api/api-cf.yml
 
   Cluster:
@@ -95,6 +100,7 @@ Resources:
         VpcId: !Ref VpcId
         SubnetIds: !Join [',', !Ref SubnetIds]
         ContentBucket: !Ref ContentBucket
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: compute-cf.yml
 
   ProcessNewGranules:
@@ -105,8 +111,8 @@ Resources:
         UsersTable: !Ref UsersTable
         SubscriptionsTable: !Ref SubscriptionsTable
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: process-new-granules/process-new-granules-cf.yml
-
 
   StepFunction:
     Type: AWS::CloudFormation::Stack
@@ -120,6 +126,7 @@ Resources:
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
         AutoriftNamingScheme: !Ref AutoriftNamingScheme
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: workflow-cf.yml
 
   Monitoring:

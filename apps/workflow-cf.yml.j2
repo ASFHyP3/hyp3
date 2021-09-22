@@ -31,6 +31,13 @@ Parameters:
       - ITS_LIVE_OD
       - ITS_LIVE_PROD
 
+  PermissionsBoundaryPolicyArn:
+    Type: String
+    Default: ""
+
+Conditions:
+  UsePermissionsBoundary: !Not [ !Equals [ !Ref PermissionsBoundaryPolicyArn, "" ] ]
+
 Outputs:
   StepFunctionArn:
     Value: !Ref StepFunction
