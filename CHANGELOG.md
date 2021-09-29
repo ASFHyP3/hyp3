@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.5.0](https://github.com/ASFHyP3/hyp3/compare/v2.4.3...v2.5.0)
 ### Added
-- Exposed new `include_displacement_maps` API parameter for INSAR_GAMMA jobs, which will cause both a line-of-site
+- Exposed new `include_displacement_maps` API parameter for INSAR_GAMMA jobs, which will cause both a line-of-sight
   displacement and a vertical displacement GEOTIFF to be included in the product.
 
 ### Depreciated
