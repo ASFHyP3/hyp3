@@ -120,7 +120,7 @@ InsarGamma:
     - --include-look-vectors
     - Ref::include_look_vectors
     - --include-los-displacement
-    - Ref::include_los-displacement
+    - Ref::include_los_displacement
     - --include-displacement-maps
     - Ref::include_displacement_maps
     - --include-inc-map
