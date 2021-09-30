@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Exposed new `include_displacement_maps` API parameter for INSAR_GAMMA jobs, which will cause both a line-of-sight
   displacement and a vertical displacement GEOTIFF to be included in the product.
 
+### Changed
+- Reduced default job quota to 250 jobs per user per month
+
 ### Deprecated
 - The `include_los_displacement` API parameter for INSAR_GAMMA jobs has been deprecated in favor of the
   `include_displacement_maps` parameter, and will be removed in the future.
