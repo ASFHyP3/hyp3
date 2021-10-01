@@ -80,7 +80,7 @@ jobs:
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
           AUTORIFT_NAMING_SCHEME: ${{ matrix.autorift_naming_scheme }}
-          AUTORIFT_PARAMETER_FILE:
+          AUTORIFT_PARAMETER_FILE: ${{ matrix.autorift_parameter_file }}
 
   tag:
     runs-on: ubuntu-latest
