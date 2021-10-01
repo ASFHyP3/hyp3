@@ -68,7 +68,7 @@ Parameters:
 
   AutoriftParameterFile:
     Type: String
-    Default: /vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp
+    Default: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
 
 Outputs:
 
