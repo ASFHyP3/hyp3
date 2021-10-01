@@ -139,7 +139,7 @@ InsarGamma:
   timeout: 10800
 
 Autorift:
-  image: '!Ref AutoriftImage'
+  image: ${AutoriftImage}
   api_job_type: AUTORIFT
   parameters:
     granules:
