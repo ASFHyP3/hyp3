@@ -66,6 +66,10 @@ Parameters:
       - ITS_LIVE_OD
       - ITS_LIVE_PROD
 
+  AutoriftParameterFile:
+    Type: String
+    Default: /vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp
+
 Outputs:
 
   ApiUrl:
@@ -120,6 +124,7 @@ Resources:
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
         AutoriftNamingScheme: !Ref AutoriftNamingScheme
+        AutoriftParameterFile: !Ref AutoriftParameterFile
       TemplateURL: workflow-cf.yml
 
   Monitoring:
