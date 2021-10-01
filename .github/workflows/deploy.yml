@@ -50,7 +50,7 @@ jobs:
             deploy_ref: refs/heads/main
             autorift_image: 230742024655.dkr.ecr.eu-central-1.amazonaws.com/hyp3-autorift
             autorift_naming_scheme: ITS_LIVE_PROD
-            autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+            autorift_parameter_file: '/vsicurl/http://its-live-data-eu.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
 
     environment:
       name: ${{ matrix.environment }}
