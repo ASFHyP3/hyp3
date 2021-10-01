@@ -156,7 +156,7 @@ Autorift:
     - '!Ref Bucket'
     - --bucket-prefix
     - Ref::bucket_prefix
-    - --parmeter-file
+    - --parameter-file
     - '!Ref AutoriftParameterFile'
     - --naming-scheme
     - '!Ref AutoriftNamingScheme'
