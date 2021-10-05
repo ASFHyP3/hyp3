@@ -53,7 +53,7 @@ jobs:
             autorift_naming_scheme: ITS_LIVE_PROD
             autorift_parameter_file: '/vsicurl/http://its-live-data-eu.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
 
-          - environment: hyp3
+          - environment: hyp3-isce
             domain: hyp3-isce.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: 9ef8f93
