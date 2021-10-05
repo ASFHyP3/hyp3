@@ -163,3 +163,31 @@ Autorift:
     - Ref::granules
   validators: []
   timeout: 10800
+
+InsarISCE:
+  image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-isce2
+  api_job_type: INSAR_ISCE
+  parameters:
+    granules:
+      default:  '""'
+      api_schema_location: "#/components/schemas/isce_scenes"
+    secondary_granules:
+      default: '""'
+      api_schema_location: "#/components/schemas/isce_scenes"
+    bucket_prefix:
+      default:  '""'
+  command:
+    - --username
+    - '!Ref EDLUsername'
+    - --password
+    - '!Ref EDLPassword'
+    - --bucket
+    - '!Ref Bucket'
+    - --bucket-prefix
+    - Ref::bucket_prefix
+    - --reference-scenes
+    - Ref::granules
+    - --secondary-scenes
+    - Ref::secondary_granules
+  validators: []
+  timeout: 10800
