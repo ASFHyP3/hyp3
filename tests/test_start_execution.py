@@ -20,13 +20,15 @@ def states_stubber():
         stubber.assert_no_pending_responses()
 
 
-def test_convert_parameters():
+def test_convert_to_string():
     assert start_execution.convert_to_string(1) == '1'
     assert start_execution.convert_to_string(True) == 'True'
     assert start_execution.convert_to_string([1, 2]) == '1 2'
     assert start_execution.convert_to_string(['abc', 'bcd']) == 'abc bcd'
     assert start_execution.convert_to_string('abc') == 'abc'
 
+
+def test_convert_parameters_to_string():
     parameters = {
         'param1': 1,
         'param2': True,
@@ -41,6 +43,7 @@ def test_convert_parameters():
         'param4': 'abc bcd',
         'param5': 'abc',
     }
+
 
 def test_submit_jobs(states_stubber):
     jobs = [
