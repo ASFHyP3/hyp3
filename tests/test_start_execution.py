@@ -4,7 +4,7 @@ from json import dumps
 import pytest
 from botocore.stub import Stubber
 
-from start_execution import STEP_FUNCTION, submit_jobs
+import start_execution
 
 
 @pytest.fixture(autouse=True)
@@ -15,10 +15,32 @@ def setup_env(monkeypatch):
 
 @pytest.fixture
 def states_stubber():
-    with Stubber(STEP_FUNCTION) as stubber:
+    with Stubber(start_execution.STEP_FUNCTION) as stubber:
         yield stubber
         stubber.assert_no_pending_responses()
 
+
+def test_convert_parameters():
+    assert start_execution.convert_to_string(1) == '1'
+    assert start_execution.convert_to_string(True) == 'True'
+    assert start_execution.convert_to_string([1, 2]) == '1 2'
+    assert start_execution.convert_to_string(['abc', 'bcd']) == 'abc bcd'
+    assert start_execution.convert_to_string('abc') == 'abc'
+
+    parameters = {
+        'param1': 1,
+        'param2': True,
+        'param3': [1, 2],
+        'param4': ['abc', 'bcd'],
+        'param5': 'abc',
+    }
+    assert start_execution.convert_parameters_to_strings(parameters) == {
+        'param1': '1',
+        'param2': 'True',
+        'param3': '1 2',
+        'param4': 'abc bcd',
+        'param5': 'abc',
+    }
 
 def test_submit_jobs(states_stubber):
     jobs = [
@@ -69,4 +91,4 @@ def test_submit_jobs(states_stubber):
         },
     )
 
-    submit_jobs(jobs)
+    start_execution.submit_jobs(jobs)
