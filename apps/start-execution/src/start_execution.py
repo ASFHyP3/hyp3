@@ -18,9 +18,14 @@ class DecimalEncoder(json.JSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 
+def convert_to_string(obj):
+    if isinstance(obj, list):
+        return ' '.join([str(item) for item in obj])
+    return str(obj)
+
+
 def convert_parameters_to_strings(parameters):
-    parameters['granules'] = ' '.join(parameters['granules'])
-    return {key: str(value) for key, value in parameters.items()}
+    return {key: convert_to_string(value) for key, value in parameters.items()}
 
 
 def submit_jobs(jobs):
