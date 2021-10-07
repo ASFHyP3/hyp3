@@ -74,6 +74,11 @@ Parameters:
     Type: String
     Default: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
 
+  BannedCidrBlocks:
+    Description: Comma separated list of IP CIDR blocks that will receive HTTP 403 FORBIDDEN responses from the API
+    Type: CommaDelimitedList
+    Default: ""
+
 Outputs:
 
   ApiUrl:
@@ -94,6 +99,7 @@ Resources:
         CertificateArn: !Ref CertificateArn
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         SystemAvailable: !Ref SystemAvailable
+        BannedCidrBlocks: !Join [',', !Ref BannedCidrBlocks]
       TemplateURL: api/api-cf.yml
 
   Cluster:
@@ -114,7 +120,6 @@ Resources:
         SubscriptionsTable: !Ref SubscriptionsTable
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
       TemplateURL: process-new-granules/process-new-granules-cf.yml
-
 
   StepFunction:
     Type: AWS::CloudFormation::Stack

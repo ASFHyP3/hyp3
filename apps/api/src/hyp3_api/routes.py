@@ -1,4 +1,5 @@
 import datetime
+import ipaddress
 import json
 from decimal import Decimal
 from os import environ
@@ -36,6 +37,16 @@ def check_system_available():
             'type': 'about:blank'
         }
         return make_response(jsonify(error), 503)
+
+
+@app.before_request
+def check_banned_addresses():
+    ip_address = ipaddress.ip_address(request.remote_addr)
+
+    banned_networks = [ipaddress.ip_network(network) for network in json.loads(environ['BANNED_CIDR_BLOCKS'])]
+    for banned_network in banned_networks:
+        if ip_address in banned_network:
+            abort(403)
 
 
 @app.before_request
