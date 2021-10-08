@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.5.2](https://github.com/ASFHyP3/hyp3/compare/v2.5.1...v2.5.2)
 ### Added
-- `BannedCidrBlocks` stack parameter to specify CIDR ranges that will receive HTTP 403 Forbidden responses from the api
+- `BannedCidrBlocks` stack parameter to specify CIDR ranges that will receive HTTP 403 Forbidden responses from the API
 
 ## [2.5.1](https://github.com/ASFHyP3/hyp3/compare/v2.5.0...v2.5.1)
 ### Changed
