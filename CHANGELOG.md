@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.1](https://github.com/ASFHyP3/hyp3/compare/v2.5.0...v2.5.1)
+### Added
+- `BannedCidrBlocks` stack parameter to specify CIDR ranges that will receive HTTP 403 Forbidden responses from the API
+
+### Changed
+- All job parameters of type `list` now are converted to space delimited strings prior to invoking job definitions in Batch.
+
 ## [2.5.0](https://github.com/ASFHyP3/hyp3/compare/v2.4.3...v2.5.0)
 ### Added
 - Exposed new `include_displacement_maps` API parameter for INSAR_GAMMA jobs, which will cause both a line-of-sight
