@@ -43,7 +43,7 @@ def check_system_available():
 def check_banned_addresses():
     ip_address = ipaddress.ip_address(request.remote_addr)
 
-    banned_networks = [ipaddress.ip_network(network) for network in json.loads(environ['BANNED_CIDR_BLOCKS'])]
+    banned_networks = [ipaddress.ip_network(network) for network in environ['BANNED_CIDR_BLOCKS'].split(',')]
     for banned_network in banned_networks:
         if ip_address in banned_network:
             abort(403)

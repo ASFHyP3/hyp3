@@ -76,8 +76,7 @@ Parameters:
 
   BannedCidrBlocks:
     Description: Comma separated list of IP CIDR blocks that will receive HTTP 403 FORBIDDEN responses from the API
-    Type: CommaDelimitedList
-    Default: ""
+    Type: String
 
 Outputs:
 
@@ -99,7 +98,7 @@ Resources:
         CertificateArn: !Ref CertificateArn
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         SystemAvailable: !Ref SystemAvailable
-        BannedCidrBlocks: !Join [',', !Ref BannedCidrBlocks]
+        BannedCidrBlocks: !Ref BannedCidrBlocks
       TemplateURL: api/api-cf.yml
 
   Cluster:

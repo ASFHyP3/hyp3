@@ -28,7 +28,7 @@ Parameters:
     Type: String
 
   BannedCidrBlocks:
-    Type: CommaDelimitedList
+    Type: String
 
 Outputs:
 
