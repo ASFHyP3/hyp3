@@ -44,6 +44,9 @@ inputs:
   AUTORIFT_PARAMETER_FILE:
     description: "Naming scheme for autoRIFT products, On Demand (ITS_LIVE_OD) or Production (ITS_LIVE_PROD)"
     required: true
+  BANNED_CIDR_BLOCKS:
+    description: "Comma separated list of IP CIDR blocks that will receive HTTP 403 FORBIDDEN responses from the API"
+    required: true
 
 runs:
   using: "composite"
@@ -81,4 +84,5 @@ runs:
                 MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \
                 AutoriftImage='${{ inputs.AUTORIFT_IMAGE }}' \
                 AutoriftNamingScheme='${{ inputs.AUTORIFT_NAMING_SCHEME }}' \
-                AutoriftParameterFile='${{ inputs.AUTORIFT_PARAMETER_FILE }}'
+                AutoriftParameterFile='${{ inputs.AUTORIFT_PARAMETER_FILE }}' \
+                BannedCidrBlocks='${{ inputs.BANNED_CIDR_BLOCKS }}'
