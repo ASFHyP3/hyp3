@@ -41,9 +41,12 @@ def check_system_available():
 
 @app.before_request
 def check_banned_addresses():
-    ip_address = ipaddress.ip_address(request.remote_addr)
+    banned_cidr_blocks = environ.get('BANNED_CIDR_BLOCKS')
+    if not banned_cidr_blocks:
+        return
 
-    banned_networks = [ipaddress.ip_network(network) for network in environ['BANNED_CIDR_BLOCKS'].split(',')]
+    ip_address = ipaddress.ip_address(request.remote_addr)
+    banned_networks = [ipaddress.ip_network(cidr_block) for cidr_block in banned_cidr_blocks.split(',')]
     for banned_network in banned_networks:
         if ip_address in banned_network:
             abort(403)
