@@ -45,7 +45,7 @@ def check_banned_addresses():
     if not banned_cidr_blocks:
         return
 
-    ip_address = ipaddress.ip_address(request.remote_addr)
+    ip_address = ipaddress.ip_address(request.remote_addr.strip())
     banned_networks = [ipaddress.ip_network(cidr_block) for cidr_block in banned_cidr_blocks.split(',')]
     for banned_network in banned_networks:
         if ip_address in banned_network:
