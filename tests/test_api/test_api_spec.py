@@ -122,7 +122,7 @@ def test_wkt_validator(client):
 def test_banned_ip_address(client, monkeypatch):
     monkeypatch.setenv('BANNED_CIDR_BLOCKS', '1.1.1.0/24,2.2.2.2/32')
 
-    good_addresses = ['2.2.2.1', '2.2.2.3', '1.1.2.1']
+    good_addresses = ['2.2.2.1', '2.2.2.3', '1.1.2.1', ' 123.123.123.50']
     for good_address in good_addresses:
         client.environ_base = {'REMOTE_ADDR': good_address}
         response = client.get('/ui/')
