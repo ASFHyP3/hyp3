@@ -44,7 +44,7 @@ Outputs:
 
 Resources:
   {% for job_type, job_spec in  job_types.items() %}
-  {{ job_type }}:
+  {{ snake_to_pascal_case(job_type) }}:
     Type: AWS::Batch::JobDefinition
     Properties:
       Type: container
@@ -76,7 +76,7 @@ Resources:
       DefinitionSubstitutions:
         JobQueueArn: !Ref JobQueueArn
         {% for job_type in job_types %}
-        {{ job_type }}: !Ref {{ job_type }}
+        {{ snake_to_pascal_case(job_type) }}: !Ref {{ snake_to_pascal_case(job_type) }}
         {% endfor %}
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
         GetFilesLambdaArn: !GetAtt GetFiles.Outputs.LambdaArn
@@ -102,7 +102,7 @@ Resources:
                 Resource:
                   - !Ref JobQueueArn
                   {% for job_type in job_types %}
-                  - !Ref {{ job_type }}
+                  - !Ref {{ snake_to_pascal_case(job_type) }}
                   {% endfor %}
               - Effect: Allow
                 Action:

@@ -79,7 +79,7 @@
         {% for job_type, job_spec in job_types.items() %}
         {
           "Variable": "$.job_type",
-          "StringEquals": "{{ job_type }}",
+          "StringEquals": "{{ snake_to_pascal_case(job_type) }}",
           "Next": "{{ job_type }}"
         }{% if not loop.last %},{% endif %}
         {% endfor %}
@@ -87,7 +87,7 @@
       "Default": "JOB_FAILED"
     },
     {% for job_type, job_spec in job_types.items() %}
-    "{{ job_type }}": {
+    "{{ snake_to_pascal_case(job_type) }}": {
       "Type": "Task",
       "Resource": "arn:aws:states:::batch:submitJob.sync",
       "Parameters": {

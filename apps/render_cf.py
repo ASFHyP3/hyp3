@@ -1,9 +1,14 @@
-import pprint
+import string
 from pathlib import Path, PurePosixPath
 
 import jinja2
 import yaml
 import json
+
+
+def snake_to_pascal_case(input_string: str):
+    split_string = input_string.lower().split('_')
+    return ''.join([i.title() for i in split_string])
 
 
 def render_template(template_file, job_types, env):
@@ -12,7 +17,7 @@ def render_template(template_file, job_types, env):
 
     template = env.get_template(str(template_file))
     with open(output_file, 'w') as f:
-        f.write(template.render(job_types=job_types, json=json))
+        f.write(template.render(job_types=job_types, json=json, snake_to_pascal_case=snake_to_pascal_case))
 
 
 def render_templates(job_types):
