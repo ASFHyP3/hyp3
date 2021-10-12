@@ -50,7 +50,7 @@ Resources:
       Type: container
       Parameters:
         {% for k, v in job_spec['parameters'].items() %}
-        {{ k }}: {{ v['default'] }}
+        {{ k }}: {{ v.get('default') or v['api_schema'].get('default') }}
         {% endfor %}
       ContainerProperties:
         Image: !Sub "{{ job_spec['image'] }}:${ImageTag}"

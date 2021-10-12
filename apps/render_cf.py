@@ -1,8 +1,9 @@
-from argparse import ArgumentParser
+import pprint
 from pathlib import Path, PurePosixPath
 
 import jinja2
 import yaml
+import json
 
 
 def render_template(template_file, job_types, env):
@@ -11,7 +12,7 @@ def render_template(template_file, job_types, env):
 
     template = env.get_template(str(template_file))
     with open(output_file, 'w') as f:
-        f.write(template.render(job_types=job_types))
+        f.write(template.render(job_types=job_types, json=json))
 
 
 def render_templates(job_types):
@@ -33,14 +34,13 @@ def get_env():
 
 
 def main():
-    parser = ArgumentParser()
-    parser.add_argument('--job-types-file', required=True)
-    job_types_file = parser.parse_args().job_types_file
-
-    with open(job_types_file) as f:
-        job_types = yaml.safe_load(f)
+    job_types = {}
+    job_spec_path = Path('./job_spec')
+    for file in job_spec_path.glob('*.yml'):
+        with open(file.absolute()) as f:
+            job_types[file.stem] = yaml.safe_load(f)
+    # pprint.pprint(job_types)
     render_templates(job_types)
-
 
 if __name__ == '__main__':
     main()
