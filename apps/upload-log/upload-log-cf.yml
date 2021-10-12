@@ -10,6 +10,7 @@ Parameters:
     Default: ""
 
 Conditions:
+
   UsePermissionsBoundary: !Not [ !Equals [ !Ref PermissionsBoundaryPolicyArn, "" ] ]
 
 Outputs:

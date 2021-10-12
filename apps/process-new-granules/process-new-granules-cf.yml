@@ -1,14 +1,19 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
+
   SubscriptionsTable:
     Type: String
+
   JobsTable:
     Type: String
+
   UsersTable:
     Type: String
+
   MonthlyJobQuotaPerUser:
     Type: Number
+
   PermissionsBoundaryPolicyArn:
     Type: String
     Default: ""
