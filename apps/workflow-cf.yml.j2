@@ -36,7 +36,8 @@ Parameters:
     Default: ""
 
 Conditions:
-  UsePermissionsBoundary: !Not [ !Equals [ !Ref PermissionsBoundaryPolicyArn, "" ] ]
+
+  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
 
 Outputs:
   StepFunctionArn:
