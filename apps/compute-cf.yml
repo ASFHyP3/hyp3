@@ -136,6 +136,7 @@ Resources:
           Principal:
             Service: ec2.amazonaws.com
           Effect: Allow
+      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
 
