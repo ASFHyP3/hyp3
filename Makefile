@@ -17,6 +17,12 @@ run: render
 install:
 	python -m pip install -r requirements-all.txt
 
+build: install render
+	pip install -r apps/api/requirements-api.txt -t apps/api/src
+	pip install -r apps/process-new-granules/requirements-process-new-granules.txt -t apps/process-new-granules/src
+	pip install -r apps/update-db/update-db-requirements.txt -t apps/update-db/src
+	pip install -r apps/start-execution/start-execution-requirements.txt -t apps/start-execution/src
+
 render:
 	@python apps/render_cf.py --job-types-file job_types.yml > /dev/null
 
