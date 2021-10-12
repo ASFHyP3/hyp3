@@ -1,5 +1,4 @@
 image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
-api_job_type: INSAR_GAMMA
 input_parameters:
   - granules
 parameters:
