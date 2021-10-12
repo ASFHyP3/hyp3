@@ -97,6 +97,7 @@ jobs:
           AUTORIFT_IMAGE: ${{ matrix.autorift_image }}
           AUTORIFT_NAMING_SCHEME: ${{ matrix.autorift_naming_scheme }}
           AUTORIFT_PARAMETER_FILE: ${{ matrix.autorift_parameter_file }}
+          BANNED_CIDR_BLOCKS: ${{ secrets.BANNED_CIDR_BLOCKS }}
 
   tag:
     runs-on: ubuntu-latest

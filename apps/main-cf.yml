@@ -74,6 +74,15 @@ Parameters:
     Type: String
     Default: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
 
+  BannedCidrBlocks:
+    Description: Comma separated list of IP CIDR blocks that will receive HTTP 403 FORBIDDEN responses from the API
+    Type: String
+    Default: ""
+
+  PermissionsBoundaryPolicyArn:
+    Type: String
+    Default: ""
+
 Outputs:
 
   ApiUrl:
@@ -94,6 +103,8 @@ Resources:
         CertificateArn: !Ref CertificateArn
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         SystemAvailable: !Ref SystemAvailable
+        BannedCidrBlocks: !Ref BannedCidrBlocks
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: api/api-cf.yml
 
   Cluster:
@@ -103,6 +114,7 @@ Resources:
         VpcId: !Ref VpcId
         SubnetIds: !Join [',', !Ref SubnetIds]
         ContentBucket: !Ref ContentBucket
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: compute-cf.yml
 
   ProcessNewGranules:
@@ -113,8 +125,8 @@ Resources:
         UsersTable: !Ref UsersTable
         SubscriptionsTable: !Ref SubscriptionsTable
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: process-new-granules/process-new-granules-cf.yml
-
 
   StepFunction:
     Type: AWS::CloudFormation::Stack
@@ -130,6 +142,7 @@ Resources:
         AutoriftImage: !Ref AutoriftImage
         AutoriftNamingScheme: !Ref AutoriftNamingScheme
         AutoriftParameterFile: !Ref AutoriftParameterFile
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: workflow-cf.yml
 
   Monitoring:

@@ -11,6 +11,7 @@ def test_404_response():
         'requestContext': {
             'http': {
                 'method': 'GET',
+                'sourceIp': '123.123.123.123',
             },
         },
     }
@@ -28,6 +29,7 @@ def test_401_response():
         'requestContext': {
             'http': {
                 'method': 'POST',
+                'sourceIp': '123.123.123.123',
             },
         },
     }
