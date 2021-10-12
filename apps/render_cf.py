@@ -1,9 +1,8 @@
-import string
+import json
 from pathlib import Path, PurePosixPath
 
 import jinja2
 import yaml
-import json
 
 
 def snake_to_pascal_case(input_string: str):
@@ -13,7 +12,6 @@ def snake_to_pascal_case(input_string: str):
 
 def render_template(template_file, job_types, env):
     output_file = template_file.with_suffix('')
-    print(f'Rendering {template_file} to {output_file}')
 
     template = env.get_template(str(template_file))
     with open(output_file, 'w') as f:
@@ -44,8 +42,8 @@ def main():
     for file in job_spec_path.glob('*.yml'):
         with open(file.absolute()) as f:
             job_types[file.stem] = yaml.safe_load(f)
-    # pprint.pprint(job_types)
     render_templates(job_types)
+
 
 if __name__ == '__main__':
     main()
