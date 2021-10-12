@@ -24,6 +24,9 @@ Parameters:
   TaskRoleArn:
     Type: String
 
+  AutoriftImage:
+    Type: String
+
   AutoriftNamingScheme:
     Type: String
     Default: ITS_LIVE_OD
@@ -31,7 +34,10 @@ Parameters:
       - ITS_LIVE_OD
       - ITS_LIVE_PROD
 
-  PermissionsBoundaryPolicyArn:
+  AutoriftParameterFile:
+    Type: String
+
+PermissionsBoundaryPolicyArn:
     Type: String
     Default: ""
 

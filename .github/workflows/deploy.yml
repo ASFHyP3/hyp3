@@ -16,17 +16,21 @@ jobs:
             domain: hyp3-api.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: latest
-            quota: 1000
+            quota: 250
             deploy_ref: refs/heads/main
+            autorift_image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
             autorift_naming_scheme: ITS_LIVE_OD
+            autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
 
           - environment: hyp3-test
             domain: hyp3-test-api.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: test
-            quota: 1000
+            quota: 250
             deploy_ref: refs/heads/develop
+            autorift_image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
             autorift_naming_scheme: ITS_LIVE_OD
+            autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
 
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
@@ -34,7 +38,19 @@ jobs:
             image_tag: latest
             quota: 0
             deploy_ref: refs/heads/main
+            autorift_image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
             autorift_naming_scheme: ITS_LIVE_PROD
+            autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+
+          - environment: hyp3-autorift-eu
+            domain: hyp3-autorift-eu.asf.alaska.edu
+            template_bucket: cf-templates-autorift-eu-central-1
+            image_tag: latest
+            quota: 0
+            deploy_ref: refs/heads/main
+            autorift_image: 230742024655.dkr.ecr.eu-central-1.amazonaws.com/hyp3-autorift
+            autorift_naming_scheme: ITS_LIVE_PROD
+            autorift_parameter_file: '/vsicurl/http://its-live-data-eu.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
 
     environment:
       name: ${{ matrix.environment }}
@@ -67,7 +83,10 @@ jobs:
           EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
+          AUTORIFT_IMAGE: ${{ matrix.autorift_image }}
           AUTORIFT_NAMING_SCHEME: ${{ matrix.autorift_naming_scheme }}
+          AUTORIFT_PARAMETER_FILE: ${{ matrix.autorift_parameter_file }}
+          BANNED_CIDR_BLOCKS: ${{ secrets.BANNED_CIDR_BLOCKS }}
 
   tag:
     runs-on: ubuntu-latest

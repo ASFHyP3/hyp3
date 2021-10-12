@@ -88,6 +88,9 @@ InsarGamma:
     include_los_displacement:
       default:  false
       api_schema_location: "#/components/schemas/los_displacement"
+    include_displacement_maps:
+      default:  false
+      api_schema_location: "#/components/schemas/include_displacement_maps"
     include_inc_map:
       default: false
       api_schema_location: "#/components/schemas/include_inc_map"
@@ -118,6 +121,8 @@ InsarGamma:
     - Ref::include_look_vectors
     - --include-los-displacement
     - Ref::include_los_displacement
+    - --include-displacement-maps
+    - Ref::include_displacement_maps
     - --include-inc-map
     - Ref::include_inc_map
     - --include-dem
@@ -134,7 +139,7 @@ InsarGamma:
   timeout: 10800
 
 Autorift:
-  image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
+  image: ${AutoriftImage}
   api_job_type: AUTORIFT
   parameters:
     granules:
@@ -151,6 +156,8 @@ Autorift:
     - '!Ref Bucket'
     - --bucket-prefix
     - Ref::bucket_prefix
+    - --parameter-file
+    - '!Ref AutoriftParameterFile'
     - --naming-scheme
     - '!Ref AutoriftNamingScheme'
     - Ref::granules

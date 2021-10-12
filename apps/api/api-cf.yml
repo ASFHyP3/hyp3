@@ -27,6 +27,9 @@ Parameters:
   SystemAvailable:
     Type: String
 
+  BannedCidrBlocks:
+    Type: String
+
   PermissionsBoundaryPolicyArn:
     Type: String
     Default: ""
@@ -158,6 +161,7 @@ Resources:
           AUTH_ALGORITHM: !Ref AuthAlgorithm
           MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
           SYSTEM_AVAILABLE: !Ref SystemAvailable
+          BANNED_CIDR_BLOCKS: !Ref BannedCidrBlocks
       Code: src/
       Handler: hyp3_api.lambda_handler.handler
       MemorySize: 3008

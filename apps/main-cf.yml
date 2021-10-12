@@ -58,6 +58,10 @@ Parameters:
       - false
       - true
 
+  AutoriftImage:
+    Type: String
+    Default: ''
+
   AutoriftNamingScheme:
     Description: Naming scheme for autoRIFT products, On Demand (ITS_LIVE_OD) or Production (ITS_LIVE_PROD)
     Type: String
@@ -65,6 +69,15 @@ Parameters:
     AllowedValues:
       - ITS_LIVE_OD
       - ITS_LIVE_PROD
+
+  AutoriftParameterFile:
+    Type: String
+    Default: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+
+  BannedCidrBlocks:
+    Description: Comma separated list of IP CIDR blocks that will receive HTTP 403 FORBIDDEN responses from the API
+    Type: String
+    Default: ""
 
   PermissionsBoundaryPolicyArn:
     Type: String
@@ -90,6 +103,7 @@ Resources:
         CertificateArn: !Ref CertificateArn
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         SystemAvailable: !Ref SystemAvailable
+        BannedCidrBlocks: !Ref BannedCidrBlocks
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: api/api-cf.yml
 
@@ -125,7 +139,9 @@ Resources:
         EDLPassword: !Ref EDLPassword
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
+        AutoriftImage: !Ref AutoriftImage
         AutoriftNamingScheme: !Ref AutoriftNamingScheme
+        AutoriftParameterFile: !Ref AutoriftParameterFile
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: workflow-cf.yml
 
