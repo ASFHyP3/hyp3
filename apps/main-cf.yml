@@ -79,6 +79,10 @@ Parameters:
     Type: String
     Default: ""
 
+  PermissionsBoundaryPolicyArn:
+    Type: String
+    Default: ""
+
 Outputs:
 
   ApiUrl:
@@ -100,6 +104,7 @@ Resources:
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         SystemAvailable: !Ref SystemAvailable
         BannedCidrBlocks: !Ref BannedCidrBlocks
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: api/api-cf.yml
 
   Cluster:
@@ -109,6 +114,7 @@ Resources:
         VpcId: !Ref VpcId
         SubnetIds: !Join [',', !Ref SubnetIds]
         ContentBucket: !Ref ContentBucket
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: compute-cf.yml
 
   ProcessNewGranules:
@@ -119,6 +125,7 @@ Resources:
         UsersTable: !Ref UsersTable
         SubscriptionsTable: !Ref SubscriptionsTable
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
   StepFunction:
@@ -135,6 +142,7 @@ Resources:
         AutoriftImage: !Ref AutoriftImage
         AutoriftNamingScheme: !Ref AutoriftNamingScheme
         AutoriftParameterFile: !Ref AutoriftParameterFile
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: workflow-cf.yml
 
   Monitoring:

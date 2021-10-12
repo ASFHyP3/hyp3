@@ -5,6 +5,14 @@ Parameters:
   Bucket:
     Type: String
 
+  PermissionsBoundaryPolicyArn:
+    Type: String
+    Default: ""
+
+Conditions:
+
+  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
+
 Outputs:
 
   LambdaArn:
@@ -28,6 +36,7 @@ Resources:
           Principal:
             Service: lambda.amazonaws.com
           Effect: Allow
+      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       Policies:
         - PolicyName: policy
           PolicyDocument:

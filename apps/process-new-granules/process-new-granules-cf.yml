@@ -1,16 +1,29 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
+
   SubscriptionsTable:
     Type: String
+
   JobsTable:
     Type: String
+
   UsersTable:
     Type: String
+
   MonthlyJobQuotaPerUser:
     Type: Number
 
+  PermissionsBoundaryPolicyArn:
+    Type: String
+    Default: ""
+
+Conditions:
+
+  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
+
 Outputs:
+
   LambdaArn:
     Value: !GetAtt Lambda.Arn
 
@@ -31,6 +44,7 @@ Resources:
           Principal:
             Service: lambda.amazonaws.com
           Effect: Allow
+      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       Policies:
         - PolicyName: policy
           PolicyDocument:
