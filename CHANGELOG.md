@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.4](https://github.com/ASFHyP3/hyp3/compare/v2.4.3...v2.4.4)
+### Added
+- Optional `PermissionsBoundaryPolicyArn` stack parameter to apply to all created IAM roles
+
 ## [2.4.3](https://github.com/ASFHyP3/hyp3/compare/v2.4.2...v2.4.3)
 ### Changed
 - The `logs` attribute in `GET /jobs` responses is now only populated for FAILED jobs, and will be an empty list for SUCCEEDED jobs
