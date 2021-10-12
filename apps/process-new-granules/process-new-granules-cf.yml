@@ -14,9 +14,11 @@ Parameters:
     Default: ""
 
 Conditions:
-  UsePermissionsBoundary: !Not [ !Equals [ !Ref PermissionsBoundaryPolicyArn, "" ] ]
+
+  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
 
 Outputs:
+
   LambdaArn:
     Value: !GetAtt Lambda.Arn
 
