@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [2.5.3](https://github.com/ASFHyP3/hyp3/compare/v2.5.2...v2.5.3)
+### Added
+- Optional `PermissionsBoundaryPolicyArn` stack parameter to apply to all created IAM roles
+
 ## [2.5.2](https://github.com/ASFHyP3/hyp3/compare/v2.5.1...v2.5.2)
 ### Fixed
 - Resolved an issue where API requests would return HTTP 500 due to space-padded sourceIp value, e.g. ' 123.123.123.50'
