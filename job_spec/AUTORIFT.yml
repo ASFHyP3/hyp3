@@ -1,6 +1,4 @@
 image: ${AutoriftImage}
-required_parameters:
-  - granules
 parameters:
   granules:
     default:  '""'

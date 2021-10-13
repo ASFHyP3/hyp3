@@ -25,24 +25,28 @@ components:
     {{ job_type }}JobDefinition:
       allOf:
         - $ref: "#/components/schemas/{{ job_type }}"
+          {% for parameter in job_spec.get('required_parameters') or [] %}
+          {% if loop.first %}
         - type: object
           required:
-            {% for parameter in job_spec['required_parameters'] %}
+          {% endif %}
             - {{ parameter }}
-            {% endfor %}
-          properties:
-            {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter in job_spec['required_parameters']%}
-            {{ parameter }}:
-              {{ json.dumps(parameter_spec['api_schema']) }}
-            {% endfor %}
           {% endfor %}
+          {% for parameter in job_spec.get('required_parameters') or [] %}
+          {% if loop.first %}
+          properties:
+          {% endif %}
+            {{ parameter }}:
+              {{ json.dumps(job_spec['parameters'][parameter]['api_schema']) }}
+          {% endfor %}
+        {% endfor %}
 
 
     {% for job_type, job_spec in job_types.items() %}
     {{ job_type }}:
       description: Parameters for running {{ job_type }} jobs
       type: object
-      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter not in job_spec['required_parameters']%}
+      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter not in (job_spec.get('required_parameters') or [])%}
       {% if loop.first %}
       properties:
       {% endif %}
