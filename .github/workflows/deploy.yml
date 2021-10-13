@@ -59,6 +59,9 @@ jobs:
             image_tag: 4.6.3
             quota: 0
             deploy_ref: refs/heads/watermap
+            autorift_image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
+            autorift_naming_scheme: ITS_LIVE_OD
+            autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
 
     environment:
       name: ${{ matrix.environment }}
