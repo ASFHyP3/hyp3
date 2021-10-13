@@ -91,7 +91,7 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::batch:submitJob.sync",
       "Parameters": {
-        "JobDefinition": "{{ '${'+ snake_to_camel_case(job_type) + '}' }}",
+        "JobDefinition": "{{ '${'+ snake_to_pascal_case(job_type) + '}' }}",
         "JobName.$": "$.job_id",
         "JobQueue": "${JobQueueArn}",
         "Parameters.$": "$.job_parameters",
