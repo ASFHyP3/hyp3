@@ -475,16 +475,6 @@ components:
       type: string
       example: myUserId
 
-    job_type:
-      description: Type of process to run this job.
-      type: string
-      example: RTC_GAMMA
-      enum:
-        - RTC_GAMMA
-        - INSAR_GAMMA
-        - AUTORIFT
-        - WATER_MAP
-
     subscription_enabled:
       description: Set to false to pause/disable the processing of new data.
       type: boolean
