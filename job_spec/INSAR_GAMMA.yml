@@ -18,52 +18,45 @@ parameters:
   bucket_prefix:
     default:  '""'
   include_look_vectors:
-    default:  false
     api_schema:
       description: Include the look vector theta and phi files in the product package
       default: false
       type: boolean
   include_los_displacement:
-    default:  false
     api_schema:
       description: Include a GeoTIFF in the product package containing displacement values along the Line-Of-Sight (LOS)
       default: false
       type: boolean
   include_displacement_maps:
-    default:  false
     api_schema:
       description: Include displacement maps (line-of-sight and vertical) in the product package
       default: false
       type: boolean
   include_inc_map:
-    default: false
     api_schema:
       description: Include the incidence angle map(s) in the product package
       default: false
       type: boolean
   include_dem:
-    default: false
     api_schema:
       description: Include the DEM file in the product package
       default: false
       type: boolean
   include_wrapped_phase:
-    default: false
     api_schema:
       description: Include the wrapped phase GeoTIFF in the product package
       default: false
       type: boolean
   apply_water_mask:
-    default: false
     api_schema:
       description: Sets pixels over coastal and large inland waterbodies as invalid for phase unwrapping.
       default: false
       type: boolean
   looks:
-    default:  20x4
     api_schema:
       description: Number of looks to take in range and azimuth
       type: string
+      default: 20x4
       enum:
         - 20x4
         - 10x2
