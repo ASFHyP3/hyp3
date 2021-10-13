@@ -8,7 +8,7 @@ on:
       - unlabeled
       - synchronize
     branches:
-      - master
+      - main
 
 jobs:
   bump-labeled:

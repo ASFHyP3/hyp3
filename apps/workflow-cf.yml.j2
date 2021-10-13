@@ -24,6 +24,27 @@ Parameters:
   TaskRoleArn:
     Type: String
 
+  AutoriftImage:
+    Type: String
+
+  AutoriftNamingScheme:
+    Type: String
+    Default: ITS_LIVE_OD
+    AllowedValues:
+      - ITS_LIVE_OD
+      - ITS_LIVE_PROD
+
+  AutoriftParameterFile:
+    Type: String
+
+  PermissionsBoundaryPolicyArn:
+    Type: String
+    Default: ""
+
+Conditions:
+
+  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
+
 Outputs:
   StepFunctionArn:
     Value: !Ref StepFunction
@@ -40,9 +61,12 @@ Resources:
         {% endfor %}
       ContainerProperties:
         Image: !Sub "{{ job_spec['image'] }}:${ImageTag}"
-        Vcpus: 1
-        Memory: 126000
         JobRoleArn: !Ref TaskRoleArn
+        ResourceRequirements:
+          - Type: VCPU
+            Value: "1"
+          - Type: MEMORY
+            Value: "126000"
         Command:
           {% for command in job_spec['command'] %}
           - {{ command }}
@@ -75,6 +99,7 @@ Resources:
           Principal:
             Service: states.amazonaws.com
           Effect: Allow
+      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       Policies:
         - PolicyName: policy
           PolicyDocument:
@@ -105,6 +130,7 @@ Resources:
     Properties:
       Parameters:
         JobsTable: !Ref JobsTable
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: update-db/update-db-cf.yml
 
   GetFiles:
@@ -112,6 +138,7 @@ Resources:
     Properties:
       Parameters:
         Bucket: !Ref Bucket
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: get-files/get-files-cf.yml
 
   StartExecution:
@@ -120,6 +147,7 @@ Resources:
       Parameters:
         JobsTable: !Ref JobsTable
         StepFunctionArn: !Ref StepFunction
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: start-execution/start-execution-cf.yml
 
   UploadLog:
@@ -127,4 +155,5 @@ Resources:
     Properties:
       Parameters:
         Bucket: !Ref Bucket
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: upload-log/upload-log-cf.yml

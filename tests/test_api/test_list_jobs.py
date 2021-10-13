@@ -2,7 +2,8 @@ from http import HTTPStatus
 from unittest import mock
 from urllib.parse import unquote
 
-from api.conftest import JOBS_URI, list_have_same_elements, login, make_db_record
+from conftest import list_have_same_elements
+from test_api.conftest import JOBS_URI, login, make_db_record
 
 
 def test_list_jobs(client, tables):
@@ -34,7 +35,7 @@ def test_list_jobs(client, tables):
                        browse_images=browse_images, thumbnail_images=thumbnail_images)
     ]
     for item in items:
-        tables['jobs_table'].put_item(Item=item)
+        tables.jobs_table.put_item(Item=item)
 
     login(client, 'user_with_jobs')
     response = client.get(JOBS_URI)
@@ -54,7 +55,7 @@ def test_list_jobs_by_name(client, tables):
         make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', name='item2')
     ]
     for item in items:
-        tables['jobs_table'].put_item(Item=item)
+        tables.jobs_table.put_item(Item=item)
 
     login(client)
     response = client.get(JOBS_URI, query_string={'name': 'item1'})
@@ -73,7 +74,7 @@ def test_list_jobs_by_type(client, tables):
         make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', job_type='INSAR_GAMMA'),
     ]
     for item in items:
-        tables['jobs_table'].put_item(Item=item)
+        tables.jobs_table.put_item(Item=item)
 
     login(client)
     response = client.get(JOBS_URI, query_string={'job_type': 'RTC_GAMMA'})
@@ -94,7 +95,7 @@ def test_list_jobs_by_status(client, tables):
         make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', status_code='SUCCEEDED')
     ]
     for item in items:
-        tables['jobs_table'].put_item(Item=item)
+        tables.jobs_table.put_item(Item=item)
 
     login(client)
     response = client.get(JOBS_URI, query_string={'status_code': 'RUNNING'})
@@ -123,7 +124,7 @@ def test_list_jobs_date_start_and_end(client, tables):
         make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', request_time='2019-12-31T10:00:11+00:00'),
     ]
     for item in items:
-        tables['jobs_table'].put_item(Item=item)
+        tables.jobs_table.put_item(Item=item)
 
     dates = [
         '2019-12-31T10:00:10Z',
@@ -148,6 +149,37 @@ def test_list_jobs_date_start_and_end(client, tables):
         response = client.get(JOBS_URI, query_string={'start': date, 'end': date})
         assert response.status_code == HTTPStatus.OK
         assert response.json == {'jobs': [items[1]]}
+
+
+def test_list_jobs_subscription_id(client, tables):
+    items = [
+        make_db_record('874f7533-807d-4b20-afe1-27b5b6fc9d6c', subscription_id='9b02d992-e21e-4e2f-9310-5dd469be2708'),
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', subscription_id='9b02d992-e21e-4e2f-9310-5dd469be2708'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', subscription_id='9b02d992-e21e-4e2f-9310-5dd469be2700'),
+        make_db_record('4277c126-6927-4859-b62f-eb3d2a8815c2'),
+    ]
+    for item in items:
+        tables.jobs_table.put_item(Item=item)
+
+    login(client)
+    response = client.get(JOBS_URI, query_string={'subscription_id': '9b02d992-e21e-4e2f-9310-5dd469be2708'})
+    assert response.status_code == HTTPStatus.OK
+    assert list_have_same_elements(response.json['jobs'], items[:2])
+
+    response = client.get(JOBS_URI, query_string={'subscription_id': '9b02d992-e21e-4e2f-9310-5dd469be2700'})
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['jobs'] == [items[2]]
+
+    response = client.get(JOBS_URI, query_string={'subscription_id': '55c6981e-c33a-4086-b20b-661ee6f592a9'})
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['jobs'] == []
+
+    response = client.get(JOBS_URI)
+    assert response.status_code == HTTPStatus.OK
+    assert list_have_same_elements(response.json['jobs'], items)
+
+    response = client.get(JOBS_URI, query_string={'subscription_id': 'not a uuid'})
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_bad_date_formats(client):
@@ -175,6 +207,6 @@ def test_bad_date_formats(client):
 def test_list_paging(client):
     login(client)
     mock_response = ([], {'foo': 1, 'bar': 2})
-    with mock.patch('hyp3_api.dynamo.query_jobs', return_value=mock_response):
+    with mock.patch('dynamo.jobs.query_jobs', return_value=mock_response):
         response = client.get(JOBS_URI)
         assert unquote(response.json['next']) == 'http://localhost/jobs?start_token=eyJmb28iOiAxLCAiYmFyIjogMn0='

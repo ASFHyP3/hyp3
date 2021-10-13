@@ -2,10 +2,9 @@ import binascii
 import json
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
-from decimal import Decimal
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
-from hyp3_api import dynamo
+import dynamo
 
 
 class TokenDeserializeError(Exception):
@@ -20,13 +19,6 @@ def get_granules(jobs):
     return granules
 
 
-def format_time(time: datetime):
-    if time.tzinfo is None:
-        raise ValueError(f'missing tzinfo for datetime {time}')
-    utc_time = time.astimezone(timezone.utc)
-    return utc_time.isoformat(timespec='seconds')
-
-
 def get_remaining_jobs_for_user(user, limit):
     previous_jobs = get_job_count_for_month(user)
     remaining_jobs = limit - previous_jobs
@@ -36,18 +28,8 @@ def get_remaining_jobs_for_user(user, limit):
 def get_job_count_for_month(user):
     now = datetime.now(timezone.utc)
     start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    job_count_for_month = dynamo.count_jobs(user, format_time(start_of_month))
+    job_count_for_month = dynamo.jobs.count_jobs(user, dynamo.util.format_time(start_of_month))
     return job_count_for_month
-
-
-def convert_floats_to_decimals(element):
-    if type(element) is float:
-        return Decimal(str(element))
-    if type(element) is list:
-        return [convert_floats_to_decimals(item) for item in element]
-    if type(element) is dict:
-        return {key: convert_floats_to_decimals(value) for key, value in element.items()}
-    return element
 
 
 def serialize(payload: dict):

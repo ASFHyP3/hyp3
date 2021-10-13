@@ -1,28 +1,25 @@
-from datetime import datetime, timezone
-from decimal import Decimal
 from os import environ
-from pathlib import Path
-from uuid import UUID, uuid4
+from uuid import UUID
 
 import requests
-from connexion import problem
-from connexion.apps.flask_app import FlaskJSONEncoder
-from flask import jsonify, make_response, redirect, request
-from flask_cors import CORS
+from flask import abort, jsonify, request
 from jsonschema import draft4_format_checker
 
-from hyp3_api import connexion_app, dynamo, util
-from hyp3_api.openapi import get_spec
+import dynamo
+from hyp3_api import util
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
 
-class DecimalEncoder(FlaskJSONEncoder):
-    def default(self, o):
-        if isinstance(o, Decimal):
-            if o == int(o):
-                return int(o)
-            return float(o)
-        return super(DecimalEncoder, self).default(o)
+def problem_format(status, title, message):
+    response = jsonify({
+        'status': status,
+        'detail': message,
+        'title': title,
+        'type': 'about:blank'
+    })
+    response.headers['Content-Type'] = 'application/problem+json'
+    response.status_code = status
+    return response
 
 
 @draft4_format_checker.checks('uuid')
@@ -34,59 +31,32 @@ def is_uuid(val):
     return True
 
 
-@connexion_app.app.before_request
-def check_system_available():
-    if environ['SYSTEM_AVAILABLE'] != "true":
-        message = 'HyP3 is currently unavailable. Please try again later.'
-        error = {
-            'detail': message,
-            'status': 503,
-            'title': 'Service Unavailable',
-            'type': 'about:blank'
-        }
-        return make_response(jsonify(error), 503)
-
-
-@connexion_app.app.route('/')
-def redirect_to_ui():
-    return redirect('/ui')
-
-
 def post_jobs(body, user):
     print(body)
-
-    monthly_quota = get_max_jobs_per_month(user)
-    remaining_jobs = util.get_remaining_jobs_for_user(user, monthly_quota)
-    if remaining_jobs - len(body['jobs']) < 0:
-        message = f'Your monthly quota is {monthly_quota} jobs. You have {remaining_jobs} jobs remaining.'
-        return problem(400, 'Bad Request', message)
 
     try:
         validate_jobs(body['jobs'])
     except requests.HTTPError as e:
         print(f'WARN: CMR search failed: {e}')
     except GranuleValidationError as e:
-        return problem(400, 'Bad Request', str(e))
+        abort(problem_format(400, 'Bad Request', str(e)))
 
-    request_time = util.format_time(datetime.now(timezone.utc))
-    jobs = []
-    for job in body['jobs']:
-        job['job_id'] = str(uuid4())
-        job['user_id'] = user
-        job['status_code'] = 'PENDING'
-        job['request_time'] = request_time
-        jobs.append(util.convert_floats_to_decimals(job))
     if not body.get('validate_only'):
-        dynamo.put_jobs(jobs)
-    return body
+        try:
+            body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'])
+        except dynamo.jobs.QuotaError as e:
+            abort(problem_format(400, 'Bad Request', str(e)))
+        return body
 
 
-def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None):
+def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None,
+             subscription_id=None):
     try:
         start_key = util.deserialize(start_token) if start_token else None
     except util.TokenDeserializeError:
-        return problem(400, 'Bad Request', 'Invalid start_token value')
-    jobs, last_evaluated_key = dynamo.query_jobs(user, start, end, status_code, name, job_type, start_key)
+        abort(problem_format(400, 'Bad Request', 'Invalid start_token value'))
+    jobs, last_evaluated_key = dynamo.jobs.query_jobs(user, start, end, status_code, name, job_type, start_key,
+                                                      subscription_id)
     payload = {'jobs': jobs}
     if last_evaluated_key is not None:
         next_token = util.serialize(last_evaluated_key)
@@ -95,23 +65,23 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=N
 
 
 def get_job_by_id(job_id):
-    job = dynamo.get_job(job_id)
+    job = dynamo.jobs.get_job(job_id)
     if job is None:
-        return problem(404, 'Not Found', f'job_id does not exist: {job_id}')
+        abort(problem_format(404, 'Not Found', f'job_id does not exist: {job_id}'))
     return job
 
 
 def get_names_for_user(user):
-    jobs, next_key = dynamo.query_jobs(user)
+    jobs, next_key = dynamo.jobs.query_jobs(user)
     while next_key is not None:
-        new_jobs, next_key = dynamo.query_jobs(user, start_key=next_key)
+        new_jobs, next_key = dynamo.jobs.query_jobs(user, start_key=next_key)
         jobs.extend(new_jobs)
     names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))
 
 
 def get_max_jobs_per_month(user):
-    user = dynamo.get_user(user)
+    user = dynamo.user.get_user(user)
     if user:
         max_jobs_per_month = user['max_jobs_per_month']
     else:
@@ -132,8 +102,48 @@ def get_user(user):
     }
 
 
-api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
-api_spec = get_spec(api_spec_file)
-connexion_app.app.json_encoder = DecimalEncoder
-connexion_app.add_api(api_spec, strict_validation=True)
-CORS(connexion_app.app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
+def post_subscriptions(body, user):
+    subscription = body['subscription']
+    validate_only = body.get('validate_only')
+    try:
+        subscription = dynamo.subscriptions.put_subscription(user, subscription, validate_only)
+        response = {
+            'subscription': subscription
+        }
+        if validate_only is not None:
+            response['validate_only'] = validate_only
+        return response
+    except ValueError as e:
+        abort(problem_format(400, 'Bad Request', str(e)))
+
+
+def get_subscriptions(user, name=None, job_type=None, enabled=None):
+    subscriptions = dynamo.subscriptions.get_subscriptions_for_user(user, name, job_type, enabled)
+    payload = {
+        'subscriptions': subscriptions
+    }
+    return payload
+
+
+def get_subscription_by_id(subscription_id):
+    subscription = dynamo.subscriptions.get_subscription_by_id(subscription_id)
+    if subscription is None:
+        abort(problem_format(404, 'Not Found', f'subscription_id does not exist: {subscription_id}'))
+    return subscription
+
+
+def patch_subscriptions(subscription_id, body, user):
+    subscription = dynamo.subscriptions.get_subscription_by_id(subscription_id)
+    if subscription is None:
+        abort(problem_format(404, 'Not Found', f'subscription_id does not exist: {subscription_id}'))
+    if subscription['user_id'] != user:
+        abort(problem_format(403, 'Forbidden', 'You may not update subscriptions created by a different user'))
+    if 'end' in body:
+        subscription['search_parameters']['end'] = body['end']
+    if 'enabled' in body:
+        subscription['enabled'] = body['enabled']
+    try:
+        dynamo.subscriptions.put_subscription(user, subscription)
+    except ValueError as e:
+        abort(problem_format(400, 'Bad Request', str(e)))
+    return subscription

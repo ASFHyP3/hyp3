@@ -1,17 +1,16 @@
 import json
 import re
-from os import environ
 
 import pytest
 import responses
-from moto import mock_dynamodb2
 
-from hyp3_api import CMR_URL, DYNAMODB_RESOURCE, auth, connexion_app
+from hyp3_api import CMR_URL, app, auth
 from hyp3_api.util import get_granules
 
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 USER_URI = '/user'
+SUBSCRIPTIONS_URI = '/subscriptions'
 
 DEFAULT_JOB_ID = 'myJobId'
 DEFAULT_USERNAME = 'test_username'
@@ -21,22 +20,8 @@ CMR_URL_RE = re.compile(f'{CMR_URL}.*')
 
 @pytest.fixture
 def client():
-    with connexion_app.app.test_client() as test_client:
+    with app.test_client() as test_client:
         yield test_client
-
-
-@pytest.fixture
-def tables(table_properties):
-    with mock_dynamodb2():
-        jobs_table = DYNAMODB_RESOURCE.create_table(
-            TableName=environ['JOBS_TABLE_NAME'],
-            **table_properties['JobsTable'],
-        )
-        users_table = DYNAMODB_RESOURCE.create_table(
-            TableName=environ['USERS_TABLE_NAME'],
-            **table_properties['UsersTable'],
-        )
-        yield {'users_table': users_table, 'jobs_table': jobs_table}
 
 
 def make_job(granules=['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'],
@@ -68,6 +53,7 @@ def submit_batch(client, batch=None, validate_only=None):
 
 
 def make_db_record(job_id,
+                   subscription_id=None,
                    granules=['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B'],
                    job_type='RTC_GAMMA',
                    user_id=DEFAULT_USERNAME,
@@ -88,6 +74,8 @@ def make_db_record(job_id,
         'request_time': request_time,
         'status_code': status_code,
     }
+    if subscription_id is not None:
+        record['subscription_id'] = subscription_id
     if name is not None:
         record['name'] = name
     if files is not None:
@@ -122,7 +110,3 @@ def setup_requests_mock(batch):
 
 def login(client, username=DEFAULT_USERNAME):
     client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username))
-
-
-def list_have_same_elements(l1, l2):
-    return [item for item in l1 if item not in l2] == [] == [item for item in l2 if item not in l1]

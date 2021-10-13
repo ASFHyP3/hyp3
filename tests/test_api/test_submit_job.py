@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 
-from api.conftest import DEFAULT_USERNAME, login, make_db_record, make_job, setup_requests_mock, submit_batch
+from test_api.conftest import DEFAULT_USERNAME, login, make_db_record, make_job, setup_requests_mock, submit_batch
 
-from hyp3_api.util import format_time
+from dynamo.util import format_time
 
 
 def test_submit_one_job(client, tables):
@@ -38,9 +38,11 @@ def test_submit_insar_gamma(client, tables):
             'looks': '10x2',
             'include_inc_map': True,
             'include_look_vectors': True,
-            'include_los_displacement': True,
+            'include_los_displacement': False,
+            'include_displacement_maps': True,
             'include_dem': True,
             'include_wrapped_phase': True,
+            'apply_water_mask': True,
         },
     )
     response = submit_batch(client, batch=[job])
@@ -105,7 +107,7 @@ def test_submit_exceeds_quota(client, tables, monkeypatch):
     time_for_previous_month = format_time(datetime.now(timezone.utc) - timedelta(days=32))
     job_from_previous_month = make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266',
                                              request_time=time_for_previous_month)
-    tables['jobs_table'].put_item(Item=job_from_previous_month)
+    tables.jobs_table.put_item(Item=job_from_previous_month)
 
     monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
     batch = [make_job() for ii in range(25)]
@@ -209,6 +211,10 @@ def test_submit_bad_rtc_granule_names(client):
         'S1B_IW_OCN__2SDV_20200518T220815_20200518T220851_021642_02915F_B404',
         'S1B_IW_RAW__0SDV_20200605T145138_20200605T145210_021900_029903_AFF4',
         'S1A_IW_GRDM_1SDH_20190624T101121_20190624T101221_027820_0323FF_79E4',
+        # bad polarizations
+        'S1A_IW_SLC__1SHH_20150512T135706_20150512T135734_005889_007957_EE69',
+        'S1A_IW_SLC__1SVH_20150513T032111_20150513T032139_005897_007989_686E',
+        'S1A_IW_SLC__1SVV_20150622T103100_20150622T103120_006485_008992_BBB5',
         # other missions
         'S2A_MSIL1C_20200627T150921_N0209_R025_T22WEB_20200627T170912',
         'S2B_22WEB_20200612_0_L1C',
@@ -293,15 +299,15 @@ def test_submit_validate_only(client, tables):
 
     response = submit_batch(client, validate_only=True)
     assert response.status_code == HTTPStatus.OK
-    jobs = tables['jobs_table'].scan()['Items']
+    jobs = tables.jobs_table.scan()['Items']
     assert len(jobs) == 0
 
     response = submit_batch(client, validate_only=False)
     assert response.status_code == HTTPStatus.OK
-    jobs = tables['jobs_table'].scan()['Items']
+    jobs = tables.jobs_table.scan()['Items']
     assert len(jobs) == 1
 
     response = submit_batch(client, validate_only=None)
     assert response.status_code == HTTPStatus.OK
-    jobs = tables['jobs_table'].scan()['Items']
+    jobs = tables.jobs_table.scan()['Items']
     assert len(jobs) == 2

@@ -1,9 +1,9 @@
 from datetime import datetime, timezone
 from http import HTTPStatus
 
-from api.conftest import USER_URI, login, make_db_record
+from test_api.conftest import USER_URI, login, make_db_record
 
-from hyp3_api.util import format_time
+from dynamo.util import format_time
 
 
 def test_get_user(client, tables, monkeypatch):
@@ -17,7 +17,7 @@ def test_get_user(client, tables, monkeypatch):
         make_db_record('job4', user_id=user, request_time=request_time, status_code='SUCCEEDED', name=None)
     ]
     for item in items:
-        tables['jobs_table'].put_item(Item=item)
+        tables.jobs_table.put_item(Item=item)
 
     login(client, 'user_with_jobs')
     response = client.get(USER_URI)
@@ -41,19 +41,19 @@ def test_user_at_quota(client, tables, monkeypatch):
 
     items = [make_db_record(f'job{ii}', request_time=request_time) for ii in range(0, 24)]
     for item in items:
-        tables['jobs_table'].put_item(Item=item)
+        tables.jobs_table.put_item(Item=item)
 
     login(client)
     response = client.get(USER_URI)
     assert response.status_code == HTTPStatus.OK
     assert response.json['quota']['remaining'] == 1
 
-    tables['jobs_table'].put_item(Item=make_db_record('anotherJob', request_time=request_time))
+    tables.jobs_table.put_item(Item=make_db_record('anotherJob', request_time=request_time))
     response = client.get(USER_URI)
     assert response.status_code == HTTPStatus.OK
     assert response.json['quota']['remaining'] == 0
 
-    tables['jobs_table'].put_item(Item=make_db_record('yetAnotherJob', request_time=request_time))
+    tables.jobs_table.put_item(Item=make_db_record('yetAnotherJob', request_time=request_time))
     response = client.get(USER_URI)
     assert response.status_code == HTTPStatus.OK
     assert response.json['quota']['remaining'] == 0
@@ -62,7 +62,7 @@ def test_user_at_quota(client, tables, monkeypatch):
 def test_get_user_custom_quota(client, tables):
     username = 'user_with_custom_quota'
     login(client, username)
-    tables['users_table'].put_item(Item={'user_id': username, 'max_jobs_per_month': 50})
+    tables.users_table.put_item(Item={'user_id': username, 'max_jobs_per_month': 50})
 
     response = client.get(USER_URI)
     assert response.status_code == HTTPStatus.OK
