@@ -46,7 +46,7 @@ Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
 
-  UseVpc: !Not [!Equals [!Ref SecurityGroupId, ""]]
+  LambdasInVpc: !Not [!Equals [!Ref SecurityGroupId, ""]]
 
 Outputs:
 
@@ -133,7 +133,7 @@ Resources:
           Effect: Allow
       PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       ManagedPolicyArns:
-        - !If [UseVpc, arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole, !Ref AWS::NoValue]
+        - !If [LambdasInVpc, arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole, !Ref AWS::NoValue]
       Policies:
         - PolicyName: policy
           PolicyDocument:
@@ -182,7 +182,7 @@ Resources:
       Timeout: 30
       VpcConfig:
         !If
-          - UseVpc
+          - LambdasInVpc
           - SecurityGroupIds:
               - !Ref SecurityGroupId
             SubnetIds: !Ref SubnetIds

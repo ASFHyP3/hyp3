@@ -92,7 +92,7 @@ Parameters:
 
 Conditions:
 
-  DeployLambdasInVpc: !Equals [!Ref DeployLambdasInVpc, "true"]
+  LambdasInVpc: !Equals [!Ref DeployLambdasInVpc, "true"]
 
 Outputs:
 
@@ -122,7 +122,7 @@ Resources:
         SystemAvailable: !Ref SystemAvailable
         BannedCidrBlocks: !Ref BannedCidrBlocks
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [DeployLambdasInVpc, !Ref SecurityGroup, !Ref AWS::NoValue]
+        SecurityGroupId: !If [LambdasInVpc, !Ref SecurityGroup, !Ref AWS::NoValue]
         SubnetIds: !Join [',', !Ref SubnetIds]
       TemplateURL: api/api-cf.yml
 
