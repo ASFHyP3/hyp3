@@ -1,5 +1,5 @@
 image: ${AutoriftImage}
-input_parameters:
+required_parameters:
   - granules
 parameters:
   granules:

@@ -27,11 +27,11 @@ components:
         - $ref: "#/components/schemas/{{ job_type }}"
         - type: object
           required:
-            {% for parameter in job_spec['input_parameters'] %}
+            {% for parameter in job_spec['required_parameters'] %}
             - {{ parameter }}
             {% endfor %}
           properties:
-            {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter in job_spec['input_parameters']%}
+            {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter in job_spec['required_parameters']%}
             {{ parameter }}:
               {{ json.dumps(parameter_spec['api_schema']) }}
             {% endfor %}
@@ -42,7 +42,7 @@ components:
     {{ job_type }}:
       description: Parameters for running {{ job_type }} jobs
       type: object
-      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter not in job_spec['input_parameters']%}
+      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter not in job_spec['required_parameters']%}
       {% if loop.first %}
       properties:
       {% endif %}
