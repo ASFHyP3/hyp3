@@ -38,7 +38,7 @@ def get_env():
 
 def main():
     job_types = {}
-    job_spec_path = Path(__file__).parent / 'job_spec'
+    job_spec_path = Path(__file__).parent.parent / 'job_spec'
     for file in job_spec_path.glob('*.yml'):
         with open(file.absolute()) as f:
             job_types[file.stem] = yaml.safe_load(f)
