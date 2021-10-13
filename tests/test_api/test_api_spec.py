@@ -1,17 +1,20 @@
 from http import HTTPStatus
 
-from api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login
+from test_api.conftest import AUTH_COOKIE, JOBS_URI, SUBSCRIPTIONS_URI, USER_URI, login
 
-from hyp3_api import auth
+from hyp3_api import auth, routes
 
 ENDPOINTS = {
     JOBS_URI: {'GET', 'HEAD', 'OPTIONS', 'POST'},
+    JOBS_URI + '/foo': {'GET', 'HEAD', 'OPTIONS'},
     USER_URI: {'GET', 'HEAD', 'OPTIONS'},
+    SUBSCRIPTIONS_URI: {'GET', 'HEAD', 'OPTIONS', 'POST'},
+    SUBSCRIPTIONS_URI + '/foo': {'GET', 'HEAD', 'OPTIONS', 'PATCH'},
 }
 
 
 def test_options(client):
-    all_methods = {'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE'}
+    all_methods = {'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE', 'PATCH'}
 
     login(client)
     for uri, good_methods in ENDPOINTS.items():
@@ -96,5 +99,37 @@ def test_hyp3_unavailable(client, monkeypatch):
 
 def test_redirect_root(client):
     response = client.get('/')
-    assert response.location.endswith('/ui')
+    assert response.location.endswith('/ui/')
     assert response.status_code == HTTPStatus.FOUND
+
+
+def test_ui_location(client):
+    response = client.get('/ui')
+    assert response.status_code == HTTPStatus.PERMANENT_REDIRECT
+    assert response.location.endswith('/ui/')
+
+    response = client.get('/ui/')
+    assert response.status_code == HTTPStatus.OK
+
+
+def test_wkt_validator(client):
+    validator = routes.WKTValidator()
+
+    assert not validator.validate('foo')
+    assert validator.validate('POLYGON((-5 2, -3 2, -3 5, -5 5, -5 2))')
+
+
+def test_banned_ip_address(client, monkeypatch):
+    monkeypatch.setenv('BANNED_CIDR_BLOCKS', '1.1.1.0/24,2.2.2.2/32')
+
+    good_addresses = ['2.2.2.1', '2.2.2.3', '1.1.2.1', ' 123.123.123.50']
+    for good_address in good_addresses:
+        client.environ_base = {'REMOTE_ADDR': good_address}
+        response = client.get('/ui/')
+        assert response.status_code == HTTPStatus.OK
+
+    bad_addresses = ['1.1.1.1', '1.1.1.255', '2.2.2.2']
+    for bad_address in bad_addresses:
+        client.environ_base = {'REMOTE_ADDR': bad_address}
+        response = client.get('/ui/')
+        assert response.status_code == HTTPStatus.FORBIDDEN

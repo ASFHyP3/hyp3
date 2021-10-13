@@ -8,6 +8,14 @@ Parameters:
   StepFunctionArn:
     Type: String
 
+  PermissionsBoundaryPolicyArn:
+    Type: String
+    Default: ""
+
+Conditions:
+
+  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
+
 Resources:
 
   LogGroup:
@@ -26,6 +34,7 @@ Resources:
           Principal:
             Service: lambda.amazonaws.com
           Effect: Allow
+      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       Policies:
         - PolicyName: policy
           PolicyDocument:
@@ -48,7 +57,7 @@ Resources:
     Properties:
       Environment:
         Variables:
-          TABLE_NAME: !Ref JobsTable
+          JOBS_TABLE_NAME: !Ref JobsTable
           STEP_FUNCTION_ARN: !Ref StepFunctionArn
       Code: src/
       Handler: start_execution.lambda_handler

@@ -1,0 +1,109 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+  SubscriptionsTable:
+    Type: String
+
+  JobsTable:
+    Type: String
+
+  UsersTable:
+    Type: String
+
+  MonthlyJobQuotaPerUser:
+    Type: Number
+
+  PermissionsBoundaryPolicyArn:
+    Type: String
+    Default: ""
+
+Conditions:
+
+  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
+
+Outputs:
+
+  LambdaArn:
+    Value: !GetAtt Lambda.Arn
+
+Resources:
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${Lambda}"
+      RetentionInDays: 90
+
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: lambda.amazonaws.com
+          Effect: Allow
+      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
+      Policies:
+        - PolicyName: policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:Query
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
+              - Effect: Allow
+                Action: dynamodb:GetItem
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UsersTable}*"
+              - Effect: Allow
+                Action:
+                  - dynamodb:Scan
+                  - dynamodb:PutItem
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SubscriptionsTable}*"
+
+  Lambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Environment:
+        Variables:
+          JOBS_TABLE_NAME: !Ref JobsTable
+          USERS_TABLE_NAME: !Ref UsersTable
+          SUBSCRIPTIONS_TABLE_NAME: !Ref SubscriptionsTable
+          MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
+      Code: src/
+      Handler: process_new_granules.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt Role.Arn
+      Runtime: python3.8
+      Timeout: 900
+
+  EventInvokeConfig:
+    Type: AWS::Lambda::EventInvokeConfig
+    Properties:
+      FunctionName: !Ref Lambda
+      Qualifier: $LATEST
+      MaximumRetryAttempts: 0
+
+  Schedule:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: "rate(16 minutes)"
+      Targets:
+        - Arn: !GetAtt Lambda.Arn
+          Id: lambda
+
+  EventPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt Lambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt Schedule.Arn

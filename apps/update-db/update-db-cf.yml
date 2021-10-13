@@ -5,6 +5,14 @@ Parameters:
   JobsTable:
     Type: String
 
+  PermissionsBoundaryPolicyArn:
+    Type: String
+    Default: ""
+
+Conditions:
+
+  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
+
 Outputs:
 
   LambdaArn:
@@ -28,6 +36,7 @@ Resources:
           Principal:
             Service: lambda.amazonaws.com
           Effect: Allow
+      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       Policies:
         - PolicyName: policy
           PolicyDocument:
@@ -47,7 +56,7 @@ Resources:
     Properties:
       Environment:
         Variables:
-          TABLE_NAME: !Ref JobsTable
+          JOBS_TABLE_NAME: !Ref JobsTable
       Code: src/
       Handler: main.lambda_handler
       MemorySize: 128

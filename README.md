@@ -49,10 +49,12 @@ python render_cf.py --job-types-file ../job_types.yml
 cd ..
 ```
 
-- Install API dependencies (requires pip for python 3.8)
+- Install Python dependencies for AWS Lambda functions (requires pip for python 3.8)
 
 ```sh
 pip install -r apps/api/requirements-api.txt -t apps/api/src
+pip install -r apps/update-db/update-db-requirements.txt -t apps/update-db/src
+pip install -r apps/start-execution/start-execution-requirements.txt -t apps/start-execution/src
 ```
 
 - Package the CloudFormation template
@@ -86,51 +88,25 @@ aws cloudformation deploy \
 ## Running the Tests
 Tests for each HyP3 module are located in `tests/`. To run them you need to do a bit of setup first.
 
-- Install test requirements
+- Install test requirements (this must be done from the root of the repo for libraries to resolve correctly)
 ```sh
 pip install -r requirements-all.txt
 ```
 
-- Add module source directories to your Python path
+- run the tests
 ```sh
-export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src:`pwd`/apps/get-files/src:`pwd`/apps/start-execution/src:`pwd`/apps/upload-log/src"
-```
-
-- Set environment variables needed by the API module
-```sh
-export $(cat tests/api/cfg.env | xargs)
-```
-
-- Render CloudFormation templates needed by the API module
-```sh
-cd apps
-python render_cf.py --job-types-file ../job_types.yml
-cd ..
-```
-
-- Run the tests
-```sh
-pytest tests/
+make tests
 ```
 
 ## Running the API Locally
 The API can be run locally to verify changes, but must be connected to an existing DynamoDB jobs table.
 
 - Setup aws credentials in your environment [Documentation by AWS](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration)
-- Setup environment variables
-  - `JOBS_TABLE_NAME=<jobs table id>`
-  - `USERS_TABLE_NAME=<users table id>`
-  - `MONTHLY_JOB_QUOTA_PER_USER=25`
-  - `AUTH_PUBLIC_KEY=123456789` *we use this auth config so that we can set the cookie ourselves to a known good value*
-  - `AUTH_ALGORITHM=HS256`
-  - `SYSTEM_AVAILABLE=true`
-- Add hyp3-api to python path
-```sh
-export PYTHONPATH="${PYTHONPATH}:`pwd`/apps/api/src"
-```
+- Setup environment variables in `test/cfg.env` to desired values (you must change the names of any DynamoDB table to one that exists)
+
 - run API
 ```sh
-python3 apps/api/src/hyp3_api/__main__.py
+make run
 ```
 - In order to use you will need to include the following cookie
 ```
