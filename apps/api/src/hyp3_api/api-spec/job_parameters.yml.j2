@@ -46,7 +46,7 @@ components:
     {{ job_type }}:
       description: Parameters for running {{ job_type }} jobs
       type: object
-      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter not in job_spec.get('required_parameters', [])%}
+      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter not in job_spec.get('required_parameters', []) %}
       {% if loop.first %}
       properties:
       {% endif %}
