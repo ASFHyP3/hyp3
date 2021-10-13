@@ -2,8 +2,8 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  VpcId:
-    Type: AWS::EC2::VPC::Id
+  SecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
 
   SubnetIds:
     Type: List<AWS::EC2::Subnet::Id>
@@ -32,12 +32,6 @@ Outputs:
     Value: !GetAtt TaskRole.Arn
 
 Resources:
-
-  SecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: !Sub "Security group for ${AWS::StackName} machines"
-      VpcId: !Ref VpcId
 
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
@@ -72,7 +66,7 @@ Resources:
         Subnets: !Ref SubnetIds
         InstanceRole: !Ref InstanceProfile
         SecurityGroupIds:
-          - !Ref SecurityGroup
+          - !Ref SecurityGroupId
         LaunchTemplate:
           LaunchTemplateId: !Ref LaunchTemplate
           Version: $Latest

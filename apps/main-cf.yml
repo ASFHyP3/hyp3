@@ -83,12 +83,29 @@ Parameters:
     Type: String
     Default: ""
 
+  DeployLambdasInVpc:
+    Type: String
+    Default: false
+    AllowedValues:
+      - false
+      - true
+
+Conditions:
+
+  DeployLambdasInVpc: !Equals [!Ref DeployLambdasInVpc, "true"]
+
 Outputs:
 
   ApiUrl:
     Value: !GetAtt Api.Outputs.Url
 
 Resources:
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub "Security group for ${AWS::StackName} resources"
+      VpcId: !Ref VpcId
 
   Api:
     Type: AWS::CloudFormation::Stack
@@ -105,13 +122,15 @@ Resources:
         SystemAvailable: !Ref SystemAvailable
         BannedCidrBlocks: !Ref BannedCidrBlocks
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !If [DeployLambdasInVpc, !Ref SecurityGroup, !Ref AWS::NoValue]
+        SubnetIds: !Join [',', !Ref SubnetIds]
       TemplateURL: api/api-cf.yml
 
   Cluster:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        VpcId: !Ref VpcId
+        SecurityGroupId: !Ref SecurityGroup
         SubnetIds: !Join [',', !Ref SubnetIds]
         ContentBucket: !Ref ContentBucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
