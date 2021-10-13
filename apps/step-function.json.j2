@@ -80,7 +80,7 @@
         {
           "Variable": "$.job_type",
           "StringEquals": "{{ snake_to_pascal_case(job_type) }}",
-          "Next": "{{ snake_to_pascal_case(job_type) }}"
+          "Next": "{{ job_type }}"
         }{% if not loop.last %},{% endif %}
         {% endfor %}
       ],
