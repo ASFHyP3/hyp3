@@ -27,8 +27,8 @@ components:
         - $ref: "#/components/schemas/{{ job_type }}"
         - type: object
           required:
-            {% for parameter in job_spec['input_parameters'] if parameter in job_spec['input_parameters']%}
-            - granules
+            {% for parameter in job_spec['input_parameters'] %}
+            - {{ parameter }}
             {% endfor %}
           properties:
             {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter in job_spec['input_parameters']%}
