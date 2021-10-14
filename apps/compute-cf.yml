@@ -84,7 +84,7 @@ Resources:
     Properties:
       Priority: 1
       ComputeEnvironmentOrder:
-        - ComputeEnvironment: !Ref ComputeEnvironment
+        - ComputeEnvironment: !Ref ComputeEnvironmentFIXME
           Order: 1
 
   TaskRole:
