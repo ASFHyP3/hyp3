@@ -18,7 +18,7 @@ install:
 	python -m pip install -r requirements-all.txt
 
 render:
-	@python apps/render_cf.py --job-types-file job_types.yml > /dev/null
+	@python apps/render_cf.py
 
 static: flake8 openapi-validate
 
