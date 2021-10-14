@@ -164,6 +164,8 @@ Resources:
         AutoriftNamingScheme: !Ref AutoriftNamingScheme
         AutoriftParameterFile: !Ref AutoriftParameterFile
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !If [LambdasInVpc, !Ref SecurityGroup, !Ref AWS::NoValue]
+        SubnetIds: !Join [',', !Ref SubnetIds]
       TemplateURL: workflow-cf.yml
 
   Monitoring:

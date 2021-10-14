@@ -38,6 +38,7 @@ Outputs:
     Value: !GetAtt Lambda.Arn
 
 Resources:
+
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -82,6 +83,7 @@ Resources:
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SubscriptionsTable}*"
 
   Lambda:
+
     Type: AWS::Lambda::Function
     Properties:
       Environment:
