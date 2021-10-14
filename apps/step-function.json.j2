@@ -79,19 +79,19 @@
         {% for job_type, job_spec in job_types.items() %}
         {
           "Variable": "$.job_type",
-          "StringEquals": "{{ job_spec['api_job_type'] }}",
-          "Next": "{{ job_spec['api_job_type'] }}"
+          "StringEquals": "{{ job_type }}",
+          "Next": "{{ job_type }}"
         }{% if not loop.last %},{% endif %}
         {% endfor %}
       ],
       "Default": "JOB_FAILED"
     },
     {% for job_type, job_spec in job_types.items() %}
-    "{{ job_spec['api_job_type'] }}": {
+    "{{ job_type }}": {
       "Type": "Task",
       "Resource": "arn:aws:states:::batch:submitJob.sync",
       "Parameters": {
-        "JobDefinition": "{{ '${'+ job_type + '}' }}",
+        "JobDefinition": "{{ '${'+ snake_to_pascal_case(job_type) + '}' }}",
         "JobName.$": "$.job_id",
         "JobQueue": "${JobQueueArn}",
         "Parameters.$": "$.job_parameters",
