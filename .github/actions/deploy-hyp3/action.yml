@@ -56,7 +56,7 @@ runs:
         run: |
           pip install --upgrade pip
           pip install -r requirements-all.txt
-          python apps/render_cf.py --job-types-file job_types.yml
+          python apps/render_cf.py
           pip install -r apps/api/requirements-api.txt -t apps/api/src
           pip install -r apps/process-new-granules/requirements-process-new-granules.txt -t apps/process-new-granules/src
           pip install -r apps/update-db/update-db-requirements.txt -t apps/update-db/src
