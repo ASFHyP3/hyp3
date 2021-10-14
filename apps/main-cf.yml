@@ -122,8 +122,8 @@ Resources:
         SystemAvailable: !Ref SystemAvailable
         BannedCidrBlocks: !Ref BannedCidrBlocks
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !Ref SecurityGroup, !Ref AWS::NoValue]
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SecurityGroupId: !If [LambdasInVpc, !Ref SecurityGroup, ""]
+        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
       TemplateURL: api/api-cf.yml
 
   Cluster:
@@ -145,8 +145,8 @@ Resources:
         SubscriptionsTable: !Ref SubscriptionsTable
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !Ref SecurityGroup, !Ref AWS::NoValue]
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SecurityGroupId: !If [LambdasInVpc, !Ref SecurityGroup, ""]
+        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
   StepFunction:
@@ -164,8 +164,8 @@ Resources:
         AutoriftNamingScheme: !Ref AutoriftNamingScheme
         AutoriftParameterFile: !Ref AutoriftParameterFile
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !Ref SecurityGroup, !Ref AWS::NoValue]
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SecurityGroupId: !If [LambdasInVpc, !Ref SecurityGroup, ""]
+        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
       TemplateURL: workflow-cf.yml
 
   Monitoring:

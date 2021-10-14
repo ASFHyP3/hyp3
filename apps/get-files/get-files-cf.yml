@@ -11,11 +11,9 @@ Parameters:
 
   SecurityGroupId:
     Type: String
-    Default: ""
 
   SubnetIds:
     Type: CommaDelimitedList
-    Default: ""
 
 Conditions:
 

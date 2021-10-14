@@ -17,7 +17,6 @@ Parameters:
 
   PermissionsBoundaryPolicyArn:
     Type: String
-    Default: ""
 
 Conditions:
 
