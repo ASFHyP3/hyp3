@@ -145,6 +145,8 @@ Resources:
         SubscriptionsTable: !Ref SubscriptionsTable
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !If [LambdasInVpc, !Ref SecurityGroup, !Ref AWS::NoValue]
+        SubnetIds: !Join [',', !Ref SubnetIds]
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
   StepFunction:
