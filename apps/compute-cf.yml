@@ -56,7 +56,7 @@ Resources:
 
             --==BOUNDARY==--
 
-  ComputeEnvironment:
+  ComputeEnvironmentFIXME:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       ServiceRole: !GetAtt BatchServiceRole.Arn
