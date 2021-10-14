@@ -7,18 +7,11 @@ Parameters:
 
   PermissionsBoundaryPolicyArn:
     Type: String
-
-  SecurityGroupId:
-    Type: String
-
-  SubnetIds:
-    Type: CommaDelimitedList
+    Default: ""
 
 Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
-
-  LambdasInVpc: !Not [!Equals [!Ref SecurityGroupId, ""]]
 
 Outputs:
 
@@ -44,8 +37,6 @@ Resources:
             Service: lambda.amazonaws.com
           Effect: Allow
       PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
-      ManagedPolicyArns:
-        - !If [LambdasInVpc, arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole, !Ref AWS::NoValue]
       Policies:
         - PolicyName: policy
           PolicyDocument:
@@ -72,10 +63,3 @@ Resources:
       Role: !GetAtt Role.Arn
       Runtime: python3.8
       Timeout: 30
-      VpcConfig:
-        !If
-          - LambdasInVpc
-          - SecurityGroupIds:
-              - !Ref SecurityGroupId
-            SubnetIds: !Ref SubnetIds
-          - !Ref AWS::NoValue
