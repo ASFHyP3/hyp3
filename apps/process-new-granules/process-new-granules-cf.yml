@@ -16,18 +16,11 @@ Parameters:
 
   PermissionsBoundaryPolicyArn:
     Type: String
-
-  SecurityGroupId:
-    Type: String
-
-  SubnetIds:
-    Type: CommaDelimitedList
+    Default: ""
 
 Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
-
-  LambdasInVpc: !Not [!Equals [!Ref SecurityGroupId, ""]]
 
 Outputs:
 
@@ -35,7 +28,6 @@ Outputs:
     Value: !GetAtt Lambda.Arn
 
 Resources:
-
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -53,8 +45,6 @@ Resources:
             Service: lambda.amazonaws.com
           Effect: Allow
       PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
-      ManagedPolicyArns:
-        - !If [LambdasInVpc, arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole, !Ref AWS::NoValue]
       Policies:
         - PolicyName: policy
           PolicyDocument:
@@ -80,7 +70,6 @@ Resources:
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SubscriptionsTable}*"
 
   Lambda:
-
     Type: AWS::Lambda::Function
     Properties:
       Environment:
@@ -95,13 +84,6 @@ Resources:
       Role: !GetAtt Role.Arn
       Runtime: python3.8
       Timeout: 900
-      VpcConfig:
-        !If
-          - LambdasInVpc
-          - SecurityGroupIds:
-              - !Ref SecurityGroupId
-            SubnetIds: !Ref SubnetIds
-          - !Ref AWS::NoValue
 
   EventInvokeConfig:
     Type: AWS::Lambda::EventInvokeConfig
