@@ -4,11 +4,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
-## [2.6.1](https://github.com/ASFHyP3/hyp3/compare/v2.6.0...v2.6.1)
-### Added
-- Optional `DeployLambdasInVpc` stack parameter to deploy all lambda functions into the given `VpcId` and `SubnetIds`
-
 ## [2.6.0](https://github.com/ASFHyP3/hyp3/compare/v2.5.3...v2.6.0)
 ### Changed
 - Job types now are defined each in their own file under the `job_spec` directory
