@@ -56,7 +56,7 @@ Resources:
 
             --==BOUNDARY==--
 
-  ComputeEnvironmentFIXME:
+  ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       ServiceRole: !GetAtt BatchServiceRole.Arn
@@ -84,7 +84,7 @@ Resources:
     Properties:
       Priority: 1
       ComputeEnvironmentOrder:
-        - ComputeEnvironment: !Ref ComputeEnvironmentFIXME
+        - ComputeEnvironment: !Ref ComputeEnvironment
           Order: 1
 
   TaskRole:
