@@ -83,6 +83,17 @@ Parameters:
     Type: String
     Default: ""
 
+  DeployLambdasInVpc:
+    Type: String
+    Default: false
+    AllowedValues:
+      - false
+      - true
+
+Conditions:
+
+  LambdasInVpc: !Equals [!Ref DeployLambdasInVpc, "true"]
+
 Outputs:
 
   ApiUrl:
@@ -105,6 +116,8 @@ Resources:
         SystemAvailable: !Ref SystemAvailable
         BannedCidrBlocks: !Ref BannedCidrBlocks
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
+        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
       TemplateURL: api/api-cf.yml
 
   Cluster:
@@ -126,6 +139,8 @@ Resources:
         SubscriptionsTable: !Ref SubscriptionsTable
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
+        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
   StepFunction:
@@ -143,6 +158,8 @@ Resources:
         AutoriftNamingScheme: !Ref AutoriftNamingScheme
         AutoriftParameterFile: !Ref AutoriftParameterFile
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
+        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
       TemplateURL: workflow-cf.yml
 
   Monitoring:

@@ -39,13 +39,19 @@ Parameters:
 
   PermissionsBoundaryPolicyArn:
     Type: String
-    Default: ""
+
+  SecurityGroupId:
+    Type: String
+
+  SubnetIds:
+    Type: CommaDelimitedList
 
 Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
 
 Outputs:
+
   StepFunctionArn:
     Value: !Ref StepFunction
 
@@ -66,7 +72,7 @@ Resources:
           - Type: VCPU
             Value: "1"
           - Type: MEMORY
-            Value: "31672"
+            Value: "31600"
         Command:
           {% for command in job_spec['command'] %}
           - {{ command }}
@@ -131,6 +137,8 @@ Resources:
       Parameters:
         JobsTable: !Ref JobsTable
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [',', !Ref SubnetIds]
       TemplateURL: update-db/update-db-cf.yml
 
   GetFiles:
@@ -139,6 +147,8 @@ Resources:
       Parameters:
         Bucket: !Ref Bucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [',', !Ref SubnetIds]
       TemplateURL: get-files/get-files-cf.yml
 
   StartExecution:
@@ -148,6 +158,8 @@ Resources:
         JobsTable: !Ref JobsTable
         StepFunctionArn: !Ref StepFunction
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [',', !Ref SubnetIds]
       TemplateURL: start-execution/start-execution-cf.yml
 
   UploadLog:
@@ -156,4 +168,6 @@ Resources:
       Parameters:
         Bucket: !Ref Bucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [',', !Ref SubnetIds]
       TemplateURL: upload-log/upload-log-cf.yml
