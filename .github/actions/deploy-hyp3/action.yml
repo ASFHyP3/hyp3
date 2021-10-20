@@ -47,6 +47,9 @@ inputs:
   BANNED_CIDR_BLOCKS:
     description: "Comma separated list of IP CIDR blocks that will receive HTTP 403 FORBIDDEN responses from the API"
     required: true
+  AMI_ID:
+    description: "Amazon Linux 2 ECS-optimized AMI id to use when running AWS Batch jobs"
+    required: true
 
 runs:
   using: "composite"
@@ -85,4 +88,5 @@ runs:
                 AutoriftImage='${{ inputs.AUTORIFT_IMAGE }}' \
                 AutoriftNamingScheme='${{ inputs.AUTORIFT_NAMING_SCHEME }}' \
                 AutoriftParameterFile='${{ inputs.AUTORIFT_PARAMETER_FILE }}' \
-                BannedCidrBlocks='${{ inputs.BANNED_CIDR_BLOCKS }}'
+                BannedCidrBlocks='${{ inputs.BANNED_CIDR_BLOCKS }}' \
+                AmiId='${{ inputs.AMI_ID }}'

@@ -21,6 +21,7 @@ jobs:
             autorift_image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
             autorift_naming_scheme: ITS_LIVE_OD
             autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+            ami_id: 'ami-0971980bcf180eb0c'
 
           - environment: hyp3-test
             domain: hyp3-test-api.asf.alaska.edu
@@ -31,6 +32,7 @@ jobs:
             autorift_image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
             autorift_naming_scheme: ITS_LIVE_OD
             autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+            ami_id: 'ami-0971980bcf180eb0c'
 
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
@@ -41,6 +43,7 @@ jobs:
             autorift_image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
             autorift_naming_scheme: ITS_LIVE_PROD
             autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+            ami_id: 'ami-0971980bcf180eb0c'
 
           - environment: hyp3-autorift-eu
             domain: hyp3-autorift-eu.asf.alaska.edu
@@ -51,6 +54,7 @@ jobs:
             autorift_image: 230742024655.dkr.ecr.eu-central-1.amazonaws.com/hyp3-autorift
             autorift_naming_scheme: ITS_LIVE_PROD
             autorift_parameter_file: '/vsicurl/http://its-live-data-eu.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+            ami_id: 'ami-06a0b593202c1590d'
 
     environment:
       name: ${{ matrix.environment }}
@@ -87,6 +91,7 @@ jobs:
           AUTORIFT_NAMING_SCHEME: ${{ matrix.autorift_naming_scheme }}
           AUTORIFT_PARAMETER_FILE: ${{ matrix.autorift_parameter_file }}
           BANNED_CIDR_BLOCKS: ${{ secrets.BANNED_CIDR_BLOCKS }}
+          AMI_ID: ${{ matrix.ami_id }}
 
   tag:
     runs-on: ubuntu-latest
