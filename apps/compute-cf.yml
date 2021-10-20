@@ -2,6 +2,9 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
   SubnetIds:
     Type: List<AWS::EC2::Subnet::Id>
 
