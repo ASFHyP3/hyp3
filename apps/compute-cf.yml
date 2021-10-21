@@ -9,7 +9,7 @@ Parameters:
     Type: List<AWS::EC2::Subnet::Id>
 
   AmiId:
-    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Type: AWS::EC2::Image::Id
 
   ContentBucket:
     Type: String
