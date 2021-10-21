@@ -90,6 +90,10 @@ Parameters:
       - false
       - true
 
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+
 Conditions:
 
   LambdasInVpc: !Equals [!Ref DeployLambdasInVpc, "true"]
@@ -126,6 +130,7 @@ Resources:
       Parameters:
         VpcId: !Ref VpcId
         SubnetIds: !Join [',', !Ref SubnetIds]
+        AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: compute-cf.yml
