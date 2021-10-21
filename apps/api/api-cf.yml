@@ -47,8 +47,8 @@ Conditions:
 
 Outputs:
 
-  Url:
-    Value: !Sub "https://${CustomDomainName}/ui"
+#  Url:
+#    Value: !Sub "https://${CustomDomainName}/ui"
 
   ApiId:
     Value: !Ref Api
@@ -77,20 +77,20 @@ Resources:
     Properties:
       RetentionInDays: 180
 
-  CustomDomainName:
-    Type: AWS::ApiGatewayV2::DomainName
-    Properties:
-      DomainName: !Ref DomainName
-      DomainNameConfigurations:
-        - CertificateArn: !Ref CertificateArn
-          EndpointType: REGIONAL
-
-  ApiMapping:
-    Type: AWS::ApiGatewayV2::ApiMapping
-    Properties:
-      ApiId: !Ref Api
-      DomainName: !Ref CustomDomainName
-      Stage: $default
+#  CustomDomainName:
+#    Type: AWS::ApiGatewayV2::DomainName
+#    Properties:
+#      DomainName: !Ref DomainName
+#      DomainNameConfigurations:
+#        - CertificateArn: !Ref CertificateArn
+#          EndpointType: REGIONAL
+#
+#  ApiMapping:
+#    Type: AWS::ApiGatewayV2::ApiMapping
+#    Properties:
+#      ApiId: !Ref Api
+#      DomainName: !Ref CustomDomainName
+#      Stage: $default
 
   ApiRole:
     Type: AWS::IAM::Role

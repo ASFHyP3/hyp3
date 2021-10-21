@@ -98,10 +98,10 @@ Conditions:
 
   LambdasInVpc: !Equals [!Ref DeployLambdasInVpc, "true"]
 
-Outputs:
-
-  ApiUrl:
-    Value: !GetAtt Api.Outputs.Url
+#Outputs:
+#
+#  ApiUrl:
+#    Value: !GetAtt Api.Outputs.Url
 
 Resources:
 
@@ -213,31 +213,31 @@ Resources:
           - Status: Enabled
             AbortIncompleteMultipartUpload:
               DaysAfterInitiation: 1
-      CorsConfiguration:
-        CorsRules:
-          - AllowedMethods:
-              - GET
-              - HEAD
-            AllowedOrigins:
-              - "*.asf.alaska.edu"
+#      CorsConfiguration:
+#        CorsRules:
+#          - AllowedMethods:
+#              - GET
+#              - HEAD
+#            AllowedOrigins:
+#              - "*.asf.alaska.edu"
 
-  BucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref ContentBucket
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal: "*"
-            Action:
-              - s3:GetObject
-              - s3:GetObjectTagging
-            Resource: !Sub "${ContentBucket.Arn}/*"
-          - Effect: Allow
-            Principal: "*"
-            Action: s3:ListBucket
-            Resource: !GetAtt ContentBucket.Arn
+#  BucketPolicy:
+#    Type: AWS::S3::BucketPolicy
+#    Properties:
+#      Bucket: !Ref ContentBucket
+#      PolicyDocument:
+#        Version: 2012-10-17
+#        Statement:
+#          - Effect: Allow
+#            Principal: "*"
+#            Action:
+#              - s3:GetObject
+#              - s3:GetObjectTagging
+#            Resource: !Sub "${ContentBucket.Arn}/*"
+#          - Effect: Allow
+#            Principal: "*"
+#            Action: s3:ListBucket
+#            Resource: !GetAtt ContentBucket.Arn
 
   JobsTable:
     Type: AWS::DynamoDB::Table
