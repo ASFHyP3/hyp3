@@ -61,7 +61,9 @@ Resources:
                 Action: s3:ListBucket
                 Resource: !Sub "arn:aws:s3:::${Bucket}"
               - Effect: Allow
-                Action: s3:GetObjectTagging
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectTagging
                 Resource: !Sub "arn:aws:s3:::${Bucket}/*"
 
   Lambda:
