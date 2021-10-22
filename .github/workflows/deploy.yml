@@ -35,7 +35,7 @@ jobs:
             image_tag: latest
             quota: 0
             deploy_ref: refs/heads/main
-            job_files: 'job_spec/AUTORIFT_ITS_LIVE.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml'
+            job_files: 'job_spec/AUTORIFT_ITS_LIVE.yml'
 
           - environment: hyp3-autorift-eu
             domain: hyp3-autorift-eu.asf.alaska.edu
@@ -43,7 +43,7 @@ jobs:
             image_tag: latest
             quota: 0
             deploy_ref: refs/heads/main
-            job_files: 'job_spec/AUTORIFT_ITS_LIVE_EU.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml'
+            job_files: 'job_spec/AUTORIFT_ITS_LIVE_EU.yml'
 
     environment:
       name: ${{ matrix.environment }}
