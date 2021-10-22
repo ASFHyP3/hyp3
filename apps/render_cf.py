@@ -1,3 +1,4 @@
+import argparse
 import json
 from pathlib import Path, PurePosixPath
 
@@ -37,11 +38,14 @@ def get_env():
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('paths', nargs='+', type=Path)
+    args = parser.parse_args()
+
     job_types = {}
-    job_spec_path = Path(__file__).parent.parent / 'job_spec'
-    for file in job_spec_path.glob('*.yml'):
+    for file in args.paths:
         with open(file.absolute()) as f:
-            job_types[file.stem] = yaml.safe_load(f)
+            job_types.update(yaml.safe_load(f))
     render_templates(job_types)
 
 
