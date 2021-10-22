@@ -58,22 +58,6 @@ Parameters:
       - false
       - true
 
-  AutoriftImage:
-    Type: String
-    Default: ''
-
-  AutoriftNamingScheme:
-    Description: Naming scheme for autoRIFT products, On Demand (ITS_LIVE_OD) or Production (ITS_LIVE_PROD)
-    Type: String
-    Default: ITS_LIVE_OD
-    AllowedValues:
-      - ITS_LIVE_OD
-      - ITS_LIVE_PROD
-
-  AutoriftParameterFile:
-    Type: String
-    Default: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
-
   BannedCidrBlocks:
     Description: Comma separated list of IP CIDR blocks that will receive HTTP 403 FORBIDDEN responses from the API
     Type: String
@@ -159,9 +143,6 @@ Resources:
         EDLPassword: !Ref EDLPassword
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
-        AutoriftImage: !Ref AutoriftImage
-        AutoriftNamingScheme: !Ref AutoriftNamingScheme
-        AutoriftParameterFile: !Ref AutoriftParameterFile
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
         SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
