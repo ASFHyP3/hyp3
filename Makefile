@@ -18,7 +18,7 @@ install:
 	python -m pip install -r requirements-all.txt
 
 render:
-	@python apps/render_cf.py
+	@python apps/render_cf.py job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml            
 
 static: flake8 openapi-validate
 
