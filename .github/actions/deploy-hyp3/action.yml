@@ -17,6 +17,9 @@ inputs:
   IMAGE_TAG:
     description: "HyP3 plugin docker image tag to pull"
     required: true
+  PRODUCT_LIFETIME:
+    description: "Number of days to keep output files before deleting them"
+    required: true
   VPC_ID:
     description: "Default VPC ID"
     required: true
@@ -73,6 +76,7 @@ runs:
                 EDLUsername='${{ inputs.EDL_USERNAME }}' \
                 EDLPassword='${{ inputs.EDL_PASSWORD }}' \
                 ImageTag='${{ inputs.IMAGE_TAG }}' \
+                ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}'\
                 DomainName='${{ inputs.DOMAIN_NAME }}' \
                 CertificateArn='${{ inputs.CERTIFICATE_ARN }}' \
                 MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \

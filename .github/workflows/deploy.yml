@@ -17,6 +17,7 @@ jobs:
             domain: hyp3-api.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: latest
+            product_lifetime_in_days: 14
             quota: 250
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
@@ -25,6 +26,7 @@ jobs:
             domain: hyp3-test-api.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: test
+            product_lifetime_in_days: 14
             quota: 250
             deploy_ref: refs/heads/develop
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
@@ -33,6 +35,7 @@ jobs:
             domain: hyp3-autorift.asf.alaska.edu
             template_bucket: cf-templates-igavixdzdy7k-us-west-2
             image_tag: latest
+            product_lifetime_in_days: 180
             quota: 0
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT_ITS_LIVE.yml
@@ -41,6 +44,7 @@ jobs:
             domain: hyp3-autorift-eu.asf.alaska.edu
             template_bucket: cf-templates-autorift-eu-central-1
             image_tag: latest
+            product_lifetime_in_days: 180
             quota: 0
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT_ITS_LIVE_EU.yml
@@ -70,6 +74,7 @@ jobs:
           DOMAIN_NAME: ${{ matrix.domain }}
           CERTIFICATE_ARN:  ${{ secrets.CERTIFICATE_ARN }}
           IMAGE_TAG: ${{ matrix.image_tag }}
+          PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
           VPC_ID: ${{ secrets.VPC_ID }}
           SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
           EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
