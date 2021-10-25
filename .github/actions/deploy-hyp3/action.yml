@@ -76,7 +76,7 @@ runs:
                 EDLUsername='${{ inputs.EDL_USERNAME }}' \
                 EDLPassword='${{ inputs.EDL_PASSWORD }}' \
                 ImageTag='${{ inputs.IMAGE_TAG }}' \
-                ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}'\
+                ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
                 DomainName='${{ inputs.DOMAIN_NAME }}' \
                 CertificateArn='${{ inputs.CERTIFICATE_ARN }}' \
                 MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \
