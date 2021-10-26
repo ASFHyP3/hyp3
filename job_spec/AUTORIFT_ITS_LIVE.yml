@@ -47,7 +47,7 @@ AUTORIFT:
     - --parameter-file
     - '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
     - --naming-scheme
-    - ITS_LIVE_OD
+    - ITS_LIVE_PROD
     - Ref::granules
   validators: []
   timeout: 10800
