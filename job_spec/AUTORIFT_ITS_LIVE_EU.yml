@@ -1,5 +1,7 @@
 AUTORIFT:
   image: 230742024655.dkr.ecr.eu-central-1.amazonaws.com/hyp3-autorift
+  required_parameters:
+    - granules
   parameters:
     granules:
       default:  '""'
