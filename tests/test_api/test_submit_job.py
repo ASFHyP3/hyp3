@@ -282,6 +282,8 @@ def test_submit_bad_autorift_granule_names(client):
 
 
 def test_submit_mixed_job_parameters(client, tables):
+    login(client)
+
     rtc_parameters = {
         'resolution': 30.0,
     }
