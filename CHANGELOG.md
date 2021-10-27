@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.6.3](https://github.com/ASFHyP3/hyp3/compare/v2.6.2...v2.6.3)
+### Channged
+- fixed typo in `search_parameteters['FlightDirection']` DECENDING -> DESCENDING
+
 ## [2.6.2](https://github.com/ASFHyP3/hyp3/compare/v2.6.1...v2.6.2)
 ### Added
 - New `AmiId` stack parameter to specify a specific AMI for the AWS Batch compute environment 
