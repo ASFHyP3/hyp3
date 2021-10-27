@@ -283,7 +283,7 @@ def test_submit_bad_autorift_granule_names(client):
 
 def test_submit_mixed_job_parameters(client, tables):
     rtc_parameters = {
-        "resolution": 30.0,
+        'resolution': 30.0,
     }
     insar_parameters = {
         'looks': '10x2',
