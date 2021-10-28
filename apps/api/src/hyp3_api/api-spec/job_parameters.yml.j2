@@ -10,13 +10,13 @@ components:
         {% endfor %}
 
     job_definitions:
-      oneOf:
+      anyOf:
         {% for job_type in job_types %}
         - $ref: "#/components/schemas/{{ job_type }}JobDefinition"
         {% endfor %}
 
     job_parameters:
-      anyOf:
+      oneOf:
         {% for job_type in job_types %}
         - $ref: "#/components/schemas/{{ job_type }}"
         {% endfor %}
