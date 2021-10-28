@@ -10,7 +10,7 @@ components:
         {% endfor %}
 
     job_definitions:
-      anyOf:
+      oneOf:
         {% for job_type in job_types %}
         - $ref: "#/components/schemas/{{ job_type }}JobDefinition"
         {% endfor %}
@@ -27,19 +27,20 @@ components:
         - $ref: "#/components/schemas/{{ job_type }}"
           {% for parameter in job_spec.get('required_parameters', []) %}
           {% if loop.first %}
-        - type: object
-          required:
-          {% endif %}
-            - {{ parameter }}
-          {% endfor %}
-          {% for parameter in job_spec.get('required_parameters', []) %}
-          {% if loop.first %}
-          properties:
-          {% endif %}
-            {{ parameter }}:
-              {{ json.dumps(job_spec['parameters'][parameter]['api_schema']) }}
-          {% endfor %}
-        {% endfor %}
+        - anyOf:
+            - type: object
+              required:
+              {% endif %}
+                - {{ parameter }}
+              {% endfor %}
+              {% for parameter in job_spec.get('required_parameters', []) %}
+              {% if loop.first %}
+              properties:
+              {% endif %}
+                {{ parameter }}:
+                  {{ json.dumps(job_spec['parameters'][parameter]['api_schema']) }}
+              {% endfor %}
+            {% endfor %}
 
 
     {% for job_type, job_spec in job_types.items() %}

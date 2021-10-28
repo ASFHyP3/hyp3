@@ -110,3 +110,9 @@ def setup_requests_mock(batch):
 
 def login(client, username=DEFAULT_USERNAME):
     client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username))
+
+def assert_status(response, status):
+    try:
+        assert response.status_code == status
+    except AssertionError:
+        raise AssertionError(str(response.data))

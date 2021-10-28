@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 
-from test_api.conftest import DEFAULT_USERNAME, login, make_db_record, make_job, setup_requests_mock, submit_batch
+from test_api.conftest import DEFAULT_USERNAME, login, make_db_record, make_job, setup_requests_mock, submit_batch, assert_status
 
 from dynamo.util import format_time
 
@@ -29,7 +29,7 @@ def test_submit_insar_gamma(client, tables):
         job_type='INSAR_GAMMA',
     )
     response = submit_batch(client, batch=[job])
-    assert response.status_code == HTTPStatus.OK
+    assert_status(response, HTTPStatus.OK)
 
     job = make_job(
         granules=granules,
