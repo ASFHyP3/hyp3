@@ -5,7 +5,6 @@ on:
     branches:
       - main
       - develop
-      - isce
 
 jobs:
   deploy:
@@ -30,7 +29,7 @@ jobs:
             product_lifetime_in_days: 14
             quota: 250
             deploy_ref: refs/heads/develop
-            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/INSAR_ISCE.yml job_spec/RTC_GAMMA.yml
 
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
@@ -54,11 +53,10 @@ jobs:
             domain: hyp3-isce.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: test
+            product_lifetime_in_days: 30
             quota: 0
-            deploy_ref: refs/heads/isce
-            autorift_image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
-            autorift_naming_scheme: ITS_LIVE_OD
-            autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+            deploy_ref: refs/heads/main
+            job_files: job_spec/INSAR_ISCE.yml
 
     environment:
       name: ${{ matrix.environment }}
