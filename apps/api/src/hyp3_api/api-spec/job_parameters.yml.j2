@@ -58,3 +58,33 @@ components:
           {{ json.dumps(parameter_spec['api_schema']) }}
       {% endfor %}
     {% endfor %}
+
+    job_definitions:
+      oneOf:
+        {% for job_type in job_types %}
+        - $ref: "#/components/schemas/{{ job_type }}Definition"
+        {% endfor %}
+
+    {% for job_type, job_spec in job_types.items() %}
+    {{ job_type }}Definition:
+      description: Contains user provided information on runnning a new {{ job_type }} job.
+      type: object
+      additionalProperties: false
+      properties:
+        job_type:
+          type: string
+          enum:
+            - {{ job_type }}
+        name:
+          type: string
+          minLength: 1
+          maxLength: 20
+        job_parameters:
+          type: object
+          additionalProperties: false
+          properties:
+          {% for parameter, parameter_spec in job_spec[ 'parameters' ].items() if 'api_schema' in parameter_spec if parameter not in job_spec['required_parameters'] %}
+            {{ parameter }}:
+              {{ json.dumps(parameter_spec[ 'api_schema' ]) }}
+            {% endfor %}
+      {% endfor %}

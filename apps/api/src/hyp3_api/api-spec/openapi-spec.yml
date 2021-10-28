@@ -236,7 +236,7 @@ components:
         search_parameters:
           $ref: "#/components/schemas/search_parameters"
         job_specification:
-          $ref: "#components/schemas/subscription_job_specification"
+          $ref: "./job_parameters.yml#components/schemas/new_job"
 
     subscriptions_update_expression:
       description: Change/update a subscription
@@ -266,7 +266,7 @@ components:
         search_parameters:
           $ref: "#/components/schemas/search_parameters"
         job_specification:
-          $ref: "#components/schemas/subscription_job_specification"
+          $ref: "./job_parameters.yml#components/schemas/new_job"
         user_id:
           $ref: "#/components/schemas/user_id"
         creation_date:
@@ -316,21 +316,6 @@ components:
       maxItems: 200
       items:
         $ref: "./job_parameters.yml#components/schemas/new_job"
-
-    subscription_job_specification:
-      description: Contains user provided information on running a job for a subscription.
-      type: object
-      required:
-        - job_type
-        - name
-      additionalProperties: false
-      properties:
-        job_type:
-          $ref: "./job_parameters.yml#components/schemas/job_type"
-        job_parameters:
-          $ref: "./job_parameters.yml#components/schemas/job_parameters"
-        name:
-          $ref: "#/components/schemas/name"
 
     list_of_jobs:
       type: array
