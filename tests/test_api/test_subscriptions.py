@@ -26,7 +26,7 @@ def test_post_subscription(client, tables):
                     'include_wrapped_phase': True,
                     'apply_water_mask': True,
                 },
-                'job_type': 'RTC_GAMMA',
+                'job_type': 'INSAR_GAMMA',
                 'name': 'SubscriptionName'
             }
         }

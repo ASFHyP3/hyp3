@@ -1,5 +1,11 @@
 components:
   schemas:
+    new_job:
+      oneOf:
+      {% for job_type in job_types %}
+        - $ref: "#/components/schemas/{{ job_type }}Job"
+      {% endfor %}
+
     job_type:
       description: Type of process to run this job.
       type: string
@@ -9,42 +15,39 @@ components:
         - {{ job_type }}
         {% endfor %}
 
-    job_definitions:
-      oneOf:
-        {% for job_type in job_types %}
-        - $ref: "#/components/schemas/{{ job_type }}JobDefinition"
-        {% endfor %}
-
     job_parameters:
-      oneOf:
+      anyOf:
         {% for job_type in job_types %}
-        - $ref: "#/components/schemas/{{ job_type }}"
+        - $ref: "#/components/schemas/{{ job_type }}Parameters"
         {% endfor %}
 
     {% for job_type, job_spec in job_types.items() %}
-    {{ job_type }}JobDefinition:
-      allOf:
-        - $ref: "#/components/schemas/{{ job_type }}"
-          {% for parameter in job_spec.get('required_parameters', []) %}
-          {% if loop.first %}
-        - anyOf:
-            - type: object
-              required:
-              {% endif %}
-                - {{ parameter }}
+    {{ job_type }}Job:
+      description: Contains user provided information on runnning a new {{ job_type }} job.
+      type: object
+      additionalProperties: false
+      properties:
+        job_type:
+          type: string
+          enum:
+            - {{ job_type }}
+        name:
+          type: string
+          minLength: 1
+          maxLength: 20
+        job_parameters:
+          type: object
+          additionalProperties: false
+          properties:
+              {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec %}
+              {{ parameter }}:
+                {{ json.dumps(parameter_spec[ 'api_schema' ]) }}
               {% endfor %}
-              {% for parameter in job_spec.get('required_parameters', []) %}
-              {% if loop.first %}
-              properties:
-              {% endif %}
-                {{ parameter }}:
-                  {{ json.dumps(job_spec['parameters'][parameter]['api_schema']) }}
-              {% endfor %}
-            {% endfor %}
+    {% endfor %}
 
 
     {% for job_type, job_spec in job_types.items() %}
-    {{ job_type }}:
+    {{ job_type }}Parameters:
       description: Parameters for running {{ job_type }} jobs
       type: object
       {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter not in job_spec.get('required_parameters', []) %}
