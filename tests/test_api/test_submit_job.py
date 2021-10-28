@@ -29,7 +29,7 @@ def test_submit_insar_gamma(client, tables):
         job_type='INSAR_GAMMA',
     )
     response = submit_batch(client, batch=[job])
-    assert_status(response, HTTPStatus.OK)
+    assert response.status_code == HTTPStatus.OK
 
     job = make_job(
         granules=granules,
