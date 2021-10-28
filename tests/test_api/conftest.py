@@ -110,4 +110,3 @@ def setup_requests_mock(batch):
 
 def login(client, username=DEFAULT_USERNAME):
     client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username))
-
