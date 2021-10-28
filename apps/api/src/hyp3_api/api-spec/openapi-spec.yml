@@ -419,7 +419,7 @@ components:
           type: string
           enum:
             - ASCENDING
-            - DECENDING
+            - DESCENDING
 
     job:
       description: Contains information about a submitted job.
