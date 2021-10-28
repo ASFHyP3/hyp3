@@ -298,38 +298,38 @@ def test_submit_mixed_job_parameters(client, tables):
     job = make_job(job_type='RTC_GAMMA', parameters=rtc_parameters)
     response = submit_batch(client, batch=[job])
     assert response.status_code == HTTPStatus.OK
-
-    job = make_job(job_type='RTC_GAMMA', parameters=insar_parameters)
-    response = submit_batch(client, batch=[job])
-    assert response.status_code == HTTPStatus.BAD_REQUEST
-
-    # job = make_job(job_type='RTC_GAMMA', parameters={**rtc_parameters, **insar_parameters})
+    #
+    # job = make_job(job_type='RTC_GAMMA', parameters=insar_parameters)
     # response = submit_batch(client, batch=[job])
     # assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    job = make_job(job_type='RTC_GAMMA', parameters={**rtc_parameters, **insar_parameters})
+    response = submit_batch(client, batch=[job])
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
     job = make_job(granules=granule_pair, job_type='INSAR_GAMMA', parameters=insar_parameters)
     response = submit_batch(client, batch=[job])
     assert response.status_code == HTTPStatus.OK
 
-    job = make_job(granules=granule_pair, job_type='INSAR_GAMMA', parameters=rtc_parameters)
-    response = submit_batch(client, batch=[job])
-    assert response.status_code == HTTPStatus.BAD_REQUEST
-
-    # job = make_job(granules=granule_pair, job_type='INSAR_GAMMA', parameters={**rtc_parameters, **insar_parameters})
+    # job = make_job(granules=granule_pair, job_type='INSAR_GAMMA', parameters=rtc_parameters)
     # response = submit_batch(client, batch=[job])
     # assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    job = make_job(granules=granule_pair, job_type='INSAR_GAMMA', parameters={**rtc_parameters, **insar_parameters})
+    response = submit_batch(client, batch=[job])
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
     job = make_job(granules=granule_pair, job_type='AUTORIFT')
     response = submit_batch(client, batch=[job])
     assert response.status_code == HTTPStatus.OK
 
-    job = make_job(granules=granule_pair, job_type='AUTORIFT', parameters=rtc_parameters)
-    response = submit_batch(client, batch=[job])
-    assert response.status_code == HTTPStatus.BAD_REQUEST
+    # job = make_job(granules=granule_pair, job_type='AUTORIFT', parameters=rtc_parameters)
+    # response = submit_batch(client, batch=[job])
+    # assert response.status_code == HTTPStatus.BAD_REQUEST
 
-    job = make_job(granules=granule_pair, job_type='AUTORIFT', parameters=insar_parameters)
-    response = submit_batch(client, batch=[job])
-    assert response.status_code == HTTPStatus.BAD_REQUEST
+    # job = make_job(granules=granule_pair, job_type='AUTORIFT', parameters=insar_parameters)
+    # response = submit_batch(client, batch=[job])
+    # assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_float_input(client, tables):
