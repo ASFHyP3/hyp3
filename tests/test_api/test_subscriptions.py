@@ -26,7 +26,7 @@ def test_post_subscription(client, tables):
                     'include_wrapped_phase': True,
                     'apply_water_mask': True,
                 },
-                'job_type': 'RTC_GAMMA',
+                'job_type': 'INSAR_GAMMA',
                 'name': 'SubscriptionName'
             }
         }
@@ -569,3 +569,41 @@ def test_query_jobs_by_enabled(client, tables):
     response = client.get(SUBSCRIPTIONS_URI, query_string={'enabled': False})
     assert response.status_code == HTTPStatus.OK
     assert response.json['subscriptions'] == [items[1]]
+
+
+def test_mixed_subscriptions(client, tables):
+    login(client)
+    insar_parameters = {
+        'looks': '20x4',
+    }
+    params = {
+        'subscription': {
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-02T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'INSAR_GAMMA',
+                'name': 'SubscriptionName',
+                'job_parameters': insar_parameters
+            }
+        }
+    }
+    response = client.post(SUBSCRIPTIONS_URI, json=params)
+    assert response.status_code == HTTPStatus.OK
+
+    params = {
+        'subscription': {
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-02T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'RTC_GAMMA',
+                'name': 'SubscriptionName',
+                'job_parameters': insar_parameters
+            }
+        }
+    }
+    response = client.post(SUBSCRIPTIONS_URI, json=params)
+    assert response.status_code == HTTPStatus.BAD_REQUEST
