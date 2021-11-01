@@ -259,6 +259,9 @@ components:
         - subscription_id
         - search_parameters
         - job_specification
+        - user_id
+        - creation_date
+        - enabled
       additionalProperties: false
       properties:
         subscription_id:
