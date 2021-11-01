@@ -66,6 +66,9 @@ components:
       description: Contains user provided information on creating a new {{ job_type }} subscription, without specific granules.
       type: object
       additionalProperties: false
+      required:
+        - job_type
+        - name
       properties:
         job_type:
           type: string
