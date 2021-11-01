@@ -39,10 +39,10 @@ components:
           type: object
           additionalProperties: false
           properties:
-              {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec %}
-              {{ parameter }}:
-                {{ json.dumps(parameter_spec[ 'api_schema' ]) }}
-              {% endfor %}
+            {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec %}
+            {{ parameter }}:
+              {{ json.dumps(parameter_spec[ 'api_schema' ]) }}
+            {% endfor %}
     {% endfor %}
 
 
@@ -83,8 +83,8 @@ components:
           type: object
           additionalProperties: false
           properties:
-          {% for parameter, parameter_spec in job_spec[ 'parameters' ].items() if 'api_schema' in parameter_spec if parameter not in job_spec['required_parameters'] %}
+            {% for parameter, parameter_spec in job_spec[ 'parameters' ].items() if 'api_schema' in parameter_spec if parameter not in job_spec['required_parameters'] %}
             {{ parameter }}:
               {{ json.dumps(parameter_spec[ 'api_schema' ]) }}
             {% endfor %}
-      {% endfor %}
+    {% endfor %}
