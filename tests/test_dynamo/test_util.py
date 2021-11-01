@@ -63,7 +63,7 @@ def test_convert_floats_to_decimals():
     ]
 
 
-def test_convert_decimals_to_floats():
+def test_convert_decimals_to_numbers():
     payload = [
         {
             'a': [123, decimal.Decimal(123.45)],
