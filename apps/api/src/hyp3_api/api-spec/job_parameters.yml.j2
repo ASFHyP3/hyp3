@@ -23,7 +23,7 @@ components:
 
     {% for job_type, job_spec in job_types.items() %}
     {{ job_type }}Job:
-      description: Contains user provided information on runnning a new {{ job_type }} job.
+      description: Contains user provided information on running a new {{ job_type }} job.
       type: object
       additionalProperties: false
       properties:
@@ -67,7 +67,7 @@ components:
 
     {% for job_type, job_spec in job_types.items() %}
     {{ job_type }}Definition:
-      description: Contains user provided information on runnning a new {{ job_type }} job.
+      description: Contains user provided information on running a new {{ job_type }} job.
       type: object
       additionalProperties: false
       properties:
