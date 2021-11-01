@@ -15,7 +15,7 @@ def get_unprocessed_granules(subscription):
     )
     processed_granules = [job['job_parameters']['granules'][0] for job in processed_jobs]
 
-    search_results = asf_search.search(**subscription['search_parameters'])
+    search_results = asf_search.search(**dynamo.util.convert_floats_to_decimals(subscription['search_parameters']))
     return [result for result in search_results if result.properties['sceneName'] not in processed_granules]
 
 

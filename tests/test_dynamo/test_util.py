@@ -61,3 +61,33 @@ def test_convert_floats_to_decimals():
         123,
         decimal.Decimal('123.45')
     ]
+
+
+def test_convert_decimals_to_floats():
+    payload = [
+        {
+            'a': [123, decimal.Decimal(123.45)],
+            'b': {},
+            'c': '123.45',
+            'd': 123,
+            'e': decimal.Decimal(123.45),
+        },
+        '123.45',
+        123,
+        123.45
+    ]
+
+    response = dynamo.util.convert_decimals_to_floats(payload)
+    assert response == [
+        {
+            'a': [123, 123.45],
+            'b': {},
+            'c': '123.45',
+            'd': 123,
+            'e': 123.45,
+        },
+        '123.45',
+        123,
+        123.45
+    ]
+
