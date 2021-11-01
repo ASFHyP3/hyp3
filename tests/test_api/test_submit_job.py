@@ -160,6 +160,20 @@ def test_submit_job_with_long_name(client):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
+def test_submit_job_without_granules(client):
+    login(client)
+
+    for job_type in ['AUTORIFT', 'INSAR_GAMMA', 'RTC_GAMMA']:
+        batch = [
+            {
+                'job_type': job_type,
+                'job_parameters': {},
+            },
+        ]
+        response = submit_batch(client, batch)
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
 def test_submit_job_granule_does_not_exist(client, tables):
     batch = [
         make_job(['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38']),
