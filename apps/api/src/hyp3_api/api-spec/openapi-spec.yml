@@ -236,7 +236,7 @@ components:
         search_parameters:
           $ref: "#/components/schemas/search_parameters"
         job_specification:
-          $ref: "./job_parameters.yml#components/schemas/new_job"
+          $ref: "./job_parameters.yml#components/schemas/job_specification"
 
     subscriptions_update_expression:
       description: Change/update a subscription
@@ -266,7 +266,7 @@ components:
         search_parameters:
           $ref: "#/components/schemas/search_parameters"
         job_specification:
-          $ref: "./job_parameters.yml#components/schemas/new_job"
+          $ref: "./job_parameters.yml#components/schemas/job_specification"
         user_id:
           $ref: "#/components/schemas/user_id"
         creation_date:
