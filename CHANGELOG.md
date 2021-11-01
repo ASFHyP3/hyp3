@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - `POST /jobs` no longer allows users to submit a job of one `job_type` with the parameters of another
 - `POST /subscriptions` no longer allows user to submit a subscriptions of one `job_type` with the parameters of another
+- `ProcessNewGranules` now converts `decimal.Decimal` objects to `float` before passing to `asfsearch.search`
 
 ## [2.6.3](https://github.com/ASFHyP3/hyp3/compare/v2.6.2...v2.6.3)
 ### Fixed

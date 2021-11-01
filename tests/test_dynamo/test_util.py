@@ -90,4 +90,3 @@ def test_convert_decimals_to_floats():
         123,
         123.45
     ]
-
