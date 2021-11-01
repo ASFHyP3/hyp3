@@ -607,3 +607,25 @@ def test_mixed_subscriptions(client, tables):
     }
     response = client.post(SUBSCRIPTIONS_URI, json=params)
     assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
+def test_submit_subscription_with_granules(client):
+    login(client)
+    for job_type in ['AUTORIFT', 'INSAR_GAMMA', 'RTC_GAMMA']:
+        params = {
+            'subscription': {
+                'search_parameters': {
+                    'start': '2020-01-01T00:00:00+00:00',
+                    'end': '2020-01-02T00:00:00+00:00',
+                },
+                'job_specification': {
+                    'job_type': job_type,
+                    'name': 'SubscriptionName',
+                    'job_parameters': {
+                        'granules': ['S1B_IW_GRDH_1SDV_20211101T182511_20211101T182536_029398_03822D_2A42'],
+                    },
+                }
+            }
+        }
+        response = client.post(SUBSCRIPTIONS_URI, json=params)
+        assert response.status_code == HTTPStatus.BAD_REQUEST
