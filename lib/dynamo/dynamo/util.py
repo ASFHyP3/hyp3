@@ -36,3 +36,16 @@ def convert_floats_to_decimals(element):
     if type(element) is dict:
         return {key: convert_floats_to_decimals(value) for key, value in element.items()}
     return element
+
+
+def convert_decimals_to_numbers(element):
+    if type(element) is Decimal:
+        as_float = float(element)
+        if as_float.is_integer():
+            return int(as_float)
+        return as_float
+    if type(element) is list:
+        return [convert_decimals_to_numbers(item) for item in element]
+    if type(element) is dict:
+        return {key: convert_decimals_to_numbers(value) for key, value in element.items()}
+    return element
