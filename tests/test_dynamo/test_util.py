@@ -73,7 +73,7 @@ def test_convert_decimals_to_floats():
             'e': decimal.Decimal(123.45),
         },
         '123.45',
-        123,
+        decimal.Decimal('123'),
         123.45
     ]
 

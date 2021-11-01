@@ -38,11 +38,14 @@ def convert_floats_to_decimals(element):
     return element
 
 
-def convert_decimals_to_floats(element):
+def convert_decimals_to_numbers(element):
     if type(element) is Decimal:
-        return float(element)
+        as_float = float(element)
+        if as_float.is_integer():
+            return int(as_float)
+        return as_float
     if type(element) is list:
-        return [convert_decimals_to_floats(item) for item in element]
+        return [convert_decimals_to_numbers(item) for item in element]
     if type(element) is dict:
-        return {key: convert_decimals_to_floats(value) for key, value in element.items()}
+        return {key: convert_decimals_to_numbers(value) for key, value in element.items()}
     return element
