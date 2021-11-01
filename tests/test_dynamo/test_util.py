@@ -77,7 +77,7 @@ def test_convert_decimals_to_floats():
         123.45
     ]
 
-    response = dynamo.util.convert_decimals_to_floats(payload)
+    response = dynamo.util.convert_decimals_to_numbers(payload)
     assert response == [
         {
             'a': [123, 123.45],
