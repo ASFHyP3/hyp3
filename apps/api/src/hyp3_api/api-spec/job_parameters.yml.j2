@@ -50,6 +50,9 @@ components:
       description: Contains user provided information on running a new {{ job_type }} job.
       type: object
       additionalProperties: false
+      required:
+        - job_type
+        - job_parameters
       properties:
         job_type:
           type: string
