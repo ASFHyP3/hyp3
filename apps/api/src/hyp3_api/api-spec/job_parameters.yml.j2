@@ -2,9 +2,9 @@ components:
   schemas:
     new_job:
       oneOf:
-      {% for job_type in job_types %}
+        {% for job_type in job_types %}
         - $ref: "#/components/schemas/{{ job_type }}Job"
-      {% endfor %}
+        {% endfor %}
 
     job_type:
       description: Type of process to run this job.
@@ -21,55 +21,57 @@ components:
         - $ref: "#/components/schemas/{{ job_type }}Parameters"
         {% endfor %}
 
-    {% for job_type, job_spec in job_types.items() %}
-    {{ job_type }}Job:
-      description: Contains user provided information on runnning a new {{ job_type }} job.
-      type: object
-      additionalProperties: false
-      properties:
-        job_type:
-          type: string
-          enum:
-            - {{ job_type }}
-        name:
-          type: string
-          minLength: 1
-          maxLength: 20
-        job_parameters:
-          type: object
-          additionalProperties: false
-          properties:
-              {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec %}
-              {{ parameter }}:
-                {{ json.dumps(parameter_spec[ 'api_schema' ]) }}
-              {% endfor %}
-    {% endfor %}
-
+    job_specification:
+      oneOf:
+        {% for job_type in job_types %}
+        - $ref: "#/components/schemas/{{ job_type }}Specification"
+        {% endfor %}
 
     {% for job_type, job_spec in job_types.items() %}
     {{ job_type }}Parameters:
-      description: Parameters for running {{ job_type }} jobs
+      description: Parameters for running {{ job_type }} jobs, including specific granules
       type: object
-      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter not in job_spec.get('required_parameters', []) %}
+      additionalProperties: false
+      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter in job_spec.get('required_parameters', []) %}
+      {% if loop.first %}
+      required:
+      {% endif %}
+        - {{ parameter }}
+      {% endfor %}
+      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec %}
       {% if loop.first %}
       properties:
       {% endif %}
         {{ parameter }}:
           {{ json.dumps(parameter_spec['api_schema']) }}
       {% endfor %}
-    {% endfor %}
 
-    job_definitions:
-      oneOf:
-        {% for job_type in job_types %}
-        - $ref: "#/components/schemas/{{ job_type }}Definition"
-        {% endfor %}
-
-    {% for job_type, job_spec in job_types.items() %}
-    {{ job_type }}Definition:
-      description: Contains user provided information on runnning a new {{ job_type }} job.
+    {{ job_type }}Job:
+      description: Contains user provided information on running a new {{ job_type }} job.
       type: object
       additionalProperties: false
+      required:
+        - job_type
+        - job_parameters
+      properties:
+        job_type:
+          type: string
+          enum:
+            - {{ job_type }}
+        name:
+          type: string
+          minLength: 1
+          maxLength: 20
+        job_parameters:
+          $ref: "#/components/schemas/{{ job_type }}Parameters"
+
+    {{ job_type }}Specification:
+      description: Contains user provided information on creating a new {{ job_type }} subscription, without specific granules.
+      type: object
+      additionalProperties: false
+      required:
+        - job_type
+        - name
       properties:
         job_type:
           type: string
@@ -82,9 +84,12 @@ components:
         job_parameters:
           type: object
           additionalProperties: false
+          {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter not in job_spec.get('required_parameters', []) %}
+          {% if loop.first %}
           properties:
-          {% for parameter, parameter_spec in job_spec[ 'parameters' ].items() if 'api_schema' in parameter_spec if parameter not in job_spec['required_parameters'] %}
+          {% endif %}
             {{ parameter }}:
               {{ json.dumps(parameter_spec[ 'api_schema' ]) }}
-            {% endfor %}
-      {% endfor %}
+          {% endfor %}
+
+    {% endfor %}
