@@ -30,4 +30,3 @@ flake8:
 openapi-validate: render
 	@python -m pip install openapi-spec-validator click prance --quiet
 	prance validate --backend=openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
-
