@@ -19,7 +19,7 @@ install:
 
 files ?= job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
 render:
-	@python apps/render_cf.py $(files)
+	@echo $(files); python apps/render_cf.py $(files)
 
 static: flake8 openapi-validate
 

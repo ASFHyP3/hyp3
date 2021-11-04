@@ -31,7 +31,7 @@ jobs:
       - run: |
           pip install --upgrade pip
           make install
-          make render
+          make files=job_spec/*.yml render
 
       - uses: scottbrenner/cfn-lint-action@v2
         with:
@@ -67,7 +67,7 @@ jobs:
           python-version: 3.8
       - run: |
           pip install -r requirements-all.txt
-          make render
+          make files=job_spec/*.yml render
 
       - run: |
           sed -i 's/"Resource": "${.*}"/"Resource": "foo:bar"/' apps/step-function.json
