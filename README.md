@@ -45,7 +45,7 @@ pip install -r requirements-all.txt
 - Render cloudformation templates
 ```sh
 cd apps
-python render_cf.py --job-types-file ../job_types.yml
+python render_cf.py
 cd ..
 ```
 

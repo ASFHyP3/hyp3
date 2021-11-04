@@ -236,7 +236,7 @@ components:
         search_parameters:
           $ref: "#/components/schemas/search_parameters"
         job_specification:
-          $ref: "#components/schemas/subscription_job_specification"
+          $ref: "./job_parameters.yml#components/schemas/job_specification"
 
     subscriptions_update_expression:
       description: Change/update a subscription
@@ -259,6 +259,9 @@ components:
         - subscription_id
         - search_parameters
         - job_specification
+        - user_id
+        - creation_date
+        - enabled
       additionalProperties: false
       properties:
         subscription_id:
@@ -266,7 +269,7 @@ components:
         search_parameters:
           $ref: "#/components/schemas/search_parameters"
         job_specification:
-          $ref: "#components/schemas/subscription_job_specification"
+          $ref: "./job_parameters.yml#components/schemas/job_specification"
         user_id:
           $ref: "#/components/schemas/user_id"
         creation_date:
@@ -315,43 +318,7 @@ components:
       minItems: 1
       maxItems: 200
       items:
-        $ref: "#/components/schemas/new_job"
-
-    subscription_job_specification:
-      description: Contains user provided information on running a job for a subscription.
-      type: object
-      required:
-        - job_type
-        - name
-      additionalProperties: false
-      properties:
-        job_type:
-          $ref: "./job_parameters.yml#components/schemas/job_type"
-        job_parameters:
-          $ref: "./job_parameters.yml#components/schemas/job_parameters"
-        name:
-          $ref: "#/components/schemas/name"
-
-    new_job:
-      description: Contains user provided information on runnning a new job.
-      type: object
-      required:
-        - job_type
-        - job_parameters
-      additionalProperties: false
-      example:
-        job_parameters:
-          granules:
-            - S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
-        job_type: RTC_GAMMA
-        name: Job Name
-      properties:
-        job_type:
-          $ref: "./job_parameters.yml#components/schemas/job_type"
-        job_parameters:
-          $ref: "./job_parameters.yml#components/schemas/job_definitions"
-        name:
-          $ref: "#/components/schemas/name"
+        $ref: "./job_parameters.yml#components/schemas/new_job"
 
     list_of_jobs:
       type: array
@@ -419,7 +386,7 @@ components:
           type: string
           enum:
             - ASCENDING
-            - DECENDING
+            - DESCENDING
 
     job:
       description: Contains information about a submitted job.
