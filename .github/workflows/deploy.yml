@@ -30,7 +30,7 @@ jobs:
             product_lifetime_in_days: 14
             quota: 250
             deploy_ref: refs/heads/develop
-            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/INSAR_ISCE.yml job_spec/RTC_GAMMA.yml
+            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
 
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
