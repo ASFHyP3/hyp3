@@ -10,7 +10,7 @@ INSAR_ISCE:
         type: array
         minItems: 1
         items:
-          description: The name of the Sentinel-1 SLC granule to use as reference scenes for InSAR processing
+          description: The name of the Sentinel-1 SLC granules to use as reference scenes for InSAR processing
           type: string
           pattern: "^S1[AB]_IW_SLC__1S[SD][VH]"
           minLength: 67
@@ -22,7 +22,7 @@ INSAR_ISCE:
         type: array
         minItems: 1
         items:
-          description: The name of the Sentinel-1 SLC granule to use as secondary scenes for InSAR processing
+          description: The name of the Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
           type: string
           pattern: "^S1[AB]_IW_SLC__1S[SD][VH]"
           minLength: 67
