@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - isce
 
 jobs:
   deploy:
@@ -55,7 +56,7 @@ jobs:
             image_tag: test
             product_lifetime_in_days: 30
             quota: 0
-            deploy_ref: refs/heads/main
+            deploy_ref: refs/heads/isce
             job_files: job_spec/INSAR_ISCE.yml
 
     environment:
