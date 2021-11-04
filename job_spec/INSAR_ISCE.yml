@@ -2,6 +2,7 @@ INSAR_ISCE:
   image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
   required_parameters:
     - granules
+    - secondary_granules
   parameters:
     granules:
       default:  '""'
