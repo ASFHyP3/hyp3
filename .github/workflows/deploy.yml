@@ -11,57 +11,53 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - environment: hyp3
             domain: hyp3-api.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: latest
+            product_lifetime_in_days: 14
             quota: 250
             deploy_ref: refs/heads/main
-            autorift_image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
-            autorift_naming_scheme: ITS_LIVE_OD
-            autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
 
           - environment: hyp3-test
             domain: hyp3-test-api.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: test
+            product_lifetime_in_days: 14
             quota: 250
             deploy_ref: refs/heads/develop
-            autorift_image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
-            autorift_naming_scheme: ITS_LIVE_OD
-            autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
 
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
             template_bucket: cf-templates-igavixdzdy7k-us-west-2
             image_tag: latest
+            product_lifetime_in_days: 180
             quota: 0
             deploy_ref: refs/heads/main
-            autorift_image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
-            autorift_naming_scheme: ITS_LIVE_PROD
-            autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+            job_files: job_spec/AUTORIFT_ITS_LIVE.yml
 
           - environment: hyp3-autorift-eu
             domain: hyp3-autorift-eu.asf.alaska.edu
             template_bucket: cf-templates-autorift-eu-central-1
             image_tag: latest
+            product_lifetime_in_days: 180
             quota: 0
             deploy_ref: refs/heads/main
-            autorift_image: 230742024655.dkr.ecr.eu-central-1.amazonaws.com/hyp3-autorift
-            autorift_naming_scheme: ITS_LIVE_PROD
-            autorift_parameter_file: '/vsicurl/http://its-live-data-eu.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+            job_files: job_spec/AUTORIFT_ITS_LIVE_EU.yml
 
           - environment: hyp3-isce
             domain: hyp3-isce.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: test
+            product_lifetime_in_days: 30
             quota: 0
             deploy_ref: refs/heads/isce
-            autorift_image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
-            autorift_naming_scheme: ITS_LIVE_OD
-            autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+            job_files: job_spec/INSAR_ISCE.yml
 
     environment:
       name: ${{ matrix.environment }}
@@ -88,15 +84,14 @@ jobs:
           DOMAIN_NAME: ${{ matrix.domain }}
           CERTIFICATE_ARN:  ${{ secrets.CERTIFICATE_ARN }}
           IMAGE_TAG: ${{ matrix.image_tag }}
+          PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
           VPC_ID: ${{ secrets.VPC_ID }}
           SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
           EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
           EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
-          AUTORIFT_IMAGE: ${{ matrix.autorift_image }}
-          AUTORIFT_NAMING_SCHEME: ${{ matrix.autorift_naming_scheme }}
-          AUTORIFT_PARAMETER_FILE: ${{ matrix.autorift_parameter_file }}
+          JOB_FILES: ${{ matrix.job_files }}
           BANNED_CIDR_BLOCKS: ${{ secrets.BANNED_CIDR_BLOCKS }}
 
   tag:

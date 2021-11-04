@@ -26,7 +26,7 @@ def test_post_subscription(client, tables):
                     'include_wrapped_phase': True,
                     'apply_water_mask': True,
                 },
-                'job_type': 'RTC_GAMMA',
+                'job_type': 'INSAR_GAMMA',
                 'name': 'SubscriptionName'
             }
         }
@@ -569,3 +569,63 @@ def test_query_jobs_by_enabled(client, tables):
     response = client.get(SUBSCRIPTIONS_URI, query_string={'enabled': False})
     assert response.status_code == HTTPStatus.OK
     assert response.json['subscriptions'] == [items[1]]
+
+
+def test_mixed_subscriptions(client, tables):
+    login(client)
+    insar_parameters = {
+        'looks': '20x4',
+    }
+    params = {
+        'subscription': {
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-02T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'INSAR_GAMMA',
+                'name': 'SubscriptionName',
+                'job_parameters': insar_parameters
+            }
+        }
+    }
+    response = client.post(SUBSCRIPTIONS_URI, json=params)
+    assert response.status_code == HTTPStatus.OK
+
+    params = {
+        'subscription': {
+            'search_parameters': {
+                'start': '2020-01-01T00:00:00+00:00',
+                'end': '2020-01-02T00:00:00+00:00',
+            },
+            'job_specification': {
+                'job_type': 'RTC_GAMMA',
+                'name': 'SubscriptionName',
+                'job_parameters': insar_parameters
+            }
+        }
+    }
+    response = client.post(SUBSCRIPTIONS_URI, json=params)
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
+def test_submit_subscription_with_granules(client):
+    login(client)
+    for job_type in ['AUTORIFT', 'INSAR_GAMMA', 'RTC_GAMMA']:
+        params = {
+            'subscription': {
+                'search_parameters': {
+                    'start': '2020-01-01T00:00:00+00:00',
+                    'end': '2020-01-02T00:00:00+00:00',
+                },
+                'job_specification': {
+                    'job_type': job_type,
+                    'name': 'SubscriptionName',
+                    'job_parameters': {
+                        'granules': ['S1B_IW_GRDH_1SDV_20211101T182511_20211101T182536_029398_03822D_2A42'],
+                    },
+                }
+            }
+        }
+        response = client.post(SUBSCRIPTIONS_URI, json=params)
+        assert response.status_code == HTTPStatus.BAD_REQUEST
