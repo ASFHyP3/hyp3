@@ -53,7 +53,11 @@ Resources:
         {{ k }}: {{ v.get('default') or v['api_schema'].get('default') }}
         {% endfor %}
       ContainerProperties:
-        Image: !Sub "{{ job_spec['image'] }}:{{ job_spec['image_tag'] if 'image_tag' in job_spec else '${ImageTag}' }}"
+        {% if  'image_tag' in job_spec %}
+        Image: "{{ job_spec['image'] }}:{{ job_spec['image_tag'] }}"
+        {% else %}
+        Image: !Sub "{{ job_spec['image'] }}:${ImageTag}"
+        {% endif %}
         JobRoleArn: !Ref TaskRoleArn
         ResourceRequirements:
           - Type: VCPU
