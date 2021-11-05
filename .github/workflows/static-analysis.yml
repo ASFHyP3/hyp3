@@ -3,53 +3,42 @@ name: Static code analysis
 on: push
 
 jobs:
-
   flake8:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
-
       - uses: actions/setup-python@v1
         with:
           python-version: 3.8
-
       - run: |
           python -m pip install --upgrade pip
+          make install
+
       - run: make flake8
 
   cfn-lint:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
-
       - uses: actions/setup-python@v1
         with:
           python-version: 3.8
-
       - run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           make install
-          make render
 
-      - uses: scottbrenner/cfn-lint-action@v2
-        with:
-          command: cfn-lint --info --ignore-checks W3002 --template **/*cf.yml
+      - run: make cfn-lint
 
   openapi-spec-validator:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
-
       - uses: actions/setup-python@v1
         with:
           python-version: 3.8
-
       - run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements-all.txt
+          make install
 
       - run: make openapi-validate
 
@@ -66,9 +55,10 @@ jobs:
         with:
           python-version: 3.8
       - run: |
-          pip install -r requirements-all.txt
-          make render
+          python -m pip install --upgrade pip
+          make install
 
       - run: |
+          make render
           sed -i 's/"Resource": "${.*}"/"Resource": "foo:bar"/' apps/step-function.json
           statelint apps/step-function.json
