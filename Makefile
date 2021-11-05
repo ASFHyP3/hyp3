@@ -36,7 +36,7 @@ cfn-lint: render
 	cfn-lint --info --ignore-checks W3002 --template **/*cf.yml
 
 clean:
-	rm apps/api/src/hyp3_api/api-spec/job_parameters.yml \
-	apps/api/src/hyp3_api/job_validation_map.yml \
-	apps/step-function.json \
-	apps/workflow-cf.yml
+	rm -f apps/api/src/hyp3_api/api-spec/job_parameters.yml \
+	    apps/api/src/hyp3_api/job_validation_map.yml \
+	    apps/step-function.json \
+	    apps/workflow-cf.yml
