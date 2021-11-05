@@ -53,12 +53,11 @@ jobs:
           - environment: hyp3-watermap
             domain: hyp3-watermap.asf.alaska.edu
             template_bucket: cf-templates-1217di08q7vwl-us-west-2
-            image_tag: 4.6.3
+            image_tag: latest
+            product_lifetime_in_days: 14
             quota: 0
             deploy_ref: refs/heads/watermap
-            autorift_image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-autorift
-            autorift_naming_scheme: ITS_LIVE_OD
-            autorift_parameter_file: '/vsicurl/http://its-live-data.jpl.nasa.gov.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+            job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml
 
     environment:
       name: ${{ matrix.environment }}
