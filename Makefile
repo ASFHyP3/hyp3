@@ -24,15 +24,12 @@ render:
 static: flake8 openapi-validate cfn-lint
 
 flake8:
-	@python -m pip install flake8  flake8-import-order flake8-blind-except flake8-builtins --quiet
 	flake8 --max-line-length=120 --import-order-style=pycharm --statistics --application-import-names hyp3_api,get_files,start_execution,update_db,upload_log,dynamo,process_new_granules apps tests lib
 
 openapi-validate: render
-	@python -m pip install openapi-spec-validator click prance --quiet
 	prance validate --backend=openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
 
 cfn-lint: render
-	@python -m pip install cfn-lint --quiet
 	cfn-lint --info --ignore-checks W3002 --template **/*cf.yml
 
 clean:
