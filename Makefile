@@ -17,11 +17,11 @@ run: render
 install:
 	python -m pip install -r requirements-all.txt
 
-files ?= job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+files ?= job_spec/*.yml
 render:
 	@echo $(files); python apps/render_cf.py $(files)
 
-static: flake8 openapi-validate
+static: flake8 openapi-validate cfn-lint
 
 flake8:
 	@python -m pip install flake8  flake8-import-order flake8-blind-except flake8-builtins --quiet
@@ -31,3 +31,12 @@ openapi-validate: render
 	@python -m pip install openapi-spec-validator click prance --quiet
 	prance validate --backend=openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
 
+cfn-lint: render
+	@python -m pip install cfn-lint --quiet
+	cfn-lint --info --ignore-checks W3002 --template **/*cf.yml
+
+clean:
+	rm apps/api/src/hyp3_api/api-spec/job_parameters.yml \
+	apps/api/src/hyp3_api/job_validation_map.yml \
+	apps/step-function.json \
+	apps/workflow-cf.yml
