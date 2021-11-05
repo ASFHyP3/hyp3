@@ -19,7 +19,7 @@ install:
 
 files ?= job_spec/*.yml
 render:
-	@echo $(files); python apps/render_cf.py $(files)
+	@echo rendering $(files); python apps/render_cf.py $(files)
 
 static: flake8 openapi-validate cfn-lint
 
