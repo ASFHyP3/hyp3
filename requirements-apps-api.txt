@@ -8,4 +8,4 @@ requests==2.26.0
 serverless_wsgi==2.0.1
 shapely==1.7.1
 strict-rfc3339==0.7
-lib/dynamo
+./lib/dynamo/
