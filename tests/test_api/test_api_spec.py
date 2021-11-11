@@ -152,4 +152,3 @@ def test_error_format(client):
     assert response.json['title'] == 'Bad Request'
     assert response.json['type'] == 'about:blank'
     assert 'detail' in response.json
-
