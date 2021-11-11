@@ -133,3 +133,23 @@ def test_banned_ip_address(client, monkeypatch):
         client.environ_base = {'REMOTE_ADDR': bad_address}
         response = client.get('/ui/')
         assert response.status_code == HTTPStatus.FORBIDDEN
+
+
+def test_error_format(client):
+    response = client.post(JOBS_URI)
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.headers['Content-Type'] == 'application/problem+json'
+    assert response.json['status'] == HTTPStatus.UNAUTHORIZED
+    assert response.json['title'] == 'Unauthorized'
+    assert response.json['type'] == 'about:blank'
+    assert 'detail' in response.json
+
+    login(client)
+    response = client.post(JOBS_URI)
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.headers['Content-Type'] == 'application/problem+json'
+    assert response.json['status'] == HTTPStatus.BAD_REQUEST
+    assert response.json['title'] == 'Bad Request'
+    assert response.json['type'] == 'about:blank'
+    assert 'detail' in response.json
+

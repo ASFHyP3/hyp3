@@ -11,6 +11,7 @@ import yaml
 from flask import abort, g, jsonify, make_response, redirect, render_template, request
 from flask_cors import CORS
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
+from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 from openapi_core.spec.shortcuts import create_spec
 from openapi_core.validation.request.validators import RequestValidator
 from openapi_core.validation.response.datatypes import ResponseValidationResult
@@ -60,7 +61,7 @@ def authenticate_user():
         g.user = auth_info['sub']
     else:
         if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
-            abort(handlers.problem_format(401, 'Unauthorized', 'No authorization token provided'))
+            abort(handlers.problem_format(401, 'No authorization token provided'))
 
 
 @app.route('/')
@@ -85,9 +86,8 @@ def render_ui():
 
 @app.errorhandler(404)
 def error404(e):
-    return handlers.problem_format(404, 'Not Found',
-                                   'The requested URL was not found on the server.'
-                                   ' If you entered the URL manually please check your spelling and try again.')
+    return handlers.problem_format(404, 'The requested URL was not found on the server.'
+                                        ' If you entered the URL manually please check your spelling and try again.')
 
 
 class CustomEncoder(json.JSONEncoder):
@@ -130,10 +130,22 @@ class WKTValidator:
         return value
 
 
+class ErrorHandler(FlaskOpenAPIErrorsHandler):
+    def __init__(self):
+        super().__init__()
+
+    @classmethod
+    def handle(cls, errors):
+        response = super().handle(errors)
+        error = response.json['errors'][0]
+        return handlers.problem_format(error['status'], error['title'])
+
+
 class Jobs(FlaskOpenAPIView):
     def __init__(self, spec):
         super().__init__(spec)
         self.response_validator = NonValidator
+        self.openapi_errors_handler = ErrorHandler
 
     def post(self):
         return jsonify(handlers.post_jobs(request.get_json(), g.user))
@@ -163,6 +175,7 @@ class User(FlaskOpenAPIView):
     def __init__(self, spec):
         super().__init__(spec)
         self.response_validator = NonValidator
+        self.openapi_errors_handler = ErrorHandler
 
     def get(self):
         return jsonify(handlers.get_user(g.user))
@@ -173,6 +186,7 @@ class Subscriptions(FlaskOpenAPIView):
         super().__init__(spec)
         self.request_validator = RequestValidator(spec, custom_formatters={'wkt': WKTValidator()})
         self.response_validator = NonValidator
+        self.openapi_errors_handler = ErrorHandler
 
     def post(self):
         body = request.get_json()
