@@ -123,7 +123,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        ComputeEnvironmentArn: !Ref Cluster.Outputs.ComputeEnvironmentArn
+        ComputeEnvironmentArn: !GetAtt Cluster.Outputs.ComputeEnvironmentArn
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
         SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
