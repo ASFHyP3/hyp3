@@ -119,6 +119,16 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: compute-cf.yml
 
+  ScaleCluster:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ComputeEnvironmentArn: !Ref Cluster.Outputs.ComputeEnvironmentArn
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
+        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+      TemplateURL: scale-cluster/scale-cluster-cf.yml
+
   ProcessNewGranules:
     Type: AWS::CloudFormation::Stack
     Properties:

@@ -23,6 +23,9 @@ Conditions:
 
 Outputs:
 
+  ComputeEnvironmentArn:
+    Value: !Ref ComputeEnvironment
+
   JobQueueArn:
     Value: !Ref JobQueue
 
