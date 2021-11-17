@@ -1,10 +1,11 @@
 API = ${PWD}/apps/api/src
 GET_FILES = ${PWD}/apps/get-files/src
+SCALE_CLUSTER = ${PWD}/apps/scale-cluster/src
 START_EXECUTION = ${PWD}/apps/start-execution/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
 PROCESS_NEW_GRANULES = ${PWD}/apps/process-new-granules/src
 DYNAMO = ${PWD}/lib/dynamo
-export PYTHONPATH = ${API}:${GET_FILES}:${START_EXECUTION}:${UPLOAD_LOG}:${PROCESS_NEW_GRANULES}:${DYNAMO}
+export PYTHONPATH = ${API}:${GET_FILES}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPLOAD_LOG}:${PROCESS_NEW_GRANULES}:${DYNAMO}
 
 tests: render
 	export $$(xargs < tests/cfg.env); \

@@ -55,6 +55,7 @@ make render
 python -m pip install -r requirements-apps-api.txt -t apps/api/src
 python -m pip install -r requirements-apps-process-new-granules.txt -t apps/process-new-granules/src
 python -m pip install -r requirements-apps-update-db.txt -t apps/update-db/src
+python -m pip install -r requirements-apps-scale-cluster.txt -t apps/scale-cluster/src
 python -m pip install -r requirements-apps-start-execution.txt -t apps/start-execution/src
 ```
 

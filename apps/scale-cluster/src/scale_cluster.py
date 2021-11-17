@@ -1,11 +1,11 @@
 import boto3
-from datetime import datetime, timezone
+import dateutil.relativedelta
+from datetime import date, datetime, timezone
 
-def get_time_period():
-    today = datetime.now(tz=timezone.utc).date()
+
+def get_time_period(today: date):
     start = today.replace(day=1)
-    next_month = 1 if start.month == 12 else start.month + 1
-    end = start.replace(month=next_month)
+    end = start + dateutil.relativedelta.relativedelta(months=1)
     return {
         'Start': str(start),
         'End': str(end)
@@ -14,7 +14,7 @@ def get_time_period():
 
 def get_ec2_spending_month_to_date():
     client = boto3.client('ce')
-    time_period = get_time_period()
+    time_period = get_time_period(datetime.now(tz=timezone.utc).date())
     granularity = 'MONTHLY'
     _filter = {
         'Dimensions': {
