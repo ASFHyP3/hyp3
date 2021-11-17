@@ -37,24 +37,25 @@ Review the parameters in [cloudformation.yml](apps/main-cf.yml) for deploy time 
 
 ### Deploy with CloudFormation
 
+From the repository root, 
+
 - Install dependencies for build and run
 ```sh
-pip install -r requirements-all.txt
+make install
 ```
 
 - Render cloudformation templates
 ```sh
-cd apps
-python render_cf.py
-cd ..
+make render
 ```
 
 - Install Python dependencies for AWS Lambda functions (requires pip for python 3.8)
 
 ```sh
-pip install -r apps/api/requirements-api.txt -t apps/api/src
-pip install -r apps/update-db/update-db-requirements.txt -t apps/update-db/src
-pip install -r apps/start-execution/start-execution-requirements.txt -t apps/start-execution/src
+python -m pip install -r requirements-apps-api.txt -t apps/api/src
+python -m pip install -r requirements-apps-process-new-granules.txt -t apps/process-new-granules/src
+python -m pip install -r requirements-apps-update-db.txt -t apps/update-db/src
+python -m pip install -r requirements-apps-start-execution.txt -t apps/start-execution/src
 ```
 
 - Package the CloudFormation template
@@ -78,9 +79,11 @@ aws cloudformation deploy \
                 "EDLUsername=<EDL Username to download products>" \
                 "EDLPassword=<EDL Password to download products>" \
                 "ImageTag=<docker image tag>" \
+                "ProductLifetimeInDays=<product lifetime (expiration) time in days>" \
                 "DomainName=<Domain Name>" \
                 "CertificateArn=<arn for ssl certificate>" \
-                "MonthlyJobQuotaPerUser=<quota>"
+                "MonthlyJobQuotaPerUser=<quota>" \
+                "BannedCidrBlocks=<CIDR blocks to ban>"
 ```
 - Check API at `https://<Domain Name>/ui`
 
@@ -90,7 +93,7 @@ Tests for each HyP3 module are located in `tests/`. To run them you need to do a
 
 - Install test requirements (this must be done from the root of the repo for libraries to resolve correctly)
 ```sh
-pip install -r requirements-all.txt
+make install
 ```
 
 - run the tests
