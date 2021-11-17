@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Job specification YAMLs can now specify a container `image_tag`, which will override the deployment default
   image tag
+- Provided example granule pairs for INSAR_GAMMA and AUTORIFT jobs in the OpenApi schema 
 
 ## [2.6.4](https://github.com/ASFHyP3/hyp3/compare/v2.6.3...v2.6.4)
 ### Fixed
