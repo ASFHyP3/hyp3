@@ -1,5 +1,7 @@
 from datetime import date
+
 import scale_cluster
+
 
 def test_get_time_period():
     result = scale_cluster.get_time_period(date(year=2020, month=1, day=1))
