@@ -92,4 +92,4 @@ WATER_MAP_OLD:
     - Ref::granules
   validators:
     - check_dem_coverage
-  timeout: 86400
+  timeout: 10800
