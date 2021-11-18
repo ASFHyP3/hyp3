@@ -11,18 +11,18 @@ WATER_MAP:
         maxItems: 1
         items:
           anyOf:
-            - description: The name of the Sentinel-1 GRDH granule to process
+            - description: The name of the IW VV+VH Sentinel-1 GRDH granule to process
               type: string
-              pattern: "^S1[AB]_IW_GRDH_1S[SD][VH]"
+              pattern: "^S1[AB]_IW_GRDH_1SDV"
               minLength: 67
               maxLength: 67
-              example: S1B_IW_GRDH_1SDV_20211013T183321_20211013T183346_029121_037995_5B38
-            - description: The name of the Sentinel-1 SLC granule to process
+              example: S1A_IW_GRDH_1SDV_20210413T235641_20210413T235706_037439_0469D0_3F2B
+            - description: The name of the IW VV+VH Sentinel-1 SLC granule to process
               type: string
-              pattern: "^S1[AB]_IW_SLC__1S[SD][VH]"
+              pattern: "^S1[AB]_IW_SLC__1SDV"
               minLength: 67
               maxLength: 67
-              example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+              example: S1A_IW_SLC__1SDV_20211110T234815_20211110T234842_040516_04CE0A_E717
     bucket_prefix:
       default:  '""'
     resolution:
