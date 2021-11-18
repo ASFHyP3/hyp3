@@ -57,7 +57,7 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             deploy_ref: refs/heads/watermap
-            job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml  job_spec/WATER_MAP_OLD.yml
+            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml  job_spec/WATER_MAP_OLD.yml
 
     environment:
       name: ${{ matrix.environment }}
