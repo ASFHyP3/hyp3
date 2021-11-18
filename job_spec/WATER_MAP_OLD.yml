@@ -1,5 +1,6 @@
-WATER_MAP:
+WATER_MAP_OLD:
   image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
+  image_tag: '4.6.3'
   required_parameters:
     - granules
   parameters:
