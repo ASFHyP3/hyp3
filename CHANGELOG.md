@@ -5,6 +5,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.6.5](https://github.com/ASFHyP3/hyp3/compare/v2.6.4...v2.6.5)
+### Changed
+- Job specification YAMLs can now specify a container `image_tag`, which will override the deployment default
+  image tag
+
+## [2.6.4](https://github.com/ASFHyP3/hyp3/compare/v2.6.3...v2.6.4)
+### Fixed
+- `POST /jobs` no longer allows users to submit a job of one `job_type` with the parameters of another
+- `POST /subscriptions` no longer allows user to submit a subscriptions of one `job_type` with the parameters of another
+- `ProcessNewGranules` now converts `decimal.Decimal` objects to `float` or `int` before passing to `asf_search.search`
+
+## [2.6.3](https://github.com/ASFHyP3/hyp3/compare/v2.6.2...v2.6.3)
+### Fixed
+- fixed typo in `search_parameteters['FlightDirection']` DECENDING -> DESCENDING
+
+## [2.6.2](https://github.com/ASFHyP3/hyp3/compare/v2.6.1...v2.6.2)
+### Added
+- New `AmiId` stack parameter to specify a specific AMI for the AWS Batch compute environment 
+
+### Changed
+- `job_spec/*.yml` files are now explicitly selected allowing per-deployment job customization 
+
+### Removed
+- `AutoriftImage`, `AutoriftNamingScheme`, and `AutoriftParameterFile` CloudFormation stack parameters
+  have been removed and are instead captured in custom `job_spec/*.yml` files.
+
+## [2.6.1](https://github.com/ASFHyP3/hyp3/compare/v2.6.0...v2.6.1)
+### Added
+- Optional `DeployLambdasInVpc` stack parameter to deploy all lambda functions into the given `VpcId` and `SubnetIds`
+
+## [2.6.0](https://github.com/ASFHyP3/hyp3/compare/v2.5.3...v2.6.0)
+### Changed
+- Job types now are defined each in their own file under the `job_spec` directory
+- Api job parameters are now defined in the `job_spec` folder for the given job type
+
 ## [2.5.3](https://github.com/ASFHyP3/hyp3/compare/v2.5.2...v2.5.3)
 ### Added
 - Optional `PermissionsBoundaryPolicyArn` stack parameter to apply to all created IAM roles

@@ -1,230 +1,95 @@
 components:
   schemas:
+    new_job:
+      oneOf:
+        {% for job_type in job_types %}
+        - $ref: "#/components/schemas/{{ job_type }}Job"
+        {% endfor %}
+
     job_type:
       description: Type of process to run this job.
       type: string
-      example: {{ job_types.values() | map(attribute='api_job_type') | first }}
+      example: {{ job_types.__iter__().__next__() }}
       enum:
-        {% for job_spec in job_types.values() %}
-        - {{ job_spec['api_job_type'] }}
-        {% endfor %}
-
-    job_definitions:
-      anyOf:
-        {% for job_type in job_types %}
-        - $ref: "#/components/schemas/{{ job_type }}JobDefinition"
+        {% for job_type in job_types.keys() %}
+        - {{ job_type }}
         {% endfor %}
 
     job_parameters:
       anyOf:
         {% for job_type in job_types %}
-        - $ref: "#/components/schemas/{{ job_type }}"
+        - $ref: "#/components/schemas/{{ job_type }}Parameters"
+        {% endfor %}
+
+    job_specification:
+      oneOf:
+        {% for job_type in job_types %}
+        - $ref: "#/components/schemas/{{ job_type }}Specification"
         {% endfor %}
 
     {% for job_type, job_spec in job_types.items() %}
-    {{ job_type }}JobDefinition:
-      allOf:
-        - $ref: "#/components/schemas/{{ job_type }}"
-        - type: object
-          required:
-            - granules
-          properties:
-            granules:
-              $ref: "{{ job_spec['parameters']['granules']['api_schema_location'] }}"
-    {% endfor %}
-
-
-    {% for job_type, job_spec in job_types.items() %}
-    {{ job_type }}:
-      description: Parameters for running {{job_spec['api_job_type']}} jobs
+    {{ job_type }}Parameters:
+      description: Parameters for running {{ job_type }} jobs, including specific granules
       type: object
-      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema_location' in parameter_spec and parameter != 'granules' %}
+      additionalProperties: false
+      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter in job_spec.get('required_parameters', []) %}
+      {% if loop.first %}
+      required:
+      {% endif %}
+        - {{ parameter }}
+      {% endfor %}
+      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec %}
       {% if loop.first %}
       properties:
       {% endif %}
         {{ parameter }}:
-          $ref: "{{ parameter_spec['api_schema_location'] }}"
+          {{ json.dumps(parameter_spec['api_schema']) }}
       {% endfor %}
+
+    {{ job_type }}Job:
+      description: Contains user provided information on running a new {{ job_type }} job.
+      type: object
+      additionalProperties: false
+      required:
+        - job_type
+        - job_parameters
+      properties:
+        job_type:
+          type: string
+          enum:
+            - {{ job_type }}
+        name:
+          type: string
+          minLength: 1
+          maxLength: 20
+        job_parameters:
+          $ref: "#/components/schemas/{{ job_type }}Parameters"
+
+    {{ job_type }}Specification:
+      description: Contains user provided information on creating a new {{ job_type }} subscription, without specific granules.
+      type: object
+      additionalProperties: false
+      required:
+        - job_type
+        - name
+      properties:
+        job_type:
+          type: string
+          enum:
+            - {{ job_type }}
+        name:
+          type: string
+          minLength: 1
+          maxLength: 20
+        job_parameters:
+          type: object
+          additionalProperties: false
+          {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter not in job_spec.get('required_parameters', []) %}
+          {% if loop.first %}
+          properties:
+          {% endif %}
+            {{ parameter }}:
+              {{ json.dumps(parameter_spec[ 'api_schema' ]) }}
+          {% endfor %}
+
     {% endfor %}
-
-    autorift_granules:
-      type: array
-      minItems: 2
-      maxItems: 2
-      items:
-        anyOf:
-          - $ref: "#/components/schemas/granule_slc"
-          - $ref: "#/components/schemas/granule_s2_l1c_esa"
-          - $ref: "#/components/schemas/granule_s2_l1c_earth_search"
-          - $ref: "#/components/schemas/granule_lc08"
-
-    insar_granules:
-      type: array
-      minItems: 2
-      maxItems: 2
-      items:
-        $ref: "#/components/schemas/granule_slc"
-
-    rtc_granules:
-      type: array
-      minItems: 1
-      maxItems: 1
-      items:
-        anyOf:
-          - $ref: "#/components/schemas/granule_grdh"
-          - $ref: "#/components/schemas/granule_slc"
-
-    granule_grdh:
-      description: The name of the Sentinel-1 GRDH granule to process
-      type: string
-      pattern: "^S1[AB]_IW_GRDH_1S[SD][VH]"
-      minLength: 67
-      maxLength: 67
-      example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
-
-    granule_slc:
-      description: The name of the Sentinel-1 SLC granule to process
-      type: string
-      pattern: "^S1[AB]_IW_SLC__1S[SD][VH]"
-      minLength: 67
-      maxLength: 67
-      example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
-
-    granule_s2_l1c_esa:
-      description: The name of the Sentinel-2 granule to process (ESA naming convention)
-      type: string
-      pattern: "^S2[AB]_MSIL1C_"
-      minLength: 60
-      maxLength: 60
-      example: S2A_MSIL1C_20200627T150921_N0209_R025_T22WEB_20200627T170912
-
-    granule_s2_l1c_earth_search:
-      description: The name of the Sentinel-2 granule to process (Element 84 Earth Search naming convention)
-      type: string
-      pattern: "^S2[AB]_.*_L1C"
-      minLength: 23
-      maxLength: 24
-      example: S2A_22WEB_20200627_0_L1C
-
-    granule_lc08:
-      description: The name of the Landsat 8 Collection 2 granule to process
-      type: string
-      pattern: "^L[CO]08_"
-      minLength: 40
-      maxLength: 40
-      example: LC08_L1GT_118112_20210107_20210107_02_RT
-
-    resolution:
-      description: Desired output pixel spacing in meters
-      type: number
-      enum:
-        - 30.0
-        - 10.0
-
-    dem_name:
-      description: Name of the DEM to use for processing. `copernicus` will use the Copernicus GLO-30 Public DEM, while `legacy` will use the DEM with the best coverage from ASF's legacy SRTM/NED datasets.
-      type: string
-      enum:
-        - copernicus
-        - legacy
-
-    radiometry:
-      description: Backscatter coefficient normalization, either by ground area (sigma0) or illuminated area projected into the look direction (gamma0)
-      type: string
-      enum:
-        - gamma0
-        - sigma0
-
-    scale:
-      description: Scale of output image; either power or amplitude
-      type: string
-      enum:
-        - power
-        - amplitude
-
-    speckle_filter:
-      description: Apply an Enhanced Lee speckle filter
-      default: false
-      type: boolean
-
-    dem_matching:
-      description: Coregisters SAR data to the DEM, rather than using dead reckoning based on orbit files
-      default: false
-      type: boolean
-
-    include_dem:
-      description: Include the DEM file in the product package
-      default: false
-      type: boolean
-
-    include_inc_map:
-      description: Include the incidence angle map(s) in the product package
-      default: false
-      type: boolean
-
-    include_scattering_area:
-      description: Include the scattering area in the product package
-      default: false
-      type: boolean
-
-    include_rgb:
-      description: Include a false-color RGB decomposition in the product package for dual-pol granules (ignored for single-pol granules)
-      default: false
-      type: boolean
-
-    include_look_vectors:
-      description: Include the look vector theta and phi files in the product package
-      default: false
-      type: boolean
-
-    include_wrapped_phase:
-      description: Include the wrapped phase GeoTIFF in the product package
-      default: false
-      type: boolean
-
-    apply_water_mask:
-      description: Sets pixels over coastal and large inland waterbodies as invalid for phase unwrapping.
-      default: false
-      type: boolean
-
-    looks:
-      description: Number of looks to take in range and azimuth
-      type: string
-      enum:
-        - 20x4
-        - 10x2
-
-    los_displacement:
-      description: Include a GeoTIFF in the product package containing displacement values along the Line-Of-Sight (LOS)
-      default: false
-      type: boolean
-
-    max_vv_threshold:
-      description: Maximum threshold value to use for VV polarized raster in decibels (dB)
-      default: -15.5
-      type: number
-
-    max_vh_threshold:
-      description: Maximum threshold value to use for VH polarized raster in decibels (dB)
-      default: -23.0
-      type: number
-
-    hand_threshold:
-      description: The maximum height above nearest drainage in meters to consider a pixel valid
-      default: 15.0
-      type: number
-
-    hand_fraction:
-      description: The minimum fraction of valid HAND pixels required in a tile for thresholding
-      default: 0.8
-      type: number
-
-    membership_threshold:
-      description: The average membership to the fuzzy indicators required for a water pixel
-      default: 0.45
-      type: number
-
-    include_displacement_maps:
-      description: Include displacement maps (line-of-sight and vertical) in the product package
-      default: false
-      type: boolean

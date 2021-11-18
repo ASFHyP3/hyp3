@@ -1,17 +1,22 @@
-from argparse import ArgumentParser
+import argparse
+import json
 from pathlib import Path, PurePosixPath
 
 import jinja2
 import yaml
 
 
+def snake_to_pascal_case(input_string: str):
+    split_string = input_string.lower().split('_')
+    return ''.join([i.title() for i in split_string])
+
+
 def render_template(template_file, job_types, env):
     output_file = template_file.with_suffix('')
-    print(f'Rendering {template_file} to {output_file}')
 
     template = env.get_template(str(template_file))
     with open(output_file, 'w') as f:
-        f.write(template.render(job_types=job_types))
+        f.write(template.render(job_types=job_types, json=json, snake_to_pascal_case=snake_to_pascal_case))
 
 
 def render_templates(job_types):
@@ -33,12 +38,14 @@ def get_env():
 
 
 def main():
-    parser = ArgumentParser()
-    parser.add_argument('--job-types-file', required=True)
-    job_types_file = parser.parse_args().job_types_file
+    parser = argparse.ArgumentParser()
+    parser.add_argument('paths', nargs='+', type=Path)
+    args = parser.parse_args()
 
-    with open(job_types_file) as f:
-        job_types = yaml.safe_load(f)
+    job_types = {}
+    for file in args.paths:
+        with open(file.absolute()) as f:
+            job_types.update(yaml.safe_load(f))
     render_templates(job_types)
 
 

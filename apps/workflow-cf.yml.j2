@@ -24,43 +24,40 @@ Parameters:
   TaskRoleArn:
     Type: String
 
-  AutoriftImage:
-    Type: String
-
-  AutoriftNamingScheme:
-    Type: String
-    Default: ITS_LIVE_OD
-    AllowedValues:
-      - ITS_LIVE_OD
-      - ITS_LIVE_PROD
-
-  AutoriftParameterFile:
-    Type: String
-
   PermissionsBoundaryPolicyArn:
     Type: String
-    Default: ""
+
+  SecurityGroupId:
+    Type: String
+
+  SubnetIds:
+    Type: CommaDelimitedList
 
 Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
 
 Outputs:
+
   StepFunctionArn:
     Value: !Ref StepFunction
 
 Resources:
   {% for job_type, job_spec in  job_types.items() %}
-  {{ job_type }}:
+  {{ snake_to_pascal_case(job_type) }}:
     Type: AWS::Batch::JobDefinition
     Properties:
       Type: container
       Parameters:
         {% for k, v in job_spec['parameters'].items() %}
-        {{ k }}: {{ v['default'] }}
+        {{ k }}: {{ v.get('default') or v['api_schema'].get('default') }}
         {% endfor %}
       ContainerProperties:
+        {% if  'image_tag' in job_spec %}
+        Image: "{{ job_spec['image'] }}:{{ job_spec['image_tag'] }}"
+        {% else %}
         Image: !Sub "{{ job_spec['image'] }}:${ImageTag}"
+        {% endif %}
         JobRoleArn: !Ref TaskRoleArn
         ResourceRequirements:
           - Type: VCPU
@@ -83,7 +80,7 @@ Resources:
       DefinitionSubstitutions:
         JobQueueArn: !Ref JobQueueArn
         {% for job_type in job_types %}
-        {{ job_type }}: !Ref {{ job_type }}
+        {{ snake_to_pascal_case(job_type) }}: !Ref {{ snake_to_pascal_case(job_type) }}
         {% endfor %}
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
         GetFilesLambdaArn: !GetAtt GetFiles.Outputs.LambdaArn
@@ -110,7 +107,7 @@ Resources:
                 Resource:
                   - !Ref JobQueueArn
                   {% for job_type in job_types %}
-                  - !Ref {{ job_type }}
+                  - !Ref {{ snake_to_pascal_case(job_type) }}
                   {% endfor %}
               - Effect: Allow
                 Action:
@@ -131,6 +128,8 @@ Resources:
       Parameters:
         JobsTable: !Ref JobsTable
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [',', !Ref SubnetIds]
       TemplateURL: update-db/update-db-cf.yml
 
   GetFiles:
@@ -139,6 +138,8 @@ Resources:
       Parameters:
         Bucket: !Ref Bucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [',', !Ref SubnetIds]
       TemplateURL: get-files/get-files-cf.yml
 
   StartExecution:
@@ -148,6 +149,8 @@ Resources:
         JobsTable: !Ref JobsTable
         StepFunctionArn: !Ref StepFunction
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [',', !Ref SubnetIds]
       TemplateURL: start-execution/start-execution-cf.yml
 
   UploadLog:
@@ -156,4 +159,6 @@ Resources:
       Parameters:
         Bucket: !Ref Bucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [',', !Ref SubnetIds]
       TemplateURL: upload-log/upload-log-cf.yml
