@@ -1,4 +1,4 @@
-cryptography==35.0.0
+cryptography==36.0.0
 flask==2.0.1
 Flask-Cors==3.0.10
 openapi-core==0.14.2
