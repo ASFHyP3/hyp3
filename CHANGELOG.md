@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.7.0](https://github.com/ASFHyP3/hyp3/compare/v2.6.6...v2.7.0)
 ### Added
-- Support for automatically setting maxvCpus for the cluster based on monthly budget vs month-to-date spending
+- Support for automatic toggling between two `maxvCpus` values for the Batch compute environment, based on monthly
+  budget vs month-to-date spending
 
 ## [2.6.6](https://github.com/ASFHyP3/hyp3/compare/v2.6.5...v2.6.6)
 ### Fixed
