@@ -48,10 +48,10 @@ def get_max_vcpus(today, budget, spending):
     target_spending = (budget / days_in_month) * today.day
     max_spending_for_next_day = (target_spending - spending)
 
-    if max_spending_for_next_day >= 1000:
-        max_vcpus = 1600
+    if max_spending_for_next_day >= int(environ['REQUIRED_SURPLUS']):
+        max_vcpus = int(environ['LARGE_FLEET_SIZE'])
     else:
-        max_vcpus = 600
+        max_vcpus = int(environ['SMALL_FLEET_SIZE'])
     return max_vcpus
 
 

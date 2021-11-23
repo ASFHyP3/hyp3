@@ -64,6 +64,10 @@ Resources:
       Environment:
         Variables:
           COMPUTE_ENVIRONMENT_ARN: !Ref ComputeEnvironmentArn
+          MONTHLY_COMPUTE_BUDGET: 10000
+          SMALL_FLEET_SIZE: 600
+          LARGE_FLEET_SIZE: 1600
+          REQUIRED_SURPLUS: 1000
       Code: src/
       Handler: scale_cluster.lambda_handler
       MemorySize: 128
