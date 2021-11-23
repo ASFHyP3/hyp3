@@ -1,10 +1,11 @@
 API = ${PWD}/apps/api/src
 GET_FILES = ${PWD}/apps/get-files/src
+SCALE_CLUSTER = ${PWD}/apps/scale-cluster/src
 START_EXECUTION = ${PWD}/apps/start-execution/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
 PROCESS_NEW_GRANULES = ${PWD}/apps/process-new-granules/src
 DYNAMO = ${PWD}/lib/dynamo
-export PYTHONPATH = ${API}:${GET_FILES}:${START_EXECUTION}:${UPLOAD_LOG}:${PROCESS_NEW_GRANULES}:${DYNAMO}
+export PYTHONPATH = ${API}:${GET_FILES}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPLOAD_LOG}:${PROCESS_NEW_GRANULES}:${DYNAMO}
 
 tests: render
 	export $$(xargs < tests/cfg.env); \
@@ -24,7 +25,7 @@ render:
 static: flake8 openapi-validate cfn-lint
 
 flake8:
-	flake8 --max-line-length=120 --import-order-style=pycharm --statistics --application-import-names hyp3_api,get_files,start_execution,update_db,upload_log,dynamo,process_new_granules apps tests lib
+	flake8 --max-line-length=120 --import-order-style=pycharm --statistics --application-import-names hyp3_api,get_files,start_execution,update_db,upload_log,dynamo,process_new_granules,scale_cluster apps tests lib
 
 openapi-validate: render
 	prance validate --backend=openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml

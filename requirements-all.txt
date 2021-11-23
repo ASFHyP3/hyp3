@@ -1,5 +1,6 @@
 -r requirements-apps-api.txt
 -r requirements-apps-process-new-granules.txt
+-r requirements-apps-scale-cluster.txt
 -r requirements-apps-start-execution.txt
 -r requirements-apps-update-db.txt
 boto3==1.20.11

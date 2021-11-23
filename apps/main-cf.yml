@@ -78,9 +78,35 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
+  DefaultMaxvCpus:
+    Description: Default maximum size for the AWS Batch compute environment
+    Type: Number
+    MinValue: 0
+    Default: 60
+
+  ExpandedMaxvCpus:
+    Description: Expanded maximum size for the AWS Batch compute environment to use when month-to-date budget sufficiently exceeds month-to-date spending
+    Type: Number
+    MinValue: 0
+    Default: 60
+
+  MonthlyComputeBudget:
+    Description: Total budget allocated for AWS Batch processing per month, in dollars
+    Type: Number
+    MinValue: 0
+    Default: 0
+
+  RequiredSurplus:
+    Description: Amount month-to-date budget must exceed month-to-date spending to increase fleet size, in dollars
+    Type: Number
+    MinValue: 0
+    Default: 0
+
 Conditions:
 
   LambdasInVpc: !Equals [!Ref DeployLambdasInVpc, "true"]
+
+  ScaleCluster: !Not [!Equals [!Ref DefaultMaxvCpus, !Ref ExpandedMaxvCpus]]
 
 Outputs:
 
@@ -117,7 +143,23 @@ Resources:
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        MaxvCpus: !Ref DefaultMaxvCpus
       TemplateURL: compute-cf.yml
+
+  ScaleCluster:
+    Type: AWS::CloudFormation::Stack
+    Condition: ScaleCluster
+    Properties:
+      Parameters:
+        ComputeEnvironmentArn: !GetAtt Cluster.Outputs.ComputeEnvironmentArn
+        DefaultMaxvCpus: !Ref DefaultMaxvCpus
+        ExpandedMaxvCpus: !Ref ExpandedMaxvCpus
+        MonthlyComputeBudget: !Ref MonthlyComputeBudget
+        RequiredSurplus: !Ref RequiredSurplus
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
+        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+      TemplateURL: scale-cluster/scale-cluster-cf.yml
 
   ProcessNewGranules:
     Type: AWS::CloudFormation::Stack
