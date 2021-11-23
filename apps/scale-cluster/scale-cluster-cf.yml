@@ -5,6 +5,26 @@ Parameters:
   ComputeEnvironmentArn:
     Type: String
 
+  DefaultMaxvCpus:
+    Type: Number
+    MinValue: 0
+    Default: 600
+
+  ExpandedMaxvCpus:
+    Type: Number
+    MinValue: 0
+    Default: 1600
+
+  MonthlyComputeBudget:
+    Type: Number
+    MinValue: 0
+    Default: 0
+
+  RequiredSurplus:
+    Type: Number
+    MinValue: 0
+    Default: 0
+
   PermissionsBoundaryPolicyArn:
     Type: String
 
@@ -64,10 +84,10 @@ Resources:
       Environment:
         Variables:
           COMPUTE_ENVIRONMENT_ARN: !Ref ComputeEnvironmentArn
-          MONTHLY_COMPUTE_BUDGET: 10000
-          SMALL_FLEET_SIZE: 600
-          LARGE_FLEET_SIZE: 1600
-          REQUIRED_SURPLUS: 1000
+          MONTHLY_COMPUTE_BUDGET: !Ref MonthlyComputeBudget
+          DEFAULT_MAX_VCPUS: !Ref DefaultMaxvCpus
+          EXPANDED_MAX_VCPUS: !Ref ExpandedMaxvCpus
+          REQUIRED_SURPLUS: !Ref RequiredSurplus
       Code: src/
       Handler: scale_cluster.lambda_handler
       MemorySize: 128
