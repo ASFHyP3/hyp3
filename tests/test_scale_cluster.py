@@ -19,9 +19,58 @@ def test_get_time_period():
 
 def test_get_max_vcpus():
     # monthly budget == 10,000
-    assert scale_cluster.get_max_vcpus(date(2020, 1, 1), 1000, 0) == 600
-    assert scale_cluster.get_max_vcpus(date(2020, 1, 31), 1000, 0) == 1600
-    assert scale_cluster.get_max_vcpus(date(2020, 1, 31), 999.99, 0) == 600
-    assert scale_cluster.get_max_vcpus(date(2020, 1, 31), 0, 0) == 600
-    assert scale_cluster.get_max_vcpus(date(2020, 2, 20), 29000, 19001) == 600
-    assert scale_cluster.get_max_vcpus(date(2020, 2, 20), 29000, 19000) == 1600
+    vcpus = scale_cluster.get_max_vcpus(today=date(2020, 1, 1),
+                                        budget=1000,
+                                        spending=0,
+                                        default_max_vcpus=1,
+                                        expanded_max_vcpus=2,
+                                        required_surplus=1000)
+    assert vcpus == 1
+
+    vcpus = scale_cluster.get_max_vcpus(today=date(2020, 1, 31),
+                                        budget=1000,
+                                        spending=0,
+                                        default_max_vcpus=3,
+                                        expanded_max_vcpus=4,
+                                        required_surplus=1000)
+    assert vcpus == 4
+
+    vcpus = scale_cluster.get_max_vcpus(today=date(2020, 1, 31),
+                                        budget=1000,
+                                        spending=999.99,
+                                        default_max_vcpus=1,
+                                        expanded_max_vcpus=2,
+                                        required_surplus=1000)
+    assert vcpus == 1
+
+    vcpus = scale_cluster.get_max_vcpus(today=date(2020, 1, 31),
+                                        budget=0,
+                                        spending=0,
+                                        default_max_vcpus=1,
+                                        expanded_max_vcpus=2,
+                                        required_surplus=1)
+    assert vcpus == 1
+
+    vcpus = scale_cluster.get_max_vcpus(today=date(2020, 2, 20),
+                                        budget=29000,
+                                        spending=19001,
+                                        default_max_vcpus=1,
+                                        expanded_max_vcpus=2,
+                                        required_surplus=1000)
+    assert vcpus == 1
+
+    vcpus = scale_cluster.get_max_vcpus(today=date(2020, 2, 20),
+                                        budget=29000,
+                                        spending=19000,
+                                        default_max_vcpus=1,
+                                        expanded_max_vcpus=2,
+                                        required_surplus=1000)
+    assert vcpus == 2
+
+    vcpus = scale_cluster.get_max_vcpus(today=date(2020, 2, 20),
+                                        budget=29000,
+                                        spending=19000,
+                                        default_max_vcpus=1,
+                                        expanded_max_vcpus=2,
+                                        required_surplus=1001)
+    assert vcpus == 1

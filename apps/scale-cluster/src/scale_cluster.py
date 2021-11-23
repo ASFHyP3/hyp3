@@ -42,22 +42,24 @@ def update_compute_cluster_size(max_vcpus):
     )
 
 
-def get_max_vcpus(today, budget, spending):
+def get_max_vcpus(today, budget, spending, default_max_vcpus, expanded_max_vcpus, required_surplus):
     days_in_month = calendar.monthrange(today.year, today.month)[1]
 
     target_spending = (budget / days_in_month) * today.day
     max_spending_for_next_day = (target_spending - spending)
 
-    if max_spending_for_next_day >= int(environ['REQUIRED_SURPLUS']):
-        max_vcpus = int(environ['EXPANDED_MAX_VCPUS'])
+    if max_spending_for_next_day >= required_surplus:
+        max_vcpus = expanded_max_vcpus
     else:
-        max_vcpus = int(environ['DEFAULT_MAX_VCPUS'])
+        max_vcpus = default_max_vcpus
     return max_vcpus
 
 
 def lambda_handler(event, context):
-    today = date.today()
-    monthly_compute_budget = int(environ['MONTHLY_COMPUTE_BUDGET'])
-    current_spending = get_ec2_spending_month_to_date()
-    max_vcpus = get_max_vcpus(today, monthly_compute_budget, current_spending)
+    max_vcpus = get_max_vcpus(today=date.today(),
+                              budget=int(environ['MONTHLY_COMPUTE_BUDGET']),
+                              spending=get_ec2_spending_month_to_date(),
+                              default_max_vcpus=int(environ['DEFAULT_MAX_VCPUS']),
+                              expanded_max_vcpus=int(environ['EXPANDED_MAX_VCPUS']),
+                              required_surplus=int(environ['REQUIRED_SURPLUS']))
     update_compute_cluster_size(max_vcpus)
