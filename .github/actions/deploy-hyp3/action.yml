@@ -44,6 +44,18 @@ inputs:
   BANNED_CIDR_BLOCKS:
     description: "Comma separated list of IP CIDR blocks that will receive HTTP 403 FORBIDDEN responses from the API"
     required: true
+  MONTHLY_COMPUTE_BUDGET:
+    description: ""
+    required: true
+  DEFAULT_MAX_VCPUS:
+    description: ""
+    required: true
+  EXPANDED_MAX_VCPUS:
+    description: ""
+    required: true
+  REQUIRED_SURPLUS:
+    description: ""
+    required: true
 
 runs:
   using: "composite"
@@ -81,4 +93,8 @@ runs:
                 DomainName='${{ inputs.DOMAIN_NAME }}' \
                 CertificateArn='${{ inputs.CERTIFICATE_ARN }}' \
                 MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \
-                BannedCidrBlocks='${{ inputs.BANNED_CIDR_BLOCKS }}'
+                BannedCidrBlocks='${{ inputs.BANNED_CIDR_BLOCKS }}' \
+                MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \
+                DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
+                ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
+                RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}'

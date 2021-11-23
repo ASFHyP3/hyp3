@@ -102,6 +102,8 @@ Conditions:
 
   LambdasInVpc: !Equals [!Ref DeployLambdasInVpc, "true"]
 
+  ScaleCluster: !Not [!Equals [!Ref DefaultMaxvCpus, !Ref ExpandedMaxvCpus]]
+
 Outputs:
 
   ApiUrl:
@@ -142,6 +144,7 @@ Resources:
 
   ScaleCluster:
     Type: AWS::CloudFormation::Stack
+    Condition: ScaleCluster
     Properties:
       Parameters:
         ComputeEnvironmentArn: !GetAtt Cluster.Outputs.ComputeEnvironmentArn
