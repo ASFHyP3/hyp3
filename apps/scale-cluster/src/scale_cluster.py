@@ -44,7 +44,7 @@ def set_max_vcpus(compute_environment_arn, max_vcpus):
 def get_max_vcpus(today, monthly_compute_budget, month_to_date_compute_spending, default_max_vcpus, expanded_max_vcpus,
                   required_surplus):
     days_in_month = calendar.monthrange(today.year, today.month)[1]
-    month_to_date_compute_budget = today.day * monthly_compute_budget / days_in_month
+    month_to_date_compute_budget = monthly_compute_budget * today.day / days_in_month
     available_surplus = month_to_date_compute_budget - month_to_date_compute_spending
 
     print(f'Month-to-date compute budget: ${month_to_date_compute_budget:,.2f}')
