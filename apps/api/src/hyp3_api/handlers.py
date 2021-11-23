@@ -1,3 +1,4 @@
+from http.client import responses
 from os import environ
 from uuid import UUID
 
@@ -10,11 +11,11 @@ from hyp3_api import util
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
 
-def problem_format(status, title, message):
+def problem_format(status, message):
     response = jsonify({
         'status': status,
         'detail': message,
-        'title': title,
+        'title': responses[status],
         'type': 'about:blank'
     })
     response.headers['Content-Type'] = 'application/problem+json'
@@ -39,13 +40,13 @@ def post_jobs(body, user):
     except requests.HTTPError as e:
         print(f'WARN: CMR search failed: {e}')
     except GranuleValidationError as e:
-        abort(problem_format(400, 'Bad Request', str(e)))
+        abort(problem_format(400, str(e)))
 
     if not body.get('validate_only'):
         try:
             body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'])
         except dynamo.jobs.QuotaError as e:
-            abort(problem_format(400, 'Bad Request', str(e)))
+            abort(problem_format(400, str(e)))
         return body
 
 
@@ -54,7 +55,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=N
     try:
         start_key = util.deserialize(start_token) if start_token else None
     except util.TokenDeserializeError:
-        abort(problem_format(400, 'Bad Request', 'Invalid start_token value'))
+        abort(problem_format(400, 'Invalid start_token value'))
     jobs, last_evaluated_key = dynamo.jobs.query_jobs(user, start, end, status_code, name, job_type, start_key,
                                                       subscription_id)
     payload = {'jobs': jobs}
@@ -67,7 +68,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=N
 def get_job_by_id(job_id):
     job = dynamo.jobs.get_job(job_id)
     if job is None:
-        abort(problem_format(404, 'Not Found', f'job_id does not exist: {job_id}'))
+        abort(problem_format(404, f'job_id does not exist: {job_id}'))
     return job
 
 
@@ -114,7 +115,7 @@ def post_subscriptions(body, user):
             response['validate_only'] = validate_only
         return response
     except ValueError as e:
-        abort(problem_format(400, 'Bad Request', str(e)))
+        abort(problem_format(400, str(e)))
 
 
 def get_subscriptions(user, name=None, job_type=None, enabled=None):
@@ -128,16 +129,16 @@ def get_subscriptions(user, name=None, job_type=None, enabled=None):
 def get_subscription_by_id(subscription_id):
     subscription = dynamo.subscriptions.get_subscription_by_id(subscription_id)
     if subscription is None:
-        abort(problem_format(404, 'Not Found', f'subscription_id does not exist: {subscription_id}'))
+        abort(problem_format(404, f'subscription_id does not exist: {subscription_id}'))
     return subscription
 
 
 def patch_subscriptions(subscription_id, body, user):
     subscription = dynamo.subscriptions.get_subscription_by_id(subscription_id)
     if subscription is None:
-        abort(problem_format(404, 'Not Found', f'subscription_id does not exist: {subscription_id}'))
+        abort(problem_format(404, f'subscription_id does not exist: {subscription_id}'))
     if subscription['user_id'] != user:
-        abort(problem_format(403, 'Forbidden', 'You may not update subscriptions created by a different user'))
+        abort(problem_format(403, 'You may not update subscriptions created by a different user'))
     if 'end' in body:
         subscription['search_parameters']['end'] = body['end']
     if 'enabled' in body:
@@ -145,5 +146,5 @@ def patch_subscriptions(subscription_id, body, user):
     try:
         dynamo.subscriptions.put_subscription(user, subscription)
     except ValueError as e:
-        abort(problem_format(400, 'Bad Request', str(e)))
+        abort(problem_format(400, str(e)))
     return subscription
