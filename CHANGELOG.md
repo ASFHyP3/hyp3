@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [2.6.5](https://github.com/ASFHyP3/hyp3/compare/v2.6.4...v2.6.5)
+### Changed
+- Default autoRIFT parameter file was updated to point at the new `its-live-data` AWS S3 bucket
+  instead of `its-live-data.jpl.nasa.gov`, except for the custom `autorift-eu` deployment which uses a copy in `eu-central-1`.
+- Job specification YAMLs can now specify a container `image_tag`, which will override the deployment default
+  image tag
+- Provided example granule pairs for INSAR_GAMMA and AUTORIFT jobs in the OpenApi schema
+
 ### Fixed
 - Api 400 responses now use a consistent JSON schema for the response body. Fixes [#625](https://github.com/ASFHyP3/hyp3/issues/625)
 
