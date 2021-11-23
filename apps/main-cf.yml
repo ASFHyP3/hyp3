@@ -91,13 +91,13 @@ Parameters:
     Default: 60
 
   MonthlyComputeBudget:
-    Description: Total budget allocated for AWS Batch processing per month, in dollars
+    Description: Total budget allocated for AWS Batch processing per month, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus.
     Type: Number
     MinValue: 0
     Default: 0
 
   RequiredSurplus:
-    Description: Amount month-to-date budget must exceed month-to-date spending to increase fleet size, in dollars
+    Description: Amount by which month-to-date budget must exceed month-to-date spending to increase fleet size, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus.
     Type: Number
     MinValue: 0
     Default: 0
