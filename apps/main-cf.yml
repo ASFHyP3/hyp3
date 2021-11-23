@@ -140,10 +140,10 @@ Resources:
       Parameters:
         VpcId: !Ref VpcId
         SubnetIds: !Join [',', !Ref SubnetIds]
+        MaxvCpus: !Ref DefaultMaxvCpus
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        MaxvCpus: !Ref DefaultMaxvCpus
       TemplateURL: compute-cf.yml
 
   ScaleCluster:

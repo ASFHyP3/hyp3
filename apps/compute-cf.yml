@@ -8,6 +8,10 @@ Parameters:
   SubnetIds:
     Type: List<AWS::EC2::Subnet::Id>
 
+  MaxvCpus:
+    Type: Number
+    MinValue: 0
+
   AmiId:
     Type: AWS::EC2::Image::Id
 
@@ -16,10 +20,6 @@ Parameters:
 
   PermissionsBoundaryPolicyArn:
     Type: String
-
-  MaxvCpus:
-    Type: Number
-    MinValue: 0
 
 Conditions:
 
