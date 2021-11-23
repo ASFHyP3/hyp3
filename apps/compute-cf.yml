@@ -17,6 +17,10 @@ Parameters:
   PermissionsBoundaryPolicyArn:
     Type: String
 
+  MaxvCpus:
+    Type: Number
+    MinValue: 0
+
 Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
@@ -69,7 +73,7 @@ Resources:
         Type: SPOT
         AllocationStrategy: SPOT_CAPACITY_OPTIMIZED
         MinvCpus: 0
-        MaxvCpus: 1600
+        MaxvCpus: !Ref MaxvCpus
         InstanceTypes:
           - r5d.xlarge
         ImageId: !Ref AmiId

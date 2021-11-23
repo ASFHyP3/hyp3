@@ -78,6 +78,26 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
+  DefaultMaxvCpus:
+    Type: Number
+    MinValue: 0
+    Default: 600
+
+  ExpandedMaxvCpus:
+    Type: Number
+    MinValue: 0
+    Default: 1600
+
+  MonthlyComputeBudget:
+    Type: Number
+    MinValue: 0
+    Default: 0
+
+  RequiredSurplus:
+    Type: Number
+    MinValue: 0
+    Default: 0
+
 Conditions:
 
   LambdasInVpc: !Equals [!Ref DeployLambdasInVpc, "true"]
@@ -117,6 +137,7 @@ Resources:
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        MaxvCpus: !Ref DefaultMaxvCpus
       TemplateURL: compute-cf.yml
 
   ScaleCluster:
@@ -124,6 +145,10 @@ Resources:
     Properties:
       Parameters:
         ComputeEnvironmentArn: !GetAtt Cluster.Outputs.ComputeEnvironmentArn
+        DefaultMaxvCpus: !Ref DefaultMaxvCpus
+        ExpandedMaxvCpus: !Ref ExpandedMaxvCpus
+        MonthlyComputeBudget: !Ref MonthlyComputeBudget
+        RequiredSurplus: !Ref RequiredSurplus
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
         SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]

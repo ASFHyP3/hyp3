@@ -8,22 +8,18 @@ Parameters:
   DefaultMaxvCpus:
     Type: Number
     MinValue: 0
-    Default: 600
 
   ExpandedMaxvCpus:
     Type: Number
     MinValue: 0
-    Default: 1600
 
   MonthlyComputeBudget:
     Type: Number
     MinValue: 0
-    Default: 0
 
   RequiredSurplus:
     Type: Number
     MinValue: 0
-    Default: 0
 
   PermissionsBoundaryPolicyArn:
     Type: String
