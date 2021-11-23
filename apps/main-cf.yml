@@ -81,12 +81,12 @@ Parameters:
   DefaultMaxvCpus:
     Type: Number
     MinValue: 0
-    Default: 600
+    Default: 60
 
   ExpandedMaxvCpus:
     Type: Number
     MinValue: 0
-    Default: 1600
+    Default: 60
 
   MonthlyComputeBudget:
     Type: Number
