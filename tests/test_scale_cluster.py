@@ -1,6 +1,16 @@
 from datetime import date
 
+import pytest
+from botocore.stub import Stubber
+
 import scale_cluster
+
+
+@pytest.fixture
+def batch_stubber():
+    with Stubber(scale_cluster.BATCH) as stubber:
+        yield stubber
+        stubber.assert_no_pending_responses()
 
 
 def test_get_time_period():
@@ -74,3 +84,11 @@ def test_get_max_vcpus():
                                         expanded_max_vcpus=2,
                                         required_surplus=1001)
     assert vcpus == 1
+
+
+def test_set_max_vcpus(batch_stubber):
+    expected_params = {'computeEnvironment': 'foo', 'computeResources': {'maxvCpus': 10}}
+    batch_stubber.add_response(method='update_compute_environment', expected_params=expected_params,
+                               service_response={})
+
+    scale_cluster.set_max_vcpus(compute_environment_arn='foo', max_vcpus=10)
