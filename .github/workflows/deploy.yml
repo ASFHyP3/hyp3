@@ -21,6 +21,9 @@ jobs:
             quota: 250
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            default_max_vcpus: 600
+            expanded_max_vcpus: 1600
+            required_surplus: 1000
 
           - environment: hyp3-test
             domain: hyp3-test-api.asf.alaska.edu
@@ -30,6 +33,9 @@ jobs:
             quota: 250
             deploy_ref: refs/heads/develop
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            default_max_vcpus: 600
+            expanded_max_vcpus: 1600
+            required_surplus: 1000
 
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
@@ -39,6 +45,9 @@ jobs:
             quota: 0
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT_ITS_LIVE.yml
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
+            required_surplus: 0
 
           - environment: hyp3-autorift-eu
             domain: hyp3-autorift-eu.asf.alaska.edu
@@ -48,6 +57,9 @@ jobs:
             quota: 0
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT_ITS_LIVE_EU.yml
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
+            required_surplus: 0
 
     environment:
       name: ${{ matrix.environment }}
@@ -83,6 +95,10 @@ jobs:
           MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
           JOB_FILES: ${{ matrix.job_files }}
           BANNED_CIDR_BLOCKS: ${{ secrets.BANNED_CIDR_BLOCKS }}
+          DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}
+          EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
+          MONTHLY_COMPUTE_BUDGET: ${{ secrets.MONTHLY_COMPUTE_BUDGET }}
+          REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
 
   tag:
     runs-on: ubuntu-latest

@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.7.0](https://github.com/ASFHyP3/hyp3/compare/v2.6.6...v2.7.0)
+### Added
+- Support for automatic toggling between two `maxvCpus` values for the Batch compute environment, based on monthly
+  budget vs month-to-date spending
+
 ## [2.6.6](https://github.com/ASFHyP3/hyp3/compare/v2.6.5...v2.6.6)
 ### Fixed
 - Api 400 responses now use a consistent JSON schema for the response body. Fixes [#625](https://github.com/ASFHyP3/hyp3/issues/625)

@@ -8,6 +8,10 @@ Parameters:
   SubnetIds:
     Type: List<AWS::EC2::Subnet::Id>
 
+  MaxvCpus:
+    Type: Number
+    MinValue: 0
+
   AmiId:
     Type: AWS::EC2::Image::Id
 
@@ -22,6 +26,9 @@ Conditions:
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
 
 Outputs:
+
+  ComputeEnvironmentArn:
+    Value: !Ref ComputeEnvironment
 
   JobQueueArn:
     Value: !Ref JobQueue
@@ -66,7 +73,7 @@ Resources:
         Type: SPOT
         AllocationStrategy: SPOT_CAPACITY_OPTIMIZED
         MinvCpus: 0
-        MaxvCpus: 1600
+        MaxvCpus: !Ref MaxvCpus
         InstanceTypes:
           - r5d.xlarge
         ImageId: !Ref AmiId
