@@ -59,6 +59,15 @@ jobs:
             deploy_ref: refs/heads/isce
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
 
+          - environment: hyp3-tibet
+            domain: hyp3-tibet.asf.alaska.edu
+            template_bucket: cf-templates-ejaipnrxq7xg-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 30
+            quota: 0
+            deploy_ref: refs/heads/isce
+            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
+
     environment:
       name: ${{ matrix.environment }}
       url: https://${{ matrix.domain }}
