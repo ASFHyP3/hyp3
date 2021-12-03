@@ -87,6 +87,9 @@ Resources:
         Tags:
           Name: !Ref AWS::StackName
 
+  SchedulingPolicy:
+    Type: AWS::Batch::ScedulingPolicy
+
   JobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
@@ -94,6 +97,7 @@ Resources:
       ComputeEnvironmentOrder:
         - ComputeEnvironment: !Ref ComputeEnvironment
           Order: 1
+      SchedulingPolicyArn: !Ref SchedulingPolicy
 
   TaskRole:
     Type: AWS::IAM::Role
