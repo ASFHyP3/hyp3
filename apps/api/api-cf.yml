@@ -45,7 +45,7 @@ Conditions:
 
   LambdasInVpc: !Not [!Equals [!Ref SecurityGroupId, ""]]
 
-  UseCustomDomainName: !Not [!Equals [!Ref DomainNames, ""]]
+  UseCustomDomainName: !Not [!Equals [!Ref DomainName, ""]]
 
 Outputs:
 
