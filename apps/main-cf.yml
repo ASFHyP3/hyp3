@@ -40,10 +40,12 @@ Parameters:
   DomainName:
     Description: DNS domain name that will be used to invoke this api.
     Type: String
+    Default: ""
 
   CertificateArn:
     Description: ARN of Certificate in AWS Certificate Manager setup previously for this domain name.
     Type: String
+    Default: ""
 
   MonthlyJobQuotaPerUser:
     Description: Number of jobs each user is allowed per month.
