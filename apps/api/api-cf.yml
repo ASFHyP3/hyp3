@@ -45,10 +45,12 @@ Conditions:
 
   LambdasInVpc: !Not [!Equals [!Ref SecurityGroupId, ""]]
 
+  UseCustomDomainName: !Not [!Equals [!Ref DomainNames, ""]]
+
 Outputs:
 
   Url:
-    Value: !Sub "https://${CustomDomainName}/ui"
+    Value: !If [UseCustomDomainName, !Sub "https://${CustomDomainName}/ui", !Sub "${Api.ApiEndpoint}/ui"]
 
   ApiId:
     Value: !Ref Api
@@ -79,6 +81,7 @@ Resources:
 
   CustomDomainName:
     Type: AWS::ApiGatewayV2::DomainName
+    Condition: UseCustomDomainName
     Properties:
       DomainName: !Ref DomainName
       DomainNameConfigurations:
@@ -87,6 +90,7 @@ Resources:
 
   ApiMapping:
     Type: AWS::ApiGatewayV2::ApiMapping
+    Condition: UseCustomDomainName
     Properties:
       ApiId: !Ref Api
       DomainName: !Ref CustomDomainName
