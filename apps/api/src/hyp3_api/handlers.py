@@ -1,5 +1,4 @@
 from http.client import responses
-from os import environ
 from uuid import UUID
 
 import requests
@@ -81,17 +80,8 @@ def get_names_for_user(user):
     return sorted(list(names))
 
 
-def get_max_jobs_per_month(user):
-    user = dynamo.user.get_user(user)
-    if user:
-        max_jobs_per_month = user['max_jobs_per_month']
-    else:
-        max_jobs_per_month = int(environ['MONTHLY_JOB_QUOTA_PER_USER'])
-    return max_jobs_per_month
-
-
 def get_user(user):
-    max_jobs = get_max_jobs_per_month(user)
+    max_jobs = dynamo.user.get_max_jobs_per_month(user)
 
     return {
         'user_id': user,
