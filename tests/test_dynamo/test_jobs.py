@@ -317,13 +317,20 @@ def test_put_jobs(tables):
     jobs = dynamo.jobs.put_jobs('user1', payload)
     assert len(jobs) == 3
     for job in jobs:
-        assert set(job.keys()) == {'name', 'job_id', 'user_id', 'status_code', 'request_time'}
+        assert set(job.keys()) == {'name', 'job_id', 'user_id', 'status_code', 'request_time', 'priority'}
         assert job['request_time'] <= dynamo.util.format_time(datetime.now(timezone.utc))
         assert job['user_id'] == 'user1'
         assert job['status_code'] == 'PENDING'
 
     response = tables.jobs_table.scan()
     assert response['Items'] == jobs
+
+
+def test_put_jobs_priority(tables):
+    jobs = dynamo.jobs.put_jobs('user1', [{}])
+    jobs.extend(dynamo.jobs.put_jobs('user1', [{}, {}]))
+    jobs.extend(dynamo.jobs.put_jobs('user2', [{}]))
+    assert [job['priority'] for job in jobs] == [9999, 9998, 9997, 9999]
 
 
 def test_get_job(tables):

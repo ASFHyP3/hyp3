@@ -20,7 +20,7 @@ def _get_job_count_for_month(user) -> int:
     return job_count_for_month
 
 
-def get_quota_status(user) -> Tuple[int]:
+def get_quota_status(user) -> Tuple[int, int, int]:
     max_jobs = get_max_jobs_per_month(user)
     previous_jobs = _get_job_count_for_month(user)
     remaining_jobs = max(max_jobs - previous_jobs, 0)

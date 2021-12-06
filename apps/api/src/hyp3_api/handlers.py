@@ -81,7 +81,7 @@ def get_names_for_user(user):
 
 
 def get_user(user):
-    max_jobs, _, remaining_jobs = dynamo.jobs.get_quota_staus(user)
+    max_jobs, _, remaining_jobs = dynamo.jobs.get_quota_status(user)
 
     return {
         'user_id': user,
