@@ -327,10 +327,23 @@ def test_put_jobs(tables):
 
 
 def test_put_jobs_priority(tables):
-    jobs = dynamo.jobs.put_jobs('user1', [{}])
+    jobs = []
+    jobs.extend(dynamo.jobs.put_jobs('user1', [{}]))
     jobs.extend(dynamo.jobs.put_jobs('user1', [{}, {}]))
     jobs.extend(dynamo.jobs.put_jobs('user2', [{}]))
-    assert [job['priority'] for job in jobs] == [9999, 9998, 9997, 9999]
+    assert jobs[0]['priority'] == 9999
+    assert jobs[1]['priority'] == 9998
+    assert jobs[2]['priority'] == 9997
+    assert jobs[3]['priority'] == 9999
+
+
+def test_put_jobs_priority_overflow(tables, monkeypatch):
+    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '10001')
+    many_jobs = [{} for ii in range(10001)]
+    jobs = dynamo.jobs.put_jobs('user3', many_jobs)
+    assert jobs[-1]['priority'] == 0
+    assert jobs[-2]['priority'] == 0
+    assert jobs[-3]['priority'] == 1
 
 
 def test_get_job(tables):
