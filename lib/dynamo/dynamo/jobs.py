@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from os import environ
-from typing import List, Tuple
+from typing import List
 from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
@@ -13,28 +13,29 @@ class QuotaError(Exception):
     """Raised when trying to submit more jobs that user has remaining"""
 
 
-def _get_job_count_for_month(user) -> int:
+def _get_job_count_for_month(user):
     now = datetime.now(timezone.utc)
     start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     job_count_for_month = count_jobs(user, format_time(start_of_month))
     return job_count_for_month
 
 
-def get_quota_status(user) -> Tuple[int, int, int]:
-    max_jobs = get_max_jobs_per_month(user)
+def get_remaining_jobs_for_user(user, limit):
     previous_jobs = _get_job_count_for_month(user)
-    remaining_jobs = max(max_jobs - previous_jobs, 0)
-    return max_jobs, previous_jobs, remaining_jobs
+    remaining_jobs = limit - previous_jobs
+    return max(remaining_jobs, 0)
 
 
 def put_jobs(user_id: str, jobs: List[dict], fail_when_over_quota=True) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
-    max_jobs, previous_jobs, remaining_jobs = get_quota_status(user_id)
-    if len(jobs) > remaining_jobs:
+    job_limit = get_max_jobs_per_month(user_id)
+    number_of_jobs = len(jobs)
+    remaining_jobs = get_remaining_jobs_for_user(user_id, job_limit)
+    if number_of_jobs > remaining_jobs:
         if fail_when_over_quota:
-            raise QuotaError(f'Your monthly quota is {max_jobs} jobs. You have {remaining_jobs} jobs remaining.')
+            raise QuotaError(f'Your monthly quota is {job_limit} jobs. You have {remaining_jobs} jobs remaining.')
         jobs = jobs[:remaining_jobs]
 
     prepared_jobs = [
@@ -43,9 +44,8 @@ def put_jobs(user_id: str, jobs: List[dict], fail_when_over_quota=True) -> List[
             'user_id': user_id,
             'status_code': 'PENDING',
             'request_time': request_time,
-            'priority': max(9999 - previous_jobs - index, 0),
             **job,
-        } for index, job in enumerate(jobs)
+        } for job in jobs
     ]
 
     for prepared_job in prepared_jobs:

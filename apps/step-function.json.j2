@@ -94,8 +94,6 @@
         "JobDefinition": "{{ '${'+ snake_to_pascal_case(job_type) + '}' }}",
         "JobName.$": "$.job_id",
         "JobQueue": "${JobQueueArn}",
-        "ShareIdentifier": "default",
-        "SchedulingPriorityOverride": "$.priority",
         "Parameters.$": "$.job_parameters",
         "ContainerOverrides.$": "$.container_overrides",
         "RetryStrategy": {

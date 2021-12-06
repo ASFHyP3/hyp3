@@ -9,7 +9,7 @@ def get_user(user):
     return response.get('Item')
 
 
-def get_max_jobs_per_month(user) -> int:
+def get_max_jobs_per_month(user):
     user = get_user(user)
     if user:
         max_jobs_per_month = int(user['max_jobs_per_month'])
