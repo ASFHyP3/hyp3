@@ -88,7 +88,7 @@ Resources:
           Name: !Ref AWS::StackName
 
   SchedulingPolicy:
-    Type: AWS::Batch::ScedulingPolicy
+    Type: AWS::Batch::SchedulingPolicy
 
   JobQueue:
     Type: AWS::Batch::JobQueue
