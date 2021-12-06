@@ -37,7 +37,7 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 1000
 
-          - environment: edl-uat
+          - environment: edc-uat
             domain: ''
             template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
             image_tag: test
