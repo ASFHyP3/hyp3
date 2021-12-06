@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.7.2](https://github.com/ASFHyP3/hyp3/compare/v2.7.1...v2.7.2)
+### Changed
+- Jobs are now assigned a `priority` attribute when submitted. `priority` is calculated based on jobs already
+  submitted month-to-date by the same user. Jobs with a higher `priority` value will run before jobs with a lower value.
+
 ## [2.7.1](https://github.com/ASFHyP3/hyp3/compare/v2.7.0...v2.7.1)
 ### Changed
 - The `DomainName` and `CertificateArn` stack parameters are now optional, allowing HyP3 to be deployed without
