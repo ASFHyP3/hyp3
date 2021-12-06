@@ -37,6 +37,18 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 1000
 
+          - environment: edl-uat
+            domain: ''
+            template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
+            image_tag: test
+            product_lifetime_in_days: 14
+            quota: 250
+            deploy_ref: refs/heads/develop
+            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            default_max_vcpus: 600
+            expanded_max_vcpus: 1600
+            required_surplus: 1000
+
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
             template_bucket: cf-templates-igavixdzdy7k-us-west-2
