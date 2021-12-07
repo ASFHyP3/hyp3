@@ -32,7 +32,12 @@ jobs:
             product_lifetime_in_days: 14
             quota: 250
             deploy_ref: refs/heads/develop
-            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            job_files: >-
+              job_spec/AUTORIFT.yml 
+              job_spec/INSAR_GAMMA.yml 
+              job_spec/RTC_GAMMA.yml 
+              job_spec/INSAR_ISCE.yml   
+              job_spec/WATER_MAP.yml
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
@@ -61,6 +66,29 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 0
 
+          - environment: hyp3-isce
+            domain: hyp3-isce.asf.alaska.edu
+            template_bucket: cf-templates-t790khv4btdq-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 30
+            quota: 0
+            deploy_ref: refs/heads/main
+            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
+            required_surplus: 0
+
+          - environment: hyp3-tibet
+            domain: hyp3-tibet.asf.alaska.edu
+            template_bucket: cf-templates-ejaipnrxq7xg-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 30
+            quota: 0
+            deploy_ref: refs/heads/main
+            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
+            required_surplus: 0
     environment:
       name: ${{ matrix.environment }}
       url: https://${{ matrix.domain }}
