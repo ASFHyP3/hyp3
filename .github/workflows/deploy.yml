@@ -200,16 +200,20 @@ jobs:
           owner: ASFHyP3
           name: hyp3
 
+      - name: Get tag data
+        run: |
+          LABEL_QUERY='.data.repository.pullRequest.labels.nodes[].name'
+          SELECT='select(. == "major" or . == "minor" or . == "patch")'
+          echo "BUMP_PART=$(jq --raw-output  "${LABEL_QUERY} | ${SELECT}" labels.json | sort | head -1)" >> $GITHUB_ENV
+          PR_QUERY='.data.repository.commit.associatedPullRequests.edges[0].node.title'
+          echo "TAG_MSG=$(jq --raw-output "${PR_QUERY}"  pr.json)" >> $GITHUB_ENV
+
       - name: Tag version
+        if: env.BUMP_PART != 'bumpless'
         run: |
           git fetch origin +refs/tags/*:refs/tags/*
           git config user.email "UAF-asf-apd@alaska.edu"
           git config user.name "tools-bot"
-          LABEL_QUERY='.data.repository.pullRequest.labels.nodes[].name'
-          SELECT='select(. == "major" or . == "minor" or . == "patch")'
-          BUMP_PART=$(jq --raw-output  "${LABEL_QUERY} | ${SELECT}" labels.json | sort | head -1)
-          PR_QUERY='.data.repository.commit.associatedPullRequests.edges[0].node.title'
-          TAG_MSG=$(jq --raw-output "${PR_QUERY}"  pr.json)
           bump2version --current-version $(git describe --abbrev=0) \
               --tag --tag-message "${TAG_MSG}" "${BUMP_PART}"
           git push --tags
