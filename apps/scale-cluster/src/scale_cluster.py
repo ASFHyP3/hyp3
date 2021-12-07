@@ -33,11 +33,17 @@ def get_month_to_date_compute_spending():
     return float(response['ResultsByTime'][0]['Total']['UnblendedCost']['Amount'])
 
 
-def set_max_vcpus(compute_environment_arn, max_vcpus):
-    print(f'Updating {compute_environment_arn} maxvCpus to {max_vcpus}')
+def get_desired_vcpus(compute_environment_arn):
+    response = BATCH.describe_compute_environments(computeEnvironments=[compute_environment_arn])
+    return response['computeEnvironments'][0]['computeResources']['desiredvCpus']
+
+
+def set_max_vcpus(compute_environment_arn: str, max_vcpus: int, desired_vcpus: int):
+    compute_resources = {'maxvCpus': max_vcpus, 'desiredvCpus': desired_vcpus}
+    print(f'Updating {compute_environment_arn} compute resources to {compute_resources}')
     BATCH.update_compute_environment(
         computeEnvironment=compute_environment_arn,
-        computeResources={'maxvCpus': max_vcpus},
+        computeResources=compute_resources,
     )
 
 
@@ -66,4 +72,9 @@ def lambda_handler(event, context):
                               default_max_vcpus=int(environ['DEFAULT_MAX_VCPUS']),
                               expanded_max_vcpus=int(environ['EXPANDED_MAX_VCPUS']),
                               required_surplus=int(environ['REQUIRED_SURPLUS']))
-    set_max_vcpus(compute_environment_arn=environ['COMPUTE_ENVIRONMENT_ARN'], max_vcpus=max_vcpus)
+    desired_vcpus = get_desired_vcpus(environ['COMPUTE_ENVIRONMENT_ARN'])
+    set_max_vcpus(
+        compute_environment_arn=environ['COMPUTE_ENVIRONMENT_ARN'],
+        max_vcpus=max_vcpus,
+        desired_vcpus=min(desired_vcpus, max_vcpus),
+    )
