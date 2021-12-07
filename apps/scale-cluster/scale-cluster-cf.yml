@@ -71,7 +71,9 @@ Resources:
                 Action: ce:GetCostAndUsage
                 Resource: "*"
               - Effect: Allow
-                Action: batch:UpdateComputeEnvironment
+                Action:
+                - batch:DescribeComputeEnvironments
+                - batch:UpdateComputeEnvironment
                 Resource: !Ref ComputeEnvironmentArn
 
   Lambda:
