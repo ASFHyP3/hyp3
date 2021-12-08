@@ -104,5 +104,5 @@ runs:
                 ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
                 MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \
                 RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
-                PermissionsBoundaryArn='${{ inputs.PERMISSIONS_BOUNDARY_ARN }}' \
+                PermissionsBoundaryPolicyArn='${{ inputs.PERMISSIONS_BOUNDARY_ARN }}' \
                 DeployLambdasInVpc='${{ inputs.DEPLOY_LAMBDAS_IN_VPC }}'
