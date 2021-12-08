@@ -24,7 +24,6 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
-            permissions_boundary_arn: ''
             deploy_lambdas_in_vpc: false
 
           - environment: hyp3-test
@@ -38,7 +37,6 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
-            permissions_boundary_arn: ''
             deploy_lambdas_in_vpc: false
 
           - environment: edc-uat
@@ -52,7 +50,6 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
-            permissions_boundary_arn: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
             deploy_lambdas_in_vpc: false
 
           - environment: hyp3-autorift
@@ -66,7 +63,6 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            permissions_boundary_arn: ''
             deploy_lambdas_in_vpc: false
 
           - environment: hyp3-autorift-eu
@@ -80,7 +76,6 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            permissions_boundary_arn: ''
             deploy_lambdas_in_vpc: false
 
     environment:
@@ -121,7 +116,7 @@ jobs:
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
           MONTHLY_COMPUTE_BUDGET: ${{ secrets.MONTHLY_COMPUTE_BUDGET }}
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
-          PERMISSIONS_BOUNDARY_ARN: ${{ matrix.permissions_boundary_arn }}
+          PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
           DEPLOY_LAMBDAS_IN_VPC: ${{ matrix.deploy_lambdas_in_vpc }}
 
   tag:
