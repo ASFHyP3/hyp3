@@ -122,6 +122,8 @@ jobs:
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
           MONTHLY_COMPUTE_BUDGET: ${{ secrets.MONTHLY_COMPUTE_BUDGET }}
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
+          PERMISSIONS_BOUNDARY_ARN: ${{ matrix.permission_boundary_arn }}
+          DEPLOY_LAMBDAS_IN_VPC: ${{ matrix.deploy_lamdas_in_vpc }}
 
   tag:
     runs-on: ubuntu-latest
