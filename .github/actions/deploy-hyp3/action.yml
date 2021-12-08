@@ -61,7 +61,7 @@ inputs:
     required: true
   DEPLOY_LAMBDAS_IN_VPC:
     description: "Whether or not to deploy lambda functions in a VPC"
-    required: false
+    required: true
 
 runs:
   using: "composite"
