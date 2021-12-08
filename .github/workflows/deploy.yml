@@ -24,6 +24,8 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
+            permissions_boundary_arn: ''
+            deploy_lambdas_in_vpc: false
 
           - environment: hyp3-test
             domain: hyp3-test-api.asf.alaska.edu
@@ -41,6 +43,8 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
+            permissions_boundary_arn: ''
+            deploy_lambdas_in_vpc: false
 
           - environment: edc-uat
             domain: ''
@@ -53,6 +57,8 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
+            permissions_boundary_arn: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
+            deploy_lambdas_in_vpc: false
 
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
@@ -65,6 +71,8 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
+            permissions_boundary_arn: ''
+            deploy_lambdas_in_vpc: false
 
           - environment: hyp3-autorift-eu
             domain: hyp3-autorift-eu.asf.alaska.edu
@@ -77,6 +85,8 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
+            permissions_boundary_arn: ''
+            deploy_lambdas_in_vpc: false
 
           - environment: hyp3-isce
             domain: hyp3-isce.asf.alaska.edu
@@ -112,7 +122,6 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN}}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - uses: actions/setup-python@v1
@@ -140,6 +149,8 @@ jobs:
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
           MONTHLY_COMPUTE_BUDGET: ${{ secrets.MONTHLY_COMPUTE_BUDGET }}
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
+          PERMISSIONS_BOUNDARY_ARN: ${{ matrix.permissions_boundary_arn }}
+          DEPLOY_LAMBDAS_IN_VPC: ${{ matrix.deploy_lambdas_in_vpc }}
 
   tag:
     runs-on: ubuntu-latest
