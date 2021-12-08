@@ -94,6 +94,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
+            deploy_lambdas_in_vpc: false
 
           - environment: hyp3-tibet
             domain: hyp3-tibet.asf.alaska.edu
@@ -106,6 +107,8 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
+            deploy_lambdas_in_vpc: false
+
     environment:
       name: ${{ matrix.environment }}
       url: https://${{ matrix.domain }}
