@@ -55,7 +55,7 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
-            deploy_lambdas_in_vpc: false
+            deploy_lambdas_in_vpc: true
 
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
