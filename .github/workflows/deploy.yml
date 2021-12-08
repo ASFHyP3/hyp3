@@ -24,6 +24,8 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
+            permission_boundary_arn: ''
+            deploy_lamdas_in_vpc: false
 
           - environment: hyp3-test
             domain: hyp3-test-api.asf.alaska.edu
@@ -36,6 +38,8 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
+            permission_boundary_arn: ''
+            deploy_lamdas_in_vpc: false
 
           - environment: edc-uat
             domain: ''
@@ -48,6 +52,8 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
+            permission_boundary_arn: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
+            deploy_lamdas_in_vpc: false
 
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
@@ -60,6 +66,8 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
+            permission_boundary_arn: ''
+            deploy_lamdas_in_vpc: false
 
           - environment: hyp3-autorift-eu
             domain: hyp3-autorift-eu.asf.alaska.edu
@@ -72,6 +80,8 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
+            permission_boundary_arn: ''
+            deploy_lamdas_in_vpc: false
 
     environment:
       name: ${{ matrix.environment }}
