@@ -59,7 +59,7 @@ inputs:
   PERMISSIONS_BOUNDARY_ARN:
     description: "Arn of permissions boundary to provide to any created IAM roles"
     required: true
-  DEPLOY_LAMDAS_IN_VPC:
+  DEPLOY_LAMBDAS_IN_VPC:
     description: "Whether or not to deploy lambda functions in a VPC"
     required: false
 
