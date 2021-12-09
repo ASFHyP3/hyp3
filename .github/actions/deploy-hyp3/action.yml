@@ -59,8 +59,8 @@ inputs:
   PERMISSIONS_BOUNDARY_ARN:
     description: "Arn of permissions boundary to provide to any created IAM roles"
     required: true
-  DEPLOY_LAMBDAS_IN_VPC:
-    description: "Whether or not to deploy lambda functions in a VPC"
+  EARTHDATA_CLOUD:
+    description: "Modify resources/configurations to be compatible with Earthdata Cloud"
     required: true
 
 runs:
@@ -105,4 +105,4 @@ runs:
                 MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \
                 RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
                 PermissionsBoundaryPolicyArn='${{ inputs.PERMISSIONS_BOUNDARY_ARN }}' \
-                DeployLambdasInVpc='${{ inputs.DEPLOY_LAMBDAS_IN_VPC }}'
+                EarthdataCloud='${{ inputs.EARTHDATA_CLOUD }}'
