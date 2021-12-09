@@ -107,7 +107,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            earthdata_cloudv: false
+            earthdata_cloud: false
 
     environment:
       name: ${{ matrix.environment }}
