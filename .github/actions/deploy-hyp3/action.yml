@@ -60,7 +60,7 @@ inputs:
     description: "Arn of permissions boundary to provide to any created IAM roles"
     required: true
   EARTHDATA_CLOUD:
-    description: "Whether or not to exclude resources/configurations incompatable with Earthdata Cloud"
+    description: "Modify resources/configurations to be compatible with Earthdata Cloud"
     required: true
 
 runs:
