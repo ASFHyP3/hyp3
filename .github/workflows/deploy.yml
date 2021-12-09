@@ -24,7 +24,7 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
-            deploy_lambdas_in_vpc: false
+            earthdata_cloud: false
 
           - environment: hyp3-test
             domain: hyp3-test-api.asf.alaska.edu
@@ -42,7 +42,7 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
-            deploy_lambdas_in_vpc: false
+            earthdata_cloud: false
 
           - environment: edc-uat
             domain: ''
@@ -55,7 +55,7 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
-            deploy_lambdas_in_vpc: true
+            earthdata_cloud: true
 
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
@@ -68,7 +68,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            deploy_lambdas_in_vpc: false
+            earthdata_cloud: false
 
           - environment: hyp3-autorift-eu
             domain: hyp3-autorift-eu.asf.alaska.edu
@@ -81,7 +81,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            deploy_lambdas_in_vpc: false
+            earthdata_cloud: false
 
           - environment: hyp3-isce
             domain: hyp3-isce.asf.alaska.edu
@@ -94,7 +94,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            deploy_lambdas_in_vpc: false
+            earthdata_cloud: false
 
           - environment: hyp3-tibet
             domain: hyp3-tibet.asf.alaska.edu
@@ -107,7 +107,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            deploy_lambdas_in_vpc: false
+            earthdata_cloudv: false
 
     environment:
       name: ${{ matrix.environment }}
@@ -148,7 +148,7 @@ jobs:
           MONTHLY_COMPUTE_BUDGET: ${{ secrets.MONTHLY_COMPUTE_BUDGET }}
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
           PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
-          DEPLOY_LAMBDAS_IN_VPC: ${{ matrix.deploy_lambdas_in_vpc }}
+          EARTHDATA_CLOUD: ${{ matrix.earthdata_cloud }}
 
   tag:
     runs-on: ubuntu-latest
