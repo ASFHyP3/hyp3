@@ -44,7 +44,7 @@ jobs:
             required_surplus: 1000
             earthdata_cloud: false
 
-          - environment: edc-uat
+          - environment: hyp3-edc-uat
             domain: ''
             template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
             image_tag: test
