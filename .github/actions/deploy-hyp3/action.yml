@@ -80,6 +80,13 @@ runs:
       - name: Package and deploy
         shell: bash
         run: |
+          if ! [ -z ${{ inputs.CLOUDFORMATION_ROLE_ARN }} ]
+          then:
+            export $ROLE_SATEMENT="--role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }}"
+          else:
+            export $ROLE_SATEMENT=""
+          fi
+
           aws cloudformation package \
             --template-file apps/main-cf.yml \
             --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
@@ -87,7 +94,7 @@ runs:
           aws cloudformation deploy \
             --stack-name ${{ inputs.STACK_NAME }} \
             --template-file packaged.yml \
-            --role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }} \
+            $ROLE_STATEMENT \
             --capabilities CAPABILITY_IAM \
             --parameter-overrides \
                 VpcId='${{ inputs.VPC_ID }}' \
