@@ -80,9 +80,8 @@ runs:
       - name: Package and deploy
         shell: bash
         run: |
-          ! [ -z ${{ inputs.CLOUDFORMATION_ROLE_ARN }} ] \
-            && export $ROLE_SATEMENT="--role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }}" \
-            || export $ROLE_SATEMENT=""
+          [ -z ${{ inputs.CLOUDFORMATION_ROLE_ARN }} ] && export $ROLE_STATEMENT="" \
+            || export $ROLE_STATEMENT="--role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }}"
 
           aws cloudformation package \
             --template-file apps/main-cf.yml \
