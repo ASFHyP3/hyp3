@@ -80,12 +80,9 @@ runs:
       - name: Package and deploy
         shell: bash
         run: |
-          if ! [ -z ${{ inputs.CLOUDFORMATION_ROLE_ARN }} ]
-          then:
-            export $ROLE_SATEMENT="--role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }}"
-          else:
-            export $ROLE_SATEMENT=""
-          fi
+          ! [ -z ${{ inputs.CLOUDFORMATION_ROLE_ARN }} ] \
+            && export $ROLE_SATEMENT="--role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }}" \
+            || export $ROLE_SATEMENT=""
 
           aws cloudformation package \
             --template-file apps/main-cf.yml \
