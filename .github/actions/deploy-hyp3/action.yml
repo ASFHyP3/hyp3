@@ -56,6 +56,12 @@ inputs:
   REQUIRED_SURPLUS:
     description: "Amount by which month-to-date budget must exceed month-to-date spending to increase fleet size, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus."
     required: true
+  PERMISSIONS_BOUNDARY_ARN:
+    description: "Arn of permissions boundary to provide to any created IAM roles"
+    required: true
+  EARTHDATA_CLOUD:
+    description: "Modify resources/configurations to be compatible with Earthdata Cloud"
+    required: true
 
 runs:
   using: "composite"
@@ -74,6 +80,9 @@ runs:
       - name: Package and deploy
         shell: bash
         run: |
+          [ -z ${{ inputs.CLOUDFORMATION_ROLE_ARN }} ] && export ROLE_STATEMENT="" \
+            || export ROLE_STATEMENT="--role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }}"
+
           aws cloudformation package \
             --template-file apps/main-cf.yml \
             --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
@@ -81,7 +90,7 @@ runs:
           aws cloudformation deploy \
             --stack-name ${{ inputs.STACK_NAME }} \
             --template-file packaged.yml \
-            --role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }} \
+            $ROLE_STATEMENT \
             --capabilities CAPABILITY_IAM \
             --parameter-overrides \
                 VpcId='${{ inputs.VPC_ID }}' \
@@ -97,4 +106,6 @@ runs:
                 DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
                 ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
                 MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \
-                RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}'
+                RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
+                PermissionsBoundaryPolicyArn='${{ inputs.PERMISSIONS_BOUNDARY_ARN }}' \
+                EarthdataCloud='${{ inputs.EARTHDATA_CLOUD }}'

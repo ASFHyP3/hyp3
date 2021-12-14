@@ -24,6 +24,7 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
+            earthdata_cloud: false
 
           - environment: hyp3-test
             domain: hyp3-test-api.asf.alaska.edu
@@ -41,6 +42,20 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
+            earthdata_cloud: false
+
+          - environment: hyp3-edc-uat
+            domain: ''
+            template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
+            image_tag: test
+            product_lifetime_in_days: 14
+            quota: 250
+            deploy_ref: refs/heads/develop
+            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            default_max_vcpus: 600
+            expanded_max_vcpus: 1600
+            required_surplus: 1000
+            earthdata_cloud: true
 
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
@@ -53,6 +68,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
+            earthdata_cloud: false
 
           - environment: hyp3-autorift-eu
             domain: hyp3-autorift-eu.asf.alaska.edu
@@ -65,6 +81,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
+            earthdata_cloud: false
 
           - environment: hyp3-isce
             domain: hyp3-isce.asf.alaska.edu
@@ -77,6 +94,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
+            earthdata_cloud: false
 
           - environment: hyp3-tibet
             domain: hyp3-tibet.asf.alaska.edu
@@ -89,6 +107,8 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
+            earthdata_cloud: false
+
     environment:
       name: ${{ matrix.environment }}
       url: https://${{ matrix.domain }}
@@ -100,6 +120,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - uses: actions/setup-python@v1
@@ -127,6 +148,8 @@ jobs:
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
           MONTHLY_COMPUTE_BUDGET: ${{ secrets.MONTHLY_COMPUTE_BUDGET }}
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
+          PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
+          EARTHDATA_CLOUD: ${{ matrix.earthdata_cloud }}
 
   tag:
     runs-on: ubuntu-latest
