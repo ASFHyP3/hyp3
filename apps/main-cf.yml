@@ -214,6 +214,28 @@ Resources:
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - BucketKeyEnabled: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+
+  LogBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref LogBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+            - Effect: Allow
+              Principal:
+                service: logging.s3.amazonaws.com
+              Action:
+                - s3:PutObject
+              Resource: !GetAtt LogBucket.Arn
+              Condition:
+                ArnLike:
+                  "aws:SourceArn": !Sub "arn:aws:s3:::${ContentBucket.Arn}"
+                StringEquals:
+                  "aws:SourceAccount": !Ref AWS::AccountId
 
   ContentBucket:
     Type: AWS::S3::Bucket
@@ -250,6 +272,9 @@ Resources:
               - HEAD
             AllowedOrigins:
               - "*.asf.alaska.edu"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
 
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
