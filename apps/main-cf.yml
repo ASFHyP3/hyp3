@@ -225,17 +225,16 @@ Resources:
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-            - Effect: Allow
-              Principal:
-                service: logging.s3.amazonaws.com
-              Action:
-                - s3:PutObject
-              Resource: !GetAtt LogBucket.Arn
-              Condition:
-                ArnLike:
-                  "aws:SourceArn": !Sub "arn:aws:s3:::${ContentBucket.Arn}"
-                StringEquals:
-                  "aws:SourceAccount": !Ref AWS::AccountId
+          - Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Sub "${LogBucket.Arn}/*"
+            Condition:
+              ArnLike:
+                "aws:SourceArn": !GetAtt ContentBucket.Arn
+              StringEquals:
+                "aws:SourceAccount": !Ref AWS::AccountId
 
   ContentBucket:
     Type: AWS::S3::Bucket
