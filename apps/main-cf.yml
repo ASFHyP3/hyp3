@@ -213,7 +213,9 @@ Resources:
         RestrictPublicBuckets: True
       BucketEncryption:
         ServerSideEncryptionConfiguration:
-          - BucketKeyEnabled: true
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+            BucketKeyEnabled: true
 
   ContentBucket:
     Type: AWS::S3::Bucket
