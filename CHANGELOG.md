@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - s3 access log bucket is now encrypted using [AWS S3 Bucket Keys](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html)
 
-
 ## [2.7.2](https://github.com/ASFHyP3/hyp3/compare/v2.7.1...v2.7.2)
 ### Changed
 - The `scale-cluster` lambda now reduces `desiredVpucs` to match `maxVcpus` when necessary to allow the compute
