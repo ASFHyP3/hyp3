@@ -211,6 +211,9 @@ Resources:
         IgnorePublicAcls: True
         BlockPublicPolicy: True
         RestrictPublicBuckets: True
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - BucketKeyEnabled: true
 
   ContentBucket:
     Type: AWS::S3::Bucket
@@ -247,6 +250,9 @@ Resources:
               - HEAD
             AllowedOrigins:
               - "*.asf.alaska.edu"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - BucketKeyEnabled: true
 
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
