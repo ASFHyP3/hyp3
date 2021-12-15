@@ -250,9 +250,6 @@ Resources:
               - HEAD
             AllowedOrigins:
               - "*.asf.alaska.edu"
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - BucketKeyEnabled: true
 
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
