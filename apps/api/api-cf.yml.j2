@@ -60,7 +60,6 @@ Resources:
   Api:
     Type: AWS::ApiGateway::RestApi
     Properties:
-      Name: !Ref AWS::StackName
       EndpointConfiguration:
         Types:
           - REGIONAL
@@ -73,17 +72,15 @@ Resources:
                 type: aws_proxy
                 uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
                 httpMethod: POST
-                passthroughBehavior: when_no_match
           /{proxy+}:
             x-amazon-apigateway-any-method:
               x-amazon-apigateway-integration:
                 type: aws_proxy
                 uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
                 httpMethod: POST
-                passthroughBehavior: when_no_match
 
-  {% set deployment_id = range(1, 999999) | random %}
-  Deployment{{ deployment_id }}:
+  {% set random_id = range(1, 999999) | random %}
+  Deployment{{ random_id }}:
     Type: AWS::ApiGateway::Deployment
     Properties:
       RestApiId: !Ref Api
@@ -92,7 +89,7 @@ Resources:
     Type: AWS::ApiGateway::Stage
     Properties:
       RestApiId: !Ref Api
-      DeploymentId: !Ref Deployment{{ deployment_id }}
+      DeploymentId: !Ref Deployment{{ random_id }}
       AccessLogSetting:
         DestinationArn: !GetAtt ApiLogGroup.Arn
         Format: '{"sourceIp":"$context.identity.sourceIp","httpMethod":"$context.httpMethod","path":"$context.path","status":"$context.status","responseLength":"$context.responseLength","responseLatency":"$context.responseLatency","requestTime":"$context.requestTime","protocol":"$context.protocol","userAgent":"$context.identity.userAgent","requestId":"$context.requestId"}'
