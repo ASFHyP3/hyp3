@@ -54,9 +54,9 @@ jobs:
             quota: 250
             deploy_ref: refs/heads/develop
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            default_max_vcpus: 600
-            expanded_max_vcpus: 1600
-            required_surplus: 1000
+            default_max_vcpus: 60
+            expanded_max_vcpus: 60
+            required_surplus: 0
             earthdata_cloud: true
             ami_id: image_id_ecs_amz2
 
