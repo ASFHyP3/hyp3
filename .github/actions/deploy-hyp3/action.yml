@@ -62,6 +62,9 @@ inputs:
   EARTHDATA_CLOUD:
     description: "Modify resources/configurations to be compatible with Earthdata Cloud"
     required: true
+  AMI_ID:
+    description: "Name of the Systems Manager parameter from which to retrieve the current Ami Id"
+    required: true
 
 runs:
   using: "composite"
@@ -108,4 +111,5 @@ runs:
                 MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \
                 RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
                 PermissionsBoundaryPolicyArn='${{ inputs.PERMISSIONS_BOUNDARY_ARN }}' \
-                EarthdataCloud='${{ inputs.EARTHDATA_CLOUD }}'
+                EarthdataCloud='${{ inputs.EARTHDATA_CLOUD }}' \
+                AmiId='${{ inputs.AMI_ID }}'
