@@ -50,7 +50,7 @@ Conditions:
 Outputs:
 
   Url:
-    Value: !If [UseCustomDomainName, !Sub "https://${CustomDomainName}/ui", !Sub "${Api.ApiEndpoint}/ui"]
+    Value: !If [UseCustomDomainName, !Sub "https://${CustomDomainName}/ui", !Sub "https://${Api}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/ui"]
 
   ApiId:
     Value: !Ref Api
@@ -58,21 +58,44 @@ Outputs:
 Resources:
 
   Api:
-    Type: AWS::ApiGatewayV2::Api
+    Type: AWS::ApiGateway::RestApi
     Properties:
       Name: !Ref AWS::StackName
-      ProtocolType: HTTP
-      Target: !GetAtt Lambda.Arn
-      CredentialsArn: !GetAtt ApiRole.Arn
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Body:
+        openapi: 3.0.3
+        paths:
+          /:
+            x-amazon-apigateway-any-method:
+              x-amazon-apigateway-integration:
+                type: aws_proxy
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
+                httpMethod: POST
+                passthroughBehavior: when_no_match
+          /{proxy+}:
+            x-amazon-apigateway-any-method:
+              x-amazon-apigateway-integration:
+                type: aws_proxy
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
+                httpMethod: POST
+                passthroughBehavior: when_no_match
 
-  ApiOverrides:
-    Type: AWS::ApiGatewayV2::ApiGatewayManagedOverrides
+  {% set deployment_id = range(1, 999999) | random %}
+  Deployment{{ deployment_id }}:
+    Type: AWS::ApiGateway::Deployment
     Properties:
-      ApiId: !Ref Api
-      Stage:
-        AccessLogSettings:
-          DestinationArn: !GetAtt ApiLogGroup.Arn
-          Format: '{"sourceIp":"$context.identity.sourceIp","httpMethod":"$context.httpMethod","path":"$context.path","status":"$context.status","responseLength":"$context.responseLength","responseLatency":"$context.responseLatency","requestTime":"$context.requestTime","protocol":"$context.protocol","userAgent":"$context.identity.userAgent","requestId":"$context.requestId"}'
+      RestApiId: !Ref Api
+
+  Stage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref Api
+      DeploymentId: !Ref Deployment{{ deployment_id }}
+      AccessLogSetting:
+        DestinationArn: !GetAtt ApiLogGroup.Arn
+        Format: '{"sourceIp":"$context.identity.sourceIp","httpMethod":"$context.httpMethod","path":"$context.path","status":"$context.status","responseLength":"$context.responseLength","responseLatency":"$context.responseLatency","requestTime":"$context.requestTime","protocol":"$context.protocol","userAgent":"$context.identity.userAgent","requestId":"$context.requestId"}'
 
   ApiLogGroup:
     Type: AWS::Logs::LogGroup
@@ -80,41 +103,23 @@ Resources:
       RetentionInDays: 180
 
   CustomDomainName:
-    Type: AWS::ApiGatewayV2::DomainName
+    Type: AWS::ApiGateway::DomainName
     Condition: UseCustomDomainName
     Properties:
       DomainName: !Ref DomainName
-      DomainNameConfigurations:
-        - CertificateArn: !Ref CertificateArn
-          EndpointType: REGIONAL
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      RegionalCertificateArn: !Ref CertificateArn
+      SecurityPolicy: TLS_1_2
 
-  ApiMapping:
-    Type: AWS::ApiGatewayV2::ApiMapping
+  BasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
     Condition: UseCustomDomainName
     Properties:
-      ApiId: !Ref Api
       DomainName: !Ref CustomDomainName
-      Stage: $default
-
-  ApiRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          Action: sts:AssumeRole
-          Principal:
-            Service: apigateway.amazonaws.com
-          Effect: Allow
-      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
-      Policies:
-        - PolicyName: policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action: lambda:InvokeFunction
-                Resource: !GetAtt Lambda.Arn
+      RestApiId: !Ref Api
+      Stage: !Ref Stage
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -188,3 +193,11 @@ Resources:
               - !Ref SecurityGroupId
             SubnetIds: !Ref SubnetIds
           - !Ref AWS::NoValue
+
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt Lambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${Api}/*"
