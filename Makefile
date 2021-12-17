@@ -37,4 +37,5 @@ clean:
 	rm -f apps/api/src/hyp3_api/api-spec/job_parameters.yml \
 	    apps/api/src/hyp3_api/job_validation_map.yml \
 	    apps/step-function.json \
-	    apps/workflow-cf.yml
+	    apps/workflow-cf.yml \
+	    apps/api/api-cf.yml
