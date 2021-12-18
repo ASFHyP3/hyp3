@@ -101,22 +101,20 @@ Resources:
       RetentionInDays: 180
 
   CustomDomainName:
-    Type: AWS::ApiGateway::DomainName
+    Type: AWS::ApiGatewayV2::DomainName
     Condition: UseCustomDomainName
     Properties:
       DomainName: !Ref DomainName
-      EndpointConfiguration:
-        Types:
-          - REGIONAL
-      RegionalCertificateArn: !Ref CertificateArn
-      SecurityPolicy: TLS_1_2
+      DomainNameConfigurations:
+        - CertificateArn: !Ref CertificateArn
+          EndpointType: REGIONAL
 
-  BasePathMapping:
-    Type: AWS::ApiGateway::BasePathMapping
+  ApiMapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
     Condition: UseCustomDomainName
     Properties:
+      ApiId: !Ref RestApi
       DomainName: !Ref CustomDomainName
-      RestApiId: !Ref RestApi
       Stage: !Ref Stage
 
   LambdaLogGroup:
