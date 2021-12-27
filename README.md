@@ -29,6 +29,7 @@ These resources are required for a successful deployment, but managed separately
 - DNS record for custom API domain name
 - SSL certificate in AWS Certificate Manager for custom API domain name
 - EarthData Login account authorized to download data from ASF
+- IAM role configured for [REST API access logging](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html#set-up-access-logging-permissions)
 - default VPC
 - IAM user and roles for automated CloudFormation deployments (if desired)
 
