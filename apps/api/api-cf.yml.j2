@@ -50,29 +50,50 @@ Conditions:
 Outputs:
 
   Url:
-    Value: !If [UseCustomDomainName, !Sub "https://${CustomDomainName}/ui", !Sub "${Api.ApiEndpoint}/ui"]
+    Value: !If [UseCustomDomainName, !Sub "https://${CustomDomainName}/ui", !Sub "https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/ui"]
 
   ApiId:
-    Value: !Ref Api
+    Value: !Ref RestApi
 
 Resources:
 
-  Api:
-    Type: AWS::ApiGatewayV2::Api
+  RestApi:
+    Type: AWS::ApiGateway::RestApi
     Properties:
-      Name: !Ref AWS::StackName
-      ProtocolType: HTTP
-      Target: !GetAtt Lambda.Arn
-      CredentialsArn: !GetAtt ApiRole.Arn
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Body:
+        openapi: 3.0.3
+        paths:
+          /:
+            x-amazon-apigateway-any-method:
+              x-amazon-apigateway-integration:
+                type: aws_proxy
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
+                httpMethod: POST
+          /{proxy+}:
+            x-amazon-apigateway-any-method:
+              x-amazon-apigateway-integration:
+                type: aws_proxy
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
+                httpMethod: POST
 
-  ApiOverrides:
-    Type: AWS::ApiGatewayV2::ApiGatewayManagedOverrides
+  {% set random_id = range(1, 999999) | random %}
+  Deployment{{ random_id }}:
+    Type: AWS::ApiGateway::Deployment
     Properties:
-      ApiId: !Ref Api
-      Stage:
-        AccessLogSettings:
-          DestinationArn: !GetAtt ApiLogGroup.Arn
-          Format: '{"sourceIp":"$context.identity.sourceIp","httpMethod":"$context.httpMethod","path":"$context.path","status":"$context.status","responseLength":"$context.responseLength","responseLatency":"$context.responseLatency","requestTime":"$context.requestTime","protocol":"$context.protocol","userAgent":"$context.identity.userAgent","requestId":"$context.requestId"}'
+      RestApiId: !Ref RestApi
+
+  Stage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      StageName: api
+      RestApiId: !Ref RestApi
+      DeploymentId: !Ref Deployment{{ random_id }}
+      AccessLogSetting:
+        DestinationArn: !GetAtt ApiLogGroup.Arn
+        Format: '{"sourceIp":"$context.identity.sourceIp","httpMethod":"$context.httpMethod","path":"$context.path","status":"$context.status","responseLength":"$context.responseLength","responseLatency":"$context.responseLatency","requestTime":"$context.requestTime","protocol":"$context.protocol","userAgent":"$context.identity.userAgent","requestId":"$context.requestId"}'
 
   ApiLogGroup:
     Type: AWS::Logs::LogGroup
@@ -92,29 +113,9 @@ Resources:
     Type: AWS::ApiGatewayV2::ApiMapping
     Condition: UseCustomDomainName
     Properties:
-      ApiId: !Ref Api
+      ApiId: !Ref RestApi
       DomainName: !Ref CustomDomainName
-      Stage: $default
-
-  ApiRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          Action: sts:AssumeRole
-          Principal:
-            Service: apigateway.amazonaws.com
-          Effect: Allow
-      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
-      Policies:
-        - PolicyName: policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action: lambda:InvokeFunction
-                Resource: !GetAtt Lambda.Arn
+      Stage: !Ref Stage
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -188,3 +189,11 @@ Resources:
               - !Ref SecurityGroupId
             SubnetIds: !Ref SubnetIds
           - !Ref AWS::NoValue
+
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt Lambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*"
