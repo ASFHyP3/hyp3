@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [2.7.4](https://github.com/ASFHyP3/hyp3/compare/v2.7.3...v2.7.4)
+### Added
+- Enabled default encryption for the monitoring SNS topic
+
 ### Changed
 - Block Public Access settings for the S3 content bucket are now configured based on the EarthdataCloud stack parameter.
 
