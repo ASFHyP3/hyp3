@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Enabled default encryption for the monitoring SNS topic
 
+### Changed
+- Block Public Access settings for the S3 content bucket are now configured based on the EarthdataCloud stack parameter.
+
 ## [2.7.3](https://github.com/ASFHyP3/hyp3/compare/v2.7.2...v2.7.3)
 ### Changed
 - s3 access log bucket is now encrypted using [AWS S3 Bucket Keys](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html)
