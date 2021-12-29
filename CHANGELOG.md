@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.7.5](https://github.com/ASFHyP3/hyp3/compare/v2.7.4...v2.7.5)
+### Removed
+- Disabled default encryption for the monitoring SNS topic. Fixes [#762](https://github.com/ASFHyP3/hyp3/issues/762).
+
 ## [2.7.4](https://github.com/ASFHyP3/hyp3/compare/v2.7.3...v2.7.4)
 ### Added
 - Enabled default encryption for the monitoring SNS topic
@@ -206,7 +210,7 @@ to the database but still validate it.
 ### Added
 - INSAR_GAMMA jobs now expose `include_inc_map` parameter that allows users to include an incidence angle map.
 
-## Fixed
+### Fixed
 - Updated API GATEWAY payload format to version 2.0 to support later versions of serverless wsgi
 
 ## [1.1.1](https://github.com/ASFHyP3/hyp3/compare/v1.1.0...v1.1.1)
