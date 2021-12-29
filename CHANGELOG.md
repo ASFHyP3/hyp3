@@ -7,8 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.8.0](https://github.com/ASFHyP3/hyp3/compare/v2.7.3...v2.8.0)
 ### Changed
-- The HyP3 API is now implemented as an API Gateway REST API, a prerequisite for upcoming work to support private API
-  deployments.
+- The HyP3 API is now implemented as an API Gateway REST API, supporting private API deployments.
+
+## [2.7.4](https://github.com/ASFHyP3/hyp3/compare/v2.7.3...v2.7.4)
+### Added
+- Enabled default encryption for the monitoring SNS topic
+
+### Changed
+- Block Public Access settings for the S3 content bucket are now configured based on the EarthdataCloud stack parameter.
 
 ## [2.7.3](https://github.com/ASFHyP3/hyp3/compare/v2.7.2...v2.7.3)
 ### Changed

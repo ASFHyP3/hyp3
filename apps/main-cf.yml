@@ -229,8 +229,8 @@ Resources:
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
         IgnorePublicAcls: True
-        BlockPublicPolicy: False
-        RestrictPublicBuckets: False
+        BlockPublicPolicy: !If [PublicBucket, False, True]
+        RestrictPublicBuckets: !If [PublicBucket, False, True]
       LifecycleConfiguration:
         Rules:
           - Status: Enabled
