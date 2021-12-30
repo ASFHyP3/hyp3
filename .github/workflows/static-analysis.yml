@@ -62,6 +62,5 @@ jobs:
           sed -i 's/"Resource": "${.*}"/"Resource": "foo:bar"/' apps/step-function.json
           statelint apps/step-function.json
 
-
   call-secrets-analysis-workflow:
     uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@main
