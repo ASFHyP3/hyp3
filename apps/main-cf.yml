@@ -69,6 +69,10 @@ Parameters:
     Type: String
     Default: ""
 
+  OriginAccessIdentityId:
+    Type: String
+    Default: ""
+
   EarthdataCloud:
     Type: String
     Default: false
@@ -255,20 +259,19 @@ Resources:
 
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
-    Condition: PublicBucket
     Properties:
       Bucket: !Ref ContentBucket
       PolicyDocument:
         Version: 2012-10-17
         Statement:
           - Effect: Allow
-            Principal: "*"
+            Principal: !If [PublicBucket, "*", {"AWS": !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"}]
             Action:
               - s3:GetObject
               - s3:GetObjectTagging
             Resource: !Sub "${ContentBucket.Arn}/*"
           - Effect: Allow
-            Principal: "*"
+            Principal: !If [PublicBucket, "*", {"AWS": !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"}]
             Action: s3:ListBucket
             Resource: !GetAtt ContentBucket.Arn
 
