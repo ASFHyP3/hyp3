@@ -70,6 +70,7 @@ Parameters:
     Default: ""
 
   OriginAccessIdentityId:
+    Description: ID of the CloudFront Origin Access Identity used to access data in S3 for Earthdata Cloud deployments
     Type: String
     Default: ""
 

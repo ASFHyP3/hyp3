@@ -59,6 +59,9 @@ inputs:
   PERMISSIONS_BOUNDARY_ARN:
     description: "Arn of permissions boundary to provide to any created IAM roles"
     required: true
+  ORIGIN_ACCESS_IDENTITY_ID:
+    description: "ID of the CloudFront Origin Access Identity used to access data in S3 for Earthdata Cloud deployments"
+    required: true
   EARTHDATA_CLOUD:
     description: "Modify resources/configurations to be compatible with Earthdata Cloud"
     required: true
@@ -111,5 +114,6 @@ runs:
                 MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \
                 RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
                 PermissionsBoundaryPolicyArn='${{ inputs.PERMISSIONS_BOUNDARY_ARN }}' \
+                OriginAccessIdentityId='${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }}' \
                 EarthdataCloud='${{ inputs.EARTHDATA_CLOUD }}' \
                 AmiId='${{ inputs.AMI_ID }}'
