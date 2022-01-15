@@ -69,7 +69,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-      - name: install dependancies and render templates
+      - name: install dependencies and render templates
         shell: bash
         run: |
           pip install --upgrade pip
