@@ -21,10 +21,7 @@ A processing environment for HyP3 Plugins in AWS.
 ### Prerequisites
 These resources are required for a successful deployment, but managed separately:
 
-- HyP3 plugin container images and tags:
-  - RTC_GAMMA
-  - INSAR_GAMMA
-  - AUTORIFT
+- HyP3 plugin container images and tags. Current plugins are defined in [`job_spec`](./job_spec).
 - S3 bucket for CloudFormation deployment artifacts
 - DNS record for custom API domain name
 - SSL certificate in AWS Certificate Manager for custom API domain name
@@ -52,11 +49,7 @@ make render
 - Install Python dependencies for AWS Lambda functions (requires pip for python 3.8)
 
 ```sh
-python -m pip install -r requirements-apps-api.txt -t apps/api/src
-python -m pip install -r requirements-apps-process-new-granules.txt -t apps/process-new-granules/src
-python -m pip install -r requirements-apps-update-db.txt -t apps/update-db/src
-python -m pip install -r requirements-apps-scale-cluster.txt -t apps/scale-cluster/src
-python -m pip install -r requirements-apps-start-execution.txt -t apps/start-execution/src
+make build
 ```
 
 - Package the CloudFormation template
@@ -88,6 +81,12 @@ aws cloudformation deploy \
 ```
 - Check API at `https://<Domain Name>/ui`
 
+- (Optional) clean render and build artifacts
+```sh
+make clean  # just the render artifacts
+make distclean  # render and build artifacts
+```
+*Note: `distclean` will remove any [untracked files](https://git-scm.com/docs/git-ls-files#Documentation/git-ls-files.txt--o) in the `apps/` directory.*
 
 ## Running the Tests
 Tests for each HyP3 module are located in `tests/`. To run them you need to do a bit of setup first.
