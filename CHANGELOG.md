@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [2.7.6](https://github.com/ASFHyP3/hyp3/compare/v2.7.5...v2.7.6)
-### Changed
+### Added
 - Added build target to Makefile.
 
 ## [2.7.5](https://github.com/ASFHyP3/hyp3/compare/v2.7.4...v2.7.5)
