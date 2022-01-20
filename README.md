@@ -34,6 +34,9 @@ Review the parameters in [cloudformation.yml](apps/main-cf.yml) for deploy time 
 
 ### Deploy with CloudFormation
 
+To deploy HyP3 with reasonable defaults, follow the steps below. For more advanced
+deployment configuration, see the [deployment GitHub Action](.github/actions/deploy-hyp3/action.yml).
+
 From the repository root, 
 
 - Install dependencies for build and run
@@ -41,13 +44,7 @@ From the repository root,
 make install
 ```
 
-- Render cloudformation templates
-```sh
-make render
-```
-
 - Install Python dependencies for AWS Lambda functions (requires pip for python 3.8)
-
 ```sh
 make build
 ```
@@ -72,12 +69,8 @@ aws cloudformation deploy \
                 "SubnetIds=<comma separated list of subnet ids>" \
                 "EDLUsername=<EDL Username to download products>" \
                 "EDLPassword=<EDL Password to download products>" \
-                "ImageTag=<docker image tag>" \
-                "ProductLifetimeInDays=<product lifetime (expiration) time in days>" \
                 "DomainName=<Domain Name>" \
-                "CertificateArn=<arn for ssl certificate>" \
-                "MonthlyJobQuotaPerUser=<quota>" \
-                "BannedCidrBlocks=<CIDR blocks to ban>"
+                "CertificateArn=<arn for ssl certificate>"
 ```
 - Check API at `https://<Domain Name>/ui`
 
