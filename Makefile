@@ -1,11 +1,20 @@
 API = ${PWD}/apps/api/src
 GET_FILES = ${PWD}/apps/get-files/src
+PROCESS_NEW_GRANULES = ${PWD}/apps/process-new-granules/src
 SCALE_CLUSTER = ${PWD}/apps/scale-cluster/src
 START_EXECUTION = ${PWD}/apps/start-execution/src
+UPDATE_DB = ${PWD}/apps/update-db/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
-PROCESS_NEW_GRANULES = ${PWD}/apps/process-new-granules/src
 DYNAMO = ${PWD}/lib/dynamo
-export PYTHONPATH = ${API}:${GET_FILES}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPLOAD_LOG}:${PROCESS_NEW_GRANULES}:${DYNAMO}
+export PYTHONPATH = ${API}:${GET_FILES}:${PROCESS_NEW_GRANULES}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}
+
+
+build: render
+	python -m pip install --upgrade -r requirements-apps-api.txt -t ${API}; \
+	python -m pip install --upgrade -r requirements-apps-process-new-granules.txt -t ${PROCESS_NEW_GRANULES}; \
+	python -m pip install --upgrade -r requirements-apps-scale-cluster.txt -t ${SCALE_CLUSTER}; \
+	python -m pip install --upgrade -r requirements-apps-start-execution.txt -t ${START_EXECUTION}; \
+	python -m pip install --upgrade -r requirements-apps-update-db.txt -t ${UPDATE_DB}
 
 tests: render
 	export $$(xargs < tests/cfg.env); \
@@ -38,3 +47,8 @@ clean:
 	    apps/api/src/hyp3_api/job_validation_map.yml \
 	    apps/step-function.json \
 	    apps/workflow-cf.yml
+
+distclean: clean
+	git ls-files -o -- apps | xargs rm; \
+	find ./apps/ -empty -type d -delete; \
+	rm -f packaged.yml

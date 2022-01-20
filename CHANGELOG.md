@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.7.7](https://github.com/ASFHyP3/hyp3/compare/v2.7.6...v2.7.7)
+### Changed
+- Use Managed Policies for IAM permissions in support of future deployments using custom CloudFormation IAM resources
+
+## [2.7.6](https://github.com/ASFHyP3/hyp3/compare/v2.7.5...v2.7.6)
+### Added
+- Added build target to Makefile.
+
 ## [2.7.5](https://github.com/ASFHyP3/hyp3/compare/v2.7.4...v2.7.5)
 ### Removed
 - Disabled default encryption for the monitoring SNS topic. Fixes [#762](https://github.com/ASFHyP3/hyp3/issues/762).
