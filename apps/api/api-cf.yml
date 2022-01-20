@@ -108,9 +108,9 @@ Resources:
           Effect: Allow
       PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       ManagedPolicyArns:
-        - !Ref TaskPolicy
+        - !Ref Policy
 
-  TaskPolicy:
+  Policy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
