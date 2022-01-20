@@ -14,11 +14,16 @@ Parameters:
   SubnetIds:
     Type: CommaDelimitedList
 
+  JPLRoles:
+    Type: String
+
 Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
 
   LambdasInVpc: !Not [!Equals [!Ref SecurityGroupId, ""]]
+
+  UseJPLRoles: !Not [!Equals [!Ref JPLRoles, ""]]
 
 Outputs:
 
@@ -34,8 +39,10 @@ Resources:
       RetentionInDays: 90
 
   Role:
-    Type: AWS::IAM::Role
+    Type: !If [UseJPLRoles, Custom::JplRole, AWS::IAM::Role]
     Properties:
+      ServiceToken: !If [UseJPLRoles, !ImportValue Custom::JplRole::ServiceToken, !Ref AWS::NoValue]
+      Path: !If [UseJPLRoles, /account-managed/hyp3/, !Ref AWS::NoValue]
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -49,8 +56,10 @@ Resources:
         - !Ref Policy
 
   Policy:
-    Type: AWS::IAM::ManagedPolicy
+    Type: !If [UseJPLRoles, Custom::JplPolicy, AWS::IAM::ManagedPolicy]
     Properties:
+      ServiceToken: !If [UseJPLRoles, !ImportValue Custom::JplPolicy::ServiceToken, !Ref AWS::NoValue]
+      Path: !If [UseJPLRoles, /account-managed/hyp3/, !Ref AWS::NoValue]
       PolicyDocument:
         Version: 2012-10-17
         Statement:

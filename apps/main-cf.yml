@@ -69,12 +69,14 @@ Parameters:
     Type: String
     Default: ""
 
-  EarthdataCloud:
+  SecurityEnvironment:
     Type: String
-    Default: false
+    Default: ASF
     AllowedValues:
-      - false
-      - true
+      - ASF
+      - EDC
+      - JPL
+    Description: Specify the deploy envionment as ASF (Default), EDC, or JPL.
 
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
@@ -106,11 +108,13 @@ Parameters:
 
 Conditions:
 
-  LambdasInVpc: !Equals [!Ref EarthdataCloud, "true"]
+  LambdasInVpc: !Equals [!Ref SecurityEnvironment, "EDC"]
 
-  PublicBucket: !Equals [!Ref EarthdataCloud, "false"]
+  PublicBucket: !Equals [!Ref SecurityEnvironment, "EDC"]
 
   ScaleCluster: !Not [!Equals [!Ref DefaultMaxvCpus, !Ref ExpandedMaxvCpus]]
+
+  UseJPLRoles: !Equals [!Ref SecurityEnvironment, "JPL"]
 
 Outputs:
 
@@ -136,6 +140,7 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
         SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        JPLRoles: !If [UseJPLRoles, "true", ""]
       TemplateURL: api/api-cf.yml
 
   Cluster:
@@ -148,6 +153,7 @@ Resources:
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        JPLRoles: !If [UseJPLRoles, "true", ""]
       TemplateURL: compute-cf.yml
 
   ScaleCluster:
@@ -163,6 +169,7 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
         SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: scale-cluster/scale-cluster-cf.yml
 
   ProcessNewGranules:
@@ -176,6 +183,7 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
         SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
   StepFunction:
@@ -192,6 +200,7 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
         SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: workflow-cf.yml
 
   Monitoring:

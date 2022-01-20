@@ -59,8 +59,8 @@ inputs:
   PERMISSIONS_BOUNDARY_ARN:
     description: "Arn of permissions boundary to provide to any created IAM roles"
     required: true
-  EARTHDATA_CLOUD:
-    description: "Modify resources/configurations to be compatible with Earthdata Cloud"
+  SECURITY_ENVIRONMENT:
+    description: "Modify resources/configurations for ASF (default), EDC, or JPL security environments"
     required: true
   AMI_ID:
     description: "Name of the Systems Manager parameter from which to retrieve the current Ami Id"
@@ -106,5 +106,5 @@ runs:
                 MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \
                 RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
                 PermissionsBoundaryPolicyArn='${{ inputs.PERMISSIONS_BOUNDARY_ARN }}' \
-                EarthdataCloud='${{ inputs.EARTHDATA_CLOUD }}' \
+                SecurityEnvironment='${{ inputs.SECURITY_ENVIRONMENT }}' \
                 AmiId='${{ inputs.AMI_ID }}'

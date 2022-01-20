@@ -21,9 +21,14 @@ Parameters:
   PermissionsBoundaryPolicyArn:
     Type: String
 
+  JPLRoles:
+    Type: String
+
 Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
+
+  UseJPLRoles: !Not [!Equals [!Ref JPLRoles, ""]]
 
 Outputs:
 
@@ -96,8 +101,10 @@ Resources:
           Order: 1
 
   TaskRole:
-    Type: AWS::IAM::Role
+    Type: !If [UseJPLRoles, Custom::JplRole, AWS::IAM::Role]
     Properties:
+      ServiceToken: !If [UseJPLRoles, !ImportValue Custom::JplRole::ServiceToken, !Ref AWS::NoValue]
+      Path: !If [UseJPLRoles, /account-managed/hyp3/, !Ref AWS::NoValue]
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -111,8 +118,10 @@ Resources:
         - !Ref TaskPolicy
 
   TaskPolicy:
-    Type: AWS::IAM::ManagedPolicy
+    Type: !If [UseJPLRoles, Custom::JplPolicy, AWS::IAM::ManagedPolicy]
     Properties:
+      ServiceToken: !If [UseJPLRoles, !ImportValue Custom::JplPolicy::ServiceToken, !Ref AWS::NoValue]
+      Path: !If [UseJPLRoles, /account-managed/hyp3/, !Ref AWS::NoValue]
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -124,8 +133,10 @@ Resources:
             Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
 
   BatchServiceRole:
-    Type: AWS::IAM::Role
+    Type: !If [UseJPLRoles, Custom::JplRole, AWS::IAM::Role]
     Properties:
+      ServiceToken: !If [UseJPLRoles, !ImportValue Custom::JplRole::ServiceToken, !Ref AWS::NoValue]
+      Path: !If [UseJPLRoles, /account-managed/hyp3/, !Ref AWS::NoValue]
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -138,8 +149,10 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
 
   InstanceRole:
-    Type: AWS::IAM::Role
+    Type: !If [UseJPLRoles, Custom::JplRole, AWS::IAM::Role]
     Properties:
+      ServiceToken: !If [UseJPLRoles, !ImportValue Custom::JplRole::ServiceToken, !Ref AWS::NoValue]
+      Path: !If [UseJPLRoles, /account-managed/hyp3/, !Ref AWS::NoValue]
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -154,5 +167,6 @@ Resources:
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
+      Path: !If [UseJPLRoles, /account-managed/hyp3/, !Ref AWS::NoValue]
       Roles:
         - !Ref InstanceRole
