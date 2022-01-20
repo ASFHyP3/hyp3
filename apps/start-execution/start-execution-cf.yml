@@ -43,9 +43,10 @@ Resources:
           Effect: Allow
       PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       ManagedPolicyArns:
-        - !Ref TaskPolicy
+        - !If [LambdasInVpc, arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole, !Ref AWS::NoValue]
+        - !Ref Policy
 
-  TaskPolicy:
+  Policy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
