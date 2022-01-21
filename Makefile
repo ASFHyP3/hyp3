@@ -28,8 +28,9 @@ install:
 	python -m pip install -r requirements-all.txt
 
 files ?= job_spec/*.yml
+security_environment ?= ASF
 render:
-	@echo rendering $(files); python apps/render_cf.py $(files)
+	@echo rendering $(files) for $(security_environment); python apps/render_cf.py $(files) -s $(security_environment)
 
 static: flake8 openapi-validate cfn-lint
 
@@ -40,7 +41,7 @@ openapi-validate: render
 	prance validate --backend=openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
 
 cfn-lint: render
-	cfn-lint --info --ignore-checks W3002 --template `find . -name *-cf.yml`
+	cfn-lint --info -i W3002 -i E3008 --template `find . -name *-cf.yml`
 
 clean:
 	git ls-files -o -- apps | xargs rm;

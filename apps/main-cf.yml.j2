@@ -114,8 +114,6 @@ Conditions:
 
   ScaleCluster: !Not [!Equals [!Ref DefaultMaxvCpus, !Ref ExpandedMaxvCpus]]
 
-  UseJPLRoles: !Equals [!Ref SecurityEnvironment, "JPL"]
-
 Outputs:
 
   ApiUrl:
@@ -140,7 +138,6 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
         SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
-        JPLRoles: !If [UseJPLRoles, "true", ""]
       TemplateURL: api/api-cf.yml
 
   Cluster:
@@ -153,7 +150,6 @@ Resources:
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        JPLRoles: !If [UseJPLRoles, "true", ""]
       TemplateURL: compute-cf.yml
 
   ScaleCluster:
@@ -169,7 +165,6 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
         SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
-        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: scale-cluster/scale-cluster-cf.yml
 
   ProcessNewGranules:
@@ -183,7 +178,6 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
         SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
-        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
   StepFunction:
@@ -200,7 +194,6 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
         SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
-        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: workflow-cf.yml
 
   Monitoring:

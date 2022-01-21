@@ -15,16 +15,11 @@ Parameters:
   SubnetIds:
     Type: CommaDelimitedList
 
-  JPLRoles:
-    Type: String
-
 Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
 
   LambdasInVpc: !Not [!Equals [!Ref SecurityGroupId, ""]]
-
-  UseJPLRoles: !Not [!Equals [!Ref JPLRoles, ""]]
 
 Outputs:
 
@@ -40,10 +35,12 @@ Resources:
       RetentionInDays: 90
 
   Role:
-    Type: !If [UseJPLRoles, Custom::JplRole, AWS::IAM::Role]
+    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
     Properties:
-      ServiceToken: !If [UseJPLRoles, !ImportValue Custom::JplRole::ServiceToken, !Ref AWS::NoValue]
-      Path: !If [UseJPLRoles, /account-managed/hyp3/, !Ref AWS::NoValue]
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -57,10 +54,12 @@ Resources:
         - !Ref Policy
 
   Policy:
-    Type: !If [UseJPLRoles, Custom::JplPolicy, AWS::IAM::ManagedPolicy]
+    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
     Properties:
-      ServiceToken: !If [UseJPLRoles, !ImportValue Custom::JplPolicy::ServiceToken, !Ref AWS::NoValue]
-      Path: !If [UseJPLRoles, /account-managed/hyp3/, !Ref AWS::NoValue]
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       PolicyDocument:
         Version: 2012-10-17
         Statement:

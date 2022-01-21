@@ -33,14 +33,11 @@ Parameters:
   SubnetIds:
     Type: CommaDelimitedList
 
-  JPLRoles:
-    Type: String
 
 Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
 
-  UseJPLRoles: !Not [!Equals [!Ref JPLRoles, ""]]
 
 Outputs:
 
@@ -58,11 +55,11 @@ Resources:
         {{ k }}: {{ v.get('default') or v['api_schema'].get('default') }}
         {% endfor %}
       ContainerProperties:
-        {% if  'image_tag' in job_spec %}
-        Image: "{{ job_spec['image'] }}:{{ job_spec['image_tag'] }}"
-        {% else %}
-        Image: !Sub "{{ job_spec['image'] }}:${ImageTag}"
-        {% endif %}
+        Image: {% if  'image_tag' in job_spec -%}
+            {{ job_spec['image'] }}:{{ job_spec['image_tag'] }}"
+          {% else -%}
+            !Sub "{{ job_spec['image'] }}:${ImageTag}"
+          {% endif %}
         JobRoleArn: !Ref TaskRoleArn
         ResourceRequirements:
           - Type: VCPU
@@ -92,10 +89,12 @@ Resources:
         UploadLogLambdaArn: !GetAtt UploadLog.Outputs.LambdaArn
 
   StepFunctionRole:
-    Type: !If [UseJPLRoles, Custom::JplRole, AWS::IAM::Role]
+    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
     Properties:
-      ServiceToken: !If [UseJPLRoles, !ImportValue Custom::JplRole::ServiceToken, !Ref AWS::NoValue]
-      Path: !If [UseJPLRoles, /account-managed/hyp3/, !Ref AWS::NoValue]
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -108,10 +107,12 @@ Resources:
         - !Ref StepFunctionPolicy
 
   StepFunctionPolicy:
-    Type: !If [UseJPLRoles, Custom::JplPolicy, AWS::IAM::ManagedPolicy]
+    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
     Properties:
-      ServiceToken: !If [UseJPLRoles, !ImportValue Custom::JplPolicy::ServiceToken, !Ref AWS::NoValue]
-      Path: !If [UseJPLRoles, /account-managed/hyp3/, !Ref AWS::NoValue]
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -143,7 +144,6 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [',', !Ref SubnetIds]
-        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: update-db/update-db-cf.yml
 
   GetFiles:
@@ -154,7 +154,6 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [',', !Ref SubnetIds]
-        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: get-files/get-files-cf.yml
 
   StartExecution:
@@ -166,7 +165,6 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [',', !Ref SubnetIds]
-        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: start-execution/start-execution-cf.yml
 
   UploadLog:
@@ -177,5 +175,4 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [',', !Ref SubnetIds]
-        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: upload-log/upload-log-cf.yml
