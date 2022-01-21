@@ -46,6 +46,20 @@ jobs:
             earthdata_cloud: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
+          - environment: hyp3-edc-prod
+            domain: ''
+            template_bucket: cf-templates-118mtzosmrltk-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            quota: 250
+            deploy_ref: refs/heads/main
+            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            default_max_vcpus: 60
+            expanded_max_vcpus: 60
+            required_surplus: 0
+            earthdata_cloud: true
+            ami_id: image_id_ecs_amz2
+
           - environment: hyp3-edc-uat
             domain: ''
             template_bucket: cf-templates-118ylv0o6jp2n-us-west-2

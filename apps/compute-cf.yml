@@ -108,17 +108,20 @@ Resources:
       PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
-      Policies:
-        - PolicyName: policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action: s3:PutObject
-                Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
-              - Effect: Allow
-                Action: s3:PutObjectTagging
-                Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
+        - !Ref TaskPolicy
+
+  TaskPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: s3:PutObject
+            Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
+          - Effect: Allow
+            Action: s3:PutObjectTagging
+            Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
 
   BatchServiceRole:
     Type: AWS::IAM::Role
