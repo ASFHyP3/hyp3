@@ -143,6 +143,7 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [',', !Ref SubnetIds]
+        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: update-db/update-db-cf.yml
 
   GetFiles:
@@ -153,6 +154,7 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [',', !Ref SubnetIds]
+        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: get-files/get-files-cf.yml
 
   StartExecution:
@@ -164,6 +166,7 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [',', !Ref SubnetIds]
+        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: start-execution/start-execution-cf.yml
 
   UploadLog:
@@ -174,4 +177,5 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [',', !Ref SubnetIds]
+        JPLRoles: !If [ UseJPLRoles, "true", "" ]
       TemplateURL: upload-log/upload-log-cf.yml
