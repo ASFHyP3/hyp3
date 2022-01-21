@@ -97,30 +97,34 @@ Resources:
             Service: states.amazonaws.com
           Effect: Allow
       PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
-      Policies:
-        - PolicyName: policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action: batch:SubmitJob
-                Resource:
-                  - !Ref JobQueueArn
-                  {% for job_type in job_types %}
-                  - !Ref {{ snake_to_pascal_case(job_type) }}
-                  {% endfor %}
-              - Effect: Allow
-                Action:
-                  - events:PutTargets
-                  - events:PutRule
-                  - events:DescribeRule
-                Resource: !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/StepFunctionsGetEventsForBatchJobsRule"
-              - Effect: Allow
-                Action: lambda:InvokeFunction
-                Resource:
-                 - !GetAtt UpdateDB.Outputs.LambdaArn
-                 - !GetAtt GetFiles.Outputs.LambdaArn
-                 - !GetAtt UploadLog.Outputs.LambdaArn
+      ManagedPolicyArns:
+        - !Ref StepFunctionPolicy
+
+  StepFunctionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: batch:SubmitJob
+            Resource:
+              - !Ref JobQueueArn
+              {% for job_type in job_types %}
+              - !Ref {{ snake_to_pascal_case(job_type) }}
+              {% endfor %}
+          - Effect: Allow
+            Action:
+              - events:PutTargets
+              - events:PutRule
+              - events:DescribeRule
+            Resource: !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/StepFunctionsGetEventsForBatchJobsRule"
+          - Effect: Allow
+            Action: lambda:InvokeFunction
+            Resource:
+             - !GetAtt UpdateDB.Outputs.LambdaArn
+             - !GetAtt GetFiles.Outputs.LambdaArn
+             - !GetAtt UploadLog.Outputs.LambdaArn
 
   UpdateDB:
     Type: AWS::CloudFormation::Stack
