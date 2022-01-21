@@ -33,11 +33,9 @@ Parameters:
   SubnetIds:
     Type: CommaDelimitedList
 
-
 Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
-
 
 Outputs:
 
