@@ -43,12 +43,10 @@ cfn-lint: render
 	cfn-lint --info --ignore-checks W3002 --template `find . -name *-cf.yml`
 
 clean:
-	rm -f apps/api/src/hyp3_api/api-spec/job_parameters.yml \
-	    apps/api/src/hyp3_api/job_validation_map.yml \
-	    apps/step-function.json \
-	    apps/workflow-cf.yml
+	git ls-files -o -- apps | xargs rm;
 
 distclean: clean
-	git ls-files -o -- apps | xargs rm; \
-	find ./apps/ -empty -type d -delete; \
+	git ls-files -o -- lib/dynamo | xargs rm; \
+	git ls-files -o -- .pytest_cache | xargs rm; \
+	find ./ -empty -type d -delete; \
 	rm -f packaged.yml
