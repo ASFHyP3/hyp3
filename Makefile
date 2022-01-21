@@ -41,7 +41,7 @@ openapi-validate: render
 	prance validate --backend=openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
 
 cfn-lint: render
-	cfn-lint --info -i W3002 -i E3008 --template `find . -name *-cf.yml`
+	cfn-lint --info --ignore-checks W3002 E3008 --template `find . -name *-cf.yml`
 
 clean:
 	git ls-files -o -- apps | xargs rm;
