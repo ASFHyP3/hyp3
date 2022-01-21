@@ -18,6 +18,9 @@ jobs:
 
   cfn-lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        security_environment: [ASF, EDC, JPL]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
@@ -27,7 +30,8 @@ jobs:
           python -m pip install --upgrade pip
           make install
 
-      - run: make cfn-lint
+      - run: |
+          make security_environment=${{ matrix.security_environment }} cfn-lint
 
   openapi-spec-validator:
     runs-on: ubuntu-latest
