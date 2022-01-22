@@ -98,7 +98,6 @@ Parameters:
     Default: 0
 
 Conditions:
-  PublicBucket: !Equals [!Ref SecurityEnvironment, "EDC"]
 
   ScaleCluster: !Not [!Equals [!Ref DefaultMaxvCpus, !Ref ExpandedMaxvCpus]]
 
@@ -243,9 +242,9 @@ Resources:
             AllowedOrigins:
               - "*.asf.alaska.edu"
 
+  {% if security_environment != 'EDC' %}
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
-    Condition: PublicBucket
     Properties:
       Bucket: !Ref ContentBucket
       PolicyDocument:
@@ -261,6 +260,7 @@ Resources:
             Principal: "*"
             Action: s3:ListBucket
             Resource: !GetAtt ContentBucket.Arn
+  {% endif %}
 
   JobsTable:
     Type: AWS::DynamoDB::Table
