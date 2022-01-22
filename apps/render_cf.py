@@ -36,12 +36,12 @@ def render_templates(job_types, security_environment):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('job_spec', nargs='+', type=Path)
+    parser.add_argument('job_spec_files', nargs='+', type=Path)
     parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL'])
     args = parser.parse_args()
 
     job_types = {}
-    for file in args.job_spec:
+    for file in args.job_spec_files:
         job_types.update(yaml.safe_load(file.read_text()))
     render_templates(job_types, args.security_environment)
 
