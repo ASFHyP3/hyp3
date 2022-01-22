@@ -67,7 +67,7 @@ Resources:
     Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
     Properties:
       {% if security_environment == 'JPL' %}
-      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
       Path: /account-managed/hyp3/
       {% endif %}
       PolicyDocument:
