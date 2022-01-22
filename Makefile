@@ -44,9 +44,7 @@ cfn-lint: render
 	cfn-lint --info --ignore-checks W3002 E3008 --template `find . -name *-cf.yml`
 
 clean:
-	git ls-files -o -- apps | xargs rm;
-
-distclean: clean
+	git ls-files -o -- apps | xargs rm; \
 	git ls-files -o -- lib/dynamo | xargs rm; \
 	git ls-files -o -- .pytest_cache | xargs rm; \
 	find ./ -empty -type d -delete; \
