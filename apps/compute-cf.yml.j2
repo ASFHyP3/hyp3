@@ -170,6 +170,8 @@ Resources:
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      Path: {{ '/account-managed/hyp3/' if security_environment == 'JPL' else '!Ref AWS::NoValue' }}
+      {% if security_environment == 'JPL' %}
+      Path: /account-managed/hyp3/
+      {% endif %}
       Roles:
         - !Ref InstanceRole
