@@ -69,15 +69,6 @@ Parameters:
     Type: String
     Default: ""
 
-  SecurityEnvironment:
-    Type: String
-    Default: ASF
-    AllowedValues:
-      - ASF
-      - EDC
-      - JPL
-    Description: Specify the deploy envionment as ASF (Default), EDC, or JPL.
-
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -107,9 +98,6 @@ Parameters:
     Default: 0
 
 Conditions:
-
-  LambdasInVpc: !Equals [!Ref SecurityEnvironment, "EDC"]
-
   PublicBucket: !Equals [!Ref SecurityEnvironment, "EDC"]
 
   ScaleCluster: !Not [!Equals [!Ref DefaultMaxvCpus, !Ref ExpandedMaxvCpus]]
@@ -136,8 +124,8 @@ Resources:
         SystemAvailable: !Ref SystemAvailable
         BannedCidrBlocks: !Ref BannedCidrBlocks
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
-        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        SecurityGroupId: {{'!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else ""}}
+        SubnetIds: {{'!Join [',', !Ref SubnetIds]' if security_environment == 'EDC' else ""}}
       TemplateURL: api/api-cf.yml
 
   Cluster:
@@ -163,8 +151,8 @@ Resources:
         MonthlyComputeBudget: !Ref MonthlyComputeBudget
         RequiredSurplus: !Ref RequiredSurplus
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
-        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [',', !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
       TemplateURL: scale-cluster/scale-cluster-cf.yml
 
   ProcessNewGranules:
@@ -176,8 +164,8 @@ Resources:
         SubscriptionsTable: !Ref SubscriptionsTable
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
-        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [',', !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
   StepFunction:
@@ -192,8 +180,8 @@ Resources:
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
-        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [',', !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
       TemplateURL: workflow-cf.yml
 
   Monitoring:
@@ -230,8 +218,8 @@ Resources:
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
         IgnorePublicAcls: True
-        BlockPublicPolicy: !If [PublicBucket, False, True]
-        RestrictPublicBuckets: !If [PublicBucket, False, True]
+        BlockPublicPolicy: {{ 'True' if security_environment == 'EDC' else 'False' }}
+        RestrictPublicBuckets: {{ 'True' if security_environment == 'EDC' else 'False' }}
       LifecycleConfiguration:
         Rules:
           - Status: Enabled
