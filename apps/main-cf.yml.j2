@@ -124,8 +124,8 @@ Resources:
         SystemAvailable: !Ref SystemAvailable
         BannedCidrBlocks: !Ref BannedCidrBlocks
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: {{'!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else ""}}
-        SubnetIds: {{'!Join [',', !Ref SubnetIds]' if security_environment == 'EDC' else ""}}
+        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
       TemplateURL: api/api-cf.yml
 
   Cluster:
@@ -133,7 +133,7 @@ Resources:
     Properties:
       Parameters:
         VpcId: !Ref VpcId
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SubnetIds: !Join [",", !Ref SubnetIds]
         MaxvCpus: !Ref DefaultMaxvCpus
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
@@ -152,7 +152,7 @@ Resources:
         RequiredSurplus: !Ref RequiredSurplus
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
-        SubnetIds: {{ '!Join [',', !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
       TemplateURL: scale-cluster/scale-cluster-cf.yml
 
   ProcessNewGranules:
@@ -165,7 +165,7 @@ Resources:
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
-        SubnetIds: {{ '!Join [',', !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
   StepFunction:
@@ -181,7 +181,7 @@ Resources:
         ImageTag: !Ref ImageTag
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
-        SubnetIds: {{ '!Join [',', !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
       TemplateURL: workflow-cf.yml
 
   Monitoring:

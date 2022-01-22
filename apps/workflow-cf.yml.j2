@@ -141,7 +141,7 @@ Resources:
         JobsTable: !Ref JobsTable
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SubnetIds: !Join [",", !Ref SubnetIds]
       TemplateURL: update-db/update-db-cf.yml
 
   GetFiles:
@@ -151,7 +151,7 @@ Resources:
         Bucket: !Ref Bucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SubnetIds: !Join [",", !Ref SubnetIds]
       TemplateURL: get-files/get-files-cf.yml
 
   StartExecution:
@@ -162,7 +162,7 @@ Resources:
         StepFunctionArn: !Ref StepFunction
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SubnetIds: !Join [",", !Ref SubnetIds]
       TemplateURL: start-execution/start-execution-cf.yml
 
   UploadLog:
@@ -172,5 +172,5 @@ Resources:
         Bucket: !Ref Bucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SubnetIds: !Join [",", !Ref SubnetIds]
       TemplateURL: upload-log/upload-log-cf.yml
