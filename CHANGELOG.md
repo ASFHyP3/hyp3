@@ -5,6 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.8.0](https://github.com/ASFHyP3/hyp3/compare/v2.7.7...v2.8.0)
+### Added
+- HyP3 can now be deployed into a JPL managed commercial AWS account
+- Selectable security environment when rendering CloudFormation templates, which will modify resources/configurations for:
+  - `ASF` (default) -- AWS accounts managed by the Alaska Satellite Facility
+  - `EDC` -- AWS accounts managed by the NASA Earthdata CLoud
+  - `JPL` -- AWS accounts managed by the NASA Jet Propulsion Laboratory
+- A `security_environment` Make variable used by the `render` target (and any target that depends on `render`). 
+  Use like `make security_environment=ASF build`
+
+### Changed
+- All CloudFormation templates (`*-cf.yml`) are now rendered from jinja2 templates (`*-cf.yml.j2`)
+
+### Removed
+- The `EarthdataCloud` CloudFormation template parameter to `apps/main-cf.yml`
+
 ## [2.7.7](https://github.com/ASFHyP3/hyp3/compare/v2.7.6...v2.7.7)
 ### Changed
 - Use Managed Policies for IAM permissions in support of future deployments using custom CloudFormation IAM resources
