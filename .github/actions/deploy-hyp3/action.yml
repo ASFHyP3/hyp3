@@ -74,7 +74,7 @@ runs:
         run: |
           pip install --upgrade pip
           make install
-          make files='${{ inputs.JOB_FILES }}' build
+          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' build
       - name: Package and deploy
         shell: bash
         run: |
@@ -106,5 +106,4 @@ runs:
                 MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \
                 RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
                 PermissionsBoundaryPolicyArn='${{ inputs.PERMISSIONS_BOUNDARY_ARN }}' \
-                SecurityEnvironment='${{ inputs.SECURITY_ENVIRONMENT }}' \
                 AmiId='${{ inputs.AMI_ID }}'
