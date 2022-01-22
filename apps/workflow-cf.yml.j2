@@ -54,7 +54,7 @@ Resources:
         {% endfor %}
       ContainerProperties:
         Image: {% if 'image_tag' in job_spec -%}
-            {{ job_spec['image'] }}:{{ job_spec['image_tag'] }}"
+            "{{ job_spec['image'] }}:{{ job_spec['image_tag'] }}"
           {% else -%}
             !Sub "{{ job_spec['image'] }}:${ImageTag}"
           {% endif %}
