@@ -2,17 +2,24 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  SubscriptionsTable:
+  ComputeEnvironmentArn:
     Type: String
 
-  JobsTable:
-    Type: String
-
-  UsersTable:
-    Type: String
-
-  MonthlyJobQuotaPerUser:
+  DefaultMaxvCpus:
     Type: Number
+    MinValue: 0
+
+  ExpandedMaxvCpus:
+    Type: Number
+    MinValue: 0
+
+  MonthlyComputeBudget:
+    Type: Number
+    MinValue: 0
+
+  RequiredSurplus:
+    Type: Number
+    MinValue: 0
 
   PermissionsBoundaryPolicyArn:
     Type: String
@@ -29,11 +36,6 @@ Conditions:
 
   LambdasInVpc: !Not [!Equals [!Ref SecurityGroupId, ""]]
 
-Outputs:
-
-  LambdaArn:
-    Value: !GetAtt Lambda.Arn
-
 Resources:
 
   LogGroup:
@@ -43,8 +45,12 @@ Resources:
       RetentionInDays: 90
 
   Role:
-    Type: AWS::IAM::Role
+    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -58,8 +64,12 @@ Resources:
         - !Ref Policy
 
   Policy:
-    Type: AWS::IAM::ManagedPolicy
+    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -70,33 +80,29 @@ Resources:
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
           - Effect: Allow
             Action:
-              - dynamodb:PutItem
-              - dynamodb:Query
-            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
+              - ce:GetCostAndUsage
+              - batch:DescribeComputeEnvironments
+            Resource: "*"
           - Effect: Allow
-            Action: dynamodb:GetItem
-            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UsersTable}*"
-          - Effect: Allow
-            Action:
-              - dynamodb:Scan
-              - dynamodb:PutItem
-            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SubscriptionsTable}*"
+            Action: batch:UpdateComputeEnvironment
+            Resource: !Ref ComputeEnvironmentArn
 
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
       Environment:
         Variables:
-          JOBS_TABLE_NAME: !Ref JobsTable
-          USERS_TABLE_NAME: !Ref UsersTable
-          SUBSCRIPTIONS_TABLE_NAME: !Ref SubscriptionsTable
-          MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
+          COMPUTE_ENVIRONMENT_ARN: !Ref ComputeEnvironmentArn
+          MONTHLY_COMPUTE_BUDGET: !Ref MonthlyComputeBudget
+          DEFAULT_MAX_VCPUS: !Ref DefaultMaxvCpus
+          EXPANDED_MAX_VCPUS: !Ref ExpandedMaxvCpus
+          REQUIRED_SURPLUS: !Ref RequiredSurplus
       Code: src/
-      Handler: process_new_granules.lambda_handler
+      Handler: scale_cluster.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.8
-      Timeout: 900
+      Timeout: 30
       VpcConfig:
         !If
           - LambdasInVpc
@@ -115,7 +121,7 @@ Resources:
   Schedule:
     Type: AWS::Events::Rule
     Properties:
-      ScheduleExpression: "rate(16 minutes)"
+      ScheduleExpression: "rate(6 hours)"
       Targets:
         - Arn: !GetAtt Lambda.Arn
           Id: lambda

@@ -35,8 +35,12 @@ Resources:
       RetentionInDays: 90
 
   Role:
-    Type: AWS::IAM::Role
+    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -50,8 +54,12 @@ Resources:
         - !Ref Policy
 
   Policy:
-    Type: AWS::IAM::ManagedPolicy
+    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       PolicyDocument:
         Version: 2012-10-17
         Statement:

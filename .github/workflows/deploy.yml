@@ -24,7 +24,7 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
-            earthdata_cloud: false
+            security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
           - environment: hyp3-test
@@ -43,7 +43,7 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
-            earthdata_cloud: false
+            security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
           - environment: hyp3-edc-prod
@@ -57,7 +57,7 @@ jobs:
             default_max_vcpus: 60
             expanded_max_vcpus: 60
             required_surplus: 0
-            earthdata_cloud: true
+            security_environment: EDC
             ami_id: image_id_ecs_amz2
 
           - environment: hyp3-edc-uat
@@ -71,8 +71,22 @@ jobs:
             default_max_vcpus: 60
             expanded_max_vcpus: 60
             required_surplus: 0
-            earthdata_cloud: true
+            security_environment: EDC
             ami_id: image_id_ecs_amz2
+
+          - environment: hyp3-its-live
+            domain: hyp3-its-live.asf.alaska.edu
+            template_bucket: cf-templates-3o5lnspmwmzg-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 180
+            quota: 0
+            deploy_ref: refs/heads/main
+            job_files: job_spec/AUTORIFT_ITS_LIVE.yml
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
+            required_surplus: 0
+            security_environment: JPL
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
@@ -85,7 +99,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            earthdata_cloud: false
+            security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
           - environment: hyp3-autorift-eu
@@ -99,7 +113,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            earthdata_cloud: false
+            security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
           - environment: hyp3-isce
@@ -113,7 +127,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            earthdata_cloud: false
+            security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
           - environment: hyp3-tibet
@@ -127,7 +141,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            earthdata_cloud: false
+            security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
     environment:
@@ -170,7 +184,7 @@ jobs:
           MONTHLY_COMPUTE_BUDGET: ${{ secrets.MONTHLY_COMPUTE_BUDGET }}
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
           PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
-          EARTHDATA_CLOUD: ${{ matrix.earthdata_cloud }}
+          SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           AMI_ID: ${{ matrix.ami_id }}
 
   call-bump-version-workflow:
