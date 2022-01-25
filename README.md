@@ -76,10 +76,10 @@ aws cloudformation deploy \
 
 - (Optional) clean render and build artifacts
 ```sh
-make clean  # just the render artifacts
-make distclean  # render and build artifacts
+make clean
 ```
-*Note: `distclean` will remove any [untracked files](https://git-scm.com/docs/git-ls-files#Documentation/git-ls-files.txt--o) in the `apps/` directory.*
+*Note: this will remove any [untracked files](https://git-scm.com/docs/git-ls-files#Documentation/git-ls-files.txt--o)
+in the `apps/` or `lib/dynamo/` directory.*
 
 ## Running the Tests
 Tests for each HyP3 module are located in `tests/`. To run them you need to do a bit of setup first.

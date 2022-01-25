@@ -2,8 +2,17 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
+  SubscriptionsTable:
+    Type: String
+
   JobsTable:
     Type: String
+
+  UsersTable:
+    Type: String
+
+  MonthlyJobQuotaPerUser:
+    Type: Number
 
   PermissionsBoundaryPolicyArn:
     Type: String
@@ -34,8 +43,12 @@ Resources:
       RetentionInDays: 90
 
   Role:
-    Type: AWS::IAM::Role
+    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -49,8 +62,12 @@ Resources:
         - !Ref Policy
 
   Policy:
-    Type: AWS::IAM::ManagedPolicy
+    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -60,8 +77,18 @@ Resources:
               - logs:PutLogEvents
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
           - Effect: Allow
-            Action: dynamodb:UpdateItem
+            Action:
+              - dynamodb:PutItem
+              - dynamodb:Query
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
+          - Effect: Allow
+            Action: dynamodb:GetItem
+            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UsersTable}*"
+          - Effect: Allow
+            Action:
+              - dynamodb:Scan
+              - dynamodb:PutItem
+            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SubscriptionsTable}*"
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -69,12 +96,15 @@ Resources:
       Environment:
         Variables:
           JOBS_TABLE_NAME: !Ref JobsTable
+          USERS_TABLE_NAME: !Ref UsersTable
+          SUBSCRIPTIONS_TABLE_NAME: !Ref SubscriptionsTable
+          MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
       Code: src/
-      Handler: main.lambda_handler
+      Handler: process_new_granules.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.8
-      Timeout: 30
+      Timeout: 900
       VpcConfig:
         !If
           - LambdasInVpc
@@ -82,3 +112,26 @@ Resources:
               - !Ref SecurityGroupId
             SubnetIds: !Ref SubnetIds
           - !Ref AWS::NoValue
+
+  EventInvokeConfig:
+    Type: AWS::Lambda::EventInvokeConfig
+    Properties:
+      FunctionName: !Ref Lambda
+      Qualifier: $LATEST
+      MaximumRetryAttempts: 0
+
+  Schedule:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: "rate(16 minutes)"
+      Targets:
+        - Arn: !GetAtt Lambda.Arn
+          Id: lambda
+
+  EventPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt Lambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt Schedule.Arn

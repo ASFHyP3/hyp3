@@ -2,24 +2,8 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  ComputeEnvironmentArn:
+  Bucket:
     Type: String
-
-  DefaultMaxvCpus:
-    Type: Number
-    MinValue: 0
-
-  ExpandedMaxvCpus:
-    Type: Number
-    MinValue: 0
-
-  MonthlyComputeBudget:
-    Type: Number
-    MinValue: 0
-
-  RequiredSurplus:
-    Type: Number
-    MinValue: 0
 
   PermissionsBoundaryPolicyArn:
     Type: String
@@ -36,6 +20,11 @@ Conditions:
 
   LambdasInVpc: !Not [!Equals [!Ref SecurityGroupId, ""]]
 
+Outputs:
+
+  LambdaArn:
+    Value: !GetAtt Lambda.Arn
+
 Resources:
 
   LogGroup:
@@ -45,8 +34,12 @@ Resources:
       RetentionInDays: 90
 
   Role:
-    Type: AWS::IAM::Role
+    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -60,8 +53,12 @@ Resources:
         - !Ref Policy
 
   Policy:
-    Type: AWS::IAM::ManagedPolicy
+    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -72,25 +69,21 @@ Resources:
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
           - Effect: Allow
             Action:
-              - ce:GetCostAndUsage
-              - batch:DescribeComputeEnvironments
-            Resource: "*"
+              - s3:PutObject
+              - s3:PutObjectTagging
+            Resource: !Sub "arn:aws:s3:::${Bucket}/*"
           - Effect: Allow
-            Action: batch:UpdateComputeEnvironment
-            Resource: !Ref ComputeEnvironmentArn
+            Action: logs:GetLogEvents
+            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/batch/job*"
 
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
       Environment:
         Variables:
-          COMPUTE_ENVIRONMENT_ARN: !Ref ComputeEnvironmentArn
-          MONTHLY_COMPUTE_BUDGET: !Ref MonthlyComputeBudget
-          DEFAULT_MAX_VCPUS: !Ref DefaultMaxvCpus
-          EXPANDED_MAX_VCPUS: !Ref ExpandedMaxvCpus
-          REQUIRED_SURPLUS: !Ref RequiredSurplus
+          BUCKET: !Ref Bucket
       Code: src/
-      Handler: scale_cluster.lambda_handler
+      Handler: upload_log.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.8
@@ -102,26 +95,3 @@ Resources:
               - !Ref SecurityGroupId
             SubnetIds: !Ref SubnetIds
           - !Ref AWS::NoValue
-
-  EventInvokeConfig:
-    Type: AWS::Lambda::EventInvokeConfig
-    Properties:
-      FunctionName: !Ref Lambda
-      Qualifier: $LATEST
-      MaximumRetryAttempts: 0
-
-  Schedule:
-    Type: AWS::Events::Rule
-    Properties:
-      ScheduleExpression: "rate(6 hours)"
-      Targets:
-        - Arn: !GetAtt Lambda.Arn
-          Id: lambda
-
-  EventPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !GetAtt Lambda.Arn
-      Action: lambda:InvokeFunction
-      Principal: events.amazonaws.com
-      SourceArn: !GetAtt Schedule.Arn
