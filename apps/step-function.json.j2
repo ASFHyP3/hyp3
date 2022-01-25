@@ -95,7 +95,7 @@
         "JobName.$": "$.job_id",
         "JobQueue": "${JobQueueArn}",
         "ShareIdentifier": "default",
-        "SchedulingPriorityOverride": "$.priority",
+        "SchedulingPriorityOverride.$": "$.priority",
         "Parameters.$": "$.job_parameters",
         "ContainerOverrides.$": "$.container_overrides",
         "RetryStrategy": {
