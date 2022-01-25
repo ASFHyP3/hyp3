@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.8.1](https://github.com/ASFHyP3/hyp3/compare/v2.8.0...v2.8.1)
+### Changed
+- Jobs are now assigned a `priority` attribute when submitted. `priority` is calculated based on jobs already
+  submitted month-to-date by the same user. Jobs with a higher `priority` value will run before jobs with a lower value.
+
 ## [2.8.0](https://github.com/ASFHyP3/hyp3/compare/v2.7.7...v2.8.0)
 ### Added
 - HyP3 can now be deployed into a JPL managed commercial AWS account
