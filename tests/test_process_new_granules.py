@@ -265,4 +265,3 @@ def get_jobs_for_subscription():
 
             result = process_new_granules.get_jobs_for_subscription(subscription={}, limit=0)
             assert result == []
-
