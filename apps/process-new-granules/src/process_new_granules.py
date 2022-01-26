@@ -50,10 +50,10 @@ def get_jobs_for_granule(subscription, granule):
     return payload
 
 
-def get_jobs_for_subscription(subscription):
+def get_jobs_for_subscription(subscription, limit):
     granules = get_unprocessed_granules(subscription)
     jobs = []
-    for granule in granules:
+    for granule in granules[:limit]:
         jobs.extend(get_jobs_for_granule(subscription, granule))
     return jobs
 
@@ -64,7 +64,7 @@ def disable_subscription(subscription):
 
 
 def handle_subscription(subscription):
-    jobs = get_jobs_for_subscription(subscription)
+    jobs = get_jobs_for_subscription(subscription, limit=20)
     if jobs:
         dynamo.jobs.put_jobs(subscription['user_id'], jobs, fail_when_over_quota=False)
 

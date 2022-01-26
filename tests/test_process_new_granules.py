@@ -238,3 +238,31 @@ def test_lambda_handler(tables):
     response = tables.subscriptions_table.scan()['Items']
     sub3 = [sub for sub in response if sub['subscription_id'] == 'sub3'][0]
     assert sub3['enabled'] is False
+
+
+def get_jobs_for_subscription():
+    def mock_get_unprocessed_granules(subscription):
+        assert subscription == {}
+        return ['a', 'b', 'c']
+
+    def mock_get_jobs_for_granule(subscription, granule):
+        return [{'granule': granule}]
+
+    with patch('process_new_granules.get_unprocessed_granules', mock_get_unprocessed_granules):
+        with patch('process_new_granules.get_jobs_for_granule', mock_get_jobs_for_granule):
+
+            result = process_new_granules.get_jobs_for_subscription(subscription={}, limit=20)
+            assert result == [
+                {'granule': 'a'},
+                {'granule': 'b'},
+                {'granule': 'c'},
+            ]
+
+            result = process_new_granules.get_jobs_for_subscription(subscription={}, limit=1)
+            assert result == [
+                {'granule': 'a'},
+            ]
+
+            result = process_new_granules.get_jobs_for_subscription(subscription={}, limit=0)
+            assert result == []
+
