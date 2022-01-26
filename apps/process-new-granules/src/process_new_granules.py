@@ -76,5 +76,6 @@ def lambda_handler(event, context):
         if subscription['enabled']:
             handle_subscription(subscription)
 
-            if end_filter > dateutil.parser.parse(subscription['search_parameters']['end']):
+            if end_filter > dateutil.parser.parse(subscription['search_parameters']['end']) \
+                    and len(get_unprocessed_granules(subscription)) == 0:
                 disable_subscription(subscription)
