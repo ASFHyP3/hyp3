@@ -107,6 +107,12 @@
       "Retry": [
         {
           "ErrorEquals": [
+            "Batch.ServerException"
+          ],
+          "MaxAttempts": 2
+        },
+        {
+          "ErrorEquals": [
             "States.ALL"
           ],
           "MaxAttempts": 0
