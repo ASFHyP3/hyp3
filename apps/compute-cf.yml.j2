@@ -89,10 +89,6 @@ Resources:
 
   SchedulingPolicy:
     Type: AWS::Batch::SchedulingPolicy
-    Properties:
-      FairsharePolicy:
-        ShareDistribution:
-          - ShareIdentifier: default
 
   BatchJobQueue:
     Type: AWS::Batch::JobQueue
