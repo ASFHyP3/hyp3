@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Jobs are now assigned a `priority` attribute when submitted. `priority` is calculated based on jobs already
   submitted month-to-date by the same user. Jobs with a higher `priority` value will run before jobs with a lower value.
 - `Batch.ServerException` errors encountered by the Step Function are now retried, to address intermittent errors when
-  the Step Functions service calls Batch service.
+  the Step Functions service calls the Batch SubmitJob API.
 
 ## [2.8.0](https://github.com/ASFHyP3/hyp3/compare/v2.7.7...v2.8.0)
 ### Added
