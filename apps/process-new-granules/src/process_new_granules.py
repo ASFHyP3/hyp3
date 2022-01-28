@@ -72,10 +72,10 @@ def handle_subscription(subscription):
 def lambda_handler(event, context):
     subscriptions = dynamo.subscriptions.get_all_subscriptions()
     for subscription in subscriptions:
-        end_filter = datetime.now(tz=timezone.utc) - timedelta(days=5)
+        cutoff_date = datetime.now(tz=timezone.utc) - timedelta(days=5)
         if subscription['enabled']:
             handle_subscription(subscription)
 
-            if end_filter > dateutil.parser.parse(subscription['search_parameters']['end']) \
+            if dateutil.parser.parse(subscription['search_parameters']['end']) <= cutoff_date\
                     and len(get_unprocessed_granules(subscription)) == 0:
                 disable_subscription(subscription)
