@@ -31,7 +31,7 @@ Outputs:
     Value: !Ref ComputeEnvironment
 
   JobQueueArn:
-    Value: !Ref JobQueue
+    Value: !Ref BatchJobQueue
 
   TaskRoleArn:
     Value: !GetAtt TaskRole.Arn
@@ -87,13 +87,17 @@ Resources:
         Tags:
           Name: !Ref AWS::StackName
 
-  JobQueue:
+  SchedulingPolicy:
+    Type: AWS::Batch::SchedulingPolicy
+
+  BatchJobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
       Priority: 1
       ComputeEnvironmentOrder:
         - ComputeEnvironment: !Ref ComputeEnvironment
           Order: 1
+      SchedulingPolicyArn: !Ref SchedulingPolicy
 
   TaskRole:
     Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
