@@ -213,10 +213,6 @@ def test_lambda_handler(tables):
             'subscription_id': 'sub2',
             'creation_date': '2020-01-01T00:00:00+00:00',
             'job_type': 'INSAR_GAMMA',
-            'search_parameters': {
-                'start': datetime.now(tz=timezone.utc).isoformat(timespec='seconds'),
-                'end': (datetime.now(tz=timezone.utc) + timedelta(days=5)).isoformat(timespec='seconds'),
-            },
             'user_id': 'user1',
             'enabled': False
         },
@@ -248,9 +244,9 @@ def test_lambda_handler(tables):
 
     def mock_get_unprocessed_granules(subscription):
         if subscription['subscription_id'] == 'sub4':
-            return 'notempty'
+            return ['notempty']
         else:
-            return ''
+            return []
 
     with patch('process_new_granules.handle_subscription') as p:
         with patch('process_new_granules.get_unprocessed_granules', mock_get_unprocessed_granules):
@@ -265,7 +261,7 @@ def test_lambda_handler(tables):
     assert sub4['enabled'] is True
 
 
-def get_jobs_for_subscription():
+def test_get_jobs_for_subscription():
     def mock_get_unprocessed_granules(subscription):
         assert subscription == {}
         return ['a', 'b', 'c']
