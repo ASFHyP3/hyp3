@@ -255,13 +255,23 @@ Resources:
         Version: 2012-10-17
         Statement:
           - Effect: Allow
-            Principal: !If [PublicBucket, "*", {"AWS": !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"}]
+            {% if security_environment == 'EDC' %}
+            Principal:
+              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"
+            {% else %}
+            Principal: "*"
+            {% endif %}
             Action:
               - s3:GetObject
               - s3:GetObjectTagging
             Resource: !Sub "${ContentBucket.Arn}/*"
           - Effect: Allow
-            Principal: !If [PublicBucket, "*", {"AWS": !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"}]
+            {% if security_environment == 'EDC' %}
+            Principal:
+              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"
+            {% else %}
+            Principal: "*"
+            {% endif %}
             Action: s3:ListBucket
             Resource: !GetAtt ContentBucket.Arn
 
