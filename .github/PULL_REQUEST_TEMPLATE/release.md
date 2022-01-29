@@ -5,17 +5,12 @@ Please describe the release here, including a brief overview of the changes in t
 -->
 
 <!--
-If applicable, indicate any upstream packages/projects this is relevant too, and the associated issues
+If applicable, indicate any upstream packages/projects this is relevant to, and the associated issues
 or pull requests
 -->
 
 ### Developer checklist
 
-- [ ] Assigned a reviewer
-  <!-- NOTE: Pull requests should only be opened for merges to protected branches (required) and any
-   changes which you'd like reviewed. Do not open a pull request to update a feature or personal
-   branch -- simply merge with `git`
-   -->
 - [ ] Indicated the level of changes to this package by affixing one of these labels:
   * major -- Major changes to the API that may break current workflows
   * minor -- Minor changes to the API that do not break current workflows
@@ -23,8 +18,6 @@ or pull requests
   * bumpless -- Changes to documentation, CI/CD pipelines, etc. that don't affect the software's version
 
 - [ ] (If applicable) Updated the dependencies and indicated any downstream changes that are required
-
-- [ ] Updated `CHANGELOG.md`
 - [ ] Added/updated documentation for these changes
 - [ ] Added/updated tests for these changes
 
