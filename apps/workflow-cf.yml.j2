@@ -53,11 +53,11 @@ Resources:
         {{ k }}: {{ v.get('default') or v['api_schema'].get('default') }}
         {% endfor %}
       ContainerProperties:
-        {% if  'image_tag' in job_spec %}
-        Image: "{{ job_spec['image'] }}:{{ job_spec['image_tag'] }}"
-        {% else %}
-        Image: !Sub "{{ job_spec['image'] }}:${ImageTag}"
-        {% endif %}
+        Image: {% if 'image_tag' in job_spec -%}
+            "{{ job_spec['image'] }}:{{ job_spec['image_tag'] }}"
+          {% else -%}
+            !Sub "{{ job_spec['image'] }}:${ImageTag}"
+          {% endif %}
         JobRoleArn: !Ref TaskRoleArn
         ResourceRequirements:
           - Type: VCPU
@@ -87,8 +87,12 @@ Resources:
         UploadLogLambdaArn: !GetAtt UploadLog.Outputs.LambdaArn
 
   StepFunctionRole:
-    Type: AWS::IAM::Role
+    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -97,30 +101,38 @@ Resources:
             Service: states.amazonaws.com
           Effect: Allow
       PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
-      Policies:
-        - PolicyName: policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action: batch:SubmitJob
-                Resource:
-                  - !Ref JobQueueArn
-                  {% for job_type in job_types %}
-                  - !Ref {{ snake_to_pascal_case(job_type) }}
-                  {% endfor %}
-              - Effect: Allow
-                Action:
-                  - events:PutTargets
-                  - events:PutRule
-                  - events:DescribeRule
-                Resource: !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/StepFunctionsGetEventsForBatchJobsRule"
-              - Effect: Allow
-                Action: lambda:InvokeFunction
-                Resource:
-                 - !GetAtt UpdateDB.Outputs.LambdaArn
-                 - !GetAtt GetFiles.Outputs.LambdaArn
-                 - !GetAtt UploadLog.Outputs.LambdaArn
+      ManagedPolicyArns:
+        - !Ref StepFunctionPolicy
+
+  StepFunctionPolicy:
+    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
+    Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: batch:SubmitJob
+            Resource:
+              - !Ref JobQueueArn
+              {% for job_type in job_types %}
+              - !Ref {{ snake_to_pascal_case(job_type) }}
+              {% endfor %}
+          - Effect: Allow
+            Action:
+              - events:PutTargets
+              - events:PutRule
+              - events:DescribeRule
+            Resource: !Sub "arn:aws:events:${AWS::Region}:${AWS::AccountId}:rule/StepFunctionsGetEventsForBatchJobsRule"
+          - Effect: Allow
+            Action: lambda:InvokeFunction
+            Resource:
+             - !GetAtt UpdateDB.Outputs.LambdaArn
+             - !GetAtt GetFiles.Outputs.LambdaArn
+             - !GetAtt UploadLog.Outputs.LambdaArn
 
   UpdateDB:
     Type: AWS::CloudFormation::Stack
@@ -129,7 +141,7 @@ Resources:
         JobsTable: !Ref JobsTable
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SubnetIds: !Join [",", !Ref SubnetIds]
       TemplateURL: update-db/update-db-cf.yml
 
   GetFiles:
@@ -139,7 +151,7 @@ Resources:
         Bucket: !Ref Bucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SubnetIds: !Join [",", !Ref SubnetIds]
       TemplateURL: get-files/get-files-cf.yml
 
   StartExecution:
@@ -150,7 +162,7 @@ Resources:
         StepFunctionArn: !Ref StepFunction
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SubnetIds: !Join [",", !Ref SubnetIds]
       TemplateURL: start-execution/start-execution-cf.yml
 
   UploadLog:
@@ -160,5 +172,5 @@ Resources:
         Bucket: !Ref Bucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SubnetIds: !Join [",", !Ref SubnetIds]
       TemplateURL: upload-log/upload-log-cf.yml

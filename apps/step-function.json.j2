@@ -94,6 +94,8 @@
         "JobDefinition": "{{ '${'+ snake_to_pascal_case(job_type) + '}' }}",
         "JobName.$": "$.job_id",
         "JobQueue": "${JobQueueArn}",
+        "ShareIdentifier": "default",
+        "SchedulingPriorityOverride.$": "$.priority",
         "Parameters.$": "$.job_parameters",
         "ContainerOverrides.$": "$.container_overrides",
         "RetryStrategy": {
@@ -103,6 +105,12 @@
       "ResultPath": "$.results.processing_results",
       "Next": "GET_FILES",
       "Retry": [
+        {
+          "ErrorEquals": [
+            "Batch.ServerException"
+          ],
+          "MaxAttempts": 2
+        },
         {
           "ErrorEquals": [
             "States.ALL"

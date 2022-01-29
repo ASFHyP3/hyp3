@@ -62,8 +62,8 @@ inputs:
   ORIGIN_ACCESS_IDENTITY_ID:
     description: "ID of the CloudFront Origin Access Identity used to access data in S3 for Earthdata Cloud deployments"
     required: true
-  EARTHDATA_CLOUD:
-    description: "Modify resources/configurations to be compatible with Earthdata Cloud"
+  SECURITY_ENVIRONMENT:
+    description: "Modify resources/configurations for ASF (default), EDC, or JPL security environments"
     required: true
   AMI_ID:
     description: "Name of the Systems Manager parameter from which to retrieve the current Ami Id"
@@ -72,12 +72,12 @@ inputs:
 runs:
   using: "composite"
   steps:
-      - name: install dependancies and render templates
+      - name: install dependencies and render templates
         shell: bash
         run: |
           pip install --upgrade pip
           make install
-          make files='${{ inputs.JOB_FILES }}' build
+          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' build
       - name: Package and deploy
         shell: bash
         run: |
@@ -110,5 +110,4 @@ runs:
                 RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
                 PermissionsBoundaryPolicyArn='${{ inputs.PERMISSIONS_BOUNDARY_ARN }}' \
                 OriginAccessIdentityId='${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }}' \
-                EarthdataCloud='${{ inputs.EARTHDATA_CLOUD }}' \
                 AmiId='${{ inputs.AMI_ID }}'

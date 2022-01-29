@@ -5,9 +5,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [2.7.7](https://github.com/ASFHyP3/hyp3/compare/v2.7.6...v2.7.7)
+## [2.8.3](https://github.com/ASFHyP3/hyp3/compare/v2.8.2...v2.8.3)
 ### Added
 - `OriginAccessIdentityId` stack parameter supporting content distribution via CloudFront.
+- 
+## [2.8.2](https://github.com/ASFHyP3/hyp3/compare/v2.8.1...v2.8.2)
+### Fixed
+- Limited the number of jobs a subscription can send at a time to avoid timing out. Fixes [#794](https://github.com/ASFHyP3/hyp3/issues/794).
+- Confirm there are no unprocessed granules before disabling subscriptions past their expiration date.
+
+## [2.8.1](https://github.com/ASFHyP3/hyp3/compare/v2.8.0...v2.8.1)
+### Changed
+- Jobs are now assigned a `priority` attribute when submitted. `priority` is calculated based on jobs already
+  submitted month-to-date by the same user. Jobs with a higher `priority` value will run before jobs with a lower value.
+- `Batch.ServerException` errors encountered by the Step Function are now retried, to address intermittent errors when
+  the Step Functions service calls the Batch SubmitJob API.
+
+## [2.8.0](https://github.com/ASFHyP3/hyp3/compare/v2.7.7...v2.8.0)
+### Added
+- HyP3 can now be deployed into a JPL managed commercial AWS account
+- Selectable security environment when rendering CloudFormation templates, which will modify resources/configurations for:
+  - `ASF` (default) -- AWS accounts managed by the Alaska Satellite Facility
+  - `EDC` -- AWS accounts managed by the NASA Earthdata CLoud
+  - `JPL` -- AWS accounts managed by the NASA Jet Propulsion Laboratory
+- A `security_environment` Make variable used by the `render` target (and any target that depends on `render`). 
+  Use like `make security_environment=ASF build`
+
+### Changed
+- All CloudFormation templates (`*-cf.yml`) are now rendered from jinja2 templates (`*-cf.yml.j2`)
+
+### Removed
+- The `EarthdataCloud` CloudFormation template parameter to `apps/main-cf.yml`
+
+## [2.7.7](https://github.com/ASFHyP3/hyp3/compare/v2.7.6...v2.7.7)
+### Changed
+- Use Managed Policies for IAM permissions in support of future deployments using custom CloudFormation IAM resources
 
 ## [2.7.6](https://github.com/ASFHyP3/hyp3/compare/v2.7.5...v2.7.6)
 ### Added

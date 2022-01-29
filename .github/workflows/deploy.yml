@@ -24,7 +24,7 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
-            earthdata_cloud: false
+            security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
           - environment: hyp3-test
@@ -43,8 +43,22 @@ jobs:
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
-            earthdata_cloud: false
+            security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+
+          - environment: hyp3-edc-prod
+            domain: ''
+            template_bucket: cf-templates-118mtzosmrltk-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            quota: 250
+            deploy_ref: refs/heads/main
+            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            default_max_vcpus: 600
+            expanded_max_vcpus: 1600
+            required_surplus: 1000
+            security_environment: EDC
+            ami_id: image_id_ecs_amz2
 
           - environment: hyp3-edc-uat
             domain: ''
@@ -54,11 +68,25 @@ jobs:
             quota: 250
             deploy_ref: refs/heads/develop
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            default_max_vcpus: 60
-            expanded_max_vcpus: 60
-            required_surplus: 0
-            earthdata_cloud: true
+            default_max_vcpus: 600
+            expanded_max_vcpus: 1600
+            required_surplus: 1000
+            security_environment: EDC
             ami_id: image_id_ecs_amz2
+
+          - environment: hyp3-its-live
+            domain: hyp3-its-live.asf.alaska.edu
+            template_bucket: cf-templates-3o5lnspmwmzg-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 180
+            quota: 0
+            deploy_ref: refs/heads/main
+            job_files: job_spec/AUTORIFT_ITS_LIVE.yml
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
+            required_surplus: 0
+            security_environment: JPL
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
           - environment: hyp3-autorift
             domain: hyp3-autorift.asf.alaska.edu
@@ -71,7 +99,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            earthdata_cloud: false
+            security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
           - environment: hyp3-autorift-eu
@@ -85,7 +113,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            earthdata_cloud: false
+            security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
           - environment: hyp3-isce
@@ -99,7 +127,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            earthdata_cloud: false
+            security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
           - environment: hyp3-tibet
@@ -113,7 +141,7 @@ jobs:
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
-            earthdata_cloud: false
+            security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
     environment:
@@ -157,7 +185,7 @@ jobs:
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
           PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
           ORIGIN_ACCESS_IDENTITY_ID: ${{ secrets.ORIGIN_ACCESS_IDENTITY_ID }}
-          EARTHDATA_CLOUD: ${{ matrix.earthdata_cloud }}
+          SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           AMI_ID: ${{ matrix.ami_id }}
 
   call-bump-version-workflow:

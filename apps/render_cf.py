@@ -1,6 +1,6 @@
 import argparse
 import json
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 
 import jinja2
 import yaml
@@ -11,21 +11,7 @@ def snake_to_pascal_case(input_string: str):
     return ''.join([i.title() for i in split_string])
 
 
-def render_template(template_file, job_types, env):
-    output_file = template_file.with_suffix('')
-
-    template = env.get_template(str(template_file))
-    with open(output_file, 'w') as f:
-        f.write(template.render(job_types=job_types, json=json, snake_to_pascal_case=snake_to_pascal_case))
-
-
-def render_templates(job_types):
-    env = get_env()
-    for template_file in Path('.').glob('**/*.j2'):
-        render_template(PurePosixPath(template_file), job_types, env)
-
-
-def get_env():
+def render_templates(job_types, security_environment):
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader('./'),
         autoescape=jinja2.select_autoescape(default=True, disabled_extensions=('j2',)),
@@ -34,19 +20,30 @@ def get_env():
         lstrip_blocks=True,
         keep_trailing_newline=True,
     )
-    return env
+
+    for template_file in Path('.').glob('**/*.j2'):
+        template = env.get_template(str(template_file))
+
+        output = template.render(
+            job_types=job_types,
+            security_environment=security_environment,
+            json=json,
+            snake_to_pascal_case=snake_to_pascal_case
+        )
+
+        template_file.with_suffix('').write_text(output)
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('paths', nargs='+', type=Path)
+    parser.add_argument('job_spec_files', nargs='+', type=Path)
+    parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL'])
     args = parser.parse_args()
 
     job_types = {}
-    for file in args.paths:
-        with open(file.absolute()) as f:
-            job_types.update(yaml.safe_load(f))
-    render_templates(job_types)
+    for file in args.job_spec_files:
+        job_types.update(yaml.safe_load(file.read_text()))
+    render_templates(job_types, args.security_environment)
 
 
 if __name__ == '__main__':
