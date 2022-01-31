@@ -19,6 +19,7 @@ jobs:
   cfn-lint:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         security_environment: [ASF, EDC, JPL]
     steps:
