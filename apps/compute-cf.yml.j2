@@ -31,7 +31,7 @@ Outputs:
     Value: !Ref ComputeEnvironment
 
   JobQueueArn:
-    Value: !Ref JobQueue
+    Value: !Ref BatchJobQueue
 
   TaskRoleArn:
     Value: !GetAtt TaskRole.Arn
@@ -87,17 +87,25 @@ Resources:
         Tags:
           Name: !Ref AWS::StackName
 
-  JobQueue:
+  SchedulingPolicy:
+    Type: AWS::Batch::SchedulingPolicy
+
+  BatchJobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
       Priority: 1
       ComputeEnvironmentOrder:
         - ComputeEnvironment: !Ref ComputeEnvironment
           Order: 1
+      SchedulingPolicyArn: !Ref SchedulingPolicy
 
   TaskRole:
-    Type: AWS::IAM::Role
+    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -111,8 +119,12 @@ Resources:
         - !Ref TaskPolicy
 
   TaskPolicy:
-    Type: AWS::IAM::ManagedPolicy
+    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -124,8 +136,12 @@ Resources:
             Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
 
   BatchServiceRole:
-    Type: AWS::IAM::Role
+    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -138,8 +154,12 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
 
   InstanceRole:
-    Type: AWS::IAM::Role
+    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -154,5 +174,8 @@ Resources:
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
+      {% if security_environment == 'JPL' %}
+      Path: /account-managed/hyp3/
+      {% endif %}
       Roles:
         - !Ref InstanceRole

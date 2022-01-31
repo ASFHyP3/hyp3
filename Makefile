@@ -1,11 +1,20 @@
 API = ${PWD}/apps/api/src
 GET_FILES = ${PWD}/apps/get-files/src
+PROCESS_NEW_GRANULES = ${PWD}/apps/process-new-granules/src
 SCALE_CLUSTER = ${PWD}/apps/scale-cluster/src
 START_EXECUTION = ${PWD}/apps/start-execution/src
+UPDATE_DB = ${PWD}/apps/update-db/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
-PROCESS_NEW_GRANULES = ${PWD}/apps/process-new-granules/src
 DYNAMO = ${PWD}/lib/dynamo
-export PYTHONPATH = ${API}:${GET_FILES}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPLOAD_LOG}:${PROCESS_NEW_GRANULES}:${DYNAMO}
+export PYTHONPATH = ${API}:${GET_FILES}:${PROCESS_NEW_GRANULES}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}
+
+
+build: render
+	python -m pip install --upgrade -r requirements-apps-api.txt -t ${API}; \
+	python -m pip install --upgrade -r requirements-apps-process-new-granules.txt -t ${PROCESS_NEW_GRANULES}; \
+	python -m pip install --upgrade -r requirements-apps-scale-cluster.txt -t ${SCALE_CLUSTER}; \
+	python -m pip install --upgrade -r requirements-apps-start-execution.txt -t ${START_EXECUTION}; \
+	python -m pip install --upgrade -r requirements-apps-update-db.txt -t ${UPDATE_DB}
 
 tests: render
 	export $$(xargs < tests/cfg.env); \
@@ -19,8 +28,9 @@ install:
 	python -m pip install -r requirements-all.txt
 
 files ?= job_spec/*.yml
+security_environment ?= ASF
 render:
-	@echo rendering $(files); python apps/render_cf.py $(files)
+	@echo rendering $(files) for $(security_environment); python apps/render_cf.py $(files) -s $(security_environment)
 
 static: flake8 openapi-validate cfn-lint
 
@@ -31,10 +41,11 @@ openapi-validate: render
 	prance validate --backend=openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
 
 cfn-lint: render
-	cfn-lint --info --ignore-checks W3002 --template `find . -name *-cf.yml`
+	cfn-lint --info --ignore-checks W3002 E3008 --template `find . -name *-cf.yml`
 
 clean:
-	rm -f apps/api/src/hyp3_api/api-spec/job_parameters.yml \
-	    apps/api/src/hyp3_api/job_validation_map.yml \
-	    apps/step-function.json \
-	    apps/workflow-cf.yml
+	git ls-files -o -- apps | xargs rm; \
+	git ls-files -o -- lib/dynamo | xargs rm; \
+	git ls-files -o -- .pytest_cache | xargs rm; \
+	find ./ -empty -type d -delete; \
+	rm -f packaged.yml
