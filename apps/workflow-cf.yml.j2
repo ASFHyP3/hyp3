@@ -66,9 +66,9 @@ Resources:
           {% endfor %}
         Secrets:
           - Name: EARTHDATA_USERNAME
-            ValueFrom: !Sub "${SecretArn}:username"
+            ValueFrom: !Sub "${SecretArn}:username::"
           - Name: EARTHDATA_PASSWORD
-            ValueFrom: !Sub "${SecretArn}:password"
+            ValueFrom: !Sub "${SecretArn}:password::"
       Timeout:
         AttemptDurationSeconds: {{ job_spec['timeout'] }}
   {% endfor %}
