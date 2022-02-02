@@ -21,6 +21,9 @@ Parameters:
   PermissionsBoundaryPolicyArn:
     Type: String
 
+  SecretArn:
+    Type: String
+
 Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
@@ -170,6 +173,21 @@ Resources:
       PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+        - !Ref InstancePolicy
+
+  InstancePolicy:
+    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
+    Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: secretsmanager:GetSecretValue
+            Resource: !Ref SecretArn
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
