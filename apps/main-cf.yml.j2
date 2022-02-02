@@ -137,6 +137,7 @@ Resources:
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecretArn: !Ref Secret
       TemplateURL: compute-cf.yml
 
   ScaleCluster:
