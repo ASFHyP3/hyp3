@@ -5,13 +5,6 @@ Parameters:
   JobQueueArn:
     Type: String
 
-  EDLUsername:
-    Type: String
-
-  EDLPassword:
-    Type: String
-    NoEcho: true
-
   JobsTable:
     Type: String
 
@@ -32,6 +25,9 @@ Parameters:
 
   SubnetIds:
     Type: CommaDelimitedList
+
+  SecretArn:
+    Type: String
 
 Conditions:
 
@@ -68,6 +64,11 @@ Resources:
           {% for command in job_spec['command'] %}
           - {{ command }}
           {% endfor %}
+        Secrets:
+          - name: EARTHDATA_USERNAME
+            valueFrom: !Sub "${SecretArn}:username"
+          - name: EARTHDATA_PASSWORD
+            valueFrom: !Sub "${SecretArn}:password"
       Timeout:
         AttemptDurationSeconds: {{ job_spec['timeout'] }}
   {% endfor %}
