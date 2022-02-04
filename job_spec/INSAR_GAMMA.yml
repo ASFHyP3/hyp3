@@ -67,10 +67,6 @@ INSAR_GAMMA:
   command:
     - ++process
     - insar
-    - --username
-    - '!Ref EDLUsername'
-    - --password
-    - '!Ref EDLPassword'
     - --bucket
     - '!Ref Bucket'
     - --bucket-prefix

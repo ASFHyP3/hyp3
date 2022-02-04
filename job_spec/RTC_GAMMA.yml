@@ -91,10 +91,6 @@ RTC_GAMMA:
   command:
     - ++process
     - rtc
-    - --username
-    - '!Ref EDLUsername'
-    - --password
-    - '!Ref EDLPassword'
     - --bucket
     - '!Ref Bucket'
     - --bucket-prefix

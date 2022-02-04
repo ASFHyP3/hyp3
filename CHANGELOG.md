@@ -5,9 +5,60 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [2.8.0](https://github.com/ASFHyP3/hyp3/compare/v2.7.3...v2.8.0)
+## [2.9.0]
 ### Changed
 - The HyP3 API is now implemented as an API Gateway REST API, supporting private API deployments.
+
+## [2.8.4](https://github.com/ASFHyP3/hyp3/compare/v2.8.3...v2.8.4)
+### Security
+- Encrypt Earthdata username and password using AWS Secrets Manager.
+### Added
+- Documentation about deploying to a JPL-managed commercial AWS account has been added to
+  [`docs/deployments`](docs/deployments).
+
+## [2.8.3](https://github.com/ASFHyP3/hyp3/compare/v2.8.2...v2.8.3)
+### Changed
+- Increase monthly job quota per user from 250 to 1,000.
+
+## [2.8.2](https://github.com/ASFHyP3/hyp3/compare/v2.8.1...v2.8.2)
+### Fixed
+- Limited the number of jobs a subscription can send at a time to avoid timing out. Fixes [#794](https://github.com/ASFHyP3/hyp3/issues/794).
+- Confirm there are no unprocessed granules before disabling subscriptions past their expiration date.
+
+## [2.8.1](https://github.com/ASFHyP3/hyp3/compare/v2.8.0...v2.8.1)
+### Changed
+- Jobs are now assigned a `priority` attribute when submitted. `priority` is calculated based on jobs already
+  submitted month-to-date by the same user. Jobs with a higher `priority` value will run before jobs with a lower value.
+- `Batch.ServerException` errors encountered by the Step Function are now retried, to address intermittent errors when
+  the Step Functions service calls the Batch SubmitJob API.
+
+## [2.8.0](https://github.com/ASFHyP3/hyp3/compare/v2.7.7...v2.8.0)
+### Added
+- HyP3 can now be deployed into a JPL managed commercial AWS account
+- Selectable security environment when rendering CloudFormation templates, which will modify resources/configurations for:
+  - `ASF` (default) -- AWS accounts managed by the Alaska Satellite Facility
+  - `EDC` -- AWS accounts managed by the NASA Earthdata CLoud
+  - `JPL` -- AWS accounts managed by the NASA Jet Propulsion Laboratory
+- A `security_environment` Make variable used by the `render` target (and any target that depends on `render`). 
+  Use like `make security_environment=ASF build`
+
+### Changed
+- All CloudFormation templates (`*-cf.yml`) are now rendered from jinja2 templates (`*-cf.yml.j2`)
+
+### Removed
+- The `EarthdataCloud` CloudFormation template parameter to `apps/main-cf.yml`
+
+## [2.7.7](https://github.com/ASFHyP3/hyp3/compare/v2.7.6...v2.7.7)
+### Changed
+- Use Managed Policies for IAM permissions in support of future deployments using custom CloudFormation IAM resources
+
+## [2.7.6](https://github.com/ASFHyP3/hyp3/compare/v2.7.5...v2.7.6)
+### Added
+- Added build target to Makefile.
+
+## [2.7.5](https://github.com/ASFHyP3/hyp3/compare/v2.7.4...v2.7.5)
+### Removed
+- Disabled default encryption for the monitoring SNS topic. Fixes [#762](https://github.com/ASFHyP3/hyp3/issues/762).
 
 ## [2.7.4](https://github.com/ASFHyP3/hyp3/compare/v2.7.3...v2.7.4)
 ### Added
@@ -210,7 +261,7 @@ to the database but still validate it.
 ### Added
 - INSAR_GAMMA jobs now expose `include_inc_map` parameter that allows users to include an incidence angle map.
 
-## Fixed
+### Fixed
 - Updated API GATEWAY payload format to version 2.0 to support later versions of serverless wsgi
 
 ## [1.1.1](https://github.com/ASFHyP3/hyp3/compare/v1.1.0...v1.1.1)

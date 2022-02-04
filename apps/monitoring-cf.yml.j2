@@ -11,8 +11,6 @@ Resources:
 
   AlarmTopic:
     Type: AWS::SNS::Topic
-    Properties:
-      KmsMasterKeyId: alias/aws/sns
 
   StepFunctionAlarm:
     Type: AWS::CloudWatch::Alarm
