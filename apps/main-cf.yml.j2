@@ -174,13 +174,12 @@ Resources:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
         TaskRoleArn: !GetAtt Cluster.Outputs.TaskRoleArn
         JobsTable: !Ref JobsTable
-        EDLUsername: !Ref EDLUsername
-        EDLPassword: !Ref EDLPassword
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
         SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
+        SecretArn: !Ref Secret
       TemplateURL: workflow-cf.yml
 
   Monitoring:
@@ -328,3 +327,8 @@ Resources:
               KeyType: RANGE
           Projection:
             ProjectionType: ALL
+
+  Secret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      SecretString: !Sub '{"username": "${EDLUsername}", "password": "${EDLPassword}"}'
