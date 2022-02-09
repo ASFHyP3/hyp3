@@ -18,6 +18,10 @@ jobs:
 
   cfn-lint:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        security_environment: [ASF, EDC, JPL]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
@@ -27,7 +31,8 @@ jobs:
           python -m pip install --upgrade pip
           make install
 
-      - run: make cfn-lint
+      - run: |
+          make security_environment=${{ matrix.security_environment }} cfn-lint
 
   openapi-spec-validator:
     runs-on: ubuntu-latest
@@ -41,7 +46,6 @@ jobs:
           make install
 
       - run: make openapi-validate
-
 
   statelint:
     runs-on: ubuntu-latest
@@ -62,3 +66,6 @@ jobs:
           make render
           sed -i 's/"Resource": "${.*}"/"Resource": "foo:bar"/' apps/step-function.json
           statelint apps/step-function.json
+
+  call-secrets-analysis-workflow:
+    uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@main

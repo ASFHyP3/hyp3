@@ -1,0 +1,55 @@
+title = "gitleaks config"
+[[rules]]
+    description = "AWS Manager ID"
+    regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+    tags = ["key", "AWS"]
+[[rules]]
+    description = "AWS Secret Key"
+    regex = '''(?i)aws(.{0,20})?(?-i)[0-9a-zA-Z\/+]{40}'''
+    tags = ["key", "AWS"]
+[[rules]]
+    description = "AWS MWS key"
+    regex = '''amzn\.mws\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'''
+    tags = ["key", "AWS", "MWS"]
+[[rules]]
+    description = "Github"
+    regex = '''(?i)github(.{0,20})?(?-i)[0-9a-zA-Z]{35,40}'''
+    tags = ["key", "Github"]
+[[rules]]
+    description = "Asymmetric Private Key"
+    regex = '''-----BEGIN ((EC|PGP|DSA|RSA|OPENSSH) )?PRIVATE KEY( BLOCK)?-----'''
+    tags = ["key", "AsymmetricPrivateKey"]
+[[rules]]
+    description = "Generic Credential"
+    regex = '''(?i)(api_key|apikey|secret|password|pass|pw|key)(.{0,20})?[0-9a-zA-Z]{16,45}'''
+    tags = ["key", "API", "generic"]
+    [[rules.whitelist]]
+        regex = '''KeyChecking.no.*'''
+        description = "Ignore ssh settings for GitLab tools-bot"
+[[rules]]
+    description = "Google API key"
+    regex = '''AIza[0-9A-Za-z\\-_]{35}'''
+    tags = ["key", "Google"]
+[[rules]]
+    description = "Google (GCP) Service Account"
+    regex = '''"type": "service_account"'''
+    tags = ["key", "Google"]
+[[rules]]
+    description = "Heroku API key"
+    regex = '''(?i)heroku(.{0,20})?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'''
+    tags = ["key", "Heroku"]
+[[rules]]
+    description = "MailChimp API key"
+    regex = '''(?i)(mailchimp|mc)(.{0,20})?[0-9a-f]{32}-us[0-9]{1,2}'''
+    tags = ["key", "Mailchimp"]
+[[rules]]
+    description = "Mailgun API key"
+    regex = '''((?i)(mailgun|mg)(.{0,20})?)?key-[0-9a-z]{32}'''
+    tags = ["key", "Mailgun"]
+[[rules]]
+    description = "Slack Webhook"
+    regex = '''https://hooks.slack.com/services/T[a-zA-Z0-9_]{8}/B[a-zA-Z0-9_]{8}/[a-zA-Z0-9_]{24}'''
+    tags = ["key", "slack"]
+[whitelist]
+    description = "Whitelisted files"
+    files = ['''(^.*gitleaks.toml$|(.*?)(jpg|gif|doc|pdf|bin)$)''']

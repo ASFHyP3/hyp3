@@ -4,11 +4,94 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.8.4](https://github.com/ASFHyP3/hyp3/compare/v2.8.3...v2.8.4)
+### Security
+- Encrypt Earthdata username and password using AWS Secrets Manager.
+### Added
+- Documentation about deploying to a JPL-managed commercial AWS account has been added to
+  [`docs/deployments`](docs/deployments).
+
+## [2.8.3](https://github.com/ASFHyP3/hyp3/compare/v2.8.2...v2.8.3)
+### Changed
+- Increase monthly job quota per user from 250 to 1,000.
+
+## [2.8.2](https://github.com/ASFHyP3/hyp3/compare/v2.8.1...v2.8.2)
+### Fixed
+- Limited the number of jobs a subscription can send at a time to avoid timing out. Fixes [#794](https://github.com/ASFHyP3/hyp3/issues/794).
+- Confirm there are no unprocessed granules before disabling subscriptions past their expiration date.
+
+## [2.8.1](https://github.com/ASFHyP3/hyp3/compare/v2.8.0...v2.8.1)
+### Changed
+- Jobs are now assigned a `priority` attribute when submitted. `priority` is calculated based on jobs already
+  submitted month-to-date by the same user. Jobs with a higher `priority` value will run before jobs with a lower value.
+- `Batch.ServerException` errors encountered by the Step Function are now retried, to address intermittent errors when
+  the Step Functions service calls the Batch SubmitJob API.
+
+## [2.8.0](https://github.com/ASFHyP3/hyp3/compare/v2.7.7...v2.8.0)
+### Added
+- HyP3 can now be deployed into a JPL managed commercial AWS account
+- Selectable security environment when rendering CloudFormation templates, which will modify resources/configurations for:
+  - `ASF` (default) -- AWS accounts managed by the Alaska Satellite Facility
+  - `EDC` -- AWS accounts managed by the NASA Earthdata CLoud
+  - `JPL` -- AWS accounts managed by the NASA Jet Propulsion Laboratory
+- A `security_environment` Make variable used by the `render` target (and any target that depends on `render`). 
+  Use like `make security_environment=ASF build`
+
+### Changed
+- All CloudFormation templates (`*-cf.yml`) are now rendered from jinja2 templates (`*-cf.yml.j2`)
+
+### Removed
+- The `EarthdataCloud` CloudFormation template parameter to `apps/main-cf.yml`
+
+## [2.7.7](https://github.com/ASFHyP3/hyp3/compare/v2.7.6...v2.7.7)
+### Changed
+- Use Managed Policies for IAM permissions in support of future deployments using custom CloudFormation IAM resources
+
+## [2.7.6](https://github.com/ASFHyP3/hyp3/compare/v2.7.5...v2.7.6)
+### Added
+- Added build target to Makefile.
+
+## [2.7.5](https://github.com/ASFHyP3/hyp3/compare/v2.7.4...v2.7.5)
+### Removed
+- Disabled default encryption for the monitoring SNS topic. Fixes [#762](https://github.com/ASFHyP3/hyp3/issues/762).
+
+## [2.7.4](https://github.com/ASFHyP3/hyp3/compare/v2.7.3...v2.7.4)
+### Added
+- Enabled default encryption for the monitoring SNS topic
+
+### Changed
+- Block Public Access settings for the S3 content bucket are now configured based on the EarthdataCloud stack parameter.
+
+## [2.7.3](https://github.com/ASFHyP3/hyp3/compare/v2.7.2...v2.7.3)
+### Changed
+- s3 access log bucket is now encrypted using [AWS S3 Bucket Keys](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html)
+
+## [2.7.2](https://github.com/ASFHyP3/hyp3/compare/v2.7.1...v2.7.2)
+### Changed
+- The `scale-cluster` lambda now reduces `desiredVpucs` to match `maxVcpus` when necessary to allow the compute
+  environment to scale down immediately.
+
+## [2.7.1](https://github.com/ASFHyP3/hyp3/compare/v2.7.0...v2.7.1)
+### Changed
+- The `DomainName` and `CertificateArn` stack parameters are now optional, allowing HyP3 to be deployed without
+  a custom domain name for the API.
+
+## [2.7.0](https://github.com/ASFHyP3/hyp3/compare/v2.6.6...v2.7.0)
+### Added
+- Support for automatic toggling between two `maxvCpus` values for the Batch compute environment, based on monthly
+  budget vs month-to-date spending
+
+## [2.6.6](https://github.com/ASFHyP3/hyp3/compare/v2.6.5...v2.6.6)
+### Fixed
+- Api 400 responses now use a consistent JSON schema for the response body. Fixes [#625](https://github.com/ASFHyP3/hyp3/issues/625)
 
 ## [2.6.5](https://github.com/ASFHyP3/hyp3/compare/v2.6.4...v2.6.5)
 ### Changed
+- Default autoRIFT parameter file was updated to point at the new `its-live-data` AWS S3 bucket
+  instead of `its-live-data.jpl.nasa.gov`, except for the custom `autorift-eu` deployment which uses a copy in `eu-central-1`.
 - Job specification YAMLs can now specify a container `image_tag`, which will override the deployment default
   image tag
+- Provided example granule pairs for INSAR_GAMMA and AUTORIFT jobs in the OpenApi schema
 
 ## [2.6.4](https://github.com/ASFHyP3/hyp3/compare/v2.6.3...v2.6.4)
 ### Fixed
@@ -173,7 +256,7 @@ to the database but still validate it.
 ### Added
 - INSAR_GAMMA jobs now expose `include_inc_map` parameter that allows users to include an incidence angle map.
 
-## Fixed
+### Fixed
 - Updated API GATEWAY payload format to version 2.0 to support later versions of serverless wsgi
 
 ## [1.1.1](https://github.com/ASFHyP3/hyp3/compare/v1.1.0...v1.1.1)

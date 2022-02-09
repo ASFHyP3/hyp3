@@ -66,10 +66,6 @@ WATER_MAP:
   command:
     - ++process
     - water_map
-    - --username
-    - '!Ref EDLUsername'
-    - --password
-    - '!Ref EDLPassword'
     - --bucket
     - '!Ref Bucket'
     - --bucket-prefix
