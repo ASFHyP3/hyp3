@@ -148,11 +148,11 @@ jobs:
           - environment: hyp3-watermap
             domain: hyp3-watermap.asf.alaska.edu
             template_bucket: cf-templates-1217di08q7vwl-us-west-2
-            image_tag: latest
+            image_tag: 5.1.2
             product_lifetime_in_days: 14
             quota: 0
             deploy_ref: refs/heads/watermap
-            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml  job_spec/WATER_MAP_OLD.yml
+            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
