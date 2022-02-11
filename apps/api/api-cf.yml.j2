@@ -15,12 +15,6 @@ Parameters:
   AuthAlgorithm:
     Type: String
 
-  DomainName:
-    Type: String
-
-  CertificateArn:
-    Type: String
-
   MonthlyJobQuotaPerUser:
     Type: Number
 
@@ -30,6 +24,7 @@ Parameters:
   BannedCidrBlocks:
     Type: String
 
+  {% if security_environment == 'EDC' %}
   PermissionsBoundaryPolicyArn:
     Type: String
 
@@ -42,18 +37,18 @@ Parameters:
   SubnetIds:
     Type: CommaDelimitedList
 
-Conditions:
+  {% else %}
+  DomainName:
+    Type: String
 
-  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
-
-  LambdasInVpc: !Not [!Equals [!Ref SecurityGroupId, ""]]
-
-  PublicApi: !Not [!Equals [!Ref DomainName, ""]]
+  CertificateArn:
+    Type: String
+  {% endif %}
 
 Outputs:
 
   Url:
-    Value: !If [PublicApi, !Sub "https://${CustomDomainName}/ui", !Sub "https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/ui"]
+    Value: {{ '!Sub "https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/ui"' if security_environment == 'EDC' else '!Sub "https://${CustomDomainName}/ui"' }}
 
   ApiId:
     Value: !Ref RestApi
@@ -65,7 +60,7 @@ Resources:
     Properties:
       EndpointConfiguration:
         Types:
-          - !If [PublicApi, REGIONAL, PRIVATE]
+          - {{ 'PRIVATE' if security_environment == 'EDC' else 'REGIONAL' }}
       Body:
         openapi: 3.0.3
         paths:
@@ -81,19 +76,18 @@ Resources:
                 type: aws_proxy
                 uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
                 httpMethod: POST
+      {% if security_environment == 'EDC' %}
       Policy:
-        !If
-          - PublicApi
-          - !Ref AWS::NoValue
-          - Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Principal: "*"
-                Action: execute-api:Invoke
-                Resource: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*"
-                Condition:
-                  StringEquals:
-                    aws:SourceVpc: !Ref VpcId
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: execute-api:Invoke
+            Resource: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*"
+            Condition:
+              StringEquals:
+                aws:SourceVpc: !Ref VpcId
+      {% endif %}
 
   {% set random_id = range(1, 999999) | random %}
   Deployment{{ random_id }}:
@@ -116,9 +110,9 @@ Resources:
     Properties:
       RetentionInDays: 180
 
+  {% if security_environment != 'EDC' %}
   CustomDomainName:
     Type: AWS::ApiGatewayV2::DomainName
-    Condition: PublicApi
     Properties:
       DomainName: !Ref DomainName
       DomainNameConfigurations:
@@ -127,11 +121,11 @@ Resources:
 
   ApiMapping:
     Type: AWS::ApiGatewayV2::ApiMapping
-    Condition: PublicApi
     Properties:
       ApiId: !Ref RestApi
       DomainName: !Ref CustomDomainName
       Stage: !Ref Stage
+  {% endif %}
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -153,9 +147,13 @@ Resources:
           Principal:
             Service: lambda.amazonaws.com
           Effect: Allow
-      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
+      {% if security_environment == 'EDC' %}
+      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
+      {% endif %}
       ManagedPolicyArns:
-        - !If [LambdasInVpc, arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole, !Ref AWS::NoValue]
+        {% if security_environment == 'EDC' %}
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        {% endif %}
         - !Ref LambdaPolicy
 
   LambdaPolicy:
@@ -209,13 +207,12 @@ Resources:
       Role: !GetAtt LambdaRole.Arn
       Runtime: python3.8
       Timeout: 30
+      {% if security_environment == 'EDC' %}
       VpcConfig:
-        !If
-          - LambdasInVpc
-          - SecurityGroupIds:
-              - !Ref SecurityGroupId
-            SubnetIds: !Ref SubnetIds
-          - !Ref AWS::NoValue
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetIds: !Ref SubnetIds
+      {% endif %}
 
   LambdaPermission:
     Type: AWS::Lambda::Permission
