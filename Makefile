@@ -1,4 +1,5 @@
 API = ${PWD}/apps/api/src
+CHECK_PROCESSING_TIME = ${PWD}/apps/check-processing-time/src
 GET_FILES = ${PWD}/apps/get-files/src
 PROCESS_NEW_GRANULES = ${PWD}/apps/process-new-granules/src
 SCALE_CLUSTER = ${PWD}/apps/scale-cluster/src
@@ -6,7 +7,7 @@ START_EXECUTION = ${PWD}/apps/start-execution/src
 UPDATE_DB = ${PWD}/apps/update-db/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
 DYNAMO = ${PWD}/lib/dynamo
-export PYTHONPATH = ${API}:${GET_FILES}:${PROCESS_NEW_GRANULES}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}
+export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${PROCESS_NEW_GRANULES}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}
 
 
 build: render
