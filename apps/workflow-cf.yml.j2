@@ -86,6 +86,7 @@ Resources:
         {% endfor %}
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
         GetFilesLambdaArn: !GetAtt GetFiles.Outputs.LambdaArn
+        CheckProcessingTimeLambdaArn: !GetAtt CheckProcessingTime.Outputs.LambdaArn
         UploadLogLambdaArn: !GetAtt UploadLog.Outputs.LambdaArn
 
   StepFunctionRole:
@@ -155,6 +156,15 @@ Resources:
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
       TemplateURL: get-files/get-files-cf.yml
+
+  CheckProcessingTime:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+      TemplateURL: check-processing-time/check-processing-time-cf.yml
 
   StartExecution:
     Type: AWS::CloudFormation::Stack
