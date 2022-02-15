@@ -426,6 +426,8 @@ components:
           $ref: "#/components/schemas/list_of_urls"
         expiration_time:
           $ref: "#/components/schemas/datetime"
+        processing_time_in_seconds:
+          $ref: "#/components/schemas/seconds"
         priority:
           $ref: "#/components/schemas/priority"
 
@@ -522,6 +524,10 @@ components:
       type: integer
       minimum: 0
       maximum: 9999
+
+    seconds:
+      type: integer
+      minimum: 0
 
   securitySchemes:
     EarthDataLogin:
