@@ -4,7 +4,7 @@ import json
 def get_time_from_attempts(attempts):
     attempts.sort(key=lambda attempt: attempt['StartedAt'])
     final_attempt = attempts[-1]
-    return final_attempt['StoppedAt'] - final_attempt['StartedAt']
+    return (final_attempt['StoppedAt'] - final_attempt['StartedAt']) / 1000
 
 
 def lambda_handler(event, context):
