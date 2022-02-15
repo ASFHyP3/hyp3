@@ -10,5 +10,7 @@ def get_time_from_attempts(attempts):
 def lambda_handler(event, context):
     results = event['processing_results']
     if 'Attempts' in results:
-        return get_time_from_attempts(results['Attempts'])
-    return get_time_from_attempts(json.loads(results['Cause'])['Attempts'])
+        attempts = results['Attempts']
+    else:
+        attempts = json.loads(results['Cause'])['Attempts']
+    return get_time_from_attempts(attempts)
