@@ -135,6 +135,7 @@ Resources:
             Resource:
              - !GetAtt UpdateDB.Outputs.LambdaArn
              - !GetAtt GetFiles.Outputs.LambdaArn
+             - !GetAtt CheckProcessingTime.Outputs.LambdaArn
              - !GetAtt UploadLog.Outputs.LambdaArn
 
   UpdateDB:
