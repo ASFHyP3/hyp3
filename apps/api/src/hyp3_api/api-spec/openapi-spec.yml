@@ -427,7 +427,7 @@ components:
         expiration_time:
           $ref: "#/components/schemas/datetime"
         processing_time_in_seconds:
-          $ref: "#/components/schemas/seconds"
+          $ref: "#/components/schemas/processing_time_in_seconds"
         priority:
           $ref: "#/components/schemas/priority"
 
@@ -525,7 +525,11 @@ components:
       minimum: 0
       maximum: 9999
 
-    seconds:
+    processing_time_in_seconds:
+      description: >
+        Run time in seconds for the final processing attempt (regardless of whether it succeeded). A value of zero
+        likely indicates that the job failed before reaching the processing step, although it may also indicate that the
+        job failed after reaching the processing step but before calculating the processing time.
       type: integer
       minimum: 0
 
