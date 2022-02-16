@@ -2,9 +2,6 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  Bucket:
-    Type: String
-
   PermissionsBoundaryPolicyArn:
     Type: String
 
@@ -67,23 +64,12 @@ Resources:
               - logs:CreateLogStream
               - logs:PutLogEvents
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
-          - Effect: Allow
-            Action: s3:ListBucket
-            Resource: !Sub "arn:aws:s3:::${Bucket}"
-          - Effect: Allow
-            Action:
-              - s3:GetObject
-              - s3:GetObjectTagging
-            Resource: !Sub "arn:aws:s3:::${Bucket}/*"
 
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
-      Environment:
-        Variables:
-          BUCKET: !Ref Bucket
       Code: src/
-      Handler: get_files.lambda_handler
+      Handler: check_processing_time.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.8
