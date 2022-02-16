@@ -1,1 +1,1 @@
-lib/dynamo
+./lib/dynamo/

@@ -40,10 +40,12 @@ Parameters:
   DomainName:
     Description: DNS domain name that will be used to invoke this api.
     Type: String
+    Default: ""
 
   CertificateArn:
     Description: ARN of Certificate in AWS Certificate Manager setup previously for this domain name.
     Type: String
+    Default: ""
 
   MonthlyJobQuotaPerUser:
     Description: Number of jobs each user is allowed per month.
@@ -67,20 +69,37 @@ Parameters:
     Type: String
     Default: ""
 
-  DeployLambdasInVpc:
-    Type: String
-    Default: false
-    AllowedValues:
-      - false
-      - true
-
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
+  DefaultMaxvCpus:
+    Description: Default maximum size for the AWS Batch compute environment
+    Type: Number
+    MinValue: 0
+    Default: 60
+
+  ExpandedMaxvCpus:
+    Description: Expanded maximum size for the AWS Batch compute environment to use when month-to-date budget sufficiently exceeds month-to-date spending
+    Type: Number
+    MinValue: 0
+    Default: 60
+
+  MonthlyComputeBudget:
+    Description: Total budget allocated for AWS Batch processing per month, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus.
+    Type: Number
+    MinValue: 0
+    Default: 0
+
+  RequiredSurplus:
+    Description: Amount by which month-to-date budget must exceed month-to-date spending to increase fleet size, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus.
+    Type: Number
+    MinValue: 0
+    Default: 0
+
 Conditions:
 
-  LambdasInVpc: !Equals [!Ref DeployLambdasInVpc, "true"]
+  ScaleCluster: !Not [!Equals [!Ref DefaultMaxvCpus, !Ref ExpandedMaxvCpus]]
 
 Outputs:
 
@@ -104,8 +123,8 @@ Resources:
         SystemAvailable: !Ref SystemAvailable
         BannedCidrBlocks: !Ref BannedCidrBlocks
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
-        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
       TemplateURL: api/api-cf.yml
 
   Cluster:
@@ -113,11 +132,27 @@ Resources:
     Properties:
       Parameters:
         VpcId: !Ref VpcId
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        MaxvCpus: !Ref DefaultMaxvCpus
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
       TemplateURL: compute-cf.yml
+
+  ScaleCluster:
+    Type: AWS::CloudFormation::Stack
+    Condition: ScaleCluster
+    Properties:
+      Parameters:
+        ComputeEnvironmentArn: !GetAtt Cluster.Outputs.ComputeEnvironmentArn
+        DefaultMaxvCpus: !Ref DefaultMaxvCpus
+        ExpandedMaxvCpus: !Ref ExpandedMaxvCpus
+        MonthlyComputeBudget: !Ref MonthlyComputeBudget
+        RequiredSurplus: !Ref RequiredSurplus
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
+      TemplateURL: scale-cluster/scale-cluster-cf.yml
 
   ProcessNewGranules:
     Type: AWS::CloudFormation::Stack
@@ -128,8 +163,8 @@ Resources:
         SubscriptionsTable: !Ref SubscriptionsTable
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
-        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
   StepFunction:
@@ -144,8 +179,8 @@ Resources:
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
-        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
       TemplateURL: workflow-cf.yml
 
   Monitoring:
@@ -165,6 +200,11 @@ Resources:
         IgnorePublicAcls: True
         BlockPublicPolicy: True
         RestrictPublicBuckets: True
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+            BucketKeyEnabled: true
 
   ContentBucket:
     Type: AWS::S3::Bucket
@@ -177,8 +217,8 @@ Resources:
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
         IgnorePublicAcls: True
-        BlockPublicPolicy: False
-        RestrictPublicBuckets: False
+        BlockPublicPolicy: {{ 'True' if security_environment == 'EDC' else 'False' }}
+        RestrictPublicBuckets: {{ 'True' if security_environment == 'EDC' else 'False' }}
       LifecycleConfiguration:
         Rules:
           - Status: Enabled
@@ -202,6 +242,7 @@ Resources:
             AllowedOrigins:
               - "*.asf.alaska.edu"
 
+  {% if security_environment != 'EDC' %}
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -219,6 +260,7 @@ Resources:
             Principal: "*"
             Action: s3:ListBucket
             Resource: !GetAtt ContentBucket.Arn
+  {% endif %}
 
   JobsTable:
     Type: AWS::DynamoDB::Table
