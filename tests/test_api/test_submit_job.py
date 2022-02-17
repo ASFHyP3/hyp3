@@ -265,7 +265,7 @@ def test_submit_good_autorift_granule_names(client, tables):
         'LC08_L1TP_009011_20200820_20200905_02_T1',
         'LO08_L1GT_043001_20201106_20201110_02_T2',
         'LC09_L1GT_215109_20220125_20220125_02_T2',
-        'LC09_L1GT_215109_20220210_20220210_02_T2',
+        'LO09_L1GT_215109_20220210_20220210_02_T2',
     ]
     for granule in good_granule_names:
         batch = [
