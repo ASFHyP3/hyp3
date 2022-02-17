@@ -155,10 +155,11 @@ def test_check_granules_exist():
     validation.check_granules_exist(['scene1', 'scene2'], granule_metadata)
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_granules_exist(['scene1', 'scene2', 'scene3', 'scene4', 'S2_foo', 'LC08_bar'],
+        validation.check_granules_exist(['scene1', 'scene2', 'scene3', 'scene4', 'S2_foo', 'LC08_bar', 'LC09_bar'],
                                         granule_metadata)
     assert 'S2_foo' not in str(e)
     assert 'LC08_bar' not in str(e)
+    assert 'LC09_bar' not in str(e)
     assert 'scene1' not in str(e)
     assert 'scene2' not in str(e)
     assert 'scene3' in str(e)
