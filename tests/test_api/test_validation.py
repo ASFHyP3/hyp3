@@ -155,10 +155,11 @@ def test_check_granules_exist():
     validation.check_granules_exist(['scene1', 'scene2'], granule_metadata)
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_granules_exist(['scene1', 'scene2', 'scene3', 'scene4', 'S2_foo', 'LC08_bar'],
+        validation.check_granules_exist(['scene1', 'scene2', 'scene3', 'scene4', 'S2_foo', 'LC08_bar', 'LC09_bar'],
                                         granule_metadata)
     assert 'S2_foo' not in str(e)
     assert 'LC08_bar' not in str(e)
+    assert 'LC09_bar' not in str(e)
     assert 'scene1' not in str(e)
     assert 'scene2' not in str(e)
     assert 'scene3' in str(e)
@@ -171,6 +172,9 @@ def test_is_third_party_granule():
     assert validation.is_third_party_granule('LC08_L1TP_009011_20200820_20200905_02_T1')
     assert validation.is_third_party_granule('LO08_L1GT_043001_20201106_20201110_02_T2')
     assert validation.is_third_party_granule('LT08_L1GT_041001_20200125_20200925_02_T2')
+    assert validation.is_third_party_granule('LC09_L1GT_215109_20220125_20220125_02_T2')
+    assert validation.is_third_party_granule('LO09_L1GT_215109_20220210_20220210_02_T2')
+    assert validation.is_third_party_granule('LT09_L1GT_215109_20220210_20220210_02_T2')
     assert not validation.is_third_party_granule('S1A_IW_SLC__1SSH_20150608T205059_20150608T205126_006287_0083E8_C4F0')
     assert not validation.is_third_party_granule('foo')
 
