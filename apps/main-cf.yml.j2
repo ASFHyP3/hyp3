@@ -37,16 +37,6 @@ Parameters:
     Type: String
     Default: RS256
 
-  DomainName:
-    Description: DNS domain name that will be used to invoke this api.
-    Type: String
-    Default: ""
-
-  CertificateArn:
-    Description: ARN of Certificate in AWS Certificate Manager setup previously for this domain name.
-    Type: String
-    Default: ""
-
   MonthlyJobQuotaPerUser:
     Description: Number of jobs each user is allowed per month.
     Type: Number
@@ -96,6 +86,16 @@ Parameters:
     Type: Number
     MinValue: 0
     Default: 0
+
+  {% if security_environment != 'EDC' %}
+  DomainName:
+    Description: DNS domain name that will be used to invoke this api.
+    Type: String
+
+  CertificateArn:
+    Description: ARN of Certificate in AWS Certificate Manager setup previously for this domain name.
+    Type: String
+  {% endif %}
 
 Conditions:
 
