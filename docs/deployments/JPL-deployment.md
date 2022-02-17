@@ -4,6 +4,11 @@ HyP3 can be deployed into a JPL managed AWS commercial account as long as JPL's 
 tooling is provided in the account and in same region as the deployment. Currently, the only
 regions supported are `us-west-1`, `us-west-2`, `us-east-1`, and `us-east-2`.
 
+To request `roles-as-code` tooling be deployed in a JPL account, open a 
+[Cloud Team Service Desk](https://itsd-jira.jpl.nasa.gov/servicedesk/customer/portal/13) request here:
+https://itsd-jira.jpl.nasa.gov/servicedesk/customer/portal/13/create/461?q=roles&q_time=1644889220558
+
+
 For more information about `roles-as-code`, see:
 * https://wiki.jpl.nasa.gov/display/cloudcomputing/IAM+Roles+and+Policies
 * https://github.jpl.nasa.gov/cloud/roles-as-code/blob/master/Documentation.md
