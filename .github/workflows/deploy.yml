@@ -153,8 +153,8 @@ jobs:
             quota: 0
             deploy_ref: refs/heads/watermap
             job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
