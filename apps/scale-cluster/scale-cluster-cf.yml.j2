@@ -2,11 +2,24 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  JobsTable:
+  ComputeEnvironmentArn:
     Type: String
 
-  StepFunctionArn:
-    Type: String
+  DefaultMaxvCpus:
+    Type: Number
+    MinValue: 0
+
+  ExpandedMaxvCpus:
+    Type: Number
+    MinValue: 0
+
+  MonthlyComputeBudget:
+    Type: Number
+    MinValue: 0
+
+  RequiredSurplus:
+    Type: Number
+    MinValue: 0
 
   PermissionsBoundaryPolicyArn:
     Type: String
@@ -32,8 +45,12 @@ Resources:
       RetentionInDays: 90
 
   Role:
-    Type: AWS::IAM::Role
+    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
     Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -44,36 +61,48 @@ Resources:
       PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       ManagedPolicyArns:
         - !If [LambdasInVpc, arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole, !Ref AWS::NoValue]
-      Policies:
-        - PolicyName: policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
-              - Effect: Allow
-                Action: dynamodb:Query
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
-              - Effect: Allow
-                Action: states:StartExecution
-                Resource: !Ref StepFunctionArn
+        - !Ref Policy
+
+  Policy:
+    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
+    Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+          - Effect: Allow
+            Action:
+              - ce:GetCostAndUsage
+              - batch:DescribeComputeEnvironments
+            Resource: "*"
+          - Effect: Allow
+            Action: batch:UpdateComputeEnvironment
+            Resource: !Ref ComputeEnvironmentArn
 
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
       Environment:
         Variables:
-          JOBS_TABLE_NAME: !Ref JobsTable
-          STEP_FUNCTION_ARN: !Ref StepFunctionArn
+          COMPUTE_ENVIRONMENT_ARN: !Ref ComputeEnvironmentArn
+          MONTHLY_COMPUTE_BUDGET: !Ref MonthlyComputeBudget
+          DEFAULT_MAX_VCPUS: !Ref DefaultMaxvCpus
+          EXPANDED_MAX_VCPUS: !Ref ExpandedMaxvCpus
+          REQUIRED_SURPLUS: !Ref RequiredSurplus
       Code: src/
-      Handler: start_execution.lambda_handler
+      Handler: scale_cluster.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.8
-      Timeout: 45
+      Timeout: 30
       VpcConfig:
         !If
           - LambdasInVpc
@@ -92,7 +121,7 @@ Resources:
   Schedule:
     Type: AWS::Events::Rule
     Properties:
-      ScheduleExpression: "rate(1 minute)"
+      ScheduleExpression: "rate(6 hours)"
       Targets:
         - Arn: !GetAtt Lambda.Arn
           Id: lambda

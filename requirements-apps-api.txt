@@ -1,11 +1,11 @@
-cryptography==3.4.7
+cryptography==36.0.1
 flask==2.0.1
 Flask-Cors==3.0.10
 openapi-core==0.14.2
 prance==0.21.8.0
-PyJWT==2.1.0
-requests==2.26.0
-serverless_wsgi==2.0.1
-shapely==1.7.1
+PyJWT==2.3.0
+requests==2.27.1
+serverless_wsgi==3.0.0
+shapely==1.8.0
 strict-rfc3339==0.7
-lib/dynamo
+./lib/dynamo/
