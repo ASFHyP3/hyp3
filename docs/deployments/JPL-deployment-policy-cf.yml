@@ -75,4 +75,4 @@ Resources:
   ApiGatewayLoggingPermission:
     Type: AWS::ApiGateway::Account
     Properties:
-      CloudWatchRoleArn: !Ref ApiGatewayLoggingRole
+      CloudWatchRoleArn: !GetAtt ApiGatewayLoggingRole.Arn
