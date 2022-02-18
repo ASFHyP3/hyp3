@@ -82,10 +82,10 @@ runs:
             || export ROLE_STATEMENT="--role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }}"
 
           [ -z ${{ inputs.DOMAIN_NAME }} ] && export DOMAIN_NAME="" \
-            || export DOMAIN_NAME="DomainName='${{ inputs.DOMAIN_NAME }}'"
+            || export DOMAIN_NAME="DomainName=${{ inputs.DOMAIN_NAME }}"
 
           [ -z ${{ inputs.CERTIFICATE_ARN }} ] && export CERTIFICATE_ARN="" \
-            || export CERTIFICATE_ARN="CertificateArn='${{ inputs.CERTIFICATE_ARN }}'"
+            || export CERTIFICATE_ARN="CertificateArn=${{ inputs.CERTIFICATE_ARN }}"
 
           aws cloudformation package \
             --template-file apps/main-cf.yml \
