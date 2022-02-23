@@ -26,6 +26,7 @@ jobs:
             required_surplus: 1000
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            instance_types: r5d.xlarge
 
           - environment: hyp3-test
             domain: hyp3-test-api.asf.alaska.edu
@@ -45,6 +46,7 @@ jobs:
             required_surplus: 1000
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            instance_types: r5d.xlarge
 
           - environment: hyp3-edc-prod
             domain: ''
@@ -59,6 +61,7 @@ jobs:
             required_surplus: 1000
             security_environment: EDC
             ami_id: image_id_ecs_amz2
+            instance_types: r5d.xlarge
 
           - environment: hyp3-edc-uat
             domain: ''
@@ -73,6 +76,7 @@ jobs:
             required_surplus: 1000
             security_environment: EDC
             ami_id: image_id_ecs_amz2
+            instance_types: r5d.xlarge
 
     environment:
       name: ${{ matrix.environment }}
@@ -116,6 +120,7 @@ jobs:
           PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           AMI_ID: ${{ matrix.ami_id }}
+          INSTANCE_TYPES: ${{ matrix.instance_types }}
 
   call-bump-version-workflow:
     if: github.ref == 'refs/heads/main'

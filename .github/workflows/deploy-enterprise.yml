@@ -24,6 +24,7 @@ jobs:
             required_surplus: 0
             security_environment: JPL
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            instance_types: r5d.xlarge
 
           - environment: hyp3-autorift-eu
             domain: hyp3-autorift-eu.asf.alaska.edu
@@ -37,6 +38,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            instance_types: r5d.xlarge
 
           - environment: hyp3-isce
             domain: hyp3-isce.asf.alaska.edu
@@ -50,6 +52,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            instance_types: r5d.xlarge
 
           - environment: hyp3-tibet
             domain: hyp3-tibet.asf.alaska.edu
@@ -63,6 +66,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            instance_types: r5d.xlarge
 
           - environment: hyp3-a19-jpl
             domain: hyp3-a19-jpl.asf.alaska.edu
@@ -76,6 +80,7 @@ jobs:
             required_surplus: 0
             security_environment: JPL
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            instance_types: r5d.xlarge
 
     environment:
       name: ${{ matrix.environment }}
@@ -118,3 +123,4 @@ jobs:
           PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           AMI_ID: ${{ matrix.ami_id }}
+          INSTANCE_TYPES: ${{ matrix.instance_types }}
