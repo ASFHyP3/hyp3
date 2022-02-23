@@ -75,7 +75,9 @@ Resources:
         MinvCpus: 0
         MaxvCpus: !Ref MaxvCpus
         InstanceTypes:
-          - r5d.xlarge
+          {% for instance_size in instance_sizes %}
+          - {{ instance_size }}
+          {% endfor %}
         ImageId: !Ref AmiId
         Subnets: !Ref SubnetIds
         InstanceRole: !Ref InstanceProfile

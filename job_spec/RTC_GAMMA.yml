@@ -119,3 +119,5 @@ RTC_GAMMA:
   validators:
     - check_dem_coverage
   timeout: 5400
+  vcpu: 1
+  mememory: 31600
