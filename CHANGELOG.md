@@ -14,7 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The `job_spec_files` positional argument to [`render_cf.py`](apps/render_cf.py) has been switched to a
   required `--job-spec-files` optional argument to support multiple open-ended arguments.
 
-
 ## [2.11.0]
 ### Changed
 - The HyP3 API is now implemented as an API Gateway REST API, supporting private API deployments.
