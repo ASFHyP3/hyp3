@@ -65,6 +65,9 @@ inputs:
   AMI_ID:
     description: "Name of the Systems Manager parameter from which to retrieve the current Ami Id"
     required: true
+  INSTANCE_SIZES:
+    description: "Space separated list of supported instance sizes"
+    required: true
 
 runs:
   using: "composite"
@@ -74,7 +77,7 @@ runs:
         run: |
           pip install --upgrade pip
           make install
-          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' build
+          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' instance_sizes='${{ inputs.instance_sizes }}' build
       - name: Package and deploy
         shell: bash
         run: |
