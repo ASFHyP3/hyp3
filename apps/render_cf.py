@@ -37,7 +37,7 @@ def render_templates(job_types, security_environment):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('job_spec_files', nargs='+', type=Path)
-    parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL'])
+    parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL', 'JPL-public'])
     args = parser.parse_args()
 
     job_types = {}

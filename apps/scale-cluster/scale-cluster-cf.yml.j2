@@ -45,9 +45,9 @@ Resources:
       RetentionInDays: 90
 
   Role:
-    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
+    Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}
     Properties:
-      {% if security_environment == 'JPL' %}
+      {% if security_environment in ('JPL', 'JPL-public') %}
       ServiceToken: !ImportValue Custom::JplRole::ServiceToken
       Path: /account-managed/hyp3/
       {% endif %}
@@ -64,9 +64,9 @@ Resources:
         - !Ref Policy
 
   Policy:
-    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
+    Type: {{ 'Custom::JplPolicy' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::ManagedPolicy' }}
     Properties:
-      {% if security_environment == 'JPL' %}
+      {% if security_environment in ('JPL', 'JPL-public') %}
       ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
       Path: /account-managed/hyp3/
       {% endif %}

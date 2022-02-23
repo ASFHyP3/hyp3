@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        security_environment: [ASF, EDC, JPL]
+        security_environment: [ASF, EDC, JPL, JPL-public]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1

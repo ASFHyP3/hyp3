@@ -50,7 +50,7 @@ export AWS_ACCESS_KEY_ID=<service-user-access-key-id>
 export AWS_SECRET_ACCESS_KEY=<service-user-secret-access-key>
 export AWS_REGION=<deployment-region>
 
-make files=<supported-job-spec-files> build
+make files=<supported-job-spec-files> security_environment=JPL build
 
 aws cloudformation package \
     --template-file apps/main-cf.yml \
