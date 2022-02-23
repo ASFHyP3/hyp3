@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.11.1]
+### Added
+- A `JPL-public` security environment when rendering CloudFormation templates which will
+  deploy a public bucket policy. To use this environment, the AWS S3 account level Block All Public Access
+  setting must have been turned off by the JPL Cloud team.
+
+### Fixed
+- The `JPL` security environment, when rendering CloudFormation templates, will no longer
+  deploy a public bucket policy as this is disallowed by default for JPL commercial cloud accounts.
+
 ## [2.11.0]
 ### Changed
 - The HyP3 API is now implemented as an API Gateway REST API, supporting private API deployments.

@@ -1,6 +1,14 @@
 # Deploying HyP3 to JPL
 
-HyP3 can be deployed into a JPL managed AWS commercial account as long as JPL's `roles-as-code`
+This guide walks through deploying HyP3 into a JPL managed AWS commercial cloud account.
+It should work for any new JPL account and assumes:
+* the JPL account setup in the "default" manner by the JPL cloud team
+* the developer deploying the account is able to log in with the `power_user` role
+
+## 1. Roles-as-code
+
+JPL restricts developers from creating IAM roles or policies inside their AWS commercial cloud accounts.
+However, HyP3 can be deployed into a JPL managed AWS commercial account as long as JPL's `roles-as-code`
 tooling is provided in the account and in same region as the deployment. Currently, the only
 regions supported are `us-west-1`, `us-west-2`, `us-east-1`, and `us-east-2`.
 
@@ -15,11 +23,13 @@ For more information about `roles-as-code`, see:
 
 *Note: you must be on the JPL VPN to view the JPL `.jpl.nasa.gov` links in this document.*
 
-## 1. Roles-as-code
+## 2. Set up a service user
 
-JPL deployment uses a JPL-created service user with a deployment policy attached.
-An appropriate deployment policy can be created in a JPL account by deploying the
-`hyp3-ci` stack. From the repository root, run:
+In order to integrate a JPL deployment into our CI/CD pipelines, a JPL-created "service user"
+is needed to get long-term (90-day) AWS access keys. When requesting a service user, you'll
+need to request an appropriate deployment policy containing all the necessary permissions for
+deployment is attached to the user. An appropriate deployment policy can be created in a
+JPL account by deploying the `hyp3-ci` stack. From the repository root, run:
 
 ```shell
 aws cloudformation deploy \
@@ -35,8 +45,7 @@ The policy name should look like `hyp3-ci-DeployPolicy-*`, and can be found eith
 in the [IAM console](https://console.aws.amazon.com/iamv2/home?#/policies) or listed under 
 the `hyp3-ci` CloudFormation Stack Resources.   
 
-
-## 2. Deploy HyP3 to JPL
+## 3. Deploy HyP3 to JPL
 
 Once the JPL service user has been created, you should receive a set of AWS Access Keys
 which can be used to deploy HyP3 via CI/CD tooling, or manually. 
@@ -68,3 +77,22 @@ aws cloudformation deploy \
         EDLPassword=<erthdata-login-username> \
         MonthlyJobQuotaPerUser=0
 ```
+
+## 4. Post deployment
+
+Because the default state of the JPL account is more restrictive than typically
+desired for HyP3, this section describes some additional changes to the account
+and HyP3 that may be desired.
+
+### Allow a public HyP3 content bucket
+
+By default, JPL commercial AWS accounts have an S3 account level Block All Public
+Access set which must be disabled by the JPL Cloud team in order to attach a public
+bucket policy to the HyP3 content bucket.
+
+The steps to disable the account level Block All Public Access setting is outlined
+in the S3 section here:
+https://wiki.jpl.nasa.gov/display/cloudcomputing/AWS+Service+Policies+at+JPL
+
+Once this setting has been disabled, you can attach a public bucket policy to the
+HyP3 content bucket by redeploying HyP3 using the `JPL-public` security environment.
