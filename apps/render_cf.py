@@ -11,7 +11,7 @@ def snake_to_pascal_case(input_string: str):
     return ''.join([i.title() for i in split_string])
 
 
-def render_templates(job_types, security_environment, instance_sizes):
+def render_templates(job_types, security_environment, instance_types):
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader('./'),
         autoescape=jinja2.select_autoescape(default=True, disabled_extensions=('j2',)),
@@ -27,7 +27,7 @@ def render_templates(job_types, security_environment, instance_sizes):
         output = template.render(
             job_types=job_types,
             security_environment=security_environment,
-            instance_sizes=instance_sizes,
+            instance_types=instance_types,
             json=json,
             snake_to_pascal_case=snake_to_pascal_case
         )
@@ -45,7 +45,7 @@ def main():
     job_types = {}
     for file in args.job_spec_files:
         job_types.update(yaml.safe_load(file.read_text()))
-    render_templates(job_types, args.security_environment, args.instance_sizes)
+    render_templates(job_types, args.security_environment, args.instance_types)
 
 
 if __name__ == '__main__':

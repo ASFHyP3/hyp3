@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         security_environment: [ASF, EDC, JPL]
-        instance_sizes: ['r5d.xlarge', 'r5d.xlarge cd.large']
+        instance_types: ['r5d.xlarge', 'r5d.xlarge c5d.large']
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
@@ -33,7 +33,7 @@ jobs:
           make install
 
       - run: |
-          make security_environment=${{ matrix.security_environment }} instance_sizes=${{ matrix.instance_sizes }} cfn-lint
+          make security_environment=${{ matrix.security_environment }} instance_types='${{ matrix.instance_types }}' cfn-lint
 
   openapi-spec-validator:
     runs-on: ubuntu-latest

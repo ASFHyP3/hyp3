@@ -75,8 +75,8 @@ Resources:
         MinvCpus: 0
         MaxvCpus: !Ref MaxvCpus
         InstanceTypes:
-          {% for instance_size in instance_sizes %}
-          - {{ instance_size }}
+          {% for instance_type in instance_types %}
+          - {{ instance_type }}
           {% endfor %}
         ImageId: !Ref AmiId
         Subnets: !Ref SubnetIds
