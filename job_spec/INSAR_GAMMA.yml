@@ -92,4 +92,4 @@ INSAR_GAMMA:
     - check_dem_coverage
   timeout: 10800
   vcpu: 1
-  mememory: 31600
+  memory: 31600

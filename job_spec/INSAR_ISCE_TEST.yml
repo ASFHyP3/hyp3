@@ -43,4 +43,4 @@ INSAR_ISCE_TEST:
   validators: []
   timeout: 10800
   vcpu: 1
-  mememory: 31600
+  memory: 31600
