@@ -1,6 +1,13 @@
+{# TODO reorder States list to reflect current workflow structure #}
 {
-  "StartAt": "SET_DEFAULT_RESULTS",
+  "StartAt": "SET_DEFAULT_CONTAINER_OVERRIDES",
   "States": {
+    "SET_DEFAULT_CONTAINER_OVERRIDES": {
+      "Type": "Pass",
+      "Result": {},
+      "ResultPath": "$.container_overrides",
+      "Next": "SET_DEFAULT_RESULTS"
+    },
     "SET_DEFAULT_RESULTS": {
       "Type": "Pass",
       "Result": {
@@ -31,7 +38,7 @@
       "Type": "Pass",
       "InputPath": "$.job_id",
       "ResultPath": "$.job_parameters.bucket_prefix",
-      "Next": "INSPECT_GRANULE_TYPE"
+      "Next": "INSPECT_JOB_TYPE"
     },
     "INSPECT_GRANULE_TYPE": {
       "Type": "Choice",
@@ -47,7 +54,7 @@
           "Next": "USE_LANDSAT_MEMORY"
         }
       ],
-      "Default": "USE_DEFAULT_MEMORY"
+      "Default": "AUTORIFT"
     },
     "USE_SENTINEL2_MEMORY": {
       "Type": "Pass",
@@ -60,7 +67,7 @@
         ]
       },
       "ResultPath": "$.container_overrides",
-      "Next": "INSPECT_JOB_TYPE"
+      "Next": "AUTORIFT"
     },
     "USE_LANDSAT_MEMORY": {
       "Type": "Pass",
@@ -73,13 +80,7 @@
         ]
       },
       "ResultPath": "$.container_overrides",
-      "Next": "INSPECT_JOB_TYPE"
-    },
-    "USE_DEFAULT_MEMORY": {
-      "Type": "Pass",
-      "Result": {},
-      "ResultPath": "$.container_overrides",
-      "Next": "INSPECT_JOB_TYPE"
+      "Next": "AUTORIFT"
     },
     "INSPECT_JOB_TYPE": {
       "Type": "Choice",
@@ -88,7 +89,8 @@
         {
           "Variable": "$.job_type",
           "StringEquals": "{{ job_type }}",
-          "Next": "{{ job_type }}"
+          {# TODO This is a temporary hack until we are finished refactoring how jobs are defined (e.g. as separate step functions) #}
+          "Next": "{{ job_type if job_type != 'AUTORIFT' else 'INSPECT_GRANULE_TYPE' }}"
         }{% if not loop.last %},{% endif %}
         {% endfor %}
       ],
