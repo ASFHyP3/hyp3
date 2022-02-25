@@ -24,7 +24,7 @@ An appropriate deployment policy can be created in a JPL account by deploying th
 ```shell
 aws cloudformation deploy \
     --stack-name hyp3-ci \
-    --template-file docs/deployments/JPL-deployment-policy.yml
+    --template-file docs/deployments/JPL-deployment-policy-cf.yml
 ```
 
 Then open a [Cloud Team Service Desk](https://itsd-jira.jpl.nasa.gov/servicedesk/customer/portal/13)
