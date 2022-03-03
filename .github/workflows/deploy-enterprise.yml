@@ -77,20 +77,6 @@ jobs:
             security_environment: JPL
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
-          - environment: hyp3-watermap
-            domain: hyp3-watermap.asf.alaska.edu
-            template_bucket: cf-templates-1217di08q7vwl-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 14
-            quota: 0
-            deploy_ref: refs/heads/watermap
-            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
-            required_surplus: 0
-            security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-
     environment:
       name: ${{ matrix.environment }}
       url: https://${{ matrix.domain }}

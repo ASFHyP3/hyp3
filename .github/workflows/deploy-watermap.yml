@@ -1,0 +1,68 @@
+name: Deploy Enterprise Stacks to AWS
+
+on:
+  push:
+    branches:
+      - watermap
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - environment: hyp3-watermap
+            domain: hyp3-watermap.asf.alaska.edu
+            template_bucket: cf-templates-1217di08q7vwl-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            quota: 0
+            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+
+    environment:
+      name: ${{ matrix.environment }}
+      url: https://${{ matrix.domain }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - uses: ./.github/actions/deploy-hyp3
+        with:
+          TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
+          STACK_NAME: ${{ matrix.environment }}
+          DOMAIN_NAME: ${{ matrix.domain }}
+          CERTIFICATE_ARN:  ${{ secrets.CERTIFICATE_ARN }}
+          IMAGE_TAG: ${{ matrix.image_tag }}
+          PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
+          VPC_ID: ${{ secrets.VPC_ID }}
+          SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
+          EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
+          EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
+          CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
+          MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
+          JOB_FILES: ${{ matrix.job_files }}
+          BANNED_CIDR_BLOCKS: ${{ secrets.BANNED_CIDR_BLOCKS }}
+          DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}
+          EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
+          MONTHLY_COMPUTE_BUDGET: ${{ secrets.MONTHLY_COMPUTE_BUDGET }}
+          REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
+          PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
+          SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
+          AMI_ID: ${{ matrix.ami_id }}
