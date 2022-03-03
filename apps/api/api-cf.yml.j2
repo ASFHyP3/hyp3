@@ -15,12 +15,6 @@ Parameters:
   AuthAlgorithm:
     Type: String
 
-  DomainName:
-    Type: String
-
-  CertificateArn:
-    Type: String
-
   MonthlyJobQuotaPerUser:
     Type: Number
 
@@ -30,7 +24,11 @@ Parameters:
   BannedCidrBlocks:
     Type: String
 
+  {% if security_environment == 'EDC' %}
   PermissionsBoundaryPolicyArn:
+    Type: String
+
+  VpcId:
     Type: String
 
   SecurityGroupId:
@@ -39,49 +37,82 @@ Parameters:
   SubnetIds:
     Type: CommaDelimitedList
 
-Conditions:
+  {% else %}
+  DomainName:
+    Type: String
 
-  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
-
-  LambdasInVpc: !Not [!Equals [!Ref SecurityGroupId, ""]]
-
-  UseCustomDomainName: !Not [!Equals [!Ref DomainName, ""]]
+  CertificateArn:
+    Type: String
+  {% endif %}
 
 Outputs:
 
   Url:
-    Value: !If [UseCustomDomainName, !Sub "https://${CustomDomainName}/ui", !Sub "${Api.ApiEndpoint}/ui"]
+    Value: {{ '!Sub "https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/ui"' if security_environment == 'EDC' else '!Sub "https://${CustomDomainName}/ui"' }}
 
   ApiId:
-    Value: !Ref Api
+    Value: !Ref RestApi
 
 Resources:
 
-  Api:
-    Type: AWS::ApiGatewayV2::Api
+  RestApi:
+    Type: AWS::ApiGateway::RestApi
     Properties:
-      Name: !Ref AWS::StackName
-      ProtocolType: HTTP
-      Target: !GetAtt Lambda.Arn
-      CredentialsArn: !GetAtt ApiRole.Arn
+      EndpointConfiguration:
+        Types:
+          - {{ 'PRIVATE' if security_environment == 'EDC' else 'REGIONAL' }}
+      Body:
+        openapi: 3.0.3
+        paths:
+          /:
+            x-amazon-apigateway-any-method:
+              x-amazon-apigateway-integration:
+                type: aws_proxy
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
+                httpMethod: POST
+          /{proxy+}:
+            x-amazon-apigateway-any-method:
+              x-amazon-apigateway-integration:
+                type: aws_proxy
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
+                httpMethod: POST
+      {% if security_environment == 'EDC' %}
+      Policy:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: execute-api:Invoke
+            Resource: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*"
+            Condition:
+              StringEquals:
+                aws:SourceVpc: !Ref VpcId
+      {% endif %}
 
-  ApiOverrides:
-    Type: AWS::ApiGatewayV2::ApiGatewayManagedOverrides
+  {% set random_id = range(1, 999999) | random %}
+  Deployment{{ random_id }}:
+    Type: AWS::ApiGateway::Deployment
     Properties:
-      ApiId: !Ref Api
-      Stage:
-        AccessLogSettings:
-          DestinationArn: !GetAtt ApiLogGroup.Arn
-          Format: '{"sourceIp":"$context.identity.sourceIp","httpMethod":"$context.httpMethod","path":"$context.path","status":"$context.status","responseLength":"$context.responseLength","responseLatency":"$context.responseLatency","requestTime":"$context.requestTime","protocol":"$context.protocol","userAgent":"$context.identity.userAgent","requestId":"$context.requestId"}'
+      RestApiId: !Ref RestApi
+
+  Stage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      StageName: api
+      RestApiId: !Ref RestApi
+      DeploymentId: !Ref Deployment{{ random_id }}
+      AccessLogSetting:
+        DestinationArn: !GetAtt ApiLogGroup.Arn
+        Format: '{"sourceIp":"$context.identity.sourceIp","httpMethod":"$context.httpMethod","path":"$context.path","status":"$context.status","responseLength":"$context.responseLength","responseLatency":"$context.responseLatency","requestTime":"$context.requestTime","protocol":"$context.protocol","userAgent":"$context.identity.userAgent","requestId":"$context.requestId"}'
 
   ApiLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       RetentionInDays: 180
 
+  {% if security_environment != 'EDC' %}
   CustomDomainName:
     Type: AWS::ApiGatewayV2::DomainName
-    Condition: UseCustomDomainName
     Properties:
       DomainName: !Ref DomainName
       DomainNameConfigurations:
@@ -90,43 +121,11 @@ Resources:
 
   ApiMapping:
     Type: AWS::ApiGatewayV2::ApiMapping
-    Condition: UseCustomDomainName
     Properties:
-      ApiId: !Ref Api
+      ApiId: !Ref RestApi
       DomainName: !Ref CustomDomainName
-      Stage: $default
-
-  ApiRole:
-    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
-    Properties:
-      {% if security_environment == 'JPL' %}
-      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
-      Path: /account-managed/hyp3/
-      {% endif %}
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          Action: sts:AssumeRole
-          Principal:
-            Service: apigateway.amazonaws.com
-          Effect: Allow
-      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
-      ManagedPolicyArns:
-        - !Ref ApiPolicy
-
-  ApiPolicy:
-    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
-    Properties:
-      {% if security_environment == 'JPL' %}
-      ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
-      Path: /account-managed/hyp3/
-      {% endif %}
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action: lambda:InvokeFunction
-            Resource: !GetAtt Lambda.Arn
+      Stage: !Ref Stage
+  {% endif %}
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -148,9 +147,13 @@ Resources:
           Principal:
             Service: lambda.amazonaws.com
           Effect: Allow
-      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
+      {% if security_environment == 'EDC' %}
+      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
+      {% endif %}
       ManagedPolicyArns:
-        - !If [LambdasInVpc, arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole, !Ref AWS::NoValue]
+        {% if security_environment == 'EDC' %}
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        {% endif %}
         - !Ref LambdaPolicy
 
   LambdaPolicy:
@@ -204,10 +207,17 @@ Resources:
       Role: !GetAtt LambdaRole.Arn
       Runtime: python3.8
       Timeout: 30
+      {% if security_environment == 'EDC' %}
       VpcConfig:
-        !If
-          - LambdasInVpc
-          - SecurityGroupIds:
-              - !Ref SecurityGroupId
-            SubnetIds: !Ref SubnetIds
-          - !Ref AWS::NoValue
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetIds: !Ref SubnetIds
+      {% endif %}
+
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt Lambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*"
