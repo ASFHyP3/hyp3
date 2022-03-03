@@ -19,8 +19,8 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/AUTORIFT_ITS_LIVE.yml
-            default_max_vcpus: 2640
-            expanded_max_vcpus: 2640
+            default_max_vcpus: 5000
+            expanded_max_vcpus: 5000
             required_surplus: 0
             security_environment: JPL
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
