@@ -24,7 +24,9 @@ jobs:
             required_surplus: 0
             security_environment: JPL
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-            instance_types: r5d.xlarge
+            instance_types: >-
+              r5d.xlarge
+              r5dn.xlarge
 
           - environment: hyp3-autorift-eu
             domain: hyp3-autorift-eu.asf.alaska.edu
