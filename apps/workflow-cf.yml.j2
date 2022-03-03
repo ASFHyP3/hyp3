@@ -5,13 +5,6 @@ Parameters:
   JobQueueArn:
     Type: String
 
-  EDLUsername:
-    Type: String
-
-  EDLPassword:
-    Type: String
-    NoEcho: true
-
   JobsTable:
     Type: String
 
@@ -32,6 +25,9 @@ Parameters:
 
   SubnetIds:
     Type: CommaDelimitedList
+
+  SecretArn:
+    Type: String
 
 Conditions:
 
@@ -59,6 +55,7 @@ Resources:
             !Sub "{{ job_spec['image'] }}:${ImageTag}"
           {% endif %}
         JobRoleArn: !Ref TaskRoleArn
+        ExecutionRoleArn: !GetAtt ExecutionRole.Arn
         ResourceRequirements:
           - Type: VCPU
             Value: "1"
@@ -68,6 +65,11 @@ Resources:
           {% for command in job_spec['command'] %}
           - {{ command }}
           {% endfor %}
+        Secrets:
+          - Name: EARTHDATA_USERNAME
+            ValueFrom: !Sub "${SecretArn}:username::"
+          - Name: EARTHDATA_PASSWORD
+            ValueFrom: !Sub "${SecretArn}:password::"
       Timeout:
         AttemptDurationSeconds: {{ job_spec['timeout'] }}
   {% endfor %}
@@ -84,6 +86,7 @@ Resources:
         {% endfor %}
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
         GetFilesLambdaArn: !GetAtt GetFiles.Outputs.LambdaArn
+        CheckProcessingTimeLambdaArn: !GetAtt CheckProcessingTime.Outputs.LambdaArn
         UploadLogLambdaArn: !GetAtt UploadLog.Outputs.LambdaArn
 
   StepFunctionRole:
@@ -132,6 +135,7 @@ Resources:
             Resource:
              - !GetAtt UpdateDB.Outputs.LambdaArn
              - !GetAtt GetFiles.Outputs.LambdaArn
+             - !GetAtt CheckProcessingTime.Outputs.LambdaArn
              - !GetAtt UploadLog.Outputs.LambdaArn
 
   UpdateDB:
@@ -154,6 +158,15 @@ Resources:
         SubnetIds: !Join [",", !Ref SubnetIds]
       TemplateURL: get-files/get-files-cf.yml
 
+  CheckProcessingTime:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+      TemplateURL: check-processing-time/check-processing-time-cf.yml
+
   StartExecution:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -174,3 +187,36 @@ Resources:
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
       TemplateURL: upload-log/upload-log-cf.yml
+
+  ExecutionRole:
+    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
+    Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+          Effect: Allow
+      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+        - !Ref ExecutionPolicy
+
+  ExecutionPolicy:
+    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
+    Properties:
+      {% if security_environment == 'JPL' %}
+      ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: secretsmanager:GetSecretValue
+            Resource: !Ref SecretArn

@@ -5,6 +5,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.11.0]
+### Changed
+- The HyP3 API is now implemented as an API Gateway REST API, supporting private API deployments.
+
+## [2.10.0]
+### Added
+- AutoRIFT jobs now allow submission with Landsat 9 Collection 2 granules
+
+## [2.9.0]
+### Added
+- Add `processing_time_in_seconds` to the `job` API schema to allow plugin developers to check processing time.
+
+## [2.8.4](https://github.com/ASFHyP3/hyp3/compare/v2.8.3...v2.8.4)
+### Security
+- Encrypt Earthdata username and password using AWS Secrets Manager.
+### Added
+- Documentation about deploying to a JPL-managed commercial AWS account has been added to
+  [`docs/deployments`](docs/deployments).
+
 ## [2.8.3](https://github.com/ASFHyP3/hyp3/compare/v2.8.2...v2.8.3)
 ### Changed
 - Increase monthly job quota per user from 250 to 1,000.
