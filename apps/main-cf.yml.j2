@@ -87,6 +87,11 @@ Parameters:
     MinValue: 0
     Default: 0
 
+  InstanceTypes:
+    Description: EC2 instance types to include in AWS Batch Compute Environment
+    Type: CommaDelimitedList
+    Default: r5d.xlarge
+
   {% if security_environment != 'EDC' %}
   DomainName:
     Description: DNS domain name that will be used to invoke this api.
@@ -141,6 +146,7 @@ Resources:
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        InstanceTypes: !Join [",", !Ref InstanceTypes]
       TemplateURL: compute-cf.yml
 
   ScaleCluster:
