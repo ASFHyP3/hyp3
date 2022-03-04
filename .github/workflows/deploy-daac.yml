@@ -21,12 +21,12 @@ jobs:
             quota: 1000
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            instance_types: r5d.xlarge
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-            instance_types: r5d.xlarge
 
           - environment: hyp3-test
             domain: hyp3-test-api.asf.alaska.edu
@@ -41,12 +41,12 @@ jobs:
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE.yml
               job_spec/WATER_MAP.yml
+            instance_types: r5d.xlarge,r5dn.xlarge
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-            instance_types: r5d.xlarge,r5dn.xlarge
 
           - environment: hyp3-edc-prod
             domain: ''
@@ -56,12 +56,12 @@ jobs:
             quota: 1000
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            instance_types: r5d.xlarge
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
             security_environment: EDC
             ami_id: image_id_ecs_amz2
-            instance_types: r5d.xlarge
 
           - environment: hyp3-edc-uat
             domain: ''
@@ -71,12 +71,12 @@ jobs:
             quota: 1000
             deploy_ref: refs/heads/develop
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            instance_types: r5d.xlarge
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
             security_environment: EDC
             ami_id: image_id_ecs_amz2
-            instance_types: r5d.xlarge
 
     environment:
       name: ${{ matrix.environment }}
