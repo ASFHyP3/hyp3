@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - The `job_spec_files` positional argument to [`render_cf.py`](apps/render_cf.py) has been switched to a
   required `--job-spec-files` optional argument to support multiple open-ended arguments.
+- Set S3 Object Ownership to `Bucket owner enforced` for all buckets so that access via ACLs is no longer supported.
 
 ## [2.11.0]
 ### Changed
