@@ -66,7 +66,7 @@ inputs:
     description: "Name of the Systems Manager parameter from which to retrieve the current Ami Id"
     required: true
   INSTANCE_TYPES:
-    description: "Space separated list of supported instance types"
+    description: "Comma separated list of supported EC2 instance types"
     required: true
 
 runs:
