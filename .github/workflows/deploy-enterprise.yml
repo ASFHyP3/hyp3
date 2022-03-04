@@ -19,14 +19,12 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/AUTORIFT_ITS_LIVE.yml
-            default_max_vcpus: 2640
-            expanded_max_vcpus: 2640
+            instance_types: r5d.xlarge,r5dn.xlarge
+            default_max_vcpus: 5000
+            expanded_max_vcpus: 5000
             required_surplus: 0
             security_environment: JPL
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-            instance_types: >-
-              r5d.xlarge
-              r5dn.xlarge
 
           - environment: hyp3-autorift-eu
             domain: hyp3-autorift-eu.asf.alaska.edu
@@ -35,12 +33,12 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/AUTORIFT_ITS_LIVE_EU.yml
+            instance_types: r5d.xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-            instance_types: r5d.xlarge
 
           - environment: hyp3-isce
             domain: hyp3-isce.asf.alaska.edu
@@ -49,12 +47,12 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
+            instance_types: c5d.xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-            instance_types: c5d.xlarge
 
           - environment: hyp3-tibet
             domain: hyp3-tibet.asf.alaska.edu
@@ -63,26 +61,12 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
+            instance_types: c5d.xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-            instance_types: c5d.xlarge
-
-          - environment: hyp3-a19-jpl
-            domain: hyp3-a19-jpl.asf.alaska.edu
-            template_bucket: cf-templates-v4pvone059de-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 180
-            quota: 0
-            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
-            required_surplus: 0
-            security_environment: JPL
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-            instance_types: c5d.xlarge
 
     environment:
       name: ${{ matrix.environment }}

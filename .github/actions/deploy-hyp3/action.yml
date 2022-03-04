@@ -66,7 +66,7 @@ inputs:
     description: "Name of the Systems Manager parameter from which to retrieve the current Ami Id"
     required: true
   INSTANCE_TYPES:
-    description: "Space separated list of supported instance types"
+    description: "Comma separated list of supported EC2 instance types"
     required: true
 
 runs:
@@ -77,7 +77,7 @@ runs:
         run: |
           pip install --upgrade pip
           make install
-          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' instance_types='${{ inputs.INSTANCE_TYPES }}' build
+          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' build
       - name: Package and deploy
         shell: bash
         run: |
@@ -115,4 +115,5 @@ runs:
                 MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \
                 RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
                 PermissionsBoundaryPolicyArn='${{ inputs.PERMISSIONS_BOUNDARY_ARN }}' \
-                AmiId='${{ inputs.AMI_ID }}'
+                AmiId='${{ inputs.AMI_ID }}' \
+                InstanceTypes='${{ inputs.INSTANCE_TYPES }}'
