@@ -317,13 +317,33 @@ def test_put_jobs(tables):
     jobs = dynamo.jobs.put_jobs('user1', payload)
     assert len(jobs) == 3
     for job in jobs:
-        assert set(job.keys()) == {'name', 'job_id', 'user_id', 'status_code', 'request_time'}
+        assert set(job.keys()) == {'name', 'job_id', 'user_id', 'status_code', 'request_time', 'priority'}
         assert job['request_time'] <= dynamo.util.format_time(datetime.now(timezone.utc))
         assert job['user_id'] == 'user1'
         assert job['status_code'] == 'PENDING'
 
     response = tables.jobs_table.scan()
     assert response['Items'] == jobs
+
+
+def test_put_jobs_priority(tables):
+    jobs = []
+    jobs.extend(dynamo.jobs.put_jobs('user1', [{}]))
+    jobs.extend(dynamo.jobs.put_jobs('user1', [{}, {}]))
+    jobs.extend(dynamo.jobs.put_jobs('user2', [{}]))
+    assert jobs[0]['priority'] == 9999
+    assert jobs[1]['priority'] == 9998
+    assert jobs[2]['priority'] == 9997
+    assert jobs[3]['priority'] == 9999
+
+
+def test_put_jobs_priority_overflow(tables, monkeypatch):
+    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '10001')
+    many_jobs = [{} for ii in range(10001)]
+    jobs = dynamo.jobs.put_jobs('user3', many_jobs)
+    assert jobs[-1]['priority'] == 0
+    assert jobs[-2]['priority'] == 0
+    assert jobs[-3]['priority'] == 1
 
 
 def test_get_job(tables):
@@ -406,7 +426,7 @@ def test_update_job(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    job = {'job_id': 'job1', 'status_code': 'status2'}
+    job = {'job_id': 'job1', 'status_code': 'status2', 'processing_time_in_seconds': 1.23}
     dynamo.jobs.update_job(job)
 
     response = tables.jobs_table.scan()
@@ -417,6 +437,7 @@ def test_update_job(tables):
             'user_id': 'user1',
             'status_code': 'status2',
             'request_time': '2000-01-01T00:00:00+00:00',
+            'processing_time_in_seconds': Decimal('1.23'),
         },
     ]
     assert response['Items'] == expected_response

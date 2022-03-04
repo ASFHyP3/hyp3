@@ -37,16 +37,6 @@ Parameters:
     Type: String
     Default: RS256
 
-  DomainName:
-    Description: DNS domain name that will be used to invoke this api.
-    Type: String
-    Default: ""
-
-  CertificateArn:
-    Description: ARN of Certificate in AWS Certificate Manager setup previously for this domain name.
-    Type: String
-    Default: ""
-
   MonthlyJobQuotaPerUser:
     Description: Number of jobs each user is allowed per month.
     Type: Number
@@ -68,13 +58,6 @@ Parameters:
   PermissionsBoundaryPolicyArn:
     Type: String
     Default: ""
-
-  EarthdataCloud:
-    Type: String
-    Default: false
-    AllowedValues:
-      - false
-      - true
 
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
@@ -104,11 +87,17 @@ Parameters:
     MinValue: 0
     Default: 0
 
+  {% if security_environment != 'EDC' %}
+  DomainName:
+    Description: DNS domain name that will be used to invoke this api.
+    Type: String
+
+  CertificateArn:
+    Description: ARN of Certificate in AWS Certificate Manager setup previously for this domain name.
+    Type: String
+  {% endif %}
+
 Conditions:
-
-  LambdasInVpc: !Equals [!Ref EarthdataCloud, "true"]
-
-  PublicBucket: !Equals [!Ref EarthdataCloud, "false"]
 
   ScaleCluster: !Not [!Equals [!Ref DefaultMaxvCpus, !Ref ExpandedMaxvCpus]]
 
@@ -128,14 +117,18 @@ Resources:
         SubscriptionsTable: !Ref SubscriptionsTable
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
-        DomainName: !Ref DomainName
-        CertificateArn: !Ref CertificateArn
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         SystemAvailable: !Ref SystemAvailable
         BannedCidrBlocks: !Ref BannedCidrBlocks
+        {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
-        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        VpcId: !Ref VpcId
+        SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        {% else %}
+        DomainName: !Ref DomainName
+        CertificateArn: !Ref CertificateArn
+        {% endif %}
       TemplateURL: api/api-cf.yml
 
   Cluster:
@@ -143,7 +136,7 @@ Resources:
     Properties:
       Parameters:
         VpcId: !Ref VpcId
-        SubnetIds: !Join [',', !Ref SubnetIds]
+        SubnetIds: !Join [",", !Ref SubnetIds]
         MaxvCpus: !Ref DefaultMaxvCpus
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
@@ -161,8 +154,8 @@ Resources:
         MonthlyComputeBudget: !Ref MonthlyComputeBudget
         RequiredSurplus: !Ref RequiredSurplus
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
-        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
       TemplateURL: scale-cluster/scale-cluster-cf.yml
 
   ProcessNewGranules:
@@ -174,8 +167,8 @@ Resources:
         SubscriptionsTable: !Ref SubscriptionsTable
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
-        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
   StepFunction:
@@ -185,13 +178,12 @@ Resources:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
         TaskRoleArn: !GetAtt Cluster.Outputs.TaskRoleArn
         JobsTable: !Ref JobsTable
-        EDLUsername: !Ref EDLUsername
-        EDLPassword: !Ref EDLPassword
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: !If [LambdasInVpc, !GetAtt Cluster.Outputs.SecurityGroupId, ""]
-        SubnetIds: !If [LambdasInVpc, !Join [',', !Ref SubnetIds], ""]
+        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
+        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
+        SecretArn: !Ref Secret
       TemplateURL: workflow-cf.yml
 
   Monitoring:
@@ -213,7 +205,9 @@ Resources:
         RestrictPublicBuckets: True
       BucketEncryption:
         ServerSideEncryptionConfiguration:
-          - BucketKeyEnabled: true
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+            BucketKeyEnabled: true
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
@@ -247,8 +241,8 @@ Resources:
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
         IgnorePublicAcls: True
-        BlockPublicPolicy: False
-        RestrictPublicBuckets: False
+        BlockPublicPolicy: {{ 'True' if security_environment == 'EDC' else 'False' }}
+        RestrictPublicBuckets: {{ 'True' if security_environment == 'EDC' else 'False' }}
       LifecycleConfiguration:
         Rules:
           - Status: Enabled
@@ -275,9 +269,9 @@ Resources:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
 
+  {% if security_environment != 'EDC' %}
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
-    Condition: PublicBucket
     Properties:
       Bucket: !Ref ContentBucket
       PolicyDocument:
@@ -293,6 +287,7 @@ Resources:
             Principal: "*"
             Action: s3:ListBucket
             Resource: !GetAtt ContentBucket.Arn
+  {% endif %}
 
   JobsTable:
     Type: AWS::DynamoDB::Table
@@ -360,3 +355,8 @@ Resources:
               KeyType: RANGE
           Projection:
             ProjectionType: ALL
+
+  Secret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      SecretString: !Sub '{"username": "${EDLUsername}", "password": "${EDLPassword}"}'

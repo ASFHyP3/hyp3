@@ -8,7 +8,9 @@ from dynamo.util import format_time
 
 def test_submit_one_job(client, tables):
     login(client)
-    response = submit_batch(client)
+    batch = [make_job()]
+    setup_requests_mock(batch)
+    response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
     jobs = response.json['jobs']
     assert len(jobs) == 1
@@ -28,7 +30,9 @@ def test_submit_insar_gamma(client, tables):
         granules=granules,
         job_type='INSAR_GAMMA',
     )
-    response = submit_batch(client, batch=[job])
+    batch = [job]
+    setup_requests_mock(batch)
+    response = submit_batch(client, batch=batch)
     assert response.status_code == HTTPStatus.OK
 
     job = make_job(
@@ -45,7 +49,9 @@ def test_submit_insar_gamma(client, tables):
             'apply_water_mask': True,
         },
     )
-    response = submit_batch(client, batch=[job])
+    batch = [job]
+    setup_requests_mock(batch)
+    response = submit_batch(client, batch=batch)
     assert response.status_code == HTTPStatus.OK
 
 
@@ -54,11 +60,13 @@ def test_submit_autorift(client, tables):
     job = make_job(
         [
             'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
-            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E'
+            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E',
         ],
-        job_type='AUTORIFT'
+        job_type='AUTORIFT',
     )
-    response = submit_batch(client, batch=[job])
+    batch = [job]
+    setup_requests_mock(batch)
+    response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
 
 
@@ -79,7 +87,9 @@ def test_submit_multiple_job_types(client, tables):
         ],
         job_type='AUTORIFT'
     )
-    response = submit_batch(client, batch=[rtc_gamma_job, insar_gamma_job, autorift_job])
+    batch = [rtc_gamma_job, insar_gamma_job, autorift_job]
+    setup_requests_mock(batch)
+    response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
 
 
@@ -233,6 +243,7 @@ def test_submit_bad_rtc_granule_names(client):
         'S2A_MSIL1C_20200627T150921_N0209_R025_T22WEB_20200627T170912',
         'S2B_22WEB_20200612_0_L1C',
         'LC08_L1TP_009011_20200820_20200905_02_T1',
+        'LC09_L1GT_215109_20220125_20220125_02_T2',
     ]
     for granule in bad_granule_names:
         batch = [
@@ -253,6 +264,8 @@ def test_submit_good_autorift_granule_names(client, tables):
         'S2B_22WEB_20200612_0_L1C',
         'LC08_L1TP_009011_20200820_20200905_02_T1',
         'LO08_L1GT_043001_20201106_20201110_02_T2',
+        'LC09_L1GT_215109_20220125_20220125_02_T2',
+        'LO09_L1GT_215109_20220210_20220210_02_T2',
     ]
     for granule in good_granule_names:
         batch = [
@@ -285,6 +298,7 @@ def test_submit_bad_autorift_granule_names(client):
         'S1A_IW_GRDH_1SSH_20171122T184459_20171122T184524_019381_020DD8_B825',
         # bad L8 sensor mode
         'LT08_L1GT_041001_20200125_20200925_02_T2',
+        'LT09_L1GT_215109_20220125_20220125_02_T2',
     ]
     for granule in bad_granule_names:
         batch = [
@@ -310,7 +324,9 @@ def test_submit_mixed_job_parameters(client, tables):
     ]
 
     job = make_job(job_type='RTC_GAMMA', parameters=rtc_parameters)
-    response = submit_batch(client, batch=[job])
+    batch = [job]
+    setup_requests_mock(batch)
+    response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
 
     job = make_job(job_type='RTC_GAMMA', parameters=insar_parameters)
@@ -322,7 +338,9 @@ def test_submit_mixed_job_parameters(client, tables):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
     job = make_job(granules=granule_pair, job_type='INSAR_GAMMA', parameters=insar_parameters)
-    response = submit_batch(client, batch=[job])
+    batch = [job]
+    setup_requests_mock(batch)
+    response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
 
     job = make_job(granules=granule_pair, job_type='INSAR_GAMMA', parameters=rtc_parameters)
@@ -334,7 +352,9 @@ def test_submit_mixed_job_parameters(client, tables):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
     job = make_job(granules=granule_pair, job_type='AUTORIFT')
-    response = submit_batch(client, batch=[job])
+    batch = [job]
+    setup_requests_mock(batch)
+    response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
 
     job = make_job(granules=granule_pair, job_type='AUTORIFT', parameters=rtc_parameters)
@@ -348,31 +368,35 @@ def test_submit_mixed_job_parameters(client, tables):
 
 def test_float_input(client, tables):
     login(client)
-    job = make_job(parameters={'resolution': 30.0})
-    response = submit_batch(client, batch=[job])
+    batch = [make_job(parameters={'resolution': 30.0})]
+    setup_requests_mock(batch)
+    response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
     assert isinstance(response.json['jobs'][0]['job_parameters']['resolution'], float)
 
-    job = make_job(parameters={'resolution': 30})
-    response = submit_batch(client, batch=[job])
+    batch = [make_job(parameters={'resolution': 30})]
+    setup_requests_mock(batch)
+    response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
     assert isinstance(response.json['jobs'][0]['job_parameters']['resolution'], int)
 
 
 def test_submit_validate_only(client, tables):
     login(client)
+    batch = [make_job()]
+    setup_requests_mock(batch)
 
-    response = submit_batch(client, validate_only=True)
+    response = submit_batch(client, batch, validate_only=True)
     assert response.status_code == HTTPStatus.OK
     jobs = tables.jobs_table.scan()['Items']
     assert len(jobs) == 0
 
-    response = submit_batch(client, validate_only=False)
+    response = submit_batch(client, batch, validate_only=False)
     assert response.status_code == HTTPStatus.OK
     jobs = tables.jobs_table.scan()['Items']
     assert len(jobs) == 1
 
-    response = submit_batch(client, validate_only=None)
+    response = submit_batch(client, batch, validate_only=None)
     assert response.status_code == HTTPStatus.OK
     jobs = tables.jobs_table.scan()['Items']
     assert len(jobs) == 2

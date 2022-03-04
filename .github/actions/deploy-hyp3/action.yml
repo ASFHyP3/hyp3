@@ -59,29 +59,33 @@ inputs:
   PERMISSIONS_BOUNDARY_ARN:
     description: "Arn of permissions boundary to provide to any created IAM roles"
     required: true
-  EARTHDATA_CLOUD:
-    description: "Modify resources/configurations to be compatible with Earthdata Cloud"
+  SECURITY_ENVIRONMENT:
+    description: "Modify resources/configurations for ASF (default), EDC, or JPL security environments"
+    required: true
+  AMI_ID:
+    description: "Name of the Systems Manager parameter from which to retrieve the current Ami Id"
     required: true
 
 runs:
   using: "composite"
   steps:
-      - name: install dependancies and render templates
+      - name: install dependencies and render templates
         shell: bash
         run: |
           pip install --upgrade pip
           make install
-          make files='${{ inputs.JOB_FILES }}' render
-          python -m pip install -r requirements-apps-api.txt -t apps/api/src
-          python -m pip install -r requirements-apps-process-new-granules.txt -t apps/process-new-granules/src
-          python -m pip install -r requirements-apps-update-db.txt -t apps/update-db/src
-          python -m pip install -r requirements-apps-scale-cluster.txt -t apps/scale-cluster/src
-          python -m pip install -r requirements-apps-start-execution.txt -t apps/start-execution/src
+          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' build
       - name: Package and deploy
         shell: bash
         run: |
           [ -z ${{ inputs.CLOUDFORMATION_ROLE_ARN }} ] && export ROLE_STATEMENT="" \
             || export ROLE_STATEMENT="--role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }}"
+
+          [ -z ${{ inputs.DOMAIN_NAME }} ] && export DOMAIN_NAME="" \
+            || export DOMAIN_NAME="DomainName=${{ inputs.DOMAIN_NAME }}"
+
+          [ -z ${{ inputs.CERTIFICATE_ARN }} ] && export CERTIFICATE_ARN="" \
+            || export CERTIFICATE_ARN="CertificateArn=${{ inputs.CERTIFICATE_ARN }}"
 
           aws cloudformation package \
             --template-file apps/main-cf.yml \
@@ -99,8 +103,8 @@ runs:
                 EDLPassword='${{ inputs.EDL_PASSWORD }}' \
                 ImageTag='${{ inputs.IMAGE_TAG }}' \
                 ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
-                DomainName='${{ inputs.DOMAIN_NAME }}' \
-                CertificateArn='${{ inputs.CERTIFICATE_ARN }}' \
+                $DOMAIN_NAME \
+                $CERTIFICATE_ARN \
                 MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \
                 BannedCidrBlocks='${{ inputs.BANNED_CIDR_BLOCKS }}' \
                 DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
@@ -108,4 +112,4 @@ runs:
                 MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \
                 RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
                 PermissionsBoundaryPolicyArn='${{ inputs.PERMISSIONS_BOUNDARY_ARN }}' \
-                EarthdataCloud='${{ inputs.EARTHDATA_CLOUD }}'
+                AmiId='${{ inputs.AMI_ID }}'

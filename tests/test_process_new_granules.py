@@ -227,14 +227,62 @@ def test_lambda_handler(tables):
             'user_id': 'user1',
             'enabled': True,
         },
+        {
+            'subscription_id': 'sub4',
+            'creation_date': '2020-01-01T00:00:00+00:00',
+            'job_type': 'INSAR_GAMMA',
+            'search_parameters': {
+                'start': (datetime.now(tz=timezone.utc) - timedelta(days=15)).isoformat(timespec='seconds'),
+                'end': (datetime.now(tz=timezone.utc) - timedelta(days=5)).isoformat(timespec='seconds'),
+            },
+            'user_id': 'user1',
+            'enabled': True,
+        },
     ]
     for item in items:
         tables.subscriptions_table.put_item(Item=item)
 
+    def mock_get_unprocessed_granules(subscription):
+        if subscription['subscription_id'] == 'sub4':
+            return ['notempty']
+        else:
+            return []
+
     with patch('process_new_granules.handle_subscription') as p:
-        process_new_granules.lambda_handler(1, 1)
-        assert p.call_count == 2
+        with patch('process_new_granules.get_unprocessed_granules', mock_get_unprocessed_granules):
+            process_new_granules.lambda_handler(1, 1)
+            assert p.call_count == 3
 
     response = tables.subscriptions_table.scan()['Items']
     sub3 = [sub for sub in response if sub['subscription_id'] == 'sub3'][0]
     assert sub3['enabled'] is False
+
+    sub4 = [sub for sub in response if sub['subscription_id'] == 'sub4'][0]
+    assert sub4['enabled'] is True
+
+
+def test_get_jobs_for_subscription():
+    def mock_get_unprocessed_granules(subscription):
+        assert subscription == {}
+        return ['a', 'b', 'c']
+
+    def mock_get_jobs_for_granule(subscription, granule):
+        return [{'granule': granule}]
+
+    with patch('process_new_granules.get_unprocessed_granules', mock_get_unprocessed_granules):
+        with patch('process_new_granules.get_jobs_for_granule', mock_get_jobs_for_granule):
+
+            result = process_new_granules.get_jobs_for_subscription(subscription={}, limit=20)
+            assert result == [
+                {'granule': 'a'},
+                {'granule': 'b'},
+                {'granule': 'c'},
+            ]
+
+            result = process_new_granules.get_jobs_for_subscription(subscription={}, limit=1)
+            assert result == [
+                {'granule': 'a'},
+            ]
+
+            result = process_new_granules.get_jobs_for_subscription(subscription={}, limit=0)
+            assert result == []

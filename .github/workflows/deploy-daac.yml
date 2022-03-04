@@ -1,0 +1,125 @@
+name: Deploy DAAC Stacks to AWS
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - environment: hyp3
+            domain: hyp3-api.asf.alaska.edu
+            template_bucket: cf-templates-aubvn3i9olmk-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            quota: 1000
+            deploy_ref: refs/heads/main
+            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            default_max_vcpus: 600
+            expanded_max_vcpus: 1600
+            required_surplus: 1000
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+
+          - environment: hyp3-test
+            domain: hyp3-test-api.asf.alaska.edu
+            template_bucket: cf-templates-aubvn3i9olmk-us-west-2
+            image_tag: test
+            product_lifetime_in_days: 14
+            quota: 1000
+            deploy_ref: refs/heads/develop
+            job_files: >-
+              job_spec/AUTORIFT.yml
+              job_spec/INSAR_GAMMA.yml
+              job_spec/RTC_GAMMA.yml
+              job_spec/INSAR_ISCE.yml
+              job_spec/WATER_MAP.yml
+            default_max_vcpus: 600
+            expanded_max_vcpus: 1600
+            required_surplus: 1000
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+
+          - environment: hyp3-edc-prod
+            domain: ''
+            template_bucket: cf-templates-118mtzosmrltk-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            quota: 1000
+            deploy_ref: refs/heads/main
+            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            default_max_vcpus: 600
+            expanded_max_vcpus: 1600
+            required_surplus: 1000
+            security_environment: EDC
+            ami_id: image_id_ecs_amz2
+
+          - environment: hyp3-edc-uat
+            domain: ''
+            template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
+            image_tag: test
+            product_lifetime_in_days: 14
+            quota: 1000
+            deploy_ref: refs/heads/develop
+            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            default_max_vcpus: 600
+            expanded_max_vcpus: 1600
+            required_surplus: 1000
+            security_environment: EDC
+            ami_id: image_id_ecs_amz2
+
+    environment:
+      name: ${{ matrix.environment }}
+      url: https://${{ matrix.domain }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - uses: ./.github/actions/deploy-hyp3
+        if: github.ref == matrix.deploy_ref
+        with:
+          TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
+          STACK_NAME: ${{ matrix.environment }}
+          DOMAIN_NAME: ${{ matrix.domain }}
+          CERTIFICATE_ARN:  ${{ secrets.CERTIFICATE_ARN }}
+          IMAGE_TAG: ${{ matrix.image_tag }}
+          PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
+          VPC_ID: ${{ secrets.VPC_ID }}
+          SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
+          EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
+          EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
+          CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
+          MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
+          JOB_FILES: ${{ matrix.job_files }}
+          BANNED_CIDR_BLOCKS: ${{ secrets.BANNED_CIDR_BLOCKS }}
+          DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}
+          EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
+          MONTHLY_COMPUTE_BUDGET: ${{ secrets.MONTHLY_COMPUTE_BUDGET }}
+          REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
+          PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
+          SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
+          AMI_ID: ${{ matrix.ami_id }}
+
+  call-bump-version-workflow:
+    if: github.ref == 'refs/heads/main'
+    needs: deploy
+    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@main
+    secrets:
+      USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
