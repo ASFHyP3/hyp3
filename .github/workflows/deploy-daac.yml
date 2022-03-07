@@ -21,7 +21,7 @@ jobs:
             quota: 1000
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            instance_types: r5d.xlarge
+            instance_types: r5d.xlarge,r5dn.xlarge
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
@@ -56,7 +56,7 @@ jobs:
             quota: 1000
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            instance_types: r5d.xlarge
+            instance_types: r5d.xlarge,r5dn.xlarge
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
@@ -71,7 +71,7 @@ jobs:
             quota: 1000
             deploy_ref: refs/heads/develop
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            instance_types: r5d.xlarge
+            instance_types: r5d.xlarge,r5dn.xlarge
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000

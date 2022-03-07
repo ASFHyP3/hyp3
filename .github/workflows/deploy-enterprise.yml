@@ -33,7 +33,7 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/AUTORIFT_ITS_LIVE_EU.yml
-            instance_types: r5d.xlarge
+            instance_types: r5d.xlarge,r5dn.xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
