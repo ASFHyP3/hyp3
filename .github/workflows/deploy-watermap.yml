@@ -67,3 +67,4 @@ jobs:
           PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           AMI_ID: ${{ matrix.ami_id }}
+          INSTANCE_TYPES: ${{ matrix.instance_types }}
