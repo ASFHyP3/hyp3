@@ -275,7 +275,7 @@ Resources:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
 
-  {% if security_environment != 'EDC' %}
+  {% if security_environment in ('ASF', 'JPL-public') %}
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
