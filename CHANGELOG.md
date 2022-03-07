@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - New `InstanceTypes` parameter to the cloudformation template to specify which EC2 Instance Types are available to the
   Compute Environment
+- Added `r5dn.xlarge` as an eligible instance type in most HyP3 deployments
 
 ### Changed
 - The `job_spec_files` positional argument to [`render_cf.py`](apps/render_cf.py) has been switched to a
