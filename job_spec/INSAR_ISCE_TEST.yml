@@ -42,3 +42,5 @@ INSAR_ISCE_TEST:
     - Ref::secondary_granules
   validators: []
   timeout: 10800
+  vcpu: 1
+  memory: 7500

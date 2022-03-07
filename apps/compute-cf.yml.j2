@@ -21,6 +21,9 @@ Parameters:
   PermissionsBoundaryPolicyArn:
     Type: String
 
+  InstanceTypes:
+    Type: CommaDelimitedList
+
 Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
@@ -74,8 +77,7 @@ Resources:
         AllocationStrategy: SPOT_CAPACITY_OPTIMIZED
         MinvCpus: 0
         MaxvCpus: !Ref MaxvCpus
-        InstanceTypes:
-          - r5d.xlarge
+        InstanceTypes: !Ref InstanceTypes
         ImageId: !Ref AmiId
         Subnets: !Ref SubnetIds
         InstanceRole: !Ref InstanceProfile
