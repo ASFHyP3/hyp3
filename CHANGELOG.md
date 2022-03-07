@@ -5,10 +5,55 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [2.8.3](https://github.com/ASFHyP3/hyp3/compare/v2.8.2...v2.8.3)
+## [2.12.2]
 ### Added
 - `OriginAccessIdentityId` stack parameter supporting content distribution via CloudFront.
-- 
+
+## [2.12.1]
+### Added
+- A `JPL-public` security environment when rendering CloudFormation templates which will
+  deploy a public bucket policy. To use this environment, the AWS S3 account level Block All Public Access
+  setting must have been turned off by the JPL Cloud team.
+
+### Fixed
+- The `JPL` security environment, when rendering CloudFormation templates, will no longer
+  deploy a public bucket policy as this is disallowed by default for JPL commercial cloud accounts.
+
+## [2.12.0]
+### Added
+- New `InstanceTypes` parameter to the cloudformation template to specify which EC2 Instance Types are available to the
+  Compute Environment
+- Added `r5dn.xlarge` as an eligible instance type in most HyP3 deployments
+
+### Changed
+- The `job_spec_files` positional argument to [`render_cf.py`](apps/render_cf.py) has been switched to a
+  required `--job-spec-files` optional argument to support multiple open-ended arguments.
+- Set S3 Object Ownership to `Bucket owner enforced` for all buckets so that access via ACLs is no longer supported.
+
+## [2.11.0]
+### Changed
+- The HyP3 API is now implemented as an API Gateway REST API, supporting private API deployments.
+
+## [2.10.0]
+### Added
+- AutoRIFT jobs now allow submission with Landsat 9 Collection 2 granules
+
+## [2.9.0]
+### Added
+- Add `processing_time_in_seconds` to the `job` API schema to allow plugin developers to check processing time.
+
+## [2.8.4](https://github.com/ASFHyP3/hyp3/compare/v2.8.3...v2.8.4)
+### Security
+- Encrypt Earthdata username and password using AWS Secrets Manager.
+### Added
+- Documentation about deploying to a JPL-managed commercial AWS account has been added to
+  [`docs/deployments`](docs/deployments).
+
+## [2.8.3](https://github.com/ASFHyP3/hyp3/compare/v2.8.2...v2.8.3)
+### Changed
+- Increase monthly job quota per user from 250 to 1,000.
+
+>>>>>>> develop
 ## [2.8.2](https://github.com/ASFHyP3/hyp3/compare/v2.8.1...v2.8.2)
 ### Fixed
 - Limited the number of jobs a subscription can send at a time to avoid timing out. Fixes [#794](https://github.com/ASFHyP3/hyp3/issues/794).

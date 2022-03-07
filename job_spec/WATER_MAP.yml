@@ -65,10 +65,6 @@ WATER_MAP:
   command:
     - ++process
     - water_map
-    - --username
-    - '!Ref EDLUsername'
-    - --password
-    - '!Ref EDLPassword'
     - --bucket
     - '!Ref Bucket'
     - --bucket-prefix
@@ -91,3 +87,5 @@ WATER_MAP:
   validators:
     - check_dem_coverage
   timeout: 5400
+  vcpu: 1
+  memory: 31600

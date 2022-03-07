@@ -21,6 +21,9 @@ Parameters:
   PermissionsBoundaryPolicyArn:
     Type: String
 
+  InstanceTypes:
+    Type: CommaDelimitedList
+
 Conditions:
 
   UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
@@ -74,8 +77,7 @@ Resources:
         AllocationStrategy: SPOT_CAPACITY_OPTIMIZED
         MinvCpus: 0
         MaxvCpus: !Ref MaxvCpus
-        InstanceTypes:
-          - r5d.xlarge
+        InstanceTypes: !Ref InstanceTypes
         ImageId: !Ref AmiId
         Subnets: !Ref SubnetIds
         InstanceRole: !Ref InstanceProfile
@@ -100,9 +102,9 @@ Resources:
       SchedulingPolicyArn: !Ref SchedulingPolicy
 
   TaskRole:
-    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
+    Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}
     Properties:
-      {% if security_environment == 'JPL' %}
+      {% if security_environment in ('JPL', 'JPL-public') %}
       ServiceToken: !ImportValue Custom::JplRole::ServiceToken
       Path: /account-managed/hyp3/
       {% endif %}
@@ -119,9 +121,9 @@ Resources:
         - !Ref TaskPolicy
 
   TaskPolicy:
-    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
+    Type: {{ 'Custom::JplPolicy' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::ManagedPolicy' }}
     Properties:
-      {% if security_environment == 'JPL' %}
+      {% if security_environment in ('JPL', 'JPL-public') %}
       ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
       Path: /account-managed/hyp3/
       {% endif %}
@@ -136,9 +138,9 @@ Resources:
             Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
 
   BatchServiceRole:
-    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
+    Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}
     Properties:
-      {% if security_environment == 'JPL' %}
+      {% if security_environment in ('JPL', 'JPL-public') %}
       ServiceToken: !ImportValue Custom::JplRole::ServiceToken
       Path: /account-managed/hyp3/
       {% endif %}
@@ -154,9 +156,9 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
 
   InstanceRole:
-    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
+    Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}
     Properties:
-      {% if security_environment == 'JPL' %}
+      {% if security_environment in ('JPL', 'JPL-public') %}
       ServiceToken: !ImportValue Custom::JplRole::ServiceToken
       Path: /account-managed/hyp3/
       {% endif %}
@@ -174,7 +176,7 @@ Resources:
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      {% if security_environment == 'JPL' %}
+      {% if security_environment in ('JPL', 'JPL-public') %}
       Path: /account-managed/hyp3/
       {% endif %}
       Roles:

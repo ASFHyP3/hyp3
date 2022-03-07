@@ -37,16 +37,6 @@ Parameters:
     Type: String
     Default: RS256
 
-  DomainName:
-    Description: DNS domain name that will be used to invoke this api.
-    Type: String
-    Default: ""
-
-  CertificateArn:
-    Description: ARN of Certificate in AWS Certificate Manager setup previously for this domain name.
-    Type: String
-    Default: ""
-
   MonthlyJobQuotaPerUser:
     Description: Number of jobs each user is allowed per month.
     Type: Number
@@ -102,6 +92,21 @@ Parameters:
     MinValue: 0
     Default: 0
 
+  InstanceTypes:
+    Description: EC2 instance types to include in AWS Batch Compute Environment
+    Type: CommaDelimitedList
+    Default: r5d.xlarge
+
+  {% if security_environment != 'EDC' %}
+  DomainName:
+    Description: DNS domain name that will be used to invoke this api.
+    Type: String
+
+  CertificateArn:
+    Description: ARN of Certificate in AWS Certificate Manager setup previously for this domain name.
+    Type: String
+  {% endif %}
+
 Conditions:
 
   ScaleCluster: !Not [!Equals [!Ref DefaultMaxvCpus, !Ref ExpandedMaxvCpus]]
@@ -122,14 +127,18 @@ Resources:
         SubscriptionsTable: !Ref SubscriptionsTable
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
-        DomainName: !Ref DomainName
-        CertificateArn: !Ref CertificateArn
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         SystemAvailable: !Ref SystemAvailable
         BannedCidrBlocks: !Ref BannedCidrBlocks
+        {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
-        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
+        VpcId: !Ref VpcId
+        SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        {% else %}
+        DomainName: !Ref DomainName
+        CertificateArn: !Ref CertificateArn
+        {% endif %}
       TemplateURL: api/api-cf.yml
 
   Cluster:
@@ -142,6 +151,7 @@ Resources:
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        InstanceTypes: !Join [",", !Ref InstanceTypes]
       TemplateURL: compute-cf.yml
 
   ScaleCluster:
@@ -179,13 +189,12 @@ Resources:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
         TaskRoleArn: !GetAtt Cluster.Outputs.TaskRoleArn
         JobsTable: !Ref JobsTable
-        EDLUsername: !Ref EDLUsername
-        EDLPassword: !Ref EDLPassword
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
         SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
+        SecretArn: !Ref Secret
       TemplateURL: workflow-cf.yml
 
   Monitoring:
@@ -210,6 +219,27 @@ Resources:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
             BucketKeyEnabled: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+
+  LogBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref LogBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Sub "${LogBucket.Arn}/*"
+            Condition:
+              ArnLike:
+                "aws:SourceArn": !GetAtt ContentBucket.Arn
+              StringEquals:
+                "aws:SourceAccount": !Ref AWS::AccountId
 
   ContentBucket:
     Type: AWS::S3::Bucket
@@ -246,7 +276,11 @@ Resources:
               - HEAD
             AllowedOrigins:
               - "*.asf.alaska.edu"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
 
+  {% if security_environment != 'JPL' %}
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -274,6 +308,7 @@ Resources:
             {% endif %}
             Action: s3:ListBucket
             Resource: !GetAtt ContentBucket.Arn
+  {% endif %}
 
   JobsTable:
     Type: AWS::DynamoDB::Table
@@ -341,3 +376,8 @@ Resources:
               KeyType: RANGE
           Projection:
             ProjectionType: ALL
+
+  Secret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      SecretString: !Sub '{"username": "${EDLUsername}", "password": "${EDLPassword}"}'

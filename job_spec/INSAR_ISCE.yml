@@ -31,10 +31,6 @@ INSAR_ISCE:
     bucket_prefix:
       default:  '""'
   command:
-    - --username
-    - '!Ref EDLUsername'
-    - --password
-    - '!Ref EDLPassword'
     - --bucket
     - '!Ref Bucket'
     - --bucket-prefix
@@ -45,3 +41,5 @@ INSAR_ISCE:
     - Ref::secondary_granules
   validators: []
   timeout: 10800
+  vcpu: 1
+  memory: 7500

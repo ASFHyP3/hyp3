@@ -1,6 +1,14 @@
 {
-  "StartAt": "JOB_RUNNING",
+  "StartAt": "SET_DEFAULT_RESULTS",
   "States": {
+    "SET_DEFAULT_RESULTS": {
+      "Type": "Pass",
+      "Result": {
+        "processing_time_in_seconds": 0
+      },
+      "ResultPath": "$.results",
+      "Next": "JOB_RUNNING"
+    },
     "JOB_RUNNING": {
       "Type": "Task",
       "Resource": "${UpdateDBLambdaArn}",
@@ -181,6 +189,24 @@
         }
       ],
       "ResultPath": "$.results.get_files",
+      "Next": "CHECK_PROCESSING_TIME"
+    },
+    "CHECK_PROCESSING_TIME": {
+      "Type": "Task",
+      "Resource": "${CheckProcessingTimeLambdaArn}",
+      "Parameters": {
+        "processing_results.$": "$.results.processing_results"
+      },
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "JOB_FAILED",
+          "ResultPath": "$.results.processing_time_in_seconds"
+        }
+      ],
+      "ResultPath": "$.results.processing_time_in_seconds",
       "Next": "CHECK_STATUS"
     },
     "CHECK_STATUS": {
@@ -202,7 +228,8 @@
         "browse_images.$": "$.results.get_files.browse_images",
         "thumbnail_images.$": "$.results.get_files.thumbnail_images",
         "logs.$": "$.results.get_files.logs",
-        "expiration_time.$": "$.results.get_files.expiration_time"
+        "expiration_time.$": "$.results.get_files.expiration_time",
+        "processing_time_in_seconds.$": "$.results.processing_time_in_seconds"
       },
       "Retry": [
         {
@@ -222,7 +249,8 @@
         "job_id.$": "$.job_id",
         "status_code": "FAILED",
         "logs.$": "$.results.get_files.logs",
-        "expiration_time.$": "$.results.get_files.expiration_time"
+        "expiration_time.$": "$.results.get_files.expiration_time",
+        "processing_time_in_seconds.$": "$.results.processing_time_in_seconds"
       },
       "Retry": [
         {

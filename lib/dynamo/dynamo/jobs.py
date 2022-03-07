@@ -115,8 +115,11 @@ def update_job(job):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     primary_key = 'job_id'
     key = {'job_id': job[primary_key]}
-    update_expression = 'SET {}'.format(','.join(f'{k}=:{k}' for k in job if k != primary_key))
-    expression_attribute_values = {f':{k}': v for k, v in job.items() if k != primary_key}
+
+    prepared_job = convert_floats_to_decimals(job)
+    update_expression = 'SET {}'.format(','.join(f'{k}=:{k}' for k in prepared_job if k != primary_key))
+    expression_attribute_values = {f':{k}': v for k, v in prepared_job.items() if k != primary_key}
+
     table.update_item(
         Key=key,
         UpdateExpression=update_expression,

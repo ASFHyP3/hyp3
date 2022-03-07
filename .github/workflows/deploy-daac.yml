@@ -1,4 +1,4 @@
-name: Deploy to AWS
+name: Deploy DAAC Stacks to AWS
 
 on:
   push:
@@ -18,9 +18,10 @@ jobs:
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
-            quota: 250
+            quota: 1000
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            instance_types: r5d.xlarge,r5dn.xlarge
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
@@ -32,14 +33,15 @@ jobs:
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
-            quota: 250
+            quota: 1000
             deploy_ref: refs/heads/develop
             job_files: >-
-              job_spec/AUTORIFT.yml 
-              job_spec/INSAR_GAMMA.yml 
-              job_spec/RTC_GAMMA.yml 
-              job_spec/INSAR_ISCE.yml   
+              job_spec/AUTORIFT.yml
+              job_spec/INSAR_GAMMA.yml
+              job_spec/RTC_GAMMA.yml
+              job_spec/INSAR_ISCE.yml
               job_spec/WATER_MAP.yml
+            instance_types: r5d.xlarge,r5dn.xlarge
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
@@ -51,9 +53,10 @@ jobs:
             template_bucket: cf-templates-118mtzosmrltk-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
-            quota: 250
+            quota: 1000
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            instance_types: r5d.xlarge,r5dn.xlarge
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
@@ -65,84 +68,15 @@ jobs:
             template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
-            quota: 250
+            quota: 1000
             deploy_ref: refs/heads/develop
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            instance_types: r5d.xlarge,r5dn.xlarge
             default_max_vcpus: 600
             expanded_max_vcpus: 1600
             required_surplus: 1000
             security_environment: EDC
             ami_id: image_id_ecs_amz2
-
-          - environment: hyp3-its-live
-            domain: hyp3-its-live.asf.alaska.edu
-            template_bucket: cf-templates-3o5lnspmwmzg-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 180
-            quota: 0
-            deploy_ref: refs/heads/main
-            job_files: job_spec/AUTORIFT_ITS_LIVE.yml
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
-            required_surplus: 0
-            security_environment: JPL
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-
-          - environment: hyp3-autorift
-            domain: hyp3-autorift.asf.alaska.edu
-            template_bucket: cf-templates-igavixdzdy7k-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 180
-            quota: 0
-            deploy_ref: refs/heads/main
-            job_files: job_spec/AUTORIFT_ITS_LIVE.yml
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
-            required_surplus: 0
-            security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-
-          - environment: hyp3-autorift-eu
-            domain: hyp3-autorift-eu.asf.alaska.edu
-            template_bucket: cf-templates-autorift-eu-central-1
-            image_tag: latest
-            product_lifetime_in_days: 180
-            quota: 0
-            deploy_ref: refs/heads/main
-            job_files: job_spec/AUTORIFT_ITS_LIVE_EU.yml
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
-            required_surplus: 0
-            security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-
-          - environment: hyp3-isce
-            domain: hyp3-isce.asf.alaska.edu
-            template_bucket: cf-templates-t790khv4btdq-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 180
-            quota: 0
-            deploy_ref: refs/heads/main
-            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
-            required_surplus: 0
-            security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-
-          - environment: hyp3-tibet
-            domain: hyp3-tibet.asf.alaska.edu
-            template_bucket: cf-templates-ejaipnrxq7xg-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 180
-            quota: 0
-            deploy_ref: refs/heads/main
-            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
-            required_surplus: 0
-            security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
     environment:
       name: ${{ matrix.environment }}
@@ -187,6 +121,7 @@ jobs:
           ORIGIN_ACCESS_IDENTITY_ID: ${{ secrets.ORIGIN_ACCESS_IDENTITY_ID }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           AMI_ID: ${{ matrix.ami_id }}
+          INSTANCE_TYPES: ${{ matrix.instance_types }}
 
   call-bump-version-workflow:
     if: github.ref == 'refs/heads/main'
