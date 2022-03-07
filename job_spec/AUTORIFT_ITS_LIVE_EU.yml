@@ -52,3 +52,5 @@ AUTORIFT:
     - Ref::granules
   validators: []
   timeout: 10800
+  vcpu: 1
+  memory: 31600

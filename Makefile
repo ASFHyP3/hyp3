@@ -31,7 +31,7 @@ install:
 files ?= job_spec/*.yml
 security_environment ?= ASF
 render:
-	@echo rendering $(files) for $(security_environment); python apps/render_cf.py $(files) -s $(security_environment)
+	@echo rendering $(files) for $(security_environment); python apps/render_cf.py -j $(files) -s $(security_environment)
 
 static: flake8 openapi-validate cfn-lint
 
