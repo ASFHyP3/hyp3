@@ -87,6 +87,11 @@ Parameters:
     MinValue: 0
     Default: 0
 
+  InstanceTypes:
+    Description: EC2 instance types to include in AWS Batch Compute Environment
+    Type: CommaDelimitedList
+    Default: r5d.xlarge
+
   {% if security_environment != 'EDC' %}
   DomainName:
     Description: DNS domain name that will be used to invoke this api.
@@ -141,6 +146,7 @@ Resources:
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        InstanceTypes: !Join [",", !Ref InstanceTypes]
       TemplateURL: compute-cf.yml
 
   ScaleCluster:
@@ -208,6 +214,27 @@ Resources:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
             BucketKeyEnabled: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+
+  LogBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref LogBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Sub "${LogBucket.Arn}/*"
+            Condition:
+              ArnLike:
+                "aws:SourceArn": !GetAtt ContentBucket.Arn
+              StringEquals:
+                "aws:SourceAccount": !Ref AWS::AccountId
 
   ContentBucket:
     Type: AWS::S3::Bucket
@@ -244,6 +271,9 @@ Resources:
               - HEAD
             AllowedOrigins:
               - "*.asf.alaska.edu"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
 
   {% if security_environment != 'EDC' %}
   BucketPolicy:

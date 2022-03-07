@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.12.0]
+### Added
+- New `InstanceTypes` parameter to the cloudformation template to specify which EC2 Instance Types are available to the
+  Compute Environment
+- Added `r5dn.xlarge` as an eligible instance type in most HyP3 deployments
+
+### Changed
+- The `job_spec_files` positional argument to [`render_cf.py`](apps/render_cf.py) has been switched to a
+  required `--job-spec-files` optional argument to support multiple open-ended arguments.
+- Set S3 Object Ownership to `Bucket owner enforced` for all buckets so that access via ACLs is no longer supported.
+
 ## [2.11.0]
 ### Changed
 - The HyP3 API is now implemented as an API Gateway REST API, supporting private API deployments.
