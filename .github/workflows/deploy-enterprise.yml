@@ -23,7 +23,7 @@ jobs:
             default_max_vcpus: 5000
             expanded_max_vcpus: 5000
             required_surplus: 0
-            security_environment: JPL
+            security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
           - environment: hyp3-autorift-eu
@@ -66,6 +66,19 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+
+          - environment: hyp3-a19-jpl
+            domain: hyp3-a19-jpl.asf.alaska.edu
+            template_bucket: cf-templates-v4pvone059de-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 180
+            quota: 0
+            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
+            required_surplus: 0
+            security_environment: JPL
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
 
     environment:
