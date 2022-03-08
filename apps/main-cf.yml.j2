@@ -374,4 +374,5 @@ Resources:
   Secret:
     Type: AWS::SecretsManager::Secret
     Properties:
+      Description: !Sub "${AWS::StackName} Earthdata Login credentials"
       SecretString: !Sub '{"username": "${EDLUsername}", "password": "${EDLPassword}"}'
