@@ -91,3 +91,5 @@ INSAR_GAMMA:
   validators:
     - check_dem_coverage
   timeout: 10800
+  vcpu: 1
+  memory: 31600

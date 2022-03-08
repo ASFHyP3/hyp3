@@ -426,7 +426,7 @@ def test_update_job(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    job = {'job_id': 'job1', 'status_code': 'status2'}
+    job = {'job_id': 'job1', 'status_code': 'status2', 'processing_time_in_seconds': 1.23}
     dynamo.jobs.update_job(job)
 
     response = tables.jobs_table.scan()
@@ -437,6 +437,7 @@ def test_update_job(tables):
             'user_id': 'user1',
             'status_code': 'status2',
             'request_time': '2000-01-01T00:00:00+00:00',
+            'processing_time_in_seconds': Decimal('1.23'),
         },
     ]
     assert response['Items'] == expected_response

@@ -58,9 +58,9 @@ Resources:
         ExecutionRoleArn: !GetAtt ExecutionRole.Arn
         ResourceRequirements:
           - Type: VCPU
-            Value: "1"
+            Value: "{{ job_spec['vcpu'] }}"
           - Type: MEMORY
-            Value: "31600"
+            Value: "{{ job_spec['memory'] }}"
         Command:
           {% for command in job_spec['command'] %}
           - {{ command }}
@@ -86,12 +86,13 @@ Resources:
         {% endfor %}
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
         GetFilesLambdaArn: !GetAtt GetFiles.Outputs.LambdaArn
+        CheckProcessingTimeLambdaArn: !GetAtt CheckProcessingTime.Outputs.LambdaArn
         UploadLogLambdaArn: !GetAtt UploadLog.Outputs.LambdaArn
 
   StepFunctionRole:
-    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
+    Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}
     Properties:
-      {% if security_environment == 'JPL' %}
+      {% if security_environment in ('JPL', 'JPL-public') %}
       ServiceToken: !ImportValue Custom::JplRole::ServiceToken
       Path: /account-managed/hyp3/
       {% endif %}
@@ -107,9 +108,9 @@ Resources:
         - !Ref StepFunctionPolicy
 
   StepFunctionPolicy:
-    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
+    Type: {{ 'Custom::JplPolicy' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::ManagedPolicy' }}
     Properties:
-      {% if security_environment == 'JPL' %}
+      {% if security_environment in ('JPL', 'JPL-public') %}
       ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
       Path: /account-managed/hyp3/
       {% endif %}
@@ -134,6 +135,7 @@ Resources:
             Resource:
              - !GetAtt UpdateDB.Outputs.LambdaArn
              - !GetAtt GetFiles.Outputs.LambdaArn
+             - !GetAtt CheckProcessingTime.Outputs.LambdaArn
              - !GetAtt UploadLog.Outputs.LambdaArn
 
   UpdateDB:
@@ -155,6 +157,15 @@ Resources:
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
       TemplateURL: get-files/get-files-cf.yml
+
+  CheckProcessingTime:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+      TemplateURL: check-processing-time/check-processing-time-cf.yml
 
   StartExecution:
     Type: AWS::CloudFormation::Stack
@@ -178,9 +189,9 @@ Resources:
       TemplateURL: upload-log/upload-log-cf.yml
 
   ExecutionRole:
-    Type: {{ 'Custom::JplRole' if security_environment == 'JPL' else 'AWS::IAM::Role' }}
+    Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}
     Properties:
-      {% if security_environment == 'JPL' %}
+      {% if security_environment in ('JPL', 'JPL-public') %}
       ServiceToken: !ImportValue Custom::JplRole::ServiceToken
       Path: /account-managed/hyp3/
       {% endif %}
@@ -197,9 +208,9 @@ Resources:
         - !Ref ExecutionPolicy
 
   ExecutionPolicy:
-    Type: {{ 'Custom::JplPolicy' if security_environment == 'JPL' else 'AWS::IAM::ManagedPolicy' }}
+    Type: {{ 'Custom::JplPolicy' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::ManagedPolicy' }}
     Properties:
-      {% if security_environment == 'JPL' %}
+      {% if security_environment in ('JPL', 'JPL-public') %}
       ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
       Path: /account-managed/hyp3/
       {% endif %}

@@ -87,3 +87,5 @@ WATER_MAP:
   validators:
     - check_dem_coverage
   timeout: 5400
+  vcpu: 1
+  memory: 31600

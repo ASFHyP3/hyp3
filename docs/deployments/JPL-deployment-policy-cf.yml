@@ -56,3 +56,23 @@ Resources:
               - cloudformation:DeleteChangeSet
               - cloudformation:GetTemplateSummary
             Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+
+  ApiGatewayLoggingRole:
+    Type: Custom::JplRole
+    Properties:
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: apigateway.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+
+  ApiGatewayLoggingPermission:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn: !GetAtt ApiGatewayLoggingRole.Arn

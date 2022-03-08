@@ -1,4 +1,5 @@
 API = ${PWD}/apps/api/src
+CHECK_PROCESSING_TIME = ${PWD}/apps/check-processing-time/src
 GET_FILES = ${PWD}/apps/get-files/src
 PROCESS_NEW_GRANULES = ${PWD}/apps/process-new-granules/src
 SCALE_CLUSTER = ${PWD}/apps/scale-cluster/src
@@ -6,7 +7,7 @@ START_EXECUTION = ${PWD}/apps/start-execution/src
 UPDATE_DB = ${PWD}/apps/update-db/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
 DYNAMO = ${PWD}/lib/dynamo
-export PYTHONPATH = ${API}:${GET_FILES}:${PROCESS_NEW_GRANULES}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}
+export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${PROCESS_NEW_GRANULES}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}
 
 
 build: render
@@ -30,12 +31,12 @@ install:
 files ?= job_spec/*.yml
 security_environment ?= ASF
 render:
-	@echo rendering $(files) for $(security_environment); python apps/render_cf.py $(files) -s $(security_environment)
+	@echo rendering $(files) for $(security_environment); python apps/render_cf.py -j $(files) -s $(security_environment)
 
 static: flake8 openapi-validate cfn-lint
 
 flake8:
-	flake8 --max-line-length=120 --import-order-style=pycharm --statistics --application-import-names hyp3_api,get_files,start_execution,update_db,upload_log,dynamo,process_new_granules,scale_cluster apps tests lib
+	flake8 --max-line-length=120 --import-order-style=pycharm --statistics --application-import-names hyp3_api,get_files,check_processing_time,start_execution,update_db,upload_log,dynamo,process_new_granules,scale_cluster apps tests lib
 
 openapi-validate: render
 	prance validate --backend=openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml

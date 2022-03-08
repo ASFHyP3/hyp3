@@ -65,6 +65,9 @@ inputs:
   AMI_ID:
     description: "Name of the Systems Manager parameter from which to retrieve the current Ami Id"
     required: true
+  INSTANCE_TYPES:
+    description: "Comma separated list of supported EC2 instance types"
+    required: true
 
 runs:
   using: "composite"
@@ -80,6 +83,12 @@ runs:
         run: |
           [ -z ${{ inputs.CLOUDFORMATION_ROLE_ARN }} ] && export ROLE_STATEMENT="" \
             || export ROLE_STATEMENT="--role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }}"
+
+          [ -z ${{ inputs.DOMAIN_NAME }} ] && export DOMAIN_NAME="" \
+            || export DOMAIN_NAME="DomainName=${{ inputs.DOMAIN_NAME }}"
+
+          [ -z ${{ inputs.CERTIFICATE_ARN }} ] && export CERTIFICATE_ARN="" \
+            || export CERTIFICATE_ARN="CertificateArn=${{ inputs.CERTIFICATE_ARN }}"
 
           aws cloudformation package \
             --template-file apps/main-cf.yml \
@@ -97,8 +106,8 @@ runs:
                 EDLPassword='${{ inputs.EDL_PASSWORD }}' \
                 ImageTag='${{ inputs.IMAGE_TAG }}' \
                 ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
-                DomainName='${{ inputs.DOMAIN_NAME }}' \
-                CertificateArn='${{ inputs.CERTIFICATE_ARN }}' \
+                $DOMAIN_NAME \
+                $CERTIFICATE_ARN \
                 MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \
                 BannedCidrBlocks='${{ inputs.BANNED_CIDR_BLOCKS }}' \
                 DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
@@ -106,4 +115,5 @@ runs:
                 MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \
                 RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
                 PermissionsBoundaryPolicyArn='${{ inputs.PERMISSIONS_BOUNDARY_ARN }}' \
-                AmiId='${{ inputs.AMI_ID }}'
+                AmiId='${{ inputs.AMI_ID }}' \
+                InstanceTypes='${{ inputs.INSTANCE_TYPES }}'

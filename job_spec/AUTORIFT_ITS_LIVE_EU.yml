@@ -32,9 +32,9 @@ AUTORIFT:
               minLength: 23
               maxLength: 24
               example: S2A_22WEB_20200627_0_L1C
-            - description: The name of the Landsat 8 Collection 2 granule to process
+            - description: The name of the Landsat 8 or 9 Collection 2 granule to process
               type: string
-              pattern: "^L[CO]08_"
+              pattern: "^L[CO]0[89]_"
               minLength: 40
               maxLength: 40
               example: LC08_L1GT_118112_20210107_20210107_02_RT
@@ -52,3 +52,5 @@ AUTORIFT:
     - Ref::granules
   validators: []
   timeout: 10800
+  vcpu: 1
+  memory: 31600
