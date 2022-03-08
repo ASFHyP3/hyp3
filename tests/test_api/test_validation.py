@@ -1,6 +1,5 @@
 from pytest import raises
 from shapely.geometry import Polygon
-
 from test_api.conftest import setup_requests_mock_with_actual_polygons
 
 from hyp3_api import validation
