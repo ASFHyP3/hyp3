@@ -83,7 +83,7 @@ Resources:
           - !Ref SecurityGroup
         LaunchTemplate:
           LaunchTemplateId: !Ref LaunchTemplate
-          Version: $Latest
+          Version: !GetAtt LaunchTemplate.LatestVersionNumber
         Tags:
           Name: !Ref AWS::StackName
 
