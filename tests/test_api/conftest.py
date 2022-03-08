@@ -92,6 +92,21 @@ def make_db_record(job_id,
     return record
 
 
+def setup_requests_mock_with_actual_polygons(granule_polygon_pairs):
+    cmr_response = {
+        'feed': {
+            'entry': [
+                {
+                    'producer_granule_id': granule,
+                    'polygons': polygons
+                } for granule, polygons in granule_polygon_pairs
+            ]
+        }
+    }
+    responses.reset()
+    responses.add(responses.POST, CMR_URL_RE, json.dumps(cmr_response))
+
+
 def setup_requests_mock(batch):
     granules = get_granules(batch)
     cmr_response = {
