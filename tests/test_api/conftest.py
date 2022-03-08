@@ -24,10 +24,11 @@ def client():
         yield test_client
 
 
-def make_job(granules=['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38'],
-             name='someName',
-             job_type='RTC_GAMMA',
-             parameters={},):
+def make_job(granules=None, name='someName', job_type='RTC_GAMMA', parameters=None):
+    if granules is None:
+        granules = ['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38']
+    if parameters is None:
+        parameters = {}
     job = {
         'job_type': job_type,
         'job_parameters': {
@@ -54,7 +55,7 @@ def submit_batch(client, batch=None, validate_only=None):
 
 def make_db_record(job_id,
                    subscription_id=None,
-                   granules=['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B'],
+                   granules=None,
                    job_type='RTC_GAMMA',
                    user_id=DEFAULT_USERNAME,
                    request_time='2019-12-31T15:00:00+00:00',
@@ -64,6 +65,8 @@ def make_db_record(job_id,
                    files=None,
                    browse_images=None,
                    thumbnail_images=None):
+    if granules is None:
+        granules = ['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B']
     record = {
         'job_id': job_id,
         'user_id': user_id,
