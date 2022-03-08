@@ -55,10 +55,6 @@ Parameters:
     Type: String
     Default: ""
 
-  PermissionsBoundaryPolicyArn:
-    Type: String
-    Default: ""
-
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -100,6 +96,11 @@ Parameters:
   CertificateArn:
     Description: ARN of Certificate in AWS Certificate Manager setup previously for this domain name.
     Type: String
+
+  {% else %}
+  PermissionsBoundaryPolicyArn:
+    Type: String
+    Default: ""
   {% endif %}
 
 Conditions:
@@ -145,8 +146,10 @@ Resources:
         MaxvCpus: !Ref DefaultMaxvCpus
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         InstanceTypes: !Join [",", !Ref InstanceTypes]
+        {% if security_environment == 'EDC' %}
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        {% endif %}
       TemplateURL: compute-cf.yml
 
   ScaleCluster:
@@ -159,9 +162,11 @@ Resources:
         ExpandedMaxvCpus: !Ref ExpandedMaxvCpus
         MonthlyComputeBudget: !Ref MonthlyComputeBudget
         RequiredSurplus: !Ref RequiredSurplus
+        {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
-        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
+        SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
       TemplateURL: scale-cluster/scale-cluster-cf.yml
 
   ProcessNewGranules:
@@ -172,9 +177,11 @@ Resources:
         UsersTable: !Ref UsersTable
         SubscriptionsTable: !Ref SubscriptionsTable
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
+        {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
-        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
+        SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
   StepFunction:
@@ -186,10 +193,12 @@ Resources:
         JobsTable: !Ref JobsTable
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
-        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
         SecretArn: !Ref Secret
+        {% if security_environment == 'EDC' %}
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
       TemplateURL: workflow-cf.yml
 
   Monitoring:
@@ -365,4 +374,5 @@ Resources:
   Secret:
     Type: AWS::SecretsManager::Secret
     Properties:
+      Description: !Sub "${AWS::StackName} Earthdata Login credentials"
       SecretString: !Sub '{"username": "${EDLUsername}", "password": "${EDLPassword}"}'
