@@ -214,8 +214,8 @@ Resources:
           Effect: Allow
       ManagedPolicyArns:
         - !Ref ExecutionPolicy
-      {% if security_environment == 'EDC' %}
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      {% if security_environment == 'EDC' %}
       PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
       {% endif %}
 
