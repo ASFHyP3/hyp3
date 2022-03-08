@@ -93,6 +93,12 @@ runs:
           [ -z ${{ inputs.CERTIFICATE_ARN }} ] && export CERTIFICATE_ARN="" \
             || export CERTIFICATE_ARN="CertificateArn=${{ inputs.CERTIFICATE_ARN }}"
 
+          [ -z ${{ inputs.PERMISSIONS_BOUNDARY_ARN }} ] && export PERMISSIONS_BOUNDARY_ARN="" \
+            || export PERMISSIONS_BOUNDARY_ARN="PermissionsBoundaryPolicyArn=${{ inputs.PERMISSIONS_BOUNDARY_ARN }}"
+
+          [ -z ${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }} ] && export ORIGIN_ACCESS_IDENTITY_ID="" \
+            || export ORIGIN_ACCESS_IDENTITY_ID="OriginAccessIdentityId=${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }}"
+
           aws cloudformation package \
             --template-file apps/main-cf.yml \
             --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
@@ -111,13 +117,13 @@ runs:
                 ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
                 $DOMAIN_NAME \
                 $CERTIFICATE_ARN \
+                $PERMISSIONS_BOUNDARY_ARN \
+                $ORIGIN_ACCESS_IDENTITY_ID \
                 MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \
                 BannedCidrBlocks='${{ inputs.BANNED_CIDR_BLOCKS }}' \
                 DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
                 ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
                 MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \
                 RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
-                PermissionsBoundaryPolicyArn='${{ inputs.PERMISSIONS_BOUNDARY_ARN }}' \
-                OriginAccessIdentityId='${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }}' \
                 AmiId='${{ inputs.AMI_ID }}' \
                 InstanceTypes='${{ inputs.INSTANCE_TYPES }}'
