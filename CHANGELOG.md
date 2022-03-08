@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Upgraded AWS Lambda functions and Github Actions to Python 3.9
 - Require HttpTokens to be consistent with EC2 instance metadata configured with Instance Metadata Service Version 2 (IMDSv2).
+- Cloudformation stack parameters that are specific to Earthdata Cloud environments are now managed via Jinja templates,
+  rather than CloudFormation conditions.
 
 ## [2.12.1]
 ### Added
