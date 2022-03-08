@@ -8,6 +8,7 @@ Parameters:
   StepFunctionArn:
     Type: String
 
+  {% if security_environment == 'EDC' %}
   PermissionsBoundaryPolicyArn:
     Type: String
 
@@ -16,12 +17,7 @@ Parameters:
 
   SubnetIds:
     Type: CommaDelimitedList
-
-Conditions:
-
-  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
-
-  LambdasInVpc: !Not [!Equals [!Ref SecurityGroupId, ""]]
+  {% endif %}
 
 Resources:
 
@@ -45,10 +41,12 @@ Resources:
           Principal:
             Service: lambda.amazonaws.com
           Effect: Allow
-      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       ManagedPolicyArns:
-        - !If [LambdasInVpc, arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole, !Ref AWS::NoValue]
         - !Ref Policy
+      {% if security_environment == 'EDC' %}
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
+      {% endif %}
 
   Policy:
     Type: {{ 'Custom::JplPolicy' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::ManagedPolicy' }}
@@ -85,13 +83,12 @@ Resources:
       Role: !GetAtt Role.Arn
       Runtime: python3.8
       Timeout: 45
+      {% if security_environment == 'EDC' %}
       VpcConfig:
-        !If
-          - LambdasInVpc
-          - SecurityGroupIds:
-              - !Ref SecurityGroupId
-            SubnetIds: !Ref SubnetIds
-          - !Ref AWS::NoValue
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetIds: !Ref SubnetIds
+      {% endif %}
 
   EventInvokeConfig:
     Type: AWS::Lambda::EventInvokeConfig
