@@ -72,7 +72,7 @@ Resources:
       Handler: check_processing_time.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
-      Runtime: python3.8
+      Runtime: python3.9
       Timeout: 30
       VpcConfig:
         !If
