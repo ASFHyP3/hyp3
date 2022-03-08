@@ -9,7 +9,7 @@ setup(
         'boto3',
         'dateutil',
     ],
-    python_requires='~=3.8',
+    python_requires='~=3.9',
 
     packages=find_packages(),
 )

@@ -52,6 +52,8 @@ Resources:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
+        MetadataOptions:
+          HttpTokens: required
         UserData:
           Fn::Base64: |-
             Content-Type: multipart/mixed; boundary="==BOUNDARY=="

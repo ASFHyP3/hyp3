@@ -205,7 +205,7 @@ Resources:
       Handler: hyp3_api.lambda_handler.handler
       MemorySize: 3008
       Role: !GetAtt LambdaRole.Arn
-      Runtime: python3.8
+      Runtime: python3.9
       Timeout: 30
       {% if security_environment == 'EDC' %}
       VpcConfig:
