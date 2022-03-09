@@ -64,7 +64,7 @@ jobs:
             required_surplus: 1000
             security_environment: EDC
             ami_id: image_id_ecs_amz2
-            distribution_url: 'TODO'
+            distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
 
           - environment: hyp3-edc-uat
             domain: ''
@@ -80,7 +80,7 @@ jobs:
             required_surplus: 1000
             security_environment: EDC
             ami_id: image_id_ecs_amz2
-            distribution_url: 'TODO'
+            distribution_url: 'https://d1riv60tezqha9.cloudfront.net'
 
     environment:
       name: ${{ matrix.environment }}
