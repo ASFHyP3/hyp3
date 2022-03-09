@@ -59,6 +59,9 @@ inputs:
   PERMISSIONS_BOUNDARY_ARN:
     description: "Arn of permissions boundary to provide to any created IAM roles"
     required: true
+  ORIGIN_ACCESS_IDENTITY_ID:
+    description: "ID of the CloudFront Origin Access Identity used to access data in S3 for Earthdata Cloud deployments"
+    required: true
   SECURITY_ENVIRONMENT:
     description: "Modify resources/configurations for ASF (default), EDC, or JPL security environments"
     required: true
@@ -93,6 +96,9 @@ runs:
           [ -z ${{ inputs.PERMISSIONS_BOUNDARY_ARN }} ] && export PERMISSIONS_BOUNDARY_ARN="" \
             || export PERMISSIONS_BOUNDARY_ARN="PermissionsBoundaryPolicyArn=${{ inputs.PERMISSIONS_BOUNDARY_ARN }}"
 
+          [ -z ${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }} ] && export ORIGIN_ACCESS_IDENTITY_ID="" \
+            || export ORIGIN_ACCESS_IDENTITY_ID="OriginAccessIdentityId=${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }}"
+
           aws cloudformation package \
             --template-file apps/main-cf.yml \
             --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
@@ -112,6 +118,7 @@ runs:
                 $DOMAIN_NAME \
                 $CERTIFICATE_ARN \
                 $PERMISSIONS_BOUNDARY_ARN \
+                $ORIGIN_ACCESS_IDENTITY_ID \
                 MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \
                 BannedCidrBlocks='${{ inputs.BANNED_CIDR_BLOCKS }}' \
                 DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \

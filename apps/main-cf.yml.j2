@@ -100,7 +100,10 @@ Parameters:
   {% else %}
   PermissionsBoundaryPolicyArn:
     Type: String
-    Default: ""
+
+  OriginAccessIdentityId:
+    Description: ID of the CloudFront Origin Access Identity used to access data in S3 for Earthdata Cloud deployments
+    Type: String
   {% endif %}
 
 Conditions:
@@ -284,7 +287,7 @@ Resources:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
 
-  {% if security_environment in ('ASF', 'JPL-public') %}
+  {% if security_environment != 'JPL' %}
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -293,13 +296,23 @@ Resources:
         Version: 2012-10-17
         Statement:
           - Effect: Allow
+            {% if security_environment == 'EDC' %}
+            Principal:
+              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"
+            {% else %}
             Principal: "*"
+            {% endif %}
             Action:
               - s3:GetObject
               - s3:GetObjectTagging
             Resource: !Sub "${ContentBucket.Arn}/*"
           - Effect: Allow
+            {% if security_environment == 'EDC' %}
+            Principal:
+              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"
+            {% else %}
             Principal: "*"
+            {% endif %}
             Action: s3:ListBucket
             Resource: !GetAtt ContentBucket.Arn
   {% endif %}
