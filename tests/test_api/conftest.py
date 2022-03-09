@@ -92,7 +92,7 @@ def make_db_record(job_id,
     return record
 
 
-def setup_requests_mock_with_actual_polygons(granule_polygon_pairs):
+def setup_requests_mock_with_given_polygons(granule_polygon_pairs):
     cmr_response = {
         'feed': {
             'entry': [
@@ -108,22 +108,13 @@ def setup_requests_mock_with_actual_polygons(granule_polygon_pairs):
 
 
 def setup_requests_mock(batch):
-    granules = get_granules(batch)
-    cmr_response = {
-        'feed': {
-            'entry': [
-                {
-                    'producer_granule_id': granule,
-                    'polygons': [
-                        ['3.871941 -157.47052 62.278873 -156.62677 62.712959 -151.784653 64.318275 -152.353271 '
-                         '63.871941 -157.47052']
-                    ],
-                } for granule in granules
-            ]
-        }
-    }
-    responses.reset()
-    responses.add(responses.POST, CMR_URL_RE, json.dumps(cmr_response))
+    granule_polygon_pairs = [
+        (granule,
+         [['3.871941 -157.47052 62.278873 -156.62677 62.712959 -151.784653 '
+           '64.318275 -152.353271 63.871941 -157.47052']])
+        for granule in get_granules(batch)
+    ]
+    setup_requests_mock_with_given_polygons(granule_polygon_pairs)
 
 
 def login(client, username=DEFAULT_USERNAME):

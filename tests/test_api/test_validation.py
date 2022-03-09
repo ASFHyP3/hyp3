@@ -1,6 +1,6 @@
 from pytest import raises
 from shapely.geometry import Polygon
-from test_api.conftest import setup_requests_mock_with_actual_polygons
+from test_api.conftest import setup_requests_mock_with_given_polygons
 
 from hyp3_api import validation
 
@@ -190,7 +190,7 @@ def test_get_cmr_metadata():
          [['13.705972 -91.927132 14.452647 -91.773392 14.888498 -94.065727 '
            '14.143632 -94.211563 13.705972 -91.927132']])
     ]
-    setup_requests_mock_with_actual_polygons(granule_polygon_pairs)
+    setup_requests_mock_with_given_polygons(granule_polygon_pairs)
 
     assert validation.get_cmr_metadata(granules) == [
         {
@@ -223,7 +223,7 @@ def test_validate_jobs():
          [['37.796551 -68.331245 36.293144 -67.966415 36.69714 -65.129745 '
            '38.198883 -65.437325 37.796551 -68.331245']])
     ]
-    setup_requests_mock_with_actual_polygons(granule_polygon_pairs)
+    setup_requests_mock_with_given_polygons(granule_polygon_pairs)
 
     jobs = [
         {
