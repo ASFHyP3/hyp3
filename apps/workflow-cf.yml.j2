@@ -17,6 +17,10 @@ Parameters:
   TaskRoleArn:
     Type: String
 
+  SecretArn:
+    Type: String
+
+  {% if security_environment == 'EDC' %}
   PermissionsBoundaryPolicyArn:
     Type: String
 
@@ -25,13 +29,7 @@ Parameters:
 
   SubnetIds:
     Type: CommaDelimitedList
-
-  SecretArn:
-    Type: String
-
-Conditions:
-
-  UsePermissionsBoundary: !Not [!Equals [!Ref PermissionsBoundaryPolicyArn, ""]]
+  {% endif %}
 
 Outputs:
 
@@ -103,9 +101,11 @@ Resources:
           Principal:
             Service: states.amazonaws.com
           Effect: Allow
-      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       ManagedPolicyArns:
         - !Ref StepFunctionPolicy
+      {% if security_environment == 'EDC' %}
+      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
+      {% endif %}
 
   StepFunctionPolicy:
     Type: {{ 'Custom::JplPolicy' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::ManagedPolicy' }}
@@ -143,9 +143,11 @@ Resources:
     Properties:
       Parameters:
         JobsTable: !Ref JobsTable
+        {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
       TemplateURL: update-db/update-db-cf.yml
 
   GetFiles:
@@ -153,18 +155,22 @@ Resources:
     Properties:
       Parameters:
         Bucket: !Ref Bucket
+        {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
       TemplateURL: get-files/get-files-cf.yml
 
   CheckProcessingTime:
     Type: AWS::CloudFormation::Stack
     Properties:
+      {% if security_environment == 'EDC' %}
       Parameters:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
+      {% endif %}
       TemplateURL: check-processing-time/check-processing-time-cf.yml
 
   StartExecution:
@@ -173,9 +179,11 @@ Resources:
       Parameters:
         JobsTable: !Ref JobsTable
         StepFunctionArn: !Ref StepFunction
+        {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
       TemplateURL: start-execution/start-execution-cf.yml
 
   UploadLog:
@@ -183,9 +191,11 @@ Resources:
     Properties:
       Parameters:
         Bucket: !Ref Bucket
+        {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
       TemplateURL: upload-log/upload-log-cf.yml
 
   ExecutionRole:
@@ -202,10 +212,12 @@ Resources:
           Principal:
             Service: ecs-tasks.amazonaws.com
           Effect: Allow
-      PermissionsBoundary: !If [UsePermissionsBoundary, !Ref PermissionsBoundaryPolicyArn, !Ref AWS::NoValue]
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
         - !Ref ExecutionPolicy
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      {% if security_environment == 'EDC' %}
+      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
+      {% endif %}
 
   ExecutionPolicy:
     Type: {{ 'Custom::JplPolicy' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::ManagedPolicy' }}
