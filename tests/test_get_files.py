@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pytest
@@ -20,7 +21,7 @@ def s3_stubber():
 
 
 def test_get_download_url(monkeypatch):
-    monkeypatch.delenv('DISTRIBUTION_URL')
+    assert os.getenv('DISTRIBUTION_URL') is None
     assert get_files.get_download_url('myBucket', 'myKey') == 'https://myBucket.s3.myRegion.amazonaws.com/myKey'
 
     monkeypatch.setenv('DISTRIBUTION_URL', 'https://foo.com/')
