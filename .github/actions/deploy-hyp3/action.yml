@@ -71,6 +71,9 @@ inputs:
   INSTANCE_TYPES:
     description: "Comma separated list of supported EC2 instance types"
     required: true
+  DISTRIBUTION_URL:
+    description: "CloudFront Distribution URL for Earthdata Cloud environments"
+    required: true
 
 runs:
   using: "composite"
@@ -99,6 +102,9 @@ runs:
           [ -z ${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }} ] && export ORIGIN_ACCESS_IDENTITY_ID="" \
             || export ORIGIN_ACCESS_IDENTITY_ID="OriginAccessIdentityId=${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }}"
 
+          [ -z ${{ inputs.DISTRIBUTION_URL }} ] && export DISTRIBUTION_URL="" \
+            || export DISTRIBUTION_URL="DistributionUrl=${{ inputs.DISTRIBUTION_URL }}"
+
           aws cloudformation package \
             --template-file apps/main-cf.yml \
             --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
@@ -119,6 +125,7 @@ runs:
                 $CERTIFICATE_ARN \
                 $PERMISSIONS_BOUNDARY_ARN \
                 $ORIGIN_ACCESS_IDENTITY_ID \
+                $DISTRIBUTION_URL \
                 MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \
                 BannedCidrBlocks='${{ inputs.BANNED_CIDR_BLOCKS }}' \
                 DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \

@@ -29,6 +29,9 @@ Parameters:
 
   SubnetIds:
     Type: CommaDelimitedList
+
+  DistributionUrl:
+    Type: String
   {% endif %}
 
 Outputs:
@@ -159,6 +162,7 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
+        DistributionUrl: !Ref DistributionUrl
         {% endif %}
       TemplateURL: get-files/get-files-cf.yml
 
