@@ -72,7 +72,7 @@ inputs:
     description: "Comma separated list of supported EC2 instance types"
     required: true
   DISTRIBUTION_URL:
-    description: "Distribution endpoint URL for EDC environments"
+    description: "CloudFront Distribution URL for Earthdata Cloud environments"
     required: true
 
 runs:
