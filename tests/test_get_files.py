@@ -24,6 +24,9 @@ def test_get_download_url(monkeypatch):
     assert os.getenv('DISTRIBUTION_URL') is None
     assert get_files.get_download_url('myBucket', 'myKey') == 'https://myBucket.s3.myRegion.amazonaws.com/myKey'
 
+    monkeypatch.setenv('DISTRIBUTION_URL', '')
+    assert get_files.get_download_url('myBucket', 'myKey') == 'https://myBucket.s3.myRegion.amazonaws.com/myKey'
+
     monkeypatch.setenv('DISTRIBUTION_URL', 'https://foo.com/')
     assert get_files.get_download_url('myBucket', 'myKey') == 'https://foo.com/myKey'
 
