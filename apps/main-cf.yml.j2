@@ -104,6 +104,10 @@ Parameters:
   OriginAccessIdentityId:
     Description: ID of the CloudFront Origin Access Identity used to access data in S3 for Earthdata Cloud deployments
     Type: String
+
+  DistributionUrl:
+    Type: String
+    Description: CloudFront Distribution URL for Earthdata Cloud environments
   {% endif %}
 
 Conditions:
@@ -201,6 +205,7 @@ Resources:
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
+        DistributionUrl: !Ref DistributionUrl
         {% endif %}
       TemplateURL: workflow-cf.yml
 
