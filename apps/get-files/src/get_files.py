@@ -1,3 +1,5 @@
+import os
+import urllib.parse
 from datetime import datetime
 from os import environ
 from os.path import basename
@@ -10,8 +12,12 @@ S3_CLIENT = boto3.client('s3')
 
 
 def get_download_url(bucket, key):
-    region = environ['AWS_REGION']
-    return f'https://{bucket}.s3.{region}.amazonaws.com/{key}'
+    if distribution_url := os.getenv('DISTRIBUTION_URL'):
+        download_url = urllib.parse.urljoin(distribution_url, key)
+    else:
+        region = environ['AWS_REGION']
+        download_url = f'https://{bucket}.s3.{region}.amazonaws.com/{key}'
+    return download_url
 
 
 def get_expiration_time(bucket, key):

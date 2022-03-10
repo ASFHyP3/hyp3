@@ -25,6 +25,7 @@ jobs:
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
 
           - environment: hyp3-autorift-eu
             domain: hyp3-autorift-eu.asf.alaska.edu
@@ -39,6 +40,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
 
           - environment: hyp3-isce
             domain: hyp3-isce.asf.alaska.edu
@@ -53,6 +55,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
 
           - environment: hyp3-tibet
             domain: hyp3-tibet.asf.alaska.edu
@@ -67,6 +70,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
 
           - environment: hyp3-a19-jpl
             domain: hyp3-a19-jpl.asf.alaska.edu
@@ -75,11 +79,13 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
+            instance_types: c5d.xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: JPL
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
 
     environment:
       name: ${{ matrix.environment }}
@@ -120,6 +126,8 @@ jobs:
           MONTHLY_COMPUTE_BUDGET: ${{ secrets.MONTHLY_COMPUTE_BUDGET }}
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
           PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
+          ORIGIN_ACCESS_IDENTITY_ID: ${{ secrets.ORIGIN_ACCESS_IDENTITY_ID }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           AMI_ID: ${{ matrix.ami_id }}
           INSTANCE_TYPES: ${{ matrix.instance_types }}
+          DISTRIBUTION_URL: ${{ matrix.distribution_url }}
