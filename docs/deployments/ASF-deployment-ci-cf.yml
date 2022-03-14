@@ -31,13 +31,13 @@ Resources:
               - secretsmanager:*
               - kms:*
             Resource": "*"
-    AssumeRolePolicyDocument:
-      Version: 2012-10-17
-      Statement:
-        Action: sts:AssumeRole
-        Principal:
-          AWS: !Ref AWS::AccountId
-        Effect: Allow
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            AWS: !Ref AWS::AccountId
+          Effect: Allow
 
   GithubActionsUser:
     Type: AWS::IAM::User
