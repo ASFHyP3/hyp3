@@ -77,5 +77,6 @@ aws cloudformation deploy \
         SubnetIds=<subnet-ids> \
         EDLUsername=<earthdata-login-username> \
         EDLPassword=<earthdata-login-password> \
-        MonthlyJobQuotaPerUser=0
+        DomainName=<domain-name> \
+        CertificateArn=<certificate-arn>
 ```
