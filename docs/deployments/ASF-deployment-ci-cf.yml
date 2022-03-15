@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
-  CFBucket:
+  TemplateBucketName:
     Description: AWS S3 bucket fo uploading CloudFormation templates
     Type: String
 
@@ -9,6 +9,13 @@ Resources:
   CloudformationDeploymentRole:
     Type: AWS::IAM::Role
     Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            AWS: !Ref AWS::AccountId
+          Effect: Allow
       Policies:
         - PolicyName: cloud-formation-deployment-policy
           PolicyDocument:
@@ -33,13 +40,6 @@ Resources:
                   - secretsmanager:*
                   - kms:*
                 Resource: "*"
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          Action: sts:AssumeRole
-          Principal:
-            AWS: !Ref AWS::AccountId
-          Effect: Allow
 
   GithubActionsUser:
     Type: AWS::IAM::User
@@ -66,7 +66,7 @@ Resources:
 
               - Effect: Allow
                 Action: s3:PutObject
-                Resource: !Sub "arn:aws:s3:::${CFBucket}/*"
+                Resource: !Sub "arn:aws:s3:::${TemplateBucketName}/*"
 
               - Effect: Allow
                 Action:
