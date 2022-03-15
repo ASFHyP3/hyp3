@@ -76,6 +76,6 @@ aws cloudformation deploy \
         VpcId=<vpc-ids> \
         SubnetIds=<subnet-ids> \
         EDLUsername=<earthdata-login-username> \
-        EDLPassword=<earthdata-login-username> \
+        EDLPassword=<earthdata-login-password> \
         MonthlyJobQuotaPerUser=0
 ```
