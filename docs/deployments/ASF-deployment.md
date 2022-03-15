@@ -70,6 +70,7 @@ aws cloudformation package \
 aws cloudformation deploy \
     --stack-name <stack-name> \
     --template-file packaged.yml \
+    --role-arn <cloudformation-deployment-role-arn> \
     --capabilities CAPABILITY_IAM \
     --parameter-overrides \
         VpcId=<vpc-ids> \
