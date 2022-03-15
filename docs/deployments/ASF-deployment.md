@@ -40,12 +40,14 @@ aws cloudformation deploy \
 
 ## 3. Deploy HyP3 to JPL
 
-Once the service user has been created, you can create a set of AWS Access Keys
-which can be used to deploy HyP3 via CI/CD tooling, or manually. 
+Once the `github-actions` IAM user has been created, you can create a set of AWS
+Access Keys for that user, which can be used to deploy HyP3 via CI/CD tooling. 
+You may want to deploy HyP3 manually with the `github-actions` IAM user access keys
+to verify that the `github-actions` user has sufficient deployment permissions.
 
-To deploy HyP3 manually, run these commands from the repository root,
-replacing any `<*>` with appropriate values, and adding any other needed parameter
-overrides for the deployment:
+To deploy HyP3 manually, using either the `github-actions` access keys or your own,
+run these commands from the repository root, replacing any `<*>` with appropriate
+values, and adding any other needed parameter overrides for the deployment:
 
 ```shell
 export AWS_ACCESS_KEY_ID=<service-user-access-key-id>
