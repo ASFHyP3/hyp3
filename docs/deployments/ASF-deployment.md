@@ -26,7 +26,7 @@ suitable bucket if you try and create a new CloudFormation Stack in the AWS Cons
 In order to integrate an ASF deployment we'll need:
 * Set the account-wide API Gateway logging permissions
 * A deployment role with the necessary permissions to deploy HyP3
-* A "service user" so that we can generate long-term (90-day) AWS access keys and
+* A "service user" so that we can generate long-term AWS access keys and
   integrate the deployment into our CI/CD pipelines
 
 These can be done by deploying the `hyp3-ci` stack. From the repository root, run:
