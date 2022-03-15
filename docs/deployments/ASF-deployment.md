@@ -38,6 +38,10 @@ aws cloudformation deploy \
     --parameter-overrides TemplateBucketName=<template-bucket>
 ```
 
+***Note:** This stack assumes you are only deploy into a single AWS Region! If you
+are deploying into multiple regions, you'll need to adjust the IAM permissions that
+are limited to a single region.*
+
 ## 3. Deploy HyP3 to ASF
 
 Once the `github-actions` IAM user has been created, you can create a set of AWS
