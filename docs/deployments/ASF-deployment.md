@@ -38,7 +38,7 @@ aws cloudformation deploy \
     --parameter-overrides TemplateBucketName=<template-bucket>
 ```
 
-## 3. Deploy HyP3 to JPL
+## 3. Deploy HyP3 to ASF
 
 Once the `github-actions` IAM user has been created, you can create a set of AWS
 Access Keys for that user, which can be used to deploy HyP3 via CI/CD tooling. 
