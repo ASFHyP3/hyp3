@@ -35,6 +35,7 @@ These can be done by deploying the `hyp3-ci` stack. From the repository root, ru
 aws cloudformation deploy \
     --stack-name hyp3-ci \
     --template-file docs/deployments/ASF-deployment-ci-cf.yml \
+    --capabilities CAPABILITY_NAMED_IAM \
     --parameter-overrides TemplateBucketName=<template-bucket>
 ```
 
