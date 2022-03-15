@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
   TemplateBucketName:
-    Description: AWS S3 bucket fo uploading CloudFormation templates
+    Description: AWS S3 bucket name for uploading CloudFormation templates
     Type: String
 
 Resources:

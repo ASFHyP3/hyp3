@@ -34,7 +34,8 @@ These can be done by deploying the `hyp3-ci` stack. From the repository root, ru
 ```shell
 aws cloudformation deploy \
     --stack-name hyp3-ci \
-    --template-file docs/deployments/ASF-deployment-ci-cf.yml
+    --template-file docs/deployments/ASF-deployment-ci-cf.yml \
+    --parameter-overrides TemplateBucketName=<template-bucket>
 ```
 
 ## 3. Deploy HyP3 to JPL
@@ -65,7 +66,7 @@ aws cloudformation deploy \
     --parameter-overrides \
         VpcId=<vpc-ids> \
         SubnetIds=<subnet-ids> \
-        EDLUsername=<erthdata-login-username> \
-        EDLPassword=<erthdata-login-username> \
+        EDLUsername=<earthdata-login-username> \
+        EDLPassword=<earthdata-login-username> \
         MonthlyJobQuotaPerUser=0
 ```
