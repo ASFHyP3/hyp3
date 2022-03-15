@@ -62,11 +62,11 @@ Resources:
                 Resource: !GetAtt CloudformationDeploymentRole.Arn
                 Condition:
                   StringLike:
-                    iam:AssociatedResourceArn: !Sub "arn:aws:cloudformation:us-west-2:${AWS::AccountId}:stack/*"
+                    iam:AssociatedResourceArn: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
 
               - Effect: Allow
                 Action: s3:PutObject
-                Resource: !Sub "arn:aws:s3::${CFBucket}:/*"
+                Resource: !Sub "arn:aws:s3:::${CFBucket}/*"
 
               - Effect: Allow
                 Action:
@@ -78,7 +78,7 @@ Resources:
                   - cloudformation:ExecuteChangeSet
                   - cloudformation:DeleteChangeSet
                   - cloudformation:GetTemplateSummary
-                Resource: !Sub "arn:aws:cloudformation:us-west-2:${AWS::AccountId}:stack/*"
+                Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
 
   ApiGatewayLoggingRole:
     Type: AWS::IAM::Role
