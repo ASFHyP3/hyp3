@@ -14,7 +14,7 @@ Resources:
         Statement:
           Action: sts:AssumeRole
           Principal:
-            AWS: !Ref AWS::AccountId
+            Service: cloudformation.amazonaws.com
           Effect: Allow
       Policies:
         - PolicyName: cloud-formation-deployment-policy
