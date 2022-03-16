@@ -20,8 +20,8 @@ jobs:
             quota: 0
             job_files: job_spec/AUTORIFT_ITS_LIVE.yml
             instance_types: r5d.xlarge,r5dn.xlarge
-            default_max_vcpus: 5000
-            expanded_max_vcpus: 5000
+            default_max_vcpus: 10000
+            expanded_max_vcpus: 10000
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
