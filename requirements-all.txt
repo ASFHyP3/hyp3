@@ -3,7 +3,7 @@
 -r requirements-apps-scale-cluster.txt
 -r requirements-apps-start-execution.txt
 -r requirements-apps-update-db.txt
-boto3==1.21.19
+boto3==1.21.20
 jinja2==3.0.3
 moto==1.3.14
 pytest==7.1.0
