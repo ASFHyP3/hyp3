@@ -11,7 +11,7 @@ PyYAML==6.0
 responses==0.20.0
 flake8==4.0.1
 flake8-import-order==0.18.1
-flake8-blind-except==0.2.0
+flake8-blind-except==0.2.1
 flake8-builtins==1.5.3
 openapi-spec-validator==0.4.0
 click==8.0.4
