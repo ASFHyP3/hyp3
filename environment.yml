@@ -1,0 +1,9 @@
+name: hyp3
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.9
+  - pip
+  - pip:
+      - -r requirements-all.txt
