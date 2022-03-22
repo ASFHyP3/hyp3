@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [2.14.1]
+### Fixed
+- Step function now retries transient `Batch.AWSBatchException` errors when submitting jobs to AWS Batch. Fixes [#911](https://github.com/ASFHyP3/hyp3/issues/911).
+
 ## [2.14.0]
 ### Added
 - Expose CloudFront product download URLs for Earthdata Cloud environments via the HyP3 API.
