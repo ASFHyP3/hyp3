@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.14.2]
+### Fixed
+- Step function now retries errors when submitting checking AWS Batch processing time.
+
 ## [2.14.1]
 ### Fixed
 - Step function now retries transient `Batch.AWSBatchException` errors when submitting jobs to AWS Batch. Fixes [#911](https://github.com/ASFHyP3/hyp3/issues/911).
