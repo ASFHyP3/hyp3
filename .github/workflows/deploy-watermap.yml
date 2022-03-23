@@ -25,6 +25,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
 
     environment:
       name: ${{ matrix.environment }}
@@ -68,3 +69,4 @@ jobs:
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           AMI_ID: ${{ matrix.ami_id }}
           INSTANCE_TYPES: ${{ matrix.instance_types }}
+          DISTRIBUTION_URL: ${{ matrix.distribution_url }}
