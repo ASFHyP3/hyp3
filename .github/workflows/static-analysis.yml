@@ -22,6 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         security_environment: [ASF, EDC, JPL, JPL-public]
+        lifecycle_policy: [yes, no]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
@@ -32,7 +33,7 @@ jobs:
           make install
 
       - run: |
-          make security_environment=${{ matrix.security_environment }} cfn-lint
+          make security_environment=${{ matrix.security_environment }} lifecycle_policy=${{ matrix.lifecycle_policy }} cfn-lint
 
   openapi-spec-validator:
     runs-on: ubuntu-latest
