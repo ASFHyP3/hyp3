@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.14.2]
 ### Fixed
-- Step function now retries errors when submitting checking AWS Batch processing time.
+- Step function now retries the CHECK_PROCESSING_TIME task when errors are encountered.
 
 ## [2.14.1]
 ### Fixed
