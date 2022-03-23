@@ -32,6 +32,7 @@ WATER_MAP:
         type: number
         enum:
           - 30.0
+          - 10.0
     speckle_filter:
       api_schema:
         description: Apply an Enhanced Lee speckle filter
@@ -86,6 +87,6 @@ WATER_MAP:
     - Ref::granules
   validators:
     - check_dem_coverage
-  timeout: 5400
+  timeout: 10800
   vcpu: 1
-  memory: 31600
+  memory: 126000
