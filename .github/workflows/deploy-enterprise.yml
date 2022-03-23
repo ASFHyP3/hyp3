@@ -20,25 +20,12 @@ jobs:
             quota: 0
             job_files: job_spec/AUTORIFT_ITS_LIVE.yml
             instance_types: r5d.xlarge,r5dn.xlarge
-            default_max_vcpus: 5000
-            expanded_max_vcpus: 5000
+            default_max_vcpus: 10000
+            expanded_max_vcpus: 10000
             required_surplus: 0
-            security_environment: JPL
+            security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-
-          - environment: hyp3-autorift-eu
-            domain: hyp3-autorift-eu.asf.alaska.edu
-            template_bucket: cf-templates-autorift-eu-central-1
-            image_tag: latest
-            product_lifetime_in_days: 180
-            quota: 0
-            job_files: job_spec/AUTORIFT_ITS_LIVE_EU.yml
-            instance_types: r5d.xlarge,r5dn.xlarge
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
-            required_surplus: 0
-            security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
 
           - environment: hyp3-isce
             domain: hyp3-isce.asf.alaska.edu
@@ -48,11 +35,12 @@ jobs:
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c5d.xlarge
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
+            default_max_vcpus: 10000
+            expanded_max_vcpus: 10000
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
 
           - environment: hyp3-tibet
             domain: hyp3-tibet.asf.alaska.edu
@@ -67,6 +55,37 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
+
+          - environment: hyp3-a19-jpl
+            domain: hyp3-a19-jpl.asf.alaska.edu
+            template_bucket: cf-templates-v4pvone059de-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 180
+            quota: 0
+            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
+            instance_types: c5d.xlarge
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
+            required_surplus: 0
+            security_environment: JPL
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
+
+          - environment: hyp3-avo
+            domain: hyp3-avo.asf.alaska.edu
+            template_bucket: cf-templates-1x4a21iq1cba7-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 180
+            quota: 0
+            job_files: job_spec/INSAR_GAMMA.yml
+            instance_types: r5d.xlarge,r5dn.xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
 
     environment:
       name: ${{ matrix.environment }}
@@ -84,7 +103,7 @@ jobs:
 
       - uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.9
 
       - uses: ./.github/actions/deploy-hyp3
         with:
@@ -107,6 +126,8 @@ jobs:
           MONTHLY_COMPUTE_BUDGET: ${{ secrets.MONTHLY_COMPUTE_BUDGET }}
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
           PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
+          ORIGIN_ACCESS_IDENTITY_ID: ${{ secrets.ORIGIN_ACCESS_IDENTITY_ID }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           AMI_ID: ${{ matrix.ami_id }}
           INSTANCE_TYPES: ${{ matrix.instance_types }}
+          DISTRIBUTION_URL: ${{ matrix.distribution_url }}

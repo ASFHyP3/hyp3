@@ -55,10 +55,6 @@ Parameters:
     Type: String
     Default: ""
 
-  PermissionsBoundaryPolicyArn:
-    Type: String
-    Default: ""
-
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -100,6 +96,18 @@ Parameters:
   CertificateArn:
     Description: ARN of Certificate in AWS Certificate Manager setup previously for this domain name.
     Type: String
+
+  {% else %}
+  PermissionsBoundaryPolicyArn:
+    Type: String
+
+  OriginAccessIdentityId:
+    Description: ID of the CloudFront Origin Access Identity used to access data in S3 for Earthdata Cloud deployments
+    Type: String
+
+  DistributionUrl:
+    Type: String
+    Description: CloudFront Distribution URL for Earthdata Cloud environments
   {% endif %}
 
 Conditions:
@@ -145,8 +153,10 @@ Resources:
         MaxvCpus: !Ref DefaultMaxvCpus
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         InstanceTypes: !Join [",", !Ref InstanceTypes]
+        {% if security_environment == 'EDC' %}
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        {% endif %}
       TemplateURL: compute-cf.yml
 
   ScaleCluster:
@@ -159,9 +169,11 @@ Resources:
         ExpandedMaxvCpus: !Ref ExpandedMaxvCpus
         MonthlyComputeBudget: !Ref MonthlyComputeBudget
         RequiredSurplus: !Ref RequiredSurplus
+        {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
-        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
+        SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
       TemplateURL: scale-cluster/scale-cluster-cf.yml
 
   ProcessNewGranules:
@@ -172,9 +184,11 @@ Resources:
         UsersTable: !Ref UsersTable
         SubscriptionsTable: !Ref SubscriptionsTable
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
+        {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
-        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
+        SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
   StepFunction:
@@ -186,10 +200,13 @@ Resources:
         JobsTable: !Ref JobsTable
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        SecurityGroupId: {{ '!GetAtt Cluster.Outputs.SecurityGroupId' if security_environment == 'EDC' else '""' }}
-        SubnetIds: {{ '!Join [",", !Ref SubnetIds]' if security_environment == 'EDC' else '""' }}
         SecretArn: !Ref Secret
+        {% if security_environment == 'EDC' %}
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        DistributionUrl: !Ref DistributionUrl
+        {% endif %}
       TemplateURL: workflow-cf.yml
 
   Monitoring:
@@ -203,7 +220,6 @@ Resources:
   LogBucket:
     Type: AWS::S3::Bucket
     Properties:
-      AccessControl: LogDeliveryWrite
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
         IgnorePublicAcls: True
@@ -275,7 +291,7 @@ Resources:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
 
-  {% if security_environment != 'EDC' %}
+  {% if security_environment != 'JPL' %}
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -284,13 +300,23 @@ Resources:
         Version: 2012-10-17
         Statement:
           - Effect: Allow
+            {% if security_environment == 'EDC' %}
+            Principal:
+              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"
+            {% else %}
             Principal: "*"
+            {% endif %}
             Action:
               - s3:GetObject
               - s3:GetObjectTagging
             Resource: !Sub "${ContentBucket.Arn}/*"
           - Effect: Allow
+            {% if security_environment == 'EDC' %}
+            Principal:
+              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"
+            {% else %}
             Principal: "*"
+            {% endif %}
             Action: s3:ListBucket
             Resource: !GetAtt ContentBucket.Arn
   {% endif %}
@@ -365,4 +391,5 @@ Resources:
   Secret:
     Type: AWS::SecretsManager::Secret
     Properties:
+      Description: !Sub "${AWS::StackName} Earthdata Login credentials"
       SecretString: !Sub '{"username": "${EDLUsername}", "password": "${EDLPassword}"}'

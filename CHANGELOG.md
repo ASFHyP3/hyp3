@@ -5,6 +5,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.14.1]
+### Fixed
+- Step function now retries transient `Batch.AWSBatchException` errors when submitting jobs to AWS Batch. Fixes [#911](https://github.com/ASFHyP3/hyp3/issues/911).
+
+## [2.14.0]
+### Added
+- Expose CloudFront product download URLs for Earthdata Cloud environments via the HyP3 API.
+- `OriginAccessIdentityId` stack parameter supporting content distribution via CloudFront.
+
+## [2.13.0]
+### Changed
+- Upgraded AWS Lambda functions and Github Actions to Python 3.9
+- Require HttpTokens to be consistent with EC2 instance metadata configured with Instance Metadata Service Version 2 (IMDSv2).
+- Cloudformation stack parameters that are specific to Earthdata Cloud environments are now managed via Jinja templates,
+  rather than CloudFormation conditions.
+
+## [2.12.1]
+### Added
+- A `JPL-public` security environment when rendering CloudFormation templates which will
+  deploy a public bucket policy. To use this environment, the AWS S3 account level Block All Public Access
+  setting must have been turned off by the JPL Cloud team.
+
+### Fixed
+- The `JPL` security environment, when rendering CloudFormation templates, will no longer
+  deploy a public bucket policy as this is disallowed by default for JPL commercial cloud accounts.
+
 ## [2.12.0]
 ### Added
 - New `InstanceTypes` parameter to the cloudformation template to specify which EC2 Instance Types are available to the
