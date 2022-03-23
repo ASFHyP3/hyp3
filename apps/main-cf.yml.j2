@@ -267,6 +267,7 @@ Resources:
         RestrictPublicBuckets: {{ 'True' if security_environment == 'EDC' else 'False' }}
       LifecycleConfiguration:
         Rules:
+        {% if lifecycle_policy %}
           - Status: Enabled
             TagFilters:
               - Key: file_type
@@ -277,6 +278,7 @@ Resources:
               - Key: file_type
                 Value: log
             ExpirationInDays: !Ref ProductLifetimeInDays
+        {% endif %}
           - Status: Enabled
             AbortIncompleteMultipartUpload:
               DaysAfterInitiation: 1

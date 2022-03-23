@@ -30,8 +30,9 @@ install:
 
 files ?= job_spec/*.yml
 security_environment ?= ASF
+lifecycle_policy = yes
 render:
-	@echo rendering $(files) for $(security_environment); python apps/render_cf.py -j $(files) -s $(security_environment)
+	@echo rendering $(files) for $(security_environment); python apps/render_cf.py -j $(files) -s $(security_environment) -l $(lifecycle_policy)
 
 static: flake8 openapi-validate cfn-lint
 
