@@ -198,6 +198,14 @@
       "Parameters": {
         "processing_results.$": "$.results.processing_results"
       },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "MaxAttempts": 2
+        }
+      ],
       "Catch": [
         {
           "ErrorEquals": [
