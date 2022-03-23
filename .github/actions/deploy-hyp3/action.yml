@@ -65,6 +65,9 @@ inputs:
   SECURITY_ENVIRONMENT:
     description: "Modify resources/configurations for ASF (default), EDC, or JPL security environments"
     required: true
+  LIFECYCLE_POLICY:
+    description: "Limit the lifetime of products (must be yes or no)"
+    required: true
   AMI_ID:
     description: "Name of the Systems Manager parameter from which to retrieve the current Ami Id"
     required: true
@@ -83,7 +86,7 @@ runs:
         run: |
           pip install --upgrade pip
           make install
-          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' build
+          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' lifecycle_policy='${{ inputs.LIFECYCLE_POLICY }}' build
       - name: Package and deploy
         shell: bash
         run: |

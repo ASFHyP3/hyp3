@@ -26,6 +26,7 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 1000
             security_environment: ASF
+            lifecycle_policy: yes
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
@@ -47,6 +48,7 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 1000
             security_environment: ASF
+            lifecycle_policy: yes
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
@@ -63,6 +65,7 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 1000
             security_environment: EDC
+            lifecycle_policy: yes
             ami_id: image_id_ecs_amz2
             distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
 
@@ -79,6 +82,7 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 1000
             security_environment: EDC
+            lifecycle_policy: yes
             ami_id: image_id_ecs_amz2
             distribution_url: 'https://d1riv60tezqha9.cloudfront.net'
 
@@ -124,6 +128,7 @@ jobs:
           PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
           ORIGIN_ACCESS_IDENTITY_ID: ${{ secrets.ORIGIN_ACCESS_IDENTITY_ID }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
+          LIFECYCLE_POLICY: ${{ matrix.lifecycle_policy }}
           AMI_ID: ${{ matrix.ami_id }}
           INSTANCE_TYPES: ${{ matrix.instance_types }}
           DISTRIBUTION_URL: ${{ matrix.distribution_url }}
