@@ -1,5 +1,6 @@
 from pytest import raises
 from shapely.geometry import Polygon
+from test_api.conftest import setup_requests_mock_with_given_polygons
 
 from hyp3_api import validation
 
@@ -180,10 +181,20 @@ def test_is_third_party_granule():
 
 
 def test_get_cmr_metadata():
-    granules = ['S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8', 'not a real granule']
+    granule = 'S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8'
+    fake_granule = 'not a real granule'
+    granules = [granule, fake_granule]
+
+    granule_polygon_pairs = [
+        (granule,
+         [['13.705972 -91.927132 14.452647 -91.773392 14.888498 -94.065727 '
+           '14.143632 -94.211563 13.705972 -91.927132']])
+    ]
+    setup_requests_mock_with_given_polygons(granule_polygon_pairs)
+
     assert validation.get_cmr_metadata(granules) == [
         {
-            'name': 'S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8',
+            'name': granule,
             'polygon': Polygon([
                 [-91.927132, 13.705972],
                 [-91.773392, 14.452647],
@@ -200,6 +211,19 @@ def test_validate_jobs():
     granule_with_dem_coverage = 'S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8'
     granule_without_legacy_dem_coverage = 'S1A_IW_SLC__1SSH_20190326T081759_20190326T081831_026506_02F822_52F9'
     granule_without_dem_coverage = 'S1A_IW_GRDH_1SDV_20201219T222530_20201219T222555_035761_042F72_8378'
+
+    granule_polygon_pairs = [
+        (granule_with_dem_coverage,
+         [['13.705972 -91.927132 14.452647 -91.773392 14.888498 -94.065727 '
+           '14.143632 -94.211563 13.705972 -91.927132']]),
+        (granule_without_legacy_dem_coverage,
+         [['-66.116837 -61.940685 -64.415421 -59.718628 -63.285854 -64.154266 '
+           '-64.918007 -66.566696 -66.116837 -61.940685']]),
+        (granule_without_dem_coverage,
+         [['37.796551 -68.331245 36.293144 -67.966415 36.69714 -65.129745 '
+           '38.198883 -65.437325 37.796551 -68.331245']])
+    ]
+    setup_requests_mock_with_given_polygons(granule_polygon_pairs)
 
     jobs = [
         {

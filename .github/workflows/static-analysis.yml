@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.9
       - run: |
           python -m pip install --upgrade pip
           make install
@@ -21,12 +21,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        security_environment: [ASF, EDC, JPL]
+        security_environment: [ASF, EDC, JPL, JPL-public]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.9
       - run: |
           python -m pip install --upgrade pip
           make install
@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.9
       - run: |
           python -m pip install --upgrade pip
           make install
@@ -57,7 +57,7 @@ jobs:
       - run: gem install statelint
       - uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.9
       - run: |
           python -m pip install --upgrade pip
           make install
