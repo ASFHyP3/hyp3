@@ -16,6 +16,7 @@ jobs:
             domain: hyp3-its-live.asf.alaska.edu
             template_bucket: cf-templates-3o5lnspmwmzg-us-west-2
             image_tag: latest
+            lifecycle_policy: yes
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/AUTORIFT_ITS_LIVE.yml
@@ -24,7 +25,6 @@ jobs:
             expanded_max_vcpus: 10000
             required_surplus: 0
             security_environment: JPL-public
-            lifecycle_policy: yes
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
@@ -32,6 +32,7 @@ jobs:
             domain: hyp3-isce.asf.alaska.edu
             template_bucket: cf-templates-t790khv4btdq-us-west-2
             image_tag: latest
+            lifecycle_policy: yes
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
@@ -40,7 +41,6 @@ jobs:
             expanded_max_vcpus: 10000
             required_surplus: 0
             security_environment: ASF
-            lifecycle_policy: yes
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
@@ -48,6 +48,7 @@ jobs:
             domain: hyp3-tibet.asf.alaska.edu
             template_bucket: cf-templates-ejaipnrxq7xg-us-west-2
             image_tag: latest
+            lifecycle_policy: yes
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
@@ -56,7 +57,6 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: ASF
-            lifecycle_policy: yes
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
@@ -64,6 +64,7 @@ jobs:
             domain: hyp3-a19-jpl.asf.alaska.edu
             template_bucket: cf-templates-v4pvone059de-us-west-2
             image_tag: latest
+            lifecycle_policy: yes
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
@@ -72,7 +73,6 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: JPL
-            lifecycle_policy: yes
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
@@ -80,7 +80,8 @@ jobs:
             domain: hyp3-avo.asf.alaska.edu
             template_bucket: cf-templates-1x4a21iq1cba7-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 180
+            lifecycle_policy: no
+            product_lifetime_in_days: ''
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml
             instance_types: r5d.xlarge,r5dn.xlarge
@@ -88,7 +89,6 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            lifecycle_policy: no
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
@@ -96,6 +96,7 @@ jobs:
             domain: hyp3-watermap.asf.alaska.edu
             template_bucket: cf-templates-1217di08q7vwl-us-west-2
             image_tag: latest
+            lifecycle_policy: yes
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/RTC_GAMMA_10M.yml job_spec/WATER_MAP_10M.yml
@@ -104,7 +105,6 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            lifecycle_policy: yes
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 

@@ -17,6 +17,7 @@ jobs:
             domain: hyp3-api.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: latest
+            lifecycle_policy: yes
             product_lifetime_in_days: 14
             quota: 1000
             deploy_ref: refs/heads/main
@@ -26,7 +27,6 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 1000
             security_environment: ASF
-            lifecycle_policy: yes
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
@@ -34,6 +34,7 @@ jobs:
             domain: hyp3-test-api.asf.alaska.edu
             template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: test
+            lifecycle_policy: yes
             product_lifetime_in_days: 14
             quota: 1000
             deploy_ref: refs/heads/develop
@@ -48,7 +49,6 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 1000
             security_environment: ASF
-            lifecycle_policy: yes
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
@@ -56,6 +56,7 @@ jobs:
             domain: ''
             template_bucket: cf-templates-118mtzosmrltk-us-west-2
             image_tag: latest
+            lifecycle_policy: yes
             product_lifetime_in_days: 14
             quota: 1000
             deploy_ref: refs/heads/main
@@ -65,7 +66,6 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 1000
             security_environment: EDC
-            lifecycle_policy: yes
             ami_id: image_id_ecs_amz2
             distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
 
@@ -73,6 +73,7 @@ jobs:
             domain: ''
             template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
             image_tag: test
+            lifecycle_policy: yes
             product_lifetime_in_days: 14
             quota: 1000
             deploy_ref: refs/heads/develop
@@ -82,7 +83,6 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 1000
             security_environment: EDC
-            lifecycle_policy: yes
             ami_id: image_id_ecs_amz2
             distribution_url: 'https://d1riv60tezqha9.cloudfront.net'
 

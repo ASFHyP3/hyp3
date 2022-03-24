@@ -108,6 +108,9 @@ runs:
           [ -z ${{ inputs.DISTRIBUTION_URL }} ] && export DISTRIBUTION_URL="" \
             || export DISTRIBUTION_URL="DistributionUrl=${{ inputs.DISTRIBUTION_URL }}"
 
+          [ -z ${{ inputs.PRODUCT_LIFETIME }} ] && export PRODUCT_LIFETIME="" \
+            || export PRODUCT_LIFETIME="ProductLifetimeInDays=${{ inputs.PRODUCT_LIFETIME }}"
+
           aws cloudformation package \
             --template-file apps/main-cf.yml \
             --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
@@ -123,7 +126,7 @@ runs:
                 EDLUsername='${{ inputs.EDL_USERNAME }}' \
                 EDLPassword='${{ inputs.EDL_PASSWORD }}' \
                 ImageTag='${{ inputs.IMAGE_TAG }}' \
-                ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
+                $PRODUCT_LIFETIME \
                 $DOMAIN_NAME \
                 $CERTIFICATE_ARN \
                 $PERMISSIONS_BOUNDARY_ARN \

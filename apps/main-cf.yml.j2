@@ -21,11 +21,13 @@ Parameters:
     Type: String
     Default: latest
 
+  {% if lifecycle_policy %}
   ProductLifetimeInDays:
     Description: Number of days to keep output files before deleting them.
     Type: Number
     MinValue: 1
     Default: 14
+  {% endif %}
 
   AuthPublicKey:
     Description: Public key for jwt auth provider, if using https://auth.asf.alaska.edu then keep default.
