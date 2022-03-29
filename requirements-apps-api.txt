@@ -1,5 +1,5 @@
 cryptography==36.0.2
-flask==2.0.1
+flask==2.1.0
 Flask-Cors==3.0.10
 openapi-core==0.14.2
 prance==0.21.8.0
