@@ -5,7 +5,7 @@ from uuid import uuid4
 import dateutil.parser
 from boto3.dynamodb.conditions import Attr, Key
 
-from dynamo.util import DYNAMODB_RESOURCE, format_time
+from dynamo.util import DYNAMODB_RESOURCE, format_time, convert_floats_to_decimals
 
 
 def validate_subscription(subscription):
@@ -51,7 +51,7 @@ def put_subscription(user, subscription, validate_only=False):
 
     table = DYNAMODB_RESOURCE.Table(environ['SUBSCRIPTIONS_TABLE_NAME'])
     if not validate_only:
-        table.put_item(Item=subscription)
+        table.put_item(Item=convert_floats_to_decimals(subscription))
     return subscription
 
 
