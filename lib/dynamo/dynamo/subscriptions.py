@@ -5,7 +5,7 @@ from uuid import uuid4
 import dateutil.parser
 from boto3.dynamodb.conditions import Attr, Key
 
-from dynamo.util import DYNAMODB_RESOURCE, format_time, convert_floats_to_decimals
+from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time
 
 
 def validate_subscription(subscription):
