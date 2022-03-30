@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from decimal import Decimal
 
 import pytest
 
@@ -9,6 +10,9 @@ def test_put_subscription(tables):
     subscription = {
         'job_definition': {
             'job_type': 'RTC_GAMMA',
+            'job_parameters': {
+                'foo': 0.5,
+            },
             'name': 'sub1',
         },
         'search_parameters': {
@@ -31,6 +35,9 @@ def test_put_subscription(tables):
         'user_id': 'user1',
         'job_definition': {
             'job_type': 'RTC_GAMMA',
+            'job_parameters': {
+                'foo': Decimal('0.5'),
+            },
             'name': 'sub1',
         },
         'search_parameters': {

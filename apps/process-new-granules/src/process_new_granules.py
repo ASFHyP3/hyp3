@@ -35,7 +35,7 @@ def get_jobs_for_granule(subscription, granule):
 
     job_type = job_specification['job_type']
 
-    if job_type in ['RTC_GAMMA']:
+    if job_type in ['RTC_GAMMA', 'WATER_MAP']:
         job_specification['job_parameters']['granules'] = [granule.properties['sceneName']]
         payload = [job_specification]
     elif job_type in ['AUTORIFT', 'INSAR_GAMMA']:
