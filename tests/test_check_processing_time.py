@@ -27,6 +27,18 @@ def test_unsorted_attempts():
     assert result == 5.7
 
 
+def test_missing_start_time():
+    # There are some cases in which at least one of the attempts may not have a StartedAt time.
+    # https://github.com/ASFHyP3/hyp3/issues/936
+    attempts = [
+        {'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 1000},
+        {'Container': {}, 'StatusReason': '', 'StoppedAt': 8700},
+        {'Container': {}, 'StartedAt': 12000, 'StatusReason': '', 'StoppedAt': 15200}
+    ]
+    result = check_processing_time.get_time_from_attempts(attempts)
+    assert result == 3.2
+
+
 def test_lambda_handler_with_normal_results():
     event = {
         'processing_results': {
