@@ -35,7 +35,7 @@ WATER_MAP:
         description: Standard deviation to estimate max water height for each object.
         default: 3.0
         type: number
-   known_water_threshold:
+    known_water_threshold:
      api_schema:
         description: Threshold for extracting known water area in percent.
         default: 30.0
