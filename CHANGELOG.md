@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.15.0]
 ### Added
-- Flood depth map option added to test.
+- Added flood depth options to water map job (currently limited to `hyp3-test`).
 
 ## [2.14.4]
 ### Fixed
