@@ -113,7 +113,7 @@ WATER_MAP:
     - --include_flood_depth
     - Ref::include_flood_depth
     - --estimator
-    - Ref::estimator
+    - Ref::flood_depth_estimator
     - --water_level_sigma
     - Ref::water_level_sigma
     - --known_water_threshold
