@@ -67,7 +67,7 @@ WATER_MAP:
         description: Produce a flood depth map from water products.
         default: false
         type: boolean
-    estimator:
+    flood_depth_estimator:
       api_schema:
         description: Flood depth estimation approach
         default: 'nmad'
