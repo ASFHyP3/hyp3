@@ -63,6 +63,33 @@ WATER_MAP:
         description: The average membership to the fuzzy indicators required for a water pixel
         default: 0.45
         type: number
+    include_flood_depth:
+      api_schema:
+        description: Produce a flood depth map from water products.
+        default: false
+        type: boolean
+    estimator:
+      api_schema:
+        description: Flood depth estimation approach
+        default: 'nmad'
+        type: string
+    water_level_sigma:
+      api_schema:
+        description: Standard deviation to estimate max water height for each object.
+        default: 3.0
+        type: number
+    known_water_threshold:
+     api_schema:
+        description: Threshold for extracting known water area in percent.
+        default: 30.0
+        type: number
+        enum:
+          - 30.0
+  iterative_bounds:
+    api_schema:
+        description: Bounds used for iterative method.
+        default: (0, 15)
+        type: tuple
   command:
     - ++process
     - water_map
@@ -84,6 +111,16 @@ WATER_MAP:
     - Ref::hand_fraction
     - --membership-threshold
     - Ref::membership_threshold
+    - --include_flood_depth
+    - Ref::include_flood_depth
+    - --estimator
+    - Ref::estimator
+    - --water_level_sigma
+    - Ref::water_level_sigma
+    - --known_water_threshold
+    - Ref::known_water_threshold
+    - --iterative_bounds
+    - Ref::iterative_bounds
     - Ref::granules
   validators:
     - check_dem_coverage
