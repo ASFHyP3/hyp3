@@ -69,24 +69,24 @@ WATER_MAP:
         type: boolean
     flood_depth_estimator:
       api_schema:
-        description: Flood depth estimation approach
+        description: Flood depth estimation approach. Ignored when include_flood_depth is false.
         default: 'nmad'
         type: string
     water_level_sigma:
       api_schema:
-        description: Standard deviation to estimate max water height for each object.
+        description: Standard deviation to estimate max water height for each object. Ignored when include_flood_depth is false.
         default: 3.0
         type: number
     known_water_threshold:
      api_schema:
-        description: Threshold for extracting known water area in percent.
+        description: Threshold for extracting known water area in percent. Ignored when include_flood_depth is false.
         default: 30.0
         type: number
         enum:
           - 30.0
   iterative_bounds:
     api_schema:
-        description: Bounds used for iterative method.
+        description: Bounds used for iterative method. Ignored when include_flood_depth is false.
         default: (0, 15)
         type: tuple
   command:
