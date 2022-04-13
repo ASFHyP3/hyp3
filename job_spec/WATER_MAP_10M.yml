@@ -86,11 +86,11 @@ WATER_MAP:
         enum:
           - 30.0
     iterative_bounds:
-      default: '0.0 15.0'
+      default: '0 15'
       api_schema:
         description: Bounds used for iterative method. Ignored when include_flood_depth is false.
         type: array
-        default: [0.0, 15.0]
+        default: [0, 15]
         minItems: 2
         maxItems: 2
         items:
