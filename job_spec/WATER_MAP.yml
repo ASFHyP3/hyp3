@@ -93,7 +93,7 @@ WATER_MAP:
         minItems: 2
         maxItems: 2
         items:
-          type: number
+          type: integer
   command:
     - ++process
     - water_map
