@@ -79,14 +79,14 @@ WATER_MAP:
         default: 3.0
         type: number
     known_water_threshold:
-     api_schema:
+      api_schema:
         description: Threshold for extracting known water area in percent. Ignored when include_flood_depth is false.
         default: 30.0
         type: number
         enum:
           - 30.0
     iterative_bounds:
-     api_schema:
+      api_schema:
         description: Bounds used for iterative method. Ignored when include_flood_depth is false.
         type: array
         default: [0.0, 15.0]
