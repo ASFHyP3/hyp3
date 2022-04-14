@@ -82,8 +82,6 @@ WATER_MAP:
         description: Threshold for extracting known water area in percent. Ignored when include_flood_depth is false.
         default: 30.0
         type: number
-        enum:
-          - 30.0
     iterative_bounds:
       default: '0 15'
       api_schema:
