@@ -61,7 +61,7 @@ components:
         name:
           type: string
           minLength: 1
-          maxLength: 20
+          maxLength: 100
         job_parameters:
           $ref: "#/components/schemas/{{ job_type }}Parameters"
 
@@ -80,7 +80,7 @@ components:
         name:
           type: string
           minLength: 1
-          maxLength: 20
+          maxLength: 100
         job_parameters:
           type: object
           additionalProperties: false
