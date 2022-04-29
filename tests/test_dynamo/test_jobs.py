@@ -317,10 +317,13 @@ def test_put_jobs(tables):
     jobs = dynamo.jobs.put_jobs('user1', payload)
     assert len(jobs) == 3
     for job in jobs:
-        assert set(job.keys()) == {'name', 'job_id', 'user_id', 'status_code', 'request_time', 'priority'}
+        assert set(job.keys()) == {
+            'name', 'job_id', 'user_id', 'status_code', 'execution_started', 'request_time', 'priority'
+        }
         assert job['request_time'] <= dynamo.util.format_time(datetime.now(timezone.utc))
         assert job['user_id'] == 'user1'
         assert job['status_code'] == 'PENDING'
+        assert job['execution_started'] == False
 
     response = tables.jobs_table.scan()
     assert response['Items'] == jobs
@@ -476,6 +479,67 @@ def test_get_jobs_by_status_code(tables):
 
     jobs = dynamo.jobs.get_jobs_by_status_code('PENDING', limit=3)
     assert jobs == items[1:3]
+
+
+def test_get_jobs_waiting_for_execution(tables):
+    items = [
+        {
+            'job_id': 'job0',
+            'status_code': 'PENDING',
+            'execution_started': False
+        },
+        {
+            'job_id': 'job1',
+            'status_code': 'PENDING'
+        },
+        {
+            'job_id': 'job2',
+            'status_code': 'RUNNING',
+            'execution_started': True
+        },
+        {
+            'job_id': 'job3',
+            'status_code': 'PENDING',
+            'execution_started': True
+        },
+        {
+            'job_id': 'job4',
+            'status_code': 'PENDING',
+            'execution_started': False
+        },
+        {
+            'job_id': 'job5',
+            'status_code': 'PENDING',
+            'execution_started': True
+        },
+        {
+            'job_id': 'job6',
+            'status_code': 'PENDING',
+            'execution_started': False
+        },
+        {
+            'job_id': 'job7',
+            'status_code': 'PENDING',
+            'execution_started': True
+        },
+        {
+            'job_id': 'job8',
+            'status_code': 'RUNNING'
+        },
+        {
+            'job_id': 'job9',
+            'status_code': 'PENDING'
+        },
+    ]
+    for item in items:
+        tables.jobs_table.put_item(Item=item)
+
+    assert dynamo.jobs.get_jobs_waiting_for_execution(limit=1) == [items[0]]
+    assert dynamo.jobs.get_jobs_waiting_for_execution(limit=2) == [items[0], items[1]]
+    assert dynamo.jobs.get_jobs_waiting_for_execution(limit=3) == [items[0], items[1], items[4]]
+    assert dynamo.jobs.get_jobs_waiting_for_execution(limit=4) == [items[0], items[1], items[4], items[6]]
+    assert dynamo.jobs.get_jobs_waiting_for_execution(limit=5) == [items[0], items[1], items[4], items[6], items[9]]
+    assert dynamo.jobs.get_jobs_waiting_for_execution(limit=6) == [items[0], items[1], items[4], items[6], items[9]]
 
 
 def test_put_jobs_exceeds_quota(tables):
