@@ -91,4 +91,5 @@ Resources:
           status:
             - RUNNING
       Targets:
-        - !GetAtt Lambda.Arn
+        - Arn: !GetAtt Lambda.Arn
+          Id: lambda-target
