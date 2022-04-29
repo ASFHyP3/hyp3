@@ -83,7 +83,6 @@ WATER_MAP:
         default: 30.0
         type: number
     iterative_bounds:
-      default: '0 15'
       api_schema:
         description: Bounds used for iterative method. Ignored when include_flood_depth is false.
         type: array
