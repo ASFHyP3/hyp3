@@ -124,7 +124,7 @@ WATER_MAP:
     - Ref::known_water_threshold
     - --iterative-min
     - Ref::iterative_min
-    - --iteartive-max
+    - --iterative-max
     - Ref::iterative_max
     - Ref::granules
   validators:
