@@ -323,7 +323,7 @@ def test_put_jobs(tables):
         assert job['request_time'] <= dynamo.util.format_time(datetime.now(timezone.utc))
         assert job['user_id'] == 'user1'
         assert job['status_code'] == 'PENDING'
-        assert job['execution_started'] == False
+        assert job['execution_started'] is False
 
     response = tables.jobs_table.scan()
     assert response['Items'] == jobs
