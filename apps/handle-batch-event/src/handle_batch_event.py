@@ -1,3 +1,4 @@
+# TODO update db
 def lambda_handler(event, context):
     source = event['source']
     detail_type = event['detail-type']
