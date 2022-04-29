@@ -42,6 +42,7 @@ def put_jobs(user_id: str, jobs: List[dict], fail_when_over_quota=True) -> List[
             'job_id': str(uuid4()),
             'user_id': user_id,
             'status_code': 'PENDING',
+            'execution_started': False,
             'request_time': request_time,
             'priority': max(9999 - previous_jobs - index, 0),
             **job,
@@ -132,6 +133,18 @@ def get_jobs_by_status_code(status_code: str, limit: int) -> List[dict]:
     response = table.query(
         IndexName='status_code',
         KeyConditionExpression=Key('status_code').eq(status_code),
+        Limit=limit,
+    )
+    jobs = response['Items']
+    return jobs
+
+
+def get_jobs_waiting_for_execution(limit: int) -> list[dict]:
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
+    response = table.query(
+        IndexName='status_code',
+        KeyConditionExpression=Key('status_code').eq('PENDING'),
+        FilterExpression=Attr('execution_started').ne(True),
         Limit=limit,
     )
     jobs = response['Items']

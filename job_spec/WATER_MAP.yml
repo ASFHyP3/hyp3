@@ -70,7 +70,7 @@ WATER_MAP:
     flood_depth_estimator:
       api_schema:
         description: Flood depth estimation approach. Ignored when include_flood_depth is false.
-        default: 'nmad'
+        default: 'iterative'
         type: string
     water_level_sigma:
       api_schema:
@@ -82,16 +82,16 @@ WATER_MAP:
         description: Threshold for extracting known water area in percent. Ignored when include_flood_depth is false.
         default: 30.0
         type: number
-    iterative_bounds:
-      default: '0 15'
+    iterative_min:
       api_schema:
-        description: Bounds used for iterative method. Ignored when include_flood_depth is false.
-        type: array
-        default: [0, 15]
-        minItems: 2
-        maxItems: 2
-        items:
-          type: integer
+        description: Minimum bound used for iterative method. Ignored when include_flood_depth is false.
+        default: 0
+        type: integer
+    iterative_max:
+      api_schema:
+        description: Maximum bound used for iterative method. Ignored when include_flood_depth is false.
+        default: 15
+        type: integer
   command:
     - ++process
     - water_map
@@ -113,16 +113,18 @@ WATER_MAP:
     - Ref::hand_fraction
     - --membership-threshold
     - Ref::membership_threshold
-    - --include_flood_depth
+    - --include-flood-depth
     - Ref::include_flood_depth
     - --estimator
     - Ref::flood_depth_estimator
-    - --water_level_sigma
+    - --water-level-sigma
     - Ref::water_level_sigma
-    - --known_water_threshold
+    - --known-water-threshold
     - Ref::known_water_threshold
-    - --iterative_bounds
-    - Ref::iterative_bounds
+    - --iterative-min
+    - Ref::iterative_min
+    - --iterative-max
+    - Ref::iterative_max
     - Ref::granules
   validators:
     - check_dem_coverage
