@@ -191,6 +191,18 @@ Resources:
         {% endif %}
       TemplateURL: process-new-granules/process-new-granules-cf.yml
 
+  HandleBatchEvent:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        {% if security_environment == 'EDC' %}
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
+    TemplateURL: handle-batch-event/handle-batch-event-cf.yml
+
   StepFunction:
     Type: AWS::CloudFormation::Stack
     Properties:
