@@ -87,12 +87,12 @@ WATER_MAP:
       api_schema:
         description: Minimum bound used for iterative method. Ignored when include_flood_depth is false.
         default: 0
-        type: number
+        type: integer
     iterative_max:
       api_schema:
         description: Maximum bound used for iterative method. Ignored when include_flood_depth is false.
         default: 15
-        type: number
+        type: integer
   command:
     - ++process
     - water_map
