@@ -102,3 +102,11 @@ Resources:
       Targets:
         - Arn: !GetAtt Lambda.Arn
           Id: lambda-target
+
+  PermissionForEventsToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt Lambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt EventRule.Arn
