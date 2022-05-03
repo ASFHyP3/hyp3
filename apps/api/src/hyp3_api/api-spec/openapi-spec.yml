@@ -414,6 +414,8 @@ components:
           $ref: "#/components/schemas/datetime"
         status_code:
           $ref: "#/components/schemas/status_code"
+        execution_started:
+          $ref: "#/components/schemas/execution_started"
         name:
           $ref: "#/components/schemas/name"
         files:
@@ -465,6 +467,10 @@ components:
         - SUCCEEDED
         - FAILED
       example: SUCCEEDED
+
+    execution_started:
+      description: Whether a workflow execution has been started for the submitted job.
+      type: boolean
 
     name:
       description: User provided text to name the job
