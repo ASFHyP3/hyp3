@@ -5,6 +5,9 @@ Parameters:
   JobQueueArn:
     Type: String
 
+  JobsTable:
+    Type: String
+
   {% if security_environment == 'EDC' %}
   PermissionsBoundaryPolicyArn:
     Type: String
@@ -60,6 +63,9 @@ Resources:
               - logs:CreateLogStream
               - logs:PutLogEvents
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+          - Effect: Allow
+            Action: dynamodb:UpdateItem
+            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
 
   Lambda:
     Type: AWS::Lambda::Function

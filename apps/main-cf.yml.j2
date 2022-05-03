@@ -196,6 +196,7 @@ Resources:
     Properties:
       Parameters:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        JobsTable: !Ref JobsTable
         {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
