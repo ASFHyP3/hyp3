@@ -13,6 +13,7 @@ export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_
 
 build: render
 	python -m pip install --upgrade -r requirements-apps-api.txt -t ${API}; \
+	python -m pip install --upgrade -r requirements-apps-handle-batch-event.txt -t ${HANDLE_BATCH_EVENT}; \
 	python -m pip install --upgrade -r requirements-apps-process-new-granules.txt -t ${PROCESS_NEW_GRANULES}; \
 	python -m pip install --upgrade -r requirements-apps-scale-cluster.txt -t ${SCALE_CLUSTER}; \
 	python -m pip install --upgrade -r requirements-apps-start-execution.txt -t ${START_EXECUTION}; \
