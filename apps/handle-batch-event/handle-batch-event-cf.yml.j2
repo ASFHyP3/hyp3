@@ -70,6 +70,9 @@ Resources:
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
+      Environment:
+        Variables:
+          JOBS_TABLE_NAME: !Ref JobsTable
       Code: src/
       Handler: handle_batch_event.lambda_handler
       MemorySize: 128
