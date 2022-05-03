@@ -128,17 +128,6 @@ def update_job(job):
     )
 
 
-def get_jobs_by_status_code(status_code: str, limit: int) -> List[dict]:
-    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
-    response = table.query(
-        IndexName='status_code',
-        KeyConditionExpression=Key('status_code').eq(status_code),
-        Limit=limit,
-    )
-    jobs = response['Items']
-    return jobs
-
-
 def get_jobs_waiting_for_execution(limit: int) -> list[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     response = table.query(
