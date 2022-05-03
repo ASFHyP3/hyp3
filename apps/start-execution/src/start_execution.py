@@ -39,5 +39,5 @@ def submit_jobs(jobs):
 
 
 def lambda_handler(event, context):
-    pending_jobs = jobs.get_jobs_by_status_code('PENDING', limit=400)
+    pending_jobs = jobs.get_jobs_waiting_for_execution(limit=400)
     submit_jobs(pending_jobs)

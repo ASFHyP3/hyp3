@@ -1,4 +1,5 @@
 -r requirements-apps-api.txt
+-r requirements-apps-handle-batch-event.txt
 -r requirements-apps-process-new-granules.txt
 -r requirements-apps-scale-cluster.txt
 -r requirements-apps-start-execution.txt
