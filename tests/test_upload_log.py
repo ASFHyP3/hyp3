@@ -1,3 +1,6 @@
+import os
+from unittest.mock import MagicMock, patch
+
 import pytest
 from botocore.stub import Stubber
 
@@ -54,6 +57,20 @@ def test_get_log_content(cloudwatch_stubber):
     assert upload_log.get_log_content('myLogGroup', 'myLogStream') == 'foo\nbar'
 
 
+def test_get_log_content_from_failed_attempts():
+    cause = {
+        'Status': 'FAILED',
+        'StatusReason': 'Task failed to start',
+        'Attempts': [
+            {'Container': {'Reason': 'error message 1'}},
+            {'Container': {'Reason': 'error message 2'}},
+            {'Container': {'Reason': 'error message 3'}}
+        ]
+    }
+    content = 'error message 1\nerror message 2\nerror message 3'
+    assert upload_log.get_log_content_from_failed_attempts(cause) == content
+
+
 def test_upload_log_to_s3(s3_stubber):
     expected_params = {
         'Body': 'myContent',
@@ -74,3 +91,79 @@ def test_upload_log_to_s3(s3_stubber):
     s3_stubber.add_response(method='put_object_tagging', expected_params=tag_params, service_response={})
 
     upload_log.write_log_to_s3('myBucket', 'myJobId', 'myContent')
+
+
+@patch('upload_log.write_log_to_s3')
+@patch('upload_log.get_log_content')
+@patch.dict(os.environ, {'BUCKET': 'test-bucket'}, clear=True)
+def test_lambda_handler(mock_get_log_content: MagicMock, mock_write_log_to_s3: MagicMock):
+    log_content = mock_get_log_content.return_value = 'here is some test log content'
+    event = {
+        'prefix': 'test-prefix',
+        'log_group': 'test-log-group',
+        'processing_results': {'Container': {'LogStreamName': 'test-log-stream'}}
+    }
+    upload_log.lambda_handler(event, None)
+
+    mock_get_log_content.assert_called_once_with('test-log-group', 'test-log-stream')
+    mock_write_log_to_s3.assert_called_once_with('test-bucket', 'test-prefix', log_content)
+
+
+def test_lambda_handler_no_log_stream():
+
+    def mock_get_log_events(**kwargs):
+        assert kwargs['logGroupName'] == 'test-log-group'
+        assert kwargs['logStreamName'] == 'test-log-stream'
+        raise upload_log.CLOUDWATCH.exceptions.ResourceNotFoundException(
+            {'Error': {'Message': 'The specified log stream does not exist.'}}, 'operation_name'
+        )
+
+    event = {
+        'prefix': 'test-prefix',
+        'log_group': 'test-log-group',
+        'processing_results': {
+            'Error': '',
+            'Cause': '{"Container": {"LogStreamName": "test-log-stream"},'
+                     '"Status": "FAILED",'
+                     '"StatusReason": "Task failed to start",'
+                     '"Attempts": ['
+                     '{"Container": {"Reason": "error message 1"}},'
+                     '{"Container": {"Reason": "error message 2"}},'
+                     '{"Container": {"Reason": "error message 3"}}]}'
+        }
+    }
+    with patch('upload_log.CLOUDWATCH.get_log_events', mock_get_log_events), \
+            patch('upload_log.write_log_to_s3') as mock_write_log_to_s3, \
+            patch.dict(os.environ, {'BUCKET': 'test-bucket'}, clear=True):
+        upload_log.lambda_handler(event, None)
+        mock_write_log_to_s3.assert_called_once_with(
+            'test-bucket', 'test-prefix', 'error message 1\nerror message 2\nerror message 3'
+        )
+
+
+def test_lambda_handler_resource_not_found():
+
+    def mock_get_log_events(**kwargs):
+        assert kwargs['logGroupName'] == 'test-log-group'
+        assert kwargs['logStreamName'] == 'test-log-stream'
+        raise upload_log.CLOUDWATCH.exceptions.ResourceNotFoundException(
+            {'Error': {'Message': 'foo message'}}, 'operation_name'
+        )
+
+    event = {
+        'prefix': 'test-prefix',
+        'log_group': 'test-log-group',
+        'processing_results': {
+            'Error': '',
+            'Cause': '{"Container": {"LogStreamName": "test-log-stream"},'
+                     '"Status": "FAILED",'
+                     '"StatusReason": "Task failed to start",'
+                     '"Attempts": ['
+                     '{"Container": {"Reason": "error message 1"}},'
+                     '{"Container": {"Reason": "error message 2"}},'
+                     '{"Container": {"Reason": "error message 3"}}]}'
+        }
+    }
+    with patch('upload_log.CLOUDWATCH.get_log_events', mock_get_log_events):
+        with pytest.raises(upload_log.CLOUDWATCH.exceptions.ResourceNotFoundException, match=r".*foo message.*"):
+            upload_log.lambda_handler(event, None)
