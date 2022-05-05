@@ -31,12 +31,15 @@ def get_log_content(log_group, log_stream):
 
 def get_log_content_from_failed_attempts(cause: dict) -> str:
     status = cause['Status']
-    status_reason = cause['StatusReason']
-
     assert status == 'FAILED', status
-    assert status_reason == 'Task failed to start', status_reason
 
-    return '\n'.join(attempt['Container']['Reason'] for attempt in cause['Attempts'])
+    attempts = cause['Attempts']
+    if len(attempts) > 0:
+        content = '\n'.join(attempt['Container']['Reason'] for attempt in attempts)
+    else:
+        content = cause['StatusReason']
+
+    return content
 
 
 def write_log_to_s3(bucket, prefix, content):

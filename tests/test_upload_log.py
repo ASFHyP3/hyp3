@@ -71,6 +71,16 @@ def test_get_log_content_from_failed_attempts():
     assert upload_log.get_log_content_from_failed_attempts(cause) == content
 
 
+def test_get_log_content_from_failed_attempts_no_attempts():
+    cause = {
+        'Status': 'FAILED',
+        'StatusReason': 'foo reason',
+        'Attempts': []
+    }
+    content = 'foo reason'
+    assert upload_log.get_log_content_from_failed_attempts(cause) == content
+
+
 def test_upload_log_to_s3(s3_stubber):
     expected_params = {
         'Body': 'myContent',
