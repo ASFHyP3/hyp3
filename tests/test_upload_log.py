@@ -35,6 +35,12 @@ def test_get_log_stream():
     }
     assert upload_log.get_log_stream(processing_results) == 'myFailedLogStream'
 
+    processing_results = {
+        'Error': 'States.TaskFailed',
+        'Cause': '{"Container": {}}',
+    }
+    assert upload_log.get_log_stream(processing_results) is None
+
 
 def test_get_log_content(cloudwatch_stubber):
     expected_params = {'logGroupName': 'myLogGroup', 'logStreamName': 'myLogStream', 'startFromHead': True}
@@ -120,7 +126,27 @@ def test_lambda_handler(mock_get_log_content: MagicMock, mock_write_log_to_s3: M
     mock_write_log_to_s3.assert_called_once_with('test-bucket', 'test-prefix', mock_get_log_content.return_value)
 
 
-def test_lambda_handler_no_log_stream():
+@patch('upload_log.write_log_to_s3')
+@patch.dict(os.environ, {'BUCKET': 'test-bucket'}, clear=True)
+def test_lambda_handler_no_log_stream(mock_write_log_to_s3: MagicMock):
+    event = {
+        'prefix': 'test-prefix',
+        'log_group': 'test-log-group',
+        'processing_results': {
+            'Error': '',
+            'Cause': '{"Container": {},'
+                     '"Status": "FAILED",'
+                     '"StatusReason": "foo reason",'
+                     '"Attempts": []}'
+        }
+    }
+
+    upload_log.lambda_handler(event, None)
+
+    mock_write_log_to_s3.assert_called_once_with('test-bucket', 'test-prefix', 'foo reason')
+
+
+def test_lambda_handler_log_stream_does_not_exist():
 
     def mock_get_log_events(**kwargs):
         assert kwargs['logGroupName'] == 'test-log-group'
