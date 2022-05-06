@@ -29,6 +29,19 @@ def get_log_content(log_group, log_stream):
     return '\n'.join(messages)
 
 
+def get_log_content_from_failed_attempts(cause: dict) -> str:
+    status = cause['Status']
+    assert status == 'FAILED', status
+
+    attempts = cause['Attempts']
+    if len(attempts) > 0:
+        content = '\n'.join(attempt['Container']['Reason'] for attempt in attempts)
+    else:
+        content = cause['StatusReason']
+
+    return content
+
+
 def write_log_to_s3(bucket, prefix, content):
     key = f'{prefix}/{prefix}.log'
     S3.put_object(Bucket=bucket, Key=key, Body=content, ContentType='text/plain')
@@ -45,5 +58,12 @@ def write_log_to_s3(bucket, prefix, content):
 
 def lambda_handler(event, context):
     log_stream = get_log_stream(event['processing_results'])
-    log_content = get_log_content(event['log_group'], log_stream)
+    try:
+        log_content = get_log_content(event['log_group'], log_stream)
+    except CLOUDWATCH.exceptions.ResourceNotFoundException as e:
+        if 'specified log stream does not exist' in str(e):
+            assert 'Error' in event['processing_results']
+            log_content = get_log_content_from_failed_attempts(json.loads(event['processing_results']['Cause']))
+        else:
+            raise
     write_log_to_s3(environ['BUCKET'], event['prefix'], log_content)
