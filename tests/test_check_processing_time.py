@@ -42,7 +42,7 @@ def test_missing_start_time():
 
 
 def test_no_attempts():
-    with pytest.raises(ValueError, match='list of attempts is empty'):
+    with pytest.raises(ValueError, match='no Batch job attempts'):
         check_processing_time.get_time_from_attempts([])
 
 

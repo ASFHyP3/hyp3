@@ -3,7 +3,7 @@ import json
 
 def get_time_from_attempts(attempts):
     if len(attempts) == 0:
-        raise ValueError('list of attempts is empty')
+        raise ValueError('no Batch job attempts')
     attempts.sort(key=lambda attempt: attempt['StoppedAt'])
     final_attempt = attempts[-1]
     return (final_attempt['StoppedAt'] - final_attempt['StartedAt']) / 1000
