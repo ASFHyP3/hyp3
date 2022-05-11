@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.16.1]
 ### Fixed
 - Handle missing log stream when uploading logs, which should prevent jobs from remaining in `RUNNING` status after failure.
+- Don't write error messages to `processing_time_in_seconds` field.
 
 ## [2.16.0]
 ### Added
