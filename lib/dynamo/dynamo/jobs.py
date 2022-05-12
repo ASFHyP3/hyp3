@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from os import environ
-from typing import List, Tuple, Union
+from typing import List, Union
 from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
@@ -46,11 +46,11 @@ def put_jobs(user_id: str, jobs: List[dict], fail_when_over_quota=True) -> List[
         jobs = jobs[:remaining_jobs]
 
     if priority_override is not None:
-        priority = lambda _: priority_override
+        priority = lambda _: priority_override  # noqa: E731
     elif max_jobs is None:
-        priority = lambda _: 0
+        priority = lambda _: 0  # noqa: E731
     else:
-        priority = lambda job_index: max(9999 - previous_jobs - job_index, 0)
+        priority = lambda job_index: max(9999 - previous_jobs - job_index, 0)  # noqa: E731
 
     prepared_jobs = [
         {
