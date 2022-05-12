@@ -1,11 +1,11 @@
 from datetime import datetime, timezone
 from os import environ
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
 
-from dynamo.user import get_max_jobs_per_month
+from dynamo.user import get_max_jobs_per_month, get_priority
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
 
@@ -20,10 +20,16 @@ def _get_job_count_for_month(user) -> int:
     return job_count_for_month
 
 
-def get_quota_status(user) -> Tuple[int, int, int]:
+def get_quota_status(user) -> Union[tuple[int, int, int], tuple[None, None, None]]:
     max_jobs = get_max_jobs_per_month(user)
-    previous_jobs = _get_job_count_for_month(user)
-    remaining_jobs = max(max_jobs - previous_jobs, 0)
+
+    if max_jobs is not None:
+        previous_jobs = _get_job_count_for_month(user)
+        remaining_jobs = max(max_jobs - previous_jobs, 0)
+    else:
+        previous_jobs = None
+        remaining_jobs = None
+
     return max_jobs, previous_jobs, remaining_jobs
 
 
@@ -31,11 +37,20 @@ def put_jobs(user_id: str, jobs: List[dict], fail_when_over_quota=True) -> List[
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
+    priority_override = get_priority(user_id)
     max_jobs, previous_jobs, remaining_jobs = get_quota_status(user_id)
-    if len(jobs) > remaining_jobs:
+
+    if max_jobs is not None and len(jobs) > remaining_jobs:
         if fail_when_over_quota:
             raise QuotaError(f'Your monthly quota is {max_jobs} jobs. You have {remaining_jobs} jobs remaining.')
         jobs = jobs[:remaining_jobs]
+
+    if priority_override is not None:
+        priority = lambda _: priority_override
+    elif max_jobs is None:
+        priority = lambda _: 0
+    else:
+        priority = lambda job_index: max(9999 - previous_jobs - job_index, 0)
 
     prepared_jobs = [
         {
@@ -44,7 +59,7 @@ def put_jobs(user_id: str, jobs: List[dict], fail_when_over_quota=True) -> List[
             'status_code': 'PENDING',
             'execution_started': False,
             'request_time': request_time,
-            'priority': max(9999 - previous_jobs - index, 0),
+            'priority': priority(index),
             **job,
         } for index, job in enumerate(jobs)
     ]
