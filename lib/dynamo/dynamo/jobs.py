@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from os import environ
-from typing import List, Union, Optional, Callable
+from typing import Callable, List, Optional, Union
 from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
