@@ -47,23 +47,23 @@ def test_convert_parameters_to_string():
 
 def test_submit_jobs(states_stubber):
     jobs = [
-          {
-              'job_id': 'myJobId',
-              'string_field': 'value1',
-              'boolean_field': True,
-              'decimal_float_field': Decimal('10.1'),
-              'decimal_integer_field': Decimal('10'),
-              'job_parameters': {
-                  'granules': [
-                      'granule1',
-                      'granule2',
-                  ],
-                  'string_field': 'value1',
-                  'boolean_field': True,
-                  'decimal_float_field': Decimal('10.1'),
-                  'decimal_integer_field': Decimal('10'),
-              },
-          },
+        {
+            'job_id': 'myJobId',
+            'string_field': 'value1',
+            'boolean_field': True,
+            'decimal_float_field': Decimal('10.1'),
+            'decimal_integer_field': Decimal('10'),
+            'job_parameters': {
+                'granules': [
+                    'granule1',
+                    'granule2',
+                ],
+                'string_field': 'value1',
+                'boolean_field': True,
+                'decimal_float_field': Decimal('10.1'),
+                'decimal_integer_field': Decimal('10'),
+            },
+        },
     ]
 
     states_input = {

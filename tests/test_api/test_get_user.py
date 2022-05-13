@@ -74,3 +74,20 @@ def test_get_user_custom_quota(client, tables):
         },
         'job_names': [],
     }
+
+
+def test_get_user_no_quota(client, tables):
+    username = 'user_with_no_quota'
+    login(client, username)
+    tables.users_table.put_item(Item={'user_id': username, 'max_jobs_per_month': None})
+
+    response = client.get(USER_URI)
+    assert response.status_code == HTTPStatus.OK
+    assert response.json == {
+        'user_id': username,
+        'quota': {
+            'max_jobs_per_month': None,
+            'remaining': None,
+        },
+        'job_names': [],
+    }
