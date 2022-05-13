@@ -35,3 +35,15 @@ def test_get_max_jobs_per_month(tables, monkeypatch):
     user['max_jobs_per_month'] = None
     tables.users_table.put_item(Item=user)
     assert dynamo.user.get_max_jobs_per_month('user1') is None
+
+
+def test_get_priority(tables):
+    assert dynamo.user.get_priority('user1') is None
+
+    user = {'user_id': 'user1'}
+    tables.users_table.put_item(Item=user)
+    assert dynamo.user.get_priority('user1') is None
+
+    user['priority'] = 10
+    tables.users_table.put_item(Item=user)
+    assert dynamo.user.get_priority('user1') == 10
