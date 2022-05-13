@@ -571,30 +571,31 @@ def test_decimal_conversion(tables):
 def test_get_job_priority():
     priority = dynamo.jobs._get_job_priority(priority_override=None, has_quota=True)
     assert priority(0, 0) == 9999
-    assert priority(0, 9) == 9990
+    assert priority(1, 8) == 9990
     assert priority(0, 9998) == 1
     assert priority(0, 9999) == 0
     assert priority(0, 10000) == 0
 
+    with pytest.raises(TypeError, match=r".*NoneType.*"):
+        priority(None, 9)
+
     priority = dynamo.jobs._get_job_priority(priority_override=1, has_quota=True)
     assert priority(0, 0) == 1
-    assert priority(0, 9) == 1
+    assert priority(1, 8) == 1
     assert priority(0, 9998) == 1
     assert priority(0, 9999) == 1
     assert priority(0, 10000) == 1
-    #TODO vary previous_jobs
 
     priority = dynamo.jobs._get_job_priority(priority_override=None, has_quota=False)
     assert priority(None, 0) == 0
-    assert priority(None, 9) == 0
+    assert priority(1, 8) == 0
     assert priority(None, 9998) == 0
     assert priority(None, 9999) == 0
     assert priority(None, 10000) == 0
-    #TODO vary previous_jobs
 
     priority = dynamo.jobs._get_job_priority(priority_override=2, has_quota=False)
     assert priority(None, 0) == 2
-    assert priority(None, 9) == 2
+    assert priority(1, 8) == 2
     assert priority(None, 9998) == 2
     assert priority(None, 9999) == 2
     assert priority(None, 10000) == 2
