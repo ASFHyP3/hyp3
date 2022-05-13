@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from decimal import Decimal
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 
 import pytest
 from conftest import list_have_same_elements
@@ -610,4 +610,11 @@ def test_get_quota_status(mock_get_max_jobs_per_month: MagicMock, mock_get_job_c
     mock_get_job_count_for_month.return_value = 1
     assert dynamo.jobs.get_quota_status('user1') == (5, 1, 4)
 
-    #TODO more tests?
+    mock_get_job_count_for_month.return_value = 10
+    assert dynamo.jobs.get_quota_status('user1') == (5, 10, 0)
+
+    mock_get_max_jobs_per_month.return_value = None
+    assert dynamo.jobs.get_quota_status('user1') == (None, None, None)
+
+    assert mock_get_max_jobs_per_month.mock_calls == [call('user1') for _ in range(4)]
+    assert mock_get_job_count_for_month.mock_calls == [call('user1') for _ in range(3)]

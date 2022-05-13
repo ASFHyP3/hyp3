@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
 
-from dynamo.user import get_max_jobs_per_month, get_priority
+import dynamo.user
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
 
@@ -21,7 +21,7 @@ def _get_job_count_for_month(user) -> int:
 
 
 def get_quota_status(user) -> Union[tuple[int, int, int], tuple[None, None, None]]:
-    max_jobs = get_max_jobs_per_month(user)
+    max_jobs = dynamo.user.get_max_jobs_per_month(user)
 
     if max_jobs is not None:
         previous_jobs = _get_job_count_for_month(user)
@@ -48,7 +48,7 @@ def put_jobs(user_id: str, jobs: List[dict], fail_when_over_quota=True) -> List[
             raise QuotaError(f'Your monthly quota is {max_jobs} jobs. You have {remaining_jobs} jobs remaining.')
         jobs = jobs[:remaining_jobs]
 
-    priority_override = get_priority(user_id)
+    priority_override = dynamo.user.get_priority(user_id)
     priority = _get_job_priority(priority_override, has_quota)
 
     prepared_jobs = [
