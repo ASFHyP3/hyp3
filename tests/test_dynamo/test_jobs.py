@@ -330,6 +330,41 @@ def test_put_jobs(tables):
     assert response['Items'] == jobs
 
 
+def test_put_jobs_no_quota(tables, monkeypatch):
+    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '1')
+    payload = [{'name': 'name1'}, {'name': 'name2'}]
+
+    with pytest.raises(dynamo.jobs.QuotaError):
+        jobs = dynamo.jobs.put_jobs('user1', payload)
+
+    tables.users_table.put_item(Item={'user_id': 'user1', 'max_jobs_per_month': None})
+
+    jobs = dynamo.jobs.put_jobs('user1', payload)
+
+    assert len(jobs) == 2
+    for job in jobs:
+        assert job['priority'] == 0
+
+
+def test_put_jobs_priority_override(tables):
+    payload = [{'name': 'name1'}, {'name': 'name2'}]
+    tables.users_table.put_item(Item={'user_id': 'user1', 'priority': 100})
+
+    jobs = dynamo.jobs.put_jobs('user1', payload)
+
+    assert len(jobs) == 2
+    for job in jobs:
+        assert job['priority'] == 100
+
+    tables.users_table.put_item(Item={'user_id': 'user1', 'priority': 550})
+
+    jobs = dynamo.jobs.put_jobs('user1', payload)
+
+    assert len(jobs) == 2
+    for job in jobs:
+        assert job['priority'] == 550
+
+
 def test_put_jobs_priority(tables):
     jobs = []
     jobs.extend(dynamo.jobs.put_jobs('user1', [{}]))
