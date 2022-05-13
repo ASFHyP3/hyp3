@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from decimal import Decimal
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 from conftest import list_have_same_elements
