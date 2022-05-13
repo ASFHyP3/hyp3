@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from decimal import Decimal
+from unittest.mock import patch, MagicMock
 
 import pytest
 from conftest import list_have_same_elements
@@ -597,3 +598,16 @@ def test_get_job_priority():
     assert priority(None, 9998) == 2
     assert priority(None, 9999) == 2
     assert priority(None, 10000) == 2
+
+
+@patch('dynamo.jobs._get_job_count_for_month')
+@patch('dynamo.user.get_max_jobs_per_month')
+def test_get_quota_status(mock_get_max_jobs_per_month: MagicMock, mock_get_job_count_for_month: MagicMock):
+    mock_get_max_jobs_per_month.return_value = 5
+    mock_get_job_count_for_month.return_value = 0
+    assert dynamo.jobs.get_quota_status('user1') == (5, 0, 5)
+
+    mock_get_job_count_for_month.return_value = 1
+    assert dynamo.jobs.get_quota_status('user1') == (5, 1, 4)
+
+    #TODO more tests?
