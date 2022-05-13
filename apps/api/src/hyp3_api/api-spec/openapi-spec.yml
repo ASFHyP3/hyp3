@@ -303,9 +303,11 @@ components:
         max_jobs_per_month:
           type: integer
           minimum: 0
+          nullable: true
         remaining:
           type: integer
           minimum: 0
+          nullable: true
 
     job_names_list:
       type: array
