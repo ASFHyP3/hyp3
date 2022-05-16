@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from decimal import Decimal
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 from conftest import list_have_same_elements
@@ -329,6 +330,41 @@ def test_put_jobs(tables):
     assert response['Items'] == jobs
 
 
+def test_put_jobs_no_quota(tables, monkeypatch):
+    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '1')
+    payload = [{'name': 'name1'}, {'name': 'name2'}]
+
+    with pytest.raises(dynamo.jobs.QuotaError):
+        jobs = dynamo.jobs.put_jobs('user1', payload)
+
+    tables.users_table.put_item(Item={'user_id': 'user1', 'max_jobs_per_month': None})
+
+    jobs = dynamo.jobs.put_jobs('user1', payload)
+
+    assert len(jobs) == 2
+    for job in jobs:
+        assert job['priority'] == 0
+
+
+def test_put_jobs_priority_override(tables):
+    payload = [{'name': 'name1'}, {'name': 'name2'}]
+    tables.users_table.put_item(Item={'user_id': 'user1', 'priority': 100})
+
+    jobs = dynamo.jobs.put_jobs('user1', payload)
+
+    assert len(jobs) == 2
+    for job in jobs:
+        assert job['priority'] == 100
+
+    tables.users_table.put_item(Item={'user_id': 'user1', 'priority': 550})
+
+    jobs = dynamo.jobs.put_jobs('user1', payload)
+
+    assert len(jobs) == 2
+    for job in jobs:
+        assert job['priority'] == 550
+
+
 def test_put_jobs_priority(tables):
     jobs = []
     jobs.extend(dynamo.jobs.put_jobs('user1', [{}]))
@@ -565,3 +601,56 @@ def test_decimal_conversion(tables):
     assert response[0]['float_value'] == Decimal('30.04')
     assert response[1]['float_value'] == Decimal('0.0')
     assert response[2]['float_value'] == Decimal('0.1')
+
+
+def test_get_job_priority():
+    priority = dynamo.jobs._get_job_priority(priority_override=None, has_quota=True)
+    assert priority(0, 0) == 9999
+    assert priority(1, 8) == 9990
+    assert priority(0, 9998) == 1
+    assert priority(0, 9999) == 0
+    assert priority(0, 10000) == 0
+
+    with pytest.raises(TypeError, match=r".*NoneType.*"):
+        priority(None, 9)
+
+    priority = dynamo.jobs._get_job_priority(priority_override=1, has_quota=True)
+    assert priority(0, 0) == 1
+    assert priority(1, 8) == 1
+    assert priority(0, 9998) == 1
+    assert priority(0, 9999) == 1
+    assert priority(0, 10000) == 1
+
+    priority = dynamo.jobs._get_job_priority(priority_override=None, has_quota=False)
+    assert priority(None, 0) == 0
+    assert priority(1, 8) == 0
+    assert priority(None, 9998) == 0
+    assert priority(None, 9999) == 0
+    assert priority(None, 10000) == 0
+
+    priority = dynamo.jobs._get_job_priority(priority_override=2, has_quota=False)
+    assert priority(None, 0) == 2
+    assert priority(1, 8) == 2
+    assert priority(None, 9998) == 2
+    assert priority(None, 9999) == 2
+    assert priority(None, 10000) == 2
+
+
+@patch('dynamo.jobs._get_job_count_for_month')
+@patch('dynamo.user.get_max_jobs_per_month')
+def test_get_quota_status(mock_get_max_jobs_per_month: MagicMock, mock_get_job_count_for_month: MagicMock):
+    mock_get_max_jobs_per_month.return_value = 5
+    mock_get_job_count_for_month.return_value = 0
+    assert dynamo.jobs.get_quota_status('user1') == (5, 0, 5)
+
+    mock_get_job_count_for_month.return_value = 1
+    assert dynamo.jobs.get_quota_status('user1') == (5, 1, 4)
+
+    mock_get_job_count_for_month.return_value = 10
+    assert dynamo.jobs.get_quota_status('user1') == (5, 10, 0)
+
+    mock_get_max_jobs_per_month.return_value = None
+    assert dynamo.jobs.get_quota_status('user1') == (None, None, None)
+
+    assert mock_get_max_jobs_per_month.mock_calls == [call('user1') for _ in range(4)]
+    assert mock_get_job_count_for_month.mock_calls == [call('user1') for _ in range(3)]
