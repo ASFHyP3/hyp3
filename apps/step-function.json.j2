@@ -4,7 +4,11 @@
     "SET_DEFAULT_RESULTS": {
       "Type": "Pass",
       "Result": {
-        "processing_time_in_seconds": 0
+        "processing_time_in_seconds": 0,
+        "get_files": {
+          "logs": [],
+          "expiration_time": null
+        }
       },
       "ResultPath": "$.results",
       "Next": "EXECUTION_STARTED"
@@ -186,7 +190,7 @@
             "States.ALL"
           ],
           "Next": "JOB_FAILED",
-          "ResultPath": "$.results.get_files"
+          "ResultPath": "$.results.get_files_error"
         }
       ],
       "ResultPath": "$.results.get_files",
