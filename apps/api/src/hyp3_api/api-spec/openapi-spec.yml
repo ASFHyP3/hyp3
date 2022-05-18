@@ -303,9 +303,11 @@ components:
         max_jobs_per_month:
           type: integer
           minimum: 0
+          nullable: true
         remaining:
           type: integer
           minimum: 0
+          nullable: true
 
     job_names_list:
       type: array
@@ -414,6 +416,8 @@ components:
           $ref: "#/components/schemas/datetime"
         status_code:
           $ref: "#/components/schemas/status_code"
+        execution_started:
+          $ref: "#/components/schemas/execution_started"
         name:
           $ref: "#/components/schemas/name"
         files:
@@ -465,6 +469,10 @@ components:
         - SUCCEEDED
         - FAILED
       example: SUCCEEDED
+
+    execution_started:
+      description: Whether a workflow execution has been started for the submitted job.
+      type: boolean
 
     name:
       description: User provided text to name the job
@@ -528,8 +536,8 @@ components:
     processing_time_in_seconds:
       description: >
         Run time in seconds for the final processing attempt (regardless of whether it succeeded). A value of zero
-        likely indicates that the job failed before reaching the processing step, although it may also indicate that the
-        job failed after reaching the processing step but before calculating the processing time.
+        indicates that the job failed before reaching the processing step or that there was an error in calculating
+        processing time.
       type: number
       minimum: 0
 

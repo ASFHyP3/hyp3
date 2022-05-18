@@ -1,10 +1,7 @@
 import binascii
 import json
 from base64 import b64decode, b64encode
-from datetime import datetime, timezone
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
-
-import dynamo
 
 
 class TokenDeserializeError(Exception):
@@ -17,19 +14,6 @@ def get_granules(jobs):
         for granule in job['job_parameters']['granules']:
             granules.add(granule)
     return granules
-
-
-def get_remaining_jobs_for_user(user, limit):
-    previous_jobs = get_job_count_for_month(user)
-    remaining_jobs = limit - previous_jobs
-    return max(remaining_jobs, 0)
-
-
-def get_job_count_for_month(user):
-    now = datetime.now(timezone.utc)
-    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    job_count_for_month = dynamo.jobs.count_jobs(user, dynamo.util.format_time(start_of_month))
-    return job_count_for_month
 
 
 def serialize(payload: dict):

@@ -1,3 +1,5 @@
+import pytest
+
 import check_processing_time
 
 
@@ -37,6 +39,11 @@ def test_missing_start_time():
     ]
     result = check_processing_time.get_time_from_attempts(attempts)
     assert result == 3.2
+
+
+def test_no_attempts():
+    with pytest.raises(ValueError, match='no Batch job attempts'):
+        check_processing_time.get_time_from_attempts([])
 
 
 def test_lambda_handler_with_normal_results():

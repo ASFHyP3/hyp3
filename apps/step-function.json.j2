@@ -11,14 +11,14 @@
         }
       },
       "ResultPath": "$.results",
-      "Next": "JOB_RUNNING"
+      "Next": "EXECUTION_STARTED"
     },
-    "JOB_RUNNING": {
+    "EXECUTION_STARTED": {
       "Type": "Task",
       "Resource": "${UpdateDBLambdaArn}",
       "Parameters": {
         "job_id.$": "$.job_id",
-        "status_code": "RUNNING"
+        "execution_started": true
       },
       "Retry": [
         {
@@ -28,7 +28,7 @@
           "MaxAttempts": 2
         }
       ],
-      "ResultPath": "$.results.job_running",
+      "ResultPath": "$.results.execution_started",
       "Next": "ADD_PREFIX_TO_JOB_PARAMETERS"
     },
     "ADD_PREFIX_TO_JOB_PARAMETERS": {
@@ -216,7 +216,7 @@
             "States.ALL"
           ],
           "Next": "JOB_FAILED",
-          "ResultPath": "$.results.processing_time_in_seconds"
+          "ResultPath": "$.results.processing_time_in_seconds_error"
         }
       ],
       "ResultPath": "$.results.processing_time_in_seconds",
