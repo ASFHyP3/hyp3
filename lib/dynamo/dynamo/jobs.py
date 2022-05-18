@@ -154,11 +154,18 @@ def update_job(job):
 
 def get_jobs_waiting_for_execution(limit: int) -> list[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
-    response = table.query(
-        IndexName='status_code',
-        KeyConditionExpression=Key('status_code').eq('PENDING'),
-        FilterExpression=Attr('execution_started').ne(True),
-        Limit=limit,
-    )
+
+    params = {
+        'IndexName': 'status_code',
+        'KeyConditionExpression': Key('status_code').eq('PENDING'),
+        'FilterExpression': Attr('execution_started').ne(True),
+    }
+    response = table.query(**params)
     jobs = response['Items']
-    return jobs
+
+    while 'LastEvaluatedKey' in response and len(jobs) < limit:
+        params['ExclusiveStartKey'] = response['LastEvaluatedKey']
+        response = table.query(**params)
+        jobs.extend(response['Items'])
+
+    return jobs[:limit]
