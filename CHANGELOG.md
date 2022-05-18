@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.17.1]
 ### Fixed
 - Fix how we fetch jobs that are waiting for step function execution, so that we actually start up to 400 executions at a time.
+- Added default values for `logs` and `expiration_time`, which should prevent failed jobs from remaining in `RUNNING`.
 
 ## [2.17.0]
 ### Added

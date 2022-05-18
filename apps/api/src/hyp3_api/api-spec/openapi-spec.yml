@@ -430,6 +430,7 @@ components:
           $ref: "#/components/schemas/list_of_urls"
         expiration_time:
           $ref: "#/components/schemas/datetime"
+          nullable: true
         processing_time_in_seconds:
           $ref: "#/components/schemas/processing_time_in_seconds"
         priority:
