@@ -276,8 +276,8 @@ Resources:
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
         IgnorePublicAcls: True
-        BlockPublicPolicy: {{ 'True' if security_environment == 'EDC' else 'False' }}
-        RestrictPublicBuckets: {{ 'True' if security_environment == 'EDC' else 'False' }}
+        BlockPublicPolicy: {{ 'True' if security_environment in ('EDC', 'JPL') else 'False' }}
+        RestrictPublicBuckets: {{ 'True' if security_environment in ('EDC', 'JPL') else 'False' }}
       LifecycleConfiguration:
         Rules:
           - Status: Enabled
