@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.17.3]
 ### Fixed
-AUTORIFT jobs can now be submitted for Sentinel-2 scenes with 25-character Earth Search names. Fixes [#1022](https://github.com/ASFHyP3/hyp3/issues/1022)
+AUTORIFT jobs can now be submitted for Sentinel-2 scenes with 25-character Earth Search names. Fixes [#1022](https://github.com/ASFHyP3/hyp3/issues/1022).
 
 ## [2.17.2]
 ### Fixed
