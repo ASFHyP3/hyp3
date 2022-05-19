@@ -9,15 +9,14 @@
 A processing environment for HyP3 Plugins in AWS.
 
 ## Table of contents
-- [Local Development](#local-development)
+- [Developer Setup](#developer-setup)
 - [Deployment](#deployment)
   - [Prerequisites](#prerequisites)
   - [Stack Parameters](#stack-parameters)
   - [Deploy with CloudFormation](#deploy-with-cloudformation)
 - [Running the API Locally](#running-the-api-locally)
 
-
-## Local Development
+## Developer Setup
 
 1. Clone the repository
    ```
