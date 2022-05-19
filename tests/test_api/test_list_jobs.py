@@ -50,7 +50,7 @@ def test_list_jobs(client, tables):
 
 
 def test_list_jobs_by_name(client, tables):
-    long_name ='item with a long name' + '-' * 79
+    long_name = 'item with a long name' + '-' * 79
     assert len(long_name) == 100
 
     items = [
