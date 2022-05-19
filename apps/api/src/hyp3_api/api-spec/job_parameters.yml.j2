@@ -59,9 +59,7 @@ components:
           enum:
             - {{ job_type }}
         name:
-          type: string
-          minLength: 1
-          maxLength: 100
+          $ref: "./openapi-spec.yml#components/schemas/name"
         job_parameters:
           $ref: "#/components/schemas/{{ job_type }}Parameters"
 
@@ -78,9 +76,7 @@ components:
           enum:
             - {{ job_type }}
         name:
-          type: string
-          minLength: 1
-          maxLength: 100
+          $ref: "./openapi-spec.yml#components/schemas/name"
         job_parameters:
           type: object
           additionalProperties: false
