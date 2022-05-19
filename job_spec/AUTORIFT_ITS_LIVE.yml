@@ -30,7 +30,7 @@ AUTORIFT:
               type: string
               pattern: "^S2[AB]_.*_L1C"
               minLength: 23
-              maxLength: 24
+              maxLength: 25
               example: S2A_22WEB_20200627_0_L1C
             - description: The name of the Landsat 8 or 9 Collection 2 granule to process
               type: string
