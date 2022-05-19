@@ -9,12 +9,30 @@
 A processing environment for HyP3 Plugins in AWS.
 
 ## Table of contents
+- [Local Development](#local-development)
 - [Deployment](#deployment)
   - [Prerequisites](#prerequisites)
   - [Stack Parameters](#stack-parameters)
   - [Deploy with CloudFormation](#deploy-with-cloudformation)
-- [Testing the API](#testing-the-api)
 - [Running the API Locally](#running-the-api-locally)
+
+
+## Local Development
+
+1. Clone the repository
+   ```
+   git clone git@github.com:ASFHyP3/hyp3.git
+   cd hyp3
+   ```
+2. Create and activate a conda environment
+   ```
+   conda env create -f environment.yml
+   conda activate hyp3
+   ```
+3. Run the tests:
+   ```
+   make tests
+   ```
 
 ## Deployment
 
@@ -88,19 +106,6 @@ make clean
 ```
 *Note: this will remove any [untracked files](https://git-scm.com/docs/git-ls-files#Documentation/git-ls-files.txt--o)
 in the `apps/` or `lib/dynamo/` directory.*
-
-## Running the Tests
-Tests for each HyP3 module are located in `tests/`. To run them you need to do a bit of setup first.
-
-- Install test requirements (this must be done from the root of the repo for libraries to resolve correctly)
-```sh
-make install
-```
-
-- run the tests
-```sh
-make tests
-```
 
 ## Running the API Locally
 The API can be run locally to verify changes, but must be connected to an existing DynamoDB jobs table.
