@@ -266,6 +266,8 @@ def test_submit_good_autorift_granule_names(client, tables):
         'LO08_L1GT_043001_20201106_20201110_02_T2',
         'LC09_L1GT_215109_20220125_20220125_02_T2',
         'LO09_L1GT_215109_20220210_20220210_02_T2',
+        'S2B_22XEQ_20190610_11_L1C',
+        'S2A_22XEQ_20190610_10_L1C',
     ]
     for granule in good_granule_names:
         batch = [
@@ -299,6 +301,9 @@ def test_submit_bad_autorift_granule_names(client):
         # bad L8 sensor mode
         'LT08_L1GT_041001_20200125_20200925_02_T2',
         'LT09_L1GT_215109_20220125_20220125_02_T2',
+        # S2 name too long
+        'S2B_22XEQ_20190610_11_XL1C',
+        'S2A_22XEQ_20190610_10_XL1C',
     ]
     for granule in bad_granule_names:
         batch = [
