@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [2.17.2]
+### Fixed
+- `GET /jobs` requests now accept `name` parameters up to 100 characters. Fixes [#1019](https://github.com/ASFHyP3/hyp3/issues/1019).
+
 ## [2.17.1]
 ### Fixed
 - Fix how we fetch jobs that are waiting for step function execution, so that we actually start up to 400 executions at a time.

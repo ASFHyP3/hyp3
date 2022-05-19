@@ -50,9 +50,12 @@ def test_list_jobs(client, tables):
 
 
 def test_list_jobs_by_name(client, tables):
+    long_name = 'item with a long name' + '-' * 79
+    assert len(long_name) == 100
+
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', name='item1'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', name='item2')
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', name=long_name)
     ]
     for item in items:
         tables.jobs_table.put_item(Item=item)
@@ -65,6 +68,13 @@ def test_list_jobs_by_name(client, tables):
     response = client.get(JOBS_URI, query_string={'name': 'item does not exist'})
     assert response.status_code == HTTPStatus.OK
     assert response.json == {'jobs': []}
+
+    response = client.get(JOBS_URI, query_string={'name': long_name})
+    assert response.status_code == HTTPStatus.OK
+    assert response.json == {'jobs': [items[1]]}
+
+    response = client.get(JOBS_URI, query_string={'name': long_name + '-'})
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_list_jobs_by_type(client, tables):
