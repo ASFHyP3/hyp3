@@ -303,7 +303,7 @@ def test_submit_bad_autorift_granule_names(client):
         # S2 name too long
         'S2B_22XEQ_20190610_11_XL1C',
         'S2A_22XEQ_20190610_10_XL1C',
-        # S2 name too long
+        # S2 name too short
         'S2B_22XEQ_20190610_L1C',
         'S2A_22XEQ_20190610_L1C',
     ]
