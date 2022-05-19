@@ -479,7 +479,7 @@ components:
       description: User provided text to name the job
       type: string
       minLength: 1
-      maxLength: 20
+      maxLength: 100
       example: Job Name
 
     start_token:
