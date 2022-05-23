@@ -83,8 +83,8 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
-          snyk test --package-manager=pip --file=requirements-all.txt
-          snyk iac test
+          snyk test --package-manager=pip --file=requirements-all.txt --severity-threshold=high
+          snyk iac test --severity-threshold=high
 
   call-secrets-analysis-workflow:
     uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@main
