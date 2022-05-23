@@ -71,6 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+      - uses: snyk/actions/setup@master
       - uses: actions/setup-python@v1
         with:
           python-version: 3.9
@@ -79,9 +80,11 @@ jobs:
           make install
           make render
       - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/python-3.8@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          snyk test
+          snyk iac test
 
   call-secrets-analysis-workflow:
     uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@main
