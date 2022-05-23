@@ -78,7 +78,7 @@ jobs:
       - run: |
           python -m pip install --upgrade pip
           make install
-          make render
+          make render security_environment=EDC
       - name: Run Snyk to check for vulnerabilities
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
