@@ -83,7 +83,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
-          snyk test --package-manager=pip --file=requirements*.txt
+          snyk test --package-manager=pip --file=requirements-all.txt
           snyk iac test
 
   call-secrets-analysis-workflow:
