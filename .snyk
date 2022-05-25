@@ -1,0 +1,7 @@
+version: v1.19.0
+ignore:
+  SNYK-CC-TF-99:
+    - 'apps/api/api-cf.yml > [DocId: 0] > Resources[RestApi] > Properties > Body > * > x-amazon-apigateway-any-method[x-amazon-apigateway-auth] > type':
+        created: 2022-05-25T00:00:00.000Z
+        reason: Rest API is configured as a private API only accepting traffic from the application VPC in Earthdata
+                Cloud deployments. Authentication and authorization are implemented in the Python app served by the API.

@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.17.4]
+### Added
+- GitHub action to scan Python dependencies and rendered CloudFormation templates for known security vulnerabilities
+  using Snyk.
+
 ## [2.17.3]
 ### Fixed
-AUTORIFT jobs can now be submitted for Sentinel-2 scenes with 25-character Earth Search names. Fixes [#1022](https://github.com/ASFHyP3/hyp3/issues/1022).
+- AUTORIFT jobs can now be submitted for Sentinel-2 scenes with 25-character Earth Search names. Fixes [#1022](https://github.com/ASFHyP3/hyp3/issues/1022).
 
 ## [2.17.2]
 ### Fixed
