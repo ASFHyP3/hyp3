@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.17.4]
 ### Added
 - GitHub action to scan Python dependencies and rendered CloudFormation templates for known security vulnerabilities
-  using Snyk
+  using Snyk.
 
 ## [2.17.3]
 ### Fixed
