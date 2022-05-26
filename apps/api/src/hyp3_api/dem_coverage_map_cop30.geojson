@@ -1,6 +1,6 @@
 {
     "type": "FeatureCollection",
-    "name": "dem_coverage_map_cop30_2021_2",
+    "name": "dem_coverage_map_cop30_2021",
     "crs": {
         "type": "name",
         "properties": {
@@ -11,7 +11,7 @@
         {
             "type": "Feature",
             "properties": {
-                "file_path": "/vsis3/copernicus-dem-30m/2021/Copernicus_DSM_COG_10_N00_00_E006_00_DEM/Copernicus_DSM_COG_10_N00_00_E006_00_DEM.tif"
+                "file_path": "/vsis3/copernicus-dem-30m/2021/"
             },
             "geometry": {
                 "type": "MultiPolygon",
