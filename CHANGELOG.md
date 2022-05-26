@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub action to scan Python dependencies and rendered CloudFormation templates for known security vulnerabilities
   using Snyk.
 
+### Updated
+- Granules for jobs are now validated against the updated [2021  release of Copernicus GLO-30 Public DEM coverage](https://spacedata.copernicus.eu/blogs/-/blogs/copernicus-dem-2021-release-now-available).
+
 ## [2.17.3]
 ### Fixed
 - AUTORIFT jobs can now be submitted for Sentinel-2 scenes with 25-character Earth Search names. Fixes [#1022](https://github.com/ASFHyP3/hyp3/issues/1022).
