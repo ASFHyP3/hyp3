@@ -409,6 +409,10 @@ Resources:
 
   # TODO configure registry permissions policy on the destination account
   {% if security_environment == 'EDC' %}
+  {% endif %}
+
+  # TODO I think we'll just do this configuration manually, so it can probably be removed
+  {% if security_environment != 'EDC' %}
   ECRImageReplication:
     Type: AWS::ECR::ReplicationConfiguration
     Properties:
