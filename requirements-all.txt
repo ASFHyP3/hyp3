@@ -17,4 +17,4 @@ flake8-builtins==1.5.3
 openapi-spec-validator==0.4.0
 click==8.1.3
 prance==0.21.8.0
-cfn-lint==0.60.1
+cfn-lint==0.61.0
