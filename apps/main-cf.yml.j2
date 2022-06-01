@@ -406,3 +406,19 @@ Resources:
     Properties:
       Description: !Sub "${AWS::StackName} Earthdata Login credentials"
       SecretString: !Sub '{"username": "${EDLUsername}", "password": "${EDLPassword}"}'
+
+  # TODO configure registry permissions policy on the destination account
+  {% if security_environment == 'EDC' %}
+  ECRImageReplication:
+    Type: AWS::ECR::ReplicationConfiguration
+    Properties:
+      ReplicationConfiguration:
+        Rules:
+          - Destinations:
+              # TODO should we store the EDC registry ID in github secrets?
+              - Region: TODO
+                RegistryId: TODO
+            RepositoryFilters:
+              - Filter: hyp3-gamma
+                FilterType: PREFIX_MATCH
+  {% endif %}
