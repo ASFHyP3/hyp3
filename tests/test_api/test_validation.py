@@ -37,7 +37,7 @@ def test_has_sufficient_coverage():
     assert not validation.has_sufficient_coverage(poly, legacy=True)
 
     # almost minimum sufficient coverage off the coast of Eureka, CA
-    poly = rectangle(40.1, 40, -126, -125.000139)
+    poly = rectangle(40.1, 40, -126, -125.000140)
     assert not validation.has_sufficient_coverage(poly)
     assert not validation.has_sufficient_coverage(poly, legacy=True)
 

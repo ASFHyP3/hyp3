@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - `BannedCidrBlocks` stack parameter to specify CIDR ranges that will receive HTTP 403 Forbidden responses from the API
 
+## [2.17.5]
+### Changed
+- Granules for jobs are now validated against the updated [2021  release of Copernicus GLO-30 Public DEM coverage](https://spacedata.copernicus.eu/blogs/-/blogs/copernicus-dem-2021-release-now-available).
+
 ## [2.17.4]
 ### Added
 - GitHub action to scan Python dependencies and rendered CloudFormation templates for known security vulnerabilities
