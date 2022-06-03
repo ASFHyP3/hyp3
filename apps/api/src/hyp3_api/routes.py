@@ -1,5 +1,4 @@
 import datetime
-import ipaddress
 import json
 from decimal import Decimal
 from os import environ
