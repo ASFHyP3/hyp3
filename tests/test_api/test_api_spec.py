@@ -119,22 +119,6 @@ def test_wkt_validator(client):
     assert validator.validate('POLYGON((-5 2, -3 2, -3 5, -5 5, -5 2))')
 
 
-def test_banned_ip_address(client, monkeypatch):
-    monkeypatch.setenv('BANNED_CIDR_BLOCKS', '1.1.1.0/24,2.2.2.2/32')
-
-    good_addresses = ['2.2.2.1', '2.2.2.3', '1.1.2.1', ' 123.123.123.50']
-    for good_address in good_addresses:
-        client.environ_base = {'REMOTE_ADDR': good_address}
-        response = client.get('/ui/')
-        assert response.status_code == HTTPStatus.OK
-
-    bad_addresses = ['1.1.1.1', '1.1.1.255', '2.2.2.2']
-    for bad_address in bad_addresses:
-        client.environ_base = {'REMOTE_ADDR': bad_address}
-        response = client.get('/ui/')
-        assert response.status_code == HTTPStatus.FORBIDDEN
-
-
 def test_error_format(client):
     response = client.post(JOBS_URI)
     assert response.status_code == HTTPStatus.UNAUTHORIZED
