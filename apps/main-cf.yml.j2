@@ -50,11 +50,6 @@ Parameters:
       - false
       - true
 
-  BannedCidrBlocks:
-    Description: Comma separated list of IP CIDR blocks that will receive HTTP 403 FORBIDDEN responses from the API
-    Type: String
-    Default: ""
-
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -132,7 +127,6 @@ Resources:
         AuthAlgorithm: !Ref AuthAlgorithm
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         SystemAvailable: !Ref SystemAvailable
-        BannedCidrBlocks: !Ref BannedCidrBlocks
         {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         VpcId: !Ref VpcId

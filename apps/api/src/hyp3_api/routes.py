@@ -41,19 +41,6 @@ def check_system_available():
 
 
 @app.before_request
-def check_banned_addresses():
-    banned_cidr_blocks = environ.get('BANNED_CIDR_BLOCKS')
-    if not banned_cidr_blocks:
-        return
-
-    ip_address = ipaddress.ip_address(request.remote_addr.strip())
-    banned_networks = [ipaddress.ip_network(cidr_block) for cidr_block in banned_cidr_blocks.split(',')]
-    for banned_network in banned_networks:
-        if ip_address in banned_network:
-            abort(403)
-
-
-@app.before_request
 def authenticate_user():
     cookie = request.cookies.get('asf-urs')
     auth_info = auth.decode_token(cookie)
