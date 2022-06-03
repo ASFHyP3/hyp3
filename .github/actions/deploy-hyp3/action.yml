@@ -41,9 +41,6 @@ inputs:
   JOB_FILES:
     description: "Space seperated list of job spec YAMLs to include"
     required: true
-  BANNED_CIDR_BLOCKS:
-    description: "Comma separated list of IP CIDR blocks that will receive HTTP 403 FORBIDDEN responses from the API"
-    required: true
   DEFAULT_MAX_VCPUS:
     description: "Default maximum size for the AWS Batch compute environment"
     required: true
@@ -127,7 +124,6 @@ runs:
                 $ORIGIN_ACCESS_IDENTITY_ID \
                 $DISTRIBUTION_URL \
                 MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \
-                BannedCidrBlocks='${{ inputs.BANNED_CIDR_BLOCKS }}' \
                 DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
                 ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
                 MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \

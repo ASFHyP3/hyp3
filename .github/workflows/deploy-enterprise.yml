@@ -35,8 +35,8 @@ jobs:
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c5d.xlarge
-            default_max_vcpus: 10000
-            expanded_max_vcpus: 10000
+            default_max_vcpus: 4000
+            expanded_max_vcpus: 4000
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -135,7 +135,6 @@ jobs:
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
           JOB_FILES: ${{ matrix.job_files }}
-          BANNED_CIDR_BLOCKS: ${{ secrets.BANNED_CIDR_BLOCKS }}
           DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
           MONTHLY_COMPUTE_BUDGET: ${{ secrets.MONTHLY_COMPUTE_BUDGET }}
