@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.18.1]
+### Changed
+- Increased `MemorySize` for `process-new-granules` function to improve performance when evaluating subscriptions.
+
 ## [2.18.0]
 ### Removed
 - `BannedCidrBlocks` stack parameter to specify CIDR ranges that will receive HTTP 403 Forbidden responses from the API
