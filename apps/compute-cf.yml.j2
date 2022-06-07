@@ -70,7 +70,6 @@ Resources:
   ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
-      ServiceRole: !GetAtt BatchServiceRole.Arn
       Type: MANAGED
       ComputeResources:
         Type: SPOT
