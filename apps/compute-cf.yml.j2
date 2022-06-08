@@ -29,7 +29,7 @@ Parameters:
 Outputs:
 
   ComputeEnvironmentArn:
-    Value: !Ref BatchComputeEnvironment
+    Value: !Ref ComputeEnvironment
 
   JobQueueArn:
     Value: !Ref BatchJobQueue
@@ -67,9 +67,10 @@ Resources:
 
             --==BOUNDARY==--
 
-  BatchComputeEnvironment:
+  ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
+      ServiceRole: !GetAtt BatchServiceRole.Arn
       Type: MANAGED
       ComputeResources:
         Type: SPOT
@@ -96,7 +97,7 @@ Resources:
     Properties:
       Priority: 1
       ComputeEnvironmentOrder:
-        - ComputeEnvironment: !Ref BatchComputeEnvironment
+        - ComputeEnvironment: !Ref ComputeEnvironment
           Order: 1
       SchedulingPolicyArn: !Ref SchedulingPolicy
 
@@ -137,6 +138,26 @@ Resources:
           - Effect: Allow
             Action: s3:PutObjectTagging
             Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
+
+  BatchServiceRole:
+    Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}
+    Properties:
+      {% if security_environment in ('JPL', 'JPL-public') %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: batch.amazonaws.com
+          Effect: Allow
+      {% if security_environment == 'EDC' %}
+      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
+      {% endif %}
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
 
   InstanceRole:
     Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}
