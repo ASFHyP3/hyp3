@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.18.1]
 ### Changed
 - Increased `MemorySize` for `process-new-granules` function to improve performance when evaluating subscriptions.
+- Decoupled Batch Compute Environment from customer-managed service role in favor of the default AWS-managed
+  service-linked role.
 
 ## [2.18.0]
 ### Removed
