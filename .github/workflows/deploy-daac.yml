@@ -29,27 +29,6 @@ jobs:
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
-          - environment: hyp3-test
-            domain: hyp3-test-api.asf.alaska.edu
-            template_bucket: cf-templates-aubvn3i9olmk-us-west-2
-            image_tag: test
-            product_lifetime_in_days: 14
-            quota: 1000
-            deploy_ref: refs/heads/develop
-            job_files: >-
-              job_spec/AUTORIFT.yml
-              job_spec/INSAR_GAMMA.yml
-              job_spec/RTC_GAMMA.yml
-              job_spec/INSAR_ISCE.yml
-              job_spec/WATER_MAP.yml
-            instance_types: r5d.xlarge,r5dn.xlarge
-            default_max_vcpus: 600
-            expanded_max_vcpus: 1600
-            required_surplus: 1000
-            security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-            distribution_url: ''
-
           - environment: hyp3-edc-prod
             domain: ''
             template_bucket: cf-templates-118mtzosmrltk-us-west-2
