@@ -64,7 +64,9 @@ def disable_subscription(subscription):
 
 
 def handle_subscription(subscription):
+    print(f'Handling subscription {subscription["subscription_id"]} for user {subscription["user_id"]}')
     jobs = get_jobs_for_subscription(subscription, limit=20)
+    print(f'Jobs: {len(jobs)}')
     if jobs:
         dynamo.jobs.put_jobs(subscription['user_id'], jobs, fail_when_over_quota=False)
 
