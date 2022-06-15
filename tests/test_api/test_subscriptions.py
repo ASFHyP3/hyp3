@@ -202,6 +202,7 @@ def test_update_subscription(client, tables):
         'search_parameters': {
             'start': '2020-01-01T00:00:00+00:00',
             'end': '2020-01-02T00:00:00+00:00',
+            'intersectsWith': 'POINT(1 1)',
 
             'beamMode': ['IW'],
             'platform': 'S1',
@@ -217,7 +218,9 @@ def test_update_subscription(client, tables):
     tables.subscriptions_table.put_item(Item=subscription)
 
     api_response = client.patch(SUBSCRIPTIONS_URI + '/a97cefdf-1aa7-4bfd-9785-ff93b3e3d621',
-                                json={'end': '2020-02-02T00:00:00+00:00'})
+                                json={'start': '2020-02-01T00:00:00+00:00',
+                                      'end': '2020-02-02T00:00:00+00:00',
+                                      'intersectsWith': 'POINT(2 2)'})
     assert api_response.status_code == HTTPStatus.OK
     assert api_response.json == {
         'job_definition': {
@@ -225,8 +228,9 @@ def test_update_subscription(client, tables):
             'name': 'sub1',
         },
         'search_parameters': {
-            'start': '2020-01-01T00:00:00+00:00',
+            'start': '2020-02-01T00:00:00+00:00',
             'end': '2020-02-02T00:00:00+00:00',
+            'intersectsWith': 'POINT(2 2)',
 
             'beamMode': ['IW'],
             'platform': 'S1',
@@ -248,8 +252,9 @@ def test_update_subscription(client, tables):
             'name': 'sub1',
         },
         'search_parameters': {
-            'start': '2020-01-01T00:00:00+00:00',
+            'start': '2020-02-01T00:00:00+00:00',
             'end': '2020-02-02T00:00:00+00:00',
+            'intersectsWith': 'POINT(2 2)',
 
             'beamMode': ['IW'],
             'platform': 'S1',

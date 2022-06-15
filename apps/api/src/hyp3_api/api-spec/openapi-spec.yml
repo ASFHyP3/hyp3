@@ -243,8 +243,12 @@ components:
       type: object
       additionalProperties: false
       properties:
+        start:
+          $ref: "#/components/schemas/datetime"
         end:
           $ref: "#/components/schemas/datetime"
+        intersectsWith:
+          $ref: "#/components/schemas/intersectsWith"
         enabled:
           $ref: "#/components/schemas/subscription_enabled"
 
@@ -358,8 +362,7 @@ components:
             enum:
               - IW
         intersectsWith:
-          type: string
-          format: wkt
+          $ref: "#/components/schemas/intersectsWith"
         frame:
           type: array
           minItems: 1
@@ -460,6 +463,12 @@ components:
       type: string
       format: date-time
       example: 2020-06-04T18:00:03+00:00
+
+    intersectsWith:
+      description: Area-of-interest as a WKT string.
+      type: string
+      format: wkt
+      example: POINT(0 0)
 
     status_code:
       description: Status of a submitted job.
