@@ -468,6 +468,7 @@ components:
       description: Area-of-interest as a WKT string.
       type: string
       format: wkt
+      example: POINT(0 0)
 
     status_code:
       description: Status of a submitted job.
