@@ -129,12 +129,10 @@ def patch_subscriptions(subscription_id, body, user):
         abort(problem_format(404, f'subscription_id does not exist: {subscription_id}'))
     if subscription['user_id'] != user:
         abort(problem_format(403, 'You may not update subscriptions created by a different user'))
-    if 'start' in body:
-        subscription['search_parameters']['start'] = body['start']
-    if 'end' in body:
-        subscription['search_parameters']['end'] = body['end']
-    if 'intersectsWith' in body:
-        subscription['search_parameters']['intersectsWith'] = body['intersectsWith']
+search_parameters = ['start', 'end', 'intersectsWith']
+for key in search_parameters:
+    if key in body:
+        subscription['search_parameters'][key] = body[key]
     if 'enabled' in body:
         subscription['enabled'] = body['enabled']
     try:
