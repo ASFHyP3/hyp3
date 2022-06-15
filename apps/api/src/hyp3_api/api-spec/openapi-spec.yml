@@ -243,6 +243,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        start:
+          $ref: "#/components/schemas/datetime"
         end:
           $ref: "#/components/schemas/datetime"
         enabled:
