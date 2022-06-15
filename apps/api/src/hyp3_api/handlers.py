@@ -133,6 +133,8 @@ def patch_subscriptions(subscription_id, body, user):
         subscription['search_parameters']['start'] = body['start']
     if 'end' in body:
         subscription['search_parameters']['end'] = body['end']
+    if 'intersectsWith' in body:
+        subscription['search_parameters']['intersectsWith'] = body['intersectsWith']
     if 'enabled' in body:
         subscription['enabled'] = body['enabled']
     try:

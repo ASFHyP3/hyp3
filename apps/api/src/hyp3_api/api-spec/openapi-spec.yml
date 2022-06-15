@@ -247,6 +247,9 @@ components:
           $ref: "#/components/schemas/datetime"
         end:
           $ref: "#/components/schemas/datetime"
+        intersectsWith:
+          type: string
+          format: wkt
         enabled:
           $ref: "#/components/schemas/subscription_enabled"
 
