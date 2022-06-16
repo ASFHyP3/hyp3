@@ -220,3 +220,6 @@ def test_list_paging(client):
     with mock.patch('dynamo.jobs.query_jobs', return_value=mock_response):
         response = client.get(JOBS_URI)
         assert unquote(response.json['next']) == 'http://localhost/jobs?start_token=eyJmb28iOiAxLCAiYmFyIjogMn0='
+
+        response = client.get(JOBS_URI, headers={'X-Forwarded-Host': 'www.foo.com'})
+        assert unquote(response.json['next']) == 'http://www.foo.com/jobs?start_token=eyJmb28iOiAxLCAiYmFyIjogMn0='
