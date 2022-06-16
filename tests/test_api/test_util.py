@@ -38,8 +38,14 @@ def test_build_next_url():
     url = util.build_next_url(url, 'now_here')
     assert url == 'https://example.com/path?q1=foo&q2=bar&start_token=now_here'
 
-    url = util.build_next_url('https://example.com/path?q1=foo&q2=bar', 'NEXT', 'new-domain.edu')
+    url = util.build_next_url('https://example.com/path?q1=foo&q2=bar', 'NEXT', x_forwarded_host='new-domain.edu')
     assert url == 'https://new-domain.edu/path?q1=foo&q2=bar&start_token=NEXT'
 
-    url = util.build_next_url('https://example.com:443/path?q1=foo&q2=bar', 'NEXT', 'new-domain.edu')
+    url = util.build_next_url('https://example.com:443/path?q1=foo&q2=bar', 'NEXT', x_forwarded_host='new-domain.edu')
     assert url == 'https://new-domain.edu/path?q1=foo&q2=bar&start_token=NEXT'
+
+    url = util.build_next_url('https://example.com/root/path?q1=foo&q2=bar', 'NEXT')
+    assert url == 'https://example.com/root/path?q1=foo&q2=bar&start_token=NEXT'
+
+    url = util.build_next_url('https://example.com/root/path?q1=foo&q2=bar', 'NEXT', root_path='/root')
+    assert url == 'https://example.com/path?q1=foo&q2=bar&start_token=NEXT'

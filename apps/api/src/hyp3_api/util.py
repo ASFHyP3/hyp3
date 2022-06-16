@@ -30,11 +30,14 @@ def deserialize(token: str):
         raise TokenDeserializeError
 
 
-def build_next_url(url, start_token, x_forwarded_host=None):
+def build_next_url(url, start_token, x_forwarded_host=None, root_path=''):
     url_parts = list(urlparse(url))
 
     if x_forwarded_host:
         url_parts[1] = x_forwarded_host
+
+    if root_path:
+        url_parts[2] = url_parts[2].removeprefix(root_path)
 
     query = dict(parse_qsl(url_parts[4]))
     query['start_token'] = start_token
