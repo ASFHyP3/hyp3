@@ -51,6 +51,10 @@ def post_jobs(body, user):
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None,
              subscription_id=None):
+    print(request.headers)
+    print(dir(request))
+    print(vars(request))
+    print(repr(request))
     try:
         start_key = util.deserialize(start_token) if start_token else None
     except util.TokenDeserializeError:
