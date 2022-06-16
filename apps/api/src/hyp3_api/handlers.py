@@ -51,10 +51,6 @@ def post_jobs(body, user):
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None,
              subscription_id=None):
-    print(request.headers)
-    print(dir(request))
-    print(vars(request))
-    print(repr(request))
     try:
         start_key = util.deserialize(start_token) if start_token else None
     except util.TokenDeserializeError:
@@ -64,7 +60,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=N
     payload = {'jobs': jobs}
     if last_evaluated_key is not None:
         next_token = util.serialize(last_evaluated_key)
-        payload['next'] = util.set_start_token(request.url, next_token)
+        payload['next'] = util.build_next_url(request.url, next_token, request.headers.get('X-Forwarded-For'))
     return payload
 
 
