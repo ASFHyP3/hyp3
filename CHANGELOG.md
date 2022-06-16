@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.19.1]
 ### Fixed
-- The `next` URL in paginated `GET /jobs` responses will now reflect the correct API hostname in load balanced
+- The `next` URL in paginated `GET /jobs` responses will now reflect the correct API hostname and path in load balanced
   environments. Fixes [#1071](https://github.com/ASFHyP3/hyp3/issues/1071).
 
 ## [2.19.0]
