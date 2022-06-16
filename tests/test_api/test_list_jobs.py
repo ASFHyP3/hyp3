@@ -221,5 +221,5 @@ def test_list_paging(client):
         response = client.get(JOBS_URI)
         assert unquote(response.json['next']) == 'http://localhost/jobs?start_token=eyJmb28iOiAxLCAiYmFyIjogMn0='
 
-        response = client.get(JOBS_URI, headers={'X-Forwarded-For': 'www.foo.com'})
+        response = client.get(JOBS_URI, headers={'X-Forwarded-Host': 'www.foo.com'})
         assert unquote(response.json['next']) == 'http://www.foo.com/jobs?start_token=eyJmb28iOiAxLCAiYmFyIjogMn0='
