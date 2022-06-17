@@ -32,7 +32,7 @@ install:
 
 files ?= job_spec/*.yml
 security_environment ?= ASF
-stack_name ?= foo
+stack_name ?= TODO-placeholder-stack-name
 render:
 	@echo rendering $(files) for stack $(stack_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -s $(security_environment) -n $(stack_name)
 
