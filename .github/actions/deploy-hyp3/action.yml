@@ -11,6 +11,9 @@ inputs:
   DOMAIN_NAME:
     description: "HyP3 API domain name"
     required: true
+  API_NAME:
+    description: "HyP3 API name"
+    required: true
   CERTIFICATE_ARN:
     description: "ARN for AWS Certificate Manager SSL certificate"
     required: true
@@ -80,7 +83,7 @@ runs:
         run: |
           pip install --upgrade pip
           make install
-          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' stack_name='${{ inputs.STACK_NAME }}' build
+          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' api_name='${{ inputs.API_NAME }}' build
       - name: Package and deploy
         shell: bash
         run: |
