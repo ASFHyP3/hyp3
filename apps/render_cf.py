@@ -11,7 +11,7 @@ def snake_to_pascal_case(input_string: str):
     return ''.join([i.title() for i in split_string])
 
 
-def render_templates(job_types, security_environment):
+def render_templates(job_types, security_environment, stack_name):
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader('./'),
         autoescape=jinja2.select_autoescape(default=True, disabled_extensions=('j2',)),
@@ -27,6 +27,7 @@ def render_templates(job_types, security_environment):
         output = template.render(
             job_types=job_types,
             security_environment=security_environment,
+            stack_name=stack_name,
             json=json,
             snake_to_pascal_case=snake_to_pascal_case
         )
@@ -38,12 +39,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
     parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL', 'JPL-public'])
+    parser.add_argument('-n', '--stack-name', required=True)
     args = parser.parse_args()
 
     job_types = {}
     for file in args.job_spec_files:
         job_types.update(yaml.safe_load(file.read_text()))
-    render_templates(job_types, args.security_environment)
+    render_templates(job_types, args.security_environment, args.stack_name)
 
 
 if __name__ == '__main__':
