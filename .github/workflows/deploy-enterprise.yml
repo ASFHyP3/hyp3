@@ -42,6 +42,21 @@ jobs:
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
+          - environment: hyp3-tibet-jpl
+            domain: hyp3-tibet-jpl.asf.alaska.edu
+            template_bucket: cf-templates-1or0efwqffkgd-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 180
+            quota: 0
+            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
+            instance_types: c5d.xlarge
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
+            required_surplus: 0
+            security_environment: JPL
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
+
           - environment: hyp3-avo
             domain: hyp3-avo.asf.alaska.edu
             template_bucket: cf-templates-1x4a21iq1cba7-us-west-2
