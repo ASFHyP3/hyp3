@@ -72,6 +72,26 @@ jobs:
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
+          - environment: hyp3-test-enterprise
+            domain: TODO
+            template_bucket: cf-templates-aubvn3i9olmk-us-west-2
+            image_tag: test
+            product_lifetime_in_days: 14
+            quota: 0
+            job_files: >-
+              job_spec/AUTORIFT.yml
+              job_spec/INSAR_GAMMA.yml
+              job_spec/RTC_GAMMA.yml
+              job_spec/INSAR_ISCE.yml
+              job_spec/WATER_MAP.yml
+            instance_types: r5d.xlarge,r5dn.xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
+
     environment:
       name: ${{ matrix.environment }}
       url: https://${{ matrix.domain }}
