@@ -27,21 +27,6 @@ jobs:
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
-          - environment: hyp3-tibet
-            domain: hyp3-tibet.asf.alaska.edu
-            template_bucket: cf-templates-ejaipnrxq7xg-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 180
-            quota: 0
-            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c5d.xlarge
-            default_max_vcpus: 1000
-            expanded_max_vcpus: 1000
-            required_surplus: 0
-            security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-            distribution_url: ''
-
           - environment: hyp3-a19-jpl
             domain: hyp3-a19-jpl.asf.alaska.edu
             template_bucket: cf-templates-v4pvone059de-us-west-2
@@ -110,6 +95,7 @@ jobs:
           TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
           STACK_NAME: ${{ matrix.environment }}
           DOMAIN_NAME: ${{ matrix.domain }}
+          API_NAME: ${{ matrix.environment }}
           CERTIFICATE_ARN:  ${{ secrets.CERTIFICATE_ARN }}
           IMAGE_TAG: ${{ matrix.image_tag }}
           PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
