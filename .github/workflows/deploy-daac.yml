@@ -15,6 +15,7 @@ jobs:
         include:
           - environment: hyp3-edc-prod
             domain: ''
+            api_name: hyp3
             template_bucket: cf-templates-118mtzosmrltk-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
@@ -31,6 +32,7 @@ jobs:
 
           - environment: hyp3-edc-uat
             domain: ''
+            api_name: hyp3-test
             template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
@@ -74,6 +76,7 @@ jobs:
           TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
           STACK_NAME: ${{ matrix.environment }}
           DOMAIN_NAME: ${{ matrix.domain }}
+          API_NAME: ${{ matrix.api_name }}
           CERTIFICATE_ARN:  ${{ secrets.CERTIFICATE_ARN }}
           IMAGE_TAG: ${{ matrix.image_tag }}
           PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
