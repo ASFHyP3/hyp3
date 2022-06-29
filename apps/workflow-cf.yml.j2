@@ -128,6 +128,12 @@ Resources:
               - !Ref {{ snake_to_pascal_case(job_type) }}
               {% endfor %}
           - Effect: Allow
+            Action: batch:DescribeJobs
+            Resource: "*"
+          - Effect: Allow
+            Action: batch:TerminateJob
+            Resource: !Sub "arn:aws:batch:${AWS::Region}:${AWS::AccountId}:job/*"
+          - Effect: Allow
             Action:
               - events:PutTargets
               - events:PutRule
