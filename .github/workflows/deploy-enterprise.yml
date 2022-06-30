@@ -57,6 +57,21 @@ jobs:
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
+          - environment: hyp3-nisar-jpl
+            domain: hyp3-nisar-jpl.asf.alaska.edu
+            template_bucket: cf-templates-gdeyr9hh8rzs-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 180
+            quota: 0
+            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
+            instance_types: c5d.xlarge
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
+            required_surplus: 0
+            security_environment: JPL
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
+
           - environment: hyp3-avo
             domain: hyp3-avo.asf.alaska.edu
             template_bucket: cf-templates-1x4a21iq1cba7-us-west-2
@@ -110,6 +125,7 @@ jobs:
           TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
           STACK_NAME: ${{ matrix.environment }}
           DOMAIN_NAME: ${{ matrix.domain }}
+          API_NAME: ${{ matrix.environment }}
           CERTIFICATE_ARN:  ${{ secrets.CERTIFICATE_ARN }}
           IMAGE_TAG: ${{ matrix.image_tag }}
           PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
