@@ -1,9 +1,9 @@
-name: Deploy Enterprise Stacks to AWS
+name: Deploy Enterprise Test Stack to AWS
 
 on:
   push:
     branches:
-      - main
+      - develop
 
 jobs:
   deploy:
@@ -12,59 +12,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-its-live
-            domain: hyp3-its-live.asf.alaska.edu
-            template_bucket: cf-templates-3o5lnspmwmzg-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 180
-            quota: 0
-            job_files: job_spec/AUTORIFT_ITS_LIVE.yml
-            instance_types: r5d.xlarge,r5dn.xlarge
-            default_max_vcpus: 10000
-            expanded_max_vcpus: 10000
-            required_surplus: 0
-            security_environment: JPL-public
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-            distribution_url: ''
-
-          - environment: hyp3-a19-jpl
-            domain: hyp3-a19-jpl.asf.alaska.edu
-            template_bucket: cf-templates-v4pvone059de-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 180
-            quota: 0
-            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c5d.xlarge
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
-            required_surplus: 0
-            security_environment: JPL-public
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-            distribution_url: ''
-
-          - environment: hyp3-avo
-            domain: hyp3-avo.asf.alaska.edu
-            template_bucket: cf-templates-1x4a21iq1cba7-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 365000
-            quota: 0
-            job_files: job_spec/INSAR_GAMMA.yml
-            instance_types: r5d.xlarge,r5dn.xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
-            required_surplus: 0
-            security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-            distribution_url: ''
-
-          - environment: hyp3-watermap
-            domain: hyp3-watermap.asf.alaska.edu
-            template_bucket: cf-templates-1217di08q7vwl-us-west-2
-            image_tag: latest
+          - environment: hyp3-enterprise-test
+            domain: hyp3-enterprise-test.asf.alaska.edu
+            template_bucket: cf-templates-aubvn3i9olmk-us-west-2
+            image_tag: test
             product_lifetime_in_days: 14
             quota: 0
-            job_files: job_spec/RTC_GAMMA_10M.yml job_spec/WATER_MAP_10M.yml
-            instance_types: r5d.4xlarge,r5dn.4xlarge
+            deploy_ref: refs/heads/develop
+            job_files: >-
+              job_spec/AUTORIFT.yml
+              job_spec/INSAR_GAMMA.yml
+              job_spec/RTC_GAMMA.yml
+              job_spec/INSAR_ISCE.yml
+              job_spec/WATER_MAP.yml
+            instance_types: r5d.xlarge,r5dn.xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
