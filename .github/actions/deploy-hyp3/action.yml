@@ -50,8 +50,8 @@ inputs:
   EXPANDED_MAX_VCPUS:
     description: "Expanded maximum size for the AWS Batch compute environment to use when month-to-date budget sufficiently exceeds month-to-date spending"
     required: true
-  MONTHLY_COMPUTE_BUDGET:
-    description: "Total budget allocated for AWS Batch processing per month, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus."
+  MONTHLY_BUDGET:
+    description: "Total budget allocated per month, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus."
     required: true
   REQUIRED_SURPLUS:
     description: "Amount by which month-to-date budget must exceed month-to-date spending to increase fleet size, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus."
@@ -129,7 +129,7 @@ runs:
                 MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \
                 DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
                 ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
-                MonthlyComputeBudget='${{ inputs.MONTHLY_COMPUTE_BUDGET }}' \
+                MonthlyBudget='${{ inputs.MONTHLY_BUDGET }}' \
                 RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
                 AmiId='${{ inputs.AMI_ID }}' \
                 InstanceTypes='${{ inputs.INSTANCE_TYPES }}'
