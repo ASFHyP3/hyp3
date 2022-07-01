@@ -13,7 +13,7 @@ Parameters:
     Type: Number
     MinValue: 0
 
-  MonthlyComputeBudget:
+  MonthlyBudget:
     Type: Number
     MinValue: 0
 
@@ -91,7 +91,7 @@ Resources:
       Environment:
         Variables:
           COMPUTE_ENVIRONMENT_ARN: !Ref ComputeEnvironmentArn
-          MONTHLY_COMPUTE_BUDGET: !Ref MonthlyComputeBudget
+          MONTHLY_BUDGET: !Ref MonthlyBudget
           DEFAULT_MAX_VCPUS: !Ref DefaultMaxvCpus
           EXPANDED_MAX_VCPUS: !Ref ExpandedMaxvCpus
           REQUIRED_SURPLUS: !Ref RequiredSurplus

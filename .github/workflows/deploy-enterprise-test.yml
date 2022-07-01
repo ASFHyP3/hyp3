@@ -1,9 +1,8 @@
-name: Deploy DAAC Stacks to AWS
+name: Deploy Enterprise Test Stack to AWS
 
 on:
   push:
     branches:
-      - main
       - develop
 
 jobs:
@@ -13,30 +12,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-edc-prod
-            domain: ''
-            api_name: hyp3
-            template_bucket: cf-templates-118mtzosmrltk-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 14
-            quota: 1000
-            deploy_ref: refs/heads/main
-            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            instance_types: r5d.xlarge,r5dn.xlarge
-            default_max_vcpus: 1000
-            expanded_max_vcpus: 2000
-            required_surplus: 2000
-            security_environment: EDC
-            ami_id: image_id_ecs_amz2
-            distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
-
-          - environment: hyp3-edc-uat
-            domain: ''
-            api_name: hyp3-test
-            template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
+          - environment: hyp3-enterprise-test
+            domain: hyp3-enterprise-test.asf.alaska.edu
+            template_bucket: cf-templates-aubvn3i9olmk-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
-            quota: 1000
+            quota: 0
             deploy_ref: refs/heads/develop
             job_files: >-
               job_spec/AUTORIFT.yml
@@ -45,12 +26,12 @@ jobs:
               job_spec/INSAR_ISCE.yml
               job_spec/WATER_MAP.yml
             instance_types: r5d.xlarge,r5dn.xlarge
-            default_max_vcpus: 1000
-            expanded_max_vcpus: 2000
-            required_surplus: 2000
-            security_environment: EDC
-            ami_id: image_id_ecs_amz2
-            distribution_url: 'https://d1riv60tezqha9.cloudfront.net'
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
 
     environment:
       name: ${{ matrix.environment }}
@@ -71,12 +52,11 @@ jobs:
           python-version: 3.9
 
       - uses: ./.github/actions/deploy-hyp3
-        if: github.ref == matrix.deploy_ref
         with:
           TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
           STACK_NAME: ${{ matrix.environment }}
           DOMAIN_NAME: ${{ matrix.domain }}
-          API_NAME: ${{ matrix.api_name }}
+          API_NAME: ${{ matrix.environment }}
           CERTIFICATE_ARN:  ${{ secrets.CERTIFICATE_ARN }}
           IMAGE_TAG: ${{ matrix.image_tag }}
           PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
@@ -97,10 +77,3 @@ jobs:
           AMI_ID: ${{ matrix.ami_id }}
           INSTANCE_TYPES: ${{ matrix.instance_types }}
           DISTRIBUTION_URL: ${{ matrix.distribution_url }}
-
-  call-bump-version-workflow:
-    if: github.ref == 'refs/heads/main'
-    needs: deploy
-    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@main
-    secrets:
-      USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
