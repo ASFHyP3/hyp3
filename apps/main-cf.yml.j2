@@ -66,8 +66,8 @@ Parameters:
     MinValue: 0
     Default: 60
 
-  MonthlyComputeBudget:
-    Description: Total budget allocated for AWS Batch processing per month, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus.
+  MonthlyBudget:
+    Description: Total budget allocated per month, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus.
     Type: Number
     MinValue: 0
     Default: 0
@@ -161,7 +161,7 @@ Resources:
         ComputeEnvironmentArn: !GetAtt Cluster.Outputs.ComputeEnvironmentArn
         DefaultMaxvCpus: !Ref DefaultMaxvCpus
         ExpandedMaxvCpus: !Ref ExpandedMaxvCpus
-        MonthlyComputeBudget: !Ref MonthlyComputeBudget
+        MonthlyBudget: !Ref MonthlyBudget
         RequiredSurplus: !Ref RequiredSurplus
         {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
