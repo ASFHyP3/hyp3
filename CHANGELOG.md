@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [2.19.5]
+### Changed
+- `scale-cluster` now temporarily disables the Batch Compute Environment to allow maxvCpus to be reduced in cases when
+  the current desired vCpus exceeds the new target value.
+
 ## [2.19.4]
 ### Changed
 - `scale-cluster` now adjusts the compute environment size based on total month-to-date spending, rather than only EC2 
