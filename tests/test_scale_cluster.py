@@ -13,6 +13,13 @@ def batch_stubber():
         stubber.assert_no_pending_responses()
 
 
+@pytest.fixture
+def cost_explorer_stubber():
+    with Stubber(scale_cluster.COST_EXPLORER) as stubber:
+        yield stubber
+        stubber.assert_no_pending_responses()
+
+
 def test_get_time_period():
     result = scale_cluster.get_time_period(date(year=2020, month=1, day=1))
     assert result == {'Start': '2020-01-01', 'End': '2020-02-01'}
@@ -114,3 +121,29 @@ def test_set_max_vcpus(batch_stubber):
                                service_response={})
 
     scale_cluster.set_max_vcpus(compute_environment_arn='foo', max_vcpus=10, desired_vcpus=5)
+
+
+def test_get_month_to_date_spending(cost_explorer_stubber):
+    expected_params = {
+        'Metrics': ['UnblendedCost'],
+        'Granularity': 'MONTHLY',
+        'TimePeriod': {
+            'Start': '2022-07-01',
+            'End': '2022-08-01',
+        },
+    }
+    mock_service_response = {
+        'ResultsByTime': [
+            {
+                'Total': {
+                    'UnblendedCost': {
+                        'Amount': '100.2',
+                    },
+                },
+            },
+        ],
+    }
+    cost_explorer_stubber.add_response(method='get_cost_and_usage', expected_params=expected_params,
+                                       service_response=mock_service_response)
+
+    assert scale_cluster.get_month_to_date_spending(date(2022, 7, 15)) == 100.2

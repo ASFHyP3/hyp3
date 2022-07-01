@@ -18,8 +18,8 @@ def get_time_period(today: date):
     }
 
 
-def get_month_to_date_spending():
-    time_period = get_time_period(date.today())
+def get_month_to_date_spending(today: date):
+    time_period = get_time_period(today)
     granularity = 'MONTHLY'
     metrics = ['UnblendedCost']
     response = COST_EXPLORER.get_cost_and_usage(TimePeriod=time_period, Granularity=granularity, Metrics=metrics)
@@ -61,7 +61,7 @@ def get_max_vcpus(today, monthly_budget, month_to_date_spending, default_max_vcp
 def lambda_handler(event, context):
     max_vcpus = get_max_vcpus(today=date.today(),
                               monthly_budget=int(environ['MONTHLY_BUDGET']),
-                              month_to_date_spending=get_month_to_date_spending(),
+                              month_to_date_spending=get_month_to_date_spending(date.today()),
                               default_max_vcpus=int(environ['DEFAULT_MAX_VCPUS']),
                               expanded_max_vcpus=int(environ['EXPANDED_MAX_VCPUS']),
                               required_surplus=int(environ['REQUIRED_SURPLUS']))
