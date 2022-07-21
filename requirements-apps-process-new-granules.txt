@@ -1,2 +1,2 @@
-asf-search==4.0.3
+asf-search==5.0.2
 ./lib/dynamo/
