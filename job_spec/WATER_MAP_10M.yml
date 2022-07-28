@@ -129,6 +129,6 @@ WATER_MAP:
     - Ref::granules
   validators:
     - check_dem_coverage
-  timeout: 19800
+  timeout: 36000
   vcpu: 1
   memory: 126000
