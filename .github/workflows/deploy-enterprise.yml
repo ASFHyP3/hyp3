@@ -93,6 +93,21 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 14
             quota: 0
+            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml
+            instance_types: r5d.xlarge,r5dn.xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
+
+          - environment: hyp3-streamflow
+            domain: hyp3-streamflow.asf.alaska.edu
+            template_bucket: cf-templates-15gmiot9prm67-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            quota: 0
             job_files: job_spec/RTC_GAMMA_10M.yml job_spec/WATER_MAP_10M.yml
             instance_types: r5d.4xlarge,r5dn.4xlarge
             default_max_vcpus: 640
