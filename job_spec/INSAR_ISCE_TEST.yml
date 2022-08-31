@@ -1,5 +1,4 @@
 INSAR_ISCE_TEST:
-  image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
   image_tag: test
   required_parameters:
     - granules
@@ -31,16 +30,19 @@ INSAR_ISCE_TEST:
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
     bucket_prefix:
       default:  '""'
-  command:
-    - --bucket
-    - '!Ref Bucket'
-    - --bucket-prefix
-    - Ref::bucket_prefix
-    - --reference-scenes
-    - Ref::granules
-    - --secondary-scenes
-    - Ref::secondary_granules
   validators: []
-  timeout: 10800
-  vcpu: 1
-  memory: 7500
+  tasks:
+    - name: ''
+      image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
+      command:
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --reference-scenes
+        - Ref::granules
+        - --secondary-scenes
+        - Ref::secondary_granules
+      timeout: 10800
+      vcpu: 1
+      memory: 7500

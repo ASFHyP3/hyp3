@@ -1,5 +1,4 @@
 INSAR_GAMMA:
-  image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
   required_parameters:
     - granules
   parameters:
@@ -64,32 +63,35 @@ INSAR_GAMMA:
         enum:
           - 20x4
           - 10x2
-  command:
-    - ++process
-    - insar
-    - --bucket
-    - '!Ref Bucket'
-    - --bucket-prefix
-    - Ref::bucket_prefix
-    - --include-look-vectors
-    - Ref::include_look_vectors
-    - --include-los-displacement
-    - Ref::include_los_displacement
-    - --include-displacement-maps
-    - Ref::include_displacement_maps
-    - --include-inc-map
-    - Ref::include_inc_map
-    - --include-dem
-    - Ref::include_dem
-    - --include-wrapped-phase
-    - Ref::include_wrapped_phase
-    - --apply-water-mask
-    - Ref::apply_water_mask
-    - --looks
-    - Ref::looks
-    - Ref::granules
   validators:
     - check_dem_coverage
-  timeout: 10800
-  vcpu: 1
-  memory: 31600
+  tasks:
+    - name: ''
+      image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
+      command:
+        - ++process
+        - insar
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --include-look-vectors
+        - Ref::include_look_vectors
+        - --include-los-displacement
+        - Ref::include_los_displacement
+        - --include-displacement-maps
+        - Ref::include_displacement_maps
+        - --include-inc-map
+        - Ref::include_inc_map
+        - --include-dem
+        - Ref::include_dem
+        - --include-wrapped-phase
+        - Ref::include_wrapped_phase
+        - --apply-water-mask
+        - Ref::apply_water_mask
+        - --looks
+        - Ref::looks
+        - Ref::granules
+      timeout: 10800
+      vcpu: 1
+      memory: 31600
