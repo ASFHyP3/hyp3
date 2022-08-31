@@ -1,5 +1,4 @@
 AUTORIFT:
-  image: ghcr.io/asfhyp3/hyp3-autorift
   required_parameters:
     - granules
   parameters:
@@ -40,17 +39,20 @@ AUTORIFT:
               example: LC08_L1GT_118112_20210107_20210107_02_RT
     bucket_prefix:
       default:  '""'
-  command:
-    - --bucket
-    - '!Ref Bucket'
-    - --bucket-prefix
-    - Ref::bucket_prefix
-    - --parameter-file
-    - '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
-    - --naming-scheme
-    - ITS_LIVE_PROD
-    - Ref::granules
   validators: []
-  timeout: 10800
-  vcpu: 1
-  memory: 31600
+  tasks:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-autorift
+      command:
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --parameter-file
+        - '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+        - --naming-scheme
+        - ITS_LIVE_PROD
+        - Ref::granules
+      timeout: 10800
+      vcpu: 1
+      memory: 31600
