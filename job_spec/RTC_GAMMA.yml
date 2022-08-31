@@ -1,5 +1,4 @@
 RTC_GAMMA:
-  image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
   required_parameters:
     - granules
   parameters:
@@ -88,36 +87,39 @@ RTC_GAMMA:
         description: Include a false-color RGB decomposition in the product package for dual-pol granules (ignored for single-pol granules)
         default: false
         type: boolean
-  command:
-    - ++process
-    - rtc
-    - --bucket
-    - '!Ref Bucket'
-    - --bucket-prefix
-    - Ref::bucket_prefix
-    - --resolution
-    - Ref::resolution
-    - --dem-name
-    - Ref::dem_name
-    - --radiometry
-    - Ref::radiometry
-    - --scale
-    - Ref::scale
-    - --speckle-filter
-    - Ref::speckle_filter
-    - --dem-matching
-    - Ref::dem_matching
-    - --include-dem
-    - Ref::include_dem
-    - --include-inc-map
-    - Ref::include_inc_map
-    - --include-scattering-area
-    - Ref::include_scattering_area
-    - --include-rgb
-    - Ref::include_rgb
-    - Ref::granules
   validators:
     - check_dem_coverage
-  timeout: 5400
-  vcpu: 1
-  memory: 31600
+  tasks:
+    - name: ''
+      image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
+      command:
+        - ++process
+        - rtc
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --resolution
+        - Ref::resolution
+        - --dem-name
+        - Ref::dem_name
+        - --radiometry
+        - Ref::radiometry
+        - --scale
+        - Ref::scale
+        - --speckle-filter
+        - Ref::speckle_filter
+        - --dem-matching
+        - Ref::dem_matching
+        - --include-dem
+        - Ref::include_dem
+        - --include-inc-map
+        - Ref::include_inc_map
+        - --include-scattering-area
+        - Ref::include_scattering_area
+        - --include-rgb
+        - Ref::include_rgb
+        - Ref::granules
+      timeout: 5400
+      vcpu: 1
+      memory: 31600
