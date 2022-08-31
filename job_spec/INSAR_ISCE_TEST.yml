@@ -1,5 +1,4 @@
 INSAR_ISCE_TEST:
-  image_tag: test
   required_parameters:
     - granules
     - secondary_granules
@@ -34,6 +33,7 @@ INSAR_ISCE_TEST:
   tasks:
     - name: ''
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
+      image_tag: test
       command:
         - --bucket
         - '!Ref Bucket'
