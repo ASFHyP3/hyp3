@@ -42,7 +42,7 @@ Outputs:
 Resources:
   {% for job_type, job_spec in job_types.items() %}
   {% for task in job_spec['tasks'] %}
-  {{ snake_to_pascal_case(job_type + '_' + task['name']) }}:
+  {{ snake_to_pascal_case(task['name']) }}:
     Type: AWS::Batch::JobDefinition
     Properties:
       Type: container
@@ -86,7 +86,7 @@ Resources:
         JobQueueArn: !Ref JobQueueArn
         {% for job_type, job_spec in job_types.items() %}
         {% for task in job_spec['tasks'] %}
-        {{ snake_to_pascal_case(job_type + '_' + task['name']) }}: !Ref {{ snake_to_pascal_case(job_type + '_' + task['name']) }}
+        {{ snake_to_pascal_case(task['name']) }}: !Ref {{ snake_to_pascal_case(task['name']) }}
         {% endfor %}
         {% endfor %}
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
@@ -130,7 +130,7 @@ Resources:
               - !Ref JobQueueArn
               {% for job_type, job_spec in job_types.items() %}
               {% for task in job_spec['tasks'] %}
-              - !Ref {{ snake_to_pascal_case(job_type + '_' + task['name']) }}
+              - !Ref {{ snake_to_pascal_case(task['name']) }}
               {% endfor %}
               {% endfor %}
           - Effect: Allow
