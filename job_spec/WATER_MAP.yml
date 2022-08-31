@@ -1,5 +1,4 @@
 WATER_MAP:
-  image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
   required_parameters:
     - granules
   parameters:
@@ -92,42 +91,45 @@ WATER_MAP:
         description: Maximum bound used for iterative method. Ignored when include_flood_depth is false.
         default: 15
         type: integer
-  command:
-    - ++process
-    - water_map
-    - --bucket
-    - '!Ref Bucket'
-    - --bucket-prefix
-    - Ref::bucket_prefix
-    - --resolution
-    - Ref::resolution
-    - --speckle-filter
-    - Ref::speckle_filter
-    - --max-vv-threshold
-    - Ref::max_vv_threshold
-    - --max-vh-threshold
-    - Ref::max_vh_threshold
-    - --hand-threshold
-    - Ref::hand_threshold
-    - --hand-fraction
-    - Ref::hand_fraction
-    - --membership-threshold
-    - Ref::membership_threshold
-    - --include-flood-depth
-    - Ref::include_flood_depth
-    - --estimator
-    - Ref::flood_depth_estimator
-    - --water-level-sigma
-    - Ref::water_level_sigma
-    - --known-water-threshold
-    - Ref::known_water_threshold
-    - --iterative-min
-    - Ref::iterative_min
-    - --iterative-max
-    - Ref::iterative_max
-    - Ref::granules
   validators:
     - check_dem_coverage
-  timeout: 36000
-  vcpu: 1
-  memory: 31600
+  tasks:
+    - name: ''
+      image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
+      command:
+        - ++process
+        - water_map
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --resolution
+        - Ref::resolution
+        - --speckle-filter
+        - Ref::speckle_filter
+        - --max-vv-threshold
+        - Ref::max_vv_threshold
+        - --max-vh-threshold
+        - Ref::max_vh_threshold
+        - --hand-threshold
+        - Ref::hand_threshold
+        - --hand-fraction
+        - Ref::hand_fraction
+        - --membership-threshold
+        - Ref::membership_threshold
+        - --include-flood-depth
+        - Ref::include_flood_depth
+        - --estimator
+        - Ref::flood_depth_estimator
+        - --water-level-sigma
+        - Ref::water_level_sigma
+        - --known-water-threshold
+        - Ref::known_water_threshold
+        - --iterative-min
+        - Ref::iterative_min
+        - --iterative-max
+        - Ref::iterative_max
+        - Ref::granules
+      timeout: 36000
+      vcpu: 1
+      memory: 31600
