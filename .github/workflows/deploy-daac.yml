@@ -44,7 +44,6 @@ jobs:
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE.yml
               job_spec/WATER_MAP.yml
-              job_spec/RIVER_WIDTH.yml
             instance_types: r5d.xlarge,r5dn.xlarge
             default_max_vcpus: 1000
             expanded_max_vcpus: 2000
