@@ -36,7 +36,7 @@ def get_object_file_type(bucket, key):
 
 
 def visible_product(product_path: Union[str, Path]) -> bool:
-    return Path(product_path).suffix in ('.zip', '.nc')
+    return Path(product_path).suffix in ('.zip', '.nc', '.geojson')
 
 
 def get_products(files):
