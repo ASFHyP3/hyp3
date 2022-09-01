@@ -92,18 +92,19 @@
         {
           "Variable": "$.job_type",
           "StringEquals": "{{ job_type }}",
-          "Next": "{{ job_type }}"
+          "Next": "{{ job_spec['tasks'][0]['name'] }}"
         }{% if not loop.last %},{% endif %}
         {% endfor %}
       ],
       "Default": "JOB_FAILED"
     },
     {% for job_type, job_spec in job_types.items() %}
-    "{{ job_type }}": {
+    {% for task in job_spec['tasks'] %}
+    "{{ task['name'] }}": {
       "Type": "Task",
       "Resource": "arn:aws:states:::batch:submitJob.sync",
       "Parameters": {
-        "JobDefinition": "{{ '${'+ snake_to_pascal_case(job_type) + '}' }}",
+        "JobDefinition": "{{ '${'+ snake_to_pascal_case(task['name']) + '}' }}",
         "JobName.$": "$.job_id",
         "JobQueue": "${JobQueueArn}",
         "ShareIdentifier": "default",
@@ -115,7 +116,7 @@
         }
       },
       "ResultPath": "$.results.processing_results",
-      "Next": "GET_FILES",
+      "Next": "{% if not loop.last %}{{ loop.nextitem['name'] }}{% else %}GET_FILES{% endif %}",
       "Retry": [
         {
           "ErrorEquals": [
@@ -141,6 +142,7 @@
         }
       ]
     },
+    {% endfor %}
     {% endfor %}
     "UPLOAD_LOG":{
       "Type": "Task",
