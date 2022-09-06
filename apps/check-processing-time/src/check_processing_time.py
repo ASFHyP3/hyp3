@@ -17,7 +17,7 @@ def get_time_from_result(result: dict) -> float:
     return get_time_from_attempts(attempts)
 
 
-def lambda_handler(event, context):
+def lambda_handler(event, context) -> list[float]:
     results_dict = event['processing_results']
     results = [results_dict[i] for i in sorted(results_dict.keys())]
     return list(map(get_time_from_result, results))
