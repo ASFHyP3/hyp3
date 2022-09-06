@@ -10,10 +10,10 @@ CLOUDWATCH = boto3.client('logs', config=config)
 S3 = boto3.client('s3')
 
 
-def get_log_stream(processing_results: dict) -> Optional[str]:
-    if 'Error' in processing_results:
-        processing_results = json.loads(processing_results['Cause'])
-    return processing_results['Container'].get('LogStreamName')
+def get_log_stream(result: dict) -> Optional[str]:
+    if 'Error' in result:
+        result = json.loads(result['Cause'])
+    return result['Container'].get('LogStreamName')
 
 
 def get_log_content(log_group, log_stream):
@@ -58,9 +58,13 @@ def write_log_to_s3(bucket, prefix, content):
 
 
 def lambda_handler(event, context):
+    # TODO handle all results, not just the last one
+    results_dict = event['processing_results']
+    result = results_dict[len(results_dict) - 1]
+
     log_content = None
 
-    log_stream = get_log_stream(event['processing_results'])
+    log_stream = get_log_stream(result)
     if log_stream is not None:
         try:
             log_content = get_log_content(event['log_group'], log_stream)
@@ -69,7 +73,7 @@ def lambda_handler(event, context):
                 raise
 
     if log_content is None:
-        assert 'Error' in event['processing_results']
-        log_content = get_log_content_from_failed_attempts(json.loads(event['processing_results']['Cause']))
+        assert 'Error' in result
+        log_content = get_log_content_from_failed_attempts(json.loads(result['Cause']))
 
     write_log_to_s3(environ['BUCKET'], event['prefix'], log_content)

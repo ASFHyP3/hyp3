@@ -115,7 +115,7 @@
           "Attempts": 3
         }
       },
-      "ResultPath": "$.results.processing_results",
+      "ResultPath": "$.results.processing_results.{{ loop.index0 }}",
       "Next": "{% if not loop.last %}{{ loop.nextitem['name'] }}{% else %}GET_FILES{% endif %}",
       "Retry": [
         {
@@ -138,7 +138,7 @@
             "States.ALL"
           ],
           "Next": "UPLOAD_LOG",
-          "ResultPath": "$.results.processing_results"
+          "ResultPath": "$.results.processing_results.{{ loop.index0 }}"
         }
       ]
     },
@@ -222,13 +222,39 @@
         }
       ],
       "ResultPath": "$.results.processing_time_in_seconds",
-      "Next": "CHECK_STATUS"
+      "Next": "SET_STATUS"
     },
+    "SET_STATUS": {
+      "Type": "Task",
+      "Resource": "${SetStatusLambdaArn}",
+      "Parameters": {
+        "processing_results.$": "$.results.processing_results"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "MaxAttempts": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "JOB_FAILED",
+          "ResultPath": "$.results.set_status_error"
+        }
+      ],
+      "ResultPath": "$.results.status_is_failed",
+      "Next": "CHECK_STATUS"
+    }
     "CHECK_STATUS": {
       "Type" : "Choice",
       "Choices": [{
-        "Variable": "$.results.processing_results.Error",
-        "IsPresent": true,
+        "Variable": "$.results.status_is_failed",
+        "BooleanEquals": true,
         "Next": "JOB_FAILED"
       }],
       "Default": "JOB_SUCCEEDED"
