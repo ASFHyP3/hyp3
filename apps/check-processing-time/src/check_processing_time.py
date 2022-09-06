@@ -20,5 +20,4 @@ def get_time_from_result(result: dict) -> float:
 def lambda_handler(event, context):
     results_dict = event['processing_results']
     results = [results_dict[i] for i in sorted(results_dict.keys())]
-    # TODO return list
-    return sum(map(get_time_from_result, results))
+    return list(map(get_time_from_result, results))

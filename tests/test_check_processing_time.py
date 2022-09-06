@@ -65,20 +65,20 @@ def test_get_time_from_result_failed():
 
 def test_lambda_handler():
     event = {
-        'processing_results': [
-            {
+        'processing_results': {
+            '0': {
                 'Attempts': [
                     {'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 1000},
                     {'Container': {}, 'StartedAt': 3000, 'StatusReason': '', 'StoppedAt': 8700}
                 ]
             },
-            {
+            '1': {
                 'Error': 'States.TaskFailed',
                 'Cause': '{"Attempts": ['
                          '{"Container": {}, "StartedAt": 500, "StatusReason": "", "StoppedAt": 1000}, '
                          '{"Container": {}, "StartedAt": 1500, "StatusReason": "", "StoppedAt": 2000}, '
                          '{"Container": {}, "StartedAt": 3000, "StatusReason": "", "StoppedAt": 9400}]}'
             },
-        ]
+        }
     }
-    assert check_processing_time.lambda_handler(event, None) == 5.7 + 6.4
+    assert check_processing_time.lambda_handler(event, None) == [5.7, 6.4]
