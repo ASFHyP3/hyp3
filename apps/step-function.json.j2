@@ -222,11 +222,11 @@
         }
       ],
       "ResultPath": "$.results.processing_time_in_seconds",
-      "Next": "SET_STATUS"
+      "Next": "CHECK_FOR_PROCESSING_ERRORS"
     },
-    "SET_STATUS": {
+    "CHECK_FOR_PROCESSING_ERRORS": {
       "Type": "Task",
-      "Resource": "${SetStatusLambdaArn}",
+      "Resource": "${CheckForProcessingErrorsLambdaArn}",
       "Parameters": {
         "processing_results.$": "$.results.processing_results"
       },
@@ -244,16 +244,16 @@
             "States.ALL"
           ],
           "Next": "JOB_FAILED",
-          "ResultPath": "$.results.set_status_error"
+          "ResultPath": "$.results.check_for_processing_errors_error"
         }
       ],
-      "ResultPath": "$.results.status_is_failed",
+      "ResultPath": "$.results.processing_has_errors",
       "Next": "CHECK_STATUS"
     }
     "CHECK_STATUS": {
       "Type" : "Choice",
       "Choices": [{
-        "Variable": "$.results.status_is_failed",
+        "Variable": "$.results.processing_has_errors",
         "BooleanEquals": true,
         "Next": "JOB_FAILED"
       }],
