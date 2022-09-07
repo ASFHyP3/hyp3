@@ -45,6 +45,11 @@ def main():
     job_types = {}
     for file in args.job_spec_files:
         job_types.update(yaml.safe_load(file.read_text()))
+
+    for job_type, job_spec in job_types.items():
+        for task in job_spec['tasks']:
+            task['name'] = job_type + '_' + task['name'] if task['name'] else job_type
+
     render_templates(job_types, args.security_environment, args.api_name)
 
 
