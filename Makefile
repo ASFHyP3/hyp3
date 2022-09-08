@@ -28,7 +28,7 @@ run: render
 	python apps/api/src/hyp3_api/__main__.py
 
 install:
-	python -m pip install --platform manylinux2014_x86_64 --only-binary=:all: -r requirements-all.txt
+	python -m pip install -r requirements-all.txt
 
 files ?= job_spec/*.yml
 security_environment ?= ASF
