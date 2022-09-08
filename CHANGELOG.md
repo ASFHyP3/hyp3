@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.20.1]
+### Added
+- AutoRIFT jobs now allow submission with Landsat 4, 5, and 7 Collection 2 granules
+
 ## [2.20.0]
 ### Added
 - New `RIVER_WIDTH` job type.
