@@ -11,5 +11,6 @@ updates:
       interval: "daily"
     ignore:
       - dependency-name: "moto"
+      - dependency-name: "cryptography"
     labels:
       - "bumpless"
