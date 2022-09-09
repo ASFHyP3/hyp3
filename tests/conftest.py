@@ -5,7 +5,6 @@ import yaml
 from moto import mock_dynamodb
 
 
-
 @pytest.fixture
 def table_properties():
     class TableProperties:
