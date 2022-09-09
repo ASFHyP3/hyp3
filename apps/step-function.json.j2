@@ -4,7 +4,7 @@
     "SET_DEFAULT_RESULTS": {
       "Type": "Pass",
       "Result": {
-        "processing_time_in_seconds": 0,
+        "processing_times": [],
         "get_files": {
           "logs": [],
           "expiration_time": null
@@ -225,10 +225,10 @@
             "States.ALL"
           ],
           "Next": "JOB_FAILED",
-          "ResultPath": "$.results.processing_time_in_seconds_error"
+          "ResultPath": "$.results.check_processing_time_error"
         }
       ],
-      "ResultPath": "$.results.processing_time_in_seconds",
+      "ResultPath": "$.results.processing_times",
       "Next": "CHECK_STATUS"
     },
     "CHECK_STATUS": {
@@ -251,7 +251,7 @@
         "thumbnail_images.$": "$.results.get_files.thumbnail_images",
         "logs.$": "$.results.get_files.logs",
         "expiration_time.$": "$.results.get_files.expiration_time",
-        "processing_time_in_seconds.$": "$.results.processing_time_in_seconds"
+        "processing_times.$": "$.results.processing_times"
       },
       "Retry": [
         {
@@ -272,7 +272,7 @@
         "status_code": "FAILED",
         "logs.$": "$.results.get_files.logs",
         "expiration_time.$": "$.results.get_files.expiration_time",
-        "processing_time_in_seconds.$": "$.results.processing_time_in_seconds"
+        "processing_times.$": "$.results.processing_times"
       },
       "Retry": [
         {

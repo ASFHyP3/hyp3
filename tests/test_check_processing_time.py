@@ -38,8 +38,7 @@ def test_missing_start_time():
 
 
 def test_no_attempts():
-    with pytest.raises(ValueError, match='no Batch job attempts'):
-        check_processing_time.get_time_from_attempts([])
+    assert check_processing_time.get_time_from_attempts([]) == 0
 
 
 def test_get_time_from_result():
