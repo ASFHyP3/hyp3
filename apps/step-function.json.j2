@@ -8,7 +8,8 @@
         "get_files": {
           "logs": [],
           "expiration_time": null
-        }
+        },
+        "processing_failed": false
       },
       "ResultPath": "$.results",
       "Next": "EXECUTION_STARTED"
@@ -137,13 +138,19 @@
           "ErrorEquals": [
             "States.ALL"
           ],
-          "Next": "UPLOAD_LOG",
+          "Next": "PROCESSING_FAILED",
           "ResultPath": "$.results.processing_results.{{ loop.index0 }}"
         }
       ]
     },
     {% endfor %}
     {% endfor %}
+    "PROCESSING_FAILED": {
+      "Type": "Pass",
+      "Result": true,
+      "ResultPath": "$.results.processing_failed",
+      "Next": "UPLOAD_LOG"
+    }
     "UPLOAD_LOG":{
       "Type": "Task",
       "Resource": "${UploadLogLambdaArn}",
@@ -222,38 +229,12 @@
         }
       ],
       "ResultPath": "$.results.processing_time_in_seconds",
-      "Next": "CHECK_FOR_PROCESSING_ERRORS"
-    },
-    "CHECK_FOR_PROCESSING_ERRORS": {
-      "Type": "Task",
-      "Resource": "${CheckForProcessingErrorsLambdaArn}",
-      "Parameters": {
-        "processing_results.$": "$.results.processing_results"
-      },
-      "Retry": [
-        {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "MaxAttempts": 2
-        }
-      ],
-      "Catch": [
-        {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "Next": "JOB_FAILED",
-          "ResultPath": "$.results.check_for_processing_errors_error"
-        }
-      ],
-      "ResultPath": "$.results.processing_has_errors",
       "Next": "CHECK_STATUS"
-    }
+    },
     "CHECK_STATUS": {
       "Type" : "Choice",
       "Choices": [{
-        "Variable": "$.results.processing_has_errors",
+        "Variable": "$.results.processing_failed",
         "BooleanEquals": true,
         "Next": "JOB_FAILED"
       }],
