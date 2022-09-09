@@ -1,12 +1,9 @@
-import pytest
-
 import check_processing_time
 
 
 def test_single_attempt():
     attempts = [{'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 2800}]
-    result = check_processing_time.get_time_from_attempts(attempts)
-    assert result == 2.3
+    assert check_processing_time.get_time_from_attempts(attempts) == 2.3
 
 
 def test_multiple_attempts():
@@ -14,8 +11,7 @@ def test_multiple_attempts():
         {'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 1000},
         {'Container': {}, 'StartedAt': 3000, 'StatusReason': '', 'StoppedAt': 8700}
     ]
-    result = check_processing_time.get_time_from_attempts(attempts)
-    assert result == 5.7
+    assert check_processing_time.get_time_from_attempts(attempts) == 5.7
 
 
 def test_unsorted_attempts():
@@ -25,8 +21,7 @@ def test_unsorted_attempts():
         {'Container': {}, 'StartedAt': 3000, 'StatusReason': '', 'StoppedAt': 8700},
         {'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 1000}
     ]
-    result = check_processing_time.get_time_from_attempts(attempts)
-    assert result == 5.7
+    assert check_processing_time.get_time_from_attempts(attempts) == 5.7
 
 
 def test_missing_start_time():
@@ -37,37 +32,50 @@ def test_missing_start_time():
         {'Container': {}, 'StatusReason': '', 'StoppedAt': 8700},
         {'Container': {}, 'StartedAt': 12000, 'StatusReason': '', 'StoppedAt': 15200}
     ]
-    result = check_processing_time.get_time_from_attempts(attempts)
-    assert result == 3.2
+    assert check_processing_time.get_time_from_attempts(attempts) == 3.2
 
 
 def test_no_attempts():
-    with pytest.raises(ValueError, match='no Batch job attempts'):
-        check_processing_time.get_time_from_attempts([])
+    assert check_processing_time.get_time_from_attempts([]) == 0
 
 
-def test_lambda_handler_with_normal_results():
+def test_get_time_from_result():
+    result = {
+        'Attempts': [
+            {'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 1000},
+            {'Container': {}, 'StartedAt': 3000, 'StatusReason': '', 'StoppedAt': 8700}
+        ]
+    }
+    assert check_processing_time.get_time_from_result(result) == 5.7
+
+
+def test_get_time_from_result_failed():
+    result = {
+        'Error': 'States.TaskFailed',
+        'Cause': '{"Attempts": ['
+                 '{"Container": {}, "StartedAt": 500, "StatusReason": "", "StoppedAt": 1000}, '
+                 '{"Container": {}, "StartedAt": 1500, "StatusReason": "", "StoppedAt": 2000}, '
+                 '{"Container": {}, "StartedAt": 3000, "StatusReason": "", "StoppedAt": 9400}]}'
+    }
+    assert check_processing_time.get_time_from_result(result) == 6.4
+
+
+def test_lambda_handler():
     event = {
         'processing_results': {
-            'Attempts': [
-                {'Container': {}, 'StartedAt': 1644609403693, 'StatusReason': '', 'StoppedAt': 1644609919331},
-                {'Container': {}, 'StartedAt': 1644610107570, 'StatusReason': '', 'StoppedAt': 1644611472015}
-            ]
+            'step_0': {
+                'Attempts': [
+                    {'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 1000},
+                    {'Container': {}, 'StartedAt': 3000, 'StatusReason': '', 'StoppedAt': 8700}
+                ]
+            },
+            'step_1': {
+                'Error': 'States.TaskFailed',
+                'Cause': '{"Attempts": ['
+                         '{"Container": {}, "StartedAt": 500, "StatusReason": "", "StoppedAt": 1000}, '
+                         '{"Container": {}, "StartedAt": 1500, "StatusReason": "", "StoppedAt": 2000}, '
+                         '{"Container": {}, "StartedAt": 3000, "StatusReason": "", "StoppedAt": 9400}]}'
+            },
         }
     }
-    response = check_processing_time.lambda_handler(event, None)
-    assert response == (1644611472015 - 1644610107570) / 1000
-
-
-def test_lambda_handler_with_failed_results():
-    event = {
-        'processing_results': {
-            'Error': 'States.TaskFailed',
-            'Cause': '{"Attempts": ['
-                     '{"Container": {}, "StartedAt": 1643834765893, "StatusReason": "", "StoppedAt": 1643834766455}, '
-                     '{"Container": {}, "StartedAt": 1643834888866, "StatusReason": "", "StoppedAt": 1643834889448}, '
-                     '{"Container": {}, "StartedAt": 1643834907858, "StatusReason": "", "StoppedAt": 1643834908466}]}'
-        }
-    }
-    response = check_processing_time.lambda_handler(event, None)
-    assert response == (1643834908466 - 1643834907858) / 1000
+    assert check_processing_time.lambda_handler(event, None) == [5.7, 6.4]

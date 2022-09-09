@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.21.0]
+### Added
+- Added `processing_times` field to the Job schema in the API in order to support jobs with multiple processing steps.
+### Removed
+- Removed `processing_time_in_seconds` field from the Job schema.
+
 ## [2.20.0]
 ### Added
 - New `RIVER_WIDTH` job type.
