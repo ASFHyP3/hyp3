@@ -116,7 +116,7 @@
           "Attempts": 3
         }
       },
-      "ResultPath": "$.results.processing_results['{{ loop.index0 }}']",
+      "ResultPath": "$['results']['processing_results']['{{ loop.index0 }}']",
       "Next": "{% if not loop.last %}{{ loop.nextitem['name'] }}{% else %}GET_FILES{% endif %}",
       "Retry": [
         {
@@ -139,7 +139,7 @@
             "States.ALL"
           ],
           "Next": "PROCESSING_FAILED",
-          "ResultPath": "$.results.processing_results['{{ loop.index0 }}']"
+          "ResultPath": "$['results']['processing_results']['{{ loop.index0 }}']"
         }
       ]
     },
