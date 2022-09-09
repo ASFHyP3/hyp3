@@ -2,9 +2,8 @@ from os import environ, path
 
 import pytest
 import yaml
-from moto import mock_dynamodb2
+from moto import mock_dynamodb
 
-from dynamo import DYNAMODB_RESOURCE
 
 
 @pytest.fixture
@@ -25,9 +24,12 @@ def get_table_properties_from_template(resource_name):
     return table_properties
 
 
+@mock_dynamodb
 @pytest.fixture
 def tables(table_properties):
-    with mock_dynamodb2():
+    with mock_dynamodb():
+        from dynamo import DYNAMODB_RESOURCE
+
         class Tables:
             jobs_table = DYNAMODB_RESOURCE.create_table(
                 TableName=environ['JOBS_TABLE_NAME'],
@@ -39,7 +41,7 @@ def tables(table_properties):
             )
             subscriptions_table = DYNAMODB_RESOURCE.create_table(
                 TableName=environ['SUBSCRIPTIONS_TABLE_NAME'],
-                **table_properties.subscriptions_table
+                **table_properties.subscriptions_table,
             )
         tables = Tables()
         yield tables

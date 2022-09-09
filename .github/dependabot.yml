@@ -9,7 +9,5 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    ignore:
-      - dependency-name: "moto"
     labels:
       - "bumpless"
