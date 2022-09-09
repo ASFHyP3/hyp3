@@ -12,5 +12,6 @@ updates:
     ignore:
       - dependency-name: "moto"
       - dependency-name: "cryptography"
+      - dependency-name: "openapi-spec-validator"
     labels:
       - "bumpless"
