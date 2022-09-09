@@ -63,13 +63,13 @@ def test_get_time_from_result_failed():
 def test_lambda_handler():
     event = {
         'processing_results': {
-            'step-0': {
+            'step_0': {
                 'Attempts': [
                     {'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 1000},
                     {'Container': {}, 'StartedAt': 3000, 'StatusReason': '', 'StoppedAt': 8700}
                 ]
             },
-            'step-1': {
+            'step_1': {
                 'Error': 'States.TaskFailed',
                 'Cause': '{"Attempts": ['
                          '{"Container": {}, "StartedAt": 500, "StatusReason": "", "StoppedAt": 1000}, '

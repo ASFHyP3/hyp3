@@ -117,7 +117,7 @@ def test_lambda_handler(mock_get_log_content: MagicMock, mock_write_log_to_s3: M
     event = {
         'prefix': 'test-prefix',
         'log_group': 'test-log-group',
-        'processing_results': {'step-0': {'Container': {'LogStreamName': 'test-log-stream'}}}
+        'processing_results': {'step_0': {'Container': {'LogStreamName': 'test-log-stream'}}}
     }
 
     upload_log.lambda_handler(event, None)
@@ -133,7 +133,7 @@ def test_lambda_handler_no_log_stream(mock_write_log_to_s3: MagicMock):
         'prefix': 'test-prefix',
         'log_group': 'test-log-group',
         'processing_results': {
-            'step-0':
+            'step_0':
                 {
                     'Error': '',
                     'Cause': '{"Container": {},'
@@ -162,7 +162,7 @@ def test_lambda_handler_log_stream_does_not_exist():
         'prefix': 'test-prefix',
         'log_group': 'test-log-group',
         'processing_results': {
-            'step-0': {
+            'step_0': {
                 'Error': '',
                 'Cause': '{"Container": {"LogStreamName": "test-log-stream"},'
                          '"Status": "FAILED",'
@@ -199,7 +199,7 @@ def test_lambda_handler_resource_not_found():
         'prefix': 'test-prefix',
         'log_group': 'test-log-group',
         'processing_results': {
-            'step-0': {
+            'step_0': {
                 'Error': '',
                 'Cause': '{"Container": {"LogStreamName": "test-log-stream"},'
                          '"Status": "FAILED",'
