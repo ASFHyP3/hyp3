@@ -4,7 +4,7 @@
 -r requirements-apps-scale-cluster.txt
 -r requirements-apps-start-execution.txt
 -r requirements-apps-update-db.txt
-boto3==1.24.70
+boto3==1.24.71
 jinja2==3.1.2
 moto[dynamodb]==4.0.3
 pytest==7.1.3
