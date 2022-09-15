@@ -42,7 +42,7 @@ flake8:
 	flake8 --ignore=E731 --max-line-length=120 --import-order-style=pycharm --statistics --application-import-names hyp3_api,get_files,handle_batch_event,check_processing_time,start_execution,update_db,upload_log,dynamo,process_new_granules,scale_cluster apps tests lib
 
 openapi-validate: render
-	prance validate --backend=openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
+	openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
 
 cfn-lint: render
 	cfn-lint --info --ignore-checks W3002 E3008 --template `find . -name *-cf.yml`
