@@ -20,6 +20,7 @@ or pull requests
 - [ ] (If applicable) Updated the dependencies and indicated any downstream changes that are required
 - [ ] Added/updated documentation for these changes
 - [ ] Added/updated tests for these changes
+- [ ] If the step function code has changed, have you drained the job queue before merging?
 
 ### Reviewer checklist
 
