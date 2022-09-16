@@ -21,7 +21,6 @@ jobs:
               * minor -- Minor changes to the API that do not break current workflows
               * patch -- Patches and bugfixes for the current version that do not break current workflows
               * bumpless -- Changes to documentation, CI/CD pipelines, etc. that don't affect the software's version
-
             - [ ] (If applicable) Updated the dependencies and indicated any downstream changes that are required
             - [ ] Added/updated documentation for these changes
             - [ ] Added/updated tests for these changes
