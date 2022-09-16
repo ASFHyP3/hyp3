@@ -22,7 +22,7 @@ jobs:
             quota: 1000
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            instance_types: r5d.xlarge,r5dn.xlarge
+            instance_types: r6id.xlarge,r5dn.xlarge
             default_max_vcpus: 1000
             expanded_max_vcpus: 2000
             required_surplus: 2000
@@ -44,7 +44,7 @@ jobs:
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE.yml
               job_spec/WATER_MAP.yml
-            instance_types: r5d.xlarge,r5dn.xlarge
+            instance_types: r6id.xlarge,r5dn.xlarge
             default_max_vcpus: 1000
             expanded_max_vcpus: 2000
             required_surplus: 2000
