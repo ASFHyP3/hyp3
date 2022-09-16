@@ -14,17 +14,6 @@ jobs:
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: |
-            ## Description of this release
-
-            <!--
-            Please describe the release here, including a brief overview of the changes in this release
-            -->
-
-            <!--
-            If applicable, indicate any upstream packages/projects this is relevant to, and the associated issues
-            or pull requests
-            -->
-
             ### Developer checklist
 
             - [ ] Indicated the level of changes to this package by affixing one of these labels:
