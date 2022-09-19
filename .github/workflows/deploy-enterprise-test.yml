@@ -26,7 +26,7 @@ jobs:
               job_spec/INSAR_ISCE.yml
               job_spec/WATER_MAP.yml
               job_spec/RIVER_WIDTH.yml
-            instance_types: r5d.xlarge,r5dn.xlarge,r5d.4xlarge,r5dn.4xlarge
+            instance_types: r6id.xlarge,r6id.4xlarge,r5dn.xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
