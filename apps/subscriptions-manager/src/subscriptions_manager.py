@@ -4,11 +4,12 @@ import boto3
 
 import dynamo
 
+LAMBDA_CLIENT = boto3.client('lambda')
+
 
 def invoke_worker(worker_function_arn: str, subscription: dict) -> None:
     payload = {'subscription': subscription}
-    client = boto3.client('lambda')
-    response = client.invoke(
+    response = LAMBDA_CLIENT.invoke(
         FunctionName=worker_function_arn,
         InvocationType='Event',
         Payload=payload,
