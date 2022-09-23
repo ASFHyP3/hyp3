@@ -1,3 +1,5 @@
+from datetime import datetime, timezone, timedelta
+
 import dateutil.parser
 from copy import deepcopy
 
@@ -70,11 +72,10 @@ def handle_subscription(subscription):
 
 
 def lambda_handler(event, context) -> None:
-    cutoff_date = dateutil.parser.parse(event['cutoff_date'])
     subscription = event['subscription']
-
     handle_subscription(subscription)
 
+    cutoff_date = datetime.now(tz=timezone.utc) - timedelta(days=5)
     if dateutil.parser.parse(subscription['search_parameters']['end']) <= cutoff_date\
             and len(get_unprocessed_granules(subscription)) == 0:
         disable_subscription(subscription)
