@@ -170,7 +170,7 @@ Resources:
         {% endif %}
       TemplateURL: scale-cluster/scale-cluster-cf.yml
 
-  ProcessNewGranules:
+  SubscriptionsManager:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
@@ -183,7 +183,7 @@ Resources:
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
-      TemplateURL: process-new-granules/process-new-granules-cf.yml
+      TemplateURL: subscriptions-manager/subscriptions-manager-cf.yml
 
   HandleBatchEvent:
     Type: AWS::CloudFormation::Stack

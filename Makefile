@@ -2,19 +2,19 @@ API = ${PWD}/apps/api/src
 CHECK_PROCESSING_TIME = ${PWD}/apps/check-processing-time/src
 GET_FILES = ${PWD}/apps/get-files/src
 HANDLE_BATCH_EVENT = ${PWD}/apps/handle-batch-event/src
-PROCESS_NEW_GRANULES = ${PWD}/apps/process-new-granules/src
+SUBSCRIPTIONS_MANAGER = ${PWD}/apps/subscriptions-manager/src
 SCALE_CLUSTER = ${PWD}/apps/scale-cluster/src
 START_EXECUTION = ${PWD}/apps/start-execution/src
 UPDATE_DB = ${PWD}/apps/update-db/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
 DYNAMO = ${PWD}/lib/dynamo
-export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${PROCESS_NEW_GRANULES}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}
+export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SUBSCRIPTIONS_MANAGER}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}
 
 
 build: render
 	python -m pip install --upgrade -r requirements-apps-api.txt -t ${API}; \
 	python -m pip install --upgrade -r requirements-apps-handle-batch-event.txt -t ${HANDLE_BATCH_EVENT}; \
-	python -m pip install --upgrade -r requirements-apps-process-new-granules.txt -t ${PROCESS_NEW_GRANULES}; \
+	python -m pip install --upgrade -r requirements-apps-subscriptions-manager.txt -t ${SUBSCRIPTIONS_MANAGER}; \
 	python -m pip install --upgrade -r requirements-apps-scale-cluster.txt -t ${SCALE_CLUSTER}; \
 	python -m pip install --upgrade -r requirements-apps-start-execution.txt -t ${START_EXECUTION}; \
 	python -m pip install --upgrade -r requirements-apps-update-db.txt -t ${UPDATE_DB}
@@ -39,7 +39,7 @@ render:
 static: flake8 openapi-validate cfn-lint
 
 flake8:
-	flake8 --ignore=E731 --max-line-length=120 --import-order-style=pycharm --statistics --application-import-names hyp3_api,get_files,handle_batch_event,check_processing_time,start_execution,update_db,upload_log,dynamo,process_new_granules,scale_cluster apps tests lib
+	flake8 --ignore=E731 --max-line-length=120 --import-order-style=pycharm --statistics --application-import-names hyp3_api,get_files,handle_batch_event,check_processing_time,start_execution,update_db,upload_log,dynamo,subscriptions_manager,scale_cluster apps tests lib
 
 openapi-validate: render
 	openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml

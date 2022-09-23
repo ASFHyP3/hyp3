@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
-import process_new_granules
+import subscriptions_manager
 
 
 # TODO update
@@ -58,9 +58,9 @@ def test_lambda_handler(tables):
     #     else:
     #         return []
     #
-    # with patch('process_new_granules.handle_subscription') as p:
-    #     with patch('process_new_granules.get_unprocessed_granules', mock_get_unprocessed_granules):
-    #         process_new_granules.lambda_handler(1, 1)
+    # with patch('subscriptions_manager.handle_subscription') as p:
+    #     with patch('subscriptions_manager.get_unprocessed_granules', mock_get_unprocessed_granules):
+    #         subscriptions_manager.lambda_handler(1, 1)
     #         assert p.call_count == 3
     #
     # response = tables.subscriptions_table.scan()['Items']

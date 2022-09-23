@@ -3,7 +3,7 @@ from unittest.mock import patch
 import asf_search
 import pytest
 
-import process_new_granules_worker
+import subscriptions_worker
 
 
 def test_get_unprocessed_granules(tables):
@@ -73,7 +73,7 @@ def test_get_unprocessed_granules(tables):
         return asf_search.ASFSearchResults(search_results)
 
     with patch('asf_search.search', mock_search):
-        results = process_new_granules_worker.get_unprocessed_granules(subscription)
+        results = subscriptions_worker.get_unprocessed_granules(subscription)
         assert results == search_results[1:]
 
 
@@ -100,16 +100,16 @@ def test_get_neighbors():
         ])
 
     with patch('asf_search.baseline_search.stack_from_product', mock_stack_from_product):
-        neighbors = process_new_granules_worker.get_neighbors(granule, 1, 'S1')
+        neighbors = subscriptions_worker.get_neighbors(granule, 1, 'S1')
         assert neighbors == ['S1A_C']
 
-        neighbors = process_new_granules_worker.get_neighbors(granule, 2, 'S1')
+        neighbors = subscriptions_worker.get_neighbors(granule, 2, 'S1')
         assert neighbors == ['S1B_B', 'S1A_C']
 
-        neighbors = process_new_granules_worker.get_neighbors(granule, 2, 'S1A')
+        neighbors = subscriptions_worker.get_neighbors(granule, 2, 'S1A')
         assert neighbors == ['S1A_A', 'S1A_C']
 
-        neighbors = process_new_granules_worker.get_neighbors(granule, 5, 'S1B')
+        neighbors = subscriptions_worker.get_neighbors(granule, 5, 'S1B')
         assert neighbors == ['S1B_B']
 
 
@@ -132,8 +132,8 @@ def test_get_jobs_for_granule():
             }
         }
     }
-    payload = process_new_granules_worker.get_jobs_for_granule(subscription, granule)
-    payload2 = process_new_granules_worker.get_jobs_for_granule(subscription, granule2)
+    payload = subscriptions_worker.get_jobs_for_granule(subscription, granule)
+    payload2 = subscriptions_worker.get_jobs_for_granule(subscription, granule2)
     assert payload == [
         {
             'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
@@ -171,8 +171,8 @@ def test_get_jobs_for_granule():
         }
     }
     mock_granules = ['granule2', 'granule3']
-    with patch('process_new_granules_worker.get_neighbors', lambda x, y, z: mock_granules):
-        payload = process_new_granules_worker.get_jobs_for_granule(subscription, granule)
+    with patch('subscriptions_worker.get_neighbors', lambda x, y, z: mock_granules):
+        payload = subscriptions_worker.get_jobs_for_granule(subscription, granule)
         assert payload == [
             {
                 'subscription_id': '51b576b0-a89b-4108-a9d8-7ecb52aee950',
@@ -199,7 +199,7 @@ def test_get_jobs_for_granule():
         }
     }
     with pytest.raises(ValueError):
-        process_new_granules_worker.get_jobs_for_granule(subscription, granule)
+        subscriptions_worker.get_jobs_for_granule(subscription, granule)
 
 
 def test_get_jobs_for_subscription():
@@ -210,22 +210,22 @@ def test_get_jobs_for_subscription():
     def mock_get_jobs_for_granule(subscription, granule):
         return [{'granule': granule}]
 
-    with patch('process_new_granules_worker.get_unprocessed_granules', mock_get_unprocessed_granules):
-        with patch('process_new_granules_worker.get_jobs_for_granule', mock_get_jobs_for_granule):
+    with patch('subscriptions_worker.get_unprocessed_granules', mock_get_unprocessed_granules):
+        with patch('subscriptions_worker.get_jobs_for_granule', mock_get_jobs_for_granule):
 
-            result = process_new_granules_worker.get_jobs_for_subscription(subscription={}, limit=20)
+            result = subscriptions_worker.get_jobs_for_subscription(subscription={}, limit=20)
             assert result == [
                 {'granule': 'a'},
                 {'granule': 'b'},
                 {'granule': 'c'},
             ]
 
-            result = process_new_granules_worker.get_jobs_for_subscription(subscription={}, limit=1)
+            result = subscriptions_worker.get_jobs_for_subscription(subscription={}, limit=1)
             assert result == [
                 {'granule': 'a'},
             ]
 
-            result = process_new_granules_worker.get_jobs_for_subscription(subscription={}, limit=0)
+            result = subscriptions_worker.get_jobs_for_subscription(subscription={}, limit=0)
             assert result == []
 
 

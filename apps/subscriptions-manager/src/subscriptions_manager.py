@@ -22,7 +22,7 @@ def handle_subscription_batch(subscriptions: list[dict], cutoff_date: datetime, 
 
 def lambda_handler(event, context):
     # TODO populate this env var with the correct arn
-    worker_function_arn = os.environ['PROCESS_NEW_GRANULES_WORKER_ARN']
+    worker_function_arn = os.environ['SUBSCRIPTIONS_WORKER_ARN']
     subscriptions = dynamo.subscriptions.get_all_subscriptions()
     cutoff_date = datetime.now(tz=timezone.utc) - timedelta(days=5)
     enabled_subscriptions = [subscription for subscription in subscriptions if subscription['enabled']]
