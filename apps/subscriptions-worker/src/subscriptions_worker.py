@@ -71,10 +71,10 @@ def handle_subscription(subscription):
 
 def lambda_handler(event, context) -> None:
     cutoff_date = dateutil.parser.parse(event['cutoff_date'])
+    subscription = event['subscription']
 
-    for subscription in event['subscriptions']:
-        handle_subscription(subscription)
+    handle_subscription(subscription)
 
-        if dateutil.parser.parse(subscription['search_parameters']['end']) <= cutoff_date\
-                and len(get_unprocessed_granules(subscription)) == 0:
-            disable_subscription(subscription)
+    if dateutil.parser.parse(subscription['search_parameters']['end']) <= cutoff_date\
+            and len(get_unprocessed_granules(subscription)) == 0:
+        disable_subscription(subscription)
