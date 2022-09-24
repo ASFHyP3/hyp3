@@ -9,12 +9,13 @@ LAMBDA_CLIENT = boto3.client('lambda')
 
 def invoke_worker(worker_function_arn: str, subscription: dict) -> None:
     payload = {'subscription': subscription}
+    print(f'Invoking worker for subscription {subscription["subscription_id"]}')
     response = LAMBDA_CLIENT.invoke(
         FunctionName=worker_function_arn,
         InvocationType='Event',
         Payload=payload,
     )
-    # TODO attempt to log worker success or failure?
+    print(f'Got response status code {response["StatusCode"]} for subscription {subscription["subscription_id"]}')
 
 
 def lambda_handler(event, context):
