@@ -98,7 +98,7 @@ Resources:
           SUBSCRIPTIONS_TABLE_NAME: !Ref SubscriptionsTable
           MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
       Code: src/
-      Handler: subscriptions_manager.lambda_handler
+      Handler: subscription_manager.lambda_handler
       MemorySize: 1024
       Role: !GetAtt Role.Arn
       Runtime: python3.9

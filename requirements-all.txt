@@ -1,6 +1,6 @@
 -r requirements-apps-api.txt
 -r requirements-apps-handle-batch-event.txt
--r requirements-apps-subscriptions-manager.txt
+-r requirements-apps-subscription-manager.txt
 -r requirements-apps-scale-cluster.txt
 -r requirements-apps-start-execution.txt
 -r requirements-apps-update-db.txt
