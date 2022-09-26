@@ -73,6 +73,10 @@ def handle_subscription(subscription):
 
 def lambda_handler(event, context) -> None:
     subscription = event['subscription']
+
+    if not subscription['enabled']:
+        raise ValueError(f'subscription {subscription["subscription_id"]} is disabled')
+
     handle_subscription(subscription)
 
     cutoff_date = datetime.now(tz=timezone.utc) - timedelta(days=5)

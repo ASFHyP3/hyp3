@@ -1,3 +1,4 @@
+from datetime import datetime, timezone, timedelta
 from unittest.mock import patch
 
 import asf_search
@@ -229,6 +230,77 @@ def test_get_jobs_for_subscription():
             assert result == []
 
 
-# TODO implement
-def test_lambda_handler():
-    assert False
+def test_lambda_handler(tables):
+    items = [
+        {
+            'subscription_id': 'sub1',
+            'creation_date': '2020-01-01T00:00:00+00:00',
+            'job_type': 'INSAR_GAMMA',
+            'search_parameters': {
+                'start': datetime.now(tz=timezone.utc).isoformat(timespec='seconds'),
+                'end': (datetime.now(tz=timezone.utc) + timedelta(days=5)).isoformat(timespec='seconds'),
+            },
+            'user_id': 'user1',
+            'enabled': True,
+        },
+        {
+            'subscription_id': 'sub2',
+            'creation_date': '2020-01-01T00:00:00+00:00',
+            'job_type': 'INSAR_GAMMA',
+            'user_id': 'user1',
+            'enabled': False
+        },
+        {
+            'subscription_id': 'sub3',
+            'creation_date': '2020-01-01T00:00:00+00:00',
+            'job_type': 'INSAR_GAMMA',
+            'search_parameters': {
+                'start': (datetime.now(tz=timezone.utc) - timedelta(days=15)).isoformat(timespec='seconds'),
+                'end': (datetime.now(tz=timezone.utc) - timedelta(days=5)).isoformat(timespec='seconds'),
+            },
+            'user_id': 'user1',
+            'enabled': True,
+        },
+        {
+            'subscription_id': 'sub4',
+            'creation_date': '2020-01-01T00:00:00+00:00',
+            'job_type': 'INSAR_GAMMA',
+            'search_parameters': {
+                'start': (datetime.now(tz=timezone.utc) - timedelta(days=15)).isoformat(timespec='seconds'),
+                'end': (datetime.now(tz=timezone.utc) - timedelta(days=5)).isoformat(timespec='seconds'),
+            },
+            'user_id': 'user1',
+            'enabled': True,
+        },
+    ]
+    for item in items:
+        tables.subscriptions_table.put_item(Item=item)
+
+    def mock_get_unprocessed_granules(subscription):
+        if subscription['subscription_id'] == 'sub4':
+            return ['notempty']
+        else:
+            return []
+
+    with patch('subscription_worker.handle_subscription') as mock_handle_subscription:
+        with patch('subscription_worker.get_unprocessed_granules', mock_get_unprocessed_granules):
+            subscription_worker.lambda_handler({'subscription': items[0]}, None)
+
+            with pytest.raises(ValueError, match=r'subscription sub2 is disabled'):
+                subscription_worker.lambda_handler({'subscription': items[1]}, None)
+
+            subscription_worker.lambda_handler({'subscription': items[2]}, None)
+            subscription_worker.lambda_handler({'subscription': items[3]}, None)
+
+        assert mock_handle_subscription.call_count == 3
+
+    response = tables.subscriptions_table.scan()['Items']
+
+    sub1 = [sub for sub in response if sub['subscription_id'] == 'sub1'][0]
+    assert sub1['enabled'] is True
+
+    sub3 = [sub for sub in response if sub['subscription_id'] == 'sub3'][0]
+    assert sub3['enabled'] is False
+
+    sub4 = [sub for sub in response if sub['subscription_id'] == 'sub4'][0]
+    assert sub4['enabled'] is True
