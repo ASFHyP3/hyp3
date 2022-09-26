@@ -3,25 +3,28 @@ CHECK_PROCESSING_TIME = ${PWD}/apps/check-processing-time/src
 GET_FILES = ${PWD}/apps/get-files/src
 HANDLE_BATCH_EVENT = ${PWD}/apps/handle-batch-event/src
 SUBSCRIPTION_MANAGER = ${PWD}/apps/subscription-manager/src
+SUBSCRIPTION_WORKER = ${PWD}/apps/subscription-worker/src
 SCALE_CLUSTER = ${PWD}/apps/scale-cluster/src
 START_EXECUTION = ${PWD}/apps/start-execution/src
 UPDATE_DB = ${PWD}/apps/update-db/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
 DYNAMO = ${PWD}/lib/dynamo
-export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SUBSCRIPTION_MANAGER}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}
+export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SUBSCRIPTION_MANAGER}:${SUBSCRIPTION_WORKER}:${SCALE_CLUSTER}:${START_EXECUTION}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}
 
 
 build: render
 	python -m pip install --upgrade -r requirements-apps-api.txt -t ${API}; \
 	python -m pip install --upgrade -r requirements-apps-handle-batch-event.txt -t ${HANDLE_BATCH_EVENT}; \
 	python -m pip install --upgrade -r requirements-apps-subscription-manager.txt -t ${SUBSCRIPTION_MANAGER}; \
+	python -m pip install --upgrade -r requirements-apps-subscription-worker.txt -t ${SUBSCRIPTION_WORKER}; \
 	python -m pip install --upgrade -r requirements-apps-scale-cluster.txt -t ${SCALE_CLUSTER}; \
 	python -m pip install --upgrade -r requirements-apps-start-execution.txt -t ${START_EXECUTION}; \
 	python -m pip install --upgrade -r requirements-apps-update-db.txt -t ${UPDATE_DB}
 
+test_file ?= tests/
 tests: render
 	export $$(xargs < tests/cfg.env); \
-	pytest tests
+	pytest $(test_file)
 
 run: render
 	export $$(xargs < tests/cfg.env); \
