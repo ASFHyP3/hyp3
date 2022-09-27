@@ -5,8 +5,14 @@ Parameters:
   SubscriptionsTable:
     Type: String
 
-  SubscriptionWorkerArn:
+  JobsTable:
     Type: String
+
+  UsersTable:
+    Type: String
+
+  MonthlyJobQuotaPerUser:
+    Type: Number
 
   {% if security_environment == 'EDC' %}
   PermissionsBoundaryPolicyArn:
@@ -70,7 +76,15 @@ Resources:
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
           - Effect: Allow
             Action:
-              - dynamodb:Scan
+              - dynamodb:PutItem
+              - dynamodb:Query
+            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
+          - Effect: Allow
+            Action: dynamodb:GetItem
+            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UsersTable}*"
+          - Effect: Allow
+            Action:
+              - dynamodb:PutItem
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SubscriptionsTable}*"
 
   Lambda:
@@ -78,10 +92,12 @@ Resources:
     Properties:
       Environment:
         Variables:
+          JOBS_TABLE_NAME: !Ref JobsTable
+          USERS_TABLE_NAME: !Ref UsersTable
           SUBSCRIPTIONS_TABLE_NAME: !Ref SubscriptionsTable
-          SUBSCRIPTION_WORKER_ARN: !Ref SubscriptionWorkerArn
+          MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
       Code: src/
-      Handler: subscription_manager.lambda_handler
+      Handler: subscription_worker.lambda_handler
       MemorySize: 1024
       Role: !GetAtt Role.Arn
       Runtime: python3.9
@@ -93,25 +109,10 @@ Resources:
         SubnetIds: !Ref SubnetIds
       {% endif %}
 
+  # TODO is this still correct even with no schedule rule?
   EventInvokeConfig:
     Type: AWS::Lambda::EventInvokeConfig
     Properties:
       FunctionName: !Ref Lambda
       Qualifier: $LATEST
       MaximumRetryAttempts: 0
-
-  Schedule:
-    Type: AWS::Events::Rule
-    Properties:
-      ScheduleExpression: "rate(16 minutes)"
-      Targets:
-        - Arn: !GetAtt Lambda.Arn
-          Id: lambda
-
-  EventPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !GetAtt Lambda.Arn
-      Action: lambda:InvokeFunction
-      Principal: events.amazonaws.com
-      SourceArn: !GetAtt Schedule.Arn
