@@ -72,6 +72,10 @@ Resources:
             Action:
               - dynamodb:Scan
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SubscriptionsTable}*"
+          - Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+            Resource: !Ref SubscriptionWorkerArn
 
   Lambda:
     Type: AWS::Lambda::Function
