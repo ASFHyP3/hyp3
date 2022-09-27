@@ -1,71 +1,26 @@
-from datetime import datetime, timedelta, timezone
-from unittest.mock import patch
+import os
+from unittest.mock import patch, call
 
 import subscription_manager
 
+TEST_WORKER_ARN = 'test-worker-arn'
 
-# TODO update
+
 def test_lambda_handler(tables):
-    assert False
-    # items = [
-    #     {
-    #         'subscription_id': 'sub1',
-    #         'creation_date': '2020-01-01T00:00:00+00:00',
-    #         'job_type': 'INSAR_GAMMA',
-    #         'search_parameters': {
-    #             'start': datetime.now(tz=timezone.utc).isoformat(timespec='seconds'),
-    #             'end': (datetime.now(tz=timezone.utc) + timedelta(days=5)).isoformat(timespec='seconds'),
-    #         },
-    #         'user_id': 'user1',
-    #         'enabled': True,
-    #     },
-    #     {
-    #         'subscription_id': 'sub2',
-    #         'creation_date': '2020-01-01T00:00:00+00:00',
-    #         'job_type': 'INSAR_GAMMA',
-    #         'user_id': 'user1',
-    #         'enabled': False
-    #     },
-    #     {
-    #         'subscription_id': 'sub3',
-    #         'creation_date': '2020-01-01T00:00:00+00:00',
-    #         'job_type': 'INSAR_GAMMA',
-    #         'search_parameters': {
-    #             'start': (datetime.now(tz=timezone.utc) - timedelta(days=15)).isoformat(timespec='seconds'),
-    #             'end': (datetime.now(tz=timezone.utc) - timedelta(days=5)).isoformat(timespec='seconds'),
-    #         },
-    #         'user_id': 'user1',
-    #         'enabled': True,
-    #     },
-    #     {
-    #         'subscription_id': 'sub4',
-    #         'creation_date': '2020-01-01T00:00:00+00:00',
-    #         'job_type': 'INSAR_GAMMA',
-    #         'search_parameters': {
-    #             'start': (datetime.now(tz=timezone.utc) - timedelta(days=15)).isoformat(timespec='seconds'),
-    #             'end': (datetime.now(tz=timezone.utc) - timedelta(days=5)).isoformat(timespec='seconds'),
-    #         },
-    #         'user_id': 'user1',
-    #         'enabled': True,
-    #     },
-    # ]
-    # for item in items:
-    #     tables.subscriptions_table.put_item(Item=item)
-    #
-    # def mock_get_unprocessed_granules(subscription):
-    #     if subscription['subscription_id'] == 'sub4':
-    #         return ['notempty']
-    #     else:
-    #         return []
-    #
-    # with patch('subscription_manager.handle_subscription') as p:
-    #     with patch('subscription_manager.get_unprocessed_granules', mock_get_unprocessed_granules):
-    #         subscription_manager.lambda_handler(1, 1)
-    #         assert p.call_count == 3
-    #
-    # response = tables.subscriptions_table.scan()['Items']
-    # sub3 = [sub for sub in response if sub['subscription_id'] == 'sub3'][0]
-    # assert sub3['enabled'] is False
-    #
-    # sub4 = [sub for sub in response if sub['subscription_id'] == 'sub4'][0]
-    # assert sub4['enabled'] is True
+    items = [
+        {'subscription_id': 'sub1', 'enabled': True},
+        {'subscription_id': 'sub2', 'enabled': False},
+        {'subscription_id': 'sub3', 'enabled': True},
+        {'subscription_id': 'sub4', 'enabled': True},
+    ]
+    for item in items:
+        tables.subscriptions_table.put_item(Item=item)
+
+    with patch('subscription_manager.invoke_worker') as mock_invoke_worker, \
+            patch.dict(os.environ, {'SUBSCRIPTION_WORKER_ARN': TEST_WORKER_ARN}):
+        subscription_manager.lambda_handler(None, None)
+        assert mock_invoke_worker.mock_calls == [
+            call(TEST_WORKER_ARN, items[0]),
+            call(TEST_WORKER_ARN, items[2]),
+            call(TEST_WORKER_ARN, items[3]),
+        ]

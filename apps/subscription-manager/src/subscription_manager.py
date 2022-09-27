@@ -24,5 +24,4 @@ def lambda_handler(event, context):
     subscriptions = dynamo.subscriptions.get_all_subscriptions()
     enabled_subscriptions = [subscription for subscription in subscriptions if subscription['enabled']]
     for subscription in enabled_subscriptions:
-        # TODO is it worth having the worker just take sub id and re-fetch the subscription object, in case it's updated?
         invoke_worker(worker_function_arn, subscription)
