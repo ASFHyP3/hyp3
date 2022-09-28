@@ -1,9 +1,9 @@
-from datetime import datetime, timezone, timedelta
-
-import dateutil.parser
 from copy import deepcopy
+from datetime import datetime, timedelta, timezone
 
 import asf_search
+import dateutil.parser
+
 import dynamo
 
 

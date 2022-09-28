@@ -1,9 +1,8 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 import asf_search
 import pytest
-
 import subscription_worker
 
 
