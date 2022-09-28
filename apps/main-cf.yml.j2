@@ -175,7 +175,7 @@ Resources:
     Properties:
       Parameters:
         SubscriptionsTable: !Ref SubscriptionsTable
-        SubscriptionWorkerArn: !Ref SubscriptionWorker.Outputs.LambdaArn
+        SubscriptionWorkerArn: !GetAtt SubscriptionWorker.Outputs.LambdaArn
         {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
