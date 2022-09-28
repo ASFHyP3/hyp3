@@ -109,7 +109,6 @@ Resources:
         SubnetIds: !Ref SubnetIds
       {% endif %}
 
-  # TODO is this still correct even with no schedule rule?
   EventInvokeConfig:
     Type: AWS::Lambda::EventInvokeConfig
     Properties:
