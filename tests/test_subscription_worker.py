@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import asf_search
 import pytest
+
 import subscription_worker
 
 
