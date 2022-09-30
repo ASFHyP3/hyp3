@@ -1,3 +1,4 @@
+import json
 import os
 
 import boto3
@@ -13,7 +14,7 @@ def invoke_worker(worker_function_arn: str, subscription: dict) -> None:
     response = LAMBDA_CLIENT.invoke(
         FunctionName=worker_function_arn,
         InvocationType='Event',
-        Payload=payload,
+        Payload=json.dumps(payload),
     )
     print(f'Got response status code {response["StatusCode"]} for subscription {subscription["subscription_id"]}')
 
