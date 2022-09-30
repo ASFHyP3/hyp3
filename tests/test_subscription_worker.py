@@ -7,6 +7,12 @@ import pytest
 import subscription_worker
 
 
+def get_asf_product(properties: dict) -> asf_search.ASFProduct:
+    product = asf_search.ASFProduct()
+    product.properties.update(properties)
+    return product
+
+
 def test_get_unprocessed_granules(tables):
     items = [
         {
@@ -65,18 +71,8 @@ def test_get_unprocessed_granules(tables):
     }
 
     search_results = [
-        asf_search.ASFProduct(
-            {'umm': {'DataGranule': {'Identifiers': [{
-                'IdentifierType': 'ProducerGranuleId',
-                'Identifier': 'processed'
-            }]}}}
-        ),
-        asf_search.ASFProduct(
-            {'umm': {'DataGranule': {'Identifiers': [{
-                'IdentifierType': 'ProducerGranuleId',
-                'Identifier': 'not_processed'
-            }]}}}
-        ),
+        get_asf_product({'sceneName': 'processed'}),
+        get_asf_product({'sceneName': 'not_processed'}),
     ]
 
     def mock_search(**kwargs):
@@ -89,25 +85,18 @@ def test_get_unprocessed_granules(tables):
 
 
 def test_get_neighbors():
-    granule = asf_search.ASFProduct({'properties': {'sceneName': 'granule'}, 'geometry': {}, 'baseline': 1}),
+    granule = get_asf_product({'sceneName': 'granule'})
 
     def mock_stack_from_product(payload):
         assert payload == granule
         return asf_search.ASFSearchResults([
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1A_A', 'temporalBaseline': -3}, 'geometry': {}, 'baseline': 1}),
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1B_B', 'temporalBaseline': -2}, 'geometry': {}, 'baseline': 1}),
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1A_C', 'temporalBaseline': -1}, 'geometry': {}, 'baseline': 1}),
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1B_D', 'temporalBaseline': 0}, 'geometry': {}, 'baseline': 1}),
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1A_E', 'temporalBaseline': 1}, 'geometry': {}, 'baseline': 1}),
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1B_F', 'temporalBaseline': 2}, 'geometry': {}, 'baseline': 1}),
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1A_G', 'temporalBaseline': 3}, 'geometry': {}, 'baseline': 1}),
+            get_asf_product({'sceneName': 'S1A_A', 'temporalBaseline': -3}),
+            get_asf_product({'sceneName': 'S1B_B', 'temporalBaseline': -2}),
+            get_asf_product({'sceneName': 'S1A_C', 'temporalBaseline': -1}),
+            get_asf_product({'sceneName': 'S1B_D', 'temporalBaseline': 0}),
+            get_asf_product({'sceneName': 'S1A_E', 'temporalBaseline': 1}),
+            get_asf_product({'sceneName': 'S1B_F', 'temporalBaseline': 2}),
+            get_asf_product({'sceneName': 'S1A_G', 'temporalBaseline': 3}),
         ])
 
     with patch('asf_search.baseline_search.stack_from_product', mock_stack_from_product):
@@ -125,18 +114,8 @@ def test_get_neighbors():
 
 
 def test_get_jobs_for_granule():
-    granule = asf_search.ASFProduct(
-        {'umm': {'DataGranule': {'Identifiers': [{
-            'IdentifierType': 'ProducerGranuleId',
-            'Identifier': 'GranuleName'
-        }]}}}
-    )
-    granule2 = asf_search.ASFProduct(
-        {'umm': {'DataGranule': {'Identifiers': [{
-            'IdentifierType': 'ProducerGranuleId',
-            'Identifier': 'GranuleName2'
-        }]}}}
-    )
+    granule = get_asf_product({'sceneName': 'GranuleName'})
+    granule2 = get_asf_product({'sceneName': 'GranuleName2'})
 
     subscription = {
         'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
