@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.21.2]
+### Changed
+- Subscription handling is now parallelized using a manager to launch one worker per subscription, in order to help
+  prevent timeouts while handling subscriptions.
+
 ## [2.21.1]
 ### Changed
 - Upgraded Batch compute environments to the latest generation `r6id`/`c6id` EC2 instance types

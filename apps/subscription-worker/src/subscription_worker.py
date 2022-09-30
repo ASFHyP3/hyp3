@@ -71,13 +71,15 @@ def handle_subscription(subscription):
         dynamo.jobs.put_jobs(subscription['user_id'], jobs, fail_when_over_quota=False)
 
 
-def lambda_handler(event, context):
-    subscriptions = dynamo.subscriptions.get_all_subscriptions()
-    for subscription in subscriptions:
-        cutoff_date = datetime.now(tz=timezone.utc) - timedelta(days=5)
-        if subscription['enabled']:
-            handle_subscription(subscription)
+def lambda_handler(event, context) -> None:
+    subscription = event['subscription']
 
-            if dateutil.parser.parse(subscription['search_parameters']['end']) <= cutoff_date\
-                    and len(get_unprocessed_granules(subscription)) == 0:
-                disable_subscription(subscription)
+    if not subscription['enabled']:
+        raise ValueError(f'subscription {subscription["subscription_id"]} is disabled')
+
+    handle_subscription(subscription)
+
+    cutoff_date = datetime.now(tz=timezone.utc) - timedelta(days=5)
+    if dateutil.parser.parse(subscription['search_parameters']['end']) <= cutoff_date\
+            and len(get_unprocessed_granules(subscription)) == 0:
+        disable_subscription(subscription)
