@@ -9,12 +9,14 @@ LAMBDA_CLIENT = boto3.client('lambda')
 
 
 def invoke_worker(worker_function_arn: str, subscription: dict) -> None:
-    payload = {'subscription': subscription}
+    payload = json.dumps(
+        {'subscription': dynamo.util.convert_decimals_to_numbers(subscription)}
+    )
     print(f'Invoking worker for subscription {subscription["subscription_id"]}')
     response = LAMBDA_CLIENT.invoke(
         FunctionName=worker_function_arn,
         InvocationType='Event',
-        Payload=json.dumps(payload),
+        Payload=payload,
     )
     print(f'Got response status code {response["StatusCode"]} for subscription {subscription["subscription_id"]}')
 
