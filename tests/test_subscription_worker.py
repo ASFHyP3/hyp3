@@ -65,8 +65,18 @@ def test_get_unprocessed_granules(tables):
     }
 
     search_results = [
-        asf_search.ASFProduct({'properties': {'sceneName': 'processed'}, 'geometry': {}, 'baseline': 1}),
-        asf_search.ASFProduct({'properties': {'sceneName': 'not_processed'}, 'geometry': {}, 'baseline': 1}),
+        asf_search.ASFProduct(
+            {'umm': {'DataGranule': {'Identifiers': [{
+                'IdentifierType': 'ProducerGranuleId',
+                'Identifier': 'processed'
+            }]}}}
+        ),
+        asf_search.ASFProduct(
+            {'umm': {'DataGranule': {'Identifiers': [{
+                'IdentifierType': 'ProducerGranuleId',
+                'Identifier': 'not_processed'
+            }]}}}
+        ),
     ]
 
     def mock_search(**kwargs):
@@ -115,8 +125,18 @@ def test_get_neighbors():
 
 
 def test_get_jobs_for_granule():
-    granule = asf_search.ASFProduct({'properties': {'sceneName': 'GranuleName'}, 'geometry': {}, 'baseline': 1})
-    granule2 = asf_search.ASFProduct({'properties': {'sceneName': 'GranuleName2'}, 'geometry': {}, 'baseline': 1})
+    granule = asf_search.ASFProduct(
+        {'umm': {'DataGranule': {'Identifiers': [{
+            'IdentifierType': 'ProducerGranuleId',
+            'Identifier': 'GranuleName'
+        }]}}}
+    )
+    granule2 = asf_search.ASFProduct(
+        {'umm': {'DataGranule': {'Identifiers': [{
+            'IdentifierType': 'ProducerGranuleId',
+            'Identifier': 'GranuleName2'
+        }]}}}
+    )
 
     subscription = {
         'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
