@@ -18,7 +18,10 @@ def test_lambda_handler(tables):
 
     with patch('subscription_manager.invoke_worker') as mock_invoke_worker, \
             patch.dict(os.environ, {'SUBSCRIPTION_WORKER_ARN': TEST_WORKER_ARN}):
+        mock_invoke_worker.return_value = {'StatusCode': None}
+
         subscription_manager.lambda_handler(None, None)
+
         assert mock_invoke_worker.mock_calls == [
             call(TEST_WORKER_ARN, items[0]),
             call(TEST_WORKER_ARN, items[2]),
