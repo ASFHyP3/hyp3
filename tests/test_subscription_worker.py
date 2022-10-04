@@ -4,7 +4,13 @@ from unittest.mock import patch
 import asf_search
 import pytest
 
-import process_new_granules
+import subscription_worker
+
+
+def get_asf_product(properties: dict) -> asf_search.ASFProduct:
+    product = asf_search.ASFProduct()
+    product.properties.update(properties)
+    return product
 
 
 def test_get_unprocessed_granules(tables):
@@ -65,8 +71,8 @@ def test_get_unprocessed_granules(tables):
     }
 
     search_results = [
-        asf_search.ASFProduct({'properties': {'sceneName': 'processed'}, 'geometry': {}, 'baseline': 1}),
-        asf_search.ASFProduct({'properties': {'sceneName': 'not_processed'}, 'geometry': {}, 'baseline': 1}),
+        get_asf_product({'sceneName': 'processed'}),
+        get_asf_product({'sceneName': 'not_processed'}),
     ]
 
     def mock_search(**kwargs):
@@ -74,49 +80,42 @@ def test_get_unprocessed_granules(tables):
         return asf_search.ASFSearchResults(search_results)
 
     with patch('asf_search.search', mock_search):
-        results = process_new_granules.get_unprocessed_granules(subscription)
+        results = subscription_worker.get_unprocessed_granules(subscription)
         assert results == search_results[1:]
 
 
 def test_get_neighbors():
-    granule = asf_search.ASFProduct({'properties': {'sceneName': 'granule'}, 'geometry': {}, 'baseline': 1}),
+    granule = get_asf_product({'sceneName': 'granule'})
 
     def mock_stack_from_product(payload):
         assert payload == granule
         return asf_search.ASFSearchResults([
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1A_A', 'temporalBaseline': -3}, 'geometry': {}, 'baseline': 1}),
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1B_B', 'temporalBaseline': -2}, 'geometry': {}, 'baseline': 1}),
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1A_C', 'temporalBaseline': -1}, 'geometry': {}, 'baseline': 1}),
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1B_D', 'temporalBaseline': 0}, 'geometry': {}, 'baseline': 1}),
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1A_E', 'temporalBaseline': 1}, 'geometry': {}, 'baseline': 1}),
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1B_F', 'temporalBaseline': 2}, 'geometry': {}, 'baseline': 1}),
-            asf_search.ASFProduct(
-                {'properties': {'sceneName': 'S1A_G', 'temporalBaseline': 3}, 'geometry': {}, 'baseline': 1}),
+            get_asf_product({'sceneName': 'S1A_A', 'temporalBaseline': -3}),
+            get_asf_product({'sceneName': 'S1B_B', 'temporalBaseline': -2}),
+            get_asf_product({'sceneName': 'S1A_C', 'temporalBaseline': -1}),
+            get_asf_product({'sceneName': 'S1B_D', 'temporalBaseline': 0}),
+            get_asf_product({'sceneName': 'S1A_E', 'temporalBaseline': 1}),
+            get_asf_product({'sceneName': 'S1B_F', 'temporalBaseline': 2}),
+            get_asf_product({'sceneName': 'S1A_G', 'temporalBaseline': 3}),
         ])
 
     with patch('asf_search.baseline_search.stack_from_product', mock_stack_from_product):
-        neighbors = process_new_granules.get_neighbors(granule, 1, 'S1')
+        neighbors = subscription_worker.get_neighbors(granule, 1, 'S1')
         assert neighbors == ['S1A_C']
 
-        neighbors = process_new_granules.get_neighbors(granule, 2, 'S1')
+        neighbors = subscription_worker.get_neighbors(granule, 2, 'S1')
         assert neighbors == ['S1B_B', 'S1A_C']
 
-        neighbors = process_new_granules.get_neighbors(granule, 2, 'S1A')
+        neighbors = subscription_worker.get_neighbors(granule, 2, 'S1A')
         assert neighbors == ['S1A_A', 'S1A_C']
 
-        neighbors = process_new_granules.get_neighbors(granule, 5, 'S1B')
+        neighbors = subscription_worker.get_neighbors(granule, 5, 'S1B')
         assert neighbors == ['S1B_B']
 
 
 def test_get_jobs_for_granule():
-    granule = asf_search.ASFProduct({'properties': {'sceneName': 'GranuleName'}, 'geometry': {}, 'baseline': 1})
-    granule2 = asf_search.ASFProduct({'properties': {'sceneName': 'GranuleName2'}, 'geometry': {}, 'baseline': 1})
+    granule = get_asf_product({'sceneName': 'GranuleName'})
+    granule2 = get_asf_product({'sceneName': 'GranuleName2'})
 
     subscription = {
         'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
@@ -133,8 +132,8 @@ def test_get_jobs_for_granule():
             }
         }
     }
-    payload = process_new_granules.get_jobs_for_granule(subscription, granule)
-    payload2 = process_new_granules.get_jobs_for_granule(subscription, granule2)
+    payload = subscription_worker.get_jobs_for_granule(subscription, granule)
+    payload2 = subscription_worker.get_jobs_for_granule(subscription, granule2)
     assert payload == [
         {
             'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
@@ -172,8 +171,8 @@ def test_get_jobs_for_granule():
         }
     }
     mock_granules = ['granule2', 'granule3']
-    with patch('process_new_granules.get_neighbors', lambda x, y, z: mock_granules):
-        payload = process_new_granules.get_jobs_for_granule(subscription, granule)
+    with patch('subscription_worker.get_neighbors', lambda x, y, z: mock_granules):
+        payload = subscription_worker.get_jobs_for_granule(subscription, granule)
         assert payload == [
             {
                 'subscription_id': '51b576b0-a89b-4108-a9d8-7ecb52aee950',
@@ -200,7 +199,34 @@ def test_get_jobs_for_granule():
         }
     }
     with pytest.raises(ValueError):
-        process_new_granules.get_jobs_for_granule(subscription, granule)
+        subscription_worker.get_jobs_for_granule(subscription, granule)
+
+
+def test_get_jobs_for_subscription():
+    def mock_get_unprocessed_granules(subscription):
+        assert subscription == {}
+        return ['a', 'b', 'c']
+
+    def mock_get_jobs_for_granule(subscription, granule):
+        return [{'granule': granule}]
+
+    with patch('subscription_worker.get_unprocessed_granules', mock_get_unprocessed_granules):
+        with patch('subscription_worker.get_jobs_for_granule', mock_get_jobs_for_granule):
+
+            result = subscription_worker.get_jobs_for_subscription(subscription={}, limit=20)
+            assert result == [
+                {'granule': 'a'},
+                {'granule': 'b'},
+                {'granule': 'c'},
+            ]
+
+            result = subscription_worker.get_jobs_for_subscription(subscription={}, limit=1)
+            assert result == [
+                {'granule': 'a'},
+            ]
+
+            result = subscription_worker.get_jobs_for_subscription(subscription={}, limit=0)
+            assert result == []
 
 
 def test_lambda_handler(tables):
@@ -255,41 +281,25 @@ def test_lambda_handler(tables):
         else:
             return []
 
-    with patch('process_new_granules.handle_subscription') as p:
-        with patch('process_new_granules.get_unprocessed_granules', mock_get_unprocessed_granules):
-            process_new_granules.lambda_handler(1, 1)
-            assert p.call_count == 3
+    with patch('subscription_worker.handle_subscription') as mock_handle_subscription:
+        with patch('subscription_worker.get_unprocessed_granules', mock_get_unprocessed_granules):
+            subscription_worker.lambda_handler({'subscription': items[0]}, None)
+
+            with pytest.raises(ValueError, match=r'subscription sub2 is disabled'):
+                subscription_worker.lambda_handler({'subscription': items[1]}, None)
+
+            subscription_worker.lambda_handler({'subscription': items[2]}, None)
+            subscription_worker.lambda_handler({'subscription': items[3]}, None)
+
+        assert mock_handle_subscription.call_count == 3
 
     response = tables.subscriptions_table.scan()['Items']
+
+    sub1 = [sub for sub in response if sub['subscription_id'] == 'sub1'][0]
+    assert sub1['enabled'] is True
+
     sub3 = [sub for sub in response if sub['subscription_id'] == 'sub3'][0]
     assert sub3['enabled'] is False
 
     sub4 = [sub for sub in response if sub['subscription_id'] == 'sub4'][0]
     assert sub4['enabled'] is True
-
-
-def test_get_jobs_for_subscription():
-    def mock_get_unprocessed_granules(subscription):
-        assert subscription == {}
-        return ['a', 'b', 'c']
-
-    def mock_get_jobs_for_granule(subscription, granule):
-        return [{'granule': granule}]
-
-    with patch('process_new_granules.get_unprocessed_granules', mock_get_unprocessed_granules):
-        with patch('process_new_granules.get_jobs_for_granule', mock_get_jobs_for_granule):
-
-            result = process_new_granules.get_jobs_for_subscription(subscription={}, limit=20)
-            assert result == [
-                {'granule': 'a'},
-                {'granule': 'b'},
-                {'granule': 'c'},
-            ]
-
-            result = process_new_granules.get_jobs_for_subscription(subscription={}, limit=1)
-            assert result == [
-                {'granule': 'a'},
-            ]
-
-            result = process_new_granules.get_jobs_for_subscription(subscription={}, limit=0)
-            assert result == []

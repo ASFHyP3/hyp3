@@ -15,7 +15,7 @@ def get_unprocessed_granules(subscription):
     )
     processed_granules = [job['job_parameters']['granules'][0] for job in processed_jobs]
 
-    search_results = asf_search.search(**dynamo.util.convert_decimals_to_numbers(subscription['search_parameters']))
+    search_results = asf_search.search(**subscription['search_parameters'])
     return [result for result in search_results if result.properties['sceneName'] not in processed_granules]
 
 
@@ -64,20 +64,30 @@ def disable_subscription(subscription):
 
 
 def handle_subscription(subscription):
-    print(f'Handling subscription {subscription["subscription_id"]} for user {subscription["user_id"]}')
     jobs = get_jobs_for_subscription(subscription, limit=20)
     if jobs:
         print(f'Submitting {len(jobs)} jobs')
         dynamo.jobs.put_jobs(subscription['user_id'], jobs, fail_when_over_quota=False)
 
 
-def lambda_handler(event, context):
-    subscriptions = dynamo.subscriptions.get_all_subscriptions()
-    for subscription in subscriptions:
-        cutoff_date = datetime.now(tz=timezone.utc) - timedelta(days=5)
-        if subscription['enabled']:
-            handle_subscription(subscription)
+def lambda_handler(event, context) -> None:
+    subscription = event['subscription']
+    print(f'Handling subscription {subscription["subscription_id"]} for user {subscription["user_id"]}')
 
-            if dateutil.parser.parse(subscription['search_parameters']['end']) <= cutoff_date\
-                    and len(get_unprocessed_granules(subscription)) == 0:
-                disable_subscription(subscription)
+    if not subscription['enabled']:
+        raise ValueError(f'subscription {subscription["subscription_id"]} is disabled')
+
+    handle_subscription(subscription)
+
+    cutoff_date = datetime.now(tz=timezone.utc) - timedelta(days=5)
+    print(f'Cutoff date: {cutoff_date.isoformat()}')
+
+    end_date = dateutil.parser.parse(subscription['search_parameters']['end'])
+    print(f'Subscription end date: {end_date.isoformat()}')
+
+    unprocessed_granule_count = len(get_unprocessed_granules(subscription))
+    print(f'Unprocessed granules: {unprocessed_granule_count}')
+
+    if end_date <= cutoff_date and unprocessed_granule_count == 0:
+        print(f'Disabling subscription {subscription["subscription_id"]}')
+        disable_subscription(subscription)
