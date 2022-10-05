@@ -22,24 +22,24 @@ def s3_stubber():
 
 
 def test_get_log_stream():
-    processing_results = {
+    result = {
         'Container': {
             'LogStreamName': 'mySucceededLogStream',
         },
     }
-    assert upload_log.get_log_stream(processing_results) == 'mySucceededLogStream'
+    assert upload_log.get_log_stream(result) == 'mySucceededLogStream'
 
-    processing_results = {
+    result = {
         'Error': 'States.TaskFailed',
         'Cause': '{"Container": {"LogStreamName": "myFailedLogStream"}}',
     }
-    assert upload_log.get_log_stream(processing_results) == 'myFailedLogStream'
+    assert upload_log.get_log_stream(result) == 'myFailedLogStream'
 
-    processing_results = {
+    result = {
         'Error': 'States.TaskFailed',
         'Cause': '{"Container": {}}',
     }
-    assert upload_log.get_log_stream(processing_results) is None
+    assert upload_log.get_log_stream(result) is None
 
 
 def test_get_log_content(cloudwatch_stubber):
@@ -117,7 +117,7 @@ def test_lambda_handler(mock_get_log_content: MagicMock, mock_write_log_to_s3: M
     event = {
         'prefix': 'test-prefix',
         'log_group': 'test-log-group',
-        'processing_results': {'Container': {'LogStreamName': 'test-log-stream'}}
+        'processing_results': {'step_0': {'Container': {'LogStreamName': 'test-log-stream'}}}
     }
 
     upload_log.lambda_handler(event, None)
@@ -133,11 +133,14 @@ def test_lambda_handler_no_log_stream(mock_write_log_to_s3: MagicMock):
         'prefix': 'test-prefix',
         'log_group': 'test-log-group',
         'processing_results': {
-            'Error': '',
-            'Cause': '{"Container": {},'
-                     '"Status": "FAILED",'
-                     '"StatusReason": "foo reason",'
-                     '"Attempts": []}'
+            'step_0':
+                {
+                    'Error': '',
+                    'Cause': '{"Container": {},'
+                             '"Status": "FAILED",'
+                             '"StatusReason": "foo reason",'
+                             '"Attempts": []}'
+                }
         }
     }
 
@@ -159,14 +162,16 @@ def test_lambda_handler_log_stream_does_not_exist():
         'prefix': 'test-prefix',
         'log_group': 'test-log-group',
         'processing_results': {
-            'Error': '',
-            'Cause': '{"Container": {"LogStreamName": "test-log-stream"},'
-                     '"Status": "FAILED",'
-                     '"StatusReason": "Task failed to start",'
-                     '"Attempts": ['
-                     '{"Container": {"Reason": "error message 1"}},'
-                     '{"Container": {"Reason": "error message 2"}},'
-                     '{"Container": {"Reason": "error message 3"}}]}'
+            'step_0': {
+                'Error': '',
+                'Cause': '{"Container": {"LogStreamName": "test-log-stream"},'
+                         '"Status": "FAILED",'
+                         '"StatusReason": "Task failed to start",'
+                         '"Attempts": ['
+                         '{"Container": {"Reason": "error message 1"}},'
+                         '{"Container": {"Reason": "error message 2"}},'
+                         '{"Container": {"Reason": "error message 3"}}]}'
+            }
         }
     }
 
@@ -194,14 +199,16 @@ def test_lambda_handler_resource_not_found():
         'prefix': 'test-prefix',
         'log_group': 'test-log-group',
         'processing_results': {
-            'Error': '',
-            'Cause': '{"Container": {"LogStreamName": "test-log-stream"},'
-                     '"Status": "FAILED",'
-                     '"StatusReason": "Task failed to start",'
-                     '"Attempts": ['
-                     '{"Container": {"Reason": "error message 1"}},'
-                     '{"Container": {"Reason": "error message 2"}},'
-                     '{"Container": {"Reason": "error message 3"}}]}'
+            'step_0': {
+                'Error': '',
+                'Cause': '{"Container": {"LogStreamName": "test-log-stream"},'
+                         '"Status": "FAILED",'
+                         '"StatusReason": "Task failed to start",'
+                         '"Attempts": ['
+                         '{"Container": {"Reason": "error message 1"}},'
+                         '{"Container": {"Reason": "error message 2"}},'
+                         '{"Container": {"Reason": "error message 3"}}]}'
+            }
         }
     }
 

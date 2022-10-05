@@ -81,7 +81,7 @@ Parameters:
   InstanceTypes:
     Description: EC2 instance types to include in AWS Batch Compute Environment
     Type: CommaDelimitedList
-    Default: r5d.xlarge
+    Default: r6id.xlarge
 
   {% if security_environment != 'EDC' %}
   DomainName:
@@ -170,7 +170,20 @@ Resources:
         {% endif %}
       TemplateURL: scale-cluster/scale-cluster-cf.yml
 
-  ProcessNewGranules:
+  SubscriptionManager:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        SubscriptionsTable: !Ref SubscriptionsTable
+        SubscriptionWorkerArn: !GetAtt SubscriptionWorker.Outputs.LambdaArn
+        {% if security_environment == 'EDC' %}
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
+      TemplateURL: subscription-manager/subscription-manager-cf.yml
+
+  SubscriptionWorker:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
@@ -183,7 +196,7 @@ Resources:
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
-      TemplateURL: process-new-granules/process-new-granules-cf.yml
+      TemplateURL: subscription-worker/subscription-worker-cf.yml
 
   HandleBatchEvent:
     Type: AWS::CloudFormation::Stack

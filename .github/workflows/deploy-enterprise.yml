@@ -19,7 +19,7 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/AUTORIFT_ITS_LIVE.yml
-            instance_types: r5d.xlarge,r5dn.xlarge
+            instance_types: r6id.xlarge,r5dn.xlarge
             default_max_vcpus: 10000
             expanded_max_vcpus: 10000
             required_surplus: 0
@@ -34,7 +34,7 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c5d.xlarge
+            instance_types: c6id.xlarge,c5d.xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
@@ -49,7 +49,7 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c5d.xlarge
+            instance_types: c6id.xlarge,c5d.xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
@@ -64,7 +64,7 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c5d.xlarge
+            instance_types: c6id.xlarge,c5d.xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
@@ -75,11 +75,11 @@ jobs:
           - environment: hyp3-avo
             domain: hyp3-avo.asf.alaska.edu
             template_bucket: cf-templates-1x4a21iq1cba7-us-west-2
-            image_tag: 5.4.2.dev2_ga6225f8
+            image_tag: latest
             product_lifetime_in_days: 365000
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml
-            instance_types: r5d.xlarge,r5dn.xlarge
+            instance_types: r6id.xlarge,r5dn.xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -94,7 +94,7 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml
-            instance_types: r5d.xlarge,r5dn.xlarge
+            instance_types: r6id.xlarge,r5dn.xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -109,7 +109,7 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/RTC_GAMMA_10M.yml job_spec/WATER_MAP_10M.yml job_spec/RIVER_WIDTH.yml
-            instance_types: r5d.4xlarge,r5dn.4xlarge
+            instance_types: r6id.4xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0

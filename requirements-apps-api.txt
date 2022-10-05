@@ -1,9 +1,9 @@
-cryptography==38.0.1
+cryptography==37.0.4
 flask==2.1.0
 Flask-Cors==3.0.10
 openapi-core==0.14.5
 prance==0.21.8.0
-PyJWT==2.4.0
+PyJWT==2.5.0
 requests==2.28.1
 serverless_wsgi==3.0.1
 shapely==1.8.4

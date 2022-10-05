@@ -4,9 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.21.3]
+### Added
+- AutoRIFT jobs now allow submission of Landsat 4, 5, and 7 Collection 2 scene pairs
+
+## [2.21.2]
+### Changed
+- Subscription handling is now parallelized using a manager to launch one worker per subscription, in order to help
+  prevent timeouts while handling subscriptions.
+
+## [2.21.1]
+### Changed
+- Upgraded Batch compute environments to the latest generation `r6id`/`c6id` EC2 instance types
+
 ## [2.21.0]
 ### Added
-- AutoRIFT jobs now allow submission with Landsat 4, 5, and 7 Collection 2 granules
+- Added `processing_times` field to the Job schema in the API in order to support jobs with multiple processing steps.
+### Removed
+- Removed `processing_time_in_seconds` field from the Job schema.
 
 ## [2.20.0]
 ### Added

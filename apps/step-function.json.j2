@@ -4,11 +4,12 @@
     "SET_DEFAULT_RESULTS": {
       "Type": "Pass",
       "Result": {
-        "processing_time_in_seconds": 0,
+        "processing_times": [],
         "get_files": {
           "logs": [],
           "expiration_time": null
-        }
+        },
+        "processing_failed": false
       },
       "ResultPath": "$.results",
       "Next": "EXECUTION_STARTED"
@@ -115,7 +116,7 @@
           "Attempts": 3
         }
       },
-      "ResultPath": "$.results.processing_results",
+      "ResultPath": "$.results.processing_results.step_{{ loop.index0 }}",
       "Next": "{% if not loop.last %}{{ loop.nextitem['name'] }}{% else %}GET_FILES{% endif %}",
       "Retry": [
         {
@@ -137,13 +138,19 @@
           "ErrorEquals": [
             "States.ALL"
           ],
-          "Next": "UPLOAD_LOG",
-          "ResultPath": "$.results.processing_results"
+          "Next": "PROCESSING_FAILED",
+          "ResultPath": "$.results.processing_results.step_{{ loop.index0 }}"
         }
       ]
     },
     {% endfor %}
     {% endfor %}
+    "PROCESSING_FAILED": {
+      "Type": "Pass",
+      "Result": true,
+      "ResultPath": "$.results.processing_failed",
+      "Next": "UPLOAD_LOG"
+    },
     "UPLOAD_LOG":{
       "Type": "Task",
       "Resource": "${UploadLogLambdaArn}",
@@ -218,17 +225,17 @@
             "States.ALL"
           ],
           "Next": "JOB_FAILED",
-          "ResultPath": "$.results.processing_time_in_seconds_error"
+          "ResultPath": "$.results.check_processing_time_error"
         }
       ],
-      "ResultPath": "$.results.processing_time_in_seconds",
+      "ResultPath": "$.results.processing_times",
       "Next": "CHECK_STATUS"
     },
     "CHECK_STATUS": {
       "Type" : "Choice",
       "Choices": [{
-        "Variable": "$.results.processing_results.Error",
-        "IsPresent": true,
+        "Variable": "$.results.processing_failed",
+        "BooleanEquals": true,
         "Next": "JOB_FAILED"
       }],
       "Default": "JOB_SUCCEEDED"
@@ -244,7 +251,7 @@
         "thumbnail_images.$": "$.results.get_files.thumbnail_images",
         "logs.$": "$.results.get_files.logs",
         "expiration_time.$": "$.results.get_files.expiration_time",
-        "processing_time_in_seconds.$": "$.results.processing_time_in_seconds"
+        "processing_times.$": "$.results.processing_times"
       },
       "Retry": [
         {
@@ -265,7 +272,7 @@
         "status_code": "FAILED",
         "logs.$": "$.results.get_files.logs",
         "expiration_time.$": "$.results.get_files.expiration_time",
-        "processing_time_in_seconds.$": "$.results.processing_time_in_seconds"
+        "processing_times.$": "$.results.processing_times"
       },
       "Retry": [
         {
