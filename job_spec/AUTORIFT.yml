@@ -31,12 +31,12 @@ AUTORIFT:
               minLength: 23
               maxLength: 25
               example: S2A_22WEB_20200627_0_L1C
-            - description: The name of the Landsat 8 or 9 Collection 2 granule to process
+            - description: The name of the Landsat 4, 5, 7, 8 or 9 Collection 2 granule to process
               type: string
-              pattern: "^L[CO]0[89]_"
+              pattern: "^L([CO]0[89]|E07|T0[45])_L1"
               minLength: 40
               maxLength: 40
-              example: LC08_L1GT_118112_20210107_20210107_02_RT
+              example: LC08_L1GT_118112_20210107_20210107_02_T2
     bucket_prefix:
       default:  '""'
   validators: []
