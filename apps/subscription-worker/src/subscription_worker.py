@@ -75,8 +75,7 @@ def handle_subscription(subscription):
 
 
 def get_logger(request_id: str) -> logging.LoggerAdapter:
-    attrs = ['asctime', 'levelname', 'request_id', 'message']
-    format_str = '\t'.join('{' + attr + '}' for attr in attrs)
+    format_str = '{asctime}\t{levelname}\tRequestId: {request_id}\t{message}'
 
     logging.basicConfig(level=logging.INFO, format=format_str, style='{')
     logging.Formatter.formatTime = (
