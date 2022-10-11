@@ -57,7 +57,7 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.1.0
 
       - uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -66,7 +66,7 @@ jobs:
           aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.9
 
@@ -101,6 +101,6 @@ jobs:
   call-bump-version-workflow:
     if: github.ref == 'refs/heads/main'
     needs: deploy
-    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@main
+    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.4.0
     secrets:
       USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}

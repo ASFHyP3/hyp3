@@ -117,12 +117,27 @@ jobs:
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
+          - environment: azdwr-hyp3
+            domain: azdwr-hyp3.asf.alaska.edu
+            template_bucket: cf-templates-xlga17noink6-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 30
+            quota: 0
+            job_files: job_spec/INSAR_GAMMA.yml
+            instance_types: r6id.xlarge,r5dn.xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
+
     environment:
       name: ${{ matrix.environment }}
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.1.0
 
       - uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -131,7 +146,7 @@ jobs:
           aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.9
 
