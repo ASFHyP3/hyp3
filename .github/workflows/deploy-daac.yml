@@ -72,7 +72,7 @@ jobs:
             required_surplus: 2000
             security_environment: EDC
             ami_id: image_id_ecs_amz2
-            distribution_url: 'https://foo.cloudfront.net'
+            distribution_url: 'https://d1riv60tezqha9.cloudfront.net'
 
     environment:
       name: ${{ matrix.environment }}
