@@ -52,6 +52,28 @@ jobs:
             ami_id: image_id_ecs_amz2
             distribution_url: 'https://d1riv60tezqha9.cloudfront.net'
 
+          - environment: hyp3-edc-contingency
+            domain: ''
+            api_name: hyp3-contingency
+            template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
+            image_tag: test
+            product_lifetime_in_days: 14
+            quota: 10
+            deploy_ref: refs/heads/develop
+            job_files: >-
+              job_spec/AUTORIFT.yml
+              job_spec/INSAR_GAMMA.yml
+              job_spec/RTC_GAMMA.yml
+              job_spec/INSAR_ISCE.yml
+              job_spec/WATER_MAP.yml
+            instance_types: r6id.xlarge,r5dn.xlarge
+            default_max_vcpus: 20
+            expanded_max_vcpus: 40
+            required_surplus: 50
+            security_environment: EDC
+            ami_id: image_id_ecs_amz2
+            distribution_url: 'https://d1riv60tezqha9.cloudfront.net'
+
     environment:
       name: ${{ matrix.environment }}
       url: https://${{ matrix.domain }}
