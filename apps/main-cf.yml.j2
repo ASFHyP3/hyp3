@@ -378,6 +378,8 @@ Resources:
           KeySchema:
             - AttributeName: execution_started
               KeyType: HASH
+            - AttributeName: request_time
+              KeyType: RANGE
           Projection:
             ProjectionType: ALL
 
