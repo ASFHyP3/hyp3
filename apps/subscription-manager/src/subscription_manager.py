@@ -40,4 +40,6 @@ def lambda_handler(event, context):
             f'Invoking worker for subscription {subscription["subscription_id"]}'
         )
         response = invoke_worker(worker_function_arn, subscription)
-        logger.info(f'Got response status code {response["StatusCode"]} for subscription {subscription["subscription_id"]}')
+        logger.info(
+            f'Got response status code {response["StatusCode"]} for subscription {subscription["subscription_id"]}'
+        )
