@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
@@ -6,11 +5,6 @@ import asf_search
 import pytest
 
 import subscription_worker
-
-
-@dataclass(frozen=True)
-class LambdaContext:
-    aws_request_id: str
 
 
 def get_asf_product(properties: dict) -> asf_search.ASFProduct:
@@ -287,16 +281,15 @@ def test_lambda_handler(tables):
         else:
             return []
 
-    context = LambdaContext(aws_request_id='')
     with patch('subscription_worker.handle_subscription') as mock_handle_subscription:
         with patch('subscription_worker.get_unprocessed_granules', mock_get_unprocessed_granules):
-            subscription_worker.lambda_handler({'subscription': items[0]}, context)
+            subscription_worker.lambda_handler({'subscription': items[0]}, None)
 
             with pytest.raises(ValueError, match=r'subscription sub2 is disabled'):
-                subscription_worker.lambda_handler({'subscription': items[1]}, context)
+                subscription_worker.lambda_handler({'subscription': items[1]}, None)
 
-            subscription_worker.lambda_handler({'subscription': items[2]}, context)
-            subscription_worker.lambda_handler({'subscription': items[3]}, context)
+            subscription_worker.lambda_handler({'subscription': items[2]}, None)
+            subscription_worker.lambda_handler({'subscription': items[3]}, None)
 
         assert mock_handle_subscription.call_count == 3
 

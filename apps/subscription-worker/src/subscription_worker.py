@@ -1,14 +1,10 @@
-import logging
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 
 import asf_search
 import dateutil.parser
 
 import dynamo
-
-LOG: Optional[logging.LoggerAdapter] = None
 
 
 def get_unprocessed_granules(subscription):
@@ -70,27 +66,13 @@ def disable_subscription(subscription):
 def handle_subscription(subscription):
     jobs = get_jobs_for_subscription(subscription, limit=20)
     if jobs:
-        LOG.info(f'Submitting {len(jobs)} jobs')
+        print(f'Submitting {len(jobs)} jobs')
         dynamo.jobs.put_jobs(subscription['user_id'], jobs, fail_when_over_quota=False)
 
 
-def get_logger(request_id: str) -> logging.LoggerAdapter:
-    format_str = '{asctime}\t{levelname}\tRequestId: {request_id}\t{message}'
-
-    logging.basicConfig(level=logging.INFO, format=format_str, style='{')
-    logging.Formatter.formatTime = (
-        lambda self, record, datefmt=None: datetime.fromtimestamp(record.created, timezone.utc).isoformat()
-    )
-
-    return logging.LoggerAdapter(logger=logging.getLogger(), extra={'request_id': request_id})
-
-
 def lambda_handler(event, context) -> None:
-    global LOG
-    LOG = get_logger(context.aws_request_id)
-
     subscription = event['subscription']
-    LOG.info(f'Handling subscription {subscription["subscription_id"]} for user {subscription["user_id"]}')
+    print(f'Handling subscription {subscription["subscription_id"]} for user {subscription["user_id"]}')
 
     if not subscription['enabled']:
         raise ValueError(f'subscription {subscription["subscription_id"]} is disabled')
@@ -98,14 +80,14 @@ def lambda_handler(event, context) -> None:
     handle_subscription(subscription)
 
     cutoff_date = datetime.now(tz=timezone.utc) - timedelta(days=5)
-    LOG.info(f'Cutoff date: {cutoff_date.isoformat()}')
+    print(f'Cutoff date: {cutoff_date.isoformat()}')
 
     end_date = dateutil.parser.parse(subscription['search_parameters']['end'])
-    LOG.info(f'Subscription end date: {end_date.isoformat()}')
+    print(f'Subscription end date: {end_date.isoformat()}')
 
     unprocessed_granule_count = len(get_unprocessed_granules(subscription))
-    LOG.info(f'Unprocessed granules: {unprocessed_granule_count}')
+    print(f'Unprocessed granules: {unprocessed_granule_count}')
 
     if end_date <= cutoff_date and unprocessed_granule_count == 0:
-        LOG.info(f'Disabling subscription {subscription["subscription_id"]}')
+        print(f'Disabling subscription {subscription["subscription_id"]}')
         disable_subscription(subscription)
