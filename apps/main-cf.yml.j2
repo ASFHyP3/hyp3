@@ -354,6 +354,8 @@ Resources:
           AttributeType: S
         - AttributeName: request_time
           AttributeType: S
+        - AttributeName: execution_started
+          AttributeType: B
       KeySchema:
         - AttributeName: job_id
           KeyType: HASH
@@ -370,6 +372,14 @@ Resources:
           KeySchema:
             - AttributeName: status_code
               KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: execution_started
+          KeySchema:
+            - AttributeName: execution_started
+              KeyType: HASH
+            - AttributeName: request_time
+              KeyType: RANGE
           Projection:
             ProjectionType: ALL
 
