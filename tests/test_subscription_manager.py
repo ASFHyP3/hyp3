@@ -1,9 +1,15 @@
 import os
+from dataclasses import dataclass
 from unittest.mock import call, patch
 
 import subscription_manager
 
 TEST_WORKER_ARN = 'test-worker-arn'
+
+
+@dataclass(frozen=True)
+class LambdaContext:
+    aws_request_id: str
 
 
 def test_lambda_handler(tables):
@@ -20,7 +26,7 @@ def test_lambda_handler(tables):
             patch.dict(os.environ, {'SUBSCRIPTION_WORKER_ARN': TEST_WORKER_ARN}):
         mock_invoke_worker.return_value = {'StatusCode': None}
 
-        subscription_manager.lambda_handler(None, None)
+        subscription_manager.lambda_handler(None, LambdaContext(aws_request_id=''))
 
         assert mock_invoke_worker.mock_calls == [
             call(TEST_WORKER_ARN, items[0]),
