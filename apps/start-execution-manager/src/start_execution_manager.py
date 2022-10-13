@@ -8,6 +8,8 @@ from dynamo import jobs
 
 STEP_FUNCTION = boto3.client('stepfunctions')
 
+# TODO update
+
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):

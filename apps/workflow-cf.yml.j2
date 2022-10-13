@@ -189,9 +189,10 @@ Resources:
       {% endif %}
       TemplateURL: check-processing-time/check-processing-time-cf.yml
 
-  StartExecution:
+  StartExecutionManager:
     Type: AWS::CloudFormation::Stack
     Properties:
+      {# TODO update parameters #}
       Parameters:
         JobsTable: !Ref JobsTable
         StepFunctionArn: !Ref StepFunction
@@ -200,7 +201,19 @@ Resources:
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
-      TemplateURL: start-execution/start-execution-cf.yml
+      TemplateURL: start-execution-manager/start-execution-manager-cf.yml
+
+  StartExecutionWorker:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      {# TODO update parameters #}
+      Parameters:
+        {% if security_environment == 'EDC' %}
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
+      TemplateURL: start-execution-worker/start-execution-worker-cf.yml
 
   UploadLog:
     Type: AWS::CloudFormation::Stack
