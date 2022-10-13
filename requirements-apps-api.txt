@@ -6,6 +6,6 @@ prance==0.21.8.0
 PyJWT==2.5.0
 requests==2.28.1
 serverless_wsgi==3.0.1
-shapely==1.8.5
+shapely==1.8.5.post1
 strict-rfc3339==0.7
 ./lib/dynamo/
