@@ -1,45 +1,30 @@
 import json
-from decimal import Decimal
-from os import environ
+import os
 
 import boto3
+import dynamo
 
-from dynamo import jobs
-
-STEP_FUNCTION = boto3.client('stepfunctions')
 
 # TODO update
 
-
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, Decimal):
-            if int(o) == o:
-                return int(o)
-            return float(o)
-        return super(DecimalEncoder, self).default(o)
+LAMBDA_CLIENT = boto3.client('lambda')
 
 
-def convert_to_string(obj):
-    if isinstance(obj, list):
-        return ' '.join([str(item) for item in obj])
-    return str(obj)
+def invoke_worker(worker_function_arn: str, jobs: list[dict]) -> dict:
+    payload = json.dumps(
+        {'jobs': dynamo.util.convert_decimals_to_numbers(jobs)}
+    )
+    return LAMBDA_CLIENT.invoke(
+        FunctionName=worker_function_arn,
+        InvocationType='Event',
+        Payload=payload,
+    )
 
 
-def convert_parameters_to_strings(parameters):
-    return {key: convert_to_string(value) for key, value in parameters.items()}
-
-
-def submit_jobs(jobs):
-    for job in jobs:
-        job['job_parameters'] = convert_parameters_to_strings(job['job_parameters'])
-        STEP_FUNCTION.start_execution(
-            stateMachineArn=environ['STEP_FUNCTION_ARN'],
-            input=json.dumps(job, cls=DecimalEncoder, sort_keys=True),
-            name=job['job_id'],
-        )
-
-
+# TODO add logging
 def lambda_handler(event, context):
-    pending_jobs = jobs.get_jobs_waiting_for_execution(limit=400)
-    submit_jobs(pending_jobs)
+    worker_function_arn = os.environ['SUBSCRIPTION_WORKER_ARN']  # TODO add this in cf
+    pending_jobs = dynamo.jobs.get_jobs_waiting_for_execution(limit=400)  # TODO increase this limit, or just remove it?
+    batch_size = 500  # TODO decide on appropriate value
+    for i in range(0, len(pending_jobs), batch_size):
+        invoke_worker(worker_function_arn, pending_jobs[i:i+batch_size])
