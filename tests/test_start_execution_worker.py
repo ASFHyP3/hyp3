@@ -97,3 +97,10 @@ def test_submit_jobs():
                 name='job1',
             )
         ]
+
+
+def test_lambda_handler():
+    with patch('start_execution_worker.submit_jobs') as mock_submit_jobs:
+        start_execution_worker.lambda_handler({'jobs': [1, 2, 3]}, None)
+
+        assert mock_submit_jobs.mock_calls == [call([1, 2, 3])]
