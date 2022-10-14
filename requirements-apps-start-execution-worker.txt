@@ -1,1 +1,1 @@
-# TODO add requirements
+boto3==1.24.89

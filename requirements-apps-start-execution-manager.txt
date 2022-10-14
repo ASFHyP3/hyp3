@@ -1,2 +1,2 @@
-# TODO update
+boto3==1.24.89
 ./lib/dynamo/
