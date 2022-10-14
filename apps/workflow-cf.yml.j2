@@ -192,10 +192,9 @@ Resources:
   StartExecutionManager:
     Type: AWS::CloudFormation::Stack
     Properties:
-      {# TODO update parameters #}
       Parameters:
         JobsTable: !Ref JobsTable
-        StepFunctionArn: !Ref StepFunction
+        StartExecutionWorkerArn: !GetAtt StartExecutionWorker.Outputs.LambdaArn
         {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
@@ -206,8 +205,8 @@ Resources:
   StartExecutionWorker:
     Type: AWS::CloudFormation::Stack
     Properties:
-      {# TODO update parameters #}
       Parameters:
+        StepFunctionArn: !Ref StepFunction
         {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
