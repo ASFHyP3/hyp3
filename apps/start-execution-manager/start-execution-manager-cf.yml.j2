@@ -1,13 +1,11 @@
 AWSTemplateFormatVersion: 2010-09-09
 
-# TODO update
-
 Parameters:
 
   JobsTable:
     Type: String
 
-  StepFunctionArn:
+  StartExecutionWorkerArn:
     Type: String
 
   {% if security_environment == 'EDC' %}
@@ -68,9 +66,6 @@ Resources:
           - Effect: Allow
             Action: dynamodb:Query
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
-          - Effect: Allow
-            Action: states:StartExecution
-            Resource: !Ref StepFunctionArn
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -78,9 +73,9 @@ Resources:
       Environment:
         Variables:
           JOBS_TABLE_NAME: !Ref JobsTable
-          STEP_FUNCTION_ARN: !Ref StepFunctionArn
+          START_EXECUTION_WORKER_ARN: !Ref StartExecutionWorkerArn
       Code: src/
-      Handler: start_execution.lambda_handler
+      Handler: start_execution_manager.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.9
