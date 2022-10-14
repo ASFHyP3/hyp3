@@ -35,4 +35,5 @@ def lambda_handler(event, context) -> None:
     for i in range(0, len(pending_jobs), batch_size):
         jobs = pending_jobs[i:i + batch_size]
         logger.info(f'Invoking worker for {len(jobs)} jobs')
-        invoke_worker(worker_function_arn, jobs)
+        response = invoke_worker(worker_function_arn, jobs)
+        logger.info(f'Got response status code {response["StatusCode"]}')
