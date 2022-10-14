@@ -1,22 +1,23 @@
 import json
 import os
+from typing import Any
 
 import boto3
 
 STEP_FUNCTION = boto3.client('stepfunctions')
 
 
-def convert_to_string(obj):
+def convert_to_string(obj: Any) -> str:
     if isinstance(obj, list):
         return ' '.join([str(item) for item in obj])
     return str(obj)
 
 
-def convert_parameters_to_strings(parameters):
+def convert_parameters_to_strings(parameters: dict[str, Any]) -> dict[str, str]:
     return {key: convert_to_string(value) for key, value in parameters.items()}
 
 
-def submit_jobs(jobs):
+def submit_jobs(jobs: list[dict]) -> None:
     step_function_arn = os.environ['STEP_FUNCTION_ARN']
     for job in jobs:
         # Convert parameters to strings so they can be passed to Batch; see:
@@ -30,6 +31,5 @@ def submit_jobs(jobs):
 
 
 # TODO add logging
-# TODO add type hints
-def lambda_handler(event, context):
+def lambda_handler(event, context) -> None:
     submit_jobs(event['jobs'])
