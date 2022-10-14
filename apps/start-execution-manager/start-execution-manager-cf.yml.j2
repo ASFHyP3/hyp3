@@ -66,6 +66,10 @@ Resources:
           - Effect: Allow
             Action: dynamodb:Query
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
+          - Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+            Resource: !Ref StartExecutionWorkerArn
 
   Lambda:
     Type: AWS::Lambda::Function
