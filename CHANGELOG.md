@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.21.4]
+### Changed
+- Batches of step function executions are now started in parallel using a manager to launch one worker per batch of jobs
+  (currently up to 6 batches of 300 jobs for a total of 1800 jobs each time the manager runs).
+
 ## [2.21.3]
 ### Added
 - AutoRIFT jobs now allow submission of Landsat 4, 5, and 7 Collection 2 scene pairs
