@@ -112,3 +112,16 @@ def test_lambda_handler_50_jobs():
         assert mock_invoke_worker.mock_calls == [
             call('test-worker-function-arn', mock_jobs),
         ]
+
+
+def test_lambda_handler_no_jobs():
+    with patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution, \
+            patch('start_execution_manager.invoke_worker') as mock_invoke_worker, \
+            patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True):
+        mock_get_jobs_waiting_for_execution.return_value = []
+
+        start_execution_manager.lambda_handler(None, None)
+
+        mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=1800)
+
+        mock_invoke_worker.assert_not_called()
