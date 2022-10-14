@@ -60,6 +60,8 @@ def test_lambda_handler_1800_jobs():
         mock_jobs = list(range(1800))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
 
+        mock_invoke_worker.return_value = {'StatusCode': None}
+
         start_execution_manager.lambda_handler(None, None)
 
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=1800)
@@ -81,6 +83,8 @@ def test_lambda_handler_700_jobs():
         mock_jobs = list(range(700))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
 
+        mock_invoke_worker.return_value = {'StatusCode': None}
+
         start_execution_manager.lambda_handler(None, None)
 
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=1800)
@@ -98,6 +102,8 @@ def test_lambda_handler_50_jobs():
             patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True):
         mock_jobs = list(range(50))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
+
+        mock_invoke_worker.return_value = {'StatusCode': None}
 
         start_execution_manager.lambda_handler(None, None)
 
