@@ -1,6 +1,6 @@
 import json
 import os
-from unittest.mock import patch, call
+from unittest.mock import call, patch
 
 import start_execution_worker
 

@@ -2,6 +2,7 @@ import json
 import os
 
 import boto3
+
 import dynamo
 
 
@@ -27,4 +28,4 @@ def lambda_handler(event, context) -> None:
     pending_jobs = dynamo.jobs.get_jobs_waiting_for_execution(limit=1800)
     batch_size = 300
     for i in range(0, len(pending_jobs), batch_size):
-        invoke_worker(worker_function_arn, pending_jobs[i:i+batch_size])
+        invoke_worker(worker_function_arn, pending_jobs[i:i + batch_size])
