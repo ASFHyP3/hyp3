@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.21.4]
 ### Changed
 - Batches of step function executions are now started in parallel using a manager to launch one worker per batch of jobs
-  (currently up to 6 batches of 300 jobs for a total of 1800 jobs each time the manager runs).
+  (currently up to 3 batches of 300 jobs for a total of 900 jobs each time the manager runs).
 
 ## [2.21.3]
 ### Added

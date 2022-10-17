@@ -28,7 +28,7 @@ def lambda_handler(event, context) -> None:
     worker_function_arn = os.environ['START_EXECUTION_WORKER_ARN']
     logger.info(f'Worker function ARN: {worker_function_arn}')
 
-    pending_jobs = dynamo.jobs.get_jobs_waiting_for_execution(limit=1800)
+    pending_jobs = dynamo.jobs.get_jobs_waiting_for_execution(limit=900)
     logger.info(f'Got {len(pending_jobs)} pending jobs')
 
     batch_size = 300
