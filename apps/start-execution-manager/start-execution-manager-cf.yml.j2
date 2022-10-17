@@ -2,10 +2,10 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  SubscriptionsTable:
+  JobsTable:
     Type: String
 
-  SubscriptionWorkerArn:
+  StartExecutionWorkerArn:
     Type: String
 
   {% if security_environment == 'EDC' %}
@@ -64,27 +64,26 @@ Resources:
               - logs:PutLogEvents
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
           - Effect: Allow
-            Action:
-              - dynamodb:Scan
-            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SubscriptionsTable}*"
+            Action: dynamodb:Query
+            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
           - Effect: Allow
             Action:
               - lambda:InvokeFunction
-            Resource: !Ref SubscriptionWorkerArn
+            Resource: !Ref StartExecutionWorkerArn
 
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
       Environment:
         Variables:
-          SUBSCRIPTIONS_TABLE_NAME: !Ref SubscriptionsTable
-          SUBSCRIPTION_WORKER_ARN: !Ref SubscriptionWorkerArn
+          JOBS_TABLE_NAME: !Ref JobsTable
+          START_EXECUTION_WORKER_ARN: !Ref StartExecutionWorkerArn
       Code: src/
-      Handler: subscription_manager.lambda_handler
-      MemorySize: 1024
+      Handler: start_execution_manager.lambda_handler
+      MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.9
-      Timeout: 900
+      Timeout: 10
       {% if security_environment == 'EDC' %}
       VpcConfig:
         SecurityGroupIds:
@@ -102,7 +101,7 @@ Resources:
   Schedule:
     Type: AWS::Events::Rule
     Properties:
-      ScheduleExpression: "rate(35 minutes)"
+      ScheduleExpression: "rate(1 minute)"
       Targets:
         - Arn: !GetAtt Lambda.Arn
           Id: lambda

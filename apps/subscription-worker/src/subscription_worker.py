@@ -1,3 +1,4 @@
+import logging
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 
@@ -5,6 +6,10 @@ import asf_search
 import dateutil.parser
 
 import dynamo
+
+logging.basicConfig()
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def get_unprocessed_granules(subscription):
@@ -66,13 +71,13 @@ def disable_subscription(subscription):
 def handle_subscription(subscription):
     jobs = get_jobs_for_subscription(subscription, limit=20)
     if jobs:
-        print(f'Submitting {len(jobs)} jobs')
+        logger.info(f'Submitting {len(jobs)} jobs')
         dynamo.jobs.put_jobs(subscription['user_id'], jobs, fail_when_over_quota=False)
 
 
 def lambda_handler(event, context) -> None:
     subscription = event['subscription']
-    print(f'Handling subscription {subscription["subscription_id"]} for user {subscription["user_id"]}')
+    logger.info(f'Handling subscription {subscription["subscription_id"]} for user {subscription["user_id"]}')
 
     if not subscription['enabled']:
         raise ValueError(f'subscription {subscription["subscription_id"]} is disabled')
@@ -80,14 +85,14 @@ def lambda_handler(event, context) -> None:
     handle_subscription(subscription)
 
     cutoff_date = datetime.now(tz=timezone.utc) - timedelta(days=5)
-    print(f'Cutoff date: {cutoff_date.isoformat()}')
+    logger.info(f'Cutoff date: {cutoff_date.isoformat()}')
 
     end_date = dateutil.parser.parse(subscription['search_parameters']['end'])
-    print(f'Subscription end date: {end_date.isoformat()}')
+    logger.info(f'Subscription end date: {end_date.isoformat()}')
 
     unprocessed_granule_count = len(get_unprocessed_granules(subscription))
-    print(f'Unprocessed granules: {unprocessed_granule_count}')
+    logger.info(f'Unprocessed granules: {unprocessed_granule_count}')
 
     if end_date <= cutoff_date and unprocessed_granule_count == 0:
-        print(f'Disabling subscription {subscription["subscription_id"]}')
+        logger.info(f'Disabling subscription {subscription["subscription_id"]}')
         disable_subscription(subscription)

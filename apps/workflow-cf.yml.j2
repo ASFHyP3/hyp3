@@ -189,18 +189,30 @@ Resources:
       {% endif %}
       TemplateURL: check-processing-time/check-processing-time-cf.yml
 
-  StartExecution:
+  StartExecutionManager:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
         JobsTable: !Ref JobsTable
+        StartExecutionWorkerArn: !GetAtt StartExecutionWorker.Outputs.LambdaArn
+        {% if security_environment == 'EDC' %}
+        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
+      TemplateURL: start-execution-manager/start-execution-manager-cf.yml
+
+  StartExecutionWorker:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
         StepFunctionArn: !Ref StepFunction
         {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
-      TemplateURL: start-execution/start-execution-cf.yml
+      TemplateURL: start-execution-worker/start-execution-worker-cf.yml
 
   UploadLog:
     Type: AWS::CloudFormation::Stack
