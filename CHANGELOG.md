@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.21.5]
+### Added
+- A new `AUTORIFT_TEST` job type for the hyp3-its-live deployment running the `test` version of the container.
+
 ## [2.21.4]
 ### Changed
 - Batches of step function executions are now started in parallel using a manager to launch one worker per batch of jobs
