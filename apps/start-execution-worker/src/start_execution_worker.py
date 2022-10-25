@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import sys
 from typing import Any
 
 import boto3
@@ -10,6 +11,13 @@ STEP_FUNCTION = boto3.client('stepfunctions')
 logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+
+def handle_exception(exc_type, value, traceback) -> None:
+    logger.critical('Unhandled exception', exc_info=(exc_type, value, traceback))
+
+
+sys.excepthook = handle_exception
 
 
 def convert_to_string(obj: Any) -> str:
