@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.21.7]
 ### Changed
-- Reduced hyp3-nisar-jpl deployment to 700 maximum VCPUs.
+- Reduced hyp3-tibet-jpl deployment to 700 maximum VCPUs.
 
 ## [2.21.6]
 ### Added
