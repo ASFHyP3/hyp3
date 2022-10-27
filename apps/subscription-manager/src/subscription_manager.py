@@ -1,24 +1,16 @@
 import json
 import logging
 import os
-import sys
 
 import boto3
 
 import dynamo
 
-LAMBDA_CLIENT = boto3.client('lambda')
-
 logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-
-def handle_exception(exc_type, value, traceback) -> None:
-    logger.critical('Unhandled exception', exc_info=(exc_type, value, traceback))
-
-
-sys.excepthook = handle_exception
+LAMBDA_CLIENT = boto3.client('lambda')
 
 
 def invoke_worker(worker_function_arn: str, subscription: dict) -> dict:

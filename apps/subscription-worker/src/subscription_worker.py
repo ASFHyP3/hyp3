@@ -1,5 +1,4 @@
 import logging
-import sys
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 
@@ -11,13 +10,6 @@ import dynamo
 logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
-
-def handle_exception(exc_type, value, traceback) -> None:
-    logger.critical('Unhandled exception', exc_info=(exc_type, value, traceback))
-
-
-sys.excepthook = handle_exception
 
 
 def get_unprocessed_granules(subscription):
