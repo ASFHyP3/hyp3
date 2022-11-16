@@ -15,6 +15,7 @@ export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_
 
 build: render
 	python -m pip install --upgrade -r requirements-apps-api.txt -t ${API}; \
+	python -m pip install cryptography==38.0.3 --platform manylinux2014_x86_64 --python 3.9 --only-binary=:all: -t ${API}; \
 	python -m pip install --upgrade -r requirements-apps-handle-batch-event.txt -t ${HANDLE_BATCH_EVENT}; \
 	python -m pip install --upgrade -r requirements-apps-subscription-manager.txt -t ${SUBSCRIPTION_MANAGER}; \
 	python -m pip install --upgrade -r requirements-apps-subscription-worker.txt -t ${SUBSCRIPTION_WORKER}; \
