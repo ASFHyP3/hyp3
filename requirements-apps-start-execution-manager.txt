@@ -1,2 +1,3 @@
 boto3==1.26.11
 ./lib/dynamo/
+./lib/lambda_logging
