@@ -1,2 +1,2 @@
 ./lib/dynamo/
-./lib/lambda_logging
+./lib/lambda_logging/
