@@ -35,6 +35,7 @@ Resources:
                   - apigateway:*
                   - states:*
                   - dynamodb:*
+                  - rds:*
                   - cloudwatch:*
                   - sns:*
                   - secretsmanager:*
