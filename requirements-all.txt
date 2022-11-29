@@ -12,8 +12,8 @@ moto[dynamodb]==4.0.10
 pytest==7.2.0
 PyYAML==6.0
 responses==0.22.0
-flake8==5.0.4
-flake8-import-order==0.18.1
+flake8==6.0.0
+flake8-import-order==0.18.2
 flake8-blind-except==0.2.1
 flake8-builtins==2.0.1
 openapi-spec-validator==0.4.0
