@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.21.10]
 ### Changed
-- Double the instance size due to disk space limitations for GUNW product generation in the ACCESS19 JPL deployment.
+- Drop the `c5d` instance family due to disk space limitations for GUNW product generation in the ACCESS19 JPL deployment.
 
 ## [2.21.9]
 ### Added
