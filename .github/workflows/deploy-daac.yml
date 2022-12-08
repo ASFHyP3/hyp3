@@ -23,9 +23,9 @@ jobs:
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
             instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
-            default_max_vcpus: 1000
-            expanded_max_vcpus: 2000
-            required_surplus: 2000
+            default_max_vcpus: 1500
+            expanded_max_vcpus: 3000
+            required_surplus: 3000
             security_environment: EDC
             ami_id: image_id_ecs_amz2
             distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
