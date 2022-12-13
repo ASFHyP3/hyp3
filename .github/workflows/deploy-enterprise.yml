@@ -34,7 +34,7 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c6id.xlarge,c5d.xlarge
+            instance_types: c6id.xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
@@ -124,6 +124,21 @@ jobs:
             product_lifetime_in_days: 30
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml
+            instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
+
+          - environment: hyp3-cargill
+            domain: hyp3-cargill.asf.alaska.edu
+            template_bucket: cf-templates-j4kd746vpsuv-us-east-1
+            image_tag: latest
+            product_lifetime_in_days: 14
+            quota: 0
+            job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
             instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
