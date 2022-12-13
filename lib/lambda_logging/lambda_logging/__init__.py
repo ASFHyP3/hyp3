@@ -1,7 +1,7 @@
 import logging
+import sys
 from functools import wraps
 
-# TODO do we need to modify this since it's now in another module?
 logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -15,6 +15,6 @@ def log_exceptions(lambda_handler):
             lambda_handler(event, context)
         except:  # noqa: E722
             logger.exception('Unhandled exception')
-            raise
+            sys.exit(1)
 
     return wrapper
