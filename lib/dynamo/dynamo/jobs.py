@@ -152,7 +152,7 @@ def update_job(job):
     )
 
 
-def get_jobs_waiting_for_execution(limit: int, max_scanned: int = 50000) -> list[dict]:
+def get_jobs_waiting_for_execution(limit: int, max_scanned: int = 50_000) -> list[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     params = {
