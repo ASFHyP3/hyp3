@@ -152,7 +152,7 @@ def update_job(job):
     )
 
 
-def get_jobs_waiting_for_execution(limit: int) -> list[dict]:
+def get_jobs_waiting_for_execution(limit: int, max_scanned: int = 50000) -> list[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     params = {
@@ -162,8 +162,9 @@ def get_jobs_waiting_for_execution(limit: int) -> list[dict]:
     }
     response = table.query(**params)
     jobs = response['Items']
+    scanned = response['ScannedCount']
 
-    while 'LastEvaluatedKey' in response and len(jobs) < limit:
+    while 'LastEvaluatedKey' in response and len(jobs) < limit and scanned < max_scanned:
         params['ExclusiveStartKey'] = response['LastEvaluatedKey']
         response = table.query(**params)
         jobs.extend(response['Items'])
