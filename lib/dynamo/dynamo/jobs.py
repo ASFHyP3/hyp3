@@ -168,5 +168,6 @@ def get_jobs_waiting_for_execution(limit: int, max_scanned: int = 50000) -> list
         params['ExclusiveStartKey'] = response['LastEvaluatedKey']
         response = table.query(**params)
         jobs.extend(response['Items'])
+        scanned += response['ScannedCount']
 
     return jobs[:limit]
