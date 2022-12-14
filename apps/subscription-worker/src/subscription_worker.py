@@ -1,4 +1,3 @@
-import logging
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 
@@ -6,10 +5,7 @@ import asf_search
 import dateutil.parser
 
 import dynamo
-
-logging.basicConfig()
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+from lambda_logging import log_exceptions, logger
 
 
 def get_unprocessed_granules(subscription):
@@ -75,6 +71,7 @@ def handle_subscription(subscription):
         dynamo.jobs.put_jobs(subscription['user_id'], jobs, fail_when_over_quota=False)
 
 
+@log_exceptions
 def lambda_handler(event, context) -> None:
     subscription = event['subscription']
     logger.info(f'Handling subscription {subscription["subscription_id"]} for user {subscription["user_id"]}')

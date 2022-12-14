@@ -286,7 +286,7 @@ def test_lambda_handler(tables):
             subscription_worker.lambda_handler({'subscription': items[0]}, None)
 
             with pytest.raises(ValueError, match=r'subscription sub2 is disabled'):
-                subscription_worker.lambda_handler({'subscription': items[1]}, None)
+                subscription_worker.lambda_handler.__wrapped__({'subscription': items[1]}, None)
 
             subscription_worker.lambda_handler({'subscription': items[2]}, None)
             subscription_worker.lambda_handler({'subscription': items[3]}, None)

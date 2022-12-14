@@ -1,15 +1,12 @@
 import json
-import logging
 import os
 from typing import Any
 
 import boto3
 
-STEP_FUNCTION = boto3.client('stepfunctions')
+from lambda_logging import log_exceptions, logger
 
-logging.basicConfig()
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+STEP_FUNCTION = boto3.client('stepfunctions')
 
 
 def convert_to_string(obj: Any) -> str:
@@ -36,6 +33,7 @@ def submit_jobs(jobs: list[dict]) -> None:
         )
 
 
+@log_exceptions
 def lambda_handler(event, context) -> None:
     jobs = event['jobs']
     logger.info(f'Submitting {len(jobs)} jobs')

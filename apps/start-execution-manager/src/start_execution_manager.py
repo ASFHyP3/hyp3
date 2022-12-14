@@ -1,16 +1,12 @@
 import json
-import logging
 import os
 
 import boto3
 
 import dynamo
+from lambda_logging import log_exceptions, logger
 
 LAMBDA_CLIENT = boto3.client('lambda')
-
-logging.basicConfig()
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
 
 def invoke_worker(worker_function_arn: str, jobs: list[dict]) -> dict:
@@ -24,6 +20,7 @@ def invoke_worker(worker_function_arn: str, jobs: list[dict]) -> dict:
     )
 
 
+@log_exceptions
 def lambda_handler(event, context) -> None:
     worker_function_arn = os.environ['START_EXECUTION_WORKER_ARN']
     logger.info(f'Worker function ARN: {worker_function_arn}')
