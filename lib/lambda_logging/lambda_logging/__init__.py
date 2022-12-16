@@ -1,10 +1,13 @@
 import logging
-import sys
 from functools import wraps
 
 logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+
+class UnhandledException(Exception):
+    pass
 
 
 def log_exceptions(lambda_handler):
@@ -15,6 +18,6 @@ def log_exceptions(lambda_handler):
             lambda_handler(event, context)
         except:  # noqa: E722
             logger.exception('Unhandled exception')
-            sys.exit(1)
+            raise UnhandledException('The Lambda function failed with an unhandled exception (see the logs)')
 
     return wrapper
