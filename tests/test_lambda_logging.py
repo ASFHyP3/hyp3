@@ -1,5 +1,6 @@
-import lambda_logging
 import pytest
+
+import lambda_logging
 
 
 def test_log_exceptions():
