@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.22.0]
 ### Added
-- Add the decibel option to create the RTC product which include decibel output.
+- Add the decibel option to create the RTC product which includes decibel output.
 ## [2.21.12]
 ### Added
 - Added `lambda_logging` library for re-usable Lambda logging functionality.
