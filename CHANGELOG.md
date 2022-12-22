@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.22.0]
 ### Added
-- Add the decibel option to create the RTC product which includes decibel output.
+- In addition to `power` and `amplitude`, `decibel` can now be provided as the `scale` for `RTC_GAMMA` jobs
+
 ## [2.21.12]
 ### Added
 - Added `lambda_logging` library for re-usable Lambda logging functionality.
