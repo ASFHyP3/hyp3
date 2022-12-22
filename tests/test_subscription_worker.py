@@ -70,26 +70,36 @@ def test_get_unprocessed_granules(tables):
         },
     }
 
-    search_results = [
+    products = [
         get_asf_product({'sceneName': 'processed'}),
         get_asf_product({'sceneName': 'not_processed'}),
     ]
 
-    def mock_search(**kwargs):
+    def mock_search(**kwargs) -> asf_search.ASFSearchResults:
         assert kwargs == subscription['search_parameters']
-        return asf_search.ASFSearchResults(search_results)
+        results = asf_search.ASFSearchResults(products)
+        results.searchComplete = True
+        return results
+
+    def mock_search_incomplete(**kwargs) -> asf_search.ASFSearchResults:
+        results = mock_search(**kwargs)
+        results.searchComplete = False
+        return results
 
     with patch('asf_search.search', mock_search):
-        results = subscription_worker.get_unprocessed_granules(subscription)
-        assert results == search_results[1:]
+        assert subscription_worker.get_unprocessed_granules(subscription) == products[1:]
+
+    with patch('asf_search.search', mock_search_incomplete), \
+            pytest.raises(asf_search.ASFSearchError, match=r'.*Results are incomplete.*'):
+        subscription_worker.get_unprocessed_granules(subscription)
 
 
 def test_get_neighbors():
     granule = get_asf_product({'sceneName': 'granule'})
 
-    def mock_stack_from_product(payload):
+    def mock_stack_from_product(payload) -> asf_search.ASFSearchResults:
         assert payload == granule
-        return asf_search.ASFSearchResults([
+        results = asf_search.ASFSearchResults([
             get_asf_product({'sceneName': 'S1A_A', 'temporalBaseline': -3}),
             get_asf_product({'sceneName': 'S1B_B', 'temporalBaseline': -2}),
             get_asf_product({'sceneName': 'S1A_C', 'temporalBaseline': -1}),
@@ -98,6 +108,13 @@ def test_get_neighbors():
             get_asf_product({'sceneName': 'S1B_F', 'temporalBaseline': 2}),
             get_asf_product({'sceneName': 'S1A_G', 'temporalBaseline': 3}),
         ])
+        results.searchComplete = True
+        return results
+
+    def mock_stack_from_product_incomplete(payload) -> asf_search.ASFSearchResults:
+        results = mock_stack_from_product(payload)
+        results.searchComplete = False
+        return results
 
     with patch('asf_search.baseline_search.stack_from_product', mock_stack_from_product):
         neighbors = subscription_worker.get_neighbors(granule, 1, 'S1')
@@ -111,6 +128,10 @@ def test_get_neighbors():
 
         neighbors = subscription_worker.get_neighbors(granule, 5, 'S1B')
         assert neighbors == ['S1B_B']
+
+    with patch('asf_search.baseline_search.stack_from_product', mock_stack_from_product_incomplete), \
+            pytest.raises(asf_search.ASFSearchError, match=r'.*Results are incomplete.*'):
+        subscription_worker.get_neighbors(granule, 1, 'S1')
 
 
 def test_get_jobs_for_granule():
