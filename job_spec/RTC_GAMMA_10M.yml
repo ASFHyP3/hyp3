@@ -53,10 +53,11 @@ RTC_GAMMA:
     scale:
       api_schema:
         default:  power
-        description: Scale of output image; either power or amplitude
+        description: Scale of output image; power, decibel or amplitude
         type: string
         enum:
           - power
+          - decibel
           - amplitude
     speckle_filter:
       api_schema:
