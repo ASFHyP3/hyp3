@@ -99,6 +99,8 @@ WATER_MAP:
       command:
         - ++process
         - water_map
+        - ++omp-num-threads
+        - '4'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
