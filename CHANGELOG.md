@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set `++omp-num-threads 4` for RTC_GAMMA, INSAR_GAMMA, WATER_MAP, and AUTORIFT jobs to drastically reduce CPU
   contention when running multiple jobs on the same EC2 instance.
 - Updated DAAC deployments to include larger EC2 instance types capable of running multiple jobs per instance.
+- Increases the memory available to `AUTORIFT` jobs for Landsat pairs 
 
 ## [2.22.0]
 ### Added
