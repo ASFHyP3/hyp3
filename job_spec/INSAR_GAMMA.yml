@@ -71,6 +71,8 @@ INSAR_GAMMA:
       command:
         - ++process
         - insar
+        - ++omp-num-threads
+        - '4'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
