@@ -96,6 +96,8 @@ RTC_GAMMA:
       command:
         - ++process
         - rtc
+        - ++omp-num-threads
+        - '4'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
