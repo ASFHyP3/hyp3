@@ -33,6 +33,7 @@ RTC_GAMMA:
         type: number
         enum:
           - 30.0
+          - 10.0
     dem_name:
       api_schema:
         default: copernicus
@@ -123,6 +124,6 @@ RTC_GAMMA:
         - --include-rgb
         - Ref::include_rgb
         - Ref::granules
-      timeout: 5400
+      timeout: 10800
       vcpu: 1
       memory: 31600

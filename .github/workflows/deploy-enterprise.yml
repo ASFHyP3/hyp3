@@ -94,7 +94,7 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml
-            instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -108,8 +108,8 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 14
             quota: 0
-            job_files: job_spec/RTC_GAMMA_10M.yml job_spec/WATER_MAP_10M.yml job_spec/RIVER_WIDTH.yml
-            instance_types: r6id.4xlarge
+            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/RIVER_WIDTH.yml
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -124,7 +124,7 @@ jobs:
             product_lifetime_in_days: 30
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml
-            instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -139,7 +139,7 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
