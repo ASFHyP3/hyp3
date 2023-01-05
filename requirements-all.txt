@@ -6,7 +6,7 @@
 -r requirements-apps-start-execution-manager.txt
 -r requirements-apps-start-execution-worker.txt
 -r requirements-apps-update-db.txt
-boto3==1.26.41
+boto3==1.26.43
 jinja2==3.1.2
 moto[dynamodb]==4.0.12
 pytest==7.2.0
