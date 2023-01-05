@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.23.0]
 ### Changed
-- Set `++omp-num-threads 4` for RTC_GAMMA, INSAR_GAMMA, and WATER_MAP jobs to drastically reduce CPU contention when
-  running multiple jobs on the same EC2 instance.
+- Set `++omp-num-threads 4` for RTC_GAMMA, INSAR_GAMMA, WATER_MAP, and AUTORIFT jobs to drastically reduce CPU
+  contention when running multiple jobs on the same EC2 instance.
 - Updated DAAC deployments to include larger EC2 instance types capable of running multiple jobs per instance.
 
 ## [2.22.0]
