@@ -47,7 +47,7 @@ AUTORIFT:
         - --naming-scheme
         - ITS_LIVE_OD
         - --omp-num-threads
-        - "4"
+        - '4'
         - Ref::granules
       timeout: 10800
       vcpu: 1
