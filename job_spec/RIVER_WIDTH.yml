@@ -32,6 +32,8 @@ RIVER_WIDTH:
       command:
         - ++process
         - water_map
+        - ++omp-num-threads
+        - '16'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix

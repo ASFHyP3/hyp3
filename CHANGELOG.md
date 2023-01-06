@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.24.0]
+### Added
+- Made `resolution=10.0` parameter option for RTC_GAMMA and WATER_MAP jobs available in all deployments
+### Changed
+- Updated hyp3-enterprise-test, hyp3-watermap, hyp3-streamflow, and hyp3-cargill deployments to include larger EC2
+  instance types capable of running multiple jobs per instance.
+
 ## [2.23.0]
 ### Changed
 - Set `++omp-num-threads 4` for RTC_GAMMA, INSAR_GAMMA, WATER_MAP, and AUTORIFT jobs to drastically reduce CPU
