@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.23.0]
+### Changed
+- Set `++omp-num-threads 4` for RTC_GAMMA, INSAR_GAMMA, WATER_MAP, and AUTORIFT jobs to drastically reduce CPU
+  contention when running multiple jobs on the same EC2 instance.
+- Updated DAAC deployments to include larger EC2 instance types capable of running multiple jobs per instance.
+
 ## [2.22.0]
 ### Added
 - In addition to `power` and `amplitude`, `decibel` can now be provided as the `scale` for `RTC_GAMMA` jobs
