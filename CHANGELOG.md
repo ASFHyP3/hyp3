@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated hyp3-enterprise-test, hyp3-watermap, hyp3-streamflow, and hyp3-cargill deployments to include larger EC2
   instance types capable of running multiple jobs per instance.
+- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs will now only accept SLC scenes with a polarization of VV or VV+VH.
 
 ## [2.23.0]
 ### Changed
