@@ -17,11 +17,13 @@ def get_unprocessed_granules(subscription):
     processed_granules = [job['job_parameters']['granules'][0] for job in processed_jobs]
 
     search_results = asf_search.search(**subscription['search_parameters'])
+    search_results.raise_if_incomplete()
     return [result for result in search_results if result.properties['sceneName'] not in processed_granules]
 
 
 def get_neighbors(granule, depth, platform):
     stack = asf_search.baseline_search.stack_from_product(granule)
+    stack.raise_if_incomplete()
     stack = [item for item in stack if
              item.properties['temporalBaseline'] < 0 and item.properties['sceneName'].startswith(platform)]
     neighbors = [item.properties['sceneName'] for item in stack[-depth:]]

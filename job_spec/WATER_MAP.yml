@@ -31,6 +31,7 @@ WATER_MAP:
         type: number
         enum:
           - 30.0
+          - 10.0
     speckle_filter:
       api_schema:
         description: Apply an Enhanced Lee speckle filter
@@ -99,6 +100,8 @@ WATER_MAP:
       command:
         - ++process
         - water_map
+        - ++omp-num-threads
+        - '4'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
