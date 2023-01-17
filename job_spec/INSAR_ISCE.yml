@@ -52,7 +52,7 @@ INSAR_ISCE:
         - Ref::granules
         - --secondary-scenes
         - Ref::secondary_granules
-        - --tropospheric_model
+        - --tropospheric-model
         - Ref::tropospheric_model
       timeout: 10800
       vcpu: 1
