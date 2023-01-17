@@ -27,6 +27,16 @@ INSAR_ISCE:
           minLength: 67
           maxLength: 67
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
+    tropospheric_model:
+      api_schema:
+        description: Weather model applied in trophospheric correction
+        default: none
+        type: string
+        enum:
+          - none
+          - HRRR
+          - HRES
+          - GMAO
     bucket_prefix:
       default:  '""'
   validators: []
@@ -42,6 +52,8 @@ INSAR_ISCE:
         - Ref::granules
         - --secondary-scenes
         - Ref::secondary_granules
+        - --tropospheric_model
+        - Ref::tropospheric_model
       timeout: 10800
       vcpu: 1
       memory: 7500
