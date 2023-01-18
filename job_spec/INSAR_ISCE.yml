@@ -58,6 +58,8 @@ INSAR_ISCE:
     - name: TROPOSPHERE
       image: ghcr.io/dbekaert/raider
       command:
+        - ++process
+        - calcDelaysGunw
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix

@@ -60,6 +60,8 @@ INSAR_ISCE_TEST:
       image: ghcr.io/dbekaert/raider
       image_tag: test
       command:
+        - ++process
+        - calcDelaysGunw
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
