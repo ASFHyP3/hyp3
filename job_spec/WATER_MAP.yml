@@ -115,7 +115,7 @@ WATER_MAP:
       timeout: TODO
       vcpu: TODO
       memory: TODO
-    - name: WATER_MAP
+    - name: ''
       image: TODO
       command:
         - ++process
