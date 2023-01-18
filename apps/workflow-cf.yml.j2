@@ -42,6 +42,7 @@ Outputs:
 Resources:
   {% for job_type, job_spec in job_types.items() %}
   {% for task in job_spec['tasks'] %}
+  {% if 'choices' not in task %}
   {{ snake_to_pascal_case(task['name']) }}:
     Type: AWS::Batch::JobDefinition
     Properties:
@@ -74,6 +75,7 @@ Resources:
             ValueFrom: !Sub "${SecretArn}:password::"
       Timeout:
         AttemptDurationSeconds: {{ task['timeout'] }}
+  {% endif %}
   {% endfor %}
   {% endfor %}
 

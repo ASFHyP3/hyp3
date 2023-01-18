@@ -178,6 +178,11 @@
     {% for job_type, job_spec in job_types.items() %}
     {% for task in job_spec['tasks'] %}
     "{{ task['name'] }}": {
+      {% if 'choices' in task %}
+      "Type": "Choice",
+      "Choices": {{ json.dumps(task['choices']) }},
+      "Default": "{% if not loop.last %}{{ loop.nextitem['name'] }}{% else %}GET_FILES{% endif %}"
+      {% else %}
       "Type": "Task",
       "Resource": "arn:aws:states:::batch:submitJob.sync",
       "Parameters": {
@@ -218,6 +223,7 @@
           "ResultPath": "$.results.processing_results.step_{{ loop.index0 }}"
         }
       ]
+    {% endif %}
     },
     {% endfor %}
     {% endfor %}

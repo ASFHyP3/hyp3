@@ -55,6 +55,14 @@ INSAR_ISCE:
       timeout: 10800
       vcpu: 1
       memory: 7500
+    - name: TROPOSPHERE_CHOICE
+      choices:
+        - Or:
+            - Variable: $.job_parameters.tropospheric_model
+              IsPresent: False
+            - Variable: $.job_parameters.tropospheric_model
+              StringEquals: None
+          Next: GET_FILES
     - name: TROPOSPHERE
       image: ghcr.io/dbekaert/raider
       command:
