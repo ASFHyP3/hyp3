@@ -95,11 +95,12 @@ WATER_MAP:
   validators:
     - check_dem_coverage
   tasks:
-    - name: ''
+    - name: RTC
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
       command:
+        # TODO include other rtc parameters?
         - ++process
-        - water_map
+        - rtc
         - ++omp-num-threads
         - '4'
         - --bucket
@@ -110,6 +111,19 @@ WATER_MAP:
         - Ref::resolution
         - --speckle-filter
         - Ref::speckle_filter
+        - Ref::granules
+      timeout: TODO
+      vcpu: TODO
+      memory: TODO
+    - name: WATER_MAP
+      image: TODO
+      command:
+        - ++process
+        - water_map
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
         - --max-vv-threshold
         - Ref::max_vv_threshold
         - --max-vh-threshold
@@ -120,8 +134,18 @@ WATER_MAP:
         - Ref::hand_fraction
         - --membership-threshold
         - Ref::membership_threshold
-        - --include-flood-depth
-        - Ref::include_flood_depth
+      timeout: TODO
+      vcpu: TODO
+      memory: TODO
+    - name: FLOOD_MAP
+      image: TODO
+      command:
+        - ++process
+        - flood_map
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
         - --estimator
         - Ref::flood_depth_estimator
         - --water-level-sigma
@@ -132,7 +156,10 @@ WATER_MAP:
         - Ref::iterative_min
         - --iterative-max
         - Ref::iterative_max
-        - Ref::granules
-      timeout: 36000
-      vcpu: 1
-      memory: 31600
+      timeout: TODO
+      vcpu: TODO
+      memory: TODO
+
+      # TODO preserve functionality of this option
+      # - --include-flood-depth
+      # - Ref::include_flood_depth
