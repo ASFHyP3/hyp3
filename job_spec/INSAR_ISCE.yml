@@ -58,7 +58,7 @@ INSAR_ISCE:
       vcpu: 1
       memory: 7500
     - name: 'RAiDER'
-      image: ghcr.io/dbekaert/raider:latest
+      image: ghcr.io/dbekaert/raider #TODO: Specify image?
       command:
         - --bucket
         - '!Ref Bucket'
@@ -69,3 +69,5 @@ INSAR_ISCE:
       timeout: TODO
       vcpu: TODO
       memory: TODO
+
+    # TODO : how to pass in nc file name to raider?
