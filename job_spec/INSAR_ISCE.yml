@@ -57,3 +57,15 @@ INSAR_ISCE:
       timeout: 10800
       vcpu: 1
       memory: 7500
+    - name: 'RAiDER'
+      image: ghcr.io/dbekaert/raider:latest
+      command:
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --tropospheric-model
+        - Ref::tropospheric_model
+      timeout: TODO
+      vcpu: TODO
+      memory: TODO
