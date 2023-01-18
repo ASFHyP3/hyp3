@@ -9,7 +9,7 @@
 boto3==1.26.51
 jinja2==3.1.2
 moto[dynamodb]==4.1.0
-pytest==7.2.0
+pytest==7.2.1
 PyYAML==6.0
 responses==0.22.0
 flake8==6.0.0
