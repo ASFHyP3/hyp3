@@ -30,10 +30,10 @@ INSAR_ISCE:
     tropospheric_model:
       api_schema:
         description: Weather model applied in trophospheric correction
-        default: none
+        default: None
         type: string
         enum:
-          - none
+          - None
           - HRRR
           - HRES
           - GMAO
@@ -52,13 +52,11 @@ INSAR_ISCE:
         - Ref::granules
         - --secondary-scenes
         - Ref::secondary_granules
-        - --tropospheric-model
-        - Ref::tropospheric_model
       timeout: 10800
       vcpu: 1
       memory: 7500
-    - name: 'RAiDER'
-      image: ghcr.io/dbekaert/raider #TODO: Specify image?
+    - name: TROPOSPHERE
+      image: ghcr.io/dbekaert/raider
       command:
         - --bucket
         - '!Ref Bucket'
@@ -66,8 +64,6 @@ INSAR_ISCE:
         - Ref::bucket_prefix
         - --tropospheric-model
         - Ref::tropospheric_model
-      timeout: TODO
-      vcpu: TODO
-      memory: TODO
-
-    # TODO : how to pass in nc file name to raider?
+      timeout: 10800
+      vcpu: 1
+      memory: 7500
