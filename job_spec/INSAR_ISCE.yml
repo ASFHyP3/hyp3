@@ -29,7 +29,7 @@ INSAR_ISCE:
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
     tropospheric_model:
       api_schema:
-        description: Weather model used to generate tropospheric data layers
+        description: Weather model used to generate tropospheric delay estimations
         default: None
         type: string
         enum:
