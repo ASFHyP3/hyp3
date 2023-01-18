@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.24.1]
 ### Added
-- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs now accept a `tropospheric_model` parameter to include trophospheric delay 
+- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs now accept a `weather_model` parameter to include trophospheric delay 
    estimations. 
 
 ## [2.24.0]
