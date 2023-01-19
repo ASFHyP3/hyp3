@@ -63,11 +63,16 @@ WATER_MAP:
         default: 0.45
         type: number
     flood_depth_estimator:
-      # TODO change to enum of possible values
       api_schema:
         description: Flood depth estimation approach.
         default: 'iterative'
         type: string
+        enum:
+          - iterative
+          - logstat
+          - nmad
+          - numpy
+          - None
     water_level_sigma:
       api_schema:
         description: Standard deviation to estimate max water height for each object.
