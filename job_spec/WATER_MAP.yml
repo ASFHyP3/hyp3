@@ -62,34 +62,30 @@ WATER_MAP:
         description: The average membership to the fuzzy indicators required for a water pixel
         default: 0.45
         type: number
-    include_flood_depth:
-      api_schema:
-        description: Produce a flood depth map from water products.
-        default: false
-        type: boolean
     flood_depth_estimator:
+      # TODO change to enum of possible values
       api_schema:
-        description: Flood depth estimation approach. Ignored when include_flood_depth is false.
+        description: Flood depth estimation approach.
         default: 'iterative'
         type: string
     water_level_sigma:
       api_schema:
-        description: Standard deviation to estimate max water height for each object. Ignored when include_flood_depth is false.
+        description: Standard deviation to estimate max water height for each object.
         default: 3.0
         type: number
     known_water_threshold:
       api_schema:
-        description: Threshold for extracting known water area in percent. Ignored when include_flood_depth is false.
+        description: Threshold for extracting known water area in percent.
         default: 30.0
         type: number
     iterative_min:
       api_schema:
-        description: Minimum bound used for iterative method. Ignored when include_flood_depth is false.
+        description: Minimum bound used for iterative method.
         default: 0
         type: integer
     iterative_max:
       api_schema:
-        description: Maximum bound used for iterative method. Ignored when include_flood_depth is false.
+        description: Maximum bound used for iterative method.
         default: 15
         type: integer
   validators:
@@ -158,7 +154,3 @@ WATER_MAP:
       timeout: TODO
       vcpu: TODO
       memory: TODO
-
-      # TODO preserve functionality of this option
-      # - --include-flood-depth
-      # - Ref::include_flood_depth
