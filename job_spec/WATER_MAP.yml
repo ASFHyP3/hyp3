@@ -115,7 +115,7 @@ WATER_MAP:
       vcpu: TODO
       memory: TODO
     - name: ''
-      image: TODO
+      image: ghcr.io/asfhyp3/asf-tools
       command:
         - ++process
         - water_map
