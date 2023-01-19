@@ -45,7 +45,7 @@ RIVER_WIDTH:
       vcpu: TODO
       memory: TODO
     - name: WATER_MAP
-      image: TODO
+      image: ghcr.io/asfhyp3/asf-tools
       command:
         - ++process
         - water_map
