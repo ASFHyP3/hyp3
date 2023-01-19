@@ -98,7 +98,6 @@ WATER_MAP:
     - name: RTC
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
       command:
-        # TODO include other rtc parameters?
         - ++process
         - rtc
         - ++omp-num-threads

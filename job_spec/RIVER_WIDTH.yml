@@ -27,11 +27,11 @@ RIVER_WIDTH:
   validators:
     - check_dem_coverage
   tasks:
-    - name: WATER_MAP
+    - name: RTC
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
       command:
         - ++process
-        - water_map
+        - rtc
         - ++omp-num-threads
         - '16'
         - --bucket
@@ -41,9 +41,21 @@ RIVER_WIDTH:
         - --resolution
         - 10.0
         - Ref::granules
-      timeout: 36000
-      vcpu: 1
-      memory: 126000
+      timeout: TODO
+      vcpu: TODO
+      memory: TODO
+    - name: WATER_MAP
+      image: TODO
+      command:
+        - ++process
+        - water_map
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+      timeout: TODO
+      vcpu: TODO
+      memory: TODO
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/asfhyp3/riverwidthsar
       command:
