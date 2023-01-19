@@ -116,7 +116,7 @@ WATER_MAP:
       vcpu: TODO
       memory: TODO
     - name: ''
-      image: TODO
+      image: ghcr.io/asfhyp3/asf-tools
       command:
         - ++process
         - water_map
@@ -135,10 +135,10 @@ WATER_MAP:
         - --membership-threshold
         - Ref::membership_threshold
       timeout: TODO
-      vcpu: TODO
-      memory: TODO
+      vcpu: 1
+      memory: 31600
     - name: FLOOD_MAP
-      image: TODO
+      image: ghcr.io/asfhyp3/asf-tools
       command:
         - ++process
         - flood_map
@@ -157,5 +157,5 @@ WATER_MAP:
         - --iterative-max
         - Ref::iterative_max
       timeout: TODO
-      vcpu: TODO
-      memory: TODO
+      vcpu: 1
+      memory: 31600
