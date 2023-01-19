@@ -41,9 +41,9 @@ RIVER_WIDTH:
         - --resolution
         - 10.0
         - Ref::granules
-      timeout: TODO
-      vcpu: TODO
-      memory: TODO
+      timeout: 36000
+      vcpu: 1
+      memory: 31600
     - name: WATER_MAP
       image: ghcr.io/asfhyp3/asf-tools
       command:
