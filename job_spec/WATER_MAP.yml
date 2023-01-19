@@ -137,7 +137,7 @@ WATER_MAP:
       vcpu: TODO
       memory: TODO
     - name: FLOOD_MAP
-      image: TODO
+      image: ghcr.io/asfhyp3/asf-tools
       command:
         - ++process
         - flood_map
