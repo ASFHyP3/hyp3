@@ -59,7 +59,7 @@ INSAR_ISCE:
       image: ghcr.io/dbekaert/raider
       command:
         - ++process
-        - calcDelaysGunw
+        - calcDelaysGUNW
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
