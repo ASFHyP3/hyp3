@@ -156,8 +156,8 @@ WATER_MAP:
         - --iterative-max
         - Ref::iterative_max
       timeout: TODO
-      vcpu: TODO
-      memory: TODO
+      vcpu: 1
+      memory: 31600
 
       # TODO preserve functionality of this option
       # - --include-flood-depth
