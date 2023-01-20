@@ -152,7 +152,7 @@ WATER_MAP:
         - Ref::membership_threshold
       timeout: TODO
       vcpu: 1
-      memory: 31600
+      memory: 126000
     - name: FLOOD_MAP
       image: ghcr.io/asfhyp3/asf-tools
       command:
