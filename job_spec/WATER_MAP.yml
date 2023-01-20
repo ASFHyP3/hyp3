@@ -64,7 +64,7 @@ WATER_MAP:
         type: number
     flood_depth_estimator:
       api_schema:
-        description: Flood depth estimation approach.
+        description: Flood depth estimation approach. A value of None indicates that flood depth estimation will not be performed.
         default: None
         type: string
         enum:
@@ -75,22 +75,22 @@ WATER_MAP:
           - None
     water_level_sigma:
       api_schema:
-        description: Standard deviation to estimate max water height for each object.
+        description: Standard deviation to estimate max water height for each object. Ignored when flood_depth_estimator is None.
         default: 3.0
         type: number
     known_water_threshold:
       api_schema:
-        description: Threshold for extracting known water area in percent.
+        description: Threshold for extracting known water area in percent. Ignored when flood_depth_estimator is None.
         default: 30.0
         type: number
     iterative_min:
       api_schema:
-        description: Minimum bound used for iterative method.
+        description: Minimum bound used for iterative method. Ignored when flood_depth_estimator is None.
         default: 0
         type: integer
     iterative_max:
       api_schema:
-        description: Maximum bound used for iterative method.
+        description: Maximum bound used for iterative method. Ignored when flood_depth_estimator is None.
         default: 15
         type: integer
   validators:
