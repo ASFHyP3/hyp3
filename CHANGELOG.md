@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.25.0]
+### Changed
+- `WATER_MAP` and `RIVER_WIDTH` jobs are now run as a series of multiple tasks.
+- The `flood_depth_estimator` parameter for `WATER_MAP` jobs is now restricted to a set of possible values.
+- Changed the default value for the `flood_depth_estimator` parameter for `WATER_MAP` jobs from `iterative` to `None`.
+  A value of `None` indicates that a flood map will not be included.
+### Removed
+- Removed the `include_flood_depth` parameter for `WATER_MAP` jobs.
+
 ## [2.24.0]
 ### Added
 - Made `resolution=10.0` parameter option for RTC_GAMMA and WATER_MAP jobs available in all deployments
