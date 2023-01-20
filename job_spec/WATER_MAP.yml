@@ -65,7 +65,7 @@ WATER_MAP:
     flood_depth_estimator:
       api_schema:
         description: Flood depth estimation approach.
-        default: 'iterative'
+        default: None
         type: string
         enum:
           - iterative
