@@ -6,16 +6,16 @@
 -r requirements-apps-start-execution-manager.txt
 -r requirements-apps-start-execution-worker.txt
 -r requirements-apps-update-db.txt
-boto3==1.26.49
+boto3==1.26.51
 jinja2==3.1.2
 moto[dynamodb]==4.1.0
-pytest==7.2.0
+pytest==7.2.1
 PyYAML==6.0
 responses==0.22.0
 flake8==6.0.0
 flake8-import-order==0.18.2
 flake8-blind-except==0.2.1
 flake8-builtins==2.1.0
-setuptools==65.7.0
+setuptools==66.0.0
 openapi-spec-validator==0.4.0
-cfn-lint==0.72.8
+cfn-lint==0.72.9
