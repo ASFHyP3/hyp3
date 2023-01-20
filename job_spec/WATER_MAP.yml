@@ -174,4 +174,4 @@ WATER_MAP:
         - Ref::iterative_max
       timeout: TODO
       vcpu: 1
-      memory: 31600
+      memory: 126000
