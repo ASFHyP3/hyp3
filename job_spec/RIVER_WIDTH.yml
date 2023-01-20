@@ -40,6 +40,24 @@ RIVER_WIDTH:
         - Ref::bucket_prefix
         - --resolution
         - '10.0'
+        - --scale
+        - 'power'
+        - --radiometry
+        - 'gamma0'
+        - --speckle-filter
+        - 'false'
+        - --dem-matching
+        - 'false'
+        - --include-dem
+        - 'true'
+        - --include-inc-map
+        - 'false'
+        - --include-scattering-area
+        - 'false'
+        - --include-rgb
+        - 'true'
+        - --dem-name
+        - 'copernicus'
         - Ref::granules
       timeout: 36000
       vcpu: 1

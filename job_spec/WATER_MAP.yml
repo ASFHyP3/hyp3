@@ -111,6 +111,22 @@ WATER_MAP:
         - Ref::resolution
         - --speckle-filter
         - Ref::speckle_filter
+        - --scale
+        - 'power'
+        - --radiometry
+        - 'gamma0'
+        - --dem-matching
+        - 'false'
+        - --include-dem
+        - 'true'
+        - --include-inc-map
+        - 'false'
+        - --include-scattering-area
+        - 'false'
+        - --include-rgb
+        - 'true'
+        - --dem-name
+        - 'copernicus'
         - Ref::granules
       timeout: TODO
       vcpu: TODO
