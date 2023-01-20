@@ -39,7 +39,7 @@ RIVER_WIDTH:
         - --bucket-prefix
         - Ref::bucket_prefix
         - --resolution
-        - 10.0
+        - '10.0'
         - Ref::granules
       timeout: 36000
       vcpu: 1
