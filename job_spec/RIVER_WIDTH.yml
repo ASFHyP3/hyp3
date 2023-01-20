@@ -72,8 +72,8 @@ RIVER_WIDTH:
         - --bucket-prefix
         - Ref::bucket_prefix
       timeout: TODO
-      vcpu: TODO
-      memory: TODO
+      vcpu: 1
+      memory: 126000
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/asfhyp3/riverwidthsar
       command:
