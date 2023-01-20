@@ -129,8 +129,8 @@ WATER_MAP:
         - 'copernicus'
         - Ref::granules
       timeout: TODO
-      vcpu: TODO
-      memory: TODO
+      vcpu: 1
+      memory: 31600
     - name: ''
       image: ghcr.io/asfhyp3/asf-tools
       command:
