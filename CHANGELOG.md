@@ -4,6 +4,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0]
+### Changed
+- `WATER_MAP` and `RIVER_WIDTH` jobs are now run as a series of multiple tasks.
+- The `flood_depth_estimator` parameter for `WATER_MAP` jobs is now restricted to a set of possible values.
+- Changed the default value for the `flood_depth_estimator` parameter for `WATER_MAP` jobs from `iterative` to `None`.
+  A value of `None` indicates that a flood map will not be included.
+### Removed
+- Removed the `include_flood_depth` parameter for `WATER_MAP` jobs.
+
+## [2.25.0]
+### Added
+- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs now accept a `weather_model` parameter to specify which weather model to use 
+   when estimating trophospheric delay data.
+- Increases the memory available to `AUTORIFT` jobs for Landsat pairs
+
+## [2.24.0]
+### Added
+- Made `resolution=10.0` parameter option for RTC_GAMMA and WATER_MAP jobs available in all deployments
+### Changed
+- Updated hyp3-enterprise-test, hyp3-watermap, hyp3-streamflow, and hyp3-cargill deployments to include larger EC2
+  instance types capable of running multiple jobs per instance.
+- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs will now only accept SLC scenes with a polarization of VV or VV+VH.
+
+## [2.23.0]
+### Changed
+- Set `++omp-num-threads 4` for RTC_GAMMA, INSAR_GAMMA, WATER_MAP, and AUTORIFT jobs to drastically reduce CPU
+  contention when running multiple jobs on the same EC2 instance.
+- Updated DAAC deployments to include larger EC2 instance types capable of running multiple jobs per instance.
+
+## [2.22.0]
+### Added
+- In addition to `power` and `amplitude`, `decibel` can now be provided as the `scale` for `RTC_GAMMA` jobs
+
 ## [2.21.12]
 ### Added
 - Added `lambda_logging` library for re-usable Lambda logging functionality.

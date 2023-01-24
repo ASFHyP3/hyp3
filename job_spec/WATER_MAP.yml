@@ -31,6 +31,7 @@ WATER_MAP:
         type: number
         enum:
           - 30.0
+          - 10.0
     speckle_filter:
       api_schema:
         description: Apply an Enhanced Lee speckle filter
@@ -61,44 +62,47 @@ WATER_MAP:
         description: The average membership to the fuzzy indicators required for a water pixel
         default: 0.45
         type: number
-    include_flood_depth:
-      api_schema:
-        description: Produce a flood depth map from water products.
-        default: false
-        type: boolean
     flood_depth_estimator:
       api_schema:
-        description: Flood depth estimation approach. Ignored when include_flood_depth is false.
-        default: 'iterative'
+        description: Flood depth estimation approach. A value of None indicates that flood depth estimation will not be performed.
+        default: None
         type: string
+        enum:
+          - iterative
+          - logstat
+          - nmad
+          - numpy
+          - None
     water_level_sigma:
       api_schema:
-        description: Standard deviation to estimate max water height for each object. Ignored when include_flood_depth is false.
+        description: Standard deviation to estimate max water height for each object. Ignored when flood_depth_estimator is None.
         default: 3.0
         type: number
     known_water_threshold:
       api_schema:
-        description: Threshold for extracting known water area in percent. Ignored when include_flood_depth is false.
+        description: Threshold for extracting known water area in percent. Ignored when flood_depth_estimator is None.
         default: 30.0
         type: number
     iterative_min:
       api_schema:
-        description: Minimum bound used for iterative method. Ignored when include_flood_depth is false.
+        description: Minimum bound used for iterative method. Ignored when flood_depth_estimator is None.
         default: 0
         type: integer
     iterative_max:
       api_schema:
-        description: Maximum bound used for iterative method. Ignored when include_flood_depth is false.
+        description: Maximum bound used for iterative method. Ignored when flood_depth_estimator is None.
         default: 15
         type: integer
   validators:
     - check_dem_coverage
   tasks:
-    - name: ''
+    - name: RTC
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
       command:
         - ++process
-        - water_map
+        - rtc
+        - ++omp-num-threads
+        - '4'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -107,6 +111,35 @@ WATER_MAP:
         - Ref::resolution
         - --speckle-filter
         - Ref::speckle_filter
+        - --scale
+        - 'power'
+        - --radiometry
+        - 'gamma0'
+        - --dem-matching
+        - 'false'
+        - --include-dem
+        - 'true'
+        - --include-inc-map
+        - 'false'
+        - --include-scattering-area
+        - 'false'
+        - --include-rgb
+        - 'true'
+        - --dem-name
+        - 'copernicus'
+        - Ref::granules
+      timeout: 36000
+      vcpu: 1
+      memory: 31600
+    - name: ''
+      image: ghcr.io/asfhyp3/asf-tools
+      command:
+        - ++process
+        - water_map
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
         - --max-vv-threshold
         - Ref::max_vv_threshold
         - --max-vh-threshold
@@ -117,8 +150,18 @@ WATER_MAP:
         - Ref::hand_fraction
         - --membership-threshold
         - Ref::membership_threshold
-        - --include-flood-depth
-        - Ref::include_flood_depth
+      timeout: 10800
+      vcpu: 1
+      memory: 126000
+    - name: FLOOD_MAP
+      image: ghcr.io/asfhyp3/asf-tools
+      command:
+        - ++process
+        - flood_map
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
         - --estimator
         - Ref::flood_depth_estimator
         - --water-level-sigma
@@ -129,7 +172,6 @@ WATER_MAP:
         - Ref::iterative_min
         - --iterative-max
         - Ref::iterative_max
-        - Ref::granules
-      timeout: 36000
+      timeout: 25200
       vcpu: 1
-      memory: 31600
+      memory: 126000
