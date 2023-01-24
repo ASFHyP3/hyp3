@@ -45,7 +45,7 @@ INSAR_ISCE_TEST:
           type: float
     frame_id:
       api_schema:
-        default: none
+        default: -1
         type: int
         description: the frame-id derived from ARIA-S1-GUNW fixed frame convention; if specified, region of interest, must be too.
     weather_model:
@@ -74,6 +74,12 @@ INSAR_ISCE_TEST:
         - Ref::granules
         - --secondary-scenes
         - Ref::secondary_granules
+        - --region-of-interest
+        - Ref::region_of_interest
+        - --estimate-ionosphere-delay
+        - Ref::estimate_ionosphere_delay
+        - --frame-id
+        - Ref::frame_id
       timeout: 10800
       vcpu: 1
       memory: 7500
