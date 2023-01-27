@@ -37,7 +37,9 @@ INSAR_ISCE_TEST:
           - HRRR
           - HRES
           - GMAO
+          - NCMR
           - ERA5
+          - ERA5T
     bucket_prefix:
       default:  '""'
   validators: []
