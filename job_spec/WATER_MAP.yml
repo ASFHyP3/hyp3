@@ -172,6 +172,6 @@ WATER_MAP:
         - Ref::iterative_min
         - --iterative-max
         - Ref::iterative_max
-      timeout: 25200
+      timeout: 50400
       vcpu: 1
       memory: 126000
