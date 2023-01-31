@@ -27,6 +27,11 @@ INSAR_ISCE_TEST:
           minLength: 67
           maxLength: 67
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
+    frame_id:
+      api_schema:
+        description: Integer to enable ESD corections. The default is "-1" and no corrections will not be applied.
+        default: -1
+        type: integer
     weather_model:
       api_schema:
         description: Weather model used to generate tropospheric delay estimations
@@ -53,6 +58,8 @@ INSAR_ISCE_TEST:
         - Ref::granules
         - --secondary-scenes
         - Ref::secondary_granules
+        - --frame-id
+        - Ref::frame_id
       timeout: 10800
       vcpu: 1
       memory: 7500
