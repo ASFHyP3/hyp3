@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The `flood_depth_estimator` parameter for `WATER_MAP` jobs is now restricted to a set of possible values.
 - Changed the default value for the `flood_depth_estimator` parameter for `WATER_MAP` jobs from `iterative` to `None`.
   A value of `None` indicates that a flood map will not be included.
+- Reduced `ITS_LIVE` product lifetime cycle from 180 days to 45 days. 
 ### Removed
 - Removed the `include_flood_depth` parameter for `WATER_MAP` jobs.
 
