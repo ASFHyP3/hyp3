@@ -42,7 +42,7 @@ INSAR_ISCE_TEST:
         description: Whether or not to perform Enhanced Spectral Diversity for improved coregistration
         defult: false
         type: boolean
-    esd-coherence-threshold:
+    esd_coherence_threshold:
       api_schema:
         description: Coherence threshold for points to include when performing ESD
         defult: 0.5
