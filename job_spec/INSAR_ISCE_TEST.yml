@@ -40,7 +40,7 @@ INSAR_ISCE_TEST:
     do_esd:
       api_schema:
         description: Whether or not to perform Enhanced Spectral Diversity for improved coregistration
-        defult: False
+        defult: false
         type: boolean
     esd-coherence-threshold:
       api_schema:
@@ -48,7 +48,7 @@ INSAR_ISCE_TEST:
         defult: 0.5
         type: float
         min: 0.0
-        max: 0.0
+        max: 1.0
     bucket_prefix:
       default:  '""'
   validators: []
