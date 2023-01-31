@@ -37,6 +37,18 @@ INSAR_ISCE_TEST:
           - HRRR
           - HRES
           - GMAO
+    do_esd:
+      api_schema:
+        description: Whether or not to perform Enhanced Spectral Diversity for improved coregistration
+        defult: False
+        type: boolean
+    esd-coherence-threshold:
+      api_schema:
+        description: Coherence threshold for points to include when performing ESD
+        defult: 0.5
+        type: float
+        min: 0.0
+        max: 0.0
     bucket_prefix:
       default:  '""'
   validators: []
