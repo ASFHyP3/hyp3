@@ -47,8 +47,8 @@ INSAR_ISCE_TEST:
         description: Coherence threshold for points to include when performing ESD
         defult: 0.5
         type: number
-        min: 0.0
-        max: 1.0
+        minimum: 0.0
+        maximum: 1.0
     bucket_prefix:
       default:  '""'
   validators: []
