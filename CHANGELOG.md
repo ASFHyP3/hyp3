@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.1.0]
 ### Added
-- `INSAR_ISCE_TEST` jobs now accept  `do_esd`, and `esd_coherence_threshold` parameters to specify whether or not to perform the Enhanced Spectral Diversity (ESD), and what ESD coherence threshold to use.
+- `INSAR_ISCE_TEST` jobs now accepts an `esd_coherence_threshold` parameter to specify whether or not to perform the Enhanced Spectral Diversity (ESD), and what ESD coherence threshold to use.
 
 ## [3.0.0]
 ### Added
