@@ -150,7 +150,7 @@ WATER_MAP:
         - Ref::hand_fraction
         - --membership-threshold
         - Ref::membership_threshold
-      timeout: 10800
+      timeout: 36000
       vcpu: 1
       memory: 126000
     - name: FLOOD_MAP
@@ -172,6 +172,6 @@ WATER_MAP:
         - Ref::iterative_min
         - --iterative-max
         - Ref::iterative_max
-      timeout: 25200
+      timeout: 86400
       vcpu: 1
       memory: 126000
