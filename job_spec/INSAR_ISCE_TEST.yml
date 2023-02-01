@@ -58,12 +58,8 @@ INSAR_ISCE_TEST:
         - Ref::granules
         - --secondary-scenes
         - Ref::secondary_granules
-        - --region-of-interest
-        - Ref::region_of_interest
         - --estimate-ionosphere-delay
         - Ref::estimate_ionosphere_delay
-        - --frame-id
-        - Ref::frame_id
       timeout: 10800
       vcpu: 1
       memory: 7500
