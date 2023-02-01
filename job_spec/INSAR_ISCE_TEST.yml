@@ -34,12 +34,12 @@ INSAR_ISCE_TEST:
         type: string
         enum:
           - None
-          - HRRR
-          - HRES
-          - GMAO
-          - NCMR
           - ERA5
           - ERA5T
+          - GMAO
+          - HRES
+          - HRRR
+          - NCMR
     bucket_prefix:
       default:  '""'
   validators: []
