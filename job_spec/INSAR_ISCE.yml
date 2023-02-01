@@ -34,12 +34,9 @@ INSAR_ISCE:
         type: string
         enum:
           - None
-          - ERA5
-          - ERA5T
-          - GMAO
           - HRES
           - HRRR
-          - NCMR
+          - GMAO
     bucket_prefix:
       default:  '""'
   validators: []
