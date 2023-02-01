@@ -32,22 +32,6 @@ INSAR_ISCE_TEST:
         default: false
         type: bool
         description: "Whether to apply ionosphere correction to the ARIA-S1-GUNW as an additional layer"
-    region_of_interest:
-      api_schema:
-        default: none
-        type: array
-        minItems: 4
-        maxItems: 4
-        description: The bounding box of the region of interest as xmin, ymin, xmax, ymax
-        example: [-121.167298, 33.929114, -118.055825, 35.904876]
-        items:
-          description: the x or y coordinates of the bounding box
-          type: float
-    frame_id:
-      api_schema:
-        default: -1
-        type: int
-        description: the frame-id derived from ARIA-S1-GUNW fixed frame convention; if specified, region of interest, must be too.
     weather_model:
       api_schema:
         description: Weather model used to generate tropospheric delay estimations
