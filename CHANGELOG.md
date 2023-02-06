@@ -6,8 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.1]
 ### Added
-- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs now accept a `frame_id` parameter to apply ESD corrections in `INSAR_ISCE` 
-jobs.
+- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs now accept a `frame_id` parameter. GUNW products are subset to this frame.
 
 ## [3.0.0]
 ### Added
