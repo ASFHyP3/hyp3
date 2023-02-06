@@ -29,7 +29,7 @@ INSAR_ISCE:
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
     frame_id:
       api_schema:
-        description: Integer to enable ESD corections. The default is "-1" and no corrections will not be applied.
+        description: Subset GUNW products to this frame. The default is `-1` with no subsetting of the products.
         default: -1
         type: integer
     weather_model:
