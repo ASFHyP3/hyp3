@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `INSAR_ISCE_TEST` jobs now accept a `frame_id` parameter. GUNW products are subset to this frame.
 
+### Removed
+- - `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs no longer accepts the unsupported `NCMR` weather model; [see RAiDER#485](https://github.com/dbekaert/RAiDER/issues/485).
+
 ## [3.0.0]
 ### Added
 - `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs now accepts all weather model parameters [allowed by `RAiDER`](https://github.com/dbekaert/RAiDER/blob/dev/tools/RAiDER/models/allowed.py).
