@@ -47,7 +47,7 @@ INSAR_ISCE_TEST:
     compute_solid_earth_tide:
       api_schema:
         default: false
-        type: bool
+        type: boolean
         description: "Whether to compute and add solid earth tide correction to the ARIA-S1-GUNW as an additional layer"
     weather_model:
       api_schema:
