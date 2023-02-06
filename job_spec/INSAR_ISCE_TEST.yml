@@ -60,7 +60,7 @@ INSAR_ISCE_TEST:
         - Ref::granules
         - --secondary-scenes
         - Ref::secondary_granules
-      timeout: 10800
+      timeout: 21600
       vcpu: 1
       memory: 7500
     - name: TROPOSPHERE
