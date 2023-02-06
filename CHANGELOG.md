@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0]
 ### Added
+- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs now accepts all weather model parameters [allowed by `RAiDER`](https://github.com/dbekaert/RAiDER/blob/dev/tools/RAiDER/models/allowed.py).
 - Added `hyp3-bgc-engineering` deployment.
 ### Changed
 - `WATER_MAP` and `RIVER_WIDTH` jobs are now run as a series of multiple tasks.

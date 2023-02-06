@@ -39,8 +39,8 @@ INSAR_ISCE:
         type: string
         enum:
           - None
-          - HRRR
           - HRES
+          - HRRR
           - GMAO
     bucket_prefix:
       default:  '""'
