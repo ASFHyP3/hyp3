@@ -27,6 +27,11 @@ INSAR_ISCE_TEST:
           minLength: 67
           maxLength: 67
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
+    estimate_ionosphere_delay:
+      api_schema:
+        default: false
+        type: bool
+        description: "Whether to apply ionosphere correction to the ARIA-S1-GUNW as an additional layer"
     frame_id:
       api_schema:
         description: Subset GUNW products to this frame. The default is `-1` with no subsetting of the products.
@@ -61,6 +66,8 @@ INSAR_ISCE_TEST:
         - Ref::granules
         - --secondary-scenes
         - Ref::secondary_granules
+        - --estimate-ionosphere-delay
+        - Ref::estimate_ionosphere_delay
         - --frame-id
         - Ref::frame_id
       timeout: 10800
