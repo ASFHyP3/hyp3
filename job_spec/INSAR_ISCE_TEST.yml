@@ -29,7 +29,7 @@ INSAR_ISCE_TEST:
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
     esd_coherence_threshold:
       api_schema:
-        description: Coherence threshold value, between 0 and 1, for points to include when performing ESD, or -1 for no ESD correction.
+        description: Coherence threshold value for determining which points to include when performing ESD. Must be any value between 0 and 1 (inclusive), or -1 for no ESD correction.
         default: -1.0
         type: number
         minimum: -1.0
