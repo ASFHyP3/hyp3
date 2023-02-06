@@ -61,7 +61,7 @@ RIVER_WIDTH:
         - Ref::granules
       timeout: 36000
       vcpu: 1
-      memory: 31600
+      memory: 63200
     - name: WATER_MAP
       image: ghcr.io/asfhyp3/asf-tools
       command:
@@ -71,7 +71,7 @@ RIVER_WIDTH:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
-      timeout: 10800
+      timeout: 36000
       vcpu: 1
       memory: 126000
     - name: ''
@@ -81,6 +81,6 @@ RIVER_WIDTH:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
-      timeout: 10800
+      timeout: 36000
       vcpu: 1
       memory: 31600

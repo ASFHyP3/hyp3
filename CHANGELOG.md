@@ -6,14 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.1.0]
 ### Added
+- `INSAR_ISCE_TEST` jobs now accept a `frame_id` parameter. GUNW products are subset to this frame.
 - `INSAR_ISCE_TEST` jobs now accept an `estimate_ionosphere_delay` option to apply ionosphere correction.
 
 ## [3.0.0]
+### Added
+- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs now accepts all weather model parameters [allowed by `RAiDER`](https://github.com/dbekaert/RAiDER/blob/dev/tools/RAiDER/models/allowed.py).
+- Added `hyp3-bgc-engineering` deployment.
 ### Changed
 - `WATER_MAP` and `RIVER_WIDTH` jobs are now run as a series of multiple tasks.
 - The `flood_depth_estimator` parameter for `WATER_MAP` jobs is now restricted to a set of possible values.
 - Changed the default value for the `flood_depth_estimator` parameter for `WATER_MAP` jobs from `iterative` to `None`.
   A value of `None` indicates that a flood map will not be included.
+- Reduced `ITS_LIVE` product lifetime cycle from 180 days to 45 days. 
 ### Removed
 - Removed the `include_flood_depth` parameter for `WATER_MAP` jobs.
 

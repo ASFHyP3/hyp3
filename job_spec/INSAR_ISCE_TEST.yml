@@ -32,6 +32,11 @@ INSAR_ISCE_TEST:
         default: false
         type: bool
         description: "Whether to apply ionosphere correction to the ARIA-S1-GUNW as an additional layer"
+    frame_id:
+      api_schema:
+        description: Subset GUNW products to this frame. The default is `-1` with no subsetting of the products.
+        default: -1
+        type: integer
     weather_model:
       api_schema:
         description: Weather model used to generate tropospheric delay estimations
@@ -39,9 +44,12 @@ INSAR_ISCE_TEST:
         type: string
         enum:
           - None
-          - HRRR
-          - HRES
+          - ERA5
+          - ERA5T
           - GMAO
+          - HRES
+          - HRRR
+          - NCMR
     bucket_prefix:
       default:  '""'
   validators: []
@@ -60,6 +68,8 @@ INSAR_ISCE_TEST:
         - Ref::secondary_granules
         - --estimate-ionosphere-delay
         - Ref::estimate_ionosphere_delay
+        - --frame-id
+        - Ref::frame_id
       timeout: 10800
       vcpu: 1
       memory: 7500
