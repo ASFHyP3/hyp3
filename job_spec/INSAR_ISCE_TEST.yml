@@ -29,9 +29,9 @@ INSAR_ISCE_TEST:
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
     estimate_ionosphere_delay:
       api_schema:
+        description: Whether to apply ionosphere correction to the ARIA-S1-GUNW as an additional layer.
         default: false
-        type: bool
-        description: "Whether to apply ionosphere correction to the ARIA-S1-GUNW as an additional layer"
+        type: boolean
     frame_id:
       api_schema:
         description: Subset GUNW products to this frame. The default is `-1` with no subsetting of the products.
