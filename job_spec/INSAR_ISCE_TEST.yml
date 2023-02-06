@@ -73,6 +73,8 @@ INSAR_ISCE_TEST:
         - Ref::granules
         - --secondary-scenes
         - Ref::secondary_granules
+        - --esd-coherence-threshold
+        - Ref::esd_coherence_threshold
         - --estimate-ionosphere-delay
         - Ref::estimate_ionosphere_delay
         - --frame-id
