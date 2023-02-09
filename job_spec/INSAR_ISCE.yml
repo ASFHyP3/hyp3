@@ -56,6 +56,13 @@ INSAR_ISCE:
       vcpu: 1
       memory: 7500
     - name: TROPOSPHERE
+      run_if:
+        And:
+          - Variable: $.job_parameters.tropospheric_model
+            IsPresent: true
+          - Not:
+              Variable: $.job_parameters.tropospheric_model
+              StringEquals: None
       image: ghcr.io/dbekaert/raider
       command:
         - ++process

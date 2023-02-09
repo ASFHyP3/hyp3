@@ -169,7 +169,7 @@
         {
           "Variable": "$.job_type",
           "StringEquals": "{{ job_type }}",
-          "Next": "{{ job_spec['tasks'][0]['name'] }}"
+          "Next": "{{ job_spec['tasks'][0]['name'] }}{% if 'run_if' in job_spec['tasks'][0] %}_CHOICE{% endif %}"
         }{% if not loop.last %},{% endif %}
         {% endfor %}
       ],
@@ -177,6 +177,20 @@
     },
     {% for job_type, job_spec in job_types.items() %}
     {% for task in job_spec['tasks'] %}
+    {% if 'run_if' in task %}
+    "{{ task['name'] }}_CHOICE": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          {% for key, value in task['run_if'].items() %}
+          "{{ key }}": {{ json.dumps(value) }},
+          {% endfor %}
+          "Next": "{{ task['name'] }}"
+        }
+      ],
+      "Default": "{% if not loop.last %}{{ loop.nextitem['name'] }}{% if 'run_if' in loop.nextitem %}_CHOICE{% endif %}{% else %}GET_FILES{% endif %}"
+    },
+    {% endif %}
     "{{ task['name'] }}": {
       "Type": "Task",
       "Resource": "arn:aws:states:::batch:submitJob.sync",
@@ -193,7 +207,7 @@
         }
       },
       "ResultPath": "$.results.processing_results.step_{{ loop.index0 }}",
-      "Next": "{% if not loop.last %}{{ loop.nextitem['name'] }}{% else %}GET_FILES{% endif %}",
+      "Next": "{% if not loop.last %}{{ loop.nextitem['name'] }}{% if 'run_if' in loop.nextitem %}_CHOICE{% endif %}{% else %}GET_FILES{% endif %}",
       "Retry": [
         {
           "ErrorEquals": [
