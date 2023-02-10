@@ -6,6 +6,8 @@ on:
       - main
       - develop
 
+concurrency: deploy-daac
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
