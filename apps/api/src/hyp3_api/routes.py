@@ -14,6 +14,9 @@ from openapi_core.contrib.flask.views import FlaskOpenAPIView
 from openapi_core.spec.shortcuts import create_spec
 from openapi_core.validation.request.validators import RequestValidator
 from openapi_core.validation.response.datatypes import ResponseValidationResult
+from openapi_core.unmarshalling.schemas.factories import SchemaUnmarshallersFactory
+from openapi_schema_validator import OAS30Validator
+from openapi_core.unmarshalling.schemas.formatters import Formatter
 
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
@@ -104,16 +107,13 @@ class NonValidator:
         return ResponseValidationResult()
 
 
-class WKTValidator:
-    def validate(self, value):
+class WktFormatter(Formatter):
+    def validate(self, value) -> bool:
         try:
             shapely.wkt.loads(value)
         except shapely.errors.WKTReadingError:
             return False
         return True
-
-    def unmarshal(self, value):
-        return value
 
 
 class ErrorHandler(FlaskOpenAPIErrorsHandler):
@@ -170,7 +170,12 @@ class User(FlaskOpenAPIView):
 class Subscriptions(FlaskOpenAPIView):
     def __init__(self, spec):
         super().__init__(spec)
-        self.request_validator = RequestValidator(spec, custom_formatters={'wkt': WKTValidator()})
+
+        schema_unmarshallers_factory = SchemaUnmarshallersFactory(
+            OAS30Validator,
+            custom_formatters={'wkt': WktFormatter},
+        )
+        self.request_validator = RequestValidator(schema_unmarshallers_factory)
         self.response_validator = NonValidator
         self.openapi_errors_handler = ErrorHandler
 
