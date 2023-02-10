@@ -107,16 +107,29 @@ make clean
 in the `apps/` or `lib/dynamo/` directory.*
 
 ## Running the API Locally
-The API can be run locally to verify changes, but must be connected to an existing DynamoDB jobs table.
 
-- Setup aws credentials in your environment [Documentation by AWS](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration)
-- Setup environment variables in `test/cfg.env` to desired values (you must change the names of any DynamoDB table to one that exists)
+The API can be run locally to verify changes, but must be connected to a set of existing DynamoDB tables.
 
-- run API
-```sh
-make run
-```
-- In order to use you will need to include the following cookie
-```
-asf-urs=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1cnMtdXNlci1pZCI6InVzZXIiLCJleHAiOjIxNTk1Mzc0OTYyLCJ1cnMtZ3JvdXBzIjpbeyJuYW1lIjoiYXV0aC1ncm91cCIsImFwcF91aWQiOiJhdXRoLXVpZCJ9XX0.hMtgDTqS5wxDPCzK9MlXB-3j6MAcGYeSZjGf4SYvq9Y
-```
+1. Set up AWS credentials in your environment as described
+   [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration).
+   Also see our [wiki page](https://github.com/ASFHyP3/.github-private/wiki/AWS-Access#aws-access-keys).
+2. Edit `test/cfg.env` to specify the names of existing DynamoDB tables from a particular HyP3 deployment.
+   Delete all of the `AWS_*` variables.
+3. Run the API (replace `<profile>` with the AWS config profile that corresponds to the HyP3 deployment):
+   ```sh
+   AWS_PROFILE=<profile> make run
+   ```
+4. You should see something like `Running on http://127.0.0.1:8080` in the output. Open the host URL in your browser.
+   You should see the Swagger UI for the locally running API.
+5. In Chrome or Chromium, from the Swagger UI tab, open Developer tools, select the Application tab, then select
+   the host URL under Cookies. In Firefox, open Web Developer Tools, select the Storage tab, then select
+   the host URL under Cookies. Add a new cookie with the following Name:
+   ```
+   asf-urs
+   ```
+   And the following Value:
+   ```
+   eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1cnMtdXNlci1pZCI6InVzZXIiLCJleHAiOjIxNTk1Mzc0OTYyLCJ1cnMtZ3JvdXBzIjpbeyJuYW1lIjoiYXV0aC1ncm91cCIsImFwcF91aWQiOiJhdXRoLXVpZCJ9XX0.hMtgDTqS5wxDPCzK9MlXB-3j6MAcGYeSZjGf4SYvq9Y
+   ```
+   And `/` for Path.
+6. To verify access, query the `GET /user` endpoint and verify that the response includes `"user_id": "user"`.
