@@ -5,7 +5,7 @@ on:
     branches:
       - develop
 
-concurrency: deploy-enterprise-test
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   deploy:
