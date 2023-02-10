@@ -27,11 +27,11 @@ RIVER_WIDTH:
   validators:
     - check_dem_coverage
   tasks:
-    - name: WATER_MAP
+    - name: RTC
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
       command:
         - ++process
-        - water_map
+        - rtc
         - ++omp-num-threads
         - '16'
         - --bucket
@@ -39,8 +39,38 @@ RIVER_WIDTH:
         - --bucket-prefix
         - Ref::bucket_prefix
         - --resolution
-        - 10.0
+        - '10.0'
+        - --scale
+        - 'power'
+        - --radiometry
+        - 'gamma0'
+        - --speckle-filter
+        - 'false'
+        - --dem-matching
+        - 'false'
+        - --include-dem
+        - 'true'
+        - --include-inc-map
+        - 'false'
+        - --include-scattering-area
+        - 'false'
+        - --include-rgb
+        - 'true'
+        - --dem-name
+        - 'copernicus'
         - Ref::granules
+      timeout: 36000
+      vcpu: 1
+      memory: 63200
+    - name: WATER_MAP
+      image: ghcr.io/asfhyp3/asf-tools
+      command:
+        - ++process
+        - water_map
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
       timeout: 36000
       vcpu: 1
       memory: 126000
@@ -51,6 +81,6 @@ RIVER_WIDTH:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
-      timeout: 1800
+      timeout: 36000
       vcpu: 1
       memory: 31600
