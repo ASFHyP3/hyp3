@@ -173,7 +173,7 @@ class Subscriptions(FlaskOpenAPIView):
 
         schema_unmarshallers_factory = SchemaUnmarshallersFactory(
             OAS30Validator,
-            custom_formatters={'wkt': WktFormatter},
+            custom_formatters={'wkt': WktFormatter()},
         )
         self.request_validator = RequestValidator(schema_unmarshallers_factory)
         self.response_validator = NonValidator
