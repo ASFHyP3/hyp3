@@ -147,6 +147,7 @@ def test_get_subscriptions(client, tables):
     items = [
         {
             'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
+            'enabled': True,
             'user_id': 'subscriptionsUser',
             'creation_date': '2020-01-04T00:00:00+00:00',
             'search_parameters': {
@@ -160,6 +161,7 @@ def test_get_subscriptions(client, tables):
         },
         {
             'subscription_id': '140191ab-486b-4080-ab1b-3e2c40aab6b8',
+            'enabled': True,
             'user_id': 'subscriptionsUser',
             'creation_date': '2020-01-03T00:00:00+00:00',
             'search_parameters': {
@@ -173,6 +175,7 @@ def test_get_subscriptions(client, tables):
         },
         {
             'subscription_id': '92da7534-1896-410a-99e4-d16a20c71861',
+            'enabled': True,
             'user_id': 'subscriptionsUser',
             'creation_date': '2020-01-02T00:00:00+00:00',
             'search_parameters': {
@@ -380,6 +383,7 @@ def test_get_subscription_by_id(client, tables):
     items = [
         {
             'subscription_id': 'f00b731f-121d-44dc-abfa-c24afd8ad542',
+            'enabled': True,
             'user_id': 'subscriptionsUser1',
             'creation_date': '2020-01-01T00:00:00+00:00',
             'search_parameters': {
@@ -393,7 +397,9 @@ def test_get_subscription_by_id(client, tables):
         },
         {
             'subscription_id': '140191ab-486b-4080-ab1b-3e2c40aab6b8',
+            'enabled': True,
             'user_id': 'subscriptionsUser2',
+            'creation_date': '2020-01-01T00:00:00+00:00',
             'search_parameters': {
                 'start': '2020-01-01T00:00:00+00:00',
                 'end': '2020-01-01T00:00:00+00:00',
