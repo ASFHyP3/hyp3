@@ -112,11 +112,11 @@ def test_ui_location(client):
     assert response.status_code == HTTPStatus.OK
 
 
-def test_wkt_validator(client):
-    validator = routes.WKTValidator()
+def test_wkt_formatter(client):
+    formatter = routes.WktFormatter()
 
-    assert not validator.validate('foo')
-    assert validator.validate('POLYGON((-5 2, -3 2, -3 5, -5 5, -5 2))')
+    assert not formatter.validate('foo')
+    assert formatter.validate('POLYGON((-5 2, -3 2, -3 5, -5 5, -5 2))')
 
 
 def test_error_format(client):
