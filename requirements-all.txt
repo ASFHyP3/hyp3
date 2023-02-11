@@ -6,7 +6,7 @@
 -r requirements-apps-start-execution-manager.txt
 -r requirements-apps-start-execution-worker.txt
 -r requirements-apps-update-db.txt
-boto3==1.26.67
+boto3==1.26.68
 jinja2==3.1.2
 moto[dynamodb]==4.1.2
 pytest==7.2.1
@@ -18,4 +18,4 @@ flake8-blind-except==0.2.1
 flake8-builtins==2.1.0
 setuptools==67.2.0
 openapi-spec-validator==0.5.1
-cfn-lint==0.72.10
+cfn-lint==0.73.0
