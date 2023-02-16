@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.1.1]
 ### Fixed
-- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs no longer accepts the unsupported `NCMR` weather model; [see RAiDER#485](https://github.com/dbekaert/RAiDER/issues/485).
+- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs no longer accept the unsupported `NCMR` weather model; [see RAiDER#485](https://github.com/dbekaert/RAiDER/issues/485).
 
 ## [3.1.0]
 ### Added
