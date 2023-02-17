@@ -16,7 +16,7 @@ jobs:
         include:
           - environment: hyp3-enterprise-test
             domain: hyp3-enterprise-test.asf.alaska.edu
-            template_bucket: cf-templates-aubvn3i9olmk-us-west-2
+            template_bucket: cf-templates-1iw894v4yzqya-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
             quota: 0
