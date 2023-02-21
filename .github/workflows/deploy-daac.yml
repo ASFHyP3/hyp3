@@ -44,7 +44,7 @@ jobs:
               job_spec/AUTORIFT.yml
               job_spec/INSAR_GAMMA.yml
               job_spec/RTC_GAMMA.yml
-              job_spec/INSAR_ISCE.yml
+              job_spec/INSAR_ISCE_TEST.yml
               job_spec/WATER_MAP.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 1500
