@@ -48,7 +48,7 @@ INSAR_ISCE_TEST:
       api_schema:
         default: false
         type: boolean
-        description: "Whether to compute and add solid earth tide correction to the ARIA-S1-GUNW as an additional layer"
+        description: "Whether to compute a solid earth tide correction layer for ARIA-S1-GUNW products"
     weather_model:
       api_schema:
         description: Weather model used to generate tropospheric delay estimations
