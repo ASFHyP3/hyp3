@@ -11,7 +11,7 @@ def snake_to_pascal_case(input_string: str):
     return ''.join([i.title() for i in split_string])
 
 
-def render_templates(job_types, security_environment, api_name):
+def render_templates(job_types, security_environment, api_name, secrets):
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader('./'),
         autoescape=jinja2.select_autoescape(default=True, disabled_extensions=('j2',)),
@@ -28,8 +28,9 @@ def render_templates(job_types, security_environment, api_name):
             job_types=job_types,
             security_environment=security_environment,
             api_name=api_name,
+            secrets=secrets,
             json=json,
-            snake_to_pascal_case=snake_to_pascal_case
+            snake_to_pascal_case=snake_to_pascal_case,
         )
 
         template_file.with_suffix('').write_text(output)
@@ -46,11 +47,22 @@ def main():
     for file in args.job_spec_files:
         job_types.update(yaml.safe_load(file.read_text()))
 
+    required_secrets = []
     for job_type, job_spec in job_types.items():
         for task in job_spec['tasks']:
             task['name'] = job_type + '_' + task['name'] if task['name'] else job_type
+            if secrets := task.get('secrets'):
+                for secret in secrets:
+                    required_secrets.append({
+                        'env_var': secret,
+                        'secret_name': secret.lower(),
+                        'cf_parameter_name': secret.title()
+                    })
 
-    render_templates(job_types, args.security_environment, args.api_name)
+    # ensure no repeated secrets
+    required_secrets = [dict(s) for s in set(frozenset(d.items()) for d in required_secrets)]
+
+    render_templates(job_types, args.security_environment, args.api_name, required_secrets)
 
 
 if __name__ == '__main__':

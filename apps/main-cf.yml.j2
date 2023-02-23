@@ -17,6 +17,13 @@ Parameters:
     Type: String
     NoEcho: true
 
+  {% for secret in secrets %}
+  {{ secret['cf_parameter_name'] }}:
+    Description: Secret value for {{ secret['env_var'] }} as required by a job task.
+    Type: String
+    NoEcho: true
+
+  {% endfor %}
   ImageTag:
     Type: String
     Default: latest
@@ -412,4 +419,4 @@ Resources:
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: !Sub "${AWS::StackName} Earthdata Login credentials"
-      SecretString: !Sub '{"username": "${EDLUsername}", "password": "${EDLPassword}"}'
+      SecretString: !Sub '{% for secret in secrets %}"{{secret['secret_name']}}": "${{ '{'+secret['cf_parameter_name']+'}' }}", {% endfor %}"username": "${EDLUsername}", "password": "${EDLPassword}"}'
