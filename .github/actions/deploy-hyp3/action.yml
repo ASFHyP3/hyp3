@@ -29,7 +29,7 @@ inputs:
   SUBNET_IDS:
     description: "Comma separated list of Subnet IDs"
     required: true
-  SECRETS_ARN:
+  SECRET_ARN:
     description: "ARN of Secret in AWS Secrets Manager containing all the credentials needed for job tasks"
     required: true
   CLOUDFORMATION_ROLE_ARN:
@@ -114,7 +114,7 @@ runs:
             --parameter-overrides \
                 VpcId='${{ inputs.VPC_ID }}' \
                 SubnetIds='${{ inputs.SUBNET_IDS }}' \
-                SecretsArn='${{ inputs.SECRETS_ARN }}' \
+                SecretArn='${{ inputs.SECRET_ARN }}' \
                 ImageTag='${{ inputs.IMAGE_TAG }}' \
                 ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
                 $DOMAIN_NAME \
