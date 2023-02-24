@@ -84,8 +84,7 @@ jobs:
           PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
           VPC_ID: ${{ secrets.VPC_ID }}
           SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
-          EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
-          EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
+          SECRETS_ARN: ${{ secrets.SECRETS_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
           JOB_FILES: ${{ matrix.job_files }}
