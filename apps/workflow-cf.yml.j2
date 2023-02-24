@@ -72,9 +72,9 @@ Resources:
             ValueFrom: !Sub "${SecretArn}:username::"
           - Name: EARTHDATA_PASSWORD
             ValueFrom: !Sub "${SecretArn}:password::"
-          {% for secret in secrets %}
-          - Name: {{ secret['env_var'] }}
-            ValueFrom: !Sub "${SecretArn}:{{ secret['secret_name'] }}::"
+          {% for secret in task.get('secrets', []) %}
+          - Name: {{ secret }}
+            ValueFrom: !Sub "${SecretArn}:{{ secret }}::"
           {% endfor %}
       Timeout:
         AttemptDurationSeconds: {{ task['timeout'] }}
