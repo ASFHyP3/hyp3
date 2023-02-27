@@ -68,10 +68,6 @@ Resources:
           - {{ command }}
           {% endfor %}
         Secrets:
-          - Name: EARTHDATA_USERNAME
-            ValueFrom: !Sub "${SecretArn}:username::"
-          - Name: EARTHDATA_PASSWORD
-            ValueFrom: !Sub "${SecretArn}:password::"
           {% for secret in task.get('secrets', []) %}
           - Name: {{ secret }}
             ValueFrom: !Sub "${SecretArn}:{{ secret }}::"
