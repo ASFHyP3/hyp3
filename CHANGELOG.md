@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.2]
+### Added
+- `INSAR_ISCE_TEST` jobs now accept an `compute_solid_earth_tide` option to compute the solid earth tide ionosphere correction layer.
+
 ## [3.1.1]
 ### Fixed
 - `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs no longer accept the unsupported `NCMR` weather model; [see RAiDER#485](https://github.com/dbekaert/RAiDER/issues/485).
