@@ -67,7 +67,7 @@ Resources:
           {% for command in task['command'] %}
           - {{ command }}
           {% endfor %}
-        {% if task.get('secrets', []) %}
+        {% if task.get('secrets') %}
         Secrets:
           {% for secret in task['secrets'] %}
           - Name: {{ secret }}
