@@ -90,8 +90,9 @@ aws cloudformation deploy \
     --parameter-overrides \
         VpcId=<vpc-ids> \
         SubnetIds=<subnet-ids> \
-        EDLUsername=<erthdata-login-username> \
-        EDLPassword=<erthdata-login-username> \
+        DomainName=<domain-name> \
+        CertificateArn=<certificate-arn> \
+        SecretArn=<secret-arn> \
         MonthlyJobQuotaPerUser=0
 ```
 
