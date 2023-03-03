@@ -48,6 +48,7 @@ These resources are required for a successful deployment, but managed separately
 - IAM role configured for [REST API access logging](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html#set-up-access-logging-permissions)
 - default VPC
 - IAM user and roles for automated CloudFormation deployments (if desired)
+- AWS Secrets Manager Secret containing key-value pairs for all secrets listed in the deployed [`job_spec`s](./job_spec)
 - For Earthdata Cloud deployments:
   - An IAM permissions boundary policy ARN
 - For non-Earthdata Cloud deployments:

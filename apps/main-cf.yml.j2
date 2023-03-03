@@ -8,14 +8,9 @@ Parameters:
   SubnetIds:
     Type: List<AWS::EC2::Subnet::Id>
 
-  EDLUsername:
-    Description: Earthdata Login username to use when downloading input products.
+  SecretArn:
+    Description: ARN of Secret in AWS Secrets Manager containing all the credentials needed for job tasks.
     Type: String
-
-  EDLPassword:
-    Description: Earthdata Login password to use when downloading input products.
-    Type: String
-    NoEcho: true
 
   ImageTag:
     Type: String
@@ -220,7 +215,7 @@ Resources:
         JobsTable: !Ref JobsTable
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
-        SecretArn: !Ref Secret
+        SecretArn: !Ref SecretArn
         {% if security_environment == 'EDC' %}
         PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
@@ -407,9 +402,3 @@ Resources:
               KeyType: RANGE
           Projection:
             ProjectionType: ALL
-
-  Secret:
-    Type: AWS::SecretsManager::Secret
-    Properties:
-      Description: !Sub "${AWS::StackName} Earthdata Login credentials"
-      SecretString: !Sub '{"username": "${EDLUsername}", "password": "${EDLPassword}"}'

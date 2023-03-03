@@ -24,12 +24,14 @@ suitable bucket if you try and create a new CloudFormation Stack in the AWS Cons
 ## 2.  Prepare for deployment
 
 In order to integrate an ASF deployment we'll need:
-* Set the account-wide API Gateway logging permissions
-* A deployment role with the necessary permissions to deploy HyP3
-* A "service user" so that we can generate long-term AWS access keys and
-  integrate the deployment into our CI/CD pipelines
+1. Set the account-wide API Gateway logging permissions
+2. A deployment role with the necessary permissions to deploy HyP3
+3. A "service user" so that we can generate long-term AWS access keys and
+   integrate the deployment into our CI/CD pipelines
+4. An AWS Secrets Manager Secret containing key-value pairs for all secrets listed in the [`job_spec`s](./job_spec)
+   which will be deployed
 
-These can be done by deploying the `hyp3-ci` stack. From the repository root, run:
+(1) through (3) can be done by deploying the `hyp3-ci` stack. From the repository root, run:
 
 ```shell
 aws cloudformation deploy \
@@ -43,6 +45,19 @@ aws cloudformation deploy \
 assumes you are only deploying into a single AWS Region If you are deploying into
 multiple regions in the same AWS account, you'll need to adjust the IAM permissions
 that are limited to a single region.*
+
+(4) is typically provisioned manually. In the AWS Console navigate to Secrets Manager and:
+* Click the orange "Store a new secret" button
+* On the create secret screen:
+  * For "Secret Type" elect "Other type of secret"
+  * Enter all required secret key-value pairs. Notably, the keys should be the secret names as listed (case-sensitive)
+    in the [`job_spec`s](./job_spec) which will be deployed
+  * Click the orange "Next" button
+  * Name the secret "[HYP3_STACK]-secrets" where `HYP3_STACK` is the name of the HyP3 Cloud Formation stack that will
+    be deployed in the next section
+  * Click the orange "Next" button
+  * Click the orange "Next" button (we won't configure rotation)
+  * Click the orange "Store" button to save the Secret
 
 ## 3. Deploy HyP3 to AWS
 
@@ -75,8 +90,8 @@ aws cloudformation deploy \
     --parameter-overrides \
         VpcId=<vpc-ids> \
         SubnetIds=<subnet-ids> \
-        EDLUsername=<earthdata-login-username> \
-        EDLPassword=<earthdata-login-password> \
         DomainName=<domain-name> \
-        CertificateArn=<certificate-arn>
+        CertificateArn=<certificate-arn> \
+        SecretArn=<secret-arn> \
+        MonthlyJobQuotaPerUser=0
 ```

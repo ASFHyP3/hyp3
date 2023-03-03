@@ -131,6 +131,9 @@ WATER_MAP:
       timeout: 36000
       vcpu: 1
       memory: 31600
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
     - name: ''
       image: ghcr.io/asfhyp3/asf-tools
       command:
