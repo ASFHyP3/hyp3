@@ -31,7 +31,7 @@ In order to integrate an ASF deployment we'll need:
 4. An AWS Secrets Manager Secret containing key-value pairs for all secrets listed in the [`job_spec`s](./job_spec)
    which will be deployed
 
-(1) thorugh (3) can be done by deploying the `hyp3-ci` stack. From the repository root, run:
+(1) through (3) can be done by deploying the `hyp3-ci` stack. From the repository root, run:
 
 ```shell
 aws cloudformation deploy \
