@@ -53,7 +53,7 @@ that are limited to a single region.*
   * Enter all required secret key-value pairs. Notably, the keys should be the secret names as listed (case-sensitive)
     in the [`job_spec`s](./job_spec) which will be deployed
   * Click the orange "Next" button
-  * Name the secret "[HYP3_STACK]-secrets" where `HYP3_STACK` is the name of the HyP3 Cloud Formation stack that will
+  * Name the secret "HYP3_STACK" where `HYP3_STACK` is the name of the HyP3 CloudFormation stack that will
     be deployed in the next section
   * Click the orange "Next" button
   * Click the orange "Next" button (we won't configure rotation)
