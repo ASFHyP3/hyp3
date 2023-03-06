@@ -88,6 +88,9 @@ INSAR_ISCE_TEST:
       timeout: 21600
       vcpu: 1
       memory: 7500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
     - name: TROPOSPHERE
       image: ghcr.io/dbekaert/raider
       image_tag: test
@@ -103,3 +106,11 @@ INSAR_ISCE_TEST:
       timeout: 10800
       vcpu: 1
       memory: 7500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
+        - RAIDER_ECMWF_ERA5_UID
+        - RAIDER_ECMWF_ERA5_API_KEY
+        - RAIDER_HRES_EMAIL
+        - RAIDER_HRES_API_KEY
+        - RAIDER_HRES_URL

@@ -29,11 +29,8 @@ inputs:
   SUBNET_IDS:
     description: "Comma separated list of Subnet IDs"
     required: true
-  EDL_USERNAME:
-    description: "EarthData Login name to use when downloading data from ASF"
-    required: true
-  EDL_PASSWORD:
-    description: "EarthData Login password to use when downloading data from ASF"
+  SECRET_ARN:
+    description: "ARN of Secret in AWS Secrets Manager containing all the credentials needed for job tasks"
     required: true
   CLOUDFORMATION_ROLE_ARN:
     description: "The CloudFormation role to use for this deployment"
@@ -117,8 +114,7 @@ runs:
             --parameter-overrides \
                 VpcId='${{ inputs.VPC_ID }}' \
                 SubnetIds='${{ inputs.SUBNET_IDS }}' \
-                EDLUsername='${{ inputs.EDL_USERNAME }}' \
-                EDLPassword='${{ inputs.EDL_PASSWORD }}' \
+                SecretArn='${{ inputs.SECRET_ARN }}' \
                 ImageTag='${{ inputs.IMAGE_TAG }}' \
                 ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
                 $DOMAIN_NAME \
