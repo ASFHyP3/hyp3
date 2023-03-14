@@ -108,7 +108,7 @@ jobs:
             domain: hyp3-streamflow.asf.alaska.edu
             template_bucket: cf-templates-15gmiot9prm67-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 14
+            product_lifetime_in_days: 90
             quota: 0
             job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/RIVER_WIDTH.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
