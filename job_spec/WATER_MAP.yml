@@ -1,6 +1,7 @@
 WATER_MAP:
   required_parameters:
     - granules
+    - wm_raster
   parameters:
     granules:
       default: '""'
@@ -93,69 +94,14 @@ WATER_MAP:
         description: Maximum bound used for iterative method. Ignored when flood_depth_estimator is None.
         default: 15
         type: integer
+    wm_raster:
+      api_schema:
+        description: WM vsicurl
+        type: string
+
   validators:
     - check_dem_coverage
   tasks:
-    - name: RTC
-      image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
-      command:
-        - ++process
-        - rtc
-        - ++omp-num-threads
-        - '4'
-        - --bucket
-        - '!Ref Bucket'
-        - --bucket-prefix
-        - Ref::bucket_prefix
-        - --resolution
-        - Ref::resolution
-        - --speckle-filter
-        - Ref::speckle_filter
-        - --scale
-        - 'power'
-        - --radiometry
-        - 'gamma0'
-        - --dem-matching
-        - 'false'
-        - --include-dem
-        - 'true'
-        - --include-inc-map
-        - 'false'
-        - --include-scattering-area
-        - 'false'
-        - --include-rgb
-        - 'true'
-        - --dem-name
-        - 'copernicus'
-        - Ref::granules
-      timeout: 36000
-      vcpu: 1
-      memory: 31600
-      secrets:
-        - EARTHDATA_USERNAME
-        - EARTHDATA_PASSWORD
-    - name: ''
-      image: ghcr.io/asfhyp3/asf-tools
-      command:
-        - ++process
-        - water_map
-        - --bucket
-        - '!Ref Bucket'
-        - --bucket-prefix
-        - Ref::bucket_prefix
-        - --max-vv-threshold
-        - Ref::max_vv_threshold
-        - --max-vh-threshold
-        - Ref::max_vh_threshold
-        - --hand-threshold
-        - Ref::hand_threshold
-        - --hand-fraction
-        - Ref::hand_fraction
-        - --membership-threshold
-        - Ref::membership_threshold
-      timeout: 36000
-      vcpu: 1
-      memory: 126000
     - name: FLOOD_MAP
       image: ghcr.io/asfhyp3/asf-tools
       command:
@@ -175,6 +121,8 @@ WATER_MAP:
         - Ref::iterative_min
         - --iterative-max
         - Ref::iterative_max
+        - --wm-raster
+        - Ref::wm_raster
       timeout: 86400
       vcpu: 1
       memory: 126000
