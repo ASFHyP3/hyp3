@@ -25,44 +25,6 @@ WATER_MAP:
               example: S1A_IW_SLC__1SDV_20211110T234815_20211110T234842_040516_04CE0A_E717
     bucket_prefix:
       default:  '""'
-    resolution:
-      api_schema:
-        default:  30.0
-        description: Desired output pixel spacing in meters
-        type: number
-        enum:
-          - 30.0
-          - 10.0
-    speckle_filter:
-      api_schema:
-        description: Apply an Enhanced Lee speckle filter
-        default: false
-        type: boolean
-    max_vv_threshold:
-      api_schema:
-        description: Maximum threshold value to use for VV polarized raster in decibels (dB)
-        default: -15.5
-        type: number
-    max_vh_threshold:
-      api_schema:
-        description: Maximum threshold value to use for VH polarized raster in decibels (dB)
-        default: -23.0
-        type: number
-    hand_threshold:
-      api_schema:
-        description: The maximum height above nearest drainage in meters to consider a pixel valid
-        default: 15.0
-        type: number
-    hand_fraction:
-      api_schema:
-        description: The minimum fraction of valid HAND pixels required in a tile for thresholding
-        default: 0.8
-        type: number
-    membership_threshold:
-      api_schema:
-        description: The average membership to the fuzzy indicators required for a water pixel
-        default: 0.45
-        type: number
     flood_depth_estimator:
       api_schema:
         description: Flood depth estimation approach. A value of None indicates that flood depth estimation will not be performed.
