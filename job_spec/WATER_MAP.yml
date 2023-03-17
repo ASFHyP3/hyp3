@@ -12,7 +12,7 @@ WATER_MAP:
           anyOf:
             - description: /vsicurl link to a water map raster
               type: string
-              pattern: "^\/vsicurl\/https:\/\/.*_WM\.tif"
+              pattern: '^\/vsicurl\/https:\/\/.*_WM\.tif'
               example: /vsicurl/https://hyp3-nasa-disasters.s3-us-west-2.amazonaws.com/hkh/S1A_IW_20230316T113240_DVR_RTC30_G_gpufed_DCE6_WM.tif
     bucket_prefix:
       default:  '""'
