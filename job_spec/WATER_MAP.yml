@@ -40,8 +40,6 @@ WATER_MAP:
         description: WM vsicurl
         type: string
 
-  validators:
-    - check_dem_coverage
   tasks:
     - name: FLOOD_MAP
       image: ghcr.io/asfhyp3/asf-tools
