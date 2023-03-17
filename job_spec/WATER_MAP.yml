@@ -1,7 +1,19 @@
 WATER_MAP:
   required_parameters:
-    - wm_raster
+    - granules
   parameters:
+    granules:
+      default: '""'
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 1
+        items:
+          anyOf:
+            - description: /vsicurl link to a water map raster
+              type: string
+              pattern: "^\/vsicurl\/https:\/\/.*_WM\.tif"
+              example: /vsicurl/https://hyp3-nasa-disasters.s3-us-west-2.amazonaws.com/hkh/S1A_IW_20230316T113240_DVR_RTC30_G_gpufed_DCE6_WM.tif
     bucket_prefix:
       default:  '""'
     flood_depth_estimator:
@@ -35,10 +47,7 @@ WATER_MAP:
         description: Maximum bound used for iterative method. Ignored when flood_depth_estimator is None.
         default: 15
         type: integer
-    wm_raster:
-      api_schema:
-        description: WM vsicurl
-        type: string
+
   validators: []
   tasks:
     - name: FLOOD_MAP
@@ -61,7 +70,7 @@ WATER_MAP:
         - --iterative-max
         - Ref::iterative_max
         - --wm-raster
-        - Ref::wm_raster
+        - Ref::granules
       timeout: 86400
       vcpu: 1
       memory: 126000
