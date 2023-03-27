@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.2.1]
 ### Changed
 - Increased the `hyp3-streamflow` product lifecycle from 14 days to 90 days.
+- Increased the `hyp3-streamflow` vCPU limit from 640 to 1600.
 
 ## [3.2.0]
 ### Added
