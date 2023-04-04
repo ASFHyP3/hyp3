@@ -63,9 +63,9 @@ AVO:
         enum:
           - 20x4
           - 10x2
-    phase_filter_threshold:
+    phase_filter_parameter:
       api_schema:
-        description: Threshold value for the phase filter adf.
+        description: parameter for the adaptive phase filter.
         type: float
         default: 0.6
   validators:
@@ -98,8 +98,8 @@ AVO:
         - Ref::apply_water_mask
         - --looks
         - Ref::looks
-        - --phase-filter-threshold
-        - Ref::phase_filter_threshold
+        - --phase-filter-parameter
+        - Ref::phase_filter_parameter
         - Ref::granules
       timeout: 10800
       vcpu: 1
