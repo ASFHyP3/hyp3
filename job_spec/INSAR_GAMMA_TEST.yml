@@ -68,6 +68,7 @@ INSAR_GAMMA_TEST:
         description: Adaptive phase filter parameter
         type: number
         minimum: 0.0
+        exclusiveMinimum: true
         maximum: 1.0
         default: 0.6
   validators:
