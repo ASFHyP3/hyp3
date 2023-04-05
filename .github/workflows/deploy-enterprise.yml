@@ -80,7 +80,7 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 365000
             quota: 0
-            job_files: job_spec/INSAR_GAMMA.yml
+            job_files: job_spec/INSAR_GAMMA.yml job_spec/INSAR_GAMMA_TEST.yml
             instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
