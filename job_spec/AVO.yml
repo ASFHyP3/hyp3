@@ -1,4 +1,4 @@
-AVO:
+INSAR_GAMMA_TEST:
   required_parameters:
     - granules
   parameters:
@@ -65,14 +65,17 @@ AVO:
           - 10x2
     phase_filter_parameter:
       api_schema:
-        description: parameter for the adaptive phase filter.
-        type: float
+        description: Adaptive phase filter parameter
+        type: number
+        minimum: 0.0
+        maximum: 1.0
         default: 0.6
   validators:
     - check_dem_coverage
   tasks:
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
+      image_tag: test
       command:
         - ++process
         - insar

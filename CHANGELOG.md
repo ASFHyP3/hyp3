@@ -4,10 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.2.2]
+## [3.3.0]
 ### Added
-- A `--phase-filter-paameter` option has been added to the `__main__` (HyP3) and `ifm_sentinel.py` entry points to specify the adaptive phase filter parameter used when processing InSAR products.
-
+- An [`INSAR_GAMMA_TEST.yml`](job_spec/INSAR_GAMMA_TEST.yml) job spec  has been added, exposing the adaptive phase filter parameter used when processing InSAR products.
+- `INSAR_GAMMA_TEST.yml` job spec has been added to the HyP3 Enterprise Test and HyP3 AVO deployments.
 ## [3.2.1]
 ### Changed
 - Increased the `hyp3-streamflow` product lifecycle from 14 days to 90 days.
