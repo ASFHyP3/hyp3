@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.3.0]
 ### Added
+- Added `hyp3-carter` deployment.
 - An [`INSAR_GAMMA_TEST.yml`](job_spec/INSAR_GAMMA_TEST.yml) job spec  has been added, exposing the adaptive phase filter parameter used when processing InSAR products.
 - `INSAR_GAMMA_TEST.yml` job spec has been added to the HyP3 Enterprise Test and HyP3 AVO deployments.
 
