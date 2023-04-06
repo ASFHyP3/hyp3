@@ -80,7 +80,7 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 365000
             quota: 0
-            job_files: job_spec/INSAR_GAMMA.yml
+            job_files: job_spec/INSAR_GAMMA.yml job_spec/INSAR_GAMMA_TEST.yml
             instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -154,6 +154,21 @@ jobs:
             template_bucket: cf-templates-ez0805f6vy20-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
+            quota: 0
+            job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
+
+          - environment: hyp3-carter
+            domain: hyp3-carter.asf.alaska.edu
+            template_bucket: cf-templates-1qx2mwia5g4kh-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 30
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
