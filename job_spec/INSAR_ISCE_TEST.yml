@@ -85,7 +85,7 @@ INSAR_ISCE_TEST:
         - Ref::frame_id
         - --compute-solid-earth-tide
         - Ref::compute_solid_earth_tide
-      timeout: 21600
+      timeout: 32400
       vcpu: 1
       memory: 7500
       secrets:
