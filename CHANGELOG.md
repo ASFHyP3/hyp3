@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.4.0]
 ### Added
-- Added 20-meter `WATER_MAP` jobs.
+- Added `resolution=20.0` option for `WATER_MAP` jobs.
 
 ## [3.3.0]
 ### Added
