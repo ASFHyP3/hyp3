@@ -1,4 +1,4 @@
-WATER_MAP:
+WATER_MAP_EQ:
   required_parameters:
     - granules
   parameters:
