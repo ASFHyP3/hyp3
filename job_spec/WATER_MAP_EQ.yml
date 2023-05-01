@@ -31,7 +31,6 @@ WATER_MAP_EQ:
         type: number
         enum:
           - 30.0
-          - 20.0
           - 10.0
     speckle_filter:
       api_schema:
