@@ -95,7 +95,7 @@ WATER_MAP_EQ:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
     - name: ''
-      image: TODO
+      image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/water-map-equal-percent-solution
       command:
         - ++process
         - water_map
