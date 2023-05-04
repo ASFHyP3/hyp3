@@ -7,12 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.5.0]
 ### Added
 - Added `resolution=20.0` option for `RTC_GAMMA` jobs.
+- Added a [`WATER_MAP_EQ`](job_spec/WATER_MAP_EQ.yml) job spec to the `hyp3-streamflow` and `hyp3-enterprise-test`
+  deployments.
 
 ## [3.4.0]
 ### Added
 - Added `resolution=20.0` option for `WATER_MAP` jobs.
-- Added a [`WATER_MAP_EQ`](job_spec/WATER_MAP_EQ.yml) job spec to the `hyp3-streamflow` and `hyp3-enterprise-test`
-  deployments.
 
 ## [3.3.0]
 ### Added
