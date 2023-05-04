@@ -96,8 +96,6 @@ WATER_MAP_EQ:
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/water-map-equal-percent-solution
       command:
-        - ++process
-        - water_map
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
