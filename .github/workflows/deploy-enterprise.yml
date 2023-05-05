@@ -110,7 +110,7 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 90
             quota: 0
-            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/RIVER_WIDTH.yml
+            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml job_spec/RIVER_WIDTH.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
@@ -184,7 +184,7 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v3.5.2
 
       - uses: aws-actions/configure-aws-credentials@v2
         with:

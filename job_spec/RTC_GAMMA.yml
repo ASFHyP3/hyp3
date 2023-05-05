@@ -33,6 +33,7 @@ RTC_GAMMA:
         type: number
         enum:
           - 30.0
+          - 20.0
           - 10.0
     dem_name:
       api_schema:

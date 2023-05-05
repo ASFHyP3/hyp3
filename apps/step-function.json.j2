@@ -78,8 +78,16 @@
               "IsPresent": true
             },
             {
-              "Variable": "$.job_parameters.resolution",
-              "StringEquals": "10"
+              "Or": [
+                {
+                  "Variable": "$.job_parameters.resolution",
+                  "StringEquals": "10"
+                },
+                {
+                  "Variable": "$.job_parameters.resolution",
+                  "StringEquals": "20"
+                }
+              ]
             }
           ],
           "Next": "USE_10M_RTC_MEMORY"
@@ -87,8 +95,16 @@
         {
           "And": [
             {
-              "Variable": "$.job_type",
-              "StringEquals": "WATER_MAP"
+              "Or": [
+                {
+                  "Variable": "$.job_type",
+                  "StringEquals": "WATER_MAP"
+                },
+                {
+                  "Variable": "$.job_type",
+                  "StringEquals": "WATER_MAP_EQ"
+                }
+              ]
             },
             {
               "Variable": "$.job_parameters.resolution",
