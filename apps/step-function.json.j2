@@ -95,8 +95,16 @@
         {
           "And": [
             {
-              "Variable": "$.job_type",
-              "StringEquals": "WATER_MAP"
+              "Or": [
+                {
+                  "Variable": "$.job_type",
+                  "StringEquals": "WATER_MAP"
+                },
+                {
+                  "Variable": "$.job_type",
+                  "StringEquals": "WATER_MAP_EQ"
+                }
+              ]
             },
             {
               "Variable": "$.job_parameters.resolution",
