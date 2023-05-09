@@ -6,7 +6,8 @@ import handle_batch_event
 
 
 @patch('dynamo.jobs.update_job')
-def test_lambda_handler(mock_update_job: MagicMock):
+@patch('dynamo.jobs.get_job')
+def test_lambda_handler(mock_get_job: MagicMock, mock_update_job: MagicMock):
     event = {
         'source': 'aws.batch',
         'detail-type': 'Batch Job State Change',
@@ -15,9 +16,31 @@ def test_lambda_handler(mock_update_job: MagicMock):
             'jobName': 'fooJob'
         }
     }
+    mock_get_job.return_value = {'job_id': 'fooJob', 'status_code': 'PENDING'}
+
     handle_batch_event.lambda_handler(event, None)
 
+    mock_get_job.assert_called_once_with('fooJob')
     mock_update_job.assert_called_once_with({'job_id': 'fooJob', 'status_code': 'RUNNING'})
+
+
+@patch('dynamo.jobs.update_job')
+@patch('dynamo.jobs.get_job')
+def test_lambda_handler_job_not_pending(mock_get_job: MagicMock, mock_update_job: MagicMock):
+    event = {
+        'source': 'aws.batch',
+        'detail-type': 'Batch Job State Change',
+        'detail': {
+            'status': 'RUNNING',
+            'jobName': 'fooJob'
+        }
+    }
+    mock_get_job.return_value = {'job_id': 'fooJob', 'status_code': 'SUCCEEDED'}
+
+    handle_batch_event.lambda_handler(event, None)
+
+    mock_get_job.assert_called_once_with('fooJob')
+    mock_update_job.assert_not_called()
 
 
 def test_lambda_handler_invalid_source():
