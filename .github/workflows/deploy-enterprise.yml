@@ -21,12 +21,10 @@ jobs:
             product_lifetime_in_days: 45
             quota: 0
             job_files: job_spec/AUTORIFT_ITS_LIVE.yml job_spec/AUTORIFT_ITS_LIVE_TEST.yml
-            instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
             default_max_vcpus: 10000
             expanded_max_vcpus: 10000
             required_surplus: 0
             security_environment: JPL-public
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-a19-jpl
@@ -36,12 +34,10 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c6id.xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: JPL-public
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-tibet-jpl
@@ -51,12 +47,10 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c6id.xlarge,c5d.xlarge
             default_max_vcpus: 0
             expanded_max_vcpus: 0
             required_surplus: 0
             security_environment: JPL-public
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-nisar-jpl
@@ -66,12 +60,10 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c6id.xlarge,c5d.xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: JPL-public
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-avo
@@ -81,12 +73,10 @@ jobs:
             product_lifetime_in_days: 365000
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml job_spec/INSAR_GAMMA_TEST.yml
-            instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-watermap
@@ -96,12 +86,10 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-streamflow
@@ -111,12 +99,10 @@ jobs:
             product_lifetime_in_days: 90
             quota: 0
             job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml job_spec/RIVER_WIDTH.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
           - environment: azdwr-hyp3
@@ -126,12 +112,10 @@ jobs:
             product_lifetime_in_days: 30
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml
-            instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-cargill
@@ -141,12 +125,10 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-bgc-engineering
@@ -156,12 +138,10 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-carter
@@ -171,12 +151,10 @@ jobs:
             product_lifetime_in_days: 30
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
     environment:
@@ -219,6 +197,4 @@ jobs:
           PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
           ORIGIN_ACCESS_IDENTITY_ID: ${{ secrets.ORIGIN_ACCESS_IDENTITY_ID }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
-          AMI_ID: ${{ matrix.ami_id }}
-          INSTANCE_TYPES: ${{ matrix.instance_types }}
           DISTRIBUTION_URL: ${{ matrix.distribution_url }}

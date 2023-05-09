@@ -87,7 +87,8 @@ INSAR_ISCE_TEST:
         - Ref::compute_solid_earth_tide
       timeout: 21600
       vcpu: 1
-      memory: 7500
+      memory: 7168
+      disk: 21
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
@@ -105,7 +106,8 @@ INSAR_ISCE_TEST:
         - Ref::weather_model
       timeout: 10800
       vcpu: 1
-      memory: 7500
+      memory: 7168
+      disk: 21
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD

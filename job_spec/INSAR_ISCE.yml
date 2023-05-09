@@ -54,7 +54,8 @@ INSAR_ISCE:
         - Ref::secondary_granules
       timeout: 10800
       vcpu: 1
-      memory: 7500
+      memory: 7168
+      disk: 21
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
@@ -71,7 +72,8 @@ INSAR_ISCE:
         - Ref::weather_model
       timeout: 10800
       vcpu: 1
-      memory: 7500
+      memory: 7168
+      disk: 21
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
