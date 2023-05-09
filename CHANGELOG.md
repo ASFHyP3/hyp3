@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.5.1]
 ### Fixed
-- Job `status_code` field should only switch to `RUNNING` if current value is `PENDING` (fixes #1539).
+- Job `status_code` field should only switch to `RUNNING` if current value is `PENDING`
+  (fixes [#1539](https://github.com/ASFHyP3/hyp3/issues/1539)).
 
 ## [3.5.0]
 ### Added
