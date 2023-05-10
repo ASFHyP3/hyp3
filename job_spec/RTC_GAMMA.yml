@@ -128,7 +128,7 @@ RTC_GAMMA:
       timeout: 36000
       vcpu: 4
       memory: 30720
-      disk: 21
+      disk: 200
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
