@@ -208,6 +208,10 @@ components:
       properties:
         validate_only:
           $ref: "#/components/schemas/validate_only"
+        job_urls:
+          type: array
+          items:
+            type: string
         jobs:
           $ref: "#/components/schemas/list_of_jobs"
         next:

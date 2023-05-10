@@ -38,7 +38,6 @@ def base_url() -> str:
 
 
 # TODO add or update unit test(s)
-# TODO update response schema
 def post_jobs(body, user):
     print(body)
 
