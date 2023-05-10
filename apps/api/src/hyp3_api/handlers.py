@@ -59,6 +59,7 @@ def post_jobs(body, user):
         return body
 
 
+# TODO add job_urls field
 def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None,
              subscription_id=None):
     try:
