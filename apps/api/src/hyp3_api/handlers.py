@@ -1,4 +1,3 @@
-import os
 import urllib.parse
 from http.client import responses
 from uuid import UUID
