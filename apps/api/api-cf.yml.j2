@@ -189,7 +189,6 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Environment:
-        # TODO add domain name as env var
         Variables:
           JOBS_TABLE_NAME: !Ref JobsTable
           USERS_TABLE_NAME: !Ref UsersTable

@@ -114,8 +114,8 @@ The API can be run locally to verify changes, but must be connected to a set of 
 1. Set up AWS credentials in your environment as described
    [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration).
    Also see our [wiki page](https://github.com/ASFHyP3/.github-private/wiki/AWS-Access#aws-access-keys).
-2. Edit `tests/cfg.env` to specify the names of existing DynamoDB tables from a particular HyP3 deployment,
-   as well as the corresponding API domain name. Delete all of the `AWS_*` variables.
+2. Edit `tests/cfg.env` to specify the names of existing DynamoDB tables from a particular HyP3 deployment.
+   Delete all of the `AWS_*` variables.
 3. Run the API (replace `<profile>` with the AWS config profile that corresponds to the HyP3 deployment):
    ```sh
    AWS_PROFILE=<profile> make run
