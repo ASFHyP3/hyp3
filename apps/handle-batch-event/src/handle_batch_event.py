@@ -21,4 +21,4 @@ def lambda_handler(event, context):
         print(f'Updating job: {updated_job}')
         dynamo.jobs.update_job(updated_job)
     else:
-        print(f'Job status is {job["status_code"]} so job will not be updated')
+        print(f'Job {job_id} status is {job["status_code"]} so job will not be updated')
