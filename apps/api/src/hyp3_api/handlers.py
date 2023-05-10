@@ -1,3 +1,4 @@
+import os
 from http.client import responses
 from uuid import UUID
 
@@ -31,6 +32,8 @@ def is_uuid(val):
     return True
 
 
+# TODO add or update unit test(s)
+# TODO update response schema
 def post_jobs(body, user):
     print(body)
 
@@ -46,6 +49,8 @@ def post_jobs(body, user):
             body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'])
         except dynamo.jobs.QuotaError as e:
             abort(problem_format(400, str(e)))
+        domain_name = os.environ['DOMAIN_NAME']
+        body['job_urls'] = [f'{domain_name}/jobs/{job["job_id"]}' for job in body['jobs']]
         return body
 
 
