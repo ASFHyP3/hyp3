@@ -49,6 +49,11 @@ def test_list_jobs(client, tables):
     assert response.json == {'jobs': []}
 
 
+def test_list_jobs_by_user_id(client, tables):
+    # TODO
+    assert False, 'TODO'
+
+
 def test_list_jobs_by_name(client, tables):
     long_name = 'item with a long name' + '-' * 79
     assert len(long_name) == 100
