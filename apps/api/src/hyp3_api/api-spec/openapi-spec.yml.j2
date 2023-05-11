@@ -203,15 +203,14 @@ components:
       description: List of submitted jobs.
       type: object
       required:
+        - job_urls
         - jobs
       additionalProperties: false
       properties:
         validate_only:
           $ref: "#/components/schemas/validate_only"
         job_urls:
-          type: array
-          items:
-            type: string
+          $ref: "#/components/schemas/job_urls"
         jobs:
           $ref: "#/components/schemas/list_of_jobs"
         next:
@@ -446,6 +445,13 @@ components:
     validate_only:
       type: boolean
       default: false
+
+    job_urls:
+      type: array
+      items:
+        type: string
+        format: url
+        example: https://hyp3-api.asf.alaska.edu/jobs/27836b79-e5b2-4d8f-932f-659724ea02c3
 
     job_or_subscription_id:
       description: Unique identifier for a job or subscription
