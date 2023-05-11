@@ -50,8 +50,23 @@ def test_list_jobs(client, tables):
 
 
 def test_list_jobs_by_user_id(client, tables):
-    # TODO
-    assert False, 'TODO'
+    items = [
+        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', user_id='user_with_jobs'),
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', user_id='user_with_jobs')
+    ]
+    for item in items:
+        tables.jobs_table.put_item(Item=item)
+
+    login(client, 'some_other_user')
+
+    response = client.get(JOBS_URI, query_string={'user_id': 'user_with_jobs'})
+    assert response.status_code == HTTPStatus.OK
+    assert 'jobs' in response.json
+    assert list_have_same_elements(response.json['jobs'], items)
+
+    response = client.get(JOBS_URI, query_string={'user_id': 'user_without_jobs'})
+    assert response.status_code == HTTPStatus.OK
+    assert response.json == {'jobs': []}
 
 
 def test_list_jobs_by_name(client, tables):
