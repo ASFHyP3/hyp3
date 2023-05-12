@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - The `GET /jobs` endpoint now includes a `user_id` parameter, which allows retrieving jobs submitted by another user.
   If `user_id` is not provided, jobs are returned for the current user.
+- Added the `WATER_MAP_EQ` job spec to the `hyp3-watermap` deployment.
+- Added 20m resolution to the `WATER_MAP_EQ` job spec.
 
 ## [3.5.1]
 ### Changed
