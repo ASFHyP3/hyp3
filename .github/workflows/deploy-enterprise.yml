@@ -52,8 +52,8 @@ jobs:
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c5d.xlarge
-            default_max_vcpus: 0
-            expanded_max_vcpus: 0
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -110,7 +110,7 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 90
             quota: 0
-            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml job_spec/RIVER_WIDTH.yml
+            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
