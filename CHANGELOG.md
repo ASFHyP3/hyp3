@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [3.6.1]
+### Changed
+- - Increased the `hyp3-tibet-jpl` vCPU limit from 0 to 1600.
 ### Removed
 - The [`RIVER_WIDTH`](job_spec/RIVER_WIDTH.yml) job spec from the `hyp3-streamflow` deployment.
 
