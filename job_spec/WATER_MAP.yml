@@ -94,7 +94,7 @@ WATER_MAP:
         description: Maximum bound used for iterative method. Ignored when flood_depth_estimator is None.
         default: 15
         type: integer
-    minimzation_metric:
+    minimization_metric:
       api_schema:
         description: Evaluation method to minimize. A value of None indicates that flood depth estimation will not be performed.
         default: fmi
