@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [3.6.2]
+## [3.7.0]
 ### Added
 - Added the `WATER_MAP_DEV` job spec to the `hyp3-watermap` deployment.
 
