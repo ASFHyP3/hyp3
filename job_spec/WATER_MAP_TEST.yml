@@ -185,8 +185,8 @@ WATER_MAP_TEST:
         - Ref::iterative_min
         - --iterative-max
         - Ref::iterative_max
-        - Ref::minimization-metric
-        - --minimization_metric
+        - --minimization-metric
+        - Ref::minimization_metric
       timeout: 86400
       vcpu: 1
       memory: 126000
