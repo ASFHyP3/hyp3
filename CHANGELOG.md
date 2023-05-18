@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.7.0]
 ### Added
-- Added the `WATER_MAP_DEV` job spec to the `hyp3-watermap` deployment.
+- Added the `WATER_MAP_TEST` job spec to the `hyp3-watermap` deployment.
 
 ## [3.6.1]
 ### Changed
