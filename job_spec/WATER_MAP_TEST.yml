@@ -81,7 +81,7 @@ WATER_MAP:
         type: number
     known_water_threshold:
       api_schema:
-        description: Threshold for extracting known water area in percent. A water threshold is computed when value is None.
+        description: Threshold for extracting known water area in percent. A water threshold is computed when value is None. Ignored when flood_depth_estimator is None.
         default: None
         type: number
     iterative_min:
