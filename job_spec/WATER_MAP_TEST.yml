@@ -96,7 +96,7 @@ WATER_MAP:
         type: integer
     minimization_metric:
       api_schema:
-        description: Evaluation method to minimize. A value of None indicates that a threshold level will be calculated.
+        description: Evaluation method to minimize.
         default: fmi
         type: string
         enum:
