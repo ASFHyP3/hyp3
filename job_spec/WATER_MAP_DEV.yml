@@ -94,6 +94,14 @@ WATER_MAP:
         description: Maximum bound used for iterative method. Ignored when flood_depth_estimator is None.
         default: 15
         type: integer
+    minimization_metric:
+      api_schema:
+        description: Evaluation method to minimize. A value of None indicates that a threshold level will be calculated.
+        default: fmi
+        type: string
+        enum:
+          - fmi
+          - ts
   validators:
     - check_dem_coverage
   tasks:
@@ -176,6 +184,8 @@ WATER_MAP:
         - Ref::iterative_min
         - --iterative-max
         - Ref::iterative_max
+        - Ref::minimization-metric
+        - --minimization_metric
       timeout: 86400
       vcpu: 1
       memory: 126000
