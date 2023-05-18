@@ -82,7 +82,7 @@ WATER_MAP:
     known_water_threshold:
       api_schema:
         description: Threshold for extracting known water area in percent. Ignored when flood_depth_estimator is None.
-        default: None
+        default: 30.0
         type: number
     iterative_min:
       api_schema:
