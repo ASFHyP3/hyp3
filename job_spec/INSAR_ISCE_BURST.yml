@@ -1,0 +1,56 @@
+INSAR_ISCE_BURST:
+  required_parameters:
+    - granules
+  parameters:
+    granules:
+      default:  '""'
+      api_schema:
+        type: array
+        minItems: 2
+        maxItems: 2
+        example:
+          - TODO
+          - TODO
+        items:
+          description: TODO
+          type: string
+          pattern: "^S1_.*-BURST"
+          minLength: 43
+          maxLength: 43
+          example: TODO
+    bucket_prefix:
+      default:  '""'
+    azimuth_looks:
+      description: Number of looks to take in azimuth
+      type: integer
+      default: 4
+      # TODO enum?
+    range_looks:
+      description: Number of looks to take in range
+      type: integer
+      default: 20
+      # TODO enum?
+  validators: []
+  tasks:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-isce2
+      command:
+        - ++process
+        - insar_tops_burst
+        - ++omp-num-threads
+        - '1'
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --azimuth-looks
+        - Ref::azimuth_looks
+        - --range-looks
+        - Ref::range_looks
+        - Ref::granules
+      timeout: TODO
+      vcpu: 1
+      memory: 7600
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
