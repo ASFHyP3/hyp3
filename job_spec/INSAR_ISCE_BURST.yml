@@ -48,7 +48,7 @@ INSAR_ISCE_BURST:
         - --range-looks
         - Ref::range_looks
         - Ref::granules
-      timeout: TODO
+      timeout: 3600  # TODO decide on appropriate value
       vcpu: 1
       memory: 7600
       secrets:
