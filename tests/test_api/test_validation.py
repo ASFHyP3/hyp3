@@ -176,6 +176,7 @@ def test_is_third_party_granule():
     assert validation.is_third_party_granule('LC09_L1GT_215109_20220125_20220125_02_T2')
     assert validation.is_third_party_granule('LO09_L1GT_215109_20220210_20220210_02_T2')
     assert validation.is_third_party_granule('LT09_L1GT_215109_20220210_20220210_02_T2')
+    assert validation.is_third_party_granule('S1_249434_IW1_20230523T170733_VV_8850-BURST')
     assert not validation.is_third_party_granule('S1A_IW_SLC__1SSH_20150608T205059_20150608T205126_006287_0083E8_C4F0')
     assert not validation.is_third_party_granule('foo')
 
