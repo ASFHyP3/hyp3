@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the `S1_CORRECTION_ITS_LIVE` job spec to the `hyp3-enterprise-test` and `hyp3-its-live` deployments.
 
 ### Changed
-- The hyp3-autorift plugin now specifies the optimum number of OpenMP threads through the global `++opt-num-threads`
+- The hyp3-autorift plugin now specifies the optimum number of OpenMP threads through the global `++omp-num-threads`
   argument
 
 ## [3.7.0]
