@@ -20,16 +20,15 @@ INSAR_ISCE_BURST:
           example: S1_249434_IW1_20230523T170733_VV_8850-BURST
     bucket_prefix:
       default:  '""'
-    azimuth_looks:
-      description: Number of looks to take in azimuth
-      type: integer
-      default: 4
-      # TODO enum?
-    range_looks:
-      description: Number of looks to take in range
-      type: integer
-      default: 20
-      # TODO enum?
+    looks:
+      api_schema:
+        description: Number of looks to take in range and azimuth
+        type: string
+        default: 20x4
+        enum:
+          - 20x4
+          - 10x2
+          - 5x1
   validators: []
   tasks:
     - name: ''
@@ -43,10 +42,8 @@ INSAR_ISCE_BURST:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
-        - --azimuth-looks
-        - Ref::azimuth_looks
-        - --range-looks
-        - Ref::range_looks
+        - --looks
+        - Ref::looks
         - Ref::granules
       timeout: 3600  # TODO decide on appropriate value
       vcpu: 1
