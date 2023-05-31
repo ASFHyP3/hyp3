@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.8.0]
 ### Added
+- Added `INSAR_ISCE_BURST` job spec to the `hyp3-test` and `hyp3-enterprise-test` deployments.
 - Added the `S1_CORRECTION_ITS_LIVE` job spec to the `hyp3-enterprise-test` and `hyp3-its-live` deployments.
 
 ### Changed
