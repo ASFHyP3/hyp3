@@ -14,7 +14,7 @@ INSAR_ISCE_BURST:
         items:
           description: Name of the Sentinel-1 SLC IW burst granule to process
           type: string
-          pattern: "^S1_.*-BURST"
+          pattern: "^S1_\d{6}_IW.*-BURST"
           minLength: 43
           maxLength: 43
           example: S1_249434_IW1_20230523T170733_VV_8850-BURST
