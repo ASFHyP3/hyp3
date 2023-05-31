@@ -12,7 +12,7 @@ INSAR_ISCE_BURST:
           - S1_249434_IW1_20230523T170733_VV_8850-BURST
           - S1_249434_IW1_20230511T170732_VV_07DE-BURST
         items:
-          description: The reference and secondary bursts.
+          description: Name of the Sentinel-1 SLC IW burst granule to process
           type: string
           pattern: "^S1_.*-BURST"
           minLength: 43
