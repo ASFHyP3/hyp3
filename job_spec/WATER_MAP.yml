@@ -73,6 +73,7 @@ WATER_MAP:
           - iterative
           - logstat
           - nmad
+          - null
           - numpy
           - None
     water_level_sigma:
