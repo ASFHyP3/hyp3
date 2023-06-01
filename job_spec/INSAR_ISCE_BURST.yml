@@ -45,7 +45,7 @@ INSAR_ISCE_BURST:
         - --looks
         - Ref::looks
         - Ref::granules
-      timeout: 600
+      timeout: 5400
       vcpu: 1
       memory: 7600
       secrets:
