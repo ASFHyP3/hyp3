@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.9.2]
 ### Fixed
-- Reverted `asf_search` to v6.0.2. Fixes [#1672](https://github.com/ASFHyP3/hyp3/issues/1672).
+- Reverted `asf_search` to v6.0.2. Fixes [#1673](https://github.com/ASFHyP3/hyp3/issues/1673).
 
 ## [3.9.1]
 ### Fixed
