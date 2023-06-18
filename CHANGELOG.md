@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.9.3]
+### Fixed
+- Reduced `start-execution-worker` concurrency to address AWS Batch `Too Many Requests` errors. Fixes [#1676](https://github.com/ASFHyP3/hyp3/issues/1676).
+
 ## [3.9.2]
 ### Fixed
 - Reverted `asf_search` to v6.0.2. Fixes [#1673](https://github.com/ASFHyP3/hyp3/issues/1673).
