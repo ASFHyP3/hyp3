@@ -22,9 +22,6 @@ Parameters:
     MinValue: 0
 
   {% if security_environment == 'EDC' %}
-  PermissionsBoundaryPolicyArn:
-    Type: String
-
   SecurityGroupId:
     Type: String
 
@@ -58,7 +55,6 @@ Resources:
         - !Ref Policy
       {% if security_environment == 'EDC' %}
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
-      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
       {% endif %}
 
   Policy:
