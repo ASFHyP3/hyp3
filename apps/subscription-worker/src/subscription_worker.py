@@ -9,12 +9,18 @@ from lambda_logging import log_exceptions, logger
 
 
 def get_unprocessed_granules(subscription):
-    processed_jobs, _ = dynamo.jobs.query_jobs(
-        user=subscription['user_id'],
-        name=subscription['job_specification']['name'],
-        job_type=subscription['job_specification']['job_type'],
-    )
-    processed_granules = [job['job_parameters']['granules'][0] for job in processed_jobs]
+    processed_granules = []
+    params = {
+        'user': subscription['user_id'],
+        'name': subscription['job_specification']['name'],
+        'job_type': subscription['job_specification']['job_type'],
+    }
+    while True:
+        processed_jobs, next_token = dynamo.jobs.query_jobs(**params)
+        processed_granules += [job['job_parameters']['granules'][0] for job in processed_jobs]
+        if next_token is None:
+            break
+        params['start_key'] = next_token
 
     search_results = asf_search.search(**subscription['search_parameters'])
     search_results.raise_if_incomplete()
