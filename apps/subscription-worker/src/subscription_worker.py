@@ -17,7 +17,7 @@ def get_unprocessed_granules(subscription):
     }
     while True:
         processed_jobs, next_token = dynamo.jobs.query_jobs(**params)
-        processed_granules += [job['job_parameters']['granules'][0] for job in processed_jobs]
+        processed_granules.extend([job['job_parameters']['granules'][0] for job in processed_jobs])
         if next_token is None:
             break
         params['start_key'] = next_token
