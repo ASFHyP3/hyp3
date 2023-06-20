@@ -94,7 +94,7 @@ def test_get_unprocessed_granules(tables):
         subscription_worker.get_unprocessed_granules(subscription)
 
 
-def test_get_unprocessed_granules_pagination():
+def test_get_processed_granules():
     def mock_job(granule_name: str) -> dict:
         return {
             'job_parameters': {
@@ -120,33 +120,9 @@ def test_get_unprocessed_granules_pagination():
 
         return [job], next_token
 
-    subscription = {
-        'user_id': 'my_user',
-        'job_specification': {
-            'job_type': 'RTC_GAMMA',
-            'name': 'my_name',
-        },
-        'search_parameters': {
-            'foo': 'bar',
-        },
-    }
-
-    products = [
-        get_asf_product({'sceneName': 'granule0'}),
-        get_asf_product({'sceneName': 'granule1'}),
-        get_asf_product({'sceneName': 'granule2'}),
-        get_asf_product({'sceneName': 'granule3'}),
-        get_asf_product({'sceneName': 'granule4'}),
-    ]
-
-    def mock_search(**kwargs) -> asf_search.ASFSearchResults:
-        assert kwargs == subscription['search_parameters']
-        results = asf_search.ASFSearchResults(products)
-        results.searchComplete = True
-        return results
-
-    with patch('asf_search.search', mock_search), patch('dynamo.jobs.query_jobs', mock_query_jobs):
-        assert subscription_worker.get_unprocessed_granules(subscription) == products[3:]
+    expected = ['granule0', 'granule1', 'granule2']
+    with patch('dynamo.jobs.query_jobs', mock_query_jobs):
+        assert subscription_worker.get_processed_granules('my_user', 'my_name', 'RTC_GAMMA') == expected
 
 
 def test_get_neighbors():
