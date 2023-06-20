@@ -94,6 +94,61 @@ def test_get_unprocessed_granules(tables):
         subscription_worker.get_unprocessed_granules(subscription)
 
 
+def test_get_unprocessed_granules_pagination():
+    def mock_job(granule_name: str) -> dict:
+        return {
+            'job_parameters': {
+                'granules': [granule_name],
+            }
+        }
+
+    def mock_query_jobs(**kwargs):
+        assert kwargs['user'] == 'my_user'
+        assert kwargs['name'] == 'my_name'
+        assert kwargs['job_type'] == 'RTC_GAMMA'
+
+        if 'start_key' not in kwargs:
+            job = mock_job('granule0')
+            next_token = 0
+        elif kwargs['start_key'] == 0:
+            job = mock_job('granule1')
+            next_token = 1
+        else:
+            assert kwargs['start_key'] == 1
+            job = mock_job('granule2')
+            next_token = None
+
+        return [job], next_token
+
+    subscription = {
+        'user_id': 'my_user',
+        'job_specification': {
+            'job_type': 'RTC_GAMMA',
+            'name': 'my_name',
+        },
+        'search_parameters': {
+            'foo': 'bar',
+        },
+    }
+
+    products = [
+        get_asf_product({'sceneName': 'granule0'}),
+        get_asf_product({'sceneName': 'granule1'}),
+        get_asf_product({'sceneName': 'granule2'}),
+        get_asf_product({'sceneName': 'granule3'}),
+        get_asf_product({'sceneName': 'granule4'}),
+    ]
+
+    def mock_search(**kwargs) -> asf_search.ASFSearchResults:
+        assert kwargs == subscription['search_parameters']
+        results = asf_search.ASFSearchResults(products)
+        results.searchComplete = True
+        return results
+
+    with patch('asf_search.search', mock_search), patch('dynamo.jobs.query_jobs', mock_query_jobs):
+        assert subscription_worker.get_unprocessed_granules(subscription) == products[3:]
+
+
 def test_get_neighbors():
     granule = get_asf_product({'sceneName': 'granule'})
 
