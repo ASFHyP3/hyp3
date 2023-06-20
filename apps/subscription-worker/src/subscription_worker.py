@@ -8,19 +8,25 @@ import dynamo
 from lambda_logging import log_exceptions, logger
 
 
-def get_unprocessed_granules(subscription):
+def get_processed_granules(user_id, name, job_type):
     processed_granules = []
-    params = {
-        'user': subscription['user_id'],
-        'name': subscription['job_specification']['name'],
-        'job_type': subscription['job_specification']['job_type'],
-    }
+    params = {'user': user_id, 'name': name, 'job_type': job_type}
     while True:
-        processed_jobs, next_token = dynamo.jobs.query_jobs(**params)
-        processed_granules.extend([job['job_parameters']['granules'][0] for job in processed_jobs])
+        jobs, next_token = dynamo.jobs.query_jobs(**params)
+        granules = [job['job_parameters']['granules'][0] for job in jobs]
+        processed_granules.extend(granules)
         if next_token is None:
             break
         params['start_key'] = next_token
+    return processed_granules
+
+
+def get_unprocessed_granules(subscription):
+    processed_granules = get_processed_granules(
+        subscription['user_id'],
+        subscription['job_specification']['name'],
+        subscription['job_specification']['job_type'],
+    )
 
     search_results = asf_search.search(**subscription['search_parameters'])
     search_results.raise_if_incomplete()
