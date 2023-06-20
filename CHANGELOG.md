@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.9.3]
 ### Fixed
 - Reduced `start-execution-worker` concurrency to address AWS Batch `Too Many Requests` errors. Fixes [#1676](https://github.com/ASFHyP3/hyp3/issues/1676).
+- Added jobs query pagination for `subscription-worker` so that all jobs will be retrieved when constructing the list of processed granules.
 
 ## [3.9.2]
 ### Fixed
