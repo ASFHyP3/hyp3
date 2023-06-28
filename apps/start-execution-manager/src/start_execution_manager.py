@@ -28,7 +28,7 @@ def lambda_handler(event, context) -> None:
     pending_jobs = dynamo.jobs.get_jobs_waiting_for_execution(limit=900)
     logger.info(f'Got {len(pending_jobs)} pending jobs')
 
-    batch_size = 300
+    batch_size = 450
     for i in range(0, len(pending_jobs), batch_size):
         jobs = pending_jobs[i:i + batch_size]
         logger.info(f'Invoking worker for {len(jobs)} jobs')

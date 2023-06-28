@@ -65,13 +65,15 @@ WATER_MAP:
         type: number
     flood_depth_estimator:
       api_schema:
-        description: Flood depth estimation approach. A value of None indicates that flood depth estimation will not be performed.
-        default: None
+        description: Flood depth estimation approach. A value of null or None indicates that flood depth estimation will not be performed.
+        default: null
         type: string
+        nullable: true
         enum:
           - iterative
           - logstat
           - nmad
+          - null
           - numpy
           - None
     water_level_sigma:

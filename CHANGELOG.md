@@ -4,6 +4,57 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.9.3]
+### Fixed
+- Reduced `start-execution-worker` concurrency to address AWS Batch `Too Many Requests` errors. Fixes [#1676](https://github.com/ASFHyP3/hyp3/issues/1676).
+
+## [3.9.2]
+### Fixed
+- Reverted `asf_search` to v6.0.2. Fixes [#1673](https://github.com/ASFHyP3/hyp3/issues/1673).
+
+## [3.9.1]
+### Fixed
+- Invalid `install_requires` clause in `dynamo/setup.py`. Fixes [#1666](https://github.com/ASFHyP3/hyp3/issues/1666).
+
+## [3.9.0]
+### Added
+- Added a new `hyp3-pdc` deployment.
+
+## [3.8.0]
+### Added
+- Added `INSAR_ISCE_BURST` job spec to the `hyp3-enterprise-test` deployment.
+- Added the `S1_CORRECTION_ITS_LIVE` job spec to the `hyp3-enterprise-test` and `hyp3-its-live` deployments.
+
+### Changed
+- The hyp3-autorift plugin now specifies the optimum number of OpenMP threads through the global `++omp-num-threads`
+  argument
+
+## [3.7.0]
+### Added
+- Added the `WATER_MAP_TEST` job spec to the `hyp3-watermap` deployment.
+### Changed
+- the `flood_depth_estimator` parameter in both the `WATER_MAP` and `WATER_MAP_TEST` job spec is now nullable.
+
+## [3.6.1]
+### Changed
+- - Increased the `hyp3-tibet-jpl` vCPU limit from 0 to 1600.
+### Removed
+- The [`RIVER_WIDTH`](job_spec/RIVER_WIDTH.yml) job spec from the `hyp3-streamflow` deployment.
+
+## [3.6.0]
+### Added
+- The `GET /jobs` endpoint now includes a `user_id` parameter, which allows retrieving jobs submitted by another user.
+  If `user_id` is not provided, jobs are returned for the current user.
+- Added the `WATER_MAP_EQ` job spec to the `hyp3-watermap` deployment.
+- Added 20m resolution to the `WATER_MAP_EQ` job spec.
+
+## [3.5.1]
+### Changed
+- Increased memory available to INSAR_GAMMA jobs in azdwr-hyp3 deployment.
+### Fixed
+- Job `status_code` field should only switch to `RUNNING` if current value is `PENDING`
+  (fixes [#1539](https://github.com/ASFHyP3/hyp3/issues/1539)).
+
 ## [3.5.0]
 ### Added
 - Added `resolution=20.0` option for `RTC_GAMMA` jobs.

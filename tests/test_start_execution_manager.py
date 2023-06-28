@@ -67,17 +67,16 @@ def test_lambda_handler_900_jobs():
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=900)
 
         assert mock_invoke_worker.mock_calls == [
-            call('test-worker-function-arn', mock_jobs[0:300]),
-            call('test-worker-function-arn', mock_jobs[300:600]),
-            call('test-worker-function-arn', mock_jobs[600:900]),
+            call('test-worker-function-arn', mock_jobs[0:450]),
+            call('test-worker-function-arn', mock_jobs[450:900]),
         ]
 
 
-def test_lambda_handler_400_jobs():
+def test_lambda_handler_500_jobs():
     with patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution, \
             patch('start_execution_manager.invoke_worker') as mock_invoke_worker, \
             patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True):
-        mock_jobs = list(range(400))
+        mock_jobs = list(range(500))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
 
         mock_invoke_worker.return_value = {'StatusCode': None}
@@ -87,8 +86,8 @@ def test_lambda_handler_400_jobs():
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=900)
 
         assert mock_invoke_worker.mock_calls == [
-            call('test-worker-function-arn', mock_jobs[0:300]),
-            call('test-worker-function-arn', mock_jobs[300:400]),
+            call('test-worker-function-arn', mock_jobs[0:450]),
+            call('test-worker-function-arn', mock_jobs[450:500]),
         ]
 
 
