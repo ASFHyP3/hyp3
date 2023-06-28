@@ -143,6 +143,7 @@ WATER_MAP_TEST:
       timeout: 36000
       vcpu: 4
       memory: 30720
+      disk: 21
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
