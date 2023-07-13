@@ -20,7 +20,10 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 45
             quota: 0
-            job_files: job_spec/AUTORIFT_ITS_LIVE.yml job_spec/AUTORIFT_ITS_LIVE_TEST.yml
+            job_files: >-
+              job_spec/AUTORIFT_ITS_LIVE.yml
+              job_spec/AUTORIFT_ITS_LIVE_TEST.yml
+              job_spec/S1_CORRECTION_ITS_LIVE.yml
             instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
             default_max_vcpus: 10000
             expanded_max_vcpus: 10000
@@ -52,8 +55,8 @@ jobs:
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c5d.xlarge
-            default_max_vcpus: 0
-            expanded_max_vcpus: 0
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -80,7 +83,7 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 365000
             quota: 0
-            job_files: job_spec/INSAR_GAMMA.yml
+            job_files: job_spec/INSAR_GAMMA.yml job_spec/INSAR_GAMMA_TEST.yml
             instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -95,7 +98,7 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 14
             quota: 0
-            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml
+            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -108,12 +111,12 @@ jobs:
             domain: hyp3-streamflow.asf.alaska.edu
             template_bucket: cf-templates-15gmiot9prm67-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 14
+            product_lifetime_in_days: 90
             quota: 0
-            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/RIVER_WIDTH.yml
+            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -125,8 +128,8 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 30
             quota: 0
-            job_files: job_spec/INSAR_GAMMA.yml
-            instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
+            job_files: job_spec/INSAR_GAMMA_HIGH_MEMORY.yml
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -164,14 +167,46 @@ jobs:
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
             distribution_url: ''
 
+          - environment: hyp3-carter
+            domain: hyp3-carter.asf.alaska.edu
+            template_bucket: cf-templates-1qx2mwia5g4kh-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 30
+            quota: 0
+            job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
+
+          - environment: hyp3-pdc
+            domain: hyp3-pdc.asf.alaska.edu
+            template_bucket: cf-templates-tlsr0tnnqt5t-us-west-2
+            image_tag: latest
+            # TODO product lifetime could be much shorter since they all get transferred to a separate
+            # S3 bucket, but maybe we want to allow for a backlog of products-to-be-transferred?
+            product_lifetime_in_days: 14
+            quota: 0
+            job_files: job_spec/WATER_MAP.yml
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            distribution_url: ''
+
     environment:
       name: ${{ matrix.environment }}
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v3.5.3
 
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
@@ -193,8 +228,7 @@ jobs:
           PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
           VPC_ID: ${{ secrets.VPC_ID }}
           SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
-          EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
-          EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
+          SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
           JOB_FILES: ${{ matrix.job_files }}

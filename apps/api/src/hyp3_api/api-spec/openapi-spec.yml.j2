@@ -30,6 +30,10 @@ paths:
     get:
       description: Get list of previously run jobs.
       parameters:
+        - name: user_id
+          in: query
+          schema:
+            $ref: "#/components/schemas/user_id"
         - name: status_code
           in: query
           schema:

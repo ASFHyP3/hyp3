@@ -67,11 +67,13 @@ Resources:
           {% for command in task['command'] %}
           - {{ command }}
           {% endfor %}
+        {% if task.get('secrets') %}
         Secrets:
-          - Name: EARTHDATA_USERNAME
-            ValueFrom: !Sub "${SecretArn}:username::"
-          - Name: EARTHDATA_PASSWORD
-            ValueFrom: !Sub "${SecretArn}:password::"
+          {% for secret in task['secrets'] %}
+          - Name: {{ secret }}
+            ValueFrom: !Sub "${SecretArn}:{{ secret }}::"
+          {% endfor %}
+        {% endif %}
       Timeout:
         AttemptDurationSeconds: {{ task['timeout'] }}
   {% endfor %}

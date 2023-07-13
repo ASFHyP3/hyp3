@@ -94,6 +94,37 @@ def test_get_unprocessed_granules(tables):
         subscription_worker.get_unprocessed_granules(subscription)
 
 
+def test_get_processed_granules():
+    def mock_job(granule_name: str) -> dict:
+        return {
+            'job_parameters': {
+                'granules': [granule_name],
+            }
+        }
+
+    def mock_query_jobs(**kwargs):
+        assert kwargs['user'] == 'my_user'
+        assert kwargs['name'] == 'my_name'
+        assert kwargs['job_type'] == 'RTC_GAMMA'
+
+        if 'start_key' not in kwargs:
+            job = mock_job('granule0')
+            next_token = 0
+        elif kwargs['start_key'] == 0:
+            job = mock_job('granule1')
+            next_token = 1
+        else:
+            assert kwargs['start_key'] == 1
+            job = mock_job('granule2')
+            next_token = None
+
+        return [job], next_token
+
+    expected = ['granule0', 'granule1', 'granule2']
+    with patch('dynamo.jobs.query_jobs', mock_query_jobs):
+        assert subscription_worker.get_processed_granules('my_user', 'my_name', 'RTC_GAMMA') == expected
+
+
 def test_get_neighbors():
     granule = get_asf_product({'sceneName': 'granule'})
 

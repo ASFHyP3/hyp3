@@ -16,18 +16,22 @@ jobs:
         include:
           - environment: hyp3-enterprise-test
             domain: hyp3-enterprise-test.asf.alaska.edu
-            template_bucket: cf-templates-aubvn3i9olmk-us-west-2
+            template_bucket: cf-templates-1iw894v4yzqya-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
             quota: 0
             deploy_ref: refs/heads/develop
             job_files: >-
               job_spec/AUTORIFT.yml
-              job_spec/INSAR_GAMMA.yml
+              job_spec/INSAR_GAMMA_TEST.yml
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_TEST.yml
+              job_spec/INSAR_ISCE_BURST.yml
               job_spec/WATER_MAP.yml
+              job_spec/WATER_MAP_TEST.yml
+              job_spec/WATER_MAP_EQ.yml
               job_spec/RIVER_WIDTH.yml
+              job_spec/S1_CORRECTION_ITS_LIVE.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -41,9 +45,9 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v3.5.3
 
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
@@ -65,8 +69,7 @@ jobs:
           PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
           VPC_ID: ${{ secrets.VPC_ID }}
           SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
-          EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
-          EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
+          SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
           JOB_FILES: ${{ matrix.job_files }}

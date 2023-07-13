@@ -38,6 +38,8 @@ AUTORIFT:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
       command:
+        - ++omp-num-threads
+        - '4'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -46,9 +48,10 @@ AUTORIFT:
         - '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
         - --naming-scheme
         - ITS_LIVE_OD
-        - --omp-num-threads
-        - '4'
         - Ref::granules
       timeout: 10800
       vcpu: 1
       memory: 31600
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
