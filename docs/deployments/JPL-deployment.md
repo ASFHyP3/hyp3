@@ -45,7 +45,24 @@ The policy name should look like `hyp3-ci-DeployPolicy-*`, and can be found eith
 in the [IAM console](https://console.aws.amazon.com/iamv2/home?#/policies) or listed under 
 the `hyp3-ci` CloudFormation Stack Resources.   
 
-## 3. Deploy HyP3 to JPL
+## 3. Set up a Secrets Manager Secret
+
+HyP3 requires an AWS Secrets Manager Secret containing key-value pairs for all secrets listed in the
+[`job_spec`s](./job_spec) which will be deployed, which is typically provisioned manually. In the AWS Console
+navigate to Secrets Manager and:
+* Click the orange "Store a new secret" button
+* On the create secret screen:
+  * For "Secret Type" elect "Other type of secret"
+  * Enter all required secret key-value pairs. Notably, the keys should be the secret names as listed (case-sensitive)
+    in the [`job_spec`s](./job_spec) which will be deployed
+  * Click the orange "Next" button
+  * Name the secret "HYP3_STACK" where `HYP3_STACK` is the name of the HyP3 CloudFormation stack that will
+    be deployed in the next section
+  * Click the orange "Next" button
+  * Click the orange "Next" button (we won't configure rotation)
+  * Click the orange "Store" button to save the Secret
+
+## 4. Deploy HyP3 to JPL
 
 Once the JPL service user has been created, you should receive a set of AWS Access Keys
 which can be used to deploy HyP3 via CI/CD tooling, or manually. 
@@ -73,12 +90,13 @@ aws cloudformation deploy \
     --parameter-overrides \
         VpcId=<vpc-ids> \
         SubnetIds=<subnet-ids> \
-        EDLUsername=<erthdata-login-username> \
-        EDLPassword=<erthdata-login-username> \
+        DomainName=<domain-name> \
+        CertificateArn=<certificate-arn> \
+        SecretArn=<secret-arn> \
         MonthlyJobQuotaPerUser=0
 ```
 
-## 4. Post deployment
+## 5. Post deployment
 
 Because the default state of the JPL account is more restrictive than typically
 desired for HyP3, this section describes some additional changes to the account

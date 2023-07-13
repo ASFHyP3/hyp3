@@ -44,7 +44,7 @@ jobs:
               job_spec/AUTORIFT.yml
               job_spec/INSAR_GAMMA.yml
               job_spec/RTC_GAMMA.yml
-              job_spec/INSAR_ISCE.yml
+              job_spec/INSAR_ISCE_TEST.yml
               job_spec/WATER_MAP.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
             default_max_vcpus: 1500
@@ -59,9 +59,9 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v3.5.3
 
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
@@ -84,8 +84,7 @@ jobs:
           PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
           VPC_ID: ${{ secrets.VPC_ID }}
           SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
-          EDL_USERNAME: ${{ secrets.EDL_USERNAME }}
-          EDL_PASSWORD: ${{ secrets.EDL_PASSWORD }}
+          SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
           JOB_FILES: ${{ matrix.job_files }}
@@ -103,6 +102,6 @@ jobs:
   call-bump-version-workflow:
     if: github.ref == 'refs/heads/main'
     needs: deploy
-    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.4.0
+    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.8.0
     secrets:
       USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}

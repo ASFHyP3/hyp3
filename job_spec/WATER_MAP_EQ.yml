@@ -1,4 +1,4 @@
-RIVER_WIDTH:
+WATER_MAP_EQ:
   required_parameters:
     - granules
   parameters:
@@ -12,18 +12,47 @@ RIVER_WIDTH:
           anyOf:
             - description: The name of the IW VV+VH Sentinel-1 GRDH granule to process
               type: string
-              pattern: "^S1[AB]_IW_GRDH_1SDV"
+              pattern: "^S1[AB]_IW_GRDH_1S[SD]V"
               minLength: 67
               maxLength: 67
               example: S1A_IW_GRDH_1SDV_20210413T235641_20210413T235706_037439_0469D0_3F2B
             - description: The name of the IW VV+VH Sentinel-1 SLC granule to process
               type: string
-              pattern: "^S1[AB]_IW_SLC__1SDV"
+              pattern: "^S1[AB]_IW_SLC__1S[SD]V"
               minLength: 67
               maxLength: 67
               example: S1A_IW_SLC__1SDV_20211110T234815_20211110T234842_040516_04CE0A_E717
     bucket_prefix:
       default:  '""'
+    resolution:
+      api_schema:
+        default:  30.0
+        description: Desired output pixel spacing in meters
+        type: number
+        enum:
+          - 30.0
+          - 20.0
+          - 10.0
+    speckle_filter:
+      api_schema:
+        description: Apply an Enhanced Lee speckle filter
+        default: false
+        type: boolean
+    max_vv_threshold:
+      api_schema:
+        description: Maximum threshold value to use for VV polarized raster in decibels (dB)
+        default: -15.5
+        type: number
+    hand_threshold:
+      api_schema:
+        description: The maximum height above nearest drainage in meters to consider a pixel valid
+        default: 15.0
+        type: number
+    hand_fraction:
+      api_schema:
+        description: The minimum fraction of valid HAND pixels required in a tile for thresholding
+        default: 0.8
+        type: number
   validators:
     - check_dem_coverage
   tasks:
@@ -33,19 +62,19 @@ RIVER_WIDTH:
         - ++process
         - rtc
         - ++omp-num-threads
-        - '16'
+        - '4'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
         - --resolution
-        - '10.0'
+        - Ref::resolution
+        - --speckle-filter
+        - Ref::speckle_filter
         - --scale
         - 'power'
         - --radiometry
         - 'gamma0'
-        - --speckle-filter
-        - 'false'
         - --dem-matching
         - 'false'
         - --include-dem
@@ -61,32 +90,23 @@ RIVER_WIDTH:
         - Ref::granules
       timeout: 36000
       vcpu: 1
-      memory: 63200
-      secrets:
-        - EARTHDATA_USERNAME
-        - EARTHDATA_PASSWORD
-    - name: WATER_MAP
-      image: ghcr.io/asfhyp3/asf-tools
-      command:
-        - ++process
-        - water_map
-        - --bucket
-        - '!Ref Bucket'
-        - --bucket-prefix
-        - Ref::bucket_prefix
-      timeout: 36000
-      vcpu: 1
-      memory: 126000
+      memory: 31600
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
     - name: ''
-      image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/asfhyp3/riverwidthsar
+      image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/water-map-equal-percent-solution
       command:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
+        - --max-vv-threshold
+        - Ref::max_vv_threshold
+        - --hand-threshold
+        - Ref::hand_threshold
+        - --hand-fraction
+        - Ref::hand_fraction
       timeout: 36000
       vcpu: 1
-      memory: 31600
+      memory: 126000

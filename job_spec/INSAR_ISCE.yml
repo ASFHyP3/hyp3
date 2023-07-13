@@ -55,6 +55,9 @@ INSAR_ISCE:
       timeout: 10800
       vcpu: 1
       memory: 7500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
     - name: TROPOSPHERE
       image: ghcr.io/dbekaert/raider
       command:
@@ -69,3 +72,7 @@ INSAR_ISCE:
       timeout: 10800
       vcpu: 1
       memory: 7500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
+

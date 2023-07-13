@@ -146,7 +146,7 @@ class Jobs(FlaskOpenAPIView):
         if subscription_id is not None:
             subscription_id = str(subscription_id)
         return jsonify(handlers.get_jobs(
-            g.user,
+            parameters.get('user_id') or g.user,
             start.isoformat(timespec='seconds') if start else None,
             end.isoformat(timespec='seconds') if end else None,
             parameters.get('status_code'),

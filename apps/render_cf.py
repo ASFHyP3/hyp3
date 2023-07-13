@@ -29,7 +29,7 @@ def render_templates(job_types, security_environment, api_name):
             security_environment=security_environment,
             api_name=api_name,
             json=json,
-            snake_to_pascal_case=snake_to_pascal_case
+            snake_to_pascal_case=snake_to_pascal_case,
         )
 
         template_file.with_suffix('').write_text(output)

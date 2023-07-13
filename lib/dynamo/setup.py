@@ -5,9 +5,9 @@ setup(
     license='BSD',
     include_package_data=True,
 
-    install_reqires=[
+    install_requires=[
         'boto3',
-        'dateutil',
+        'python-dateutil',
     ],
     python_requires='~=3.9',
 
