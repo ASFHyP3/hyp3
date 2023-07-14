@@ -9,11 +9,9 @@ import shapely.wkt
 import yaml
 from flask import abort, g, jsonify, make_response, redirect, render_template, request
 from flask_cors import CORS
-from openapi_core import Spec
+from openapi_core import Spec, V30RequestValidator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
-from openapi_core.validation.request.validators import RequestValidator
-from openapi_core.validation.response.datatypes import ResponseValidationResult
 
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
@@ -96,12 +94,15 @@ class CustomEncoder(json.JSONEncoder):
         json.JSONEncoder.default(self, o)
 
 
+# TODO is this class even needed?
 class NonValidator:
     def __init__(self, spec):
         pass
 
     def validate(self, res):
-        return ResponseValidationResult()
+        # TODO is returning None sufficient?
+        # return ResponseValidationResult()
+        pass
 
 
 class WKTValidator:
@@ -130,7 +131,8 @@ class ErrorHandler(FlaskOpenAPIErrorsHandler):
 class Jobs(FlaskOpenAPIView):
     def __init__(self, spec):
         super().__init__(spec)
-        self.response_validator = NonValidator
+        # TODO is this actually needed?
+        # self.response_validator = NonValidator
         self.openapi_errors_handler = ErrorHandler
 
     def post(self):
@@ -170,7 +172,8 @@ class User(FlaskOpenAPIView):
 class Subscriptions(FlaskOpenAPIView):
     def __init__(self, spec):
         super().__init__(spec)
-        self.request_validator = RequestValidator(spec, custom_formatters={'wkt': WKTValidator()})
+        # FIXME custom_formatters is unexpected arg
+        self.request_validator = V30RequestValidator(spec, custom_formatters={'wkt': WKTValidator()})
         self.response_validator = NonValidator
         self.openapi_errors_handler = ErrorHandler
 

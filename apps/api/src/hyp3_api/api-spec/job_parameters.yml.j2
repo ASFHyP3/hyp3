@@ -3,7 +3,7 @@ components:
     new_job:
       oneOf:
         {% for job_type in job_types %}
-        - $ref: "#/components/schemas/{{ job_type }}Job"
+        - $ref: "./job_parameters.yml#/components/schemas/{{ job_type }}Job"
         {% endfor %}
 
     job_type:
@@ -18,7 +18,7 @@ components:
     job_parameters:
       anyOf:
         {% for job_type in job_types %}
-        - $ref: "#/components/schemas/{{ job_type }}Parameters"
+        - $ref: "./job_parameters.yml#/components/schemas/{{ job_type }}Parameters"
         {% endfor %}
 
     job_specification:
@@ -59,9 +59,9 @@ components:
           enum:
             - {{ job_type }}
         name:
-          $ref: "./openapi-spec.yml#components/schemas/name"
+          $ref: "./openapi-spec.yml#/components/schemas/name"
         job_parameters:
-          $ref: "#/components/schemas/{{ job_type }}Parameters"
+          $ref: "./job_parameters.yml#/components/schemas/{{ job_type }}Parameters"
 
     {{ job_type }}Specification:
       description: Contains user provided information on creating a new {{ job_type }} subscription, without specific granules.
@@ -76,7 +76,7 @@ components:
           enum:
             - {{ job_type }}
         name:
-          $ref: "./openapi-spec.yml#components/schemas/name"
+          $ref: "./openapi-spec.yml#/components/schemas/name"
         job_parameters:
           type: object
           additionalProperties: false
