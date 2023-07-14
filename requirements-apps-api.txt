@@ -1,5 +1,5 @@
 flask==2.2.5
-Flask-Cors==3.0.10
+Flask-Cors==4.0.0
 jsonschema==4.17.3
 openapi-core==0.14.5
 prance==0.22.11.4.0
