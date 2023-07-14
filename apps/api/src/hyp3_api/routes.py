@@ -9,11 +9,9 @@ import shapely.wkt
 import yaml
 from flask import abort, g, jsonify, make_response, redirect, render_template, request
 from flask_cors import CORS
+from openapi_core import Spec, V30RequestValidator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
-from openapi_core.spec.shortcuts import create_spec
-from openapi_core.validation.request.validators import RequestValidator
-from openapi_core.validation.response.datatypes import ResponseValidationResult
 from openapi_core.unmarshalling.schemas.factories import SchemaUnmarshallersFactory
 from openapi_schema_validator import OAS30Validator
 from openapi_core.unmarshalling.schemas.formatters import Formatter
@@ -23,7 +21,7 @@ from hyp3_api.openapi import get_spec_yaml
 
 api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
 api_spec_dict = get_spec_yaml(api_spec_file)
-api_spec = create_spec(api_spec_dict)
+api_spec = Spec.from_file_path(str(api_spec_file))
 CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
 
 AUTHENTICATED_ROUTES = ['/jobs', '/user', '/subscriptions']
@@ -99,12 +97,15 @@ class CustomEncoder(json.JSONEncoder):
         json.JSONEncoder.default(self, o)
 
 
+# TODO is this class even needed?
 class NonValidator:
     def __init__(self, spec):
         pass
 
     def validate(self, res):
-        return ResponseValidationResult()
+        # TODO is returning None sufficient?
+        # return ResponseValidationResult()
+        pass
 
 
 class WktFormatter(Formatter):
@@ -130,7 +131,8 @@ class ErrorHandler(FlaskOpenAPIErrorsHandler):
 class Jobs(FlaskOpenAPIView):
     def __init__(self, spec):
         super().__init__(spec)
-        self.response_validator = NonValidator
+        # TODO is this actually needed?
+        # self.response_validator = NonValidator
         self.openapi_errors_handler = ErrorHandler
 
     def post(self):
@@ -176,6 +178,7 @@ class Subscriptions(FlaskOpenAPIView):
             custom_formatters={'wkt': WktFormatter()},
         )
         self.request_validator = RequestValidator(schema_unmarshallers_factory)
+
         self.response_validator = NonValidator
         self.openapi_errors_handler = ErrorHandler
 
