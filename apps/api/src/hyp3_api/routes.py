@@ -14,6 +14,7 @@ from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
 from openapi_core.unmarshalling.schemas.factories import SchemaUnmarshallersFactory
 from openapi_schema_validator import OAS30Validator
+# FIXME `formatters` not found
 from openapi_core.unmarshalling.schemas.formatters import Formatter
 
 from hyp3_api import app, auth, handlers
@@ -175,9 +176,11 @@ class Subscriptions(FlaskOpenAPIView):
 
         schema_unmarshallers_factory = SchemaUnmarshallersFactory(
             OAS30Validator,
+            # FIXME unexpected argument, parameter unfilled
             custom_formatters={'wkt': WktFormatter()},
         )
-        self.request_validator = RequestValidator(schema_unmarshallers_factory)
+        # FIXME wrong argument type
+        self.request_validator = V30RequestValidator(schema_unmarshallers_factory)
 
         self.response_validator = NonValidator
         self.openapi_errors_handler = ErrorHandler
