@@ -105,16 +105,12 @@ class NonValidator:
         pass
 
 
-class WKTValidator:
-    def validate(self, value):
-        try:
-            shapely.wkt.loads(value)
-        except shapely.errors.WKTReadingError:
-            return False
-        return True
-
-    def unmarshal(self, value):
-        return value
+def validate_wkt(value) -> bool:
+    try:
+        shapely.wkt.loads(value)
+    except shapely.errors.WKTReadingError:
+        return False
+    return True
 
 
 class ErrorHandler(FlaskOpenAPIErrorsHandler):
@@ -172,8 +168,8 @@ class User(FlaskOpenAPIView):
 class Subscriptions(FlaskOpenAPIView):
     def __init__(self, spec):
         super().__init__(spec)
-        # FIXME custom_formatters is unexpected arg
-        self.request_validator = V30RequestValidator(spec, custom_formatters={'wkt': WKTValidator()})
+        # FIXME does self.request_validator still do something?
+        self.request_validator = V30RequestValidator(spec, extra_format_validators={'wkt': validate_wkt})
         self.response_validator = NonValidator
         self.openapi_errors_handler = ErrorHandler
 

@@ -120,6 +120,8 @@ def test_search_criteria(client, tables):
             }
         }
         response = client.post(SUBSCRIPTIONS_URI, json=params)
+        # FIXME this fails for the `intersectsWith` key even though `validate_wkt` works, so I wonder if
+        # the function is not being called
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
     params = {

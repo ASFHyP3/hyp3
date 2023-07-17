@@ -7,6 +7,8 @@ import responses
 from hyp3_api import CMR_URL, app, auth
 from hyp3_api.util import get_granules
 
+app.config.update({"TESTING": True})
+
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 USER_URI = '/user'
