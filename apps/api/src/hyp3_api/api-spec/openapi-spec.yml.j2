@@ -53,7 +53,7 @@ paths:
         - name: job_type
           in: query
           schema:
-            $ref: "./job_parameters.yml#/components/schemas/job_type"
+            $ref: "#/components/schemas/job_type"
         - name: start_token
           in: query
           schema:
@@ -133,7 +133,7 @@ paths:
         - name: job_type
           in: query
           schema:
-            $ref: "./job_parameters.yml#/components/schemas/job_type"
+            $ref: "#/components/schemas/job_type"
         - name: enabled
           in: query
           schema:
@@ -240,7 +240,7 @@ components:
         search_parameters:
           $ref: "#/components/schemas/search_parameters"
         job_specification:
-          $ref: "./job_parameters.yml#/components/schemas/job_specification"
+          $ref: "#/components/schemas/job_specification"
 
     subscriptions_update_expression:
       description: Change/update a subscription
@@ -277,7 +277,7 @@ components:
         search_parameters:
           $ref: "#/components/schemas/search_parameters"
         job_specification:
-          $ref: "./job_parameters.yml#/components/schemas/job_specification"
+          $ref: "#/components/schemas/job_specification"
         user_id:
           $ref: "#/components/schemas/user_id"
         creation_date:
@@ -328,7 +328,7 @@ components:
       minItems: 1
       maxItems: 200
       items:
-        $ref: "./job_parameters.yml#/components/schemas/new_job"
+        $ref: "#/components/schemas/new_job"
 
     list_of_jobs:
       type: array
@@ -416,9 +416,9 @@ components:
         user_id:
           $ref: "#/components/schemas/user_id"
         job_type:
-          $ref: "./job_parameters.yml#/components/schemas/job_type"
+          $ref: "#/components/schemas/job_type"
         job_parameters:
-          $ref: "./job_parameters.yml#/components/schemas/job_parameters"
+          $ref: "#/components/schemas/job_parameters"
         request_time:
           $ref: "#/components/schemas/datetime"
         status_code:
@@ -563,6 +563,96 @@ components:
         A value of zero indicates that there were no attempts.
       type: number
       minimum: 0
+
+    new_job:
+      oneOf:
+        {% for job_type in job_types %}
+        - $ref: "#/components/schemas/{{ job_type }}Job"
+        {% endfor %}
+
+    job_type:
+      description: Type of process to run this job.
+      type: string
+      example: {{ job_types.__iter__().__next__() }}
+      enum:
+        {% for job_type in job_types.keys() %}
+        - {{ job_type }}
+        {% endfor %}
+
+    job_parameters:
+      anyOf:
+        {% for job_type in job_types %}
+        - $ref: "#/components/schemas/{{ job_type }}Parameters"
+        {% endfor %}
+
+    job_specification:
+      oneOf:
+        {% for job_type in job_types %}
+        - $ref: "#/components/schemas/{{ job_type }}Specification"
+        {% endfor %}
+
+    {% for job_type, job_spec in job_types.items() %}
+    {{ job_type }}Parameters:
+      description: Parameters for running {{ job_type }} jobs, including specific granules
+      type: object
+      additionalProperties: false
+      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter in job_spec.get('required_parameters', []) %}
+      {% if loop.first %}
+      required:
+      {% endif %}
+        - {{ parameter }}
+      {% endfor %}
+      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec %}
+      {% if loop.first %}
+      properties:
+      {% endif %}
+        {{ parameter }}:
+          {{ json.dumps(parameter_spec['api_schema']) }}
+      {% endfor %}
+
+    {{ job_type }}Job:
+      description: Contains user provided information on running a new {{ job_type }} job.
+      type: object
+      additionalProperties: false
+      required:
+        - job_type
+        - job_parameters
+      properties:
+        job_type:
+          type: string
+          enum:
+            - {{ job_type }}
+        name:
+          $ref: "#/components/schemas/name"
+        job_parameters:
+          $ref: "#/components/schemas/{{ job_type }}Parameters"
+
+    {{ job_type }}Specification:
+      description: Contains user provided information on creating a new {{ job_type }} subscription, without specific granules.
+      type: object
+      additionalProperties: false
+      required:
+        - job_type
+        - name
+      properties:
+        job_type:
+          type: string
+          enum:
+            - {{ job_type }}
+        name:
+          $ref: "#/components/schemas/name"
+        job_parameters:
+          type: object
+          additionalProperties: false
+          {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter not in job_spec.get('required_parameters', []) %}
+          {% if loop.first %}
+          properties:
+          {% endif %}
+            {{ parameter }}:
+              {{ json.dumps(parameter_spec[ 'api_schema' ]) }}
+          {% endfor %}
+
+    {% endfor %}
 
   securitySchemes:
     EarthDataLogin:
