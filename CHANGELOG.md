@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.9.5]
 ### Added
-- Exposed `apply_water_mask` option for `INSAR_ISCE_BURST` jobs in `hyp3-enterprise-test`
+- `apply_water_mask` option for `INSAR_ISCE_BURST` jobs
 
 ## [3.9.4]
 ### Fixed
