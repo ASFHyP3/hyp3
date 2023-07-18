@@ -20,6 +20,11 @@ INSAR_ISCE_BURST:
           example: S1_249434_IW1_20230523T170733_VV_8850-BURST
     bucket_prefix:
       default:  '""'
+    apply_water_mask:
+      api_schema:
+        description: Set pixels over costal and large inland waterbodies as invalid after phase unwrapping.
+        default: false
+        type: boolean
     looks:
       api_schema:
         description: Number of looks to take in range and azimuth
@@ -42,6 +47,8 @@ INSAR_ISCE_BURST:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
+        - --apply-water-mask
+        - Ref::apply_water_mask
         - --looks
         - Ref::looks
         - Ref::granules
