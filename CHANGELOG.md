@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.9.5]
 ### Added
 - `apply_water_mask` option for `INSAR_ISCE_BURST` jobs
+### Changed
+- `POST /jobs` now returns HTTP 400 for Sentinel-1 Burst granules that do not exist in CMR
 
 ## [3.9.4]
 ### Fixed
