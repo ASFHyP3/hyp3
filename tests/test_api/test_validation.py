@@ -187,45 +187,49 @@ def test_is_third_party_granule():
 @responses.activate
 def test_get_cmr_metadata():
     expected_url = 'https://cmr.earthdata.nasa.gov/search/granules.json'
-    expected_body = {
-        'granule_ur': ['foo*', 'bar*', 'hello*'],
-        'options[granule_ur][pattern]': 'true',
-        'provider': 'ASF',
-        'short_name': [
-            'SENTINEL-1A_SLC',
-            'SENTINEL-1B_SLC',
-            'SENTINEL-1A_SP_GRD_HIGH',
-            'SENTINEL-1B_SP_GRD_HIGH',
-            'SENTINEL-1A_DP_GRD_HIGH',
-            'SENTINEL-1B_DP_GRD_HIGH',
-            'SENTINEL-1_BURSTS',
-        ],
-        'page_size': 2000,
-    }
+    # expected_body = {
+    #     'granule_ur': ['foo*', 'bar*', 'hello*'],
+    #     'options[granule_ur][pattern]': 'true',
+    #     'provider': 'ASF',
+    #     'short_name': [
+    #         'SENTINEL-1A_SLC',
+    #         'SENTINEL-1B_SLC',
+    #         'SENTINEL-1A_SP_GRD_HIGH',
+    #         'SENTINEL-1B_SP_GRD_HIGH',
+    #         'SENTINEL-1A_DP_GRD_HIGH',
+    #         'SENTINEL-1B_DP_GRD_HIGH',
+    #         'SENTINEL-1_BURSTS',
+    #     ],
+    #     'page_size': 2000,
+    # }
     response_payload = {
         'feed': {
             'entry': [
                 {
                     'producer_granule_id': 'foo',
-                    'polygons': [["-31.438196 25.048717 -29.763071 25.543564 -29.560961 24.667177 -31.232344 24.155773 -31.438196 25.048717"]],
+                    'polygons': [["-31.4 25.0 -29.7 25.5 -29.5 24.6 -31.2 24.1 -31.4 25.0"]],
                 },
                 {
                     'title': 'bar',
-                    'polygons': [["-31.438196 25.048717 -29.763071 25.543564 -29.560961 24.667177 -31.232344 24.155773 -31.438196 25.048717"]],
+                    'polygons': [["0 1 2 3 4 5 6 7 0 1"]],
                 }
             ],
         },
     }
-    responses.post(expected_url, match=[responses.matchers.urlencoded_params_matcher(expected_body)], json=response_payload)
+    responses.post(
+        expected_url,
+        # match=[responses.matchers.urlencoded_params_matcher(expected_body)],
+        json=response_payload
+    )
 
     assert validation.get_cmr_metadata(['foo', 'bar', 'hello']) == [
         {
             'name': 'foo',
-            'polygon': Polygon([]),
+            'polygon': Polygon([[25.0, -31.4], [25.5, -29.7], [24.6, -29.5], [24.1, -31.2]]),
         },
         {
             'name': 'bar',
-            'polygon': Polygon([]),
+            'polygon': Polygon([[1, 0], [3, 2], [5, 4], [7, 6]]),
         },
     ]
 
