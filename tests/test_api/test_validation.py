@@ -1,3 +1,6 @@
+import json
+
+import responses
 from pytest import raises
 from shapely.geometry import Polygon
 from test_api.conftest import setup_requests_mock_with_given_polygons
@@ -181,28 +184,48 @@ def test_is_third_party_granule():
     assert not validation.is_third_party_granule('foo')
 
 
+@responses.activate
 def test_get_cmr_metadata():
-    granule = 'S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8'
-    fake_granule = 'not a real granule'
-    granules = [granule, fake_granule]
+    expected_url = 'https://cmr.earthdata.nasa.gov/search/granules.json'
+    expected_body = {
+        'granule_ur': ['foo*', 'bar*', 'hello*'],
+        'options[granule_ur][pattern]': 'true',
+        'provider': 'ASF',
+        'short_name': [
+            'SENTINEL-1A_SLC',
+            'SENTINEL-1B_SLC',
+            'SENTINEL-1A_SP_GRD_HIGH',
+            'SENTINEL-1B_SP_GRD_HIGH',
+            'SENTINEL-1A_DP_GRD_HIGH',
+            'SENTINEL-1B_DP_GRD_HIGH',
+            'SENTINEL-1_BURSTS',
+        ],
+        'page_size': 2000,
+    }
+    response_payload = {
+        'feed': {
+            'entry': [
+                {
+                    'producer_granule_id': 'foo',
+                    'polygons': [["-31.438196 25.048717 -29.763071 25.543564 -29.560961 24.667177 -31.232344 24.155773 -31.438196 25.048717"]],
+                },
+                {
+                    'title': 'bar',
+                    'polygons': [["-31.438196 25.048717 -29.763071 25.543564 -29.560961 24.667177 -31.232344 24.155773 -31.438196 25.048717"]],
+                }
+            ],
+        },
+    }
+    responses.post(expected_url, match=[responses.matchers.urlencoded_params_matcher(expected_body)], json=response_payload)
 
-    granule_polygon_pairs = [
-        (granule,
-         [['13.705972 -91.927132 14.452647 -91.773392 14.888498 -94.065727 '
-           '14.143632 -94.211563 13.705972 -91.927132']])
-    ]
-    setup_requests_mock_with_given_polygons(granule_polygon_pairs)
-
-    assert validation.get_cmr_metadata(granules) == [
+    assert validation.get_cmr_metadata(['foo', 'bar', 'hello']) == [
         {
-            'name': granule,
-            'polygon': Polygon([
-                [-91.927132, 13.705972],
-                [-91.773392, 14.452647],
-                [-94.065727, 14.888498],
-                [-94.211563, 14.143632],
-                [-91.927132, 13.705972],
-            ]),
+            'name': 'foo',
+            'polygon': Polygon([]),
+        },
+        {
+            'name': 'bar',
+            'polygon': Polygon([]),
         },
     ]
 

@@ -42,7 +42,8 @@ def has_sufficient_coverage(granule: Polygon, buffer: float = 0.15, threshold: f
 
 def get_cmr_metadata(granules):
     cmr_parameters = {
-        'producer_granule_id': granules,
+        'granule_ur': [f'{granule}*' for granule in granules],
+        'options[granule_ur][pattern]': 'true',
         'provider': 'ASF',
         'short_name': [
             'SENTINEL-1A_SLC',
@@ -59,7 +60,7 @@ def get_cmr_metadata(granules):
     response.raise_for_status()
     granules = [
         {
-            'name': entry['producer_granule_id'],
+            'name': entry.get('producer_granule_id', entry.get('title')),
             'polygon': Polygon(format_points(entry['polygons'][0][0]))
         } for entry in response.json()['feed']['entry']
     ]
