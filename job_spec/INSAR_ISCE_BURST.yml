@@ -34,7 +34,8 @@ INSAR_ISCE_BURST:
           - 20x4
           - 10x2
           - 5x1
-  validators: []
+  validators:
+    - check_dem_coverage
   tasks:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2
