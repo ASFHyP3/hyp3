@@ -22,7 +22,7 @@ INSAR_ISCE_BURST:
       default:  '""'
     apply_water_mask:
       api_schema:
-        description: Set pixels over costal and large inland waterbodies as invalid after phase unwrapping.
+        description: Set pixels over coastal and large inland water bodies to NoData in wrapped and unwrapped phase GeoTIFFs (after unwrapping).
         default: false
         type: boolean
     looks:
