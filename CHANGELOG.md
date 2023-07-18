@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `apply_water_mask` option for `INSAR_ISCE_BURST` jobs
 ### Changed
 - `POST /jobs` now returns HTTP 400 for Sentinel-1 Burst granules that do not exist in CMR
+- `POST /jobs` now returns HTTP 400 for INSAR_ISCE_BURST jobs for burst granules that do not intersect the
+  Copernicus GLO-30 Public DEM.
 
 ## [3.9.4]
 ### Fixed
