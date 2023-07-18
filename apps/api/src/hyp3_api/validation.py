@@ -66,8 +66,7 @@ def get_cmr_metadata(granules):
 
 
 def is_third_party_granule(granule):
-    # FIXME remove the -BURST case when we integrate with prod CMR
-    return granule.startswith('S2') or granule.startswith('L') or granule.endswith('-BURST')
+    return granule.startswith('S2') or granule.startswith('L')
 
 
 def check_granules_exist(granules, granule_metadata):
