@@ -1,8 +1,9 @@
+import responses
 from pytest import raises
 from shapely.geometry import Polygon
 from test_api.conftest import setup_requests_mock_with_given_polygons
 
-from hyp3_api import validation
+from hyp3_api import CMR_URL, validation
 
 
 def rectangle(north, south, east, west):
@@ -181,28 +182,32 @@ def test_is_third_party_granule():
     assert not validation.is_third_party_granule('foo')
 
 
+@responses.activate
 def test_get_cmr_metadata():
-    granule = 'S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8'
-    fake_granule = 'not a real granule'
-    granules = [granule, fake_granule]
+    response_payload = {
+        'feed': {
+            'entry': [
+                {
+                    'producer_granule_id': 'foo',
+                    'polygons': [["-31.4 25.0 -29.7 25.5 -29.5 24.6 -31.2 24.1 -31.4 25.0"]],
+                },
+                {
+                    'title': 'bar',
+                    'polygons': [["0 1 2 3 4 5 6 7 0 1"]],
+                }
+            ],
+        },
+    }
+    responses.post(CMR_URL, json=response_payload)
 
-    granule_polygon_pairs = [
-        (granule,
-         [['13.705972 -91.927132 14.452647 -91.773392 14.888498 -94.065727 '
-           '14.143632 -94.211563 13.705972 -91.927132']])
-    ]
-    setup_requests_mock_with_given_polygons(granule_polygon_pairs)
-
-    assert validation.get_cmr_metadata(granules) == [
+    assert validation.get_cmr_metadata(['foo', 'bar', 'hello']) == [
         {
-            'name': granule,
-            'polygon': Polygon([
-                [-91.927132, 13.705972],
-                [-91.773392, 14.452647],
-                [-94.065727, 14.888498],
-                [-94.211563, 14.143632],
-                [-91.927132, 13.705972],
-            ]),
+            'name': 'foo',
+            'polygon': Polygon([[25.0, -31.4], [25.5, -29.7], [24.6, -29.5], [24.1, -31.2]]),
+        },
+        {
+            'name': 'bar',
+            'polygon': Polygon([[1, 0], [3, 2], [5, 4], [7, 6]]),
         },
     ]
 
