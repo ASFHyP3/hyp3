@@ -1,3 +1,4 @@
+import urllib.parse
 from http.client import responses
 from uuid import UUID
 
@@ -31,6 +32,12 @@ def is_uuid(val):
     return True
 
 
+def base_url() -> str:
+    parts = urllib.parse.urlparse(request.base_url)
+    return urllib.parse.urlunparse((parts.scheme, parts.netloc, '', '', '', ''))
+
+
+# TODO add or update unit test(s)
 def post_jobs(body, user):
     print(body)
 
@@ -46,9 +53,12 @@ def post_jobs(body, user):
             body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'])
         except dynamo.jobs.QuotaError as e:
             abort(problem_format(400, str(e)))
+        base = base_url()
+        body['job_urls'] = [f'{base}/jobs/{job["job_id"]}' for job in body['jobs']]
         return body
 
 
+# TODO add job_urls field
 def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None,
              subscription_id=None):
     try:
