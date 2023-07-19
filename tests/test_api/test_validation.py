@@ -187,21 +187,6 @@ def test_is_third_party_granule():
 @responses.activate
 def test_get_cmr_metadata():
     expected_url = 'https://cmr.earthdata.nasa.gov/search/granules.json'
-    # expected_body = {
-    #     'granule_ur': ['foo*', 'bar*', 'hello*'],
-    #     'options[granule_ur][pattern]': 'true',
-    #     'provider': 'ASF',
-    #     'short_name': [
-    #         'SENTINEL-1A_SLC',
-    #         'SENTINEL-1B_SLC',
-    #         'SENTINEL-1A_SP_GRD_HIGH',
-    #         'SENTINEL-1B_SP_GRD_HIGH',
-    #         'SENTINEL-1A_DP_GRD_HIGH',
-    #         'SENTINEL-1B_DP_GRD_HIGH',
-    #         'SENTINEL-1_BURSTS',
-    #     ],
-    #     'page_size': 2000,
-    # }
     response_payload = {
         'feed': {
             'entry': [
@@ -216,11 +201,7 @@ def test_get_cmr_metadata():
             ],
         },
     }
-    responses.post(
-        expected_url,
-        # match=[responses.matchers.urlencoded_params_matcher(expected_body)],
-        json=response_payload
-    )
+    responses.post(expected_url, json=response_payload)
 
     assert validation.get_cmr_metadata(['foo', 'bar', 'hello']) == [
         {
