@@ -1,11 +1,9 @@
-import json
-
 import responses
 from pytest import raises
 from shapely.geometry import Polygon
 from test_api.conftest import setup_requests_mock_with_given_polygons
 
-from hyp3_api import validation
+from hyp3_api import CMR_URL, validation
 
 
 def rectangle(north, south, east, west):
@@ -186,7 +184,6 @@ def test_is_third_party_granule():
 
 @responses.activate
 def test_get_cmr_metadata():
-    expected_url = 'https://cmr.earthdata.nasa.gov/search/granules.json'
     response_payload = {
         'feed': {
             'entry': [
@@ -201,7 +198,7 @@ def test_get_cmr_metadata():
             ],
         },
     }
-    responses.post(expected_url, json=response_payload)
+    responses.post(CMR_URL, json=response_payload)
 
     assert validation.get_cmr_metadata(['foo', 'bar', 'hello']) == [
         {
