@@ -50,7 +50,8 @@ These resources are required for a successful deployment, but managed separately
 - IAM user and roles for automated CloudFormation deployments (if desired)
 - AWS Secrets Manager Secret containing key-value pairs for all secrets listed in the deployed [`job_spec`s](./job_spec)
 - For Earthdata Cloud deployments:
-  - An IAM permissions boundary policy ARN
+  - SSL certificate in AWS Certificate Manager for custom CloudFront domain name
+  - ID of the CloudFront Origin Access Identity used to access data in S3 
 - For non-Earthdata Cloud deployments:
   - DNS record for custom API domain name
   - SSL certificate in AWS Certificate Manager for custom API domain name

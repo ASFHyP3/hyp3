@@ -88,9 +88,6 @@ Parameters:
     Type: String
 
   {% else %}
-  PermissionsBoundaryPolicyArn:
-    Type: String
-
   OriginAccessIdentityId:
     Description: ID of the CloudFront Origin Access Identity used to access data in S3 for Earthdata Cloud deployments
     Type: String
@@ -123,7 +120,6 @@ Resources:
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         SystemAvailable: !Ref SystemAvailable
         {% if security_environment == 'EDC' %}
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         VpcId: !Ref VpcId
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
@@ -143,9 +139,6 @@ Resources:
         AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
         InstanceTypes: !Join [",", !Ref InstanceTypes]
-        {% if security_environment == 'EDC' %}
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
-        {% endif %}
       TemplateURL: compute-cf.yml
 
   ScaleCluster:
@@ -159,7 +152,6 @@ Resources:
         MonthlyBudget: !Ref MonthlyBudget
         RequiredSurplus: !Ref RequiredSurplus
         {% if security_environment == 'EDC' %}
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
@@ -172,7 +164,6 @@ Resources:
         SubscriptionsTable: !Ref SubscriptionsTable
         SubscriptionWorkerArn: !GetAtt SubscriptionWorker.Outputs.LambdaArn
         {% if security_environment == 'EDC' %}
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
@@ -187,7 +178,6 @@ Resources:
         SubscriptionsTable: !Ref SubscriptionsTable
         MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
         {% if security_environment == 'EDC' %}
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
@@ -200,7 +190,6 @@ Resources:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
         JobsTable: !Ref JobsTable
         {% if security_environment == 'EDC' %}
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
@@ -217,7 +206,6 @@ Resources:
         ImageTag: !Ref ImageTag
         SecretArn: !Ref SecretArn
         {% if security_environment == 'EDC' %}
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         DistributionUrl: !Ref DistributionUrl

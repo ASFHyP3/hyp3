@@ -6,9 +6,6 @@ Parameters:
     Type: String
 
   {% if security_environment == 'EDC' %}
-  PermissionsBoundaryPolicyArn:
-    Type: String
-
   SecurityGroupId:
     Type: String
 
@@ -48,10 +45,9 @@ Resources:
           Effect: Allow
       ManagedPolicyArns:
         - !Ref Policy
-      {% if security_environment == 'EDC' %}
+        {% if security_environment == 'EDC' %}
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
-      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
-      {% endif %}
+        {% endif %}
 
   Policy:
     Type: {{ 'Custom::JplPolicy' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::ManagedPolicy' }}
