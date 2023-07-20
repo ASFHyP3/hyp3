@@ -51,7 +51,7 @@ AUTORIFT_TEST:
       timeout: 10800
       vcpu: 4
       memory: 30720
-      disk: 21
+      disk: 200
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
