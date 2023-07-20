@@ -214,7 +214,6 @@ jobs:
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
           MONTHLY_BUDGET: ${{ secrets.MONTHLY_BUDGET }}
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
-          PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
           ORIGIN_ACCESS_IDENTITY_ID: ${{ secrets.ORIGIN_ACCESS_IDENTITY_ID }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           DISTRIBUTION_URL: ${{ matrix.distribution_url }}

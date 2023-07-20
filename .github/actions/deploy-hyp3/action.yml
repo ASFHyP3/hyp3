@@ -53,9 +53,6 @@ inputs:
   REQUIRED_SURPLUS:
     description: "Amount by which month-to-date budget must exceed month-to-date spending to increase fleet size, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus."
     required: true
-  PERMISSIONS_BOUNDARY_ARN:
-    description: "Arn of permissions boundary to provide to any created IAM roles"
-    required: true
   ORIGIN_ACCESS_IDENTITY_ID:
     description: "ID of the CloudFront Origin Access Identity used to access data in S3 for Earthdata Cloud deployments"
     required: true
@@ -93,9 +90,6 @@ runs:
           [ -z ${{ inputs.CERTIFICATE_ARN }} ] && export CERTIFICATE_ARN="" \
             || export CERTIFICATE_ARN="CertificateArn=${{ inputs.CERTIFICATE_ARN }}"
 
-          [ -z ${{ inputs.PERMISSIONS_BOUNDARY_ARN }} ] && export PERMISSIONS_BOUNDARY_ARN="" \
-            || export PERMISSIONS_BOUNDARY_ARN="PermissionsBoundaryPolicyArn=${{ inputs.PERMISSIONS_BOUNDARY_ARN }}"
-
           [ -z ${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }} ] && export ORIGIN_ACCESS_IDENTITY_ID="" \
             || export ORIGIN_ACCESS_IDENTITY_ID="OriginAccessIdentityId=${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }}"
 
@@ -119,7 +113,6 @@ runs:
                 ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
                 $DOMAIN_NAME \
                 $CERTIFICATE_ARN \
-                $PERMISSIONS_BOUNDARY_ARN \
                 $ORIGIN_ACCESS_IDENTITY_ID \
                 $DISTRIBUTION_URL \
                 MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \

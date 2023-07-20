@@ -88,7 +88,6 @@ jobs:
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
           MONTHLY_BUDGET: ${{ secrets.MONTHLY_BUDGET }}
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
-          PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
           ORIGIN_ACCESS_IDENTITY_ID: ${{ secrets.ORIGIN_ACCESS_IDENTITY_ID }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           DISTRIBUTION_URL: ${{ matrix.distribution_url }}
@@ -96,6 +95,6 @@ jobs:
   call-bump-version-workflow:
     if: github.ref == 'refs/heads/main'
     needs: deploy
-    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.7.1
+    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.8.0
     secrets:
       USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
