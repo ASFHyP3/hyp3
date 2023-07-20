@@ -134,7 +134,7 @@ WATER_MAP:
       timeout: 36000
       vcpu: 4
       memory: 30720
-      disk: 21
+      disk: 200
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
@@ -160,7 +160,7 @@ WATER_MAP:
       timeout: 36000
       vcpu: 16
       memory: 122880
-      disk: 21
+      disk: 200
     - name: FLOOD_MAP
       image: ghcr.io/asfhyp3/asf-tools
       command:
@@ -183,4 +183,4 @@ WATER_MAP:
       timeout: 86400
       vcpu: 16
       memory: 122880
-      disk: 21
+      disk: 200
