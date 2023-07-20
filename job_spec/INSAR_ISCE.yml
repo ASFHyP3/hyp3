@@ -55,7 +55,7 @@ INSAR_ISCE:
       timeout: 10800
       vcpu: 1
       memory: 7168
-      disk: 21
+      disk: 200
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
@@ -73,8 +73,7 @@ INSAR_ISCE:
       timeout: 10800
       vcpu: 1
       memory: 7168
-      disk: 21
+      disk: 200
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-
