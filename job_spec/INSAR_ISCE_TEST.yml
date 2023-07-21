@@ -86,8 +86,8 @@ INSAR_ISCE_TEST:
         - --compute-solid-earth-tide
         - Ref::compute_solid_earth_tide
       timeout: 21600
-      vcpu: 1
-      memory: 7168
+      vcpu: 4
+      memory: 8192
       disk: 200
       secrets:
         - EARTHDATA_USERNAME

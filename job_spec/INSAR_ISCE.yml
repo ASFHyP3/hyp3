@@ -53,8 +53,8 @@ INSAR_ISCE:
         - --secondary-scenes
         - Ref::secondary_granules
       timeout: 10800
-      vcpu: 1
-      memory: 7168
+      vcpu: 4
+      memory: 8192
       disk: 200
       secrets:
         - EARTHDATA_USERNAME
