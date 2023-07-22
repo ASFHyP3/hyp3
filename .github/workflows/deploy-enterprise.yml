@@ -114,7 +114,7 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 30
             quota: 0
-            job_files: job_spec/INSAR_GAMMA_HIGH_MEMORY.yml
+            job_files: job_spec/INSAR_GAMMA.yml
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
