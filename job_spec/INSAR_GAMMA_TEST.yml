@@ -81,7 +81,7 @@ INSAR_GAMMA_TEST:
         - ++process
         - insar
         - ++omp-num-threads
-        - '4'
+        - '8'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
