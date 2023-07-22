@@ -106,9 +106,9 @@ INSAR_GAMMA_TEST:
         - Ref::phase_filter_parameter
         - Ref::granules
       timeout: 10800
-      vcpu: 4
-      memory: 30720
-      disk: 200
+      vcpu: 8
+      memory: 36864
+      disk: 120
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
