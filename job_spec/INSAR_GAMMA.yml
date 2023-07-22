@@ -97,7 +97,7 @@ INSAR_GAMMA:
       timeout: 10800
       vcpu: 8
       memory: 36864
-      disk: 200
+      disk: 120
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
