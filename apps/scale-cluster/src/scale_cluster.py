@@ -26,11 +26,6 @@ def get_month_to_date_spending(today: date):
     return float(response['ResultsByTime'][0]['Total']['UnblendedCost']['Amount'])
 
 
-def get_current_desired_vcpus(compute_environment_arn):
-    response = BATCH.describe_compute_environments(computeEnvironments=[compute_environment_arn])
-    return response['computeEnvironments'][0]['computeResources']['desiredvCpus']
-
-
 def set_max_vcpus(compute_environment_arn: str, target_max_vcpus: int):
     compute_resources = {'maxvCpus': target_max_vcpus}
     print(f'Updating {compute_environment_arn} compute resources to {compute_resources}')
