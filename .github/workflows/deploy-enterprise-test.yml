@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-      - fargate
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
