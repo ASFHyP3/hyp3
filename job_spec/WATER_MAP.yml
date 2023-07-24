@@ -132,8 +132,9 @@ WATER_MAP:
         - 'copernicus'
         - Ref::granules
       timeout: 36000
-      vcpu: 1
-      memory: 31600
+      vcpu: 4
+      memory: 30720
+      disk: 200
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
@@ -157,8 +158,9 @@ WATER_MAP:
         - --membership-threshold
         - Ref::membership_threshold
       timeout: 36000
-      vcpu: 1
-      memory: 126000
+      vcpu: 16
+      memory: 122880
+      disk: 200
     - name: FLOOD_MAP
       image: ghcr.io/asfhyp3/asf-tools
       command:
@@ -179,5 +181,6 @@ WATER_MAP:
         - --iterative-max
         - Ref::iterative_max
       timeout: 86400
-      vcpu: 1
-      memory: 126000
+      vcpu: 16
+      memory: 122880
+      disk: 200
