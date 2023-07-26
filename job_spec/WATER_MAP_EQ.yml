@@ -89,9 +89,8 @@ WATER_MAP_EQ:
         - 'copernicus'
         - Ref::granules
       timeout: 36000
-      vcpu: 4
-      memory: 30720
-      disk: 200
+      vcpu: 1
+      memory: 31600
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
@@ -109,6 +108,5 @@ WATER_MAP_EQ:
         - --hand-fraction
         - Ref::hand_fraction
       timeout: 36000
-      vcpu: 16
-      memory: 122880
-      disk: 200
+      vcpu: 1
+      memory: 126000

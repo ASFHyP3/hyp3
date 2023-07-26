@@ -73,7 +73,9 @@ Resources:
               - logs:PutLogEvents
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
           - Effect: Allow
-            Action: ce:GetCostAndUsage
+            Action:
+              - ce:GetCostAndUsage
+              - batch:DescribeComputeEnvironments
             Resource: "*"
           - Effect: Allow
             Action: batch:UpdateComputeEnvironment

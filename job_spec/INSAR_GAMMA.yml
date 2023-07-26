@@ -72,7 +72,7 @@ INSAR_GAMMA:
         - ++process
         - insar
         - ++omp-num-threads
-        - '8'
+        - '4'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -95,9 +95,8 @@ INSAR_GAMMA:
         - Ref::looks
         - Ref::granules
       timeout: 10800
-      vcpu: 8
-      memory: 36864
-      disk: 120
+      vcpu: 1
+      memory: 31600
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
