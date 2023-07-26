@@ -24,7 +24,7 @@ jobs:
               job_spec/AUTORIFT_ITS_LIVE.yml
               job_spec/AUTORIFT_ITS_LIVE_TEST.yml
               job_spec/S1_CORRECTION_ITS_LIVE.yml
-            instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
+            instance_types: r6id.xlarge,r6idn.xlarge,r5dn.xlarge,r5d.xlarge
             default_max_vcpus: 10000
             expanded_max_vcpus: 10000
             required_surplus: 0
@@ -84,7 +84,7 @@ jobs:
             product_lifetime_in_days: 365000
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml job_spec/INSAR_GAMMA_TEST.yml
-            instance_types: r6id.xlarge,r5dn.xlarge,r5d.xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -99,7 +99,7 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -114,7 +114,7 @@ jobs:
             product_lifetime_in_days: 90
             quota: 0
             job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
@@ -129,7 +129,7 @@ jobs:
             product_lifetime_in_days: 30
             quota: 0
             job_files: job_spec/INSAR_GAMMA_HIGH_MEMORY.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -144,7 +144,7 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -159,7 +159,7 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -174,7 +174,7 @@ jobs:
             product_lifetime_in_days: 30
             quota: 0
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -191,7 +191,7 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/WATER_MAP.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
