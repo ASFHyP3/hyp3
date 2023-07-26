@@ -60,9 +60,8 @@ RIVER_WIDTH:
         - 'copernicus'
         - Ref::granules
       timeout: 36000
-      vcpu: 8
-      memory: 61440
-      disk: 200
+      vcpu: 1
+      memory: 63200
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
@@ -76,9 +75,8 @@ RIVER_WIDTH:
         - --bucket-prefix
         - Ref::bucket_prefix
       timeout: 36000
-      vcpu: 16
-      memory: 122880
-      disk: 200
+      vcpu: 1
+      memory: 126000
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
@@ -90,6 +88,5 @@ RIVER_WIDTH:
         - --bucket-prefix
         - Ref::bucket_prefix
       timeout: 36000
-      vcpu: 4
-      memory: 30720
-      disk: 200
+      vcpu: 1
+      memory: 31600

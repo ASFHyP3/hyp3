@@ -44,9 +44,8 @@ S1_CORRECTION_TEST:
         - '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
         - Ref::granules
       timeout: 10800
-      vcpu: 2
-      memory: 15360
-      disk: 200
+      vcpu: 1
+      memory: 15750
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
