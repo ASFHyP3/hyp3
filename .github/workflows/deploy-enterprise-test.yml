@@ -32,7 +32,7 @@ jobs:
               job_spec/WATER_MAP_TEST.yml
               job_spec/WATER_MAP_EQ.yml
               job_spec/S1_CORRECTION_ITS_LIVE.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
