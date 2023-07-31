@@ -12,8 +12,14 @@ Parameters:
     Type: Number
     MinValue: 0
 
+  AmiId:
+    Type: AWS::EC2::Image::Id
+
   ContentBucket:
     Type: String
+
+  InstanceTypes:
+    Type: CommaDelimitedList
 
 Outputs:
 
@@ -37,17 +43,46 @@ Resources:
       GroupDescription: !Sub "Security group for ${AWS::StackName} machines"
       VpcId: !Ref VpcId
 
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        MetadataOptions:
+          HttpTokens: required
+        UserData:
+          Fn::Base64: |-
+            Content-Type: multipart/mixed; boundary="==BOUNDARY=="
+            MIME-Version: 1.0
+
+            --==BOUNDARY==
+            Content-Type: text/cloud-boothook; charset="us-ascii"
+
+            cloud-init-per instance mkfs_ssd mkfs.ext4 /dev/nvme1n1
+            cloud-init-per instance mount_ssd mount /dev/nvme1n1 /var/lib/docker
+
+            --==BOUNDARY==--
+
   ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       ServiceRole: !GetAtt BatchServiceRole.Arn
       Type: MANAGED
       ComputeResources:
-        Type: FARGATE_SPOT
+        Type: SPOT
+        AllocationStrategy: SPOT_CAPACITY_OPTIMIZED
+        MinvCpus: 0
         MaxvCpus: !Ref MaxvCpus
+        InstanceTypes: !Ref InstanceTypes
+        ImageId: !Ref AmiId
         Subnets: !Ref SubnetIds
+        InstanceRole: !Ref InstanceProfile
         SecurityGroupIds:
           - !Ref SecurityGroup
+        LaunchTemplate:
+          LaunchTemplateId: !Ref LaunchTemplate
+          Version: !GetAtt LaunchTemplate.LatestVersionNumber
+        Tags:
+          Name: !Ref AWS::StackName
 
   SchedulingPolicy:
     Type: AWS::Batch::SchedulingPolicy
@@ -112,3 +147,29 @@ Resources:
           Effect: Allow
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
+
+  InstanceRole:
+    Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}
+    Properties:
+      {% if security_environment in ('JPL', 'JPL-public') %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: ec2.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      {% if security_environment in ('JPL', 'JPL-public') %}
+      Path: /account-managed/hyp3/
+      {% endif %}
+      Roles:
+        - !Ref InstanceRole

@@ -43,8 +43,6 @@ Resources:
     Type: AWS::Batch::JobDefinition
     Properties:
       Type: container
-      PlatformCapabilities:
-        - FARGATE
       Parameters:
         {% for k, v in job_spec['parameters'].items() %}
         {{ k }}: {{ v.get('default') or v['api_schema'].get('default') }}
@@ -57,15 +55,11 @@ Resources:
           {% endif %}
         JobRoleArn: !Ref TaskRoleArn
         ExecutionRoleArn: !GetAtt ExecutionRole.Arn
-        NetworkConfiguration:
-          AssignPublicIp: ENABLED
         ResourceRequirements:
           - Type: VCPU
             Value: "{{ task['vcpu'] }}"
           - Type: MEMORY
             Value: "{{ task['memory'] }}"
-        EphemeralStorage:
-          SizeInGiB: "{{ task['disk'] }}"
         Command:
           {% for command in task['command'] %}
           - {{ command }}

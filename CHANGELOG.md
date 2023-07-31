@@ -4,14 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.10.0]
+## [3.9.7]
 ### Changed
-- AWS Batch jobs now run on Fargate Spot, rather than EC2 Spot
-### Removed
-- Obsolete `AmiId` and `InstanceTypes` stack parameters
-- Obsolete `INSAR_GAMMA_HIGH_MEMORY.yml` job specification
-### Fixed
-- Increased available memory for INSAR_GAMMA jobs. Fixes [ASFHyP3/hyp3-gamma#316](https://github.com/ASFHyP3/hyp3-gamma/issues/316).
+- Added `r6idn` instance types and removed `r5d`,`r5dn` instance types from most deployments.
 
 ## [3.9.6]
 ### Removed

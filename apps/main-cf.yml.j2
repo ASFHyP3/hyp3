@@ -45,6 +45,10 @@ Parameters:
       - false
       - true
 
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+
   DefaultMaxvCpus:
     Description: Default maximum size for the AWS Batch compute environment
     Type: Number
@@ -68,6 +72,11 @@ Parameters:
     Type: Number
     MinValue: 0
     Default: 0
+
+  InstanceTypes:
+    Description: EC2 instance types to include in AWS Batch Compute Environment
+    Type: CommaDelimitedList
+    Default: r6id.xlarge
 
   {% if security_environment != 'EDC' %}
   DomainName:
@@ -127,7 +136,9 @@ Resources:
         VpcId: !Ref VpcId
         SubnetIds: !Join [",", !Ref SubnetIds]
         MaxvCpus: !Ref DefaultMaxvCpus
+        AmiId: !Ref AmiId
         ContentBucket: !Ref ContentBucket
+        InstanceTypes: !Join [",", !Ref InstanceTypes]
       TemplateURL: compute-cf.yml
 
   ScaleCluster:

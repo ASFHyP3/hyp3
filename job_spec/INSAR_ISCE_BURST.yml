@@ -55,8 +55,7 @@ INSAR_ISCE_BURST:
         - Ref::granules
       timeout: 5400
       vcpu: 1
-      memory: 4096
-      disk: 21
+      memory: 7600
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD

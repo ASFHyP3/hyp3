@@ -49,9 +49,8 @@ AUTORIFT_TEST:
         - ITS_LIVE_PROD
         - Ref::granules
       timeout: 10800
-      vcpu: 4
-      memory: 30720
-      disk: 200
+      vcpu: 1
+      memory: 31600
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
