@@ -24,7 +24,7 @@ jobs:
             quota: 1000
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1500
             expanded_max_vcpus: 3000
             required_surplus: 3000
@@ -46,7 +46,7 @@ jobs:
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_TEST.yml
               job_spec/WATER_MAP.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1500
             expanded_max_vcpus: 3000
             required_surplus: 3000
@@ -92,7 +92,6 @@ jobs:
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
           MONTHLY_BUDGET: ${{ secrets.MONTHLY_BUDGET }}
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
-          PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
           ORIGIN_ACCESS_IDENTITY_ID: ${{ secrets.ORIGIN_ACCESS_IDENTITY_ID }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           AMI_ID: ${{ matrix.ami_id }}
@@ -102,6 +101,6 @@ jobs:
   call-bump-version-workflow:
     if: github.ref == 'refs/heads/main'
     needs: deploy
-    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.8.0
+    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.8.1
     secrets:
       USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}

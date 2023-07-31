@@ -15,7 +15,7 @@ def decode_token(token):
         return None
 
 
-def get_mock_jwt_cookie(user, lifetime_in_seconds=100):
+def get_mock_jwt_cookie(user: str, lifetime_in_seconds: int):
     payload = {
         'urs-user-id': user,
         'exp': int(time.time()) + lifetime_in_seconds,

@@ -21,11 +21,6 @@ Parameters:
   InstanceTypes:
     Type: CommaDelimitedList
 
-  {% if security_environment == 'EDC' %}
-  PermissionsBoundaryPolicyArn:
-    Type: String
-  {% endif %}
-
 Outputs:
 
   ComputeEnvironmentArn:
@@ -115,9 +110,6 @@ Resources:
           Principal:
             Service: ecs-tasks.amazonaws.com
           Effect: Allow
-      {% if security_environment == 'EDC' %}
-      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
-      {% endif %}
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
         - !Ref TaskPolicy
@@ -153,9 +145,6 @@ Resources:
           Principal:
             Service: batch.amazonaws.com
           Effect: Allow
-      {% if security_environment == 'EDC' %}
-      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
-      {% endif %}
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
 
@@ -173,9 +162,6 @@ Resources:
           Principal:
             Service: ec2.amazonaws.com
           Effect: Allow
-      {% if security_environment == 'EDC' %}
-      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
-      {% endif %}
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
 

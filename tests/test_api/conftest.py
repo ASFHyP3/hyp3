@@ -24,6 +24,10 @@ def client():
         yield test_client
 
 
+def login(client, username=DEFAULT_USERNAME):
+    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username, lifetime_in_seconds=10_000))
+
+
 def make_job(granules=None, name='someName', job_type='RTC_GAMMA', parameters=None):
     if granules is None:
         granules = ['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38']
@@ -115,7 +119,3 @@ def setup_requests_mock(batch):
         for granule in get_granules(batch)
     ]
     setup_requests_mock_with_given_polygons(granule_polygon_pairs)
-
-
-def login(client, username=DEFAULT_USERNAME):
-    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username))

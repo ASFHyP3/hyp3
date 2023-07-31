@@ -9,17 +9,22 @@ INSAR_ISCE_BURST:
         minItems: 2
         maxItems: 2
         example:
-          - S1_249434_IW1_20230523T170733_VV_8850-BURST
-          - S1_249434_IW1_20230511T170732_VV_07DE-BURST
+          - S1_136231_IW2_20200604T022312_VV_7C85-BURST
+          - S1_136231_IW2_20200616T022313_VV_5D11-BURST
         items:
           description: Name of the Sentinel-1 SLC IW burst granule to process
           type: string
           pattern: "^S1_\\d{6}_IW.*-BURST"
           minLength: 43
           maxLength: 43
-          example: S1_249434_IW1_20230523T170733_VV_8850-BURST
+          example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
     bucket_prefix:
       default:  '""'
+    apply_water_mask:
+      api_schema:
+        description: Set pixels over coastal and large inland water bodies to NoData in wrapped and unwrapped phase GeoTIFFs (after unwrapping).
+        default: false
+        type: boolean
     looks:
       api_schema:
         description: Number of looks to take in range and azimuth
@@ -29,7 +34,8 @@ INSAR_ISCE_BURST:
           - 20x4
           - 10x2
           - 5x1
-  validators: []
+  validators:
+    - check_dem_coverage
   tasks:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2
@@ -42,6 +48,8 @@ INSAR_ISCE_BURST:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
+        - --apply-water-mask
+        - Ref::apply_water_mask
         - --looks
         - Ref::looks
         - Ref::granules

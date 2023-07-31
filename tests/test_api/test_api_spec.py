@@ -47,7 +47,7 @@ def test_invalid_cookie(client):
 
 def test_expired_cookie(client):
     for uri in ENDPOINTS:
-        client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user', -1))
+        client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user', lifetime_in_seconds=-1))
         response = client.get(uri)
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 

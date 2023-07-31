@@ -23,6 +23,7 @@ jobs:
             deploy_ref: refs/heads/develop
             job_files: >-
               job_spec/AUTORIFT.yml
+              job_spec/INSAR_GAMMA.yml
               job_spec/INSAR_GAMMA_TEST.yml
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_TEST.yml
@@ -30,9 +31,8 @@ jobs:
               job_spec/WATER_MAP.yml
               job_spec/WATER_MAP_TEST.yml
               job_spec/WATER_MAP_EQ.yml
-              job_spec/RIVER_WIDTH.yml
               job_spec/S1_CORRECTION_ITS_LIVE.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r5dn.xlarge,r5dn.2xlarge,r5d.xlarge,r5d.2xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -77,7 +77,6 @@ jobs:
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
           MONTHLY_BUDGET: ${{ secrets.MONTHLY_BUDGET }}
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
-          PERMISSIONS_BOUNDARY_ARN: ${{ secrets.PERMISSIONS_BOUNDARY_ARN }}
           ORIGIN_ACCESS_IDENTITY_ID: ${{ secrets.ORIGIN_ACCESS_IDENTITY_ID }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           AMI_ID: ${{ matrix.ami_id }}

@@ -42,7 +42,8 @@ def has_sufficient_coverage(granule: Polygon, buffer: float = 0.15, threshold: f
 
 def get_cmr_metadata(granules):
     cmr_parameters = {
-        'producer_granule_id': granules,
+        'granule_ur': [f'{granule}*' for granule in granules],
+        'options[granule_ur][pattern]': 'true',
         'provider': 'ASF',
         'short_name': [
             'SENTINEL-1A_SLC',
@@ -51,6 +52,7 @@ def get_cmr_metadata(granules):
             'SENTINEL-1B_SP_GRD_HIGH',
             'SENTINEL-1A_DP_GRD_HIGH',
             'SENTINEL-1B_DP_GRD_HIGH',
+            'SENTINEL-1_BURSTS',
         ],
         'page_size': 2000,
     }
@@ -58,7 +60,7 @@ def get_cmr_metadata(granules):
     response.raise_for_status()
     granules = [
         {
-            'name': entry['producer_granule_id'],
+            'name': entry.get('producer_granule_id', entry.get('title')),
             'polygon': Polygon(format_points(entry['polygons'][0][0]))
         } for entry in response.json()['feed']['entry']
     ]
@@ -66,8 +68,7 @@ def get_cmr_metadata(granules):
 
 
 def is_third_party_granule(granule):
-    # FIXME remove the -BURST case when we integrate with prod CMR
-    return granule.startswith('S2') or granule.startswith('L') or granule.endswith('-BURST')
+    return granule.startswith('S2') or granule.startswith('L')
 
 
 def check_granules_exist(granules, granule_metadata):

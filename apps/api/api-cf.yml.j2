@@ -22,9 +22,6 @@ Parameters:
     Type: String
 
   {% if security_environment == 'EDC' %}
-  PermissionsBoundaryPolicyArn:
-    Type: String
-
   VpcId:
     Type: String
 
@@ -144,9 +141,6 @@ Resources:
           Principal:
             Service: lambda.amazonaws.com
           Effect: Allow
-      {% if security_environment == 'EDC' %}
-      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
-      {% endif %}
       ManagedPolicyArns:
         {% if security_environment == 'EDC' %}
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole

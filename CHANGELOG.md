@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.9.7]
+### Changed
+- Added `r6idn` instance types and removed `r5d`,`r5dn` instance types from most deployments.
+
+## [3.9.6]
+### Removed
+- `PermissionsBoundaryPolicyArn` stack parameter; this setting is no longer required for Earthdata Cloud deployments
+
+## [3.9.5]
+### Added
+- `apply_water_mask` option for `INSAR_ISCE_BURST` jobs
+### Changed
+- `POST /jobs` now returns HTTP 400 for Sentinel-1 Burst granules that do not exist in CMR
+- `POST /jobs` now returns HTTP 400 for INSAR_ISCE_BURST jobs for burst granules that do not intersect the
+  Copernicus GLO-30 Public DEM.
+
 ## [3.9.4]
 ### Fixed
 - Modified `start_execution_manager` to submit no more than 2 batches of 300 jobs, in order to reduce payload size.

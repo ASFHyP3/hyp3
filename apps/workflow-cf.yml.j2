@@ -21,9 +21,6 @@ Parameters:
     Type: String
 
   {% if security_environment == 'EDC' %}
-  PermissionsBoundaryPolicyArn:
-    Type: String
-
   SecurityGroupId:
     Type: String
 
@@ -112,9 +109,6 @@ Resources:
           Effect: Allow
       ManagedPolicyArns:
         - !Ref StepFunctionPolicy
-      {% if security_environment == 'EDC' %}
-      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
-      {% endif %}
 
   StepFunctionPolicy:
     Type: {{ 'Custom::JplPolicy' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::ManagedPolicy' }}
@@ -161,7 +155,6 @@ Resources:
       Parameters:
         JobsTable: !Ref JobsTable
         {% if security_environment == 'EDC' %}
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
@@ -173,7 +166,6 @@ Resources:
       Parameters:
         Bucket: !Ref Bucket
         {% if security_environment == 'EDC' %}
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         DistributionUrl: !Ref DistributionUrl
@@ -185,7 +177,6 @@ Resources:
     Properties:
       {% if security_environment == 'EDC' %}
       Parameters:
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
       {% endif %}
@@ -198,7 +189,6 @@ Resources:
         JobsTable: !Ref JobsTable
         StartExecutionWorkerArn: !GetAtt StartExecutionWorker.Outputs.LambdaArn
         {% if security_environment == 'EDC' %}
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
@@ -210,7 +200,6 @@ Resources:
       Parameters:
         StepFunctionArn: !Ref StepFunction
         {% if security_environment == 'EDC' %}
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
@@ -222,7 +211,6 @@ Resources:
       Parameters:
         Bucket: !Ref Bucket
         {% if security_environment == 'EDC' %}
-        PermissionsBoundaryPolicyArn: !Ref PermissionsBoundaryPolicyArn
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
@@ -245,9 +233,6 @@ Resources:
       ManagedPolicyArns:
         - !Ref ExecutionPolicy
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
-      {% if security_environment == 'EDC' %}
-      PermissionsBoundary: !Ref PermissionsBoundaryPolicyArn
-      {% endif %}
 
   ExecutionPolicy:
     Type: {{ 'Custom::JplPolicy' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::ManagedPolicy' }}
