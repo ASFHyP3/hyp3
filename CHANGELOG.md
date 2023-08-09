@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.4.0]
 ### Added
 - Added `INSAR_ISCE_BURST` job type to `hyp3-test` deployment.
+### Changed
+- Added larger `c6id` instance types to hyp3-tibet-jpl deployment
+- Set `++omp-num-threads=4` for `INSAR_ISCE_TEST` jobs
 
 ## [3.9.8]
 ### Removed
