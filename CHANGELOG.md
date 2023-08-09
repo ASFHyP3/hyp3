@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0]
+### Added
+- Added `INSAR_ISCE_BURST` job type to `hyp3-test` deployment.
+
 ## [3.9.8]
 ### Removed
 - Removed `c5d.xlarge` instance types from hyp3-tibet-jpl and hyp3-nisar-jpl deployments.
