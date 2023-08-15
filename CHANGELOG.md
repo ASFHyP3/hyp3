@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.10.2]
 ### Deprecated
-- The Subscriptions feature has been deprecated and will be removed as early as 2023-09-05.
+- The Subscriptions feature has been deprecated and will be removed as early as 2023-09-05 (September 5, 2023).
   Read our [Subscriptions docs](https://hyp3-docs.asf.alaska.edu/using/subscriptions/)
   for more details and take the recommended actions to avoid data loss.
   Follow our [Jupyter notebook tutorials](https://hyp3-docs.asf.alaska.edu/tutorials/process-new-granules-for-search-parameters/)
