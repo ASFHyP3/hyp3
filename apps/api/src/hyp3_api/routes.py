@@ -12,7 +12,6 @@ from flask_cors import CORS
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
 from openapi_core.spec.shortcuts import create_spec
-from openapi_core.validation.request.validators import RequestValidator
 from openapi_core.validation.response.datatypes import ResponseValidationResult
 
 from hyp3_api import app, auth, handlers
