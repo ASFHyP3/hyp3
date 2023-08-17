@@ -63,29 +63,4 @@ components:
         job_parameters:
           $ref: "#/components/schemas/{{ job_type }}Parameters"
 
-    {{ job_type }}Specification:
-      description: Contains user provided information on creating a new {{ job_type }} subscription, without specific granules.
-      type: object
-      additionalProperties: false
-      required:
-        - job_type
-        - name
-      properties:
-        job_type:
-          type: string
-          enum:
-            - {{ job_type }}
-        name:
-          $ref: "./openapi-spec.yml#components/schemas/name"
-        job_parameters:
-          type: object
-          additionalProperties: false
-          {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter not in job_spec.get('required_parameters', []) %}
-          {% if loop.first %}
-          properties:
-          {% endif %}
-            {{ parameter }}:
-              {{ json.dumps(parameter_spec[ 'api_schema' ]) }}
-          {% endfor %}
-
     {% endfor %}

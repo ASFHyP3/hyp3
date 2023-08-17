@@ -58,10 +58,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/start_token"
-        - name: subscription_id
-          in: query
-          schema:
-            $ref: "#/components/schemas/job_or_subscription_id"
 
       responses:
         "200":
@@ -78,7 +74,7 @@ paths:
         - name: job_id
           in: path
           schema:
-            $ref: "#/components/schemas/job_or_subscription_id"
+            $ref: "#/components/schemas/job_id"
           required: true
 
       responses:
@@ -99,94 +95,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/user"
-
-  /subscriptions:
-    post:
-      description: Adds a subscription with search criteria and processing parameters to use to process data as it becomes available
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/subscriptions_body"
-        required: true
-      responses:
-        "200":
-          description: 200 response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  subscription:
-                    $ref: "#/components/schemas/subscription"
-                  validate_only:
-                    $ref: "#/components/schemas/validate_only"
-
-
-    get:
-      description: Get information about subscriptions for the logged in user
-      parameters:
-        - name: name
-          in: query
-          schema:
-            $ref: "#/components/schemas/name"
-        - name: job_type
-          in: query
-          schema:
-            $ref: "./job_parameters.yml#components/schemas/job_type"
-        - name: enabled
-          in: query
-          schema:
-            $ref: "#/components/schemas/subscription_enabled"
-      responses:
-        "200":
-          description: 200 response
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - subscriptions
-                properties:
-                  subscriptions:
-                    $ref: "#/components/schemas/list_of_subscriptions"
-  /subscriptions/{subscription_id}:
-    patch:
-      description: Change information about the given subscription
-      parameters:
-        - name: subscription_id
-          in: path
-          schema:
-            $ref: "#/components/schemas/job_or_subscription_id"
-          required: true
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/subscriptions_update_expression'
-        required: true
-      responses:
-        "200":
-          description: 200 response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/subscription"
-    get:
-      description: Get information about a specific subscription
-      parameters:
-        - name: subscription_id
-          in: path
-          schema:
-            $ref: "#/components/schemas/job_or_subscription_id"
-          required: true
-      responses:
-        "200":
-          description: 200 response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/subscription"
 
 components:
   schemas:
@@ -216,74 +124,6 @@ components:
           $ref: "#/components/schemas/list_of_jobs"
         next:
           $ref: "#/components/schemas/next_url"
-
-    subscriptions_body:
-      description: Information about a subscription
-      type: object
-      required:
-        - subscription
-      additionalProperties: false
-      properties:
-        validate_only:
-          $ref: "#/components/schemas/validate_only"
-        subscription:
-          $ref: "#/components/schemas/new_subscription"
-
-    new_subscription:
-      description: Contains user provided information about a new subscription
-      type: object
-      required:
-        - search_parameters
-        - job_specification
-      additionalProperties: false
-      properties:
-        search_parameters:
-          $ref: "#/components/schemas/search_parameters"
-        job_specification:
-          $ref: "./job_parameters.yml#components/schemas/job_specification"
-
-    subscriptions_update_expression:
-      description: Change/update a subscription
-      type: object
-      additionalProperties: false
-      properties:
-        start:
-          $ref: "#/components/schemas/datetime"
-        end:
-          $ref: "#/components/schemas/datetime"
-        intersectsWith:
-          $ref: "#/components/schemas/intersectsWith"
-        enabled:
-          $ref: "#/components/schemas/subscription_enabled"
-
-    list_of_subscriptions:
-      type: array
-      items:
-        $ref: "#/components/schemas/subscription"
-
-    subscription:
-      type: object
-      required:
-        - subscription_id
-        - search_parameters
-        - job_specification
-        - user_id
-        - creation_date
-        - enabled
-      additionalProperties: false
-      properties:
-        subscription_id:
-          $ref: "#/components/schemas/job_or_subscription_id"
-        search_parameters:
-          $ref: "#/components/schemas/search_parameters"
-        job_specification:
-          $ref: "./job_parameters.yml#components/schemas/job_specification"
-        user_id:
-          $ref: "#/components/schemas/user_id"
-        creation_date:
-          $ref: "#/components/schemas/datetime"
-        enabled:
-          $ref: "#/components/schemas/subscription_enabled"
 
     user:
       description: Information about a user (quota, user id)
@@ -410,9 +250,7 @@ components:
       additionalProperties: false
       properties:
         job_id:
-          $ref: "#/components/schemas/job_or_subscription_id"
-        subscription_id:
-          $ref: "#/components/schemas/job_or_subscription_id"
+          $ref: "#/components/schemas/job_id"
         user_id:
           $ref: "#/components/schemas/user_id"
         job_type:
@@ -447,8 +285,8 @@ components:
       type: boolean
       default: false
 
-    job_or_subscription_id:
-      description: Unique identifier for a job or subscription
+    job_id:
+      description: Unique identifier for a job
       type: string
       format: uuid
       example: 27836b79-e5b2-4d8f-932f-659724ea02c3
@@ -457,10 +295,6 @@ components:
       description: Username from Earthdata Login.
       type: string
       example: myUserId
-
-    subscription_enabled:
-      description: Set to false to pause/disable the processing of new data.
-      type: boolean
 
     datetime:
       description: Date and time object formatted according to ISO 8601

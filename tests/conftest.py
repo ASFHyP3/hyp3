@@ -10,7 +10,6 @@ def table_properties():
     class TableProperties:
         jobs_table = get_table_properties_from_template('JobsTable')
         users_table = get_table_properties_from_template('UsersTable')
-        subscriptions_table = get_table_properties_from_template('SubscriptionsTable')
     return TableProperties()
 
 
@@ -37,10 +36,6 @@ def tables(table_properties):
             users_table = DYNAMODB_RESOURCE.create_table(
                 TableName=environ['USERS_TABLE_NAME'],
                 **table_properties.users_table,
-            )
-            subscriptions_table = DYNAMODB_RESOURCE.create_table(
-                TableName=environ['SUBSCRIPTIONS_TABLE_NAME'],
-                **table_properties.subscriptions_table,
             )
         tables = Tables()
         yield tables

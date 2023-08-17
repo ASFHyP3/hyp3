@@ -181,37 +181,6 @@ def test_list_jobs_date_start_and_end(client, tables):
         assert response.json == {'jobs': [items[1]]}
 
 
-def test_list_jobs_subscription_id(client, tables):
-    items = [
-        make_db_record('874f7533-807d-4b20-afe1-27b5b6fc9d6c', subscription_id='9b02d992-e21e-4e2f-9310-5dd469be2708'),
-        make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', subscription_id='9b02d992-e21e-4e2f-9310-5dd469be2708'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', subscription_id='9b02d992-e21e-4e2f-9310-5dd469be2700'),
-        make_db_record('4277c126-6927-4859-b62f-eb3d2a8815c2'),
-    ]
-    for item in items:
-        tables.jobs_table.put_item(Item=item)
-
-    login(client)
-    response = client.get(JOBS_URI, query_string={'subscription_id': '9b02d992-e21e-4e2f-9310-5dd469be2708'})
-    assert response.status_code == HTTPStatus.OK
-    assert list_have_same_elements(response.json['jobs'], items[:2])
-
-    response = client.get(JOBS_URI, query_string={'subscription_id': '9b02d992-e21e-4e2f-9310-5dd469be2700'})
-    assert response.status_code == HTTPStatus.OK
-    assert response.json['jobs'] == [items[2]]
-
-    response = client.get(JOBS_URI, query_string={'subscription_id': '55c6981e-c33a-4086-b20b-661ee6f592a9'})
-    assert response.status_code == HTTPStatus.OK
-    assert response.json['jobs'] == []
-
-    response = client.get(JOBS_URI)
-    assert response.status_code == HTTPStatus.OK
-    assert list_have_same_elements(response.json['jobs'], items)
-
-    response = client.get(JOBS_URI, query_string={'subscription_id': 'not a uuid'})
-    assert response.status_code == HTTPStatus.BAD_REQUEST
-
-
 def test_bad_date_formats(client):
     datetime_parameters = ['start', 'end']
     bad_dates = [
