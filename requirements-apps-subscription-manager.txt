@@ -1,2 +1,0 @@
-./lib/dynamo/
-./lib/lambda_logging/
