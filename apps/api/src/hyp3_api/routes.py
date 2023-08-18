@@ -4,8 +4,6 @@ from decimal import Decimal
 from os import environ
 from pathlib import Path
 
-import shapely.errors
-import shapely.wkt
 import yaml
 from flask import abort, g, jsonify, make_response, redirect, render_template, request
 from flask_cors import CORS
