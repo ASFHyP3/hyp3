@@ -103,18 +103,6 @@ class NonValidator:
         return ResponseValidationResult()
 
 
-class WKTValidator:
-    def validate(self, value):
-        try:
-            shapely.wkt.loads(value)
-        except shapely.errors.WKTReadingError:
-            return False
-        return True
-
-    def unmarshal(self, value):
-        return value
-
-
 class ErrorHandler(FlaskOpenAPIErrorsHandler):
     def __init__(self):
         super().__init__()

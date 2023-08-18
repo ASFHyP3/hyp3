@@ -110,13 +110,6 @@ def test_ui_location(client):
     assert response.status_code == HTTPStatus.OK
 
 
-def test_wkt_validator(client):
-    validator = routes.WKTValidator()
-
-    assert not validator.validate('foo')
-    assert validator.validate('POLYGON((-5 2, -3 2, -3 5, -5 5, -5 2))')
-
-
 def test_error_format(client):
     response = client.post(JOBS_URI)
     assert response.status_code == HTTPStatus.UNAUTHORIZED
