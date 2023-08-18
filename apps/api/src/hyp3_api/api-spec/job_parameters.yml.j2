@@ -21,12 +21,6 @@ components:
         - $ref: "#/components/schemas/{{ job_type }}Parameters"
         {% endfor %}
 
-    job_specification:
-      oneOf:
-        {% for job_type in job_types %}
-        - $ref: "#/components/schemas/{{ job_type }}Specification"
-        {% endfor %}
-
     {% for job_type, job_spec in job_types.items() %}
     {{ job_type }}Parameters:
       description: Parameters for running {{ job_type }} jobs, including specific granules
