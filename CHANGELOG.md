@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.2]
+### Deprecated
+- The Subscriptions feature has been deprecated and will be removed as early as `2023-09-05` (September 5, 2023).
+  Please read our [Subscriptions docs](https://hyp3-docs.asf.alaska.edu/using/subscriptions/)
+  for more details and **take the recommended actions to avoid data loss.**
+  You can also follow our
+  [Jupyter notebook tutorials](https://hyp3-docs.asf.alaska.edu/tutorials/process-new-granules-for-search-parameters/)
+  to learn how to reproduce subscription-like behavior using the HyP3 SDK.
+
 ## [3.10.1]
 ### Changed
 - Updated default public key used to verify authentication cookie
