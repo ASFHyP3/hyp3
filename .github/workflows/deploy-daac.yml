@@ -29,7 +29,7 @@ jobs:
             expanded_max_vcpus: 3000
             required_surplus: 3000
             security_environment: EDC
-            ami_id: image_id_ecs_amz2
+            ami_id: image_id_s1_ecs_amz2
             distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
 
           - environment: hyp3-edc-uat
