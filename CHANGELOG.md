@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.5]
+### Changed
+- Updated INSAR_ISCE job specification for [DockerizedTopsApp](https://github.com/ACCESS-Cloud-Based-InSAR/DockerizedTopsApp) v0.2.4
+- Added larger `c6id` instance types to hyp3-a19-jpl and hyp3-nisar-jpl deployments
+
 ## [3.10.4]
 ### Changed
 - The `hyp3-edc-uat` and `hyp3-edc-prod` deployments now uses the latest Earthdata Cloud AMI with additional software installed.
