@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.6]
+### Changed
+- Increased vCPU limits for `hyp3-a19-jpl` and `hyp3-tibet-jpl` from 1,600 to 10,000.
+
 ## [3.10.5]
 ### Changed
 - Updated INSAR_ISCE job specification for [DockerizedTopsApp](https://github.com/ACCESS-Cloud-Based-InSAR/DockerizedTopsApp) v0.2.4
