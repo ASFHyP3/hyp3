@@ -86,6 +86,24 @@ def check_dem_coverage(job, granule_metadata):
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
+def check_same_burst_ids(job, granule_metadata):
+    burst_ids = [g['name'].split('_')[1] for g in granule_metadata]
+    ref_burst_id = burst_ids[0]
+    sec_burst_id = burst_ids[1]
+    if ref_burst_id != sec_burst_id:
+        raise GranuleValidationError(f'The requested scenes do not have the same burst id: {ref_burst_id} and {sec_burst_id}')
+
+
+def check_valid_polarizations(job, granule_metadata):
+    polarizations = [g['name'].split('_')[4] for g in granule_metadata]
+    ref_polarization = polarizations[0]
+    sec_polarization = polarizations[1]
+    if ref_polarization != sec_polarization:
+        raise GranuleValidationError(f'The requested scenes do not have the same polarization: {ref_polarization} and {sec_polarization}')
+    if ref_polarization != 'VV' and ref_polarization != 'HH':
+        raise GranuleValidationError(f'Only VV and HH polarizations are currently supported, got: {ref_polarization}')
+
+
 def format_points(point_string):
     converted_to_float = [float(x) for x in point_string.split(' ')]
     points = [list(t) for t in zip(converted_to_float[1::2], converted_to_float[::2])]
