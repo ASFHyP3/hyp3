@@ -162,7 +162,7 @@ def test_check_same_burst_ids():
 
     validation.check_same_burst_ids(None, valid_case)
     with raises(validation.GranuleValidationError, match=r'.*do not have the same burst ID.*'):
-        validation.check_same_burst_ids('', invalid_case)
+        validation.check_same_burst_ids(None, invalid_case)
 
 
 def test_check_valid_polarizations():
