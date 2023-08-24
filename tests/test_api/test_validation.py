@@ -191,11 +191,11 @@ def test_check_valid_polarizations():
         }
     ]
 
-    validation.check_valid_polarizations('', valid_case)
+    validation.check_valid_polarizations(None, valid_case)
     with raises(validation.GranuleValidationError, match=r'.*do not have the same polarization.*'):
-        validation.check_valid_polarizations('', different_polarizations)
+        validation.check_valid_polarizations(None, different_polarizations)
     with raises(validation.GranuleValidationError, match=r'.*Only VV and HH.*'):
-        validation.check_valid_polarizations('', unsupported_polarizations)
+        validation.check_valid_polarizations(None, unsupported_polarizations)
 
 
 def test_check_granules_exist():
