@@ -161,7 +161,7 @@ def test_check_same_burst_ids():
     ]
 
     validation.check_same_burst_ids('', valid_case)
-    with raises(validation.GranuleValidationError, match=r'.*do not have the same burst id.*'):
+    with raises(validation.GranuleValidationError, match=r'.*do not have the same burst ID.*'):
         validation.check_same_burst_ids('', invalid_case)
 
 
