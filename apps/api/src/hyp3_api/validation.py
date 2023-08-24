@@ -87,9 +87,7 @@ def check_dem_coverage(job, granule_metadata):
 
 
 def check_same_burst_ids(job, granule_metadata):
-    burst_ids = [g['name'].split('_')[1] for g in granule_metadata]
-    ref_burst_id = burst_ids[0]
-    sec_burst_id = burst_ids[1]
+    ref_burst_id, sec_burst_id = [granule['name'].split('_')[1] for granule in granule_metadata]
     if ref_burst_id != sec_burst_id:
         raise GranuleValidationError(
             f'The requested scenes do not have the same burst id: {ref_burst_id} and {sec_burst_id}'
