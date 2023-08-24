@@ -68,8 +68,8 @@ Resources:
       ServiceRole: !GetAtt BatchServiceRole.Arn
       Type: MANAGED
       ComputeResources:
-        Type: SPOT
-        AllocationStrategy: SPOT_CAPACITY_OPTIMIZED
+        Type: {{ EC2 if security_environment in ('JPL', 'JPL-public') else SPOT }}
+        AllocationStrategy: {{ BEST_FIT_PROGRESSIVE if security_environment in ('JPL', 'JPL-public') else SPOT_CAPACITY_OPTIMIZED }}
         MinvCpus: 0
         MaxvCpus: !Ref MaxvCpus
         InstanceTypes: !Ref InstanceTypes

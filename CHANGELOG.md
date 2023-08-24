@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.8]
+### Changed
+- HyP3 deployments at JPL now use On Demand instances instead of Spot instances to prevent `INSAR_ISCE` jobs from being interrupted.
+  This *should* be a temporary change. 
+
 ## [3.10.7]
 ### Changed
 - The `INSAR_ISCE_BURST` job type now validates that polarizations and burst ids are the same.
