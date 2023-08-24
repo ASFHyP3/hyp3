@@ -27,6 +27,28 @@ INSAR_ISCE:
           minLength: 67
           maxLength: 67
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
+    esd_coherence_threshold:
+      api_schema:
+        description: Coherence threshold value for determining which points to include when performing ESD. Must be any value between 0 and 1 (inclusive), or -1 for no ESD correction.
+        default: -1.0
+        type: number
+        minimum: -1.0
+        maximum: 1.0
+    estimate_ionosphere_delay:
+      api_schema:
+        description: Whether to apply ionosphere correction to the ARIA-S1-GUNW as an additional layer.
+        default: false
+        type: boolean
+    frame_id:
+      api_schema:
+        description: Subset GUNW products to this frame. The default is `-1` with no subsetting of the products.
+        default: -1
+        type: integer
+    compute_solid_earth_tide:
+      api_schema:
+        default: false
+        type: boolean
+        description: "Whether to compute a solid earth tide correction layer for ARIA-S1-GUNW products"
     weather_model:
       api_schema:
         description: Weather model used to generate tropospheric delay estimations
@@ -34,9 +56,11 @@ INSAR_ISCE:
         type: string
         enum:
           - None
+          - ERA5
+          - ERA5T
+          - GMAO
           - HRES
           - HRRR
-          - GMAO
     bucket_prefix:
       default:  '""'
   validators: []
@@ -44,6 +68,8 @@ INSAR_ISCE:
     - name: ''
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
       command:
+        - ++omp-num-threads
+        - '4'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -52,7 +78,15 @@ INSAR_ISCE:
         - Ref::granules
         - --secondary-scenes
         - Ref::secondary_granules
-      timeout: 10800
+        - --esd-coherence-threshold
+        - Ref::esd_coherence_threshold
+        - --estimate-ionosphere-delay
+        - Ref::estimate_ionosphere_delay
+        - --frame-id
+        - Ref::frame_id
+        - --compute-solid-earth-tide
+        - Ref::compute_solid_earth_tide
+      timeout: 21600
       vcpu: 1
       memory: 7500
       secrets:
@@ -75,4 +109,8 @@ INSAR_ISCE:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-
+        - RAIDER_ECMWF_ERA5_UID
+        - RAIDER_ECMWF_ERA5_API_KEY
+        - RAIDER_HRES_EMAIL
+        - RAIDER_HRES_API_KEY
+        - RAIDER_HRES_URL
