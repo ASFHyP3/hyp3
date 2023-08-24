@@ -95,9 +95,7 @@ def check_same_burst_ids(job, granule_metadata):
 
 
 def check_valid_polarizations(job, granule_metadata):
-    polarizations = [g['name'].split('_')[4] for g in granule_metadata]
-    ref_polarization = polarizations[0]
-    sec_polarization = polarizations[1]
+    ref_polarization, sec_polarization = [granule['name'].split('_')[4] for granule in granule_metadata]
     if ref_polarization != sec_polarization:
         raise GranuleValidationError(
             f'The requested scenes do not have the same polarization: {ref_polarization} and {sec_polarization}'
