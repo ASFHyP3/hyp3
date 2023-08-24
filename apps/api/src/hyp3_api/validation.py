@@ -91,7 +91,9 @@ def check_same_burst_ids(job, granule_metadata):
     ref_burst_id = burst_ids[0]
     sec_burst_id = burst_ids[1]
     if ref_burst_id != sec_burst_id:
-        raise GranuleValidationError(f'The requested scenes do not have the same burst id: {ref_burst_id} and {sec_burst_id}')
+        raise GranuleValidationError(
+            f'The requested scenes do not have the same burst id: {ref_burst_id} and {sec_burst_id}'
+        )
 
 
 def check_valid_polarizations(job, granule_metadata):
@@ -99,7 +101,9 @@ def check_valid_polarizations(job, granule_metadata):
     ref_polarization = polarizations[0]
     sec_polarization = polarizations[1]
     if ref_polarization != sec_polarization:
-        raise GranuleValidationError(f'The requested scenes do not have the same polarization: {ref_polarization} and {sec_polarization}')
+        raise GranuleValidationError(
+            f'The requested scenes do not have the same polarization: {ref_polarization} and {sec_polarization}'
+        )
     if ref_polarization != 'VV' and ref_polarization != 'HH':
         raise GranuleValidationError(f'Only VV and HH polarizations are currently supported, got: {ref_polarization}')
 
