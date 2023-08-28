@@ -241,3 +241,4 @@ jobs:
           AMI_ID: ${{ matrix.ami_id }}
           INSTANCE_TYPES: ${{ matrix.instance_types }}
           DISTRIBUTION_URL: ${{ matrix.distribution_url }}
+          AUTH_PUBLIC_KEY: ${{ secrets.AUTH_PUBLIC_KEY }}

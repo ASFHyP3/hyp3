@@ -68,6 +68,9 @@ inputs:
   DISTRIBUTION_URL:
     description: "CloudFront Distribution URL for Earthdata Cloud environments"
     required: true
+  AUTH_PUBLIC_KEY:
+    description: "Public key for jwt auth provider"
+    required: true
 
 runs:
   using: "composite"
@@ -111,6 +114,7 @@ runs:
                 SecretArn='${{ inputs.SECRET_ARN }}' \
                 ImageTag='${{ inputs.IMAGE_TAG }}' \
                 ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
+                AuthPublicKey='${{ inputs.AUTH_PUBLIC_KEY }}' \
                 $DOMAIN_NAME \
                 $CERTIFICATE_ARN \
                 $ORIGIN_ACCESS_IDENTITY_ID \
