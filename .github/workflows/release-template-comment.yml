@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Add a comment with the release template
     steps:
-      - uses: actions/checkout@v3.5.3
+      - uses: actions/checkout@v3.6.0
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v2
