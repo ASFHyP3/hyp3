@@ -55,8 +55,8 @@ jobs:
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
-            default_max_vcpus: 10000
-            expanded_max_vcpus: 10000
+            default_max_vcpus: 0
+            expanded_max_vcpus: 0
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
