@@ -39,9 +39,9 @@ jobs:
             product_lifetime_in_days: 180
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c6id.xlarge
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
+            instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
+            default_max_vcpus: 10000
+            expanded_max_vcpus: 10000
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -51,12 +51,12 @@ jobs:
             domain: hyp3-tibet-jpl.asf.alaska.edu
             template_bucket: cf-templates-1or0efwqffkgd-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 14
+            product_lifetime_in_days: 60
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
+            default_max_vcpus: 0
+            expanded_max_vcpus: 0
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
@@ -69,7 +69,7 @@ jobs:
             product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c6id.xlarge
+            instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
@@ -204,9 +204,9 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v3.5.3
+      - uses: actions/checkout@v3.6.0
 
-      - uses: aws-actions/configure-aws-credentials@v2
+      - uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
@@ -241,3 +241,4 @@ jobs:
           AMI_ID: ${{ matrix.ami_id }}
           INSTANCE_TYPES: ${{ matrix.instance_types }}
           DISTRIBUTION_URL: ${{ matrix.distribution_url }}
+          AUTH_PUBLIC_KEY: ${{ secrets.AUTH_PUBLIC_KEY }}

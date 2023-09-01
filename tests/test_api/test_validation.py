@@ -142,6 +142,62 @@ def test_check_dem_coverage():
         validation.check_dem_coverage(job, [neither])
 
 
+def test_check_same_burst_ids():
+    valid_case = [
+        {
+            'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+        },
+        {
+            'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+        }
+    ]
+    invalid_case = [
+        {
+            'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+        },
+        {
+            'name': 'S1_136232_IW2_20200616T022313_HH_5D11-BURST'
+        }
+    ]
+
+    validation.check_same_burst_ids(None, valid_case)
+    with raises(validation.GranuleValidationError, match=r'.*do not have the same burst ID.*'):
+        validation.check_same_burst_ids(None, invalid_case)
+
+
+def test_check_valid_polarizations():
+    valid_case = [
+        {
+            'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+        },
+        {
+            'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+        }
+    ]
+    different_polarizations = [
+        {
+            'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+        },
+        {
+            'name': 'S1_136231_IW2_20200616T022313_HH_5D11-BURST'
+        }
+    ]
+    unsupported_polarizations = [
+        {
+            'name': 'S1_136231_IW2_20200604T022312_VH_7C85-BURST'
+        },
+        {
+            'name': 'S1_136231_IW2_20200616T022313_VH_5D11-BURST'
+        }
+    ]
+
+    validation.check_valid_polarizations(None, valid_case)
+    with raises(validation.GranuleValidationError, match=r'.*do not have the same polarization.*'):
+        validation.check_valid_polarizations(None, different_polarizations)
+    with raises(validation.GranuleValidationError, match=r'.*Only VV and HH.*'):
+        validation.check_valid_polarizations(None, unsupported_polarizations)
+
+
 def test_check_granules_exist():
     granule_metadata = [
         {

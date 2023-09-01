@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.10]
+### Changed
+- Reduced vCPU limits for `hyp3-tibet-jpl` to 0 from 10,000.
+
+## [3.10.9]
+### Changed
+- The public key for the JWT auth provider is now specified as a GitHub Secret. Fixes https://github.com/ASFHyP3/hyp3/issues/1765
+
+## [3.10.8]
+### Changed
+- HyP3 deployments at JPL now use On Demand instances instead of Spot instances to prevent `INSAR_ISCE` jobs from being interrupted.
+  This *should* be a temporary change. 
+
+## [3.10.7]
+### Changed
+- The `INSAR_ISCE_BURST` job type now validates that polarizations and burst ids are the same.
+
+## [3.10.6]
+### Changed
+- Increased vCPU limits for `hyp3-a19-jpl` and `hyp3-tibet-jpl` from 1,600 to 10,000.
+
+## [3.10.5]
+### Changed
+- Updated INSAR_ISCE job specification for [DockerizedTopsApp](https://github.com/ACCESS-Cloud-Based-InSAR/DockerizedTopsApp) v0.2.4
+- Added larger `c6id` instance types to hyp3-a19-jpl and hyp3-nisar-jpl deployments
+
+## [3.10.4]
+### Changed
+- The `hyp3-edc-uat` and `hyp3-edc-prod` deployments now uses the latest Earthdata Cloud AMI with additional software installed.
+
+## [3.10.3]
+### Changed
+- Increased product lifetime for hyp3-tibet-jpl deployment from 14 days to 60 days.
+
 ## [3.10.2]
 ### Deprecated
 - The Subscriptions feature has been deprecated and will be removed as early as `2023-09-05` (September 5, 2023).

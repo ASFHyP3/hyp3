@@ -29,7 +29,7 @@ jobs:
             expanded_max_vcpus: 3000
             required_surplus: 3000
             security_environment: EDC
-            ami_id: image_id_ecs_amz2
+            ami_id: image_id_s1_ecs_amz2
             distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
 
           - environment: hyp3-edc-uat
@@ -52,7 +52,7 @@ jobs:
             expanded_max_vcpus: 3000
             required_surplus: 3000
             security_environment: EDC
-            ami_id: image_id_ecs_amz2
+            ami_id: image_id_s1_ecs_amz2
             distribution_url: 'https://d1riv60tezqha9.cloudfront.net'
 
     environment:
@@ -60,9 +60,9 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v3.5.3
+      - uses: actions/checkout@v3.6.0
 
-      - uses: aws-actions/configure-aws-credentials@v2
+      - uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
@@ -98,10 +98,11 @@ jobs:
           AMI_ID: ${{ matrix.ami_id }}
           INSTANCE_TYPES: ${{ matrix.instance_types }}
           DISTRIBUTION_URL: ${{ matrix.distribution_url }}
+          AUTH_PUBLIC_KEY: ${{ secrets.AUTH_PUBLIC_KEY }}
 
   call-bump-version-workflow:
     if: github.ref == 'refs/heads/main'
     needs: deploy
-    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.8.1
+    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.8.2
     secrets:
       USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}

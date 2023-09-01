@@ -36,6 +36,8 @@ INSAR_ISCE_BURST:
           - 5x1
   validators:
     - check_dem_coverage
+    - check_valid_polarizations
+    - check_same_burst_ids
   tasks:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2
