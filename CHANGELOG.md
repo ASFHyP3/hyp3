@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0]
+### Removed
+- The Subscriptions feature has been removed.
+  - Removed the `/subscriptions` API endpoint.
+  - Removed the `subscription_id` query parameter from the `GET /jobs` API endpoint.
+  - Removed the `subscription_id` field from the response body of the `GET /jobs` API endpoint.
+
 ## [3.10.10]
 ### Changed
 - Reduced vCPU limits for `hyp3-tibet-jpl` to 0 from 10,000.
