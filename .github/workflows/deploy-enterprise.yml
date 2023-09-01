@@ -51,7 +51,7 @@ jobs:
             domain: hyp3-tibet-jpl.asf.alaska.edu
             template_bucket: cf-templates-1or0efwqffkgd-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 60
+            product_lifetime_in_days: 14
             quota: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
