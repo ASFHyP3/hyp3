@@ -4,15 +4,12 @@ from decimal import Decimal
 from os import environ
 from pathlib import Path
 
-import shapely.errors
-import shapely.wkt
 import yaml
 from flask import abort, g, jsonify, make_response, redirect, render_template, request
 from flask_cors import CORS
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
 from openapi_core.spec.shortcuts import create_spec
-from openapi_core.validation.request.validators import RequestValidator
 from openapi_core.validation.response.datatypes import ResponseValidationResult
 
 from hyp3_api import app, auth, handlers
@@ -23,7 +20,7 @@ api_spec_dict = get_spec_yaml(api_spec_file)
 api_spec = create_spec(api_spec_dict)
 CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
 
-AUTHENTICATED_ROUTES = ['/jobs', '/user', '/subscriptions']
+AUTHENTICATED_ROUTES = ['/jobs', '/user']
 
 
 @app.before_request
@@ -104,18 +101,6 @@ class NonValidator:
         return ResponseValidationResult()
 
 
-class WKTValidator:
-    def validate(self, value):
-        try:
-            shapely.wkt.loads(value)
-        except shapely.errors.WKTReadingError:
-            return False
-        return True
-
-    def unmarshal(self, value):
-        return value
-
-
 class ErrorHandler(FlaskOpenAPIErrorsHandler):
     def __init__(self):
         super().__init__()
@@ -142,9 +127,6 @@ class Jobs(FlaskOpenAPIView):
         parameters = request.openapi.parameters.query
         start = parameters.get('start')
         end = parameters.get('end')
-        subscription_id = parameters.get('subscription_id')
-        if subscription_id is not None:
-            subscription_id = str(subscription_id)
         return jsonify(handlers.get_jobs(
             parameters.get('user_id') or g.user,
             start.isoformat(timespec='seconds') if start else None,
@@ -153,7 +135,6 @@ class Jobs(FlaskOpenAPIView):
             parameters.get('name'),
             parameters.get('job_type'),
             parameters.get('start_token'),
-            subscription_id,
         ))
 
 
@@ -167,33 +148,6 @@ class User(FlaskOpenAPIView):
         return jsonify(handlers.get_user(g.user))
 
 
-class Subscriptions(FlaskOpenAPIView):
-    def __init__(self, spec):
-        super().__init__(spec)
-        self.request_validator = RequestValidator(spec, custom_formatters={'wkt': WKTValidator()})
-        self.response_validator = NonValidator
-        self.openapi_errors_handler = ErrorHandler
-
-    def post(self):
-        body = request.get_json()
-        return jsonify(handlers.post_subscriptions(body, g.user))
-
-    def get(self, subscription_id):
-        if subscription_id is not None:
-            return jsonify(handlers.get_subscription_by_id(subscription_id))
-        parameters = request.openapi.parameters.query
-        return jsonify(handlers.get_subscriptions(
-            g.user,
-            parameters.get('name'),
-            parameters.get('job_type'),
-            parameters.get('enabled'),
-        ))
-
-    def patch(self, subscription_id):
-        body = request.get_json()
-        return jsonify(handlers.patch_subscriptions(subscription_id, body, g.user))
-
-
 app.json_encoder = CustomEncoder
 
 jobs_view = Jobs.as_view('jobs', api_spec)
@@ -203,8 +157,3 @@ app.add_url_rule('/jobs/<job_id>', view_func=jobs_view, methods=['GET'])
 
 user_view = User.as_view('user', api_spec)
 app.add_url_rule('/user', view_func=user_view)
-
-subscriptions_view = Subscriptions.as_view('subscriptions', api_spec)
-app.add_url_rule('/subscriptions/<subscription_id>', view_func=subscriptions_view, methods=['PATCH', 'GET'])
-app.add_url_rule('/subscriptions', view_func=subscriptions_view, methods=['GET'], defaults={'subscription_id': None})
-app.add_url_rule('/subscriptions', view_func=subscriptions_view, methods=['POST'])
