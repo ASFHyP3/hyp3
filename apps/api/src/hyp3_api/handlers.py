@@ -49,14 +49,12 @@ def post_jobs(body, user):
         return body
 
 
-def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None,
-             subscription_id=None):
+def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None):
     try:
         start_key = util.deserialize(start_token) if start_token else None
     except util.TokenDeserializeError:
         abort(problem_format(400, 'Invalid start_token value'))
-    jobs, last_evaluated_key = dynamo.jobs.query_jobs(user, start, end, status_code, name, job_type, start_key,
-                                                      subscription_id)
+    jobs, last_evaluated_key = dynamo.jobs.query_jobs(user, start, end, status_code, name, job_type, start_key)
     payload = {'jobs': jobs}
     if last_evaluated_key is not None:
         next_token = util.serialize(last_evaluated_key)
@@ -92,57 +90,3 @@ def get_user(user):
         },
         'job_names': get_names_for_user(user)
     }
-
-
-def post_subscriptions(body, user):
-    subscription = body['subscription']
-    validate_only = body.get('validate_only')
-    try:
-        subscription = dynamo.subscriptions.put_subscription(user, subscription, validate_only)
-        response = {
-            'subscription': subscription
-        }
-        if validate_only is not None:
-            response['validate_only'] = validate_only
-        return response
-    except ValueError as e:
-        abort(problem_format(400, str(e)))
-
-
-def get_subscriptions(user, name=None, job_type=None, enabled=None):
-    subscriptions = dynamo.subscriptions.get_subscriptions_for_user(user, name, job_type, enabled)
-    payload = {
-        'subscriptions': subscriptions
-    }
-    return payload
-
-
-def get_subscription_by_id(subscription_id):
-    subscription = dynamo.subscriptions.get_subscription_by_id(subscription_id)
-    if subscription is None:
-        abort(problem_format(404, f'subscription_id does not exist: {subscription_id}'))
-    return subscription
-
-
-def patch_subscriptions(subscription_id, body, user):
-    subscription = dynamo.subscriptions.get_subscription_by_id(subscription_id)
-    if subscription is None:
-        abort(problem_format(404, f'subscription_id does not exist: {subscription_id}'))
-
-    if subscription['user_id'] != user:
-        abort(problem_format(403, 'You may not update subscriptions created by a different user'))
-
-    search_parameters = ['start', 'end', 'intersectsWith']
-    for key in search_parameters:
-        if key in body:
-            subscription['search_parameters'][key] = body[key]
-
-    if 'enabled' in body:
-        subscription['enabled'] = body['enabled']
-
-    try:
-        dynamo.subscriptions.put_subscription(user, subscription)
-    except ValueError as e:
-        abort(problem_format(400, str(e)))
-
-    return subscription

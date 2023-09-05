@@ -10,7 +10,6 @@ from hyp3_api.util import get_granules
 AUTH_COOKIE = 'asf-urs'
 JOBS_URI = '/jobs'
 USER_URI = '/user'
-SUBSCRIPTIONS_URI = '/subscriptions'
 
 DEFAULT_JOB_ID = 'myJobId'
 DEFAULT_USERNAME = 'test_username'
@@ -58,7 +57,6 @@ def submit_batch(client, batch=None, validate_only=None):
 
 
 def make_db_record(job_id,
-                   subscription_id=None,
                    granules=None,
                    job_type='RTC_GAMMA',
                    user_id=DEFAULT_USERNAME,
@@ -81,8 +79,6 @@ def make_db_record(job_id,
         'request_time': request_time,
         'status_code': status_code,
     }
-    if subscription_id is not None:
-        record['subscription_id'] = subscription_id
     if name is not None:
         record['name'] = name
     if files is not None:

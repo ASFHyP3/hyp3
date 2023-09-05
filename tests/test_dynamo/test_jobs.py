@@ -253,56 +253,6 @@ def test_query_jobs_by_type(tables):
     assert list_have_same_elements(response, table_items[:2])
 
 
-def test_query_jobs_by_subscription_id(tables):
-    table_items = [
-        {
-            'job_id': 'job1',
-            'subscription_id': '9b02d992-e21e-4e2f-9310-5dd469be2708',
-            'name': 'name1',
-            'user_id': 'user1',
-            'status_code': 'status1',
-            'request_time': '2000-01-01T00:00:00+00:00',
-        },
-        {
-            'job_id': 'job2',
-            'subscription_id': '9b02d992-e21e-4e2f-9310-5dd469be2708',
-            'name': 'name1',
-            'user_id': 'user1',
-            'status_code': 'status1',
-            'request_time': '2000-01-01T00:00:00+00:00',
-        },
-        {
-            'job_id': 'job3',
-            'subscription_id': '9b02d992-e21e-4e2f-9310-5dd469be2700',
-            'name': 'name1',
-            'user_id': 'user1',
-            'status_code': 'status1',
-            'request_time': '2000-01-01T00:00:00+00:00',
-        },
-        {
-            'job_id': 'job4',
-            'name': 'name1',
-            'user_id': 'user1',
-            'status_code': 'status1',
-            'request_time': '2000-01-01T00:00:00+00:00',
-        },
-    ]
-    for item in table_items:
-        tables.jobs_table.put_item(Item=item)
-
-    response, _ = dynamo.jobs.query_jobs('user1', subscription_id='9b02d992-e21e-4e2f-9310-5dd469be2708')
-    assert list_have_same_elements(response, table_items[:2])
-
-    response, _ = dynamo.jobs.query_jobs('user1', subscription_id='9b02d992-e21e-4e2f-9310-5dd469be2700')
-    assert list_have_same_elements(response, [table_items[2]])
-
-    response, _ = dynamo.jobs.query_jobs('user1', subscription_id='foo')
-    assert list_have_same_elements(response, [])
-
-    response, _ = dynamo.jobs.query_jobs('user1')
-    assert list_have_same_elements(response, table_items)
-
-
 def test_put_jobs(tables):
     payload = [
         {

@@ -98,8 +98,7 @@ def count_jobs(user, start=None, end=None):
     return job_count
 
 
-def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None,
-               subscription_id=None):
+def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
@@ -113,8 +112,6 @@ def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type
         filter_expression &= Attr('name').eq(name)
     if job_type is not None:
         filter_expression &= Attr('job_type').eq(job_type)
-    if subscription_id is not None:
-        filter_expression &= Attr('subscription_id').eq(subscription_id)
 
     params = {
         'IndexName': 'user_id',

@@ -6,9 +6,6 @@ Parameters:
   UsersTable:
     Type: String
 
-  SubscriptionsTable:
-    Type: String
-
   AuthPublicKey:
     Type: String
 
@@ -172,12 +169,6 @@ Resources:
             Action:
               - dynamodb:GetItem
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UsersTable}*"
-          - Effect: Allow
-            Action:
-              - dynamodb:GetItem
-              - dynamodb:PutItem
-              - dynamodb:Query
-            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${SubscriptionsTable}*"
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -186,7 +177,6 @@ Resources:
         Variables:
           JOBS_TABLE_NAME: !Ref JobsTable
           USERS_TABLE_NAME: !Ref UsersTable
-          SUBSCRIPTIONS_TABLE_NAME: !Ref SubscriptionsTable
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITHM: !Ref AuthAlgorithm
           MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
