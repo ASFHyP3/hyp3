@@ -10,7 +10,6 @@ from flask_cors import CORS
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 from openapi_core.contrib.flask.views import FlaskOpenAPIView
 from openapi_core.spec.shortcuts import create_spec
-from openapi_core.validation.response.datatypes import ResponseValidationResult
 
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
@@ -93,14 +92,6 @@ class CustomEncoder(json.JSONEncoder):
         json.JSONEncoder.default(self, o)
 
 
-class NonValidator:
-    def __init__(self, spec):
-        pass
-
-    def validate(self, res):
-        return ResponseValidationResult()
-
-
 class ErrorHandler(FlaskOpenAPIErrorsHandler):
     def __init__(self):
         super().__init__()
@@ -115,7 +106,9 @@ class ErrorHandler(FlaskOpenAPIErrorsHandler):
 class Jobs(FlaskOpenAPIView):
     def __init__(self, spec):
         super().__init__(spec)
-        self.response_validator = NonValidator
+        # FIXME: Find alternative way to disable response validation;
+        #        see https://github.com/python-openapi/openapi-core/issues/618 for context
+        # self.response_validator = NonValidator
         self.openapi_errors_handler = ErrorHandler
 
     def post(self):
@@ -141,7 +134,8 @@ class Jobs(FlaskOpenAPIView):
 class User(FlaskOpenAPIView):
     def __init__(self, spec):
         super().__init__(spec)
-        self.response_validator = NonValidator
+        # FIXME: same as the FIXME in the Jobs class
+        # self.response_validator = NonValidator
         self.openapi_errors_handler = ErrorHandler
 
     def get(self):
