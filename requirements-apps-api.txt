@@ -1,7 +1,7 @@
 flask==2.2.5
 Flask-Cors==4.0.0
 jsonschema==4.17.3
-openapi-core==0.14.5
+openapi-core==0.18.0
 prance==23.6.21.0
 PyJWT==2.8.0
 requests==2.31.0
