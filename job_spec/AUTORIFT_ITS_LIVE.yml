@@ -33,6 +33,8 @@ AUTORIFT:
               example: LC08_L1GT_118112_20210107_20210107_02_T2
     bucket_prefix:
       default:  '""'
+    parameter_file:
+      default: '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
   validators: []
   tasks:
     - name: ''
@@ -43,7 +45,7 @@ AUTORIFT:
         - --bucket-prefix
         - Ref::bucket_prefix
         - --parameter-file
-        - '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+        - Ref::parameter_file
         - --naming-scheme
         - ITS_LIVE_PROD
         - Ref::granules
