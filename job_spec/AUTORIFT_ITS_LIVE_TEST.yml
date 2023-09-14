@@ -34,7 +34,10 @@ AUTORIFT_TEST:
     bucket_prefix:
       default:  '""'
     parameter_file:
-      default: '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+      api_schema:
+        description: Shapefile for determining the correct search parameters by geographic location. Path to shapefile must be understood by GDAL.
+        type: string
+        default: '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
   validators: []
   tasks:
     - name: ''
