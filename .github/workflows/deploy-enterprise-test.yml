@@ -22,7 +22,7 @@ jobs:
             quota: 0
             deploy_ref: refs/heads/develop
             job_files: >-
-              job_spec/AUTORIFT.yml
+              job_spec/AUTORIFT_ITS_LIVE.yml
               job_spec/INSAR_GAMMA.yml
               job_spec/INSAR_GAMMA_TEST.yml
               job_spec/RTC_GAMMA.yml
@@ -47,7 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.0.0
 
-      - uses: aws-actions/configure-aws-credentials@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
