@@ -99,7 +99,7 @@ WATER_MAP_TEST:
         type: integer
     minimization_metric:
       api_schema:
-        description: Evaluation method to minimize durring the iterative flood depth calculation. Options include a Fowlkes-Mallows index (fmi) or a threat score (ts). Only used when flood_depth_estimator is iterative.
+        description: Evaluation method to minimize during the iterative flood depth calculation. Options include a Fowlkes-Mallows index (fmi) or a threat score (ts). Only used when flood_depth_estimator is iterative.
         default: fmi
         type: string
         enum:
