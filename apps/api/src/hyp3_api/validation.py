@@ -35,7 +35,7 @@ def has_sufficient_coverage(granule: Polygon, buffer: float = 0.15, threshold: f
     else:
         global DEM_COVERAGE
         if DEM_COVERAGE is None:
-            DEM_COVERAGE = get_multipolygon_from_geojson('dem_coverage_map_cop30_filled.geojson')
+            DEM_COVERAGE = get_multipolygon_from_geojson('dem_coverage_map_cop30.geojson')
 
         return granule.intersects(DEM_COVERAGE)
 
