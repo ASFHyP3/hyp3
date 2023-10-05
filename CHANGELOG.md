@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.1.1]
 ### Added
 - New DEM coverage map that allows COP90 tiles to fill the COP30 gaps over Azerbaijan and Armenia.
+### Fixed
+- Pinned `Werkzeug==2.3.7` in `requirements-apps-api.txt`. Mitigates [#1861](https://github.com/ASFHyP3/hyp3/issues/1861)
+  pending a fix for https://github.com/logandk/serverless-wsgi/issues/247
 
 ## [4.1.0]
 ### Added
