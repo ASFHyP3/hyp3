@@ -215,10 +215,7 @@
         "ShareIdentifier": "default",
         "SchedulingPriorityOverride.$": "$.priority",
         "Parameters.$": "$.job_parameters",
-        "ContainerOverrides.$": "$.container_overrides",
-        "RetryStrategy": {
-          "Attempts": 3
-        }
+        "ContainerOverrides.$": "$.container_overrides"
       },
       "ResultPath": "$.results.processing_results.step_{{ loop.index0 }}",
       "Next": "{% if not loop.last %}{{ loop.nextitem['name'] }}{% else %}GET_FILES{% endif %}",
@@ -229,6 +226,14 @@
             "Batch.AWSBatchException"
           ],
           "MaxAttempts": 2
+        },
+        {
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
+          "IntervalSeconds": 600,
+          "MaxAttempts": 2,
+          "BackoffRate": 6.0
         },
         {
           "ErrorEquals": [
