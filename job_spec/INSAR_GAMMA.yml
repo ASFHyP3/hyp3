@@ -63,6 +63,16 @@ INSAR_GAMMA:
         enum:
           - 20x4
           - 10x2
+    phase_filter_parameter:
+    # TODO: restrict to 2-decimal place precision? maybe the multipleOf keyword?
+    #  (see https://swagger.io/docs/specification/data-models/data-types/)
+      api_schema:
+        description: Adaptive phase filter exponent (alpha)
+        type: number
+        format: float
+        minimum: 0.0
+        maximum: 1.0
+        default: 0.6
   validators:
     - check_dem_coverage
   tasks:
@@ -93,6 +103,8 @@ INSAR_GAMMA:
         - Ref::apply_water_mask
         - --looks
         - Ref::looks
+        - --phase-filter-parameter
+        - Ref::phase_filter_parameter
         - Ref::granules
       timeout: 10800
       vcpu: 1
