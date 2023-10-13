@@ -65,7 +65,7 @@ INSAR_GAMMA:
           - 10x2
     phase_filter_parameter:
       api_schema:
-        description: Adaptive phase filter exponent (alpha). Value will be rounded to two decimal places.
+        description: Adaptive phase filter exponent (alpha). Value will be rounded to two decimal places. If value is zero, adaptive phase filter will be skipped.
         type: number
         format: float
         minimum: 0.0
