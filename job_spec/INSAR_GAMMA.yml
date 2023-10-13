@@ -64,10 +64,8 @@ INSAR_GAMMA:
           - 20x4
           - 10x2
     phase_filter_parameter:
-    # TODO: restrict to 2-decimal place precision? maybe the multipleOf keyword?
-    #  (see https://swagger.io/docs/specification/data-models/data-types/)
       api_schema:
-        description: Adaptive phase filter exponent (alpha)
+        description: Adaptive phase filter exponent (alpha). Value will be rounded to two decimal places.
         type: number
         format: float
         minimum: 0.0
