@@ -38,14 +38,22 @@ def test_not_logged_in(client):
 
 def test_invalid_cookie(client):
     for uri in ENDPOINTS:
-        client.set_cookie('localhost', AUTH_COOKIE, 'garbage I say!!! GARGBAGE!!!')
+        client.set_cookie(
+            domain='localhost',
+            key=AUTH_COOKIE,
+            value='garbage I say!!! GARGBAGE!!!'
+        )
         response = client.get(uri)
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
 def test_expired_cookie(client):
     for uri in ENDPOINTS:
-        client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie('user', lifetime_in_seconds=-1))
+        client.set_cookie(
+            domain='localhost',
+            key=AUTH_COOKIE,
+            value=auth.get_mock_jwt_cookie('user', lifetime_in_seconds=-1)
+        )
         response = client.get(uri)
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
