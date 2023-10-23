@@ -65,7 +65,7 @@ INSAR_GAMMA:
           - 10x2
     phase_filter_parameter:
       api_schema:
-        description: Adaptive phase filter parameter. Larger values result in stronger filtering. If zero, adaptive phase filter will be skipped. We recommend against values less than 0.2, or values with more than two decimal places of precision.
+        description: Adaptive phase filter parameter. Useful values fall in the range 0.2 to 1. Larger values result in stronger filtering. If zero, adaptive phase filter will be skipped.
         type: number
         minimum: 0.0
         maximum: 1.0
