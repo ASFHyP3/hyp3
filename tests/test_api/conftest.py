@@ -24,7 +24,11 @@ def client():
 
 
 def login(client, username=DEFAULT_USERNAME):
-    client.set_cookie('localhost', AUTH_COOKIE, auth.get_mock_jwt_cookie(username, lifetime_in_seconds=10_000))
+    client.set_cookie(
+        domain='localhost',
+        key=AUTH_COOKIE,
+        value=auth.get_mock_jwt_cookie(username, lifetime_in_seconds=10_000)
+    )
 
 
 def make_job(granules=None, name='someName', job_type='RTC_GAMMA', parameters=None):
