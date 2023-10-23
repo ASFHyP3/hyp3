@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.1]
+### Changed
+- The `ami_id` for EDC platforms now uses the original AMI.
+
+## [4.2.0]
+### Added
+- Added `phase_filter_parameter` for `INSAR_GAMMA` job type.
+### Removed
+- Removed the `INSAR_GAMMA_TEST` job type from the `hyp3-avo` and `hyp3-enterprise-test` deployments, now that the `phase_filter_parameter` option is available for the `INSAR_GAMMA` job type.
+
 ## [4.1.2]
 ### Changed
 - AWS Batch jobs are now retried twice, once after 10 minutes and once after 60 minutes, to reduce the number of jobs that fail due to transient errors, such as Earthdata Login and Sentinel-1 distribution outages.

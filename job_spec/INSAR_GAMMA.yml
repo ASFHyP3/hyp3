@@ -63,6 +63,13 @@ INSAR_GAMMA:
         enum:
           - 20x4
           - 10x2
+    phase_filter_parameter:
+      api_schema:
+        description: Adaptive phase filter parameter. Useful values fall in the range 0.2 to 1. Larger values result in stronger filtering. If zero, adaptive phase filter will be skipped.
+        type: number
+        minimum: 0.0
+        maximum: 1.0
+        default: 0.6
   validators:
     - check_dem_coverage
   tasks:
@@ -93,6 +100,8 @@ INSAR_GAMMA:
         - Ref::apply_water_mask
         - --looks
         - Ref::looks
+        - --phase-filter-parameter
+        - Ref::phase_filter_parameter
         - Ref::granules
       timeout: 10800
       vcpu: 1
