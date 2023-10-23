@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.2.0]
 ### Added
 - Added `phase_filter_parameter` for `INSAR_GAMMA` job type.
+### Removed
+- Removed the `INSAR_GAMMA_TEST` job type from the `hyp3-avo` and `hyp3-enterprise-test` deployments, now that the `phase_filter_parameter` option is available for the `INSAR_GAMMA` job type.
 
 ## [4.1.2]
 ### Changed
