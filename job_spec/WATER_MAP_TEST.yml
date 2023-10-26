@@ -142,7 +142,7 @@ WATER_MAP_TEST:
         - Ref::granules
       timeout: 36000
       vcpu: 1
-      memory: 31600
+      memory: 31500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
