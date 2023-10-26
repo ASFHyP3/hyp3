@@ -97,10 +97,16 @@ WATER_MAP_TEST:
         description: Maximum bound used for iterative method. Ignored when flood_depth_estimator is None.
         default: 15
         type: integer
+    iterative_min_size:
+      api_schema:
+        description: Minimum size of a connected waterbody in pixels for calculating flood depths with the iterative estimator
+        default: 0
+        type: integer
+        minimum: 0
     minimization_metric:
       api_schema:
         description: Evaluation method to minimize during the iterative flood depth calculation. Options include a Fowlkes-Mallows index (fmi) or a threat score (ts). Only used when flood_depth_estimator is iterative.
-        default: fmi
+        default: ts
         type: string
         enum:
           - fmi
@@ -187,6 +193,8 @@ WATER_MAP_TEST:
         - Ref::iterative_min
         - --iterative-max
         - Ref::iterative_max
+        - --iterative-min-size
+        - Ref::iterative_min_size
         - --minimization-metric
         - Ref::minimization_metric
       timeout: 86400

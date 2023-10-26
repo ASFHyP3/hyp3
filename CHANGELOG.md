@@ -4,8 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [4.2.2]
-### Changed
+## [4.3.0]
+### Added
+- An `iterative_min_size` parameter has been added to the `WATER_MAP_TEST` job spec.
+#### Changed
+- For `WATER_MAP_TEST` jobs, the default `minimization_metric` is now `ts`.
 - Use Amazon Linux 2023 AMI in non-Earthdata Cloud environments
 
 ## [4.2.1]
