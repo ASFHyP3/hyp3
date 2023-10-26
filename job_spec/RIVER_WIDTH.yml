@@ -89,4 +89,4 @@ RIVER_WIDTH:
         - Ref::bucket_prefix
       timeout: 36000
       vcpu: 1
-      memory: 31600
+      memory: 31500
