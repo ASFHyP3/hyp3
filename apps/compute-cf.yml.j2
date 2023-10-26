@@ -57,8 +57,9 @@ Resources:
             --==BOUNDARY==
             Content-Type: text/cloud-boothook; charset="us-ascii"
 
+            #!/bin/bash
             cloud-init-per instance mkfs_ssd mkfs.ext4 /dev/nvme1n1
-            cloud-init-per instance mount_ssd mount /dev/nvme1n1 /var/lib/docker
+            mount /dev/nvme1n1 /var/lib/docker
 
             --==BOUNDARY==--
 
