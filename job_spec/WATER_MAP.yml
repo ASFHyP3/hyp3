@@ -83,9 +83,10 @@ WATER_MAP:
         type: number
     known_water_threshold:
       api_schema:
-        description: Threshold for extracting known water area in percent. Ignored when flood_depth_estimator is None.
-        default: 30.0
+        description: Threshold for extracting known water area in percent. A water threshold is computed when value is null. Ignored when flood_depth_estimator is None.
+        default: null
         type: number
+        nullable: true
     iterative_min:
       api_schema:
         description: Minimum bound used for iterative method. Ignored when flood_depth_estimator is None.
@@ -96,6 +97,20 @@ WATER_MAP:
         description: Maximum bound used for iterative method. Ignored when flood_depth_estimator is None.
         default: 15
         type: integer
+    iterative_min_size:
+      api_schema:
+        description: Minimum size of a connected waterbody in pixels for calculating flood depths with the iterative estimator
+        default: 0
+        type: integer
+        minimum: 0
+    minimization_metric:
+      api_schema:
+        description: Evaluation method to minimize during the iterative flood depth calculation. Options include a Fowlkes-Mallows index (fmi) or a threat score (ts). Only used when flood_depth_estimator is iterative.
+        default: ts
+        type: string
+        enum:
+          - fmi
+          - ts
   validators:
     - check_dem_coverage
   tasks:
@@ -178,6 +193,10 @@ WATER_MAP:
         - Ref::iterative_min
         - --iterative-max
         - Ref::iterative_max
+        - --iterative-min-size
+        - Ref::iterative_min_size
+        - --minimization-metric
+        - Ref::minimization_metric
       timeout: 86400
       vcpu: 1
       memory: 126000
