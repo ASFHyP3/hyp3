@@ -152,6 +152,8 @@ WATER_MAP_TEST:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
+        - ESA_USERNAME
+        - ESA_PASSWORD
     - name: ''
       image: ghcr.io/asfhyp3/asf-tools
       command:
