@@ -4,20 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [4.4.0]
-### Changed
-- The `WATER_MAP` job spec has been updated to the new interface described in the `WATER_MAP_TEST` job spec  
-### Removed
-- The `WATER_MAP_TEST` job spec
-
 ## [4.3.0]
-### Added
-- An `iterative_min_size` parameter has been added to the `WATER_MAP_TEST` job spec.
 ### Changed
-- For `WATER_MAP_TEST` jobs, the default `minimization_metric` is now `ts`.
+- The `iterative_min_size` and `minimization_metric` parameters have been added to the `WATER_MAP` job spec, depreciating the `WATER_MAP_TEST` job spec. Notably, the default `minimization_metric` is now `ts`, instead of `fmi` as set in `WATER_MAP_TEST`
 - Use Amazon Linux 2023 AMI in non-Earthdata Cloud environments
 - All deployments now use the `SPOT_PRICE_CAPACITY_OPTIMIZED` allocation strategy for AWS Batch. This includes JPL
   deployments, reverting the temporary change to On Demand instances in HyP3 v3.10.8
+### Removed
+- The `WATER_MAP_TEST` job spec
 
 ## [4.2.1]
 ### Changed
