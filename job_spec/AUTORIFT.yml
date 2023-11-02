@@ -51,7 +51,7 @@ AUTORIFT:
         - Ref::granules
       timeout: 10800
       vcpu: 1
-      memory: 31600
+      memory: 31500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD

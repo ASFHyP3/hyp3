@@ -57,8 +57,9 @@ Resources:
             --==BOUNDARY==
             Content-Type: text/cloud-boothook; charset="us-ascii"
 
+            #!/bin/bash
             cloud-init-per instance mkfs_ssd mkfs.ext4 /dev/nvme1n1
-            cloud-init-per instance mount_ssd mount /dev/nvme1n1 /var/lib/docker
+            mount /dev/nvme1n1 /var/lib/docker
 
             --==BOUNDARY==--
 
@@ -68,13 +69,8 @@ Resources:
       ServiceRole: !GetAtt BatchServiceRole.Arn
       Type: MANAGED
       ComputeResources:
-        {% if security_environment in ('JPL', 'JPL-public') %}
-        Type: EC2
-        AllocationStrategy: BEST_FIT_PROGRESSIVE
-        {% else %}
         Type: SPOT
-        AllocationStrategy: SPOT_CAPACITY_OPTIMIZED
-        {% endif %}
+        AllocationStrategy: SPOT_PRICE_CAPACITY_OPTIMIZED
         MinvCpus: 0
         MaxvCpus: !Ref MaxvCpus
         InstanceTypes: !Ref InstanceTypes
