@@ -13,7 +13,7 @@ responses==0.23.3
 flake8==6.1.0
 flake8-import-order==0.18.2
 flake8-blind-except==0.2.1
-flake8-builtins==2.1.0
+flake8-builtins==2.2.0
 setuptools==68.2.2
 openapi-spec-validator==0.4.0
 cfn-lint==0.83.1
