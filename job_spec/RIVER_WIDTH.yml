@@ -65,6 +65,8 @@ RIVER_WIDTH:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
+        - ESA_USERNAME
+        - ESA_PASSWORD
     - name: WATER_MAP
       image: ghcr.io/asfhyp3/asf-tools
       command:
@@ -77,9 +79,6 @@ RIVER_WIDTH:
       timeout: 36000
       vcpu: 1
       memory: 126000
-      secrets:
-        - EARTHDATA_USERNAME
-        - EARTHDATA_PASSWORD
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/asfhyp3/riverwidthsar
       command:
