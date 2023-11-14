@@ -216,6 +216,16 @@ Resources:
         {% endif %}
       TemplateURL: upload-log/upload-log-cf.yml
 
+  EnablePrivateDNS:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        {% if security_environment == 'EDC' %}
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
+      TemplateURL: enable-private-dns/enable-private-dns-cf.yml
+
   ExecutionRole:
     Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}
     Properties:
