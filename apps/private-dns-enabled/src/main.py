@@ -1,5 +1,3 @@
-import os
-
 import boto3
 
 
@@ -30,8 +28,6 @@ def enable_private_dns(endpoint_name):
 
 
 def lambda_handler(event, context):
-    print('## ENVIRONMENT VARIABLES')
-    print(os.environ)
     print('## EVENT')
     print(event)
     print('## PROCESS BEGIN...')
