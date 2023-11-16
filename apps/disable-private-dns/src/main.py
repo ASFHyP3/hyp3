@@ -1,15 +1,27 @@
+import os
+
 import boto3
 
 
 CLIENT = boto3.client('ec2')
 
 
-def get_endpoint(endpoint_name):
+def get_endpoint(vpc_id, endpoint_name):
     response = CLIENT.describe_vpc_endpoints()
-    for endpoint in response['VpcEndpoints']:
+    endpoints = [endpoint for endpoint in response['VpcEndpoints'] if endpoint['VpcId'] == vpc_id]
+    if len(endpoints) == 0:
+        raise ValueError(f'No endpoints in VPC {vpc_id}.')
+
+    desired_endpoint = None
+    for endpoint in endpoints:
         retrieved_name = [item['Value'] for item in endpoint['Tags'] if item['Key'] == 'Name'][0]
         if retrieved_name == endpoint_name:
-            return endpoint
+            desired_endpoint = endpoint
+
+    if desired_endpoint is None:
+        raise ValueError(f'No endpoint in VPC {vpc_id} with name {endpoint_name} exists.')
+
+    return desired_endpoint
 
 
 def set_private_dns_disabled(endpoint_id):
@@ -18,19 +30,23 @@ def set_private_dns_disabled(endpoint_id):
     return response
 
 
-def enable_private_dns(endpoint_name):
-    endpoint = get_endpoint(endpoint_name)
-    if not endpoint['PrivateDnsEnabled']:
+def disable_private_dns(vpc_id, endpoint_name):
+    endpoint = get_endpoint(vpc_id, endpoint_name)
+    if endpoint['PrivateDnsEnabled']:
         print(f"Private DNS enabled for VPC Endpoint: {endpoint['VpcEndpointId']}, changing...")
         set_private_dns_disabled(endpoint['VpcEndpointId'])
     else:
-        print(f"Private already disabled for VPC Endpoint: {endpoint['VpcEndpointId']}, doing nothing.")
+        print(f"Private DNS already disabled for VPC Endpoint: {endpoint['VpcEndpointId']}, doing nothing.")
 
 
 def lambda_handler(event, context):
+    print('## ENVIRONMENT')
+    vpc_id = os.environ['VPCID']
+    endpoint_name = os.environ['ENDPOINT_NAME']
+    print(f'VPC ID {vpc_id}')
+    print(f'Endpoint Name: {endpoint_name}')
     print('## EVENT')
     print(event)
     print('## PROCESS BEGIN...')
-    name = 'VPC Endpoint - Consumer'
-    enable_private_dns(name)
+    disable_private_dns(endpoint_name)
     print('## PROCESS COMPLETE!')
