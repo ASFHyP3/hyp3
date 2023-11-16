@@ -61,3 +61,5 @@ INSAR_ISCE_BURST:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
+        - ESA_USERNAME
+        - ESA_PASSWORD

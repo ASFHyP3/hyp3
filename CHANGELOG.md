@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Lambda function that checks to ensure that `Enable Private DNS Names` is enabled for endpoints
 
+## [4.3.1]
+### Added
+- The `ESA_USERNAME` and `ESA_PASSWORD` secrets have been added to all of the job specs that require them.
+
 ## [4.3.0]
 ### Changed
 - The `iterative_min_size` and `minimization_metric` parameters have been moved from the `WATER_MAP_TEST` job spec to the `WATER_MAP` job spec. The default `minimization_metric` value has been changed from `fmi` to `ts`.
