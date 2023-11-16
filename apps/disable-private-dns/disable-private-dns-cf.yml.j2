@@ -1,6 +1,9 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
   {% if security_environment == 'EDC' %}
   SecurityGroupId:
     Type: String
@@ -73,6 +76,9 @@ Resources:
       Role: !GetAtt Role.Arn
       Runtime: python3.9
       Timeout: 5
+      Variables:
+        VPCID: !Ref VpcId
+        ENDPOINT_NAME: "VPC Endpoint - Consumer"
       {% if security_environment == 'EDC' %}
       VpcConfig:
         SecurityGroupIds:
