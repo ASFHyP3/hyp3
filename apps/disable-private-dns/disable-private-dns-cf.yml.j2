@@ -59,7 +59,7 @@ Resources:
     Properties:
       FunctionName: Lambda
       Code: src/
-      Handler: main.lambda_handler
+      Handler: disable_private_dns.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.9
