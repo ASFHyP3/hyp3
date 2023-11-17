@@ -13,7 +13,7 @@ Parameters:
 Outputs:
 
   LambdaArn:
-    Value: !GetAtt DisablePrivateDNS.Arn
+    Value: !GetAtt Lambda.Arn
 
 Resources:
 
@@ -52,21 +52,22 @@ Resources:
             Action:
               - ec2:DescribeVpcEndpoints
               - ec2:ModifyVpcEndpoint
-            Resource: *
+            Resource: "*"
 
-  DisablePrivateDNS:
+  Lambda:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: DisablePrivateDNS
+      FunctionName: Lambda
       Code: src/
       Handler: main.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.9
       Timeout: 5
-      Variables:
-        VPCID: !Ref VpcId
-        ENDPOINT_NAME: "VPC Endpoint - Consumer"
+      Environment:
+        Variables:
+          VPCID: !Ref VpcId
+          ENDPOINT_NAME: "VPC Endpoint - Consumer"
       VpcConfig:
         SecurityGroupIds:
           - !Ref SecurityGroupId
@@ -80,13 +81,13 @@ Resources:
       ScheduleExpression: rate(1 minute)
       State: ENABLED
       Targets:
-        - Arn: !GetAtt DisablePrivateDNS.Arn
-          Id: DisablePrivateDNSTarget
+        - Arn: !GetAtt Lambda.Arn
+          Id: LambdaTarget
 
   PermissionForEventToInvokeLambda:
     Type: AWS::Lambda::Permission
     Properties:
-        FunctionName: !GetAtt DisablePrivateDNS.Arn
+        FunctionName: !GetAtt Lambda.Arn
         SourceArn: !GetAtt EventEveryMinute.Arn
         Action: "lambda:InvokeFunction"
         Principal: "events.amazonaws.com"
