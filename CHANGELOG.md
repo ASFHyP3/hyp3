@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.3.2]
 ### Added
-- Lambda function that checks to ensure that `Enable Private DNS Names` is enabled for endpoints
+- Lambda function that disables `Enable Private DNS Names` for VPC endpoint.
 
 ## [4.3.1]
 ### Added
