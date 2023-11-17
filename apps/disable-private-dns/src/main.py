@@ -40,13 +40,8 @@ def disable_private_dns(vpc_id, endpoint_name):
 
 
 def lambda_handler(event, context):
-    print('## ENVIRONMENT')
     vpc_id = os.environ['VPCID']
     endpoint_name = os.environ['ENDPOINT_NAME']
     print(f'VPC ID {vpc_id}')
     print(f'Endpoint Name: {endpoint_name}')
-    print('## EVENT')
-    print(event)
-    print('## PROCESS BEGIN...')
     disable_private_dns(endpoint_name)
-    print('## PROCESS COMPLETE!')
