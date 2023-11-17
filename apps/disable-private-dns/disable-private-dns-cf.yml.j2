@@ -10,11 +10,6 @@ Parameters:
   SubnetIds:
     Type: CommaDelimitedList
 
-Outputs:
-
-  LambdaArn:
-    Value: !GetAtt Lambda.Arn
-
 Resources:
 
   LogGroup:
@@ -57,7 +52,6 @@ Resources:
   Lambda:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: Lambda
       Code: src/
       Handler: disable_private_dns.lambda_handler
       MemorySize: 128
@@ -73,21 +67,25 @@ Resources:
           - !Ref SecurityGroupId
         SubnetIds: !Ref SubnetIds
 
-  EventEveryMinute:
+  EventInvokeConfig:
+    Type: AWS::Lambda::EventInvokeConfig
+    Properties:
+      FunctionName: !Ref Lambda
+      Qualifier: $LATEST
+      MaximumRetryAttempts: 0
+
+  Schedule:
     Type: AWS::Events::Rule
     Properties:
-      Name: EventEveryMintue
-      Description: Trigger Lambda every minute
-      ScheduleExpression: rate(1 minute)
-      State: ENABLED
+      ScheduleExpression: "rate(1 minute)"
       Targets:
         - Arn: !GetAtt Lambda.Arn
-          Id: LambdaTarget
+          Id: lambda
 
-  PermissionForEventToInvokeLambda:
+  EventPermission:
     Type: AWS::Lambda::Permission
     Properties:
-        FunctionName: !GetAtt Lambda.Arn
-        SourceArn: !GetAtt EventEveryMinute.Arn
-        Action: "lambda:InvokeFunction"
-        Principal: "events.amazonaws.com"
+      FunctionName: !GetAtt Lambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt Schedule.Arn
