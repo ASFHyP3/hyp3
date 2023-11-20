@@ -338,3 +338,14 @@ Resources:
       KeySchema:
         - AttributeName: user_id
           KeyType: HASH
+
+  {% if security_environment == 'EDC' %}
+  DisablePrivateDNS:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        VpcId: !Ref VpcId
+        SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+      TemplateURL: disable-private-dns/disable-private-dns-cf.yml
+  {% endif %}
