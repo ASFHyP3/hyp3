@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Removed the unused `RIVER_WIDTH` job spec.
+- Removed the `WATER_MAP` job spec from UAT as it's not expected to be available in HyP3 production anytime soon.
 
 ## [4.4.0]
 ### Added
