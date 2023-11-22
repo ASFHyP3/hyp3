@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Reverted the new AWS Batch job retry strategy introduced in [HyP3 v4.1.2](https://github.com/ASFHyP3/hyp3/releases/tag/v4.1.2). Fixes https://github.com/ASFHyP3/hyp3/issues/1944
 
+### Removed
+- Removed the unused `RIVER_WIDTH` job spec.
+
 ## [4.4.0]
 ### Added
 - INSAR_ISCE_BURST job to EDC production deployment.
