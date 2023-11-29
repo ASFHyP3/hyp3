@@ -30,7 +30,7 @@ INSAR_ISCE_TEST:
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
     frame_id:
       api_schema:
-        description: Subset GUNW products to this frame. When set to `-1`, no subsetting applied. If no frame specified (i.e. `-1`), then output GUNW is not a standard GUNW. 
+        description: Subset GUNW products to this frame. Standard products require frame id to be specified. When set to `-1`, no subsetting applied. If no frame specified (i.e. `-1`), then output GUNW is not a standard GUNW. 
         default: '""'
         type: integer
     goldstein_filter_power:
@@ -48,7 +48,7 @@ INSAR_ISCE_TEST:
         maximum: 1.0
     estimate_ionosphere_delay:
       api_schema:
-        description: Whether to apply ionosphere correction to the ARIA-S1-GUNW as an additional layer; standard products include this layer
+        description: Whether to apply ionosphere correction to the ARIA-S1-GUNW as an additional layer; standard products include the ionsphere correction to be turned on and include multiple ionosphere correction layers.
         default: true
         type: boolean
     output_resolution:
