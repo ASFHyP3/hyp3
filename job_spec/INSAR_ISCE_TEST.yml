@@ -30,15 +30,14 @@ INSAR_ISCE_TEST:
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
     frame_id:
       api_schema:
-        description: Subset GUNW products to this frame. Standard products require frame id to be specified. When set to `-1`, no subsetting applied. If no frame specified (i.e. `-1`), then output GUNW is not a standard GUNW. 
+        description: Subset GUNW products to this frame. Standard products require frame id to be specified. When set to `-1`, no subsetting applied. If no frame specified (i.e. `-1`), then output GUNW is not a standard GUNW.
         type: integer
         minimum: -1
-    goldstein_filter_power:
+    compute_solid_earth_tide:
       api_schema:
-        description: The filter power of the adaptive goldsetin filter; 0 means no filter applied. Standard product requires strength to be set to 0.5.
-        default: 0.5
-        type: number
-        minimum: 0
+        default: true
+        type: boolean
+        description: Whether to compute a solid earth tide correction layer for ARIA-S1-GUNW products; standard products must include this layer.
     esd_coherence_threshold:
       api_schema:
         description: Coherence threshold value for determining which points to include when performing ESD. Must be any value between 0 and 1 (inclusive), or -1 for no ESD correction. Standard products do NOT include ESD.
@@ -51,6 +50,12 @@ INSAR_ISCE_TEST:
         description: Whether to apply ionosphere correction to the ARIA-S1-GUNW as an additional layer; standard products include the ionsphere correction to be turned on and include multiple ionosphere correction layers.
         default: true
         type: boolean
+    goldstein_filter_power:
+      api_schema:
+        description: The filter power of the adaptive goldsetin filter; 0 means no filter applied. Standard product requires strength to be set to 0.5.
+        default: 0.5
+        type: number
+        minimum: 0
     output_resolution:
       api_schema:
         default:  90.0
@@ -59,11 +64,6 @@ INSAR_ISCE_TEST:
         enum:
           - 30.0
           - 90.0
-    compute_solid_earth_tide:
-      api_schema:
-        default: true
-        type: boolean
-        description: Whether to compute a solid earth tide correction layer for ARIA-S1-GUNW products; standard products must include this layer.
     unfiltered_coherence:
       api_schema:
         default: true
@@ -114,7 +114,7 @@ INSAR_ISCE_TEST:
         - --goldstein-filter-power
         - Ref::goldstein_filter_power
         - --unfiltered-coherence
-        - Ref::unfiltered_coherence 
+        - Ref::unfiltered_coherence
       timeout: 21600
       vcpu: 1
       memory: 7500
