@@ -31,8 +31,8 @@ INSAR_ISCE_TEST:
     frame_id:
       api_schema:
         description: Subset GUNW products to this frame. Standard products require frame id to be specified. When set to `-1`, no subsetting applied. If no frame specified (i.e. `-1`), then output GUNW is not a standard GUNW. 
-        default: '""'
         type: integer
+        minimum: -1
     goldstein_filter_power:
       api_schema:
         description: The filter power of the adaptive goldsetin filter; 0 means no filter applied. Standard product requires strength to be set to 0.5.
