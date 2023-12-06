@@ -1,4 +1,4 @@
-INSAR_ISCE:
+INSAR_ISCE_TEST:
   required_parameters:
     - granules
     - secondary_granules
@@ -30,26 +30,50 @@ INSAR_ISCE:
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
     frame_id:
       api_schema:
-        description: Subset GUNW products to this frame. Standard products require frame id to be specified. When set to `-1`, no subsetting applied. If no frame specified (i.e. `-1`), then output GUNW is not a standard GUNW.
+        description: Subset GUNW products to this frame. Standard products require frame id to be specified. When set to `-1`, no subsetting applied. If no frame specified (i.e. `-1`), then output GUNW is not a standard ARIA-S1-GUNW.
         type: integer
         minimum: -1
     compute_solid_earth_tide:
       api_schema:
         default: true
         type: boolean
-        description: Whether to compute a solid earth tide correction layer for ARIA-S1-GUNW products; standard products must include this layer.
+        description: Whether to compute a solid earth tide correction layer for ARIA-S1-GUNW products; standard ARIA products must include this layer.
     esd_coherence_threshold:
       api_schema:
-        description: Coherence threshold value for determining which points to include when performing ESD. Must be any value between 0 and 1 (inclusive), or -1 for no ESD correction. Standard products do NOT include ESD.
+        description: Coherence threshold value for determining which points to include when performing ESD. Must be any value between 0 and 1 (inclusive), or -1 for no ESD correction. Standard ARIA products do NOT include ESD.
         default: -1.0
         type: number
         minimum: -1.0
         maximum: 1.0
     estimate_ionosphere_delay:
       api_schema:
-        description: Whether to apply ionosphere correction to the ARIA-S1-GUNW as an additional layer; standard products include the ionsphere correction to be turned on and include multiple ionosphere correction layers.
+        description: Whether to apply ionosphere correction to the ARIA-S1-GUNW as an additional layer; standard ARIA products include the ionsphere correction to be turned on and include multiple ionosphere correction layers.
         default: true
         type: boolean
+    goldstein_filter_power:
+      api_schema:
+        description: The filter power of the adaptive goldsetin filter; 0 means no filter applied. Standard product requires strength to be set to 0.5.
+        default: 0.5
+        type: number
+        minimum: 0
+    output_resolution:
+      api_schema:
+        default:  90.0
+        description: Desired output resolution in meters of GUNW product; standard ARIA products requires resolution to be set to 90 m.
+        type: number
+        enum:
+          - 30.0
+          - 90.0
+    unfiltered_coherence:
+      api_schema:
+        default: true
+        type: boolean
+        description: Whether to add unfiltered_coherence layer to ARIA-S1-GUNW products; standard ARIA products must include this layer.
+    dense_offsets:
+      api_schema:
+        default: false
+        type: boolean
+        description: Whether to include 2 extra layers (azimuth and range pixel offsets) that measure via patch cross-correlation the change between reference and secondary in radar coordinates; standard ARIA products do NOT include this layer.
     weather_model:
       api_schema:
         description: Weather model used to generate tropospheric delay estimations.
