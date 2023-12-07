@@ -6,10 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.5.0]
 ### Changed
-- Update `INSAR_ISCE_TEST` job spec for GUNW version 3+ standard and custom products
+- Update `INSAR_ISCE` and `INSAR_ISCE_TEST` job spec for GUNW version 3+ standard and custom products
   - `frame_id` is now a required parameter
   - Updates parameter defaults
-  - Exposes `frame_id`, `goldstein_filter_power`, and `unfiltered_coherence` parameters
+  - `INSAR_ISCE_TEST` exposes custom `goldstein_filter_power`, `output_resolution`, `dense_offsets`, and `unfiltered_coherence` parameters
 dor  
 ## [4.4.1]
 ### Changed
