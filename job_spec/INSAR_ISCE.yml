@@ -1,4 +1,4 @@
-INSAR_ISCE_TEST:
+INSAR_ISCE:
   required_parameters:
     - granules
     - secondary_granules
