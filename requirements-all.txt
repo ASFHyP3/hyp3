@@ -7,7 +7,7 @@
 -r requirements-apps-update-db.txt
 boto3==1.33.6
 jinja2==3.1.2
-moto[dynamodb]==4.2.10
+moto[dynamodb]==4.2.12
 pytest==7.4.3
 PyYAML==6.0.1
 responses==0.24.1
