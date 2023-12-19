@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.5.0]
+### Changed
+- Update `INSAR_ISCE` and `INSAR_ISCE_TEST` job spec for GUNW version 3+ standard and custom products
+  - `frame_id` is now a required parameter and has no default
+  - `compute_solid_earth_tide` and `estimate_ionosphere_delay` now default to `true` 
+  - `INSAR_ISCE_TEST` exposes custom `goldstein_filter_power`, `output_resolution`, `dense_offsets`, and `unfiltered_coherence` parameters
+
 ## [4.4.1]
 ### Changed
 - Updated `WATER_MAP` job spec to point at the [HydroSAR images](https://github.com/fjmeyer/HydroSAR/pkgs/container/hydrosar)
