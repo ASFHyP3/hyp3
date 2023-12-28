@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.9
       - run: |
@@ -24,7 +24,7 @@ jobs:
         security_environment: [ASF, EDC, JPL, JPL-public]
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.9
       - run: |
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.9
       - run: |
@@ -55,7 +55,7 @@ jobs:
         with:
           ruby-version: 2.7
       - run: gem install statelint
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.9
       - run: |
@@ -72,7 +72,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
       - uses: snyk/actions/setup@0.4.0
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.9
       - run: |
@@ -87,4 +87,4 @@ jobs:
           snyk iac test --severity-threshold=high
 
   call-secrets-analysis-workflow:
-    uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@v0.8.2
+    uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@v0.8.3
