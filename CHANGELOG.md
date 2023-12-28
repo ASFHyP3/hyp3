@@ -4,9 +4,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [4.4.1]
+
+## [5.0.0]
+### Removed
+- `legacy` option for the `dem_name` parameter of `RTC_GAMMA` jobs. All RTC processing will now use the Copernicus DEM.
 ### Fixed
 - The description of the INSAR_ISCE_BURST job's `apply_water_mask` to state that water masking now happens BEFORE unwrapping.
+
+## [4.5.1]
+### Fixed
+- `output_resolution` in the `INSAR_ISCE_TEST` job spec is now correctly specified as an int instead of number, which can be a float or an int.
+
+## [4.5.0]
+### Changed
+- Update `INSAR_ISCE` and `INSAR_ISCE_TEST` job spec for GUNW version 3+ standard and custom products
+  - `frame_id` is now a required parameter and has no default
+  - `compute_solid_earth_tide` and `estimate_ionosphere_delay` now default to `true` 
+  - `INSAR_ISCE_TEST` exposes custom `goldstein_filter_power`, `output_resolution`, `dense_offsets`, and `unfiltered_coherence` parameters
+
+## [4.4.1]
+### Changed
+- Updated `WATER_MAP` job spec to point at the [HydroSAR images](https://github.com/fjmeyer/HydroSAR/pkgs/container/hydrosar)
+  instead of the [ASF Tools images](https://github.com/asfhyp3/asf-tools/pkgs/container/asf-tools) as the HydroSAR code
+  is being migrated to the HydroSAR project repository.
+
+### Fixed
+- Reverted the new AWS Batch job retry strategy introduced in [HyP3 v4.1.2](https://github.com/ASFHyP3/hyp3/releases/tag/v4.1.2). Fixes https://github.com/ASFHyP3/hyp3/issues/1944
+
+### Removed
+- Removed the unused `RIVER_WIDTH` job spec.
+- Removed the `WATER_MAP` job spec from UAT as it's not expected to be available in HyP3 production anytime soon.
 
 ## [4.4.0]
 ### Added
