@@ -77,33 +77,19 @@ def test_check_dem_coverage():
     covered2 = {'name': 'covered2', 'polygon': rectangle(-62, -90, 180, -180)}
     not_covered = {'name': 'not_covered', 'polygon': rectangle(-20, -30, 70, 100)}
 
-    job = {'job_type': 'RTC_GAMMA', 'job_parameters': {'dem_name': 'copernicus'}}
-    validation.check_dem_coverage(job, [])
-    validation.check_dem_coverage(job, [covered1])
-    validation.check_dem_coverage(job, [covered2])
+    validation.check_dem_coverage([])
+    validation.check_dem_coverage([covered1])
+    validation.check_dem_coverage([covered2])
+    validation.check_dem_coverage([covered1, covered2])
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage(job, [not_covered])
+        validation.check_dem_coverage([not_covered])
     assert 'not_covered' in str(e)
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage(job, [covered1, not_covered])
+        validation.check_dem_coverage([covered1, not_covered])
     assert 'not_covered' in str(e)
     assert 'covered1' not in str(e)
-
-    job = {'job_type': 'RTC_GAMMA', 'job_parameters': {}}
-    validation.check_dem_coverage(job, [covered1])
-    validation.check_dem_coverage(job, [covered2])
-
-    with raises(validation.GranuleValidationError):
-        validation.check_dem_coverage(job, [not_covered])
-
-    job = {'job_type': 'INSAR_GAMMA', 'job_parameters': {}}
-    validation.check_dem_coverage(job, [covered1])
-    validation.check_dem_coverage(job, [covered2])
-
-    with raises(validation.GranuleValidationError):
-        validation.check_dem_coverage(job, [not_covered])
 
 
 def test_check_same_burst_ids():
@@ -124,9 +110,9 @@ def test_check_same_burst_ids():
         }
     ]
 
-    validation.check_same_burst_ids(None, valid_case)
+    validation.check_same_burst_ids(valid_case)
     with raises(validation.GranuleValidationError, match=r'.*do not have the same burst ID.*'):
-        validation.check_same_burst_ids(None, invalid_case)
+        validation.check_same_burst_ids(invalid_case)
 
 
 def test_check_valid_polarizations():
@@ -155,11 +141,11 @@ def test_check_valid_polarizations():
         }
     ]
 
-    validation.check_valid_polarizations(None, valid_case)
+    validation.check_valid_polarizations(valid_case)
     with raises(validation.GranuleValidationError, match=r'.*do not have the same polarization.*'):
-        validation.check_valid_polarizations(None, different_polarizations)
+        validation.check_valid_polarizations(different_polarizations)
     with raises(validation.GranuleValidationError, match=r'.*Only VV and HH.*'):
-        validation.check_valid_polarizations(None, unsupported_polarizations)
+        validation.check_valid_polarizations(unsupported_polarizations)
 
 
 def test_check_granules_exist():

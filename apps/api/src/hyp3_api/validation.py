@@ -69,13 +69,13 @@ def check_granules_exist(granules, granule_metadata):
         raise GranuleValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 
 
-def check_dem_coverage(job, granule_metadata):
+def check_dem_coverage(granule_metadata):
     bad_granules = [g['name'] for g in granule_metadata if not has_sufficient_coverage(g['polygon'])]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
-def check_same_burst_ids(job, granule_metadata):
+def check_same_burst_ids(granule_metadata):
     ref_burst_id, sec_burst_id = [granule['name'].split('_')[1] for granule in granule_metadata]
     if ref_burst_id != sec_burst_id:
         raise GranuleValidationError(
@@ -83,7 +83,7 @@ def check_same_burst_ids(job, granule_metadata):
         )
 
 
-def check_valid_polarizations(job, granule_metadata):
+def check_valid_polarizations(granule_metadata):
     ref_polarization, sec_polarization = [granule['name'].split('_')[4] for granule in granule_metadata]
     if ref_polarization != sec_polarization:
         raise GranuleValidationError(
@@ -117,4 +117,4 @@ def validate_jobs(jobs):
             job_granule_metadata = [granule for granule in granule_metadata if granule['name'] in get_granules([job])]
             module = sys.modules[__name__]
             validator = getattr(module, validator_name)
-            validator(job, job_granule_metadata)
+            validator(job_granule_metadata)
