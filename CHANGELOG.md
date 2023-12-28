@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0]
+### Removed
+- `legacy` option for the `dem_name` parameter of `RTC_GAMMA` jobs. All RTC processing will now use the Copernicus DEM.
+
+## [4.5.1]
+### Fixed
+- `output_resolution` in the `INSAR_ISCE_TEST` job spec is now correctly specified as an int instead of number, which can be a float or an int.
+
 ## [4.5.0]
 ### Changed
 - Update `INSAR_ISCE` and `INSAR_ISCE_TEST` job spec for GUNW version 3+ standard and custom products
