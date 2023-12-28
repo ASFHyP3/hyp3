@@ -14,78 +14,51 @@ def test_has_sufficient_coverage():
     # Wyoming
     poly = rectangle(45, 41, -104, -111)
     assert validation.has_sufficient_coverage(poly)
-    assert validation.has_sufficient_coverage(poly, legacy=True)
 
     # completely covered Aleutian Islands over antimeridian; should pass with fixed antimeridian
     poly = rectangle(51.7, 51.3, 179.7, -179.3)
     assert validation.has_sufficient_coverage(poly)
-    assert validation.has_sufficient_coverage(poly, legacy=True)
 
     # not enough coverage of Aleutian Islands over antimeridian
     # NOTE: Passes today but should FAIL legacy with antimeridian feature fix
     poly = rectangle(51.7, 41.3, 179.7, -179.3)
     assert validation.has_sufficient_coverage(poly)
-    assert validation.has_sufficient_coverage(poly, legacy=True)
 
     # completely encloses tile over Ascension Island in the Atlantic
     poly = rectangle(-6, -9, -15, -14)
     assert validation.has_sufficient_coverage(poly)
-    assert validation.has_sufficient_coverage(poly, legacy=True)
 
     # # minimum sufficient coverage off the coast of Eureka, CA
     poly = rectangle(40.1, 40, -126, -125.000138)
     assert validation.has_sufficient_coverage(poly)
-    assert not validation.has_sufficient_coverage(poly, legacy=True)
 
     # almost minimum sufficient coverage off the coast of Eureka, CA
     poly = rectangle(40.1, 40, -126, -125.000140)
     assert not validation.has_sufficient_coverage(poly)
-    assert not validation.has_sufficient_coverage(poly, legacy=True)
 
     # minimum sufficient legacy coverage off the coast of Eureka, CA
     poly = rectangle(40.1, 40, -126, -124.845)
     assert validation.has_sufficient_coverage(poly)
-    assert validation.has_sufficient_coverage(poly, legacy=True)
 
     # almost minimum sufficient legacy coverage off the coast of Eureka, CA
     poly = rectangle(40.1, 40, -126, -124.849)
     assert validation.has_sufficient_coverage(poly)
-    assert not validation.has_sufficient_coverage(poly, legacy=True)
 
     # polygon in missing tile over Gulf of California
     poly = rectangle(26.9, 26.1, -110.1, -110.9)
     assert not validation.has_sufficient_coverage(poly)
-    assert not validation.has_sufficient_coverage(poly, legacy=True)
 
     # southern Greenland
     poly = rectangle(62, 61, -44, -45)
     assert validation.has_sufficient_coverage(poly)
-    assert not validation.has_sufficient_coverage(poly, legacy=True)
 
     # Antarctica
     poly = rectangle(-62, -90, 180, -180)
     assert validation.has_sufficient_coverage(poly)
-    assert not validation.has_sufficient_coverage(poly, legacy=True)
 
-    # ocean over antimeridian; no dem coverage and also not enough legacy wraparound land intersection
-    # should FAIL with legacy with antimeridian feature fix
+    # ocean over antimeridian; this case incorrectly passes, see https://github.com/ASFHyP3/hyp3/issues/1989
     poly = rectangle(-40, -41, 179.7, -179.3)
     assert validation.has_sufficient_coverage(poly)
-    assert not validation.has_sufficient_coverage(poly, legacy=True)
-
-
-def test_has_sufficient_coverage_legacy_buffer():
-    needs_buffer = rectangle(40.1, 40, -126, -124.845)
-    assert validation.has_sufficient_coverage(needs_buffer, legacy=True)
-    assert validation.has_sufficient_coverage(needs_buffer, buffer=0.16, legacy=True)
-    assert not validation.has_sufficient_coverage(needs_buffer, buffer=0.14, legacy=True)
-
-
-def test_has_sufficient_coverage_legacy_threshold():
-    poly = rectangle(40.1, 40, -126, -124.845)
-    assert validation.has_sufficient_coverage(poly, legacy=True)
-    assert validation.has_sufficient_coverage(poly, threshold=0.19, legacy=True)
-    assert not validation.has_sufficient_coverage(poly, threshold=0.21, legacy=True)
 
 
 def test_format_points():
@@ -100,46 +73,37 @@ def test_format_points():
 
 
 def test_check_dem_coverage():
-    both = {'name': 'both', 'polygon': rectangle(45, 41, -104, -111)}
-    copernicus_only = {'name': 'copernicus_only', 'polygon': rectangle(-62, -90, 180, -180)}
-    neither = {'name': 'neither', 'polygon': rectangle(-20, -30, 70, 100)}
+    covered1 = {'name': 'covered1', 'polygon': rectangle(45, 41, -104, -111)}
+    covered2 = {'name': 'covered2', 'polygon': rectangle(-62, -90, 180, -180)}
+    not_covered = {'name': 'not_covered', 'polygon': rectangle(-20, -30, 70, 100)}
 
     job = {'job_type': 'RTC_GAMMA', 'job_parameters': {'dem_name': 'copernicus'}}
     validation.check_dem_coverage(job, [])
-    validation.check_dem_coverage(job, [both])
-    validation.check_dem_coverage(job, [copernicus_only])
+    validation.check_dem_coverage(job, [covered1])
+    validation.check_dem_coverage(job, [covered2])
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage(job, [neither])
-    assert 'neither' in str(e)
+        validation.check_dem_coverage(job, [not_covered])
+    assert 'not_covered' in str(e)
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_dem_coverage(job, [copernicus_only, neither])
-    assert 'neither' in str(e)
-    assert 'copernicus_only' not in str(e)
-
-    job = {'job_type': 'RTC_GAMMA', 'job_parameters': {'dem_name': 'legacy'}}
-    validation.check_dem_coverage(job, [both])
-
-    with raises(validation.GranuleValidationError):
-        validation.check_dem_coverage(job, [copernicus_only])
-
-    with raises(validation.GranuleValidationError):
-        validation.check_dem_coverage(job, [neither])
+        validation.check_dem_coverage(job, [covered1, not_covered])
+    assert 'not_covered' in str(e)
+    assert 'covered1' not in str(e)
 
     job = {'job_type': 'RTC_GAMMA', 'job_parameters': {}}
-    validation.check_dem_coverage(job, [both])
-    validation.check_dem_coverage(job, [copernicus_only])
+    validation.check_dem_coverage(job, [covered1])
+    validation.check_dem_coverage(job, [covered2])
 
     with raises(validation.GranuleValidationError):
-        validation.check_dem_coverage(job, [neither])
+        validation.check_dem_coverage(job, [not_covered])
 
     job = {'job_type': 'INSAR_GAMMA', 'job_parameters': {}}
-    validation.check_dem_coverage(job, [both])
-    validation.check_dem_coverage(job, [copernicus_only])
+    validation.check_dem_coverage(job, [covered1])
+    validation.check_dem_coverage(job, [covered2])
 
     with raises(validation.GranuleValidationError):
-        validation.check_dem_coverage(job, [neither])
+        validation.check_dem_coverage(job, [not_covered])
 
 
 def test_check_same_burst_ids():
@@ -271,16 +235,12 @@ def test_get_cmr_metadata():
 def test_validate_jobs():
     unknown_granule = 'unknown'
     granule_with_dem_coverage = 'S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8'
-    granule_without_legacy_dem_coverage = 'S1A_IW_SLC__1SSH_20190326T081759_20190326T081831_026506_02F822_52F9'
     granule_without_dem_coverage = 'S1A_IW_GRDH_1SDV_20201219T222530_20201219T222555_035761_042F72_8378'
 
     granule_polygon_pairs = [
         (granule_with_dem_coverage,
          [['13.705972 -91.927132 14.452647 -91.773392 14.888498 -94.065727 '
            '14.143632 -94.211563 13.705972 -91.927132']]),
-        (granule_without_legacy_dem_coverage,
-         [['-66.116837 -61.940685 -64.415421 -59.718628 -63.285854 -64.154266 '
-           '-64.918007 -66.566696 -66.116837 -61.940685']]),
         (granule_without_dem_coverage,
          [['37.796551 -68.331245 36.293144 -67.966415 36.69714 -65.129745 '
            '38.198883 -65.437325 37.796551 -68.331245']])
@@ -291,27 +251,20 @@ def test_validate_jobs():
         {
             'job_type': 'RTC_GAMMA',
             'job_parameters': {
-                'granules': [granule_without_legacy_dem_coverage],
-            }
-        },
-        {
-            'job_type': 'RTC_GAMMA',
-            'job_parameters': {
-                'granules': [granule_without_legacy_dem_coverage],
-                'dem_name': 'copernicus',
+                'granules': [granule_with_dem_coverage],
             }
         },
         {
             'job_type': 'RTC_GAMMA',
             'job_parameters': {
                 'granules': [granule_with_dem_coverage],
-                'dem_name': 'legacy',
+                'dem_name': 'copernicus',
             }
         },
         {
             'job_type': 'INSAR_GAMMA',
             'job_parameters': {
-                'granules': [granule_with_dem_coverage, granule_without_legacy_dem_coverage],
+                'granules': [granule_with_dem_coverage, granule_with_dem_coverage],
             }
         },
         {

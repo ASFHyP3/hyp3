@@ -22,22 +22,12 @@ with open(Path(__file__).parent / 'job_validation_map.yml') as f:
     JOB_VALIDATION_MAP = yaml.safe_load(f.read())
 
 
-def has_sufficient_coverage(granule: Polygon, buffer: float = 0.15, threshold: float = 0.2, legacy=False):
-    if legacy:
-        global DEM_COVERAGE_LEGACY
-        if DEM_COVERAGE_LEGACY is None:
-            DEM_COVERAGE_LEGACY = get_multipolygon_from_geojson('dem_coverage_map_legacy.geojson')
+def has_sufficient_coverage(granule: Polygon):
+    global DEM_COVERAGE
+    if DEM_COVERAGE is None:
+        DEM_COVERAGE = get_multipolygon_from_geojson('dem_coverage_map_cop30.geojson')
 
-        buffered_granule = granule.buffer(buffer)
-        covered_area = buffered_granule.intersection(DEM_COVERAGE_LEGACY).area
-
-        return covered_area / buffered_granule.area >= threshold
-    else:
-        global DEM_COVERAGE
-        if DEM_COVERAGE is None:
-            DEM_COVERAGE = get_multipolygon_from_geojson('dem_coverage_map_cop30.geojson')
-
-        return granule.intersects(DEM_COVERAGE)
+    return granule.intersects(DEM_COVERAGE)
 
 
 def get_cmr_metadata(granules):
@@ -80,8 +70,7 @@ def check_granules_exist(granules, granule_metadata):
 
 
 def check_dem_coverage(job, granule_metadata):
-    legacy = job['job_parameters'].get('dem_name') == 'legacy'
-    bad_granules = [g['name'] for g in granule_metadata if not has_sufficient_coverage(g['polygon'], legacy=legacy)]
+    bad_granules = [g['name'] for g in granule_metadata if not has_sufficient_coverage(g['polygon'])]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
