@@ -28,7 +28,6 @@ jobs:
               job_spec/INSAR_ISCE_TEST.yml
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/WATER_MAP.yml
-              job_spec/WATER_MAP_TEST.yml
               job_spec/WATER_MAP_EQ.yml
               job_spec/S1_CORRECTION_ITS_LIVE.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
@@ -36,7 +35,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
     environment:
@@ -53,7 +52,7 @@ jobs:
           aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.9
 

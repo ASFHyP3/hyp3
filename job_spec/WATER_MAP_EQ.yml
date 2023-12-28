@@ -90,10 +90,12 @@ WATER_MAP_EQ:
         - Ref::granules
       timeout: 36000
       vcpu: 1
-      memory: 31600
+      memory: 31500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
+        - ESA_USERNAME
+        - ESA_PASSWORD
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/water-map-equal-percent-solution
       command:
