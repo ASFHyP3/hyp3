@@ -4,6 +4,81 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [5.0.0]
+### Removed
+- `legacy` option for the `dem_name` parameter of `RTC_GAMMA` jobs. All RTC processing will now use the Copernicus DEM.
+### Fixed
+- The description of the INSAR_ISCE_BURST job's `apply_water_mask` to state that water masking now happens BEFORE unwrapping.
+
+## [4.5.1]
+### Fixed
+- `output_resolution` in the `INSAR_ISCE_TEST` job spec is now correctly specified as an int instead of number, which can be a float or an int.
+
+## [4.5.0]
+### Changed
+- Update `INSAR_ISCE` and `INSAR_ISCE_TEST` job spec for GUNW version 3+ standard and custom products
+  - `frame_id` is now a required parameter and has no default
+  - `compute_solid_earth_tide` and `estimate_ionosphere_delay` now default to `true` 
+  - `INSAR_ISCE_TEST` exposes custom `goldstein_filter_power`, `output_resolution`, `dense_offsets`, and `unfiltered_coherence` parameters
+
+## [4.4.1]
+### Changed
+- Updated `WATER_MAP` job spec to point at the [HydroSAR images](https://github.com/fjmeyer/HydroSAR/pkgs/container/hydrosar)
+  instead of the [ASF Tools images](https://github.com/asfhyp3/asf-tools/pkgs/container/asf-tools) as the HydroSAR code
+  is being migrated to the HydroSAR project repository.
+
+### Fixed
+- Reverted the new AWS Batch job retry strategy introduced in [HyP3 v4.1.2](https://github.com/ASFHyP3/hyp3/releases/tag/v4.1.2). Fixes https://github.com/ASFHyP3/hyp3/issues/1944
+
+### Removed
+- Removed the unused `RIVER_WIDTH` job spec.
+- Removed the `WATER_MAP` job spec from UAT as it's not expected to be available in HyP3 production anytime soon.
+
+## [4.4.0]
+### Added
+- INSAR_ISCE_BURST job to EDC production deployment.
+
+## [4.3.2]
+### Fixed
+- Added a Lambda function that sets `Private DNS names enabled` to false for VPC endpoint.
+
+## [4.3.1]
+### Added
+- The `ESA_USERNAME` and `ESA_PASSWORD` secrets have been added to all of the job specs that require them.
+
+## [4.3.0]
+### Changed
+- The `iterative_min_size` and `minimization_metric` parameters have been moved from the `WATER_MAP_TEST` job spec to the `WATER_MAP` job spec. The default `minimization_metric` value has been changed from `fmi` to `ts`.
+- The `known_water_threshold` parameter for the `WATER_MAP` job type is now nullable, with a default value of `null` instead of `30.0` percent. A water threshold is computed when the value is `null`.
+- Use Amazon Linux 2023 AMI in non-Earthdata Cloud environments
+  - Reduced the memory reservation of some job types due to slightly less memory being available for AWS Batch jobs on the AL2023 AMI
+- All deployments now use the `SPOT_PRICE_CAPACITY_OPTIMIZED` allocation strategy for AWS Batch. This includes JPL
+  deployments, reverting the temporary change to On Demand instances in HyP3 v3.10.8
+### Removed
+- The `WATER_MAP_TEST` job spec
+
+## [4.2.1]
+### Changed
+- The `ami_id` for EDC platforms now uses the original AMI.
+
+## [4.2.0]
+### Added
+- Added `phase_filter_parameter` for `INSAR_GAMMA` job type.
+### Removed
+- Removed the `INSAR_GAMMA_TEST` job type from the `hyp3-avo` and `hyp3-enterprise-test` deployments, now that the `phase_filter_parameter` option is available for the `INSAR_GAMMA` job type.
+
+## [4.1.2]
+### Changed
+- AWS Batch jobs are now retried twice, once after 10 minutes and once after 60 minutes, to reduce the number of jobs that fail due to transient errors, such as Earthdata Login and Sentinel-1 distribution outages.
+
+## [4.1.1]
+### Added
+- New DEM coverage map that allows COP90 tiles to fill the COP30 gaps over Azerbaijan and Armenia.
+### Fixed
+- Pinned `Werkzeug==2.3.7` in `requirements-apps-api.txt`. Mitigates [#1861](https://github.com/ASFHyP3/hyp3/issues/1861)
+  pending a fix for https://github.com/logandk/serverless-wsgi/issues/247
+
 ## [4.1.0]
 ### Added
 - New `parameter_file` parameter for the `AUTORIFT_ITS_LIVE` and `AUTORIFT_ITS_LIVE_TEST` job types.

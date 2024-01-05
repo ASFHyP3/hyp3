@@ -29,7 +29,7 @@ jobs:
             expanded_max_vcpus: 10000
             required_surplus: 0
             security_environment: JPL-public
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-a19-jpl
@@ -44,7 +44,7 @@ jobs:
             expanded_max_vcpus: 10000
             required_surplus: 0
             security_environment: JPL-public
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-tibet-jpl
@@ -59,7 +59,7 @@ jobs:
             expanded_max_vcpus: 0
             required_surplus: 0
             security_environment: JPL-public
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-nisar-jpl
@@ -74,7 +74,7 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: JPL-public
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-avo
@@ -83,13 +83,13 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 365000
             quota: 0
-            job_files: job_spec/INSAR_GAMMA.yml job_spec/INSAR_GAMMA_TEST.yml
+            job_files: job_spec/INSAR_GAMMA.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-watermap
@@ -104,7 +104,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-streamflow
@@ -119,7 +119,7 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: azdwr-hyp3
@@ -128,13 +128,13 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 30
             quota: 0
-            job_files: job_spec/INSAR_GAMMA_HIGH_MEMORY.yml
+            job_files: job_spec/INSAR_GAMMA.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-cargill
@@ -149,7 +149,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-bgc-engineering
@@ -164,7 +164,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-carter
@@ -179,7 +179,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-pdc
@@ -196,7 +196,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
     environment:
@@ -204,7 +204,7 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v4.0.0
+      - uses: actions/checkout@v4.1.1
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -213,7 +213,7 @@ jobs:
           aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.9
 
