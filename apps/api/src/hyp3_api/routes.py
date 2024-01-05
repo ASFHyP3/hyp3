@@ -92,6 +92,7 @@ class CustomEncoder(json.JSONEncoder):
         json.JSONEncoder.default(self, o)
 
 
+# FIXME: I suspect that the `problem+json` test failure is due to this class not having any effect
 class ErrorHandler(FlaskOpenAPIErrorsHandler):
     def __init__(self):
         super().__init__()
@@ -109,7 +110,8 @@ class Jobs(FlaskOpenAPIView):
         # FIXME: Find alternative way to disable response validation;
         #        see https://github.com/python-openapi/openapi-core/issues/618 for context
         # self.response_validator = NonValidator
-        self.openapi_errors_handler = ErrorHandler
+        # FIXME: commenting out this line did not break any tests:
+        # self.openapi_errors_handler = ErrorHandler
 
     def post(self):
         return jsonify(handlers.post_jobs(request.get_json(), g.user))
@@ -136,7 +138,8 @@ class User(FlaskOpenAPIView):
         super().__init__(spec)
         # FIXME: same as the FIXME in the Jobs class
         # self.response_validator = NonValidator
-        self.openapi_errors_handler = ErrorHandler
+        # FIXME: commenting out this line did not break any tests:
+        # self.openapi_errors_handler = ErrorHandler
 
     def get(self):
         return jsonify(handlers.get_user(g.user))
