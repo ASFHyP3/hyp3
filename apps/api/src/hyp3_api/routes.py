@@ -7,17 +7,16 @@ from pathlib import Path
 import yaml
 from flask import abort, g, jsonify, make_response, redirect, render_template, request
 from flask_cors import CORS
+from openapi_core import OpenAPI
+from openapi_core.contrib.flask.decorators import FlaskOpenAPIViewDecorator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
-from openapi_core.contrib.flask.views import FlaskOpenAPIView
-from openapi_core.spec.shortcuts import create_spec
-from openapi_core.validation.response.datatypes import ResponseValidationResult
 
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
 
 api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
 api_spec_dict = get_spec_yaml(api_spec_file)
-api_spec = create_spec(api_spec_dict)
+api_spec = OpenAPI.from_dict(api_spec_dict)
 CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
 
 AUTHENTICATED_ROUTES = ['/jobs', '/user']
@@ -68,7 +67,7 @@ def render_ui():
 
 
 @app.errorhandler(404)
-def error404(e):
+def error404(_):
     return handlers.problem_format(404, 'The requested URL was not found on the server.'
                                         ' If you entered the URL manually please check your spelling and try again.')
 
@@ -93,41 +92,39 @@ class CustomEncoder(json.JSONEncoder):
         json.JSONEncoder.default(self, o)
 
 
-class NonValidator:
-    def __init__(self, spec):
-        pass
-
-    def validate(self, res):
-        return ResponseValidationResult()
-
-
 class ErrorHandler(FlaskOpenAPIErrorsHandler):
     def __init__(self):
         super().__init__()
 
-    @classmethod
-    def handle(cls, errors):
-        response = super().handle(errors)
+    def __call__(self, errors):
+        response = super().__call__(errors)
         error = response.json['errors'][0]
         return handlers.problem_format(error['status'], error['title'])
 
 
-class Jobs(FlaskOpenAPIView):
-    def __init__(self, spec):
-        super().__init__(spec)
-        self.response_validator = NonValidator
-        self.openapi_errors_handler = ErrorHandler
+app.json_encoder = CustomEncoder
 
-    def post(self):
-        return jsonify(handlers.post_jobs(request.get_json(), g.user))
+openapi = FlaskOpenAPIViewDecorator(
+    api_spec,
+    response_cls=None,
+    errors_handler_cls=ErrorHandler,
+)
 
-    def get(self, job_id):
-        if job_id is not None:
-            return jsonify(handlers.get_job_by_id(job_id))
-        parameters = request.openapi.parameters.query
-        start = parameters.get('start')
-        end = parameters.get('end')
-        return jsonify(handlers.get_jobs(
+
+@app.route('/jobs', methods=['POST'])
+@openapi
+def jobs_post():
+    return jsonify(handlers.post_jobs(request.get_json(), g.user))
+
+
+@app.route('/jobs', methods=['GET'])
+@openapi
+def jobs_get():
+    parameters = request.openapi.parameters.query
+    start = parameters.get('start')
+    end = parameters.get('end')
+    return jsonify(
+        handlers.get_jobs(
             parameters.get('user_id') or g.user,
             start.isoformat(timespec='seconds') if start else None,
             end.isoformat(timespec='seconds') if end else None,
@@ -135,25 +132,17 @@ class Jobs(FlaskOpenAPIView):
             parameters.get('name'),
             parameters.get('job_type'),
             parameters.get('start_token'),
-        ))
+        )
+    )
 
 
-class User(FlaskOpenAPIView):
-    def __init__(self, spec):
-        super().__init__(spec)
-        self.response_validator = NonValidator
-        self.openapi_errors_handler = ErrorHandler
-
-    def get(self):
-        return jsonify(handlers.get_user(g.user))
+@app.route('/jobs/<job_id>', methods=['GET'])
+@openapi
+def jobs_get_by_job_id(job_id):
+    return jsonify(handlers.get_job_by_id(job_id))
 
 
-app.json_encoder = CustomEncoder
-
-jobs_view = Jobs.as_view('jobs', api_spec)
-app.add_url_rule('/jobs', view_func=jobs_view, methods=['GET'], defaults={'job_id': None})
-app.add_url_rule('/jobs', view_func=jobs_view, methods=['POST'])
-app.add_url_rule('/jobs/<job_id>', view_func=jobs_view, methods=['GET'])
-
-user_view = User.as_view('user', api_spec)
-app.add_url_rule('/user', view_func=user_view)
+@app.route('/user', methods=['GET'])
+@openapi
+def user_get():
+    return jsonify(handlers.get_user(g.user))
