@@ -53,7 +53,7 @@ components:
           enum:
             - {{ job_type }}
         name:
-          $ref: "./openapi-spec.yml#/components/schemas/name"
+          $ref: "./openapi-spec.yml#components/schemas/name"
         job_parameters:
           $ref: "#/components/schemas/{{ job_type }}Parameters"
 
