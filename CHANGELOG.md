@@ -4,9 +4,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [5.0.1]
-### Fixed
-- Upgrade the `openapi-core`, `openapi-spec-validator`, and `jsonschema` packages to their latest versions. This is now possible thanks to the pre-release of [openapi-core v0.19.0a1](https://github.com/python-openapi/openapi-core/releases/tag/0.19.0a1), which fixes <https://github.com/python-openapi/openapi-core/issues/662>. Resolves <https://github.com/ASFHyP3/hyp3/issues/1193>.
 
 ## [5.0.0]
 ### Removed

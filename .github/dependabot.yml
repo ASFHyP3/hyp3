@@ -9,6 +9,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    ignore:
+      - dependency-name: "openapi-spec-validator"
     labels:
       - "bumpless"
   - package-ecosystem: "github-actions"
