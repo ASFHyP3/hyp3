@@ -9,6 +9,7 @@ from hyp3_api import CMR_URL, validation
 def rectangle(north, south, east, west):
     return Polygon([[west, north], [east, north], [east, south], [west, south]])
 
+
 def test_not_antimeridian():
     # Wyoming
     good_rect = rectangle(45, 41, -104, -111)
@@ -18,7 +19,7 @@ def test_not_antimeridian():
 
     good_granules = [{'polygon': good_rect, 'name': 'good'}, {'polygon': good_rect, 'name': 'good'}]
     validation.check_not_antimeridian(good_granules)
-    
+
     bad_granules = [{'polygon': good_rect, 'name': 'good'}, {'polygon': bad_rect, 'name': 'bad'}]
     with raises(validation.GranuleValidationError, match=r'.*crosses the antimeridian.*'):
         validation.check_not_antimeridian(bad_granules)
