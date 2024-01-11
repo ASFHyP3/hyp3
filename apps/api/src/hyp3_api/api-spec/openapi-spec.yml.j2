@@ -7,12 +7,10 @@ info:
 security:
   - EarthDataLogin: []
 
-# TODO parameterize
 servers:
-  - url: https://hyp3-test-api.asf.alaska.edu
-  - url: https://vd2gh6uqw3.execute-api.us-west-2.amazonaws.com/api
-  - url: https://hyp3-enterprise-test.asf.alaska.edu
-  - url: http://localhost
+  {% for url in server_urls %}
+  - url: {{ url }}
+  {% endfor %}
 
 paths:
 

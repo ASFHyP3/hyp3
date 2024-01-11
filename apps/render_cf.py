@@ -11,7 +11,7 @@ def snake_to_pascal_case(input_string: str):
     return ''.join([i.title() for i in split_string])
 
 
-def render_templates(job_types, security_environment, api_name):
+def render_templates(job_types: dict, security_environment: str, api_name: str, server_urls: list[str]):
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader('./'),
         autoescape=jinja2.select_autoescape(default=True, disabled_extensions=('j2',)),
@@ -28,6 +28,7 @@ def render_templates(job_types, security_environment, api_name):
             job_types=job_types,
             security_environment=security_environment,
             api_name=api_name,
+            server_urls=server_urls,
             json=json,
             snake_to_pascal_case=snake_to_pascal_case,
         )
@@ -40,7 +41,10 @@ def main():
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
     parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL', 'JPL-public'])
     parser.add_argument('-n', '--api-name', required=True)
+    parser.add_argument('-u', '--server-urls', required=True)
     args = parser.parse_args()
+
+    server_urls = args.server_urls.split(',')
 
     job_types = {}
     for file in args.job_spec_files:
@@ -50,7 +54,7 @@ def main():
         for task in job_spec['tasks']:
             task['name'] = job_type + '_' + task['name'] if task['name'] else job_type
 
-    render_templates(job_types, args.security_environment, args.api_name)
+    render_templates(job_types, args.security_environment, args.api_name, server_urls)
 
 
 if __name__ == '__main__':
