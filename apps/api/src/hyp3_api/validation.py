@@ -93,6 +93,13 @@ def check_valid_polarizations(granule_metadata):
         raise GranuleValidationError(f'Only VV and HH polarizations are currently supported, got: {ref_polarization}')
 
 
+def check_not_antimeridian(granule_metadata):
+    for granule in granule_metadata:
+        bbox = granule['polygon'].bounds
+        if abs(bbox[0] - bbox[2]) > 180.0 and bbox[0] * bbox[2] < 0.0:
+            raise GranuleValidationError(f'Granule {granule["name"]} crosses the antimeridian')
+
+
 def format_points(point_string):
     converted_to_float = [float(x) for x in point_string.split(' ')]
     points = [list(t) for t in zip(converted_to_float[1::2], converted_to_float[::2])]
