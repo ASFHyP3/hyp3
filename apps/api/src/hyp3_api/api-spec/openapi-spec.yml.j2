@@ -7,6 +7,13 @@ info:
 security:
   - EarthDataLogin: []
 
+{% if security_environment == 'EDC' %}
+# See https://github.com/ASFHyP3/hyp3/pull/2009 for context.
+servers:
+  - url: /
+  - url: /api
+{% endif %}
+
 paths:
 
   /jobs:
@@ -53,7 +60,7 @@ paths:
         - name: job_type
           in: query
           schema:
-            $ref: "./job_parameters.yml#components/schemas/job_type"
+            $ref: "./job_parameters.yml#/components/schemas/job_type"
         - name: start_token
           in: query
           schema:
@@ -138,7 +145,7 @@ components:
         quota:
           $ref: "#/components/schemas/quota"
         job_names:
-          $ref: "#components/schemas/job_names_list"
+          $ref: "#/components/schemas/job_names_list"
 
     quota:
       description: Containes the limit of jobs per month and the amount remaining for a user.
@@ -168,7 +175,7 @@ components:
       minItems: 1
       maxItems: 200
       items:
-        $ref: "./job_parameters.yml#components/schemas/new_job"
+        $ref: "./job_parameters.yml#/components/schemas/new_job"
 
     list_of_jobs:
       type: array
@@ -254,9 +261,9 @@ components:
         user_id:
           $ref: "#/components/schemas/user_id"
         job_type:
-          $ref: "./job_parameters.yml#components/schemas/job_type"
+          $ref: "./job_parameters.yml#/components/schemas/job_type"
         job_parameters:
-          $ref: "./job_parameters.yml#components/schemas/job_parameters"
+          $ref: "./job_parameters.yml#/components/schemas/job_parameters"
         request_time:
           $ref: "#/components/schemas/datetime"
         status_code:
