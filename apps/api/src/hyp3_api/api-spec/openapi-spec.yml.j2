@@ -7,6 +7,12 @@ info:
 security:
   - EarthDataLogin: []
 
+{% if security_environment == 'EDC' %}
+servers:
+  - url: /
+  - url: /api
+{% endif %}
+
 paths:
 
   /jobs:
