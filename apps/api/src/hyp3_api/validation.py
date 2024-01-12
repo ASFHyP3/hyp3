@@ -98,8 +98,8 @@ def check_not_antimeridian(granule_metadata):
         bbox = granule['polygon'].bounds
         if abs(bbox[0] - bbox[2]) > 180.0 and bbox[0] * bbox[2] < 0.0:
             msg = (
-                f'Granule {granule["name"]} crosses the antimeridian.',
-                ' Processing across the antimeridian is not currently supported',
+                f'Granule {granule["name"]} crosses the antimeridian.'
+                ' Processing across the antimeridian is not currently supported.'
             )
             raise GranuleValidationError(msg)
 
