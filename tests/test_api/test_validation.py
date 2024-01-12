@@ -14,7 +14,7 @@ def test_not_antimeridian():
     # Wyoming
     good_rect = rectangle(45, 41, -104, -111)
 
-    # completely covered Aleutian Islands over antimeridian; should fail
+    # Aleutian Islands over antimeridian; should fail
     bad_rect = rectangle(51.7, 51.3, 179.7, -179.3)
 
     good_granules = [{'polygon': good_rect, 'name': 'good'}, {'polygon': good_rect, 'name': 'good'}]
