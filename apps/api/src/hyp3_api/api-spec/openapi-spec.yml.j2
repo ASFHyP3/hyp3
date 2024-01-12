@@ -7,6 +7,13 @@ info:
 security:
   - EarthDataLogin: []
 
+{% if security_environment == 'EDC' %}
+# See https://github.com/ASFHyP3/hyp3/pull/2009 for context.
+servers:
+  - url: /
+  - url: /api
+{% endif %}
+
 paths:
 
   /jobs:
