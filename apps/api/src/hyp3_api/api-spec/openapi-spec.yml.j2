@@ -7,9 +7,11 @@ info:
 security:
   - EarthDataLogin: []
 
+{% if security_environment == 'EDC' %}
 servers:
-  - url: https://hyp3-test-api.asf.alaska.edu
-  - url: https://vd2gh6uqw3.execute-api.us-west-2.amazonaws.com/api
+  - url: /
+  - url: /api
+{% endif %}
 
 paths:
 
