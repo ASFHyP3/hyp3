@@ -182,6 +182,7 @@ def test_query_jobs_by_type(tables):
     assert list_have_same_elements(response, table_items[:2])
 
 
+# TODO update
 def test_put_jobs(tables):
     payload = [
         {
