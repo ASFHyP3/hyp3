@@ -1,6 +1,9 @@
+import os
+from decimal import Decimal
 from os import environ
 from typing import Optional
 
+import botocore.exceptions
 from dynamo.util import DYNAMODB_RESOURCE
 
 
@@ -10,10 +13,31 @@ def get_user(user_id: str) -> Optional[dict]:
     return response.get('Item')
 
 
-def get_priority(user_id: str) -> Optional[int]:
-    user = get_user(user_id)
-    if user:
-        priority = user.get('priority')
-    else:
-        priority = None
-    return priority
+# TODO unit tests
+def create_user(user_id: str) -> dict:
+    table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
+    if get_user(user_id):
+        raise ValueError(f'user {user_id} already exists')
+    user = {'user_id': user_id, 'credits': Decimal(os.environ['MONTHLY_JOB_QUOTA_PER_USER'])}
+    table.put_item(Item=user)
+    return user
+
+
+# TODO unit tests
+def decrement_credits(user_id: str, cost: float) -> None:
+    if cost < 0:
+        raise ValueError(f'Cost {cost} < 0')
+    table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
+    try:
+        table.update_item(
+            Key={'user_id': user_id},
+            UpdateExpression='ADD credits :delta',
+            ConditionExpression='credits >= :cost',
+            ExpressionAttributeValues={':cost': cost, ':delta': -cost},
+        )
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
+            raise ValueError(
+                f'Subtracting cost {cost} from user\'s remaining credits would result in a negative balance'
+            )
+        raise

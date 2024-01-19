@@ -21,9 +21,8 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
-    try:  # TODO deal with the new user use case
-        user = dynamo.user.get_user(user_id)
-    except NotFoundError:
+    user = dynamo.user.get_user(user_id)
+    if not user:
         user = dynamo.create_user(user_id)
 
     remaining_credits = user['credits']
@@ -54,7 +53,8 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     if not dry_run:
         for prepared_job in prepared_jobs:
             table.put_item(Item=convert_floats_to_decimals(prepared_job))
-        dynamo.user.decrement_credits(total_cost)
+        # TODO: handle "negative balance" ValueError, which indicates a race condition
+        dynamo.user.decrement_credits(user, total_cost)
     return prepared_jobs
 
 
