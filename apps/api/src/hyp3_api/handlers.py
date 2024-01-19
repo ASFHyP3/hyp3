@@ -42,7 +42,7 @@ def post_jobs(body, user):
         abort(problem_format(400, str(e)))
 
     try:
-        body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], validate_only=body.get('validate_only'))
+        body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], dry_run=body.get('validate_only'))
     except dynamo.jobs.InsufficientCreditsError as e:
         abort(problem_format(400, str(e)))
     return body
