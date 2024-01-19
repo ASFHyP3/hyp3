@@ -22,12 +22,12 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
-    user = dynamo.user.get_user(user_id)
-    if not user:
-        user = dynamo.user.create_user(user_id)
+    user_record = dynamo.user.get_user(user_id)
+    if not user_record:
+        user_record = dynamo.user.create_user(user_id)
 
-    remaining_credits = user['remaining_credits']
-    priority_override = user.get('priority_override')
+    remaining_credits = user_record['remaining_credits']
+    priority_override = user_record.get('priority_override')
 
     prepared_jobs = []
     for job in jobs:
@@ -61,7 +61,7 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
         for prepared_job in prepared_jobs:
             table.put_item(Item=convert_floats_to_decimals(prepared_job))
         # TODO: handle "negative balance" ValueError, which indicates a race condition
-        dynamo.user.decrement_credits(user, total_cost)
+        dynamo.user.decrement_credits(user_record['user_id'], total_cost)
     return prepared_jobs
 
 
