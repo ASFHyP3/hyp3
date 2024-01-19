@@ -7,7 +7,7 @@ from dynamo.util import format_time
 
 
 def test_get_new_user(client, tables, monkeypatch):
-    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
 
     login(client, 'user')
     response = client.get(USER_URI)

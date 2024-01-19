@@ -17,7 +17,7 @@ def create_user(user_id: str) -> dict:
     table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     if get_user(user_id):
         raise ValueError(f'user {user_id} already exists')
-    user = {'user_id': user_id, 'remaining_credits': Decimal(os.environ['MONTHLY_JOB_QUOTA_PER_USER'])}
+    user = {'user_id': user_id, 'remaining_credits': Decimal(os.environ['DEFAULT_CREDITS_PER_USER'])}
     table.put_item(Item=user)
     return user
 
