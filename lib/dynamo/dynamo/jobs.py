@@ -17,13 +17,14 @@ def get_cost(job: dict) -> float:
     return 1.0
 
 
+# TODO add/update tests
 def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
     user = dynamo.user.get_user(user_id)
     if not user:
-        user = dynamo.create_user(user_id)
+        user = dynamo.user.create_user(user_id)
 
     remaining_credits = user['credits']
     priority_override = user.get('priority_override')
