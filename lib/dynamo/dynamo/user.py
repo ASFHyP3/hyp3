@@ -13,7 +13,6 @@ def get_user(user_id: str) -> Optional[dict]:
     return response.get('Item')
 
 
-# TODO unit tests
 def create_user(user_id: str) -> dict:
     table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     if get_user(user_id):
