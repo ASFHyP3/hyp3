@@ -41,12 +41,11 @@ def post_jobs(body, user):
     except GranuleValidationError as e:
         abort(problem_format(400, str(e)))
 
-    if not body.get('validate_only'):
-        try:
-            body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'])
-        except dynamo.jobs.QuotaError as e:
-            abort(problem_format(400, str(e)))
-        return body
+    try:
+        body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], validate_only=body.get('validate_only'))
+    except dynamo.jobs.InsufficientCreditsError as e:
+        abort(problem_format(400, str(e)))
+    return body
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None):
