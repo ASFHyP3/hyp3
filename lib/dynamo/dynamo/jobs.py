@@ -26,7 +26,7 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     if not user:
         user = dynamo.user.create_user(user_id)
 
-    remaining_credits = user['credits']
+    remaining_credits = user['remaining_credits']
     priority_override = user.get('priority_override')
 
     prepared_jobs = []
@@ -43,13 +43,13 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
         if priority_override:
             priority = priority_override
         elif prepared_jobs:
-            priority = max(prepared_jobs[-1]['priority'] - int(prepared_job['cost']), 0)
+            priority = max(prepared_jobs[-1]['priority'] - int(prepared_job['credit_cost']), 0)
         else:
             priority = min(int(remaining_credits), 9999)
         prepared_job['priority'] = priority
         prepared_jobs.append(prepared_job)
 
-    total_cost = sum([job['cost'] for job in prepared_jobs])
+    total_cost = sum([job['credit_cost'] for job in prepared_jobs])
     if remaining_credits is not None and total_cost > remaining_credits:
         raise InsufficientCreditsError(f'These jobs would cost {total_cost} remaining_credits, but you have only {remaining_credits} remaining.') # TODO change exception name
 

@@ -18,7 +18,7 @@ def create_user(user_id: str) -> dict:
     table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     if get_user(user_id):
         raise ValueError(f'user {user_id} already exists')
-    user = {'user_id': user_id, 'credits': Decimal(os.environ['MONTHLY_JOB_QUOTA_PER_USER'])}
+    user = {'user_id': user_id, 'remaining_credits': Decimal(os.environ['MONTHLY_JOB_QUOTA_PER_USER'])}
     table.put_item(Item=user)
     return user
 
@@ -31,8 +31,8 @@ def decrement_credits(user_id: str, cost: float) -> None:
     try:
         table.update_item(
             Key={'user_id': user_id},
-            UpdateExpression='ADD credits :delta',
-            ConditionExpression='credits >= :cost',
+            UpdateExpression='ADD remaining_credits :delta',
+            ConditionExpression='remaining_credits >= :cost',
             ExpressionAttributeValues={':cost': cost, ':delta': -cost},
         )
     except botocore.exceptions.ClientError as e:
