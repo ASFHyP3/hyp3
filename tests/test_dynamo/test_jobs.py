@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 from decimal import Decimal
-from unittest.mock import MagicMock, call, patch
 
 import pytest
 from conftest import list_have_same_elements
@@ -182,7 +181,6 @@ def test_query_jobs_by_type(tables):
     assert list_have_same_elements(response, table_items[:2])
 
 
-# TODO update
 def test_put_jobs(tables):
     payload = [
         {
@@ -199,12 +197,13 @@ def test_put_jobs(tables):
     assert len(jobs) == 3
     for job in jobs:
         assert set(job.keys()) == {
-            'name', 'job_id', 'user_id', 'status_code', 'execution_started', 'request_time', 'priority'
+            'name', 'job_id', 'user_id', 'status_code', 'execution_started', 'request_time', 'priority', 'credit_cost'
         }
         assert job['request_time'] <= dynamo.util.format_time(datetime.now(timezone.utc))
         assert job['user_id'] == 'user1'
         assert job['status_code'] == 'PENDING'
         assert job['execution_started'] is False
+        assert job['credit_cost'] == 1.0
 
     response = tables.jobs_table.scan()
     assert response['Items'] == jobs
