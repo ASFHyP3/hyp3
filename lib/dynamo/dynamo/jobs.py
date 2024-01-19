@@ -13,7 +13,7 @@ class InsufficientCreditsError(Exception):
     """Raised when trying to submit more jobs that user has remaining"""
 
 
-def get_cost(job: dict) -> float:
+def get_credit_cost(job: dict) -> float:
     return 1.0
 
 
@@ -37,14 +37,16 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
             'status_code': 'PENDING',
             'execution_started': False,
             'request_time': request_time,
-            'cost': get_cost(job),
+            'credit_cost': get_credit_cost(job),
             **job,
         }
         if priority_override:
-            prepared_job['priority'] = priority_override
+            priority = priority_override
+        elif prepared_jobs:
+            priority = max(prepared_jobs[-1]['priority'] - int(prepared_job['cost']), 0)
         else:
-            priority = max(prepared_jobs[-1]['priority'] - prepared_job['cost'], 0)
-            prepared_job['priority'] = priority
+            priority = min(int(remaining_credits), 9999)
+        prepared_job['priority'] = priority
         prepared_jobs.append(prepared_job)
 
     total_cost = sum([job['cost'] for job in prepared_jobs])
