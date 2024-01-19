@@ -10,7 +10,7 @@ from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_ti
 
 
 class InsufficientCreditsError(Exception):
-    """Raised when trying to submit more jobs that user has remaining"""
+    """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
 
 
 def get_credit_cost(job: dict) -> float:
