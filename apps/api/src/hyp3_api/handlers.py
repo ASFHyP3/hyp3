@@ -79,13 +79,12 @@ def get_names_for_user(user):
 
 
 def get_user(user):
-    max_jobs, _, remaining_jobs = dynamo.jobs.get_quota_status(user)
+    user_record = dynamo.user.get_user(user)
+    if not user_record:
+        user_record = dynamo.user.create_user(user)
 
     return {
         'user_id': user,
-        'quota': {
-            'max_jobs_per_month': max_jobs,
-            'remaining': remaining_jobs,
-        },
+        'remaining_credits': user_record['remaining_credits'],
         'job_names': get_names_for_user(user)
     }
