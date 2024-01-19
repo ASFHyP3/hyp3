@@ -31,8 +31,8 @@ Parameters:
     Type: String
     Default: RS256
 
-  MonthlyJobQuotaPerUser:
-    Description: Number of jobs each user is allowed per month.
+  DefaultCreditsPerUser:
+    Description: The default number of credits given to a new user.
     Type: Number
     MinValue: 0
 
@@ -115,7 +115,7 @@ Resources:
         UsersTable: !Ref UsersTable
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
-        MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
+        DefaultCreditsPerUser: !Ref DefaultCreditsPerUser
         SystemAvailable: !Ref SystemAvailable
         {% if security_environment == 'EDC' %}
         VpcId: !Ref VpcId

@@ -119,7 +119,7 @@ runs:
                 $CERTIFICATE_ARN \
                 $ORIGIN_ACCESS_IDENTITY_ID \
                 $DISTRIBUTION_URL \
-                MonthlyJobQuotaPerUser='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
+                DefaultCreditsPerUser='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
                 DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
                 ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
                 MonthlyBudget='${{ inputs.MONTHLY_BUDGET }}' \
