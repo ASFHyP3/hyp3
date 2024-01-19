@@ -42,6 +42,8 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
         }
         if priority_override:
             priority = priority_override
+        elif remaining_credits is None:
+            priority = 0
         elif prepared_jobs:
             priority = max(prepared_jobs[-1]['priority'] - int(prepared_job['cost']), 0)
         else:
@@ -51,7 +53,9 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
 
     total_cost = sum([job['cost'] for job in prepared_jobs])
     if remaining_credits is not None and total_cost > remaining_credits:
-        raise InsufficientCreditsError(f'These jobs would cost {total_cost} remaining_credits, but you have only {remaining_credits} remaining.') # TODO change exception name
+        raise InsufficientCreditsError(
+            f'These jobs would cost {total_cost} credits, but you have only {remaining_credits} remaining.'
+        )
 
     if not dry_run:
         for prepared_job in prepared_jobs:
