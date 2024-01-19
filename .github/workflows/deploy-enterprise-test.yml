@@ -19,7 +19,7 @@ jobs:
             template_bucket: cf-templates-1iw894v4yzqya-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
-            quota: 0
+            default_credits_per_user: 0
             deploy_ref: refs/heads/develop
             job_files: >-
               job_spec/AUTORIFT_ITS_LIVE.yml
@@ -69,7 +69,7 @@ jobs:
           SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
           SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
-          DEFAULT_CREDITS_PER_USER: ${{ matrix.quota }}
+          DEFAULT_CREDITS_PER_USER: ${{ matrix.default_credits_per_user }}
           JOB_FILES: ${{ matrix.job_files }}
           DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
