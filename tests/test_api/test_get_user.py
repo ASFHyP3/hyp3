@@ -6,6 +6,7 @@ from test_api.conftest import USER_URI, login, make_db_record
 from dynamo.util import format_time
 
 
+# TODO update
 def test_get_user(client, tables, monkeypatch):
     monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
     request_time = format_time(datetime.now(timezone.utc))
@@ -35,6 +36,7 @@ def test_get_user(client, tables, monkeypatch):
     }
 
 
+# TODO update
 def test_user_at_quota(client, tables, monkeypatch):
     monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
     request_time = format_time(datetime.now(timezone.utc))

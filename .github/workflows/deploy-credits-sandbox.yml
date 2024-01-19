@@ -61,7 +61,7 @@ jobs:
           SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
           SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
-          MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
+          DEFAULT_CREDITS_PER_USER: ${{ matrix.quota }}
           JOB_FILES: ${{ matrix.job_files }}
           DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}

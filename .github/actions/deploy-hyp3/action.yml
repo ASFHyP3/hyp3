@@ -35,8 +35,8 @@ inputs:
   CLOUDFORMATION_ROLE_ARN:
     description: "The CloudFormation role to use for this deployment"
     required: true
-  MONTHLY_JOB_QUOTA_PER_USER:
-    description: "The default number of jobs any user with an Earthdata Login can run per month"
+  DEFAULT_CREDITS_PER_USER:
+    description: "The default number of credits given to a new user"
     required: true
   JOB_FILES:
     description: "Space seperated list of job spec YAMLs to include"
@@ -119,7 +119,7 @@ runs:
                 $CERTIFICATE_ARN \
                 $ORIGIN_ACCESS_IDENTITY_ID \
                 $DISTRIBUTION_URL \
-                MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \
+                MonthlyJobQuotaPerUser='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
                 DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
                 ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
                 MonthlyBudget='${{ inputs.MONTHLY_BUDGET }}' \

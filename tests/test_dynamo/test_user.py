@@ -23,7 +23,7 @@ def test_get_user(tables):
 
 
 def test_create_user(tables, monkeypatch):
-    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
 
     user1 = dynamo.user.create_user('user1')
     assert user1 == {
