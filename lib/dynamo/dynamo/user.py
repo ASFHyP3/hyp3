@@ -33,7 +33,7 @@ def decrement_credits(user_id: str, cost: float) -> None:
             Key={'user_id': user_id},
             UpdateExpression='ADD remaining_credits :delta',
             ConditionExpression='remaining_credits >= :cost',
-            ExpressionAttributeValues={':cost': cost, ':delta': -cost},
+            ExpressionAttributeValues={':cost': Decimal(cost), ':delta': Decimal(-cost)},
         )
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
