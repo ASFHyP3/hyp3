@@ -52,8 +52,8 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     if not dry_run:
         for prepared_job in prepared_jobs:
             table.put_item(Item=convert_floats_to_decimals(prepared_job))
-        # TODO: handle ValueError from decrement_credits? or just let it propagate?
         if remaining_credits is not None:
+            # TODO: handle ValueError from decrement_credits? or just let it propagate?
             dynamo.user.decrement_credits(user_id, total_cost)
 
     return prepared_jobs
