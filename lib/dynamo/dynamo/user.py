@@ -38,6 +38,8 @@ def decrement_credits(user_id: str, cost: float) -> None:
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
             raise ValueError(
-                f"User '{user_id}' does not exist or they have fewer than {cost} credits"
+                f"Unable to update remaining_credits for user_id '{user_id}'."
+                f' It is likely that the user record does not exist, remaining_credits < {cost},'
+                ' or remaining_credits is of the wrong data type.'
             )
         raise
