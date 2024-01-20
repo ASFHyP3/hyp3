@@ -36,8 +36,7 @@ def decrement_credits(user_id: str, cost: float) -> None:
         )
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-            # TODO provide better error message accounting for case where user_id does not exist in the table
             raise ValueError(
-                f'Subtracting cost {cost} from user\'s remaining credits would result in a negative balance'
+                f"User '{user_id}' does not exist or they have fewer than {cost} credits"
             )
         raise
