@@ -205,15 +205,20 @@ def test_put_jobs(tables):
     assert users_response['Items'] == [{'user_id': 'user1', 'remaining_credits': expected_remaining_credits}]
 
 
-# TODO update
-def test_put_jobs_no_quota(tables, monkeypatch):
-    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '1')
+def test_put_jobs_insufficient_credits(tables, monkeypatch):
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '1')
     payload = [{'name': 'name1'}, {'name': 'name2'}]
 
-    with pytest.raises(dynamo.jobs.QuotaError):
-        jobs = dynamo.jobs.put_jobs('user1', payload)
+    with pytest.raises(dynamo.jobs.InsufficientCreditsError):
+        dynamo.jobs.put_jobs('user1', payload)
 
-    tables.users_table.put_item(Item={'user_id': 'user1', 'max_jobs_per_month': None})
+
+# TODO test fails because of bug in decrement_credits
+def test_put_jobs_infinite_credits(tables, monkeypatch):
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '1')
+    payload = [{'name': 'name1'}, {'name': 'name2'}]
+
+    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': None})
 
     jobs = dynamo.jobs.put_jobs('user1', payload)
 

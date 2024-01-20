@@ -31,6 +31,7 @@ def decrement_credits(user_id: str, cost: float) -> None:
         table.update_item(
             Key={'user_id': user_id},
             UpdateExpression='ADD remaining_credits :delta',
+            # TODO condition fails if remaining_credits is null
             ConditionExpression='remaining_credits >= :cost',
             ExpressionAttributeValues={':cost': Decimal(cost), ':delta': Decimal(-cost)},
         )
