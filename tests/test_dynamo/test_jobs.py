@@ -213,7 +213,6 @@ def test_put_jobs_insufficient_credits(tables, monkeypatch):
         dynamo.jobs.put_jobs('user1', payload)
 
 
-# TODO test fails because of bug in decrement_credits
 def test_put_jobs_infinite_credits(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '1')
     payload = [{'name': 'name1'}, {'name': 'name2'}]
