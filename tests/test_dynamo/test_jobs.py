@@ -226,10 +226,9 @@ def test_put_jobs_infinite_credits(tables, monkeypatch):
         assert job['priority'] == 0
 
 
-# TODO update
 def test_put_jobs_priority_override(tables):
     payload = [{'name': 'name1'}, {'name': 'name2'}]
-    tables.users_table.put_item(Item={'user_id': 'user1', 'priority': 100})
+    tables.users_table.put_item(Item={'user_id': 'user1', 'priority_override': 100, 'remaining_credits': 3})
 
     jobs = dynamo.jobs.put_jobs('user1', payload)
 
@@ -237,7 +236,7 @@ def test_put_jobs_priority_override(tables):
     for job in jobs:
         assert job['priority'] == 100
 
-    tables.users_table.put_item(Item={'user_id': 'user1', 'priority': 550})
+    tables.users_table.put_item(Item={'user_id': 'user1', 'priority_override': 550, 'remaining_credits': None})
 
     jobs = dynamo.jobs.put_jobs('user1', payload)
 
