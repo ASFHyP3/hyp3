@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from os import environ
-from typing import List
+from typing import List, Optional
 from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
@@ -29,29 +29,21 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     remaining_credits = user_record['remaining_credits']
     priority_override = user_record.get('priority_override')
 
+    last_job_priority = None
     prepared_jobs = []
     for job in jobs:
-        prepared_job = {
-            'job_id': str(uuid4()),
-            'user_id': user_id,
-            'status_code': 'PENDING',
-            'execution_started': False,
-            'request_time': request_time,
-            'credit_cost': get_credit_cost(job),
-            **job,
-        }
-        if priority_override:
-            priority = priority_override
-        elif remaining_credits is None:
-            priority = 0
-        elif prepared_jobs:
-            priority = max(prepared_jobs[-1]['priority'] - int(prepared_job['credit_cost']), 0)
-        else:
-            priority = min(int(remaining_credits), 9999)
-        prepared_job['priority'] = priority
+        prepared_job = prepare_job_for_database(
+            job=job,
+            user_id=user_id,
+            request_time=request_time,
+            remaining_credits=remaining_credits,
+            priority_override=priority_override,
+            last_job_priority=last_job_priority,
+        )
         prepared_jobs.append(prepared_job)
+        last_job_priority = prepared_job['priority']
 
-    total_cost = sum([job['credit_cost'] for job in prepared_jobs])
+    total_cost = sum(job['credit_cost'] for job in prepared_jobs)
     if remaining_credits is not None and total_cost > remaining_credits:
         raise InsufficientCreditsError(
             f'These jobs would cost {total_cost} credits, but you have only {remaining_credits} remaining.'
@@ -60,9 +52,39 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     if not dry_run:
         for prepared_job in prepared_jobs:
             table.put_item(Item=convert_floats_to_decimals(prepared_job))
-        # TODO: handle "negative balance" ValueError, which indicates a race condition
-        dynamo.user.decrement_credits(user_record['user_id'], total_cost)
+        # TODO: handle race condition ValueError from decrement_credits
+        dynamo.user.decrement_credits(user_id, total_cost)
+
     return prepared_jobs
+
+
+def prepare_job_for_database(
+        job: dict,
+        user_id: str,
+        request_time: str,
+        remaining_credits: Optional[float],
+        priority_override: Optional[int],
+        last_job_priority: Optional[int],
+) -> dict:
+    credit_cost = get_credit_cost(job)
+    if priority_override:
+        priority = priority_override
+    elif remaining_credits is None:
+        priority = 0
+    elif last_job_priority is None:
+        priority = min(int(remaining_credits), 9999)
+    else:
+        priority = max(last_job_priority - int(credit_cost), 0)
+    return {
+        'job_id': str(uuid4()),
+        'user_id': user_id,
+        'status_code': 'PENDING',
+        'execution_started': False,
+        'request_time': request_time,
+        'credit_cost': credit_cost,
+        'priority': priority,
+        **job,
+    }
 
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):
