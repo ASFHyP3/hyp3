@@ -29,7 +29,7 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     remaining_credits = user_record['remaining_credits']
     priority_override = user_record.get('priority_override')
 
-    last_job_priority = None
+    previous_job_priority = None
     prepared_jobs = []
     for job in jobs:
         prepared_job = prepare_job_for_database(
@@ -38,10 +38,10 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
             request_time=request_time,
             remaining_credits=remaining_credits,
             priority_override=priority_override,
-            last_job_priority=last_job_priority,
+            previous_job_priority=previous_job_priority,
         )
         prepared_jobs.append(prepared_job)
-        last_job_priority = prepared_job['priority']
+        previous_job_priority = prepared_job['priority']
 
     total_cost = sum(job['credit_cost'] for job in prepared_jobs)
     if remaining_credits is not None and total_cost > remaining_credits:
@@ -65,17 +65,19 @@ def prepare_job_for_database(
         request_time: str,
         remaining_credits: Optional[float],
         priority_override: Optional[int],
-        last_job_priority: Optional[int],
+        previous_job_priority: Optional[int],
 ) -> dict:
     credit_cost = get_credit_cost(job)
     if priority_override:
         priority = priority_override
     elif remaining_credits is None:
         priority = 0
-    elif last_job_priority is None:
+    # TODO if you have > 9999 credits, you can get higher job priority by submitting jobs one at a time;
+    #  are we OK with this behavior?
+    elif previous_job_priority is None:
         priority = min(int(remaining_credits), 9999)
     else:
-        priority = max(last_job_priority - int(credit_cost), 0)
+        priority = max(previous_job_priority - int(credit_cost), 0)
     return {
         'job_id': str(uuid4()),
         'user_id': user_id,
