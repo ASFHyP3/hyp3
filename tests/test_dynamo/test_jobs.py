@@ -245,16 +245,27 @@ def test_put_jobs_priority_override(tables):
         assert job['priority'] == 550
 
 
-# TODO update
 def test_put_jobs_priority(tables):
+    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 10_001})
+
     jobs = []
     jobs.extend(dynamo.jobs.put_jobs('user1', [{}]))
-    jobs.extend(dynamo.jobs.put_jobs('user1', [{}, {}]))
-    jobs.extend(dynamo.jobs.put_jobs('user2', [{}]))
+    jobs.extend(dynamo.jobs.put_jobs('user1', [{}]))
+    jobs.extend(dynamo.jobs.put_jobs('user1', [{}]))
+    jobs.extend(dynamo.jobs.put_jobs('user1', [{}]))
+    jobs.extend(dynamo.jobs.put_jobs('user1', [{}, {}, {}]))
+
     assert jobs[0]['priority'] == 9999
-    assert jobs[1]['priority'] == 9998
-    assert jobs[2]['priority'] == 9997
-    assert jobs[3]['priority'] == 9999
+    assert jobs[1]['priority'] == 9999
+    assert jobs[2]['priority'] == 9999
+    assert jobs[3]['priority'] == 9998
+    assert jobs[4]['priority'] == 9997
+    assert jobs[5]['priority'] == 9996
+    assert jobs[6]['priority'] == 9995
+
+    jobs.extend(dynamo.jobs.put_jobs('user2', [{}]))
+
+    assert jobs[7]['priority'] == int(os.environ['DEFAULT_CREDITS_PER_USER'])
 
 
 # TODO update
