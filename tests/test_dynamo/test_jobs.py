@@ -267,10 +267,9 @@ def test_put_jobs_priority(tables):
     assert jobs[7]['priority'] == int(os.environ['DEFAULT_CREDITS_PER_USER'])
 
 
-# TODO update
 def test_put_jobs_priority_overflow(tables, monkeypatch):
-    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '10001')
-    many_jobs = [{} for ii in range(10001)]
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '10_001')
+    many_jobs = [{} for _ in range(10_001)]
     jobs = dynamo.jobs.put_jobs('user3', many_jobs)
     assert jobs[-1]['priority'] == 0
     assert jobs[-2]['priority'] == 0
