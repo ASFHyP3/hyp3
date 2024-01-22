@@ -77,6 +77,7 @@ def prepare_job_for_database(
     elif previous_job_priority is None:
         priority = min(int(remaining_credits), 9999)
     else:
+        # TODO should we raise exception if reach 0?
         priority = max(previous_job_priority - int(credit_cost), 0)
     return {
         'job_id': str(uuid4()),

@@ -246,27 +246,37 @@ def test_put_jobs_priority_override(tables):
 
 
 def test_put_jobs_priority(tables):
-    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 10_001})
+    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 30})
 
-    jobs = []
-    jobs.extend(dynamo.jobs.put_jobs('user1', [{}, {}, {}]))
-    jobs.extend(dynamo.jobs.put_jobs('user1', [{}]))
-    jobs.extend(dynamo.jobs.put_jobs('user1', [{}, {}, {}]))
+    jobs = dynamo.jobs.put_jobs(user_id='user1', jobs=[{}, {}, {}])
+    assert jobs[0]['priority'] == 30
+    assert jobs[1]['priority'] == 29
+    assert jobs[2]['priority'] == 28
 
-    # TODO is this the behavior we want?
+    jobs.extend(dynamo.jobs.put_jobs(user_id='user1', jobs=[{}, {}]))
+    assert jobs[3]['priority'] == 27
+    assert jobs[4]['priority'] == 26
+
+
+def test_put_jobs_priority_extra_credits(tables):
+    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 10_003})
+
+    jobs = dynamo.jobs.put_jobs(user_id='user1', jobs=[{}])
     assert jobs[0]['priority'] == 9999
-    assert jobs[1]['priority'] == 9998
-    assert jobs[2]['priority'] == 9997
-    assert jobs[3]['priority'] == 9998
-    assert jobs[4]['priority'] == 9997
-    assert jobs[5]['priority'] == 9996
-    assert jobs[6]['priority'] == 9995
 
-    jobs.extend(dynamo.jobs.put_jobs('user2', [{}]))
+    jobs.extend(dynamo.jobs.put_jobs(user_id='user1', jobs=[{}]))
+    assert jobs[1]['priority'] == 9999
 
-    assert jobs[7]['priority'] == int(os.environ['DEFAULT_CREDITS_PER_USER'])
+    jobs.extend(dynamo.jobs.put_jobs(user_id='user1', jobs=[{}] * 6))
+    assert jobs[2]['priority'] == 9999
+    assert jobs[3]['priority'] == 9999
+    assert jobs[4]['priority'] == 9999
+    assert jobs[5]['priority'] == 9998
+    assert jobs[6]['priority'] == 9997
+    assert jobs[7]['priority'] == 9996
 
 
+# TODO is this still the desired behavior?
 def test_put_jobs_priority_overflow(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '10_001')
     many_jobs = [{} for _ in range(10_001)]
