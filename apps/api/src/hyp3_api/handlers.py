@@ -87,5 +87,6 @@ def get_user(user):
     return {
         'user_id': user,
         'remaining_credits': user_record['remaining_credits'],
+        # TODO: count this as jobs are submitted, not every time `/user` is queried
         'job_names': get_names_for_user(user)
     }
