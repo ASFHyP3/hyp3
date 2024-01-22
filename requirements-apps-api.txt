@@ -1,6 +1,6 @@
 flask==2.2.5
 Flask-Cors==4.0.0
-jsonschema==4.20.0
+jsonschema==4.21.1
 # TODO convert this pin back to the normal format after the next PyPI release
 openapi-core @ git+https://github.com/python-openapi/openapi-core@0.19.0a1
 prance==23.6.21.0
