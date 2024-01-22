@@ -79,6 +79,7 @@ def get_names_for_user(user):
 
 
 def get_user(user):
+    # TODO: maybe create a helper function for this since we do the same thing in `put_jobs`
     user_record = dynamo.user.get_user(user)
     if not user_record:
         user_record = dynamo.user.create_user(user)
