@@ -6,8 +6,6 @@ from test_api.conftest import DEFAULT_USERNAME, login, make_job, setup_requests_
 from dynamo.util import format_time
 
 
-# TODO update for credits system?
-
 def test_submit_one_job(client, tables):
     login(client)
     batch = [make_job()]
