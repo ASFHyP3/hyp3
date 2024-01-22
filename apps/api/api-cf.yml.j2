@@ -12,7 +12,7 @@ Parameters:
   AuthAlgorithm:
     Type: String
 
-  MonthlyJobQuotaPerUser:
+  DefaultCreditsPerUser:
     Type: Number
 
   SystemAvailable:
@@ -179,7 +179,7 @@ Resources:
           USERS_TABLE_NAME: !Ref UsersTable
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITHM: !Ref AuthAlgorithm
-          MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
+          DEFAULT_CREDITS_PER_USER: !Ref DefaultCreditsPerUser
           SYSTEM_AVAILABLE: !Ref SystemAvailable
       Code: src/
       Handler: hyp3_api.lambda_handler.handler

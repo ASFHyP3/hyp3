@@ -19,7 +19,7 @@ jobs:
             template_bucket: cf-templates-3o5lnspmwmzg-us-west-2
             image_tag: latest
             product_lifetime_in_days: 45
-            quota: 0
+            default_credits_per_user: 0
             job_files: >-
               job_spec/AUTORIFT_ITS_LIVE.yml
               job_spec/AUTORIFT_ITS_LIVE_TEST.yml
@@ -37,7 +37,7 @@ jobs:
             template_bucket: cf-templates-v4pvone059de-us-west-2
             image_tag: latest
             product_lifetime_in_days: 180
-            quota: 0
+            default_credits_per_user: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 10000
@@ -52,7 +52,7 @@ jobs:
             template_bucket: cf-templates-1or0efwqffkgd-us-west-2
             image_tag: latest
             product_lifetime_in_days: 60
-            quota: 0
+            default_credits_per_user: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 0
@@ -67,7 +67,7 @@ jobs:
             template_bucket: cf-templates-gdeyr9hh8rzs-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
-            quota: 0
+            default_credits_per_user: 0
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 1600
@@ -82,7 +82,7 @@ jobs:
             template_bucket: cf-templates-1x4a21iq1cba7-us-west-2
             image_tag: latest
             product_lifetime_in_days: 365000
-            quota: 0
+            default_credits_per_user: 0
             job_files: job_spec/INSAR_GAMMA.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
@@ -97,7 +97,7 @@ jobs:
             template_bucket: cf-templates-1217di08q7vwl-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
-            quota: 0
+            default_credits_per_user: 0
             job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
@@ -112,7 +112,7 @@ jobs:
             template_bucket: cf-templates-15gmiot9prm67-us-west-2
             image_tag: latest
             product_lifetime_in_days: 90
-            quota: 0
+            default_credits_per_user: 0
             job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1600
@@ -127,7 +127,7 @@ jobs:
             template_bucket: cf-templates-xlga17noink6-us-west-2
             image_tag: latest
             product_lifetime_in_days: 30
-            quota: 0
+            default_credits_per_user: 0
             job_files: job_spec/INSAR_GAMMA.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
@@ -142,7 +142,7 @@ jobs:
             template_bucket: cf-templates-j4kd746vpsuv-us-east-1
             image_tag: latest
             product_lifetime_in_days: 14
-            quota: 0
+            default_credits_per_user: 0
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
@@ -157,7 +157,7 @@ jobs:
             template_bucket: cf-templates-ez0805f6vy20-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
-            quota: 0
+            default_credits_per_user: 0
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
@@ -172,7 +172,7 @@ jobs:
             template_bucket: cf-templates-1qx2mwia5g4kh-us-west-2
             image_tag: latest
             product_lifetime_in_days: 30
-            quota: 0
+            default_credits_per_user: 0
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
@@ -189,7 +189,7 @@ jobs:
             # TODO product lifetime could be much shorter since they all get transferred to a separate
             # S3 bucket, but maybe we want to allow for a backlog of products-to-be-transferred?
             product_lifetime_in_days: 14
-            quota: 0
+            default_credits_per_user: 0
             job_files: job_spec/WATER_MAP.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
@@ -230,7 +230,7 @@ jobs:
           SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
           SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
-          MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
+          DEFAULT_CREDITS_PER_USER: ${{ matrix.default_credits_per_user }}
           JOB_FILES: ${{ matrix.job_files }}
           DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
