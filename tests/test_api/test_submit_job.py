@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from http import HTTPStatus
 
-from test_api.conftest import DEFAULT_USERNAME, login, make_db_record, make_job, setup_requests_mock, submit_batch
+from test_api.conftest import DEFAULT_USERNAME, login, make_job, setup_requests_mock, submit_batch
 
 from dynamo.util import format_time
 

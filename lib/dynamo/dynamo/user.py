@@ -4,6 +4,7 @@ from os import environ
 from typing import Optional
 
 import botocore.exceptions
+
 from dynamo.util import DYNAMODB_RESOURCE
 
 
