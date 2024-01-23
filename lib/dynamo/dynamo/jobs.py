@@ -32,24 +32,20 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
 
     priority_override = user_record.get('priority_override')
 
-    expected_remaining_credits = remaining_credits
+    total_cost = 0
     prepared_jobs = []
     for job in jobs:
-        credit_cost = get_credit_cost(job)
         prepared_job = prepare_job_for_database(
             job=job,
             user_id=user_id,
             request_time=request_time,
             remaining_credits=remaining_credits,
             priority_override=priority_override,
-            expected_remaining_credits=expected_remaining_credits,
-            credit_cost=credit_cost,
+            running_cost=total_cost,
         )
         prepared_jobs.append(prepared_job)
-        if expected_remaining_credits is not None:
-            expected_remaining_credits -= credit_cost
+        total_cost += prepared_job['credit_cost']
 
-    total_cost = sum(job['credit_cost'] for job in prepared_jobs)
     if remaining_credits is not None and total_cost > remaining_credits:
         raise InsufficientCreditsError(
             f'These jobs would cost {total_cost} credits, but you have only {remaining_credits} remaining.'
@@ -72,22 +68,21 @@ def prepare_job_for_database(
         request_time: str,
         remaining_credits: Optional[float],
         priority_override: Optional[int],
-        expected_remaining_credits: Optional[float],
-        credit_cost: float,
+        running_cost: float,
 ) -> dict:
     if priority_override:
         priority = priority_override
     elif remaining_credits is None:
         priority = 0
     else:
-        priority = min(int(expected_remaining_credits), 9999)
+        priority = min(int(remaining_credits - running_cost), 9999)
     return {
         'job_id': str(uuid4()),
         'user_id': user_id,
         'status_code': 'PENDING',
         'execution_started': False,
         'request_time': request_time,
-        'credit_cost': credit_cost,
+        'credit_cost': get_credit_cost(job),
         'priority': priority,
         **job,
     }
