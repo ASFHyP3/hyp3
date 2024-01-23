@@ -27,9 +27,12 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
         user_record = dynamo.user.create_user(user_id)
 
     remaining_credits = user_record['remaining_credits']
+    if remaining_credits is not None:
+        remaining_credits = float(remaining_credits)
+
     priority_override = user_record.get('priority_override')
 
-    previous_job_priority = None
+    total_cost = 0.0
     prepared_jobs = []
     for job in jobs:
         prepared_job = prepare_job_for_database(
@@ -38,23 +41,22 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
             request_time=request_time,
             remaining_credits=remaining_credits,
             priority_override=priority_override,
-            previous_job_priority=previous_job_priority,
+            running_cost=total_cost,
         )
         prepared_jobs.append(prepared_job)
-        previous_job_priority = prepared_job['priority']
+        total_cost += prepared_job['credit_cost']
 
-    total_cost = sum(job['credit_cost'] for job in prepared_jobs)
     if remaining_credits is not None and total_cost > remaining_credits:
         raise InsufficientCreditsError(
             f'These jobs would cost {total_cost} credits, but you have only {remaining_credits} remaining.'
         )
 
+    assert prepared_jobs[-1]['priority'] >= 0
     if not dry_run:
         with table.batch_writer() as batch:
             for prepared_job in prepared_jobs:
                 batch.put_item(Item=convert_floats_to_decimals(prepared_job))
         if remaining_credits is not None:
-            # TODO: handle ValueError from decrement_credits? or just let it propagate?
             dynamo.user.decrement_credits(user_id, total_cost)
 
     return prepared_jobs
@@ -66,26 +68,21 @@ def prepare_job_for_database(
         request_time: str,
         remaining_credits: Optional[float],
         priority_override: Optional[int],
-        previous_job_priority: Optional[int],
+        running_cost: float,
 ) -> dict:
-    credit_cost = get_credit_cost(job)
     if priority_override:
         priority = priority_override
     elif remaining_credits is None:
         priority = 0
-    # TODO if you have > 9999 credits, you can get higher job priority by submitting jobs one at a time;
-    #  are we OK with this behavior?
-    elif previous_job_priority is None:
-        priority = min(int(remaining_credits), 9999)
     else:
-        priority = max(previous_job_priority - int(credit_cost), 0)
+        priority = min(int(remaining_credits - running_cost), 9999)
     return {
         'job_id': str(uuid4()),
         'user_id': user_id,
         'status_code': 'PENDING',
         'execution_started': False,
         'request_time': request_time,
-        'credit_cost': credit_cost,
+        'credit_cost': get_credit_cost(job),
         'priority': priority,
         **job,
     }
