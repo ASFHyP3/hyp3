@@ -32,7 +32,7 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
 
     priority_override = user_record.get('priority_override')
 
-    total_cost = 0
+    total_cost = 0.0
     prepared_jobs = []
     for job in jobs:
         prepared_job = prepare_job_for_database(
