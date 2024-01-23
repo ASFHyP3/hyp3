@@ -27,12 +27,15 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
         user_record = dynamo.user.create_user(user_id)
 
     remaining_credits = user_record['remaining_credits']
+    if remaining_credits is not None:
+        remaining_credits = float(remaining_credits)
+
     priority_override = user_record.get('priority_override')
 
     expected_remaining_credits = remaining_credits
     prepared_jobs = []
     for job in jobs:
-        credit_cost = int(get_credit_cost(job))
+        credit_cost = get_credit_cost(job)
         prepared_job = prepare_job_for_database(
             job=job,
             user_id=user_id,
@@ -69,15 +72,15 @@ def prepare_job_for_database(
         request_time: str,
         remaining_credits: Optional[float],
         priority_override: Optional[int],
-        expected_remaining_credits: Optional[int],
-        credit_cost: int,
+        expected_remaining_credits: Optional[float],
+        credit_cost: float,
 ) -> dict:
     if priority_override:
         priority = priority_override
     elif remaining_credits is None:
         priority = 0
     else:
-        priority = min(expected_remaining_credits, 9999)
+        priority = min(int(expected_remaining_credits), 9999)
     return {
         'job_id': str(uuid4()),
         'user_id': user_id,

@@ -127,8 +127,7 @@ def test_submit_exceeds_quota(client, tables, monkeypatch):
 
     response2 = submit_batch(client, batch2)
     assert response2.status_code == HTTPStatus.BAD_REQUEST
-    # TODO maybe we should fix dynamo.jobs.put_jobs so that the formatting (float vs. int) is consistent
-    assert response2.json['detail'] == 'These jobs would cost 10.0 credits, but you have only 5 remaining.'
+    assert response2.json['detail'] == 'These jobs would cost 10.0 credits, but you have only 5.0 remaining.'
 
 
 def test_submit_without_jobs(client):
