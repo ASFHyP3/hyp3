@@ -79,11 +79,7 @@ def get_names_for_user(user):
 
 
 def get_user(user):
-    # TODO: maybe create a helper function for this since we do the same thing in `put_jobs`
-    user_record = dynamo.user.get_user(user)
-    if not user_record:
-        user_record = dynamo.user.create_user(user)
-
+    user_record = dynamo.user.get_or_create_user(user)
     return {
         'user_id': user,
         'remaining_credits': user_record['remaining_credits'],

@@ -75,7 +75,6 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
 
 
 # TODO tests
-# TODO fine to not call _reset_credits_if_needed?
 def decrement_credits(user_id: str, cost: float) -> None:
     if cost <= 0:
         raise ValueError(f'Cost {cost} <= 0')
