@@ -39,7 +39,7 @@ def get_or_create_user(user_id: str) -> dict:
 
 # TODO tests
 def _create_user(user_id: str, default_credits: Decimal, current_month: str, users_table) -> dict:
-    user = {'user_id': user_id, 'remaining_credits': default_credits, 'month_last_reset': current_month}
+    user = {'user_id': user_id, 'remaining_credits': default_credits, 'month_of_last_credits_reset': current_month}
     try:
         users_table.put_item(Item=user, ConditionExpression='attribute_not_exists(user_id)')
     except botocore.exceptions.ClientError as e:
@@ -52,15 +52,15 @@ def _create_user(user_id: str, default_credits: Decimal, current_month: str, use
 # TODO tests
 def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> None:
     if os.environ['RESET_CREDITS_MONTHLY'] == 'yes'\
-            and user['month_last_reset'] < current_month\
+            and user['month_of_last_credits_reset'] < current_month\
             and user['remaining_credits'] is not None:
         user_id = user['user_id']
         try:
             users_table.update_item(
                 Key={'user_id': user_id},
-                UpdateExpression='SET month_last_reset = :current_month,'
+                UpdateExpression='SET month_of_last_credits_reset = :current_month,'
                                  ' remaining_credits = :default_credits',
-                ConditionExpression='month_last_reset < :current_month'
+                ConditionExpression='month_of_last_credits_reset < :current_month'
                                     ' AND attribute_type(remaining_credits, :number)',
                 ExpressionAttributeValues={
                     ':default_credits': default_credits,
