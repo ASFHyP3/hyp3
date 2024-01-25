@@ -6,6 +6,9 @@ import pytest
 import dynamo.user
 
 
+# TODO mock the private functions when testing get_or_create_user
+
+
 def test_get_or_create_user_reset(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
     monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'yes')
