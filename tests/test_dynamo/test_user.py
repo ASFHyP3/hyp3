@@ -59,6 +59,18 @@ def test_create_user(tables):
     assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
 
 
+def test_create_user_failed(tables):
+    tables.users_table.put_item(Item={'user_id': 'foo'})
+
+    with pytest.raises(dynamo.user.DatabaseConditionException):
+        dynamo.user._create_user(
+            user_id='foo',
+            default_credits=Decimal(25),
+            current_month='2024-02',
+            users_table=tables.users_table
+        )
+
+
 # TODO update
 def test_decrement_credits(tables):
     with pytest.raises(ValueError):
