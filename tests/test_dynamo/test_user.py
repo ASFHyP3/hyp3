@@ -164,6 +164,21 @@ def test_reset_credits_failed_month(tables, monkeypatch):
         )
 
 
+def test_reset_credits_failed_infinite_credits(tables, monkeypatch):
+    monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'yes')
+    tables.users_table.put_item(
+        Item={'user_id': 'foo', 'remaining_credits': None, 'month_of_last_credits_reset': '2024-01'}
+    )
+
+    with pytest.raises(dynamo.user.DatabaseConditionException):
+        dynamo.user._reset_credits_if_needed(
+            user={'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-01'},
+            default_credits=Decimal(25),
+            current_month='2024-02',
+            users_table=tables.users_table,
+        )
+
+
 # TODO update
 def test_decrement_credits(tables):
     with pytest.raises(ValueError):
