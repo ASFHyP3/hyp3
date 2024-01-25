@@ -47,6 +47,18 @@ def test_get_or_create_user_create(tables, monkeypatch):
     assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
 
 
+def test_create_user(tables):
+    user = dynamo.user._create_user(
+        user_id='foo',
+        default_credits=Decimal(25),
+        current_month='2024-02',
+        users_table=tables.users_table
+    )
+
+    assert user == {'user_id': 'foo', 'remaining_credits': Decimal(25), 'month_of_last_credits_reset': '2024-02'}
+    assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
+
+
 # TODO update
 def test_decrement_credits(tables):
     with pytest.raises(ValueError):
