@@ -36,9 +36,15 @@ def test_get_or_create_user_no_reset(tables, monkeypatch):
     assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
 
 
-def test_get_or_create_user_does_not_exist():
-    # TODO
-    assert False
+def test_get_or_create_user_create(tables, monkeypatch):
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
+
+    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
+        mock_get_current_month.return_value = '2024-02'
+        user = dynamo.user.get_or_create_user('foo')
+
+    assert user == {'user_id': 'foo', 'remaining_credits': Decimal(25), 'month_of_last_credits_reset': '2024-02'}
+    assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
 
 
 # TODO update
