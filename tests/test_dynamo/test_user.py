@@ -28,6 +28,27 @@ def test_get_or_create_user_reset(tables, monkeypatch):
     assert user == 'reset_credits_return_value'
 
 
+def test_get_or_create_user_create(tables, monkeypatch):
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
+
+    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month, \
+            unittest.mock.patch('dynamo.user._create_user') as mock_create_user:
+        mock_get_current_month.return_value = '2024-02'
+        mock_create_user.return_value = 'create_user_return_value'
+
+        user = dynamo.user.get_or_create_user('foo')
+
+        mock_get_current_month.assert_called_once_with()
+        mock_create_user.assert_called_once_with(
+            user_id='foo',
+            default_credits=Decimal(25),
+            current_month='2024-02',
+            users_table=tables.users_table,
+        )
+
+    assert user == 'create_user_return_value'
+
+
 def test_create_user(tables):
     user = dynamo.user._create_user(
         user_id='foo',
