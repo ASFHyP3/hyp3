@@ -40,7 +40,6 @@ def _get_current_month() -> str:
     return datetime.now(tz=timezone.utc).strftime('%Y-%m')
 
 
-# TODO tests
 def _create_user(user_id: str, default_credits: Decimal, current_month: str, users_table) -> dict:
     user = {'user_id': user_id, 'remaining_credits': default_credits, 'month_of_last_credits_reset': current_month}
     try:
