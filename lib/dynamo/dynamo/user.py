@@ -14,14 +14,14 @@ class DatabaseConditionException(Exception):
 
 # TODO tests
 def get_or_create_user(user_id: str) -> dict:
-    current_month = datetime.now(tz=timezone.utc).strftime('%Y-%m')
+    current_month = _get_current_month()
     default_credits = Decimal(os.environ['DEFAULT_CREDITS_PER_USER'])
 
     users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     user = users_table.get_item(Key={'user_id': user_id}).get('Item')
 
     if user is not None:
-        _reset_credits_if_needed(
+        user = _reset_credits_if_needed(
             user=user,
             default_credits=default_credits,
             current_month=current_month,
@@ -37,6 +37,10 @@ def get_or_create_user(user_id: str) -> dict:
     return user
 
 
+def _get_current_month() -> str:
+    return datetime.now(tz=timezone.utc).strftime('%Y-%m')
+
+
 # TODO tests
 def _create_user(user_id: str, default_credits: Decimal, current_month: str, users_table) -> dict:
     user = {'user_id': user_id, 'remaining_credits': default_credits, 'month_of_last_credits_reset': current_month}
@@ -50,28 +54,29 @@ def _create_user(user_id: str, default_credits: Decimal, current_month: str, use
 
 
 # TODO tests
-def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> None:
-    if os.environ['RESET_CREDITS_MONTHLY'] == 'yes'\
-            and user['month_of_last_credits_reset'] < current_month\
-            and user['remaining_credits'] is not None:
-        user_id = user['user_id']
+def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> dict:
+    if (
+            os.environ['RESET_CREDITS_MONTHLY'] == 'yes'
+            and user['month_of_last_credits_reset'] < current_month
+            and user['remaining_credits'] is not None
+    ):
+        user['month_of_last_credits_reset'] = current_month
+        user['remaining_credits'] = default_credits
         try:
-            users_table.update_item(
-                Key={'user_id': user_id},
-                UpdateExpression='SET month_of_last_credits_reset = :current_month,'
-                                 ' remaining_credits = :default_credits',
+            users_table.put_item(
+                Item=user,
                 ConditionExpression='month_of_last_credits_reset < :current_month'
                                     ' AND attribute_type(remaining_credits, :number)',
                 ExpressionAttributeValues={
-                    ':default_credits': default_credits,
                     ':current_month': current_month,
                     ':number': 'N',
                 },
             )
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-                raise DatabaseConditionException(f'Failed to perform monthly credits reset for user {user_id}')
+                raise DatabaseConditionException(f'Failed to perform monthly credits reset for user {user["user_id"]}')
             raise
+    return user
 
 
 # TODO tests

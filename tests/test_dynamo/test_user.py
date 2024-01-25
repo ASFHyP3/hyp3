@@ -1,9 +1,32 @@
+import unittest.mock
+from decimal import Decimal
+
 import pytest
 
 import dynamo.user
 
 
-# TODO update?
+def test_get_or_create_user_already_exists(tables, monkeypatch):
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
+    monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'yes')
+    tables.users_table.put_item(
+        Item={'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-01'}
+    )
+
+    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
+        mock_get_current_month.return_value = '2024-02'
+        user = dynamo.user.get_or_create_user('foo')
+
+    assert user == {'user_id': 'foo', 'remaining_credits': Decimal(25), 'month_of_last_credits_reset': '2024-02'}
+    assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
+
+
+def test_get_or_create_user_does_not_exist():
+    # TODO
+    assert False
+
+
+# TODO update
 def test_decrement_credits(tables):
     with pytest.raises(ValueError):
         dynamo.user.decrement_credits('foo', 1)
