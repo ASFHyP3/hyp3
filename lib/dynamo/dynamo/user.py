@@ -51,7 +51,6 @@ def _create_user(user_id: str, default_credits: Decimal, current_month: str, use
     return user
 
 
-# TODO tests
 def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> dict:
     if (
             os.environ['RESET_CREDITS_MONTHLY'] == 'yes'
