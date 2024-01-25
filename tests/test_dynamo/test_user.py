@@ -6,48 +6,26 @@ import pytest
 import dynamo.user
 
 
-# TODO mock the private functions when testing get_or_create_user
-
-
 def test_get_or_create_user_reset(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
-    monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'yes')
-    tables.users_table.put_item(
-        Item={'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-01'}
-    )
+    tables.users_table.put_item(Item={'user_id': 'foo'})
 
-    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
+    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month, \
+            unittest.mock.patch('dynamo.user._reset_credits_if_needed') as mock_reset_credits_if_needed:
         mock_get_current_month.return_value = '2024-02'
+        mock_reset_credits_if_needed.return_value = 'reset_credits_return_value'
+
         user = dynamo.user.get_or_create_user('foo')
 
-    assert user == {'user_id': 'foo', 'remaining_credits': Decimal(25), 'month_of_last_credits_reset': '2024-02'}
-    assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
+        mock_get_current_month.assert_called_once_with()
+        mock_reset_credits_if_needed.assert_called_once_with(
+            user={'user_id': 'foo'},
+            default_credits=Decimal(25),
+            current_month='2024-02',
+            users_table=tables.users_table,
+        )
 
-
-def test_get_or_create_user_no_reset(tables, monkeypatch):
-    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
-    monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'no')
-    tables.users_table.put_item(
-        Item={'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-01'}
-    )
-
-    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
-        mock_get_current_month.return_value = '2024-02'
-        user = dynamo.user.get_or_create_user('foo')
-
-    assert user == {'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-01'}
-    assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
-
-
-def test_get_or_create_user_create(tables, monkeypatch):
-    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
-
-    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
-        mock_get_current_month.return_value = '2024-02'
-        user = dynamo.user.get_or_create_user('foo')
-
-    assert user == {'user_id': 'foo', 'remaining_credits': Decimal(25), 'month_of_last_credits_reset': '2024-02'}
-    assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
+    assert user == 'reset_credits_return_value'
 
 
 def test_create_user(tables):
