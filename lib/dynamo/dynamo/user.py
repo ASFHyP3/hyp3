@@ -12,6 +12,7 @@ class DatabaseConditionException(Exception):
     """Raised when a DynamoDB condition expression check fails."""
 
 
+# TODO tests
 def get_or_create_user(user_id: str) -> dict:
     current_month = _get_current_month()
     default_credits = Decimal(os.environ['DEFAULT_CREDITS_PER_USER'])
