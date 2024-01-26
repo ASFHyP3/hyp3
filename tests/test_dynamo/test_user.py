@@ -178,3 +178,15 @@ def test_reset_credits_failed_infinite_credits(tables, monkeypatch):
             users_table=tables.users_table,
         )
 
+
+def test_decrement_credits(tables, monkeypatch):
+    tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': Decimal(25)})
+
+    dynamo.user.decrement_credits('foo', 1)
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(24)}]
+
+    dynamo.user.decrement_credits('foo', 4)
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(20)}]
+
+    dynamo.user.decrement_credits('foo', 20)
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
