@@ -216,7 +216,6 @@ def test_decrement_credits_invalid_cost(tables):
 
 
 # TODO rename `*failed*` tests
-# TODO check database condition for all the other `*failed*` tests
 # TODO use scan instead of get_item?
 
 def test_decrement_credits_failed_cost_too_high(tables):
