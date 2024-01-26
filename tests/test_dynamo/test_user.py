@@ -1,6 +1,7 @@
 import unittest.mock
 from decimal import Decimal
 
+import botocore.exceptions
 import pytest
 
 import dynamo.user
@@ -216,4 +217,15 @@ def test_decrement_credits_failed_cost_too_high(tables):
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
 
     with pytest.raises(dynamo.user.DatabaseConditionException):
+        dynamo.user.decrement_credits('foo', 1)
+
+
+def test_decrement_credits_failed_infinite_credits(tables):
+    tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': None})
+
+    with pytest.raises(
+            botocore.exceptions.ClientError,
+            match=r'^An error occurred \(ValidationException\) when calling the UpdateItem operation:'
+                  r' An operand in the update expression has an incorrect data type$'
+    ):
         dynamo.user.decrement_credits('foo', 1)
