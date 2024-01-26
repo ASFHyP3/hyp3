@@ -198,3 +198,22 @@ def test_decrement_credits_invalid_cost():
 
     with pytest.raises(ValueError, match=r'^Cost -1 <= 0$'):
         dynamo.user.decrement_credits('foo', -1)
+
+
+# TODO check database condition for all the other `*failed*` tests
+# TODO use scan instead of get_item?
+
+def test_decrement_credits_failed_cost_too_high(tables):
+    tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': Decimal(1)})
+
+    with pytest.raises(dynamo.user.DatabaseConditionException):
+        dynamo.user.decrement_credits('foo', 2)
+
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(1)}]
+
+    dynamo.user.decrement_credits('foo', 1)
+
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
+
+    with pytest.raises(dynamo.user.DatabaseConditionException):
+        dynamo.user.decrement_credits('foo', 1)
