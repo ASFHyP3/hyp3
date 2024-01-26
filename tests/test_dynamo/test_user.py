@@ -201,6 +201,7 @@ def test_decrement_credits_invalid_cost():
         dynamo.user.decrement_credits('foo', -1)
 
 
+# TODO rename `*failed*` tests
 # TODO check database condition for all the other `*failed*` tests
 # TODO use scan instead of get_item?
 
