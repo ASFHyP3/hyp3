@@ -59,7 +59,7 @@ def test_create_user(tables):
     )
 
     assert user == {'user_id': 'foo', 'remaining_credits': Decimal(25), 'month_of_last_credits_reset': '2024-02'}
-    assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
+    assert tables.users_table.scan()['Items'] == [user]
 
 
 def test_create_user_failed(tables):
@@ -92,7 +92,7 @@ def test_reset_credits(tables, monkeypatch):
     )
 
     assert user == {'user_id': 'foo', 'remaining_credits': Decimal(25), 'month_of_last_credits_reset': '2024-02'}
-    assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
+    assert tables.users_table.scan()['Items'] == [user]
 
 
 def test_reset_credits_no_reset(tables, monkeypatch):
@@ -111,7 +111,7 @@ def test_reset_credits_no_reset(tables, monkeypatch):
     )
 
     assert user == {'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-01'}
-    assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
+    assert tables.users_table.scan()['Items'] == [user]
 
 
 def test_reset_credits_same_month(tables, monkeypatch):
@@ -130,7 +130,7 @@ def test_reset_credits_same_month(tables, monkeypatch):
     )
 
     assert user == {'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-02'}
-    assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
+    assert tables.users_table.scan()['Items'] == [user]
 
 
 def test_reset_credits_infinite_credits(tables, monkeypatch):
@@ -149,7 +149,7 @@ def test_reset_credits_infinite_credits(tables, monkeypatch):
     )
 
     assert user == {'user_id': 'foo', 'remaining_credits': None, 'month_of_last_credits_reset': '2024-01'}
-    assert user == tables.users_table.get_item(Key={'user_id': 'foo'})['Item']
+    assert tables.users_table.scan()['Items'] == [user]
 
 
 def test_reset_credits_failed_month(tables, monkeypatch):
@@ -216,7 +216,6 @@ def test_decrement_credits_invalid_cost(tables):
 
 
 # TODO rename `*failed*` tests
-# TODO use scan instead of get_item?
 
 def test_decrement_credits_failed_cost_too_high(tables):
     tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': Decimal(1)})
