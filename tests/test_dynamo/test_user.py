@@ -219,6 +219,8 @@ def test_decrement_credits_failed_cost_too_high(tables):
     with pytest.raises(dynamo.user.DatabaseConditionException):
         dynamo.user.decrement_credits('foo', 1)
 
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
+
 
 def test_decrement_credits_failed_infinite_credits(tables):
     tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': None})
@@ -229,3 +231,5 @@ def test_decrement_credits_failed_infinite_credits(tables):
                   r' An operand in the update expression has an incorrect data type$'
     ):
         dynamo.user.decrement_credits('foo', 1)
+
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': None}]
