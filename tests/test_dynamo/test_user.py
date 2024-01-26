@@ -62,7 +62,7 @@ def test_create_user(tables):
     assert tables.users_table.scan()['Items'] == [user]
 
 
-def test_create_user_failed(tables):
+def test_create_user_already_exists(tables):
     tables.users_table.put_item(Item={'user_id': 'foo'})
 
     with pytest.raises(dynamo.user.DatabaseConditionException):
@@ -152,7 +152,7 @@ def test_reset_credits_infinite_credits(tables, monkeypatch):
     assert tables.users_table.scan()['Items'] == [user]
 
 
-def test_reset_credits_failed_month(tables, monkeypatch):
+def test_reset_credits_failed_same_month(tables, monkeypatch):
     monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'yes')
     tables.users_table.put_item(
         Item={'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-02'}
@@ -215,9 +215,7 @@ def test_decrement_credits_invalid_cost(tables):
     assert tables.users_table.scan()['Items'] == []
 
 
-# TODO rename `*failed*` tests
-
-def test_decrement_credits_failed_cost_too_high(tables):
+def test_decrement_credits_cost_too_high(tables):
     tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': Decimal(1)})
 
     with pytest.raises(dynamo.user.DatabaseConditionException):
@@ -235,7 +233,7 @@ def test_decrement_credits_failed_cost_too_high(tables):
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
 
 
-def test_decrement_credits_failed_infinite_credits(tables):
+def test_decrement_credits_infinite_credits(tables):
     tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': None})
 
     with pytest.raises(
@@ -248,7 +246,7 @@ def test_decrement_credits_failed_infinite_credits(tables):
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': None}]
 
 
-def test_decrement_credits_failed_user_does_not_exist(tables):
+def test_decrement_credits_user_does_not_exist(tables):
     with pytest.raises(dynamo.user.DatabaseConditionException):
         dynamo.user.decrement_credits('foo', 1)
 
