@@ -38,8 +38,10 @@ inputs:
   DEFAULT_CREDITS_PER_USER:
     description: "The default number of credits given to a new user"
     required: true
+  RESET_CREDITS_MONTHLY:
+    description: "Reset each user's remaining credits each month if and only if this value is 'yes'"
   JOB_FILES:
-    description: "Space seperated list of job spec YAMLs to include"
+    description: "Space separated list of job spec YAMLs to include"
     required: true
   DEFAULT_MAX_VCPUS:
     description: "Default maximum size for the AWS Batch compute environment"
@@ -120,6 +122,7 @@ runs:
                 $ORIGIN_ACCESS_IDENTITY_ID \
                 $DISTRIBUTION_URL \
                 DefaultCreditsPerUser='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
+                ResetCreditsMonthly='${{ inputs.RESET_CREDITS_MONTHLY }}' \
                 DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
                 ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
                 MonthlyBudget='${{ inputs.MONTHLY_BUDGET }}' \
