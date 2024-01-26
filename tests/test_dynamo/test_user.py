@@ -73,6 +73,8 @@ def test_create_user_failed(tables):
             users_table=tables.users_table
         )
 
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'foo'}]
+
 
 def test_reset_credits(tables, monkeypatch):
     monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'yes')
@@ -164,6 +166,10 @@ def test_reset_credits_failed_month(tables, monkeypatch):
             users_table=tables.users_table,
         )
 
+    assert tables.users_table.scan()['Items'] == [
+        {'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-02'}
+    ]
+
 
 def test_reset_credits_failed_infinite_credits(tables, monkeypatch):
     monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'yes')
@@ -179,6 +185,10 @@ def test_reset_credits_failed_infinite_credits(tables, monkeypatch):
             users_table=tables.users_table,
         )
 
+    assert tables.users_table.scan()['Items'] == [
+        {'user_id': 'foo', 'remaining_credits': None, 'month_of_last_credits_reset': '2024-01'}
+    ]
+
 
 def test_decrement_credits(tables):
     tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': Decimal(25)})
@@ -193,12 +203,16 @@ def test_decrement_credits(tables):
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
 
 
-def test_decrement_credits_invalid_cost():
+def test_decrement_credits_invalid_cost(tables):
     with pytest.raises(ValueError, match=r'^Cost 0 <= 0$'):
         dynamo.user.decrement_credits('foo', 0)
 
+    assert tables.users_table.scan()['Items'] == []
+
     with pytest.raises(ValueError, match=r'^Cost -1 <= 0$'):
         dynamo.user.decrement_credits('foo', -1)
+
+    assert tables.users_table.scan()['Items'] == []
 
 
 # TODO rename `*failed*` tests
