@@ -54,8 +54,8 @@ def _create_user(user_id: str, default_credits: Decimal, current_month: str, use
 def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> dict:
     if (
             os.environ['RESET_CREDITS_MONTHLY'] == 'yes'
-            and user['month_of_last_credits_reset'] < current_month
-            and user['remaining_credits'] is not None
+            and user['month_of_last_credits_reset'] < current_month  # noqa: W503
+            and user['remaining_credits'] is not None  # noqa: W503
     ):
         user['month_of_last_credits_reset'] = current_month
         user['remaining_credits'] = default_credits
