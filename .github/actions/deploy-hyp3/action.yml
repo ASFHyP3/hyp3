@@ -40,6 +40,7 @@ inputs:
     required: true
   RESET_CREDITS_MONTHLY:
     description: "Reset each user's remaining credits each month if and only if this value is 'yes'"
+    required: true
   JOB_FILES:
     description: "Space separated list of job spec YAMLs to include"
     required: true
