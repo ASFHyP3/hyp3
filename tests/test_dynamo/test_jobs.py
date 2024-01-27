@@ -1,4 +1,5 @@
 import os
+import unittest.mock
 from datetime import datetime, timezone
 from decimal import Decimal
 
@@ -184,7 +185,10 @@ def test_query_jobs_by_type(tables):
 
 def test_put_jobs(tables):
     payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
-    jobs = dynamo.jobs.put_jobs('user1', payload)
+
+    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
+        mock_get_current_month.return_value = '2024-02'
+        jobs = dynamo.jobs.put_jobs('user1', payload)
 
     assert len(jobs) == 3
     for job in jobs:
@@ -197,12 +201,12 @@ def test_put_jobs(tables):
         assert job['execution_started'] is False
         assert job['credit_cost'] == 1
 
-    jobs_response = tables.jobs_table.scan()
-    assert jobs_response['Items'] == jobs
+    assert tables.jobs_table.scan()['Items'] == jobs
 
     expected_remaining_credits = int(os.environ['DEFAULT_CREDITS_PER_USER']) - 3
-    users_response = tables.users_table.scan()
-    assert users_response['Items'] == [{'user_id': 'user1', 'remaining_credits': expected_remaining_credits}]
+    assert tables.users_table.scan()['Items'] == [
+        {'user_id': 'user1', 'remaining_credits': expected_remaining_credits, 'month_of_last_credits_reset': '2024-02'}
+    ]
 
 
 def test_put_jobs_insufficient_credits(tables, monkeypatch):

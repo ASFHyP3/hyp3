@@ -36,6 +36,13 @@ Parameters:
     Type: Number
     MinValue: 0
 
+  ResetCreditsMonthly:
+    Description: "Reset each user's remaining credits each month if and only if this value is 'yes'."
+    Type: String
+    AllowedValues:
+      - yes
+      - no
+
   SystemAvailable:
     Description: Set to false to shutdown system, API will run and provide errors to users, but will not accept jobs.
     Type: String
@@ -116,6 +123,7 @@ Resources:
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
         DefaultCreditsPerUser: !Ref DefaultCreditsPerUser
+        ResetCreditsMonthly: !Ref ResetCreditsMonthly
         SystemAvailable: !Ref SystemAvailable
         {% if security_environment == 'EDC' %}
         VpcId: !Ref VpcId

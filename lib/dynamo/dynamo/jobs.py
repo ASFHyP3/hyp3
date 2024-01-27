@@ -22,9 +22,7 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
-    user_record = dynamo.user.get_user(user_id)
-    if not user_record:
-        user_record = dynamo.user.create_user(user_id)
+    user_record = dynamo.user.get_or_create_user(user_id)
 
     remaining_credits = user_record['remaining_credits']
     if remaining_credits is not None:
