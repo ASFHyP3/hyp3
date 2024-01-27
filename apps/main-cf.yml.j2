@@ -39,6 +39,9 @@ Parameters:
   ResetCreditsMonthly:
     Description: "Reset each user's remaining credits each month if and only if this value is 'yes'."
     Type: String
+    AllowedValues:
+      - yes
+      - no
 
   SystemAvailable:
     Description: Set to false to shutdown system, API will run and provide errors to users, but will not accept jobs.
