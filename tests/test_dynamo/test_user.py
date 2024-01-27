@@ -95,6 +95,33 @@ def test_reset_credits(tables, monkeypatch):
     assert tables.users_table.scan()['Items'] == [user]
 
 
+def test_reset_credits_override(tables, monkeypatch):
+    monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'yes')
+
+    original_user_record = {
+        'user_id': 'foo',
+        'remaining_credits': Decimal(10),
+        'credits_per_month': Decimal(50),
+        'month_of_last_credits_reset': '2024-01',
+    }
+    tables.users_table.put_item(Item=original_user_record)
+
+    user = dynamo.user._reset_credits_if_needed(
+        user=original_user_record,
+        default_credits=Decimal(25),
+        current_month='2024-02',
+        users_table=tables.users_table,
+    )
+
+    assert user == {
+        'user_id': 'foo',
+        'remaining_credits': Decimal(50),
+        'credits_per_month': Decimal(50),
+        'month_of_last_credits_reset': '2024-02',
+    }
+    assert tables.users_table.scan()['Items'] == [user]
+
+
 def test_reset_credits_no_reset(tables, monkeypatch):
     monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'no')
 

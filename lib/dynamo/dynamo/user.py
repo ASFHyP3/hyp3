@@ -58,7 +58,7 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
             and user['remaining_credits'] is not None  # noqa: W503
     ):
         user['month_of_last_credits_reset'] = current_month
-        user['remaining_credits'] = default_credits
+        user['remaining_credits'] = user.get('credits_per_month', default_credits)
         try:
             users_table.put_item(
                 Item=user,
