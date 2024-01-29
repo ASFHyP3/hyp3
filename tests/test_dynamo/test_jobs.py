@@ -306,7 +306,7 @@ def test_put_jobs_decrement_credits_failure(tables):
     with unittest.mock.patch('dynamo.user.decrement_credits') as mock_decrement_credits:
         mock_decrement_credits.side_effect = Exception('test error')
         with pytest.raises(Exception, match=r'^test error$'):
-            dynamo.jobs.put_jobs('foo', [{'name': 'job1'}])
+            dynamo.jobs.put_jobs('user1', [{'name': 'job1'}])
 
     assert tables.jobs_table.scan()['Items'] == []
 
