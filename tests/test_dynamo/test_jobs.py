@@ -183,6 +183,7 @@ def test_query_jobs_by_type(tables):
     assert list_have_same_elements(response, table_items[:2])
 
 
+# TODO test user already exists, etc.
 def test_put_jobs(tables):
     payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
 
@@ -213,8 +214,15 @@ def test_put_jobs_insufficient_credits(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '1')
     payload = [{'name': 'name1'}, {'name': 'name2'}]
 
-    with pytest.raises(dynamo.jobs.InsufficientCreditsError):
-        dynamo.jobs.put_jobs('user1', payload)
+    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
+        mock_get_current_month.return_value = '2024-02'
+        with pytest.raises(dynamo.jobs.InsufficientCreditsError):
+            dynamo.jobs.put_jobs('user1', payload)
+
+    assert tables.jobs_table.scan()['Items'] == []
+    assert tables.users_table.scan()['Items'] == [
+        {'user_id': 'user1', 'remaining_credits': 1, 'month_of_last_credits_reset': '2024-02'}
+    ]
 
 
 def test_put_jobs_infinite_credits(tables, monkeypatch):
