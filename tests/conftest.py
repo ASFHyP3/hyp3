@@ -2,7 +2,7 @@ from os import environ, path
 
 import pytest
 import yaml
-from moto import mock_dynamodb
+from moto import mock_aws
 
 
 @pytest.fixture
@@ -22,10 +22,10 @@ def get_table_properties_from_template(resource_name):
     return table_properties
 
 
-@mock_dynamodb
+@mock_aws
 @pytest.fixture
 def tables(table_properties):
-    with mock_dynamodb():
+    with mock_aws():
         from dynamo import DYNAMODB_RESOURCE
 
         class Tables:
