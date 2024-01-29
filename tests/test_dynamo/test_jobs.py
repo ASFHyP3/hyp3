@@ -184,7 +184,8 @@ def test_query_jobs_by_type(tables):
 
 
 # TODO test user already exists, etc.
-def test_put_jobs(tables):
+def test_put_jobs(tables, monkeypatch):
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '10')
     payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
 
     with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
@@ -204,9 +205,8 @@ def test_put_jobs(tables):
 
     assert tables.jobs_table.scan()['Items'] == jobs
 
-    expected_remaining_credits = int(os.environ['DEFAULT_CREDITS_PER_USER']) - 3
     assert tables.users_table.scan()['Items'] == [
-        {'user_id': 'user1', 'remaining_credits': expected_remaining_credits, 'month_of_last_credits_reset': '2024-02'}
+        {'user_id': 'user1', 'remaining_credits': 7, 'month_of_last_credits_reset': '2024-02'}
     ]
 
 
