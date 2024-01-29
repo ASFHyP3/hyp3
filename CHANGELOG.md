@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.4]
+### Added
+- `INSAR_ISCE_BURST` jobs are now available in the azdwr-hyp3 deployment.
+
+### Changed
+- Addressed breaking changes with upgrade to `moto[dynamodb]==5.0.0`
+
 ## [5.0.3]
 ### Fixed
 - Fix how the `INSAR_ISCE_BURST` antimeridian error message is formatted.
