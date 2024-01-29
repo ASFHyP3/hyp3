@@ -13,7 +13,7 @@ class InsufficientCreditsError(Exception):
     """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
 
 
-def get_credit_cost(job: dict) -> float:
+def _get_credit_cost(job: dict) -> float:
     return 1.0
 
 
@@ -33,7 +33,7 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     total_cost = 0.0
     prepared_jobs = []
     for job in jobs:
-        prepared_job = prepare_job_for_database(
+        prepared_job = _prepare_job_for_database(
             job=job,
             user_id=user_id,
             request_time=request_time,
@@ -60,7 +60,7 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     return prepared_jobs
 
 
-def prepare_job_for_database(
+def _prepare_job_for_database(
         job: dict,
         user_id: str,
         request_time: str,
@@ -80,7 +80,7 @@ def prepare_job_for_database(
         'status_code': 'PENDING',
         'execution_started': False,
         'request_time': request_time,
-        'credit_cost': get_credit_cost(job),
+        'credit_cost': _get_credit_cost(job),
         'priority': priority,
         **job,
     }
