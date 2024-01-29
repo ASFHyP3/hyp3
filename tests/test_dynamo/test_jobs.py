@@ -282,6 +282,17 @@ def test_put_jobs_priority_extra_credits(tables):
     assert jobs[7]['priority'] == 9996
 
 
+def test_put_jobs_decrement_credits_failure(tables):
+    def mock_decrement_credits(*args):
+        raise ValueError('test error')
+
+    with unittest.mock.patch('dynamo.user.decrement_credits', mock_decrement_credits):
+        with pytest.raises(ValueError, match=r'^test error$'):
+            dynamo.jobs.put_jobs('foo', [{'name': 'job1'}])
+
+    assert tables.jobs_table.scan()['Items'] == []
+
+
 def test_get_job(tables):
     table_items = [
         {

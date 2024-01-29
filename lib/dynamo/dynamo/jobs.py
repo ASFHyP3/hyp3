@@ -51,11 +51,11 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
 
     assert prepared_jobs[-1]['priority'] >= 0
     if not dry_run:
+        if remaining_credits is not None:
+            dynamo.user.decrement_credits(user_id, total_cost)
         with table.batch_writer() as batch:
             for prepared_job in prepared_jobs:
                 batch.put_item(Item=convert_floats_to_decimals(prepared_job))
-        if remaining_credits is not None:
-            dynamo.user.decrement_credits(user_id, total_cost)
 
     return prepared_jobs
 
