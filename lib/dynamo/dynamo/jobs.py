@@ -17,7 +17,6 @@ def _get_credit_cost(job: dict) -> float:
     return 1.0
 
 
-# TODO add/update tests
 def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
