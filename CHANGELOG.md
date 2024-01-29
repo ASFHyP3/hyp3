@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `INSAR_ISCE_BURST` jobs are now available in the azdwr-hyp3 deployment.
 
+### Changed
+- Addressed breaking changes with upgrade to `moto[dynamodb]==5.0.0`
+
 ## [5.0.3]
 ### Fixed
 - Fix how the `INSAR_ISCE_BURST` antimeridian error message is formatted.
