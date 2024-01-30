@@ -112,7 +112,7 @@ def test_submit_many_jobs(client, tables):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_submit_exceeds_quota(client, tables, monkeypatch):
+def test_submit_exceeds_remaining_credits(client, tables, monkeypatch):
     login(client)
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
 

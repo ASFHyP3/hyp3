@@ -1,4 +1,3 @@
-import os
 import unittest.mock
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -183,12 +182,16 @@ def test_query_jobs_by_type(tables):
     assert list_have_same_elements(response, table_items[:2])
 
 
-def test_put_jobs(tables):
+def test_put_jobs(tables, monkeypatch):
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '10')
     payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
 
     with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
         mock_get_current_month.return_value = '2024-02'
+
         jobs = dynamo.jobs.put_jobs('user1', payload)
+
+        mock_get_current_month.assert_called_once_with()
 
     assert len(jobs) == 3
     for job in jobs:
@@ -203,18 +206,34 @@ def test_put_jobs(tables):
 
     assert tables.jobs_table.scan()['Items'] == jobs
 
-    expected_remaining_credits = int(os.environ['DEFAULT_CREDITS_PER_USER']) - 3
     assert tables.users_table.scan()['Items'] == [
-        {'user_id': 'user1', 'remaining_credits': expected_remaining_credits, 'month_of_last_credits_reset': '2024-02'}
+        {'user_id': 'user1', 'remaining_credits': 7, 'month_of_last_credits_reset': '2024-02'}
     ]
+
+
+def test_put_jobs_user_exists(tables):
+    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 5})
+
+    jobs = dynamo.jobs.put_jobs('user1', [{}, {}])
+
+    assert len(jobs) == 2
+    assert tables.jobs_table.scan()['Items'] == jobs
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'user1', 'remaining_credits': 3}]
 
 
 def test_put_jobs_insufficient_credits(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '1')
     payload = [{'name': 'name1'}, {'name': 'name2'}]
 
-    with pytest.raises(dynamo.jobs.InsufficientCreditsError):
-        dynamo.jobs.put_jobs('user1', payload)
+    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
+        mock_get_current_month.return_value = '2024-02'
+        with pytest.raises(dynamo.jobs.InsufficientCreditsError):
+            dynamo.jobs.put_jobs('user1', payload)
+
+    assert tables.jobs_table.scan()['Items'] == []
+    assert tables.users_table.scan()['Items'] == [
+        {'user_id': 'user1', 'remaining_credits': 1, 'month_of_last_credits_reset': '2024-02'}
+    ]
 
 
 def test_put_jobs_infinite_credits(tables, monkeypatch):
@@ -286,7 +305,7 @@ def test_put_jobs_decrement_credits_failure(tables):
     with unittest.mock.patch('dynamo.user.decrement_credits') as mock_decrement_credits:
         mock_decrement_credits.side_effect = Exception('test error')
         with pytest.raises(Exception, match=r'^test error$'):
-            dynamo.jobs.put_jobs('foo', [{'name': 'job1'}])
+            dynamo.jobs.put_jobs('user1', [{'name': 'job1'}])
 
     assert tables.jobs_table.scan()['Items'] == []
 
