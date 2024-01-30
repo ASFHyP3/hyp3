@@ -31,10 +31,17 @@ Parameters:
     Type: String
     Default: RS256
 
-  MonthlyJobQuotaPerUser:
-    Description: Number of jobs each user is allowed per month.
+  DefaultCreditsPerUser:
+    Description: The default number of credits given to a new user.
     Type: Number
     MinValue: 0
+
+  ResetCreditsMonthly:
+    Description: "Whether to reset each user's remaining credits each month"
+    Type: String
+    AllowedValues:
+      - false
+      - true
 
   SystemAvailable:
     Description: Set to false to shutdown system, API will run and provide errors to users, but will not accept jobs.
@@ -115,7 +122,8 @@ Resources:
         UsersTable: !Ref UsersTable
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
-        MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
+        DefaultCreditsPerUser: !Ref DefaultCreditsPerUser
+        ResetCreditsMonthly: !Ref ResetCreditsMonthly
         SystemAvailable: !Ref SystemAvailable
         {% if security_environment == 'EDC' %}
         VpcId: !Ref VpcId

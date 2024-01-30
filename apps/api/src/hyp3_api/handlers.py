@@ -41,12 +41,11 @@ def post_jobs(body, user):
     except GranuleValidationError as e:
         abort(problem_format(400, str(e)))
 
-    if not body.get('validate_only'):
-        try:
-            body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'])
-        except dynamo.jobs.QuotaError as e:
-            abort(problem_format(400, str(e)))
-        return body
+    try:
+        body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], dry_run=body.get('validate_only'))
+    except dynamo.jobs.InsufficientCreditsError as e:
+        abort(problem_format(400, str(e)))
+    return body
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None):
@@ -80,13 +79,10 @@ def get_names_for_user(user):
 
 
 def get_user(user):
-    max_jobs, _, remaining_jobs = dynamo.jobs.get_quota_status(user)
-
+    user_record = dynamo.user.get_or_create_user(user)
     return {
         'user_id': user,
-        'quota': {
-            'max_jobs_per_month': max_jobs,
-            'remaining': remaining_jobs,
-        },
+        'remaining_credits': user_record['remaining_credits'],
+        # TODO: count this as jobs are submitted, not every time `/user` is queried
         'job_names': get_names_for_user(user)
     }
