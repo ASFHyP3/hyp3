@@ -216,6 +216,11 @@ Resources:
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
+      {% if security_environment == 'EDC' %}
+      Tags:
+        - Key: DAR
+          Value: YES
+      {% endif %}
 
   LogBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -273,6 +278,11 @@ Resources:
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
+      {% if security_environment == 'EDC' %}
+      Tags:
+        - Key: DAR
+          Value: NO
+      {% endif %}
 
   {% if security_environment != 'JPL' %}
   BucketPolicy:
