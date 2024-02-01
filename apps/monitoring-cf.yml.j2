@@ -4,7 +4,7 @@ Parameters:
   StepFunctionArn:
     Type: String
 
-  ApiId:
+  ApiName:
     Type: String
 
 Resources:
@@ -42,9 +42,9 @@ Resources:
       EvaluationPeriods: 1
       Threshold: 0
       Dimensions:
-        - Name: ApiId
-          Value: !Ref ApiId
-      MetricName: 5xx
+        - Name: ApiName
+          Value: !Ref ApiName
+      MetricName: 5XXError
       Namespace: AWS/ApiGateway
       Statistic: Sum
       TreatMissingData: notBreaching
