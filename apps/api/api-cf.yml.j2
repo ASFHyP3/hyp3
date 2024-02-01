@@ -44,8 +44,8 @@ Outputs:
   Url:
     Value: {{ '!Sub "https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/ui"' if security_environment == 'EDC' else '!Sub "https://${CustomDomainName}/ui"' }}
 
-  ApiId:
-    Value: !Ref RestApi
+  ApiName:
+    Value: !GetAtt RestApi.RestApiId
 
 Resources:
 
