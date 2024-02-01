@@ -219,7 +219,7 @@ Resources:
       {% if security_environment == 'EDC' %}
       Tags:
         - Key: DAR
-          Value: YES
+          Value: "YES"
       {% endif %}
 
   LogBucketPolicy:
@@ -281,7 +281,7 @@ Resources:
       {% if security_environment == 'EDC' %}
       Tags:
         - Key: DAR
-          Value: NO
+          Value: "NO"
       {% endif %}
 
   {% if security_environment != 'JPL' %}
