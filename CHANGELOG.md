@@ -4,17 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [6.0.1]
-### Added
-- A `DAR` tag is now included in Earthdata Cloud deployments for each S3 bucket to communicate which contain objects
-  that required to be encrypted at rest.
-
 ## [6.0.0]
 
 HyP3's monthly quota system has been replaced by a credits system. Previously, HyP3 provided each user with a certain number of jobs per month. Now, each job costs a particular number of credits, and users spend credits when they submit jobs. This release assigns every job a cost of 1 credit, but future releases will assign a different credit cost to each job type. Additionally, the main production deployment (`https://hyp3-api.asf.alaska.edu`) resets each user's balance to 1,000 credits each month, effectively granting each user 1,000 jobs per month. Therefore, users should not notice any difference when ordering jobs via ASF's On Demand service at <https://search.asf.alaska.edu>.
 
 ### Added
 - The `job` object returned by the `/jobs` API endpoints now includes a `credit_cost` attribute, which represents the job's cost in credits.
+- A `DAR` tag is now included in Earthdata Cloud deployments for each S3 bucket to communicate which contain objects
+  that required to be encrypted at rest.
 
 ### Changed
 - The `quota` attribute of the `user` object returned by the `/user` API endpoint has been replaced by a `remaining_credits` attribute, which represents the user's remaining credits.
