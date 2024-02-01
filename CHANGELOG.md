@@ -16,8 +16,8 @@ HyP3's monthly quota system has been replaced by a credits system. Previously, H
 ### Changed
 - The `quota` attribute of the `user` object returned by the `/user` API endpoint has been replaced by a `remaining_credits` attribute, which represents the user's remaining credits.
 
-### Fixed
-- The `monitoring` module now successfully sends SNS notifications when the API encounters HTTP 5xx errors. Fixes [#2044](https://github.com/ASFHyP3/hyp3/issues/2044).
+### Removed
+- The non-functional CloudWatch alarm for API 5xx errors has been removed from the `monitoring` module. See [#2044](https://github.com/ASFHyP3/hyp3/issues/2044).
 
 ## [5.0.4]
 ### Added
