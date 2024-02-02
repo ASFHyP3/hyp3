@@ -94,7 +94,7 @@ aws cloudformation deploy \
         CertificateArn=<certificate-arn> \
         SecretArn=<secret-arn> \
         DefaultCreditsPerUser=0 \
-        ResetCreditsMonthly=no
+        ResetCreditsMonthly=true
 ```
 
 ## 5. Post deployment
