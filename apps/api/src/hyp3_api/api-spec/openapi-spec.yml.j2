@@ -133,36 +133,24 @@ components:
           $ref: "#/components/schemas/next_url"
 
     user:
-      description: Information about a user (quota, user id)
+      description: Information about a user
       type: object
       required:
         - user_id
-        - quota
+        - remaining_credits
       additionalProperties: false
       properties:
         user_id:
           $ref: "#/components/schemas/user_id"
-        quota:
-          $ref: "#/components/schemas/quota"
+        remaining_credits:
+          $ref: "#/components/schemas/credits"
         job_names:
           $ref: "#/components/schemas/job_names_list"
 
-    quota:
-      description: Containes the limit of jobs per month and the amount remaining for a user.
-      type: object
-      required:
-        - max_jobs_per_month
-        - remaining
-      additionalProperties: false
-      properties:
-        max_jobs_per_month:
-          type: integer
-          minimum: 0
-          nullable: true
-        remaining:
-          type: integer
-          minimum: 0
-          nullable: true
+    credits:
+      description: Processing credits for running jobs.
+      type: number
+      minimum: 0
 
     job_names_list:
       type: array
@@ -287,6 +275,8 @@ components:
           $ref: "#/components/schemas/processing_times"
         priority:
           $ref: "#/components/schemas/priority"
+        credit_cost:
+          $ref: "#/components/schemas/credits"
 
     validate_only:
       type: boolean
