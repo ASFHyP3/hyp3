@@ -197,7 +197,6 @@ Resources:
     Properties:
       Parameters:
         StepFunctionArn: !GetAtt StepFunction.Outputs.StepFunctionArn
-        ApiName: !GetAtt Api.Outputs.ApiName
       TemplateURL: monitoring-cf.yml
 
   LogBucket:
