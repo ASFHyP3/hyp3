@@ -1,5 +1,7 @@
+import json
 from datetime import datetime, timezone
 from os import environ
+from pathlib import Path
 from typing import List, Optional
 from uuid import uuid4
 
@@ -8,13 +10,23 @@ from boto3.dynamodb.conditions import Attr, Key
 import dynamo.user
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
+costs_file = Path(__file__).parent / 'costs.json'
+if costs_file.exists():
+    COSTS = json.loads(costs_file.read_text())
+
 
 class InsufficientCreditsError(Exception):
     """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
 
 
-def _get_credit_cost(job: dict) -> float:
-    return 1.0
+def _get_credit_cost(job: dict, costs: dict) -> float:
+    # FIXME: don't worry about default parameter value
+    cost_definition = costs[job['job_type']]
+    if 'cost_parameter' in cost_definition:
+        parameter_value = job['job_parameters'].get(cost_definition['cost_parameter'])
+        if parameter_value is not None:
+            return cost_definition['cost_table'][parameter_value]
+    return cost_definition['default_cost']
 
 
 def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:

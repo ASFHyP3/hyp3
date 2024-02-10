@@ -182,6 +182,53 @@ def test_query_jobs_by_type(tables):
     assert list_have_same_elements(response, table_items[:2])
 
 
+def test_get_credit_cost():
+    # FIXME: don't specify default value of resolution
+    costs = {
+        'RTC_GAMMA': {
+            'cost_parameter': 'resolution',
+            'cost_table': {
+                10: 60.0,
+                20: 15.0,
+                30: 5.0,
+            },
+            'default_cost': 3.0,
+        },
+        'INSAR_ISCE_BURST': {
+            'default_cost': 1.0,
+        }
+    }
+    assert dynamo.jobs._get_credit_cost(
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 10.0}},
+        costs
+    ) == 60.0
+    assert dynamo.jobs._get_credit_cost(
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 20.0}},
+        costs
+    ) == 15.0
+    assert dynamo.jobs._get_credit_cost(
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 30.0}},
+        costs
+    ) == 5.0
+    assert dynamo.jobs._get_credit_cost(
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {}},
+        costs
+    ) == 3.0
+    with pytest.raises(KeyError):
+        dynamo.jobs._get_credit_cost(
+            {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 13.0}},
+            costs
+        )
+    assert dynamo.jobs._get_credit_cost(
+        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'foo': 'bar'}},
+        costs
+    ) == 1.0
+    assert dynamo.jobs._get_credit_cost(
+        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {}},
+        costs
+    ) == 1.0
+
+
 def test_put_jobs(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '10')
     payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
