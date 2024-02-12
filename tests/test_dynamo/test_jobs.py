@@ -211,28 +211,35 @@ def test_put_jobs(tables, monkeypatch):
     ]
 
 
-# TODO add test case: default params for job type is empty
 def test_put_jobs_default_params(tables, monkeypatch):
     monkeypatch.setenv('SKIP_DEFAULT_PARAMS', 'false')
-    payload = [
-        {'name': 'job_a', 'job_type': 'JOB_TYPE_A', 'job_parameters': {}},
-        {'name': 'job_a', 'job_type': 'JOB_TYPE_A', 'job_parameters': {'a1': 'foo'}},
-        {'name': 'job_a', 'job_type': 'JOB_TYPE_A', 'job_parameters': {'a1': 'foo', 'a2': 'bar'}},
-        {'name': 'job_a', 'job_type': 'JOB_TYPE_A', 'job_parameters': {'a1': 'foo', 'a2': 'bar', 'a3': 'foobar'}},
-        {'name': 'job_b', 'job_type': 'JOB_TYPE_B', 'job_parameters': {}},
-    ]
     default_params = {
-        'JOB_TYPE_A': {'a1': 'a1_default', 'a2': 'a2_default', 'a3': 'a3_default'},
-        'JOB_TYPE_B': {'b1': 'b1_default', 'b2': 'b2_default'}
+        'JOB_TYPE_A': {'a1': 'a1_default', 'a2': 'a2_default'},
+        'JOB_TYPE_B': {'b1': 'b1_default'},
+        'JOB_TYPE_C': {},
+
     }
-    with unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS', default_params):
+    payload = [
+        {'job_type': 'JOB_TYPE_A', 'job_parameters': {}},
+        {'job_type': 'JOB_TYPE_A', 'job_parameters': {'a1': 'foo'}},
+        {'job_type': 'JOB_TYPE_A', 'job_parameters': {'a1': 'foo', 'a2': 'bar'}},
+        {'job_type': 'JOB_TYPE_B', 'job_parameters': {}},
+        {'job_type': 'JOB_TYPE_B', 'job_parameters': {'b1': 'foo'}},
+        {'job_type': 'JOB_TYPE_B', 'job_parameters': {'b1': 'foo', 'b2': 'bar'}},
+        {'job_type': 'JOB_TYPE_C', 'job_parameters': {}},
+        {'job_type': 'JOB_TYPE_C', 'job_parameters': {'c1': 'foo'}},
+    ]
+    with unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params):
         jobs = dynamo.jobs.put_jobs('user1', payload)
 
-    assert jobs[0]['job_parameters'] == {'a1': 'a1_default', 'a2': 'a2_default', 'a3': 'a3_default'}
-    assert jobs[1]['job_parameters'] == {'a1': 'foo', 'a2': 'a2_default', 'a3': 'a3_default'}
-    assert jobs[2]['job_parameters'] == {'a1': 'foo', 'a2': 'bar', 'a3': 'a3_default'}
-    assert jobs[3]['job_parameters'] == {'a1': 'foo', 'a2': 'bar', 'a3': 'foobar'}
-    assert jobs[4]['job_parameters'] == {'b1': 'b1_default', 'b2': 'b2_default'}
+    assert jobs[0]['job_parameters'] == {'a1': 'a1_default', 'a2': 'a2_default'}
+    assert jobs[1]['job_parameters'] == {'a1': 'foo', 'a2': 'a2_default'}
+    assert jobs[2]['job_parameters'] == {'a1': 'foo', 'a2': 'bar'}
+    assert jobs[3]['job_parameters'] == {'b1': 'b1_default'}
+    assert jobs[4]['job_parameters'] == {'b1': 'foo'}
+    assert jobs[5]['job_parameters'] == {'b1': 'foo', 'b2': 'bar'}
+    assert jobs[6]['job_parameters'] == {}
+    assert jobs[7]['job_parameters'] == {'c1': 'foo'}
 
     assert tables.jobs_table.scan()['Items'] == jobs
 
