@@ -11,9 +11,9 @@ from boto3.dynamodb.conditions import Attr, Key
 import dynamo.user
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
-job_params_file = Path(__file__).parent / 'job_params.json'
-if job_params_file.exists():
-    DEFAULT_PARAMS_BY_JOB_TYPE = json.loads(job_params_file.read_text())
+default_params_file = Path(__file__).parent / 'default_params_by_job_type.json'
+if default_params_file.exists():
+    DEFAULT_PARAMS_BY_JOB_TYPE = json.loads(default_params_file.read_text())
 else:
     # Allows mocking with unittest.mock.patch
     DEFAULT_PARAMS_BY_JOB_TYPE = {}
@@ -101,8 +101,6 @@ def _prepare_job_for_database(
     return prepared_job
 
 
-# TODO add tests
-# TODO check that default params is superset of job params?
 def _get_default_params(job: dict) -> dict:
     if os.environ.get('SKIP_DEFAULT_PARAMS') == 'true':
         return {}
