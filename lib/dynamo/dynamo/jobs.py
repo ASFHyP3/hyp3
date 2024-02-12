@@ -1,5 +1,8 @@
+import json
+import os
 from datetime import datetime, timezone
 from os import environ
+from pathlib import Path
 from typing import List, Optional
 from uuid import uuid4
 
@@ -7,6 +10,10 @@ from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
+
+job_params_file = Path(__file__).parent / 'job_params.json'
+if job_params_file.exists():
+    DEFAULT_PARAMS = json.loads(job_params_file.read_text())
 
 
 class InsufficientCreditsError(Exception):
@@ -82,7 +89,16 @@ def _prepare_job_for_database(
         'credit_cost': _get_credit_cost(job),
         'priority': priority,
         **job,
+        **_get_default_params(job),
     }
+
+
+# TODO add tests
+def _get_default_params(job: dict) -> dict:
+    if os.environ.get('SKIP_DEFAULT_PARAMS') == 'true':
+        return {}
+    default_params = DEFAULT_PARAMS[job['job_type']]
+    return {param: default_params[param] for param in default_params if param not in job['job_parameters']}
 
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):
