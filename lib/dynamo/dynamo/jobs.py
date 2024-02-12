@@ -13,7 +13,10 @@ from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_ti
 
 job_params_file = Path(__file__).parent / 'job_params.json'
 if job_params_file.exists():
-    DEFAULT_PARAMS = json.loads(job_params_file.read_text())
+    DEFAULT_PARAMS_BY_JOB_TYPE = json.loads(job_params_file.read_text())
+else:
+    # Allows mocking with unittest.mock.patch
+    DEFAULT_PARAMS_BY_JOB_TYPE = {}
 
 
 class InsufficientCreditsError(Exception):
@@ -80,7 +83,7 @@ def _prepare_job_for_database(
         priority = 0
     else:
         priority = min(int(remaining_credits - running_cost), 9999)
-    return {
+    prepared_job = {
         'job_id': str(uuid4()),
         'user_id': user_id,
         'status_code': 'PENDING',
@@ -88,16 +91,22 @@ def _prepare_job_for_database(
         'request_time': request_time,
         'credit_cost': _get_credit_cost(job),
         'priority': priority,
-        **job,
-        **_get_default_params(job),
     }
+    if 'name' in job:
+        prepared_job['name'] = job['name']
+    if 'job_type' in job:
+        prepared_job['job_type'] = job['job_type']
+    if 'job_parameters' in job:
+        prepared_job['job_parameters'] = {**job['job_parameters'], **_get_default_params(job)}
+    return prepared_job
 
 
 # TODO add tests
+# TODO check that default params is superset of job params?
 def _get_default_params(job: dict) -> dict:
     if os.environ.get('SKIP_DEFAULT_PARAMS') == 'true':
         return {}
-    default_params = DEFAULT_PARAMS[job['job_type']]
+    default_params = DEFAULT_PARAMS_BY_JOB_TYPE[job['job_type']]
     return {param: default_params[param] for param in default_params if param not in job['job_parameters']}
 
 

@@ -211,6 +211,32 @@ def test_put_jobs(tables, monkeypatch):
     ]
 
 
+# TODO add test case: default params for job type is empty
+def test_put_jobs_default_params(tables, monkeypatch):
+    monkeypatch.setenv('SKIP_DEFAULT_PARAMS', 'false')
+    payload = [
+        {'name': 'job_a', 'job_type': 'JOB_TYPE_A', 'job_parameters': {}},
+        {'name': 'job_a', 'job_type': 'JOB_TYPE_A', 'job_parameters': {'a1': 'foo'}},
+        {'name': 'job_a', 'job_type': 'JOB_TYPE_A', 'job_parameters': {'a1': 'foo', 'a2': 'bar'}},
+        {'name': 'job_a', 'job_type': 'JOB_TYPE_A', 'job_parameters': {'a1': 'foo', 'a2': 'bar', 'a3': 'foobar'}},
+        {'name': 'job_b', 'job_type': 'JOB_TYPE_B', 'job_parameters': {}},
+    ]
+    default_params = {
+        'JOB_TYPE_A': {'a1': 'a1_default', 'a2': 'a2_default', 'a3': 'a3_default'},
+        'JOB_TYPE_B': {'b1': 'b1_default', 'b2': 'b2_default'}
+    }
+    with unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS', default_params):
+        jobs = dynamo.jobs.put_jobs('user1', payload)
+
+    assert jobs[0]['job_parameters'] == {'a1': 'a1_default', 'a2': 'a2_default', 'a3': 'a3_default'}
+    assert jobs[1]['job_parameters'] == {'a1': 'foo', 'a2': 'a2_default', 'a3': 'a3_default'}
+    assert jobs[2]['job_parameters'] == {'a1': 'foo', 'a2': 'bar', 'a3': 'a3_default'}
+    assert jobs[3]['job_parameters'] == {'a1': 'foo', 'a2': 'bar', 'a3': 'foobar'}
+    assert jobs[4]['job_parameters'] == {'b1': 'b1_default', 'b2': 'b2_default'}
+
+    assert tables.jobs_table.scan()['Items'] == jobs
+
+
 def test_put_jobs_user_exists(tables):
     tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 5})
 
