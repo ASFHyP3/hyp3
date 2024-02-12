@@ -170,68 +170,6 @@ components:
       items:
         $ref: "#/components/schemas/job"
 
-    search_parameters:
-      description: parameters used to find data from the ASF Search API
-      additionalProperties: false
-      type: object
-      required:
-        - start
-        - end
-      properties:
-        start:
-          $ref: "#/components/schemas/datetime"
-        end:
-          $ref: "#/components/schemas/datetime"
-        platform:
-          type: string
-          enum:
-            - S1
-            - SA
-            - SB
-        processingLevel:
-          type: string
-          enum:
-            - GRD_HD
-            - SLC
-        beamMode:
-          type: array
-          minItems: 1
-          items:
-            type: string
-            enum:
-              - IW
-        intersectsWith:
-          $ref: "#/components/schemas/intersectsWith"
-        frame:
-          type: array
-          minItems: 1
-          items:
-            type: integer
-            minimum: 1
-            maximum: 1360
-        relativeOrbit:
-          type: array
-          minItems: 1
-          items:
-            type: integer
-            minimum: 1
-            maximum: 175
-        polarization:
-          type: array
-          minItems: 1
-          items:
-            type: string
-            enum:
-              - VV
-              - VV+VH
-              - HH
-              - HH+HV
-        flightDirection:
-          type: string
-          enum:
-            - ASCENDING
-            - DESCENDING
-
     job:
       description: Contains information about a submitted job.
       type: object
@@ -298,12 +236,6 @@ components:
       type: string
       format: date-time
       example: "2020-06-04T18:00:03+00:00"
-
-    intersectsWith:
-      description: Area-of-interest as a WKT string.
-      type: string
-      format: wkt
-      example: POINT(0 0)
 
     status_code:
       description: Status of a submitted job.
