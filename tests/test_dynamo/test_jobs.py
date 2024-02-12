@@ -217,7 +217,6 @@ def test_put_jobs_default_params(tables, monkeypatch):
         'JOB_TYPE_A': {'a1': 'a1_default', 'a2': 'a2_default'},
         'JOB_TYPE_B': {'b1': 'b1_default'},
         'JOB_TYPE_C': {},
-
     }
     payload = [
         {'job_type': 'JOB_TYPE_A', 'job_parameters': {}},
