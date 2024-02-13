@@ -14,6 +14,13 @@ costs_file = Path(__file__).parent / 'costs.json'
 if costs_file.exists():
     COSTS = json.loads(costs_file.read_text())
 
+default_params_file = Path(__file__).parent / 'default_params_by_job_type.json'
+if default_params_file.exists():
+    DEFAULT_PARAMS_BY_JOB_TYPE = json.loads(default_params_file.read_text())
+else:
+    # Allows mocking with unittest.mock.patch
+    DEFAULT_PARAMS_BY_JOB_TYPE = {}
+
 
 class InsufficientCreditsError(Exception):
     """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
@@ -84,16 +91,22 @@ def _prepare_job_for_database(
         priority = 0
     else:
         priority = min(int(remaining_credits - running_cost), 9999)
-    return {
+    prepared_job = {
         'job_id': str(uuid4()),
         'user_id': user_id,
         'status_code': 'PENDING',
         'execution_started': False,
         'request_time': request_time,
-        'credit_cost': _get_credit_cost(job),
         'priority': priority,
         **job,
     }
+    if 'job_type' in prepared_job:
+        prepared_job['job_parameters'] = {
+            **DEFAULT_PARAMS_BY_JOB_TYPE[prepared_job['job_type']],
+            **prepared_job.get('job_parameters', {})
+        }
+    prepared_job['credit_cost'] = _get_credit_cost(prepared_job)
+    return prepared_job
 
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):

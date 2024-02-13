@@ -53,13 +53,13 @@ jobs:
             domain: hyp3-tibet-jpl.asf.alaska.edu
             template_bucket: cf-templates-1or0efwqffkgd-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 60
+            product_lifetime_in_days: 30
             default_credits_per_user: 0
             reset_credits_monthly: true
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
-            default_max_vcpus: 0
-            expanded_max_vcpus: 0
+            default_max_vcpus: 10000
+            expanded_max_vcpus: 10000
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
