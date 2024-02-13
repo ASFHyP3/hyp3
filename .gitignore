@@ -5,6 +5,7 @@ apps/api/src/hyp3_api/api-spec/job_parameters.yml
 apps/api/src/hyp3_api/job_validation_map.yml
 apps/step-function.json
 apps/**/*-cf.yml
+lib/dynamo/dynamo/*.json
 
 
 # Byte-compiled / optimized / DLL files
