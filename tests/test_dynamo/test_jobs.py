@@ -211,8 +211,7 @@ def test_put_jobs(tables, monkeypatch):
     ]
 
 
-def test_put_jobs_default_params(tables, monkeypatch):
-    monkeypatch.setenv('SKIP_DEFAULT_PARAMS', 'false')
+def test_put_jobs_default_params(tables):
     default_params = {
         'JOB_TYPE_A': {'a1': 'a1_default', 'a2': 'a2_default'},
         'JOB_TYPE_B': {'b1': 'b1_default'},

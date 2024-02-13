@@ -1,5 +1,4 @@
 import json
-import os
 from datetime import datetime, timezone
 from os import environ
 from pathlib import Path
@@ -89,23 +88,16 @@ def _prepare_job_for_database(
         'status_code': 'PENDING',
         'execution_started': False,
         'request_time': request_time,
-        'credit_cost': _get_credit_cost(job),
         'priority': priority,
+        **job,
     }
-    if 'name' in job:
-        prepared_job['name'] = job['name']
-    if 'job_type' in job:
-        prepared_job['job_type'] = job['job_type']
-    if 'job_parameters' in job:
-        prepared_job['job_parameters'] = {**job['job_parameters'], **_get_default_params(job)}
+    if 'job_type' in prepared_job and 'job_parameters' in prepared_job:
+        prepared_job['job_parameters'] = {
+            **DEFAULT_PARAMS_BY_JOB_TYPE[prepared_job['job_type']],
+            **prepared_job['job_parameters']
+        }
+    prepared_job['credit_cost'] = _get_credit_cost(prepared_job)
     return prepared_job
-
-
-def _get_default_params(job: dict) -> dict:
-    if os.environ.get('SKIP_DEFAULT_PARAMS') == 'true':
-        return {}
-    default_params = DEFAULT_PARAMS_BY_JOB_TYPE[job['job_type']]
-    return {param: default_params[param] for param in default_params if param not in job['job_parameters']}
 
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):
