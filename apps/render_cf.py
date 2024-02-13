@@ -35,6 +35,18 @@ def render_templates(job_types, security_environment, api_name):
         template_file.with_suffix('').write_text(output)
 
 
+def render_default_params_by_job_type(job_types: dict) -> None:
+    default_params_by_job_type = {
+        job_type: {
+            key: value['api_schema']['default'] for key, value in job_spec['parameters'].items()
+            if key not in job_spec['required_parameters'] and 'api_schema' in value
+        }
+        for job_type, job_spec in job_types.items()
+    }
+    with open(Path('lib') / 'dynamo' / 'dynamo' / 'default_params_by_job_type.json', 'w') as f:
+        json.dump(default_params_by_job_type, f, indent=2)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
@@ -50,6 +62,7 @@ def main():
         for task in job_spec['tasks']:
             task['name'] = job_type + '_' + task['name'] if task['name'] else job_type
 
+    render_default_params_by_job_type(job_types)
     render_templates(job_types, args.security_environment, args.api_name)
 
 

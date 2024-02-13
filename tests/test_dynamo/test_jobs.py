@@ -211,6 +211,45 @@ def test_put_jobs(tables, monkeypatch):
     ]
 
 
+def test_put_jobs_default_params(tables):
+    default_params = {
+        'JOB_TYPE_A': {'a1': 'a1_default', 'a2': 'a2_default'},
+        'JOB_TYPE_B': {'b1': 'b1_default'},
+        'JOB_TYPE_C': {},
+    }
+    payload = [
+        {},
+        {'job_type': 'JOB_TYPE_A'},
+        {'job_type': 'JOB_TYPE_A', 'job_parameters': {}},
+        {'job_type': 'JOB_TYPE_A', 'job_parameters': {'a1': 'foo'}},
+        {'job_type': 'JOB_TYPE_A', 'job_parameters': {'a1': 'foo', 'a2': 'bar'}},
+        {'job_type': 'JOB_TYPE_B', 'job_parameters': {}},
+        {'job_type': 'JOB_TYPE_B', 'job_parameters': {'b1': 'foo'}},
+        {'job_type': 'JOB_TYPE_B', 'job_parameters': {'b1': 'foo', 'b2': 'bar'}},
+        {'job_type': 'JOB_TYPE_C'},
+        {'job_type': 'JOB_TYPE_C', 'job_parameters': {}},
+        {'job_type': 'JOB_TYPE_C', 'job_parameters': {'c1': 'foo'}},
+        {'job_parameters': {'n1': 'foo'}},
+    ]
+    with unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params):
+        jobs = dynamo.jobs.put_jobs('user1', payload)
+
+    assert 'job_parameters' not in jobs[0]
+    assert jobs[1]['job_parameters'] == {'a1': 'a1_default', 'a2': 'a2_default'}
+    assert jobs[2]['job_parameters'] == {'a1': 'a1_default', 'a2': 'a2_default'}
+    assert jobs[3]['job_parameters'] == {'a1': 'foo', 'a2': 'a2_default'}
+    assert jobs[4]['job_parameters'] == {'a1': 'foo', 'a2': 'bar'}
+    assert jobs[5]['job_parameters'] == {'b1': 'b1_default'}
+    assert jobs[6]['job_parameters'] == {'b1': 'foo'}
+    assert jobs[7]['job_parameters'] == {'b1': 'foo', 'b2': 'bar'}
+    assert jobs[8]['job_parameters'] == {}
+    assert jobs[9]['job_parameters'] == {}
+    assert jobs[10]['job_parameters'] == {'c1': 'foo'}
+    assert jobs[11]['job_parameters'] == {'n1': 'foo'}
+
+    assert tables.jobs_table.scan()['Items'] == jobs
+
+
 def test_put_jobs_user_exists(tables):
     tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 5})
 
