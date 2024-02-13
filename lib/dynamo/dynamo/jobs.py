@@ -91,10 +91,10 @@ def _prepare_job_for_database(
         'priority': priority,
         **job,
     }
-    if 'job_type' in prepared_job and 'job_parameters' in prepared_job:
+    if 'job_type' in prepared_job:
         prepared_job['job_parameters'] = {
             **DEFAULT_PARAMS_BY_JOB_TYPE[prepared_job['job_type']],
-            **prepared_job['job_parameters']
+            **prepared_job.get('job_parameters', {})
         }
     prepared_job['credit_cost'] = _get_credit_cost(prepared_job)
     return prepared_job
