@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [6.1.0]
 
 ### Added
-- Previously, the response from the `/jobs` API endpoint only included job parameters whose values were specified by the user. Now, the response also includes optional, unspecified parameters, along with their default values. This does not change how jobs are processed, but gives the user a complete report of what parameters were used to process their jobs.
+- Previously, the `job_parameters` field of the `job` object returned by the `/jobs` API endpoint only included parameters whose values were specified by the user. Now, the field also includes optional, unspecified parameters, along with their default values. This does not change how jobs are processed, but gives the user a complete report of what parameters were used to process their jobs.
 
 ## [6.0.0]
 
