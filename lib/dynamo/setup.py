@@ -12,4 +12,6 @@ setup(
     python_requires='~=3.9',
 
     packages=find_packages(),
+
+    package_data={'dynamo': ['*.json']},
 )
