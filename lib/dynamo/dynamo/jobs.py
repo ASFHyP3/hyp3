@@ -20,12 +20,11 @@ class InsufficientCreditsError(Exception):
 
 
 def _get_credit_cost(job: dict, costs: dict) -> float:
-    # FIXME: don't worry about default parameter value
+    # TODO: verify has cost param and table OR default cost
     cost_definition = costs[job['job_type']]
     if 'cost_parameter' in cost_definition:
-        parameter_value = job['job_parameters'].get(cost_definition['cost_parameter'])
-        if parameter_value is not None:
-            return cost_definition['cost_table'][parameter_value]
+        parameter_value = job['job_parameters'][cost_definition['cost_parameter']]
+        return cost_definition['cost_table'][parameter_value]
     return cost_definition['default_cost']
 
 

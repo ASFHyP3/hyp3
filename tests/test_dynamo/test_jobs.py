@@ -183,7 +183,6 @@ def test_query_jobs_by_type(tables):
 
 
 def test_get_credit_cost():
-    # FIXME: don't specify default value of resolution
     costs = {
         'RTC_GAMMA': {
             'cost_parameter': 'resolution',
@@ -192,7 +191,6 @@ def test_get_credit_cost():
                 20: 15.0,
                 30: 5.0,
             },
-            'default_cost': 3.0,
         },
         'INSAR_ISCE_BURST': {
             'default_cost': 1.0,
@@ -210,10 +208,6 @@ def test_get_credit_cost():
         {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 30.0}},
         costs
     ) == 5.0
-    assert dynamo.jobs._get_credit_cost(
-        {'job_type': 'RTC_GAMMA', 'job_parameters': {}},
-        costs
-    ) == 3.0
     with pytest.raises(KeyError):
         dynamo.jobs._get_credit_cost(
             {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 13.0}},
