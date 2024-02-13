@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.1.0]
+
+### Added
+- Previously, the `job_parameters` field of the `job` object returned by the `/jobs` API endpoint only included parameters whose values were specified by the user. Now, the field also includes optional, unspecified parameters, along with their default values. This does not change how jobs are processed, but gives the user a complete report of what parameters were used to process their jobs.
+
 ## [6.0.0]
 
 HyP3's monthly quota system has been replaced by a credits system. Previously, HyP3 provided each user with a certain number of jobs per month. Now, each job costs a particular number of credits, and users spend credits when they submit jobs. This release assigns every job a cost of 1 credit, but future releases will assign a different credit cost to each job type. Additionally, the main production deployment (`https://hyp3-api.asf.alaska.edu`) resets each user's balance to 1,000 credits each month, effectively granting each user 1,000 jobs per month. Therefore, users should not notice any difference when ordering jobs via ASF's On Demand service at <https://search.asf.alaska.edu>.
