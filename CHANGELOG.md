@@ -12,6 +12,7 @@ HyP3's monthly quota system has been replaced by a credits system. Previously, H
 - The `job` object returned by the `/jobs` API endpoint now includes a `credit_cost` attribute, which represents the job's cost in credits.
 - A `DAR` tag is now included in Earthdata Cloud deployments for each S3 bucket to communicate which contain objects
   that required to be encrypted at rest.
+- Copies VCPU options to Tibet account (which were all set to 0) from a19 account. Also specifies 30 days for saving products in the Tibet account.
 
 ### Changed
 - The `quota` attribute of the `user` object returned by the `/user` API endpoint has been replaced by a `remaining_credits` attribute, which represents the user's remaining credits.
