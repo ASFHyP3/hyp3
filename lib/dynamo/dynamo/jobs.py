@@ -13,6 +13,8 @@ from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_ti
 costs_file = Path(__file__).parent / 'costs.json'
 if costs_file.exists():
     COSTS = json.loads(costs_file.read_text())
+else:
+    COSTS = {}
 
 default_params_file = Path(__file__).parent / 'default_params_by_job_type.json'
 if default_params_file.exists():
@@ -101,6 +103,9 @@ def _prepare_job_for_database(
 
 
 def _get_credit_cost(job: dict, costs: dict) -> float:
+    if not costs:
+        return 1.0
+
     job_type = job['job_type']
     cost_definition = costs[job_type]
 
