@@ -26,20 +26,6 @@ class InsufficientCreditsError(Exception):
     """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
 
 
-def _get_credit_cost(job: dict, costs: dict) -> float:
-    job_type = job['job_type']
-    cost_definition = costs[job_type]
-
-    if cost_definition.keys() not in ({'cost_parameter', 'cost_table'}, {'default_cost'}):
-        raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
-
-    if 'cost_parameter' in cost_definition:
-        parameter_value = job['job_parameters'][cost_definition['cost_parameter']]
-        return cost_definition['cost_table'][parameter_value]
-
-    return cost_definition['default_cost']
-
-
 def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
@@ -110,8 +96,22 @@ def _prepare_job_for_database(
             **DEFAULT_PARAMS_BY_JOB_TYPE[prepared_job['job_type']],
             **prepared_job.get('job_parameters', {})
         }
-    prepared_job['credit_cost'] = _get_credit_cost(prepared_job)
+    prepared_job['credit_cost'] = _get_credit_cost(prepared_job, COSTS)
     return prepared_job
+
+
+def _get_credit_cost(job: dict, costs: dict) -> float:
+    job_type = job['job_type']
+    cost_definition = costs[job_type]
+
+    if cost_definition.keys() not in ({'cost_parameter', 'cost_table'}, {'default_cost'}):
+        raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
+
+    if 'cost_parameter' in cost_definition:
+        parameter_value = job['job_parameters'][cost_definition['cost_parameter']]
+        return cost_definition['cost_table'][parameter_value]
+
+    return cost_definition['default_cost']
 
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):
