@@ -112,6 +112,7 @@ def test_submit_many_jobs(client, tables):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
+# TODO update for float credits
 def test_submit_exceeds_remaining_credits(client, tables, monkeypatch):
     login(client)
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
@@ -375,6 +376,7 @@ def test_submit_mixed_job_parameters(client, tables):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
+# TODO update for float credits
 def test_float_input(client, tables):
     login(client)
     batch = [make_job(parameters={'resolution': 30.0})]
