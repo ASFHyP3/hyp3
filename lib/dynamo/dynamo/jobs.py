@@ -27,11 +27,16 @@ class InsufficientCreditsError(Exception):
 
 
 def _get_credit_cost(job: dict, costs: dict) -> float:
-    # TODO: verify has cost param and table OR default cost
-    cost_definition = costs[job['job_type']]
+    job_type = job['job_type']
+    cost_definition = costs[job_type]
+
+    if cost_definition.keys() not in ({'cost_parameter', 'cost_table'}, {'default_cost'}):
+        raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
+
     if 'cost_parameter' in cost_definition:
         parameter_value = job['job_parameters'][cost_definition['cost_parameter']]
         return cost_definition['cost_table'][parameter_value]
+
     return cost_definition['default_cost']
 
 

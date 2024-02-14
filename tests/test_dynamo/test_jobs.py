@@ -223,6 +223,29 @@ def test_get_credit_cost():
     ) == 1.0
 
 
+def test_get_credit_cost_validate_keys():
+    costs = {
+        'JOB_TYPE_A': {'cost_parameter': 'foo', 'cost_table': {'bar': 3.0}},
+        'JOB_TYPE_B': {'default_cost': 5.0},
+        'JOB_TYPE_C': {'cost_parameter': ''},
+        'JOB_TYPE_D': {'cost_table': {}},
+        'JOB_TYPE_E': {'cost_parameter': '', 'cost_table': {}, 'default_cost': 1.0},
+        'JOB_TYPE_F': {'cost_parameter': '', 'cost_table': {}, 'foo': None},
+    }
+
+    assert dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_A', 'job_parameters': {'foo': 'bar'}}, costs) == 3.0
+    assert dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_B'}, costs) == 5.0
+
+    with pytest.raises(ValueError, match=r'^Cost definition for job type JOB_TYPE_C has invalid keys.*'):
+        dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_C'}, costs)
+    with pytest.raises(ValueError, match=r'^Cost definition for job type JOB_TYPE_D has invalid keys.*'):
+        dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_D'}, costs)
+    with pytest.raises(ValueError, match=r'^Cost definition for job type JOB_TYPE_E has invalid keys.*'):
+        dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_E'}, costs)
+    with pytest.raises(ValueError, match=r'^Cost definition for job type JOB_TYPE_F has invalid keys.*'):
+        dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_F'}, costs)
+
+
 def test_put_jobs(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '10')
     payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
