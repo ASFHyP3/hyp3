@@ -315,6 +315,7 @@ def test_put_jobs_default_params(tables):
     assert tables.jobs_table.scan()['Items'] == jobs
 
 
+# TODO any other assertions / test cases?
 def test_put_jobs_costs(tables):
     tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': Decimal(100)})
 

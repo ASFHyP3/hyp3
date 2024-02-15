@@ -38,7 +38,7 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     remaining_credits = user_record['remaining_credits']
     priority_override = user_record.get('priority_override')
 
-    total_cost = Decimal(0)
+    total_cost = Decimal('0.0')
     prepared_jobs = []
     for job in jobs:
         prepared_job = _prepare_job_for_database(
@@ -102,7 +102,7 @@ def _prepare_job_for_database(
 
 def _get_credit_cost(job: dict, costs: dict) -> Decimal:
     if not costs:
-        return Decimal(1)
+        return Decimal('1.0')
 
     job_type = job['job_type']
     cost_definition = costs[job_type]
