@@ -246,7 +246,7 @@ def test_get_credit_cost_validate_keys():
         dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_F'}, costs)
 
 
-# TODO update for float credits
+# TODO update for fractional credit values
 def test_put_jobs(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '10')
     payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
@@ -394,7 +394,7 @@ def test_put_jobs_user_exists(tables):
     assert tables.users_table.scan()['Items'] == [{'user_id': 'user1', 'remaining_credits': 3}]
 
 
-# TODO update for float credits
+# TODO update for fractional credit values
 def test_put_jobs_insufficient_credits(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '1')
     payload = [{'name': 'name1'}, {'name': 'name2'}]
@@ -442,7 +442,7 @@ def test_put_jobs_priority_override(tables):
         assert job['priority'] == 550
 
 
-# TODO update for float credits
+# TODO update for fractional credit values
 def test_put_jobs_priority(tables):
     tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 7})
 
@@ -458,7 +458,7 @@ def test_put_jobs_priority(tables):
     assert jobs[6]['priority'] == 1
 
 
-# TODO update for float credits
+# TODO update for fractional credit values
 def test_put_jobs_priority_extra_credits(tables):
     tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 10_003})
 
