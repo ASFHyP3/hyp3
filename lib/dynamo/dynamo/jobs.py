@@ -1,5 +1,6 @@
 import json
 from datetime import datetime, timezone
+from decimal import Decimal
 from os import environ
 from pathlib import Path
 from typing import List, Optional
@@ -12,6 +13,7 @@ from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_ti
 
 costs_file = Path(__file__).parent / 'costs.json'
 if costs_file.exists():
+    # TODO convert floats to decimals
     COSTS = json.loads(costs_file.read_text())
 else:
     COSTS = {}
@@ -33,14 +35,10 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     request_time = format_time(datetime.now(timezone.utc))
 
     user_record = dynamo.user.get_or_create_user(user_id)
-
     remaining_credits = user_record['remaining_credits']
-    if remaining_credits is not None:
-        remaining_credits = float(remaining_credits)
-
     priority_override = user_record.get('priority_override')
 
-    total_cost = 0.0
+    total_cost = Decimal(0)
     prepared_jobs = []
     for job in jobs:
         prepared_job = _prepare_job_for_database(
@@ -74,16 +72,16 @@ def _prepare_job_for_database(
         job: dict,
         user_id: str,
         request_time: str,
-        remaining_credits: Optional[float],
+        remaining_credits: Optional[Decimal],
         priority_override: Optional[int],
-        running_cost: float,
+        running_cost: Decimal,
 ) -> dict:
     if priority_override:
         priority = priority_override
     elif remaining_credits is None:
         priority = 0
     else:
-        priority = min(int(remaining_credits - running_cost), 9999)
+        priority = min(round(remaining_credits - running_cost), 9999)
     prepared_job = {
         'job_id': str(uuid4()),
         'user_id': user_id,
@@ -102,9 +100,9 @@ def _prepare_job_for_database(
     return prepared_job
 
 
-def _get_credit_cost(job: dict, costs: dict) -> float:
+def _get_credit_cost(job: dict, costs: dict) -> Decimal:
     if not costs:
-        return 1.0
+        return Decimal(1)
 
     job_type = job['job_type']
     cost_definition = costs[job_type]

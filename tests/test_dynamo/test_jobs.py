@@ -315,6 +315,74 @@ def test_put_jobs_default_params(tables):
     assert tables.jobs_table.scan()['Items'] == jobs
 
 
+def test_put_jobs_costs(tables):
+    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': Decimal(100)})
+
+    costs = {
+        'RTC_GAMMA': {
+            'cost_parameter': 'resolution',
+            'cost_table': {
+                30: Decimal('5.0'),
+                20: Decimal('15.0'),
+                10: Decimal('60.0'),
+            },
+        },
+        'INSAR_ISCE_BURST': {
+            'cost_parameter': 'looks',
+            'cost_table': {
+                '20x4': Decimal('0.4'),
+                '10x2': Decimal('0.7'),
+                '5x1': Decimal('1.8'),
+            },
+        },
+    }
+    default_params = {
+        'RTC_GAMMA': {'resolution': 30},
+        'INSAR_ISCE_BURST': {'looks': '20x4'},
+    }
+    payload = [
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 30}},
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 20}},
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 10}},
+
+        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'looks': '20x4'}},
+        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'looks': '10x2'}},
+        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'looks': '5x1'}},
+
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {}},
+        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {}},
+    ]
+    with unittest.mock.patch('dynamo.jobs.COSTS', costs), \
+            unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params):
+        jobs = dynamo.jobs.put_jobs('user1', payload)
+
+    assert len(jobs) == 8
+
+    assert jobs[0]['priority'] == 100
+    assert jobs[1]['priority'] == 95
+    assert jobs[2]['priority'] == 80
+    assert jobs[3]['priority'] == 20
+    assert jobs[4]['priority'] == 20
+    assert jobs[5]['priority'] == 19
+    assert jobs[6]['priority'] == 17
+    assert jobs[7]['priority'] == 12
+
+    assert jobs[0]['credit_cost'] == Decimal('5.0')
+    assert jobs[1]['credit_cost'] == Decimal('15.0')
+    assert jobs[2]['credit_cost'] == Decimal('60.0')
+    assert jobs[3]['credit_cost'] == Decimal('0.4')
+    assert jobs[4]['credit_cost'] == Decimal('0.7')
+    assert jobs[5]['credit_cost'] == Decimal('1.8')
+    assert jobs[6]['credit_cost'] == Decimal('5.0')
+    assert jobs[7]['credit_cost'] == Decimal('0.4')
+
+    assert tables.jobs_table.scan()['Items'] == jobs
+
+    # FIXME: fails because apparently the user record is equal to:
+    #  {'user_id': 'user1', 'remaining_credits': Decimal('11.700000000000003')}
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'user1', 'remaining_credits': Decimal('11.7')}]
+
+
 def test_put_jobs_user_exists(tables):
     tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 5})
 
