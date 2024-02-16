@@ -47,11 +47,39 @@ def render_default_params_by_job_type(job_types: dict) -> None:
         json.dump(default_params_by_job_type, f, indent=2)
 
 
+def render_costs(job_types: dict, cost_profile: str) -> None:
+    costs = {
+        job_type: get_cost_dict(job_spec, cost_profile)
+        for job_type, job_spec in job_types.items()
+    }
+    # FIXME: json requires keys to be strings, so e.g. RTC resolution gets converted to str
+    with open(Path('lib') / 'dynamo' / 'dynamo' / 'costs.json', 'w') as f:
+        json.dump(costs, f, indent=2)
+
+
+def get_cost_dict(job_spec: dict, cost_profile: str) -> dict:
+    keys = job_spec.keys()
+
+    # TODO delete this case after all job specs have cost definitions
+    if 'cost_parameter' not in keys and 'cost_tables' not in keys and 'default_cost' not in keys:
+        return {'default_cost': 99999999.0}
+
+    if 'cost_parameter' in keys:
+        assert 'cost_tables' in keys and 'default_cost' not in keys
+        return {
+            'cost_parameter': job_spec['cost_parameter'],
+            'cost_table': job_spec['cost_tables'][cost_profile],
+        }
+    assert 'default_cost' in keys and 'cost_tables' not in keys
+    return {'default_cost': job_spec['default_cost']}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
     parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL', 'JPL-public'])
     parser.add_argument('-n', '--api-name', required=True)
+    parser.add_argument('-c', '--cost-profile', required=True)
     args = parser.parse_args()
 
     job_types = {}
@@ -63,6 +91,7 @@ def main():
             task['name'] = job_type + '_' + task['name'] if task['name'] else job_type
 
     render_default_params_by_job_type(job_types)
+    render_costs(job_types, args.cost_profile)
     render_templates(job_types, args.security_environment, args.api_name)
 
 

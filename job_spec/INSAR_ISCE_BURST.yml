@@ -34,6 +34,7 @@ INSAR_ISCE_BURST:
           - 20x4
           - 10x2
           - 5x1
+  default_cost: 1.0
   validators:
     - check_dem_coverage
     - check_valid_polarizations
