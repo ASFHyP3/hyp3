@@ -13,8 +13,7 @@ from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_ti
 
 costs_file = Path(__file__).parent / 'costs.json'
 if costs_file.exists():
-    # TODO convert floats to decimals
-    COSTS = json.loads(costs_file.read_text())
+    COSTS = convert_floats_to_decimals(json.loads(costs_file.read_text()))
 else:
     COSTS = {}
 
