@@ -376,9 +376,6 @@ def test_put_jobs_costs(tables):
     assert jobs[7]['credit_cost'] == Decimal('0.4')
 
     assert tables.jobs_table.scan()['Items'] == jobs
-
-    # FIXME: fails because apparently the user record is equal to:
-    #  {'user_id': 'user1', 'remaining_credits': Decimal('11.700000000000003')}
     assert tables.users_table.scan()['Items'] == [{'user_id': 'user1', 'remaining_credits': Decimal('11.7')}]
 
 
