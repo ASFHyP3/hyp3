@@ -70,6 +70,14 @@ INSAR_GAMMA:
         minimum: 0.0
         maximum: 1.0
         default: 0.6
+  cost_profiles:
+    EDC_UAT:
+      cost_parameter: looks
+      cost_table:
+        20x4: 10.0
+        10x2: 15.0
+    DEFAULT:
+      cost: 1.0
   validators:
     - check_dem_coverage
   tasks:
