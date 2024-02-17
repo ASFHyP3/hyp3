@@ -13,5 +13,5 @@ setup(
 
     packages=find_packages(),
 
-    package_data={'dynamo': ['*.json']},
+    package_data={'dynamo': ['*.json', '*.yml']},
 )

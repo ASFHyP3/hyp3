@@ -193,7 +193,7 @@ def test_get_credit_cost():
             },
         },
         'INSAR_ISCE_BURST': {
-            'default_cost': 1.0,
+            'cost': 1.0,
         }
     }
     assert dynamo.jobs._get_credit_cost(
@@ -226,10 +226,10 @@ def test_get_credit_cost():
 def test_get_credit_cost_validate_keys():
     costs = {
         'JOB_TYPE_A': {'cost_parameter': 'foo', 'cost_table': {'bar': 3.0}},
-        'JOB_TYPE_B': {'default_cost': 5.0},
+        'JOB_TYPE_B': {'cost': 5.0},
         'JOB_TYPE_C': {'cost_parameter': ''},
         'JOB_TYPE_D': {'cost_table': {}},
-        'JOB_TYPE_E': {'cost_parameter': '', 'cost_table': {}, 'default_cost': 1.0},
+        'JOB_TYPE_E': {'cost_parameter': '', 'cost_table': {}, 'cost': 1.0},
         'JOB_TYPE_F': {'cost_parameter': '', 'cost_table': {}, 'foo': None},
     }
 

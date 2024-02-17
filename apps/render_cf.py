@@ -43,35 +43,19 @@ def render_default_params_by_job_type(job_types: dict) -> None:
         }
         for job_type, job_spec in job_types.items()
     }
+    # TODO format as yaml for consistency with costs.yml?
     with open(Path('lib') / 'dynamo' / 'dynamo' / 'default_params_by_job_type.json', 'w') as f:
         json.dump(default_params_by_job_type, f, indent=2)
 
 
 def render_costs(job_types: dict, cost_profile: str) -> None:
     costs = {
-        job_type: get_cost_dict(job_spec, cost_profile)
+        job_type: job_spec['cost_profiles'][cost_profile]
         for job_type, job_spec in job_types.items()
+        if 'cost_profiles' in job_spec  # TODO: remove this line after all job specs have cost_profiles
     }
-    # FIXME: json requires keys to be strings, so e.g. RTC resolution gets converted to str
-    with open(Path('lib') / 'dynamo' / 'dynamo' / 'costs.json', 'w') as f:
-        json.dump(costs, f, indent=2)
-
-
-def get_cost_dict(job_spec: dict, cost_profile: str) -> dict:
-    keys = job_spec.keys()
-
-    # TODO delete this case after all job specs have cost definitions
-    if 'cost_parameter' not in keys and 'cost_tables' not in keys and 'default_cost' not in keys:
-        return {'default_cost': 99999999.0}
-
-    if 'cost_parameter' in keys:
-        assert 'cost_tables' in keys and 'default_cost' not in keys
-        return {
-            'cost_parameter': job_spec['cost_parameter'],
-            'cost_table': job_spec['cost_tables'][cost_profile],
-        }
-    assert 'default_cost' in keys and 'cost_tables' not in keys
-    return {'default_cost': job_spec['default_cost']}
+    with open(Path('lib') / 'dynamo' / 'dynamo' / 'costs.yml', 'w') as f:
+        yaml.safe_dump(costs, f)
 
 
 def main():
@@ -91,7 +75,8 @@ def main():
             task['name'] = job_type + '_' + task['name'] if task['name'] else job_type
 
     render_default_params_by_job_type(job_types)
-    render_costs(job_types, args.cost_profile)
+    if args.cost_profile != 'None':
+        render_costs(job_types, args.cost_profile)
     render_templates(job_types, args.security_environment, args.api_name)
 
 

@@ -6,14 +6,15 @@ from pathlib import Path
 from typing import List, Optional
 from uuid import uuid4
 
+import yaml
 from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
-costs_file = Path(__file__).parent / 'costs.json'
+costs_file = Path(__file__).parent / 'costs.yml'
 if costs_file.exists():
-    COSTS = convert_floats_to_decimals(json.loads(costs_file.read_text()))
+    COSTS = convert_floats_to_decimals(yaml.safe_load(costs_file.read_text()))
 else:
     COSTS = {}
 
@@ -106,14 +107,14 @@ def _get_credit_cost(job: dict, costs: dict) -> Decimal:
     job_type = job['job_type']
     cost_definition = costs[job_type]
 
-    if cost_definition.keys() not in ({'cost_parameter', 'cost_table'}, {'default_cost'}):
+    if cost_definition.keys() not in ({'cost_parameter', 'cost_table'}, {'cost'}):
         raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
 
     if 'cost_parameter' in cost_definition:
         parameter_value = job['job_parameters'][cost_definition['cost_parameter']]
         return cost_definition['cost_table'][parameter_value]
 
-    return cost_definition['default_cost']
+    return cost_definition['cost']
 
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):

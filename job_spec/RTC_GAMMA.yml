@@ -89,16 +89,15 @@ RTC_GAMMA:
         description: Include a false-color RGB decomposition in the product package for dual-pol granules (ignored for single-pol granules)
         default: false
         type: boolean
-  cost_parameter: resolution
-  cost_tables:
+  cost_profiles:
     EDC_UAT:
-      30.0: 5.0
-      20.0: 15.0
-      10.0: 60.0
-    EDC_PROD:
-      30.0: 1.0
-      20.0: 1.0
-      10.0: 1.0
+      cost_parameter: resolution
+      cost_table:
+        30.0: 5.0
+        20.0: 15.0
+        10.0: 60.0
+    DEFAULT:
+      cost: 1.0
   validators:
     - check_dem_coverage
   tasks:
