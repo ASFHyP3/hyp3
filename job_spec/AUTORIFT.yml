@@ -33,6 +33,11 @@ AUTORIFT:
               example: LC08_L1GT_118112_20210107_20210107_02_T2
     bucket_prefix:
       default:  '""'
+  cost_profiles:
+    EDC_UAT:
+      cost: 25.0
+    DEFAULT:
+      cost: 1.0
   validators: []
   tasks:
     - name: ''
