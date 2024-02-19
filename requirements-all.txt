@@ -7,8 +7,7 @@
 -r requirements-apps-update-db.txt
 boto3==1.34.42
 jinja2==3.1.3
-# TODO pin moto[dynamodb] to the latest version from PyPI after https://github.com/getmoto/moto/issues/7349 is resolved
-moto[dynamodb] @ git+https://github.com/jtherrmann/moto
+moto[dynamodb]==5.0.3.dev5
 pytest==8.0.0
 PyYAML==6.0.1
 responses==0.25.0
