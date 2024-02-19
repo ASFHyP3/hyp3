@@ -65,6 +65,7 @@ jobs:
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           DEFAULT_CREDITS_PER_USER: ${{ matrix.default_credits_per_user }}
           RESET_CREDITS_MONTHLY: ${{ matrix.reset_credits_monthly }}
+          COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
           DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
