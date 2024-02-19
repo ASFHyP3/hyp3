@@ -16,6 +16,17 @@ servers:
 
 paths:
 
+  /costs:
+    get:
+      description: Get table of job costs.
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/costs"
+
   /jobs:
 
     post:
@@ -105,6 +116,11 @@ paths:
 
 components:
   schemas:
+
+    # TODO specify more information?
+    costs:
+      description: Table of job costs.
+      type: object
 
     post_jobs_body:
       description: List for new jobs to submit for processing.

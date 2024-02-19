@@ -31,6 +31,11 @@ def is_uuid(val):
     return True
 
 
+# TODO tests
+def get_costs():
+    return dynamo.jobs.COSTS
+
+
 def post_jobs(body, user):
     print(body)
 

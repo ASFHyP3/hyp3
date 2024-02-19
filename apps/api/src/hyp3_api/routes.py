@@ -111,6 +111,13 @@ openapi = FlaskOpenAPIViewDecorator(
 )
 
 
+# TODO tests
+@app.route('/costs', methods=['GET'])
+@openapi
+def costs_get():
+    return jsonify(handlers.get_costs())
+
+
 @app.route('/jobs', methods=['POST'])
 @openapi
 def jobs_post():
