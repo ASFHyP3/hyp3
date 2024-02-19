@@ -35,6 +35,8 @@ INSAR_ISCE_BURST:
           - 10x2
           - 5x1
   cost_profiles:
+    EDC_UAT:
+      cost: 1.0
     DEFAULT:
       cost: 1.0
   validators:
