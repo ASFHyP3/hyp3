@@ -1,13 +1,20 @@
+import json
 from http.client import responses
+from pathlib import Path
+from typing import Optional
 from uuid import UUID
 
+import boto3
 import requests
+from botocore.exceptions import ClientError
 from flask import abort, jsonify, request
 from jsonschema import draft4_format_checker
 
 import dynamo
 from hyp3_api import util
 from hyp3_api.validation import GranuleValidationError, validate_jobs
+
+S3_CLIENT = boto3.client('s3')
 
 
 def problem_format(status, message):
@@ -67,6 +74,23 @@ def get_job_by_id(job_id):
     if job is None:
         abort(problem_format(404, f'job_id does not exist: {job_id}'))
     return job
+
+
+def get_stac_item_from_job(job) -> Optional[dict]:
+    job_files = job.get('files')
+    if job_files is None:
+        return None
+
+    product = job_files[0]
+    stac_key = product['s3']['key'].replace(Path(product['filename']).suffix, '.json')
+
+    try:
+        response = S3_CLIENT.get_object(Bucket=product['s3']['bucket'], Key=stac_key)
+    except ClientError as e:
+        abort(problem_format(404, f'STAC item does not exist for {job.job_id}! {e}'))
+
+    stac_item = json.loads(response['Body'].read().decode('utf-8'))
+    return stac_item
 
 
 def get_names_for_user(user):

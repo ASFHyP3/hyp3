@@ -21,6 +21,9 @@ Parameters:
   SystemAvailable:
     Type: String
 
+  HyP3ContentBucketName:
+    Type: String
+
   {% if security_environment == 'EDC' %}
   VpcId:
     Type: String
@@ -184,6 +187,7 @@ Resources:
           DEFAULT_CREDITS_PER_USER: !Ref DefaultCreditsPerUser
           RESET_CREDITS_MONTHLY: !Ref ResetCreditsMonthly
           SYSTEM_AVAILABLE: !Ref SystemAvailable
+          HYP3_CONTENT_BUCKET: !Ref HyP3ContentBucketName
       Code: src/
       Handler: hyp3_api.lambda_handler.handler
       MemorySize: 3008
