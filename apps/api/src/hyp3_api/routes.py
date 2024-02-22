@@ -164,7 +164,12 @@ def stac_get():
 @app.route('/stac/<job_id>', methods=['GET'])
 @openapi
 def stac_get_by_job_id(job_id):
-    return jsonify(handlers.get_job_by_id(job_id))
+    job = handlers.get_job_by_id(job_id)
+    stac = handlers.get_stac_item_from_job(job)
+    if stac is None:
+        return f'Job is {job.status_code}', 202
+
+    return jsonify(stac)
 
 
 @app.route('/user', methods=['GET'])
