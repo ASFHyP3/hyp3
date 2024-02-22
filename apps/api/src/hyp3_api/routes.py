@@ -148,17 +148,16 @@ def stac_get():
     parameters = request.openapi.parameters.query
     start = parameters.get('start')
     end = parameters.get('end')
-    return jsonify(
-        handlers.get_jobs(
-            parameters.get('user_id') or g.user,
-            start.isoformat(timespec='seconds') if start else None,
-            end.isoformat(timespec='seconds') if end else None,
-            parameters.get('status_code'),
-            parameters.get('name'),
-            parameters.get('job_type'),
-            parameters.get('start_token'),
-        )
+    jobs = handlers.get_jobs(
+        parameters.get('user_id') or g.user,
+        start.isoformat(timespec='seconds') if start else None,
+        end.isoformat(timespec='seconds') if end else None,
+        parameters.get('status_code'),
+        parameters.get('name'),
+        parameters.get('job_type'),
+        parameters.get('start_token'),
     )
+    return jsonify(handlers.get_stac_items_from_jobs(jobs))
 
 
 @app.route('/stac/<job_id>', methods=['GET'])
@@ -167,7 +166,7 @@ def stac_get_by_job_id(job_id):
     job = handlers.get_job_by_id(job_id)
     stac = handlers.get_stac_item_from_job(job)
     if stac is None:
-        return f'Job is {job["status_code"]}', 202
+        return f'Job {job["job_id"]} is {job["status_code"]}', 202
 
     return jsonify(stac)
 

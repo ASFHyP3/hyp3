@@ -76,7 +76,7 @@ def get_job_by_id(job_id):
     return job
 
 
-def get_stac_item_from_job(job) -> Optional[dict]:
+def get_stac_item_from_job(job: dict) -> Optional[dict]:
     job_files = job.get('files')
     if job_files is None:
         return None
@@ -94,6 +94,20 @@ def get_stac_item_from_job(job) -> Optional[dict]:
 
     stac_item = json.loads(response['Body'].read().decode('utf-8'))
     return stac_item
+
+
+def get_stac_items_from_jobs(jobs: dict) -> dict:
+    stac_items = [get_stac_item_from_job(job)for job in jobs['jobs']]
+    return {
+        'type': 'FeatureCollection',
+        'features': stac_items,
+        'links': [{
+            'rel': 'next',
+            'type': 'application/geo+json',
+            'method': 'GET',
+            'href': jobs['next'].replace('/jobs?', '/stac?')
+        }]
+    }
 
 
 def get_names_for_user(user):
