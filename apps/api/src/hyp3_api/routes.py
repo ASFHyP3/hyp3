@@ -142,6 +142,31 @@ def jobs_get_by_job_id(job_id):
     return jsonify(handlers.get_job_by_id(job_id))
 
 
+@app.route('/stac', methods=['GET'])
+@openapi
+def stac_get():
+    parameters = request.openapi.parameters.query
+    start = parameters.get('start')
+    end = parameters.get('end')
+    return jsonify(
+        handlers.get_jobs(
+            parameters.get('user_id') or g.user,
+            start.isoformat(timespec='seconds') if start else None,
+            end.isoformat(timespec='seconds') if end else None,
+            parameters.get('status_code'),
+            parameters.get('name'),
+            parameters.get('job_type'),
+            parameters.get('start_token'),
+        )
+    )
+
+
+@app.route('/stac/<job_id>', methods=['GET'])
+@openapi
+def stac_get_by_job_id(job_id):
+    return jsonify(handlers.get_job_by_id(job_id))
+
+
 @app.route('/user', methods=['GET'])
 @openapi
 def user_get():
