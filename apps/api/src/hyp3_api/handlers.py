@@ -6,7 +6,6 @@ from uuid import UUID
 
 import boto3
 import requests
-from botocore.exceptions import BotoCoreError
 from flask import abort, jsonify, request
 from jsonschema import draft4_format_checker
 
@@ -86,18 +85,23 @@ def get_stac_item_from_job(job: dict) -> Optional[dict]:
 
     try:
         response = S3_CLIENT.get_object(Bucket=product['s3']['bucket'], Key=stac_key)
-    except S3_CLIENT.exceptions.NoSuchKey as e:
-        abort(problem_format(404, f'STAC item does not exist for {job["job_id"]}'))
-    # FIXME: No trust.
-    except Exception as e:
-        abort(problem_format(404, f'Woops. {e}'))
+    except S3_CLIENT.exceptions.NoSuchKey:
+        raise KeyError(f'STAC item does not exist for {job["job_id"]}')
 
     stac_item = json.loads(response['Body'].read().decode('utf-8'))
     return stac_item
 
 
 def get_stac_items_from_jobs(jobs: dict) -> dict:
+    for job in jobs['jobs']:
+        try:
+            get_stac_item_from_job(job)
+        except KeyError:
+            # don't list stac items that don't exist
+            continue
+
     stac_items = [get_stac_item_from_job(job)for job in jobs['jobs']]
+
     return {
         'type': 'FeatureCollection',
         'features': stac_items,

@@ -164,7 +164,11 @@ def stac_get():
 @openapi
 def stac_get_by_job_id(job_id):
     job = handlers.get_job_by_id(job_id)
-    stac = handlers.get_stac_item_from_job(job)
+    try:
+        stac = handlers.get_stac_item_from_job(job)
+    except KeyError:
+        abort(handlers.problem_format(404, f'STAC item does not exist for {job["job_id"]}'))
+
     if stac is None:
         return f'Job {job["job_id"]} is {job["status_code"]}', 202
 
