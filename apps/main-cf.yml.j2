@@ -125,6 +125,7 @@ Resources:
         DefaultCreditsPerUser: !Ref DefaultCreditsPerUser
         ResetCreditsMonthly: !Ref ResetCreditsMonthly
         SystemAvailable: !Ref SystemAvailable
+        HyP3ContentBucketName: !Ref ContentBucket
         {% if security_environment == 'EDC' %}
         VpcId: !Ref VpcId
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
