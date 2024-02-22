@@ -87,7 +87,7 @@ def get_stac_item_from_job(job) -> Optional[dict]:
     try:
         response = S3_CLIENT.get_object(Bucket=product['s3']['bucket'], Key=stac_key)
     except BotoCoreError as e:
-        abort(problem_format(404, f'STAC item does not exist for {job.job_id}! {e}'))
+        abort(problem_format(404, f'STAC item does not exist for {job["job_id"]}! {e}'))
 
     stac_item = json.loads(response['Body'].read().decode('utf-8'))
     return stac_item
