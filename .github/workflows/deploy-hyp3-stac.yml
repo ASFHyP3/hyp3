@@ -1,4 +1,4 @@
-name: Deploy Credits Sandbox Stack to AWS
+name: Deploy HyP3 STAC stack to AWS
 
 on:
   push:
