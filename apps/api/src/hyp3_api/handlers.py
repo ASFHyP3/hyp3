@@ -102,15 +102,19 @@ def get_stac_items_from_jobs(jobs: dict) -> dict:
 
     stac_items = [get_stac_item_from_job(job)for job in jobs['jobs']]
 
-    return {
-        'type': 'FeatureCollection',
-        'features': stac_items,
-        'links': [{
+    links = []
+    if jobs.get('next') is not None:
+        links.append({
             'rel': 'next',
             'type': 'application/geo+json',
             'method': 'GET',
             'href': jobs['next'].replace('/jobs?', '/stac?')
-        }]
+        })
+
+    return {
+        'type': 'FeatureCollection',
+        'features': stac_items,
+        'links': links
     }
 
 
