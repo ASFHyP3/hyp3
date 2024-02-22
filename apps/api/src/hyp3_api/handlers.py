@@ -93,14 +93,13 @@ def get_stac_item_from_job(job: dict) -> Optional[dict]:
 
 
 def get_stac_items_from_jobs(jobs: dict) -> dict:
+    stac_items = []
     for job in jobs['jobs']:
         try:
-            get_stac_item_from_job(job)
+            stac_items.append(get_stac_item_from_job(job))
         except KeyError:
             # don't list stac items that don't exist
             continue
-
-    stac_items = [get_stac_item_from_job(job)for job in jobs['jobs']]
 
     links = []
     if jobs.get('next') is not None:
