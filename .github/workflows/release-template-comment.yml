@@ -13,7 +13,6 @@ jobs:
     with:
       additional_developer_items: |
         - [ ] If the step function code has changed, have you drained the job queue before merging?
-
           * For example, if the interface for a Lambda function has changed to expect different input,
             then currently running jobs (which use the old step function definition) will call the new
             function with the old input. So we must drain the job queue before deployment, so that the new
