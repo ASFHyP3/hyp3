@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [6.1.1]
 
 ### Changed
-- Upgraded to cryptography>=42.0.4. Fixes CVE-2024-26130.
+- Upgraded to `cryptography==42.0.4`. Fixes CVE-2024-26130.
 
 ## [6.1.0]
 
