@@ -78,6 +78,7 @@ def get_job_by_id(job_id):
 def get_stac_item_from_job(job: dict) -> Optional[dict]:
     job_files = job.get('files')
     if job_files is None:
+        # FIXME: still processing; return an incomplete stac item?
         return None
 
     product = job_files[0]
@@ -96,9 +97,12 @@ def get_stac_items_from_jobs(jobs: dict) -> dict:
     stac_items = []
     for job in jobs['jobs']:
         try:
-            stac_items.append(get_stac_item_from_job(job))
+            stac_item = get_stac_item_from_job(job)
+            if stac_item is not None:
+                # FIXME: None is still processing; better to have an incomplete stac item?
+                stac_items.append(stac_item)
         except KeyError:
-            # don't list stac items that don't exist
+            # FIXME: missing stac json; better to have an incomplete stac item?
             continue
 
     links = []
