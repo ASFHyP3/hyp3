@@ -43,7 +43,6 @@ def render_default_params_by_job_type(job_types: dict) -> None:
         }
         for job_type, job_spec in job_types.items()
     }
-    # TODO format as yaml for consistency with costs.yml?
     with open(Path('lib') / 'dynamo' / 'dynamo' / 'default_params_by_job_type.json', 'w') as f:
         json.dump(default_params_by_job_type, f, indent=2)
 

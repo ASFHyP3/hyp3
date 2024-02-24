@@ -112,8 +112,6 @@ openapi = FlaskOpenAPIViewDecorator(
 )
 
 
-# TODO what are the implications of not explicitly handling Decimal type?
-#  jsonify automatically converts them to float?
 @app.route('/costs', methods=['GET'])
 def costs_get():
     return jsonify(dynamo.jobs.COSTS)
