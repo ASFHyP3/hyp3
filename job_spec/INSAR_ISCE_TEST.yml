@@ -89,6 +89,8 @@ INSAR_ISCE_TEST:
     bucket_prefix:
       default:  '""'
   cost_profiles:
+    EDC:
+      cost: 1.0
     DEFAULT:
       cost: 1.0
   validators: []
