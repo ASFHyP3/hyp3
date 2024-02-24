@@ -21,6 +21,7 @@ jobs:
             product_lifetime_in_days: 45
             default_credits_per_user: 0
             reset_credits_monthly: true
+            cost_profile: DEFAULT
             job_files: >-
               job_spec/AUTORIFT_ITS_LIVE.yml
               job_spec/AUTORIFT_ITS_LIVE_TEST.yml
@@ -40,6 +41,7 @@ jobs:
             product_lifetime_in_days: 180
             default_credits_per_user: 0
             reset_credits_monthly: true
+            cost_profile: DEFAULT
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 10000
@@ -56,6 +58,7 @@ jobs:
             product_lifetime_in_days: 30
             default_credits_per_user: 0
             reset_credits_monthly: true
+            cost_profile: DEFAULT
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 10000
@@ -72,6 +75,7 @@ jobs:
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             reset_credits_monthly: true
+            cost_profile: DEFAULT
             job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 1600
@@ -88,6 +92,7 @@ jobs:
             product_lifetime_in_days: 365000
             default_credits_per_user: 0
             reset_credits_monthly: true
+            cost_profile: DEFAULT
             job_files: job_spec/INSAR_GAMMA.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
@@ -104,6 +109,7 @@ jobs:
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             reset_credits_monthly: true
+            cost_profile: DEFAULT
             job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
@@ -120,6 +126,7 @@ jobs:
             product_lifetime_in_days: 90
             default_credits_per_user: 0
             reset_credits_monthly: true
+            cost_profile: DEFAULT
             job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1600
@@ -136,6 +143,7 @@ jobs:
             product_lifetime_in_days: 30
             default_credits_per_user: 0
             reset_credits_monthly: true
+            cost_profile: DEFAULT
             job_files: job_spec/INSAR_GAMMA.yml job_spec/INSAR_ISCE_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
@@ -152,6 +160,7 @@ jobs:
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             reset_credits_monthly: true
+            cost_profile: DEFAULT
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
@@ -168,6 +177,7 @@ jobs:
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             reset_credits_monthly: true
+            cost_profile: DEFAULT
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
@@ -184,6 +194,7 @@ jobs:
             product_lifetime_in_days: 30
             default_credits_per_user: 0
             reset_credits_monthly: true
+            cost_profile: DEFAULT
             job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
@@ -202,6 +213,7 @@ jobs:
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             reset_credits_monthly: true
+            cost_profile: DEFAULT
             job_files: job_spec/WATER_MAP.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640

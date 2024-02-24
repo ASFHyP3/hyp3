@@ -21,6 +21,7 @@ jobs:
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             reset_credits_monthly: false
+            cost_profile: DEFAULT
             deploy_ref: refs/heads/develop
             job_files: >-
               job_spec/AUTORIFT_ITS_LIVE.yml
