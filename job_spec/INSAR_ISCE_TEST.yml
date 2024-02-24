@@ -88,6 +88,9 @@ INSAR_ISCE_TEST:
           - HRRR
     bucket_prefix:
       default:  '""'
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
   validators: []
   tasks:
     - name: ''
