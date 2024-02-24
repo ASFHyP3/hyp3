@@ -37,7 +37,7 @@ install:
 files ?= job_spec/*.yml
 security_environment ?= ASF
 api_name ?= local
-cost_profile ?= None
+cost_profile ?= DEFAULT
 render:
 	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -s $(security_environment) -n $(api_name) -c $(cost_profile)
 

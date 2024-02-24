@@ -13,10 +13,7 @@ import dynamo.user
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
 costs_file = Path(__file__).parent / 'costs.yml'
-if costs_file.exists():
-    COSTS = convert_floats_to_decimals(yaml.safe_load(costs_file.read_text()))
-else:
-    COSTS = {}
+COSTS = convert_floats_to_decimals(yaml.safe_load(costs_file.read_text()))
 
 default_params_file = Path(__file__).parent / 'default_params_by_job_type.json'
 if default_params_file.exists():
@@ -96,14 +93,13 @@ def _prepare_job_for_database(
             **DEFAULT_PARAMS_BY_JOB_TYPE[prepared_job['job_type']],
             **prepared_job.get('job_parameters', {})
         }
-    prepared_job['credit_cost'] = _get_credit_cost(prepared_job, COSTS)
+        prepared_job['credit_cost'] = _get_credit_cost(prepared_job, COSTS)
+    else:
+        prepared_job['credit_cost'] = Decimal('1.0')
     return prepared_job
 
 
 def _get_credit_cost(job: dict, costs: dict) -> Decimal:
-    if not costs:
-        return Decimal('1.0')
-
     job_type = job['job_type']
     cost_definition = costs[job_type]
 

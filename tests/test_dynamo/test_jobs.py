@@ -281,6 +281,11 @@ def test_put_jobs_default_params(tables):
         'JOB_TYPE_B': {'b1': 'b1_default'},
         'JOB_TYPE_C': {},
     }
+    costs = {
+        'JOB_TYPE_A': {'cost': Decimal('1.0')},
+        'JOB_TYPE_B': {'cost': Decimal('1.0')},
+        'JOB_TYPE_C': {'cost': Decimal('1.0')},
+    }
     payload = [
         {},
         {'job_type': 'JOB_TYPE_A'},
@@ -295,7 +300,8 @@ def test_put_jobs_default_params(tables):
         {'job_type': 'JOB_TYPE_C', 'job_parameters': {'c1': 'foo'}},
         {'job_parameters': {'n1': 'foo'}},
     ]
-    with unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params):
+    with unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params),\
+            unittest.mock.patch('dynamo.jobs.COSTS', costs):
         jobs = dynamo.jobs.put_jobs('user1', payload)
 
     assert 'job_parameters' not in jobs[0]

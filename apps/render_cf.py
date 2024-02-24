@@ -52,7 +52,6 @@ def render_costs(job_types: dict, cost_profile: str) -> None:
     costs = {
         job_type: job_spec['cost_profiles'][cost_profile]
         for job_type, job_spec in job_types.items()
-        if 'cost_profiles' in job_spec  # TODO: remove this line after all job specs have cost_profiles
     }
     with open(Path('lib') / 'dynamo' / 'dynamo' / 'costs.yml', 'w') as f:
         yaml.safe_dump(costs, f)
@@ -63,7 +62,7 @@ def main():
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
     parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL', 'JPL-public'])
     parser.add_argument('-n', '--api-name', required=True)
-    parser.add_argument('-c', '--cost-profile', required=True)
+    parser.add_argument('-c', '--cost-profile', default='DEFAULT', choices=['DEFAULT', 'EDC'])
     args = parser.parse_args()
 
     job_types = {}
@@ -75,8 +74,7 @@ def main():
             task['name'] = job_type + '_' + task['name'] if task['name'] else job_type
 
     render_default_params_by_job_type(job_types)
-    if args.cost_profile != 'None':
-        render_costs(job_types, args.cost_profile)
+    render_costs(job_types, args.cost_profile)
     render_templates(job_types, args.security_environment, args.api_name)
 
 

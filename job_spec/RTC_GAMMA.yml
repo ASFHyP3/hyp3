@@ -90,7 +90,7 @@ RTC_GAMMA:
         default: false
         type: boolean
   cost_profiles:
-    EDC_UAT:
+    EDC:
       cost_parameter: resolution
       cost_table:
         30.0: 5.0

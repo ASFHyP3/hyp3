@@ -34,7 +34,7 @@ AUTORIFT:
     bucket_prefix:
       default:  '""'
   cost_profiles:
-    EDC_UAT:
+    EDC:
       cost: 25.0
     DEFAULT:
       cost: 1.0

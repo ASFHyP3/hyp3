@@ -71,7 +71,7 @@ INSAR_GAMMA:
         maximum: 1.0
         default: 0.6
   cost_profiles:
-    EDC_UAT:
+    EDC:
       cost_parameter: looks
       cost_table:
         20x4: 10.0
