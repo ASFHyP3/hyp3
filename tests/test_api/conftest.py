@@ -8,6 +8,7 @@ from hyp3_api import CMR_URL, app, auth
 from hyp3_api.util import get_granules
 
 AUTH_COOKIE = 'asf-urs'
+COSTS_URI = '/costs'
 JOBS_URI = '/jobs'
 USER_URI = '/user'
 
