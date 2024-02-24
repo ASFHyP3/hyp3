@@ -112,9 +112,9 @@ openapi = FlaskOpenAPIViewDecorator(
 )
 
 
-# TODO tests
 # TODO what are the implications of not explicitly handling Decimal type?
 #  jsonify automatically converts them to float?
+# TODO don't require authentication
 @app.route('/costs', methods=['GET'])
 @openapi
 def costs_get():
