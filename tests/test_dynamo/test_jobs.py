@@ -300,7 +300,7 @@ def test_put_jobs_default_params(tables):
         {'job_type': 'JOB_TYPE_C', 'job_parameters': {'c1': 'foo'}},
         {'job_parameters': {'n1': 'foo'}},
     ]
-    with unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params),\
+    with unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params), \
             unittest.mock.patch('dynamo.jobs.COSTS', costs):
         jobs = dynamo.jobs.put_jobs('user1', payload)
 
