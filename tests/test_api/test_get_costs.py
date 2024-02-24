@@ -5,7 +5,6 @@ from http import HTTPStatus
 from test_api.conftest import COSTS_URI
 
 
-# FIXME fails with 403
 def test_get_costs(client):
     costs = {'foo': Decimal('1.3')}
     with unittest.mock.patch('dynamo.jobs.COSTS', costs):
