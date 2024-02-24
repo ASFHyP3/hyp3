@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.2.0]
+
+HyP3 is in the process of transitioning from a monthly job quota to a credits system. [HyP3 v6.0.0](https://github.com/ASFHyP3/hyp3/releases/tag/v6.0.0) implemented the new credits system without changing the number of jobs that users can run per month. This release implements the capability to assign a different credit cost to each type of job, again without actually changing the number of jobs that users can run per month.
+
+Beginning on April 1st, the production API at <https://hyp3-api.asf.alaska.edu> will assign a different cost to each type of job and users will be given an allotment of 10,000 credits per month. Visit the [credits announcement page](https://hyp3-docs.asf.alaska.edu/using/credits/) for full details.
+
+### Added
+- `/costs` API endpoint that returns a table that can be used to look up the credit costs for different types of jobs.
+
+### Changed
+- The <https://hyp3-test-api.asf.alaska.edu> API now implements the credit costs displayed on the [credits announcement page](https://hyp3-docs.asf.alaska.edu/using/credits/).
+
 ## [6.1.1]
 
 ### Changed
