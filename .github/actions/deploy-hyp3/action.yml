@@ -41,6 +41,9 @@ inputs:
   RESET_CREDITS_MONTHLY:
     description: "Whether to reset each user's remaining credits each month"
     required: true
+  COST_PROFILE:
+    description: "Job spec cost profile"
+    required: true
   JOB_FILES:
     description: "Space separated list of job spec YAMLs to include"
     required: true
@@ -83,7 +86,7 @@ runs:
         run: |
           pip install --upgrade pip
           make install
-          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' api_name='${{ inputs.API_NAME }}' build
+          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' api_name='${{ inputs.API_NAME }}' cost_profile='${{ inputs.COST_PROFILE }}' build
       - name: Package and deploy
         shell: bash
         run: |

@@ -38,6 +38,9 @@ AUTORIFT:
         description: Shapefile for determining the correct search parameters by geographic location. Path to shapefile must be understood by GDAL.
         type: string
         default: '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
   validators: []
   tasks:
     - name: ''
