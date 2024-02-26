@@ -40,7 +40,7 @@ jobs:
             template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
-            default_credits_per_user: 1000
+            default_credits_per_user: 10000
             reset_credits_monthly: true
             cost_profile: EDC
             deploy_ref: refs/heads/develop
