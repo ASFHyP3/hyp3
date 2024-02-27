@@ -15,6 +15,7 @@ Beginning on April 1st, the production API at <https://hyp3-api.asf.alaska.edu> 
 
 ### Changed
 - The <https://hyp3-test-api.asf.alaska.edu> API now implements the credit costs displayed on the [credits announcement page](https://hyp3-docs.asf.alaska.edu/using/credits/).
+- `hyp3-a19-jpl` and `hyp3-tibet-jpl` deployments max vCPUs have been reduced to 1,000 from 10,000 because of persistent spot interruptions.
 
 ## [6.1.1]
 
