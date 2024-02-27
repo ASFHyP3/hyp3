@@ -1,14 +1,19 @@
 import json
 from datetime import datetime, timezone
+from decimal import Decimal
 from os import environ
 from pathlib import Path
 from typing import List, Optional
 from uuid import uuid4
 
+import yaml
 from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
+
+costs_file = Path(__file__).parent / 'costs.yml'
+COSTS = convert_floats_to_decimals(yaml.safe_load(costs_file.read_text()))
 
 default_params_file = Path(__file__).parent / 'default_params_by_job_type.json'
 if default_params_file.exists():
@@ -22,23 +27,15 @@ class InsufficientCreditsError(Exception):
     """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
 
 
-def _get_credit_cost(job: dict) -> float:
-    return 1.0
-
-
 def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
     user_record = dynamo.user.get_or_create_user(user_id)
-
     remaining_credits = user_record['remaining_credits']
-    if remaining_credits is not None:
-        remaining_credits = float(remaining_credits)
-
     priority_override = user_record.get('priority_override')
 
-    total_cost = 0.0
+    total_cost = Decimal('0.0')
     prepared_jobs = []
     for job in jobs:
         prepared_job = _prepare_job_for_database(
@@ -72,16 +69,16 @@ def _prepare_job_for_database(
         job: dict,
         user_id: str,
         request_time: str,
-        remaining_credits: Optional[float],
+        remaining_credits: Optional[Decimal],
         priority_override: Optional[int],
-        running_cost: float,
+        running_cost: Decimal,
 ) -> dict:
     if priority_override:
         priority = priority_override
     elif remaining_credits is None:
         priority = 0
     else:
-        priority = min(int(remaining_credits - running_cost), 9999)
+        priority = min(round(remaining_credits - running_cost), 9999)
     prepared_job = {
         'job_id': str(uuid4()),
         'user_id': user_id,
@@ -96,8 +93,24 @@ def _prepare_job_for_database(
             **DEFAULT_PARAMS_BY_JOB_TYPE[prepared_job['job_type']],
             **prepared_job.get('job_parameters', {})
         }
-    prepared_job['credit_cost'] = _get_credit_cost(prepared_job)
+        prepared_job['credit_cost'] = _get_credit_cost(prepared_job, COSTS)
+    else:
+        prepared_job['credit_cost'] = Decimal('1.0')
     return prepared_job
+
+
+def _get_credit_cost(job: dict, costs: dict) -> Decimal:
+    job_type = job['job_type']
+    cost_definition = costs[job_type]
+
+    if cost_definition.keys() not in ({'cost_parameter', 'cost_table'}, {'cost'}):
+        raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
+
+    if 'cost_parameter' in cost_definition:
+        parameter_value = job['job_parameters'][cost_definition['cost_parameter']]
+        return cost_definition['cost_table'][parameter_value]
+
+    return cost_definition['cost']
 
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):

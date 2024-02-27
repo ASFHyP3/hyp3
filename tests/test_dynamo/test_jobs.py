@@ -182,6 +182,70 @@ def test_query_jobs_by_type(tables):
     assert list_have_same_elements(response, table_items[:2])
 
 
+def test_get_credit_cost():
+    costs = {
+        'RTC_GAMMA': {
+            'cost_parameter': 'resolution',
+            'cost_table': {
+                10: 60.0,
+                20: 15.0,
+                30: 5.0,
+            },
+        },
+        'INSAR_ISCE_BURST': {
+            'cost': 1.0,
+        }
+    }
+    assert dynamo.jobs._get_credit_cost(
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 10.0}},
+        costs
+    ) == 60.0
+    assert dynamo.jobs._get_credit_cost(
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 20.0}},
+        costs
+    ) == 15.0
+    assert dynamo.jobs._get_credit_cost(
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 30.0}},
+        costs
+    ) == 5.0
+    with pytest.raises(KeyError):
+        dynamo.jobs._get_credit_cost(
+            {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 13.0}},
+            costs
+        )
+    assert dynamo.jobs._get_credit_cost(
+        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'foo': 'bar'}},
+        costs
+    ) == 1.0
+    assert dynamo.jobs._get_credit_cost(
+        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {}},
+        costs
+    ) == 1.0
+
+
+def test_get_credit_cost_validate_keys():
+    costs = {
+        'JOB_TYPE_A': {'cost_parameter': 'foo', 'cost_table': {'bar': 3.0}},
+        'JOB_TYPE_B': {'cost': 5.0},
+        'JOB_TYPE_C': {'cost_parameter': ''},
+        'JOB_TYPE_D': {'cost_table': {}},
+        'JOB_TYPE_E': {'cost_parameter': '', 'cost_table': {}, 'cost': 1.0},
+        'JOB_TYPE_F': {'cost_parameter': '', 'cost_table': {}, 'foo': None},
+    }
+
+    assert dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_A', 'job_parameters': {'foo': 'bar'}}, costs) == 3.0
+    assert dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_B'}, costs) == 5.0
+
+    with pytest.raises(ValueError, match=r'^Cost definition for job type JOB_TYPE_C has invalid keys.*'):
+        dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_C'}, costs)
+    with pytest.raises(ValueError, match=r'^Cost definition for job type JOB_TYPE_D has invalid keys.*'):
+        dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_D'}, costs)
+    with pytest.raises(ValueError, match=r'^Cost definition for job type JOB_TYPE_E has invalid keys.*'):
+        dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_E'}, costs)
+    with pytest.raises(ValueError, match=r'^Cost definition for job type JOB_TYPE_F has invalid keys.*'):
+        dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_F'}, costs)
+
+
 def test_put_jobs(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '10')
     payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
@@ -217,6 +281,11 @@ def test_put_jobs_default_params(tables):
         'JOB_TYPE_B': {'b1': 'b1_default'},
         'JOB_TYPE_C': {},
     }
+    costs = {
+        'JOB_TYPE_A': {'cost': Decimal('1.0')},
+        'JOB_TYPE_B': {'cost': Decimal('1.0')},
+        'JOB_TYPE_C': {'cost': Decimal('1.0')},
+    }
     payload = [
         {},
         {'job_type': 'JOB_TYPE_A'},
@@ -231,7 +300,8 @@ def test_put_jobs_default_params(tables):
         {'job_type': 'JOB_TYPE_C', 'job_parameters': {'c1': 'foo'}},
         {'job_parameters': {'n1': 'foo'}},
     ]
-    with unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params):
+    with unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params), \
+            unittest.mock.patch('dynamo.jobs.COSTS', costs):
         jobs = dynamo.jobs.put_jobs('user1', payload)
 
     assert 'job_parameters' not in jobs[0]
@@ -248,6 +318,71 @@ def test_put_jobs_default_params(tables):
     assert jobs[11]['job_parameters'] == {'n1': 'foo'}
 
     assert tables.jobs_table.scan()['Items'] == jobs
+
+
+def test_put_jobs_costs(tables):
+    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': Decimal(100)})
+
+    costs = {
+        'RTC_GAMMA': {
+            'cost_parameter': 'resolution',
+            'cost_table': {
+                30: Decimal('5.0'),
+                20: Decimal('15.0'),
+                10: Decimal('60.0'),
+            },
+        },
+        'INSAR_ISCE_BURST': {
+            'cost_parameter': 'looks',
+            'cost_table': {
+                '20x4': Decimal('0.4'),
+                '10x2': Decimal('0.7'),
+                '5x1': Decimal('1.8'),
+            },
+        },
+    }
+    default_params = {
+        'RTC_GAMMA': {'resolution': 30},
+        'INSAR_ISCE_BURST': {'looks': '20x4'},
+    }
+    payload = [
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 30}},
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 20}},
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 10}},
+
+        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'looks': '20x4'}},
+        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'looks': '10x2'}},
+        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'looks': '5x1'}},
+
+        {'job_type': 'RTC_GAMMA', 'job_parameters': {}},
+        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {}},
+    ]
+    with unittest.mock.patch('dynamo.jobs.COSTS', costs), \
+            unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params):
+        jobs = dynamo.jobs.put_jobs('user1', payload)
+
+    assert len(jobs) == 8
+
+    assert jobs[0]['priority'] == 100
+    assert jobs[1]['priority'] == 95
+    assert jobs[2]['priority'] == 80
+    assert jobs[3]['priority'] == 20
+    assert jobs[4]['priority'] == 20
+    assert jobs[5]['priority'] == 19
+    assert jobs[6]['priority'] == 17
+    assert jobs[7]['priority'] == 12
+
+    assert jobs[0]['credit_cost'] == Decimal('5.0')
+    assert jobs[1]['credit_cost'] == Decimal('15.0')
+    assert jobs[2]['credit_cost'] == Decimal('60.0')
+    assert jobs[3]['credit_cost'] == Decimal('0.4')
+    assert jobs[4]['credit_cost'] == Decimal('0.7')
+    assert jobs[5]['credit_cost'] == Decimal('1.8')
+    assert jobs[6]['credit_cost'] == Decimal('5.0')
+    assert jobs[7]['credit_cost'] == Decimal('0.4')
+
+    assert tables.jobs_table.scan()['Items'] == jobs
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'user1', 'remaining_credits': Decimal('11.7')}]
 
 
 def test_put_jobs_user_exists(tables):

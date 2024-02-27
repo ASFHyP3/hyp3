@@ -76,8 +76,8 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
     return user
 
 
-def decrement_credits(user_id: str, cost: float) -> None:
-    if cost <= 0:
+def decrement_credits(user_id: str, cost: Decimal) -> None:
+    if cost <= Decimal(0):
         raise ValueError(f'Cost {cost} <= 0')
     users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     try:
@@ -85,7 +85,7 @@ def decrement_credits(user_id: str, cost: float) -> None:
             Key={'user_id': user_id},
             UpdateExpression='ADD remaining_credits :delta',
             ConditionExpression='remaining_credits >= :cost',
-            ExpressionAttributeValues={':cost': Decimal(cost), ':delta': Decimal(-cost)},
+            ExpressionAttributeValues={':cost': cost, ':delta': -cost},
         )
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':

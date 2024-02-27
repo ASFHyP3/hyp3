@@ -111,6 +111,9 @@ WATER_MAP:
         enum:
           - fmi
           - ts
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
   validators:
     - check_dem_coverage
   tasks:

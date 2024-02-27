@@ -11,6 +11,7 @@ from openapi_core import OpenAPI
 from openapi_core.contrib.flask.decorators import FlaskOpenAPIViewDecorator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 
+import dynamo
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
 
@@ -109,6 +110,11 @@ openapi = FlaskOpenAPIViewDecorator(
     response_cls=None,
     errors_handler_cls=ErrorHandler,
 )
+
+
+@app.route('/costs', methods=['GET'])
+def costs_get():
+    return jsonify(dynamo.jobs.COSTS)
 
 
 @app.route('/jobs', methods=['POST'])

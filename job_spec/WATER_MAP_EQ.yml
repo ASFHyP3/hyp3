@@ -53,6 +53,9 @@ WATER_MAP_EQ:
         description: The minimum fraction of valid HAND pixels required in a tile for thresholding
         default: 0.8
         type: number
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
   validators:
     - check_dem_coverage
   tasks:
