@@ -11,7 +11,6 @@ from hyp3_api import CMR_URL
 from hyp3_api.util import get_granules
 
 DEM_COVERAGE = None
-DEM_COVERAGE_LEGACY = None
 
 
 class GranuleValidationError(Exception):
