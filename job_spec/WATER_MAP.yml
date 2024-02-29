@@ -111,6 +111,9 @@ WATER_MAP:
         enum:
           - fmi
           - ts
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
   validators:
     - check_dem_coverage
   tasks:
@@ -155,10 +158,10 @@ WATER_MAP:
         - ESA_USERNAME
         - ESA_PASSWORD
     - name: ''
-      image: ghcr.io/asfhyp3/asf-tools
+      image: ghcr.io/fjmeyer/hydrosar
       command:
         - ++process
-        - water_map
+        - HYDRO30
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -177,10 +180,10 @@ WATER_MAP:
       vcpu: 1
       memory: 126000
     - name: FLOOD_MAP
-      image: ghcr.io/asfhyp3/asf-tools
+      image: ghcr.io/fjmeyer/hydrosar
       command:
         - ++process
-        - flood_map
+        - FD30
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix

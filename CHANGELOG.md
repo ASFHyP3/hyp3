@@ -4,6 +4,111 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.3.0]
+
+### Removed
+- The `disable-private-dns` lambda function added in v4.3.2 has been removed; the underlying issue has been resolved in
+  the Earthdata Cloud platform. Fixes [#1956](https://github.com/ASFHyP3/hyp3/issues/1956).
+
+## [6.2.0]
+
+HyP3 is in the process of transitioning from a monthly job quota to a credits system. [HyP3 v6.0.0](https://github.com/ASFHyP3/hyp3/releases/tag/v6.0.0) implemented the new credits system without changing the number of jobs that users can run per month. This release implements the capability to assign a different credit cost to each type of job, again without actually changing the number of jobs that users can run per month.
+
+Beginning on April 1st, the production API at <https://hyp3-api.asf.alaska.edu> will assign a different cost to each type of job and users will be given an allotment of 10,000 credits per month. Visit the [credits announcement page](https://hyp3-docs.asf.alaska.edu/using/credits/) for full details.
+
+### Added
+- `/costs` API endpoint that returns a table that can be used to look up the credit costs for different types of jobs.
+
+### Changed
+- The <https://hyp3-test-api.asf.alaska.edu> API now implements the credit costs displayed on the [credits announcement page](https://hyp3-docs.asf.alaska.edu/using/credits/).
+- `hyp3-a19-jpl` and `hyp3-tibet-jpl` deployments max vCPUs have been reduced to 1,000 from 10,000 because of persistent spot interruptions.
+
+## [6.1.1]
+
+### Changed
+- Upgraded to `cryptography==42.0.4`. Fixes CVE-2024-26130.
+
+## [6.1.0]
+
+### Added
+- Previously, the `job_parameters` field of the `job` object returned by the `/jobs` API endpoint only included parameters whose values were specified by the user. Now, the field also includes optional, unspecified parameters, along with their default values. This does not change how jobs are processed, but gives the user a complete report of what parameters were used to process their jobs.
+
+### Changed
+- Increased maximum vCPUs from 0 to 10,000 in the hyp3-tibet-jpl deployment.
+- Decreased product lifetime from 60 days to 30 days in the hyp3-tibet-jpl deployment.
+
+## [6.0.0]
+
+HyP3's monthly quota system has been replaced by a credits system. Previously, HyP3 provided each user with a certain number of jobs per month. Now, each job costs a particular number of credits, and users spend credits when they submit jobs. This release assigns every job a cost of 1 credit, but future releases will assign a different credit cost to each job type. Additionally, the main production deployment (`https://hyp3-api.asf.alaska.edu`) resets each user's balance to 1,000 credits each month, effectively granting each user 1,000 jobs per month. Therefore, users should not notice any difference when ordering jobs via ASF's On Demand service at <https://search.asf.alaska.edu>.
+
+### Added
+- The `job` object returned by the `/jobs` API endpoint now includes a `credit_cost` attribute, which represents the job's cost in credits.
+- A `DAR` tag is now included in Earthdata Cloud deployments for each S3 bucket to communicate which contain objects
+  that required to be encrypted at rest.
+
+### Changed
+- The `quota` attribute of the `user` object returned by the `/user` API endpoint has been replaced by a `remaining_credits` attribute, which represents the user's remaining credits.
+
+### Removed
+- The non-functional CloudWatch alarm for API 5xx errors has been removed from the `monitoring` module. See [#2044](https://github.com/ASFHyP3/hyp3/issues/2044).
+
+## [5.0.4]
+### Added
+- `INSAR_ISCE_BURST` jobs are now available in the azdwr-hyp3 deployment.
+
+### Changed
+- Addressed breaking changes with upgrade to `moto[dynamodb]==5.0.0`
+
+## [5.0.3]
+### Fixed
+- Fix how the `INSAR_ISCE_BURST` antimeridian error message is formatted.
+
+## [5.0.2]
+### Added
+- A validation check for `INSAR_ISCE_BURST` that will fail if a granule crosses the antimeridian.
+
+## [5.0.1]
+### Fixed
+- Upgrade the `openapi-core`, `openapi-spec-validator`, and `jsonschema` packages to their latest versions. This is now possible thanks to the pre-release of [openapi-core v0.19.0a1](https://github.com/python-openapi/openapi-core/releases/tag/0.19.0a1), which fixes <https://github.com/python-openapi/openapi-core/issues/662>. Resolves <https://github.com/ASFHyP3/hyp3/issues/1193>.
+
+## [5.0.0]
+### Removed
+- `legacy` option for the `dem_name` parameter of `RTC_GAMMA` jobs. All RTC processing will now use the Copernicus DEM.
+### Fixed
+- The description of the INSAR_ISCE_BURST job's `apply_water_mask` to state that water masking now happens BEFORE unwrapping.
+
+## [4.5.1]
+### Fixed
+- `output_resolution` in the `INSAR_ISCE_TEST` job spec is now correctly specified as an int instead of number, which can be a float or an int.
+
+## [4.5.0]
+### Changed
+- Update `INSAR_ISCE` and `INSAR_ISCE_TEST` job spec for GUNW version 3+ standard and custom products
+  - `frame_id` is now a required parameter and has no default
+  - `compute_solid_earth_tide` and `estimate_ionosphere_delay` now default to `true` 
+  - `INSAR_ISCE_TEST` exposes custom `goldstein_filter_power`, `output_resolution`, `dense_offsets`, and `unfiltered_coherence` parameters
+
+## [4.4.1]
+### Changed
+- Updated `WATER_MAP` job spec to point at the [HydroSAR images](https://github.com/fjmeyer/HydroSAR/pkgs/container/hydrosar)
+  instead of the [ASF Tools images](https://github.com/asfhyp3/asf-tools/pkgs/container/asf-tools) as the HydroSAR code
+  is being migrated to the HydroSAR project repository.
+
+### Fixed
+- Reverted the new AWS Batch job retry strategy introduced in [HyP3 v4.1.2](https://github.com/ASFHyP3/hyp3/releases/tag/v4.1.2). Fixes https://github.com/ASFHyP3/hyp3/issues/1944
+
+### Removed
+- Removed the unused `RIVER_WIDTH` job spec.
+- Removed the `WATER_MAP` job spec from UAT as it's not expected to be available in HyP3 production anytime soon.
+
+## [4.4.0]
+### Added
+- INSAR_ISCE_BURST job to EDC production deployment.
+
+## [4.3.2]
+### Fixed
+- Added a Lambda function that sets `Private DNS names enabled` to false for VPC endpoint.
+
 ## [4.3.1]
 ### Added
 - The `ESA_USERNAME` and `ESA_PASSWORD` secrets have been added to all of the job specs that require them.

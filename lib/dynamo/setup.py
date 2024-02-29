@@ -8,8 +8,11 @@ setup(
     install_requires=[
         'boto3',
         'python-dateutil',
+        'pyyaml',
     ],
     python_requires='~=3.9',
 
     packages=find_packages(),
+
+    package_data={'dynamo': ['*.json', '*.yml']},
 )

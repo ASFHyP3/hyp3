@@ -1,101 +1,116 @@
+import json
 from datetime import datetime, timezone
+from decimal import Decimal
 from os import environ
-from typing import Callable, List, Optional, Union
+from pathlib import Path
+from typing import List, Optional
 from uuid import uuid4
 
+import yaml
 from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
+costs_file = Path(__file__).parent / 'costs.yml'
+COSTS = convert_floats_to_decimals(yaml.safe_load(costs_file.read_text()))
 
-class QuotaError(Exception):
-    """Raised when trying to submit more jobs that user has remaining"""
-
-
-def _get_job_count_for_month(user) -> int:
-    now = datetime.now(timezone.utc)
-    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    job_count_for_month = count_jobs(user, format_time(start_of_month))
-    return job_count_for_month
-
-
-def get_quota_status(user) -> Union[tuple[int, int, int], tuple[None, None, None]]:
-    max_jobs = dynamo.user.get_max_jobs_per_month(user)
-
-    if max_jobs is not None:
-        previous_jobs = _get_job_count_for_month(user)
-        remaining_jobs = max(max_jobs - previous_jobs, 0)
-    else:
-        previous_jobs = None
-        remaining_jobs = None
-
-    return max_jobs, previous_jobs, remaining_jobs
+default_params_file = Path(__file__).parent / 'default_params_by_job_type.json'
+if default_params_file.exists():
+    DEFAULT_PARAMS_BY_JOB_TYPE = json.loads(default_params_file.read_text())
+else:
+    # Allows mocking with unittest.mock.patch
+    DEFAULT_PARAMS_BY_JOB_TYPE = {}
 
 
-def put_jobs(user_id: str, jobs: List[dict], fail_when_over_quota=True) -> List[dict]:
+class InsufficientCreditsError(Exception):
+    """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
+
+
+def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
-    max_jobs, previous_jobs, remaining_jobs = get_quota_status(user_id)
-    has_quota = max_jobs is not None
-    if has_quota:
-        assert previous_jobs is not None
-        assert remaining_jobs is not None
+    user_record = dynamo.user.get_or_create_user(user_id)
+    remaining_credits = user_record['remaining_credits']
+    priority_override = user_record.get('priority_override')
 
-    if has_quota and len(jobs) > remaining_jobs:
-        if fail_when_over_quota:
-            raise QuotaError(f'Your monthly quota is {max_jobs} jobs. You have {remaining_jobs} jobs remaining.')
-        jobs = jobs[:remaining_jobs]
+    total_cost = Decimal('0.0')
+    prepared_jobs = []
+    for job in jobs:
+        prepared_job = _prepare_job_for_database(
+            job=job,
+            user_id=user_id,
+            request_time=request_time,
+            remaining_credits=remaining_credits,
+            priority_override=priority_override,
+            running_cost=total_cost,
+        )
+        prepared_jobs.append(prepared_job)
+        total_cost += prepared_job['credit_cost']
 
-    priority_override = dynamo.user.get_priority(user_id)
-    priority = _get_job_priority(priority_override, has_quota)
+    if remaining_credits is not None and total_cost > remaining_credits:
+        raise InsufficientCreditsError(
+            f'These jobs would cost {total_cost} credits, but you have only {remaining_credits} remaining.'
+        )
 
-    prepared_jobs = [
-        {
-            'job_id': str(uuid4()),
-            'user_id': user_id,
-            'status_code': 'PENDING',
-            'execution_started': False,
-            'request_time': request_time,
-            'priority': priority(previous_jobs, index),
-            **job,
-        } for index, job in enumerate(jobs)
-    ]
+    assert prepared_jobs[-1]['priority'] >= 0
+    if not dry_run:
+        if remaining_credits is not None:
+            dynamo.user.decrement_credits(user_id, total_cost)
+        with table.batch_writer() as batch:
+            for prepared_job in prepared_jobs:
+                batch.put_item(Item=convert_floats_to_decimals(prepared_job))
 
-    for prepared_job in prepared_jobs:
-        table.put_item(Item=convert_floats_to_decimals(prepared_job))
     return prepared_jobs
 
 
-def _get_job_priority(priority_override: Optional[int], has_quota: bool) -> Callable[[Optional[int], int], int]:
-    if priority_override is not None:
-        priority = lambda _, __: priority_override
-    elif has_quota:
-        priority = lambda previous_jobs, job_index: max(9999 - previous_jobs - job_index, 0)
+def _prepare_job_for_database(
+        job: dict,
+        user_id: str,
+        request_time: str,
+        remaining_credits: Optional[Decimal],
+        priority_override: Optional[int],
+        running_cost: Decimal,
+) -> dict:
+    if priority_override:
+        priority = priority_override
+    elif remaining_credits is None:
+        priority = 0
     else:
-        priority = lambda _, __: 0
-    return priority
-
-
-def count_jobs(user, start=None, end=None):
-    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
-    key_expression = Key('user_id').eq(user)
-    if start is not None or end is not None:
-        key_expression &= get_request_time_expression(start, end)
-
-    params = {
-        'IndexName': 'user_id',
-        'KeyConditionExpression': key_expression,
-        'Select': 'COUNT',
+        priority = min(round(remaining_credits - running_cost), 9999)
+    prepared_job = {
+        'job_id': str(uuid4()),
+        'user_id': user_id,
+        'status_code': 'PENDING',
+        'execution_started': False,
+        'request_time': request_time,
+        'priority': priority,
+        **job,
     }
-    response = table.query(**params)
-    job_count = response['Count']
-    while 'LastEvaluatedKey' in response:
-        params['ExclusiveStartKey'] = response['LastEvaluatedKey']
-        response = table.query(**params)
-        job_count += response['Count']
-    return job_count
+    if 'job_type' in prepared_job:
+        prepared_job['job_parameters'] = {
+            **DEFAULT_PARAMS_BY_JOB_TYPE[prepared_job['job_type']],
+            **prepared_job.get('job_parameters', {})
+        }
+        prepared_job['credit_cost'] = _get_credit_cost(prepared_job, COSTS)
+    else:
+        prepared_job['credit_cost'] = Decimal('1.0')
+    return prepared_job
+
+
+def _get_credit_cost(job: dict, costs: dict) -> Decimal:
+    job_type = job['job_type']
+    cost_definition = costs[job_type]
+
+    if cost_definition.keys() not in ({'cost_parameter', 'cost_table'}, {'cost'}):
+        raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
+
+    if 'cost_parameter' in cost_definition:
+        parameter_value = job['job_parameters'][cost_definition['cost_parameter']]
+        return cost_definition['cost_table'][parameter_value]
+
+    return cost_definition['cost']
 
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):

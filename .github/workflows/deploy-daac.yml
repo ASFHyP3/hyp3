@@ -21,9 +21,11 @@ jobs:
             template_bucket: cf-templates-118mtzosmrltk-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
-            quota: 1000
+            default_credits_per_user: 1000
+            reset_credits_monthly: true
+            cost_profile: DEFAULT
             deploy_ref: refs/heads/main
-            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml job_spec/INSAR_ISCE_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1500
             expanded_max_vcpus: 3000
@@ -38,14 +40,15 @@ jobs:
             template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
-            quota: 1000
+            default_credits_per_user: 10000
+            reset_credits_monthly: true
+            cost_profile: EDC
             deploy_ref: refs/heads/develop
             job_files: >-
               job_spec/AUTORIFT.yml
               job_spec/INSAR_GAMMA.yml
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_TEST.yml
-              job_spec/WATER_MAP.yml
               job_spec/INSAR_ISCE_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1500
@@ -69,7 +72,7 @@ jobs:
           aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.9
 
@@ -87,7 +90,9 @@ jobs:
           SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
           SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
-          MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
+          DEFAULT_CREDITS_PER_USER: ${{ matrix.default_credits_per_user }}
+          RESET_CREDITS_MONTHLY: ${{ matrix.reset_credits_monthly }}
+          COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
           DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
@@ -103,6 +108,6 @@ jobs:
   call-bump-version-workflow:
     if: github.ref == 'refs/heads/main'
     needs: deploy
-    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.8.2
+    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.11.0
     secrets:
       USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}

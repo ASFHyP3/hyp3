@@ -38,11 +38,10 @@ RTC_GAMMA:
     dem_name:
       api_schema:
         default: copernicus
-        description: Name of the DEM to use for processing. `copernicus` will use the Copernicus GLO-30 Public DEM, while `legacy` will use the DEM with the best coverage from ASF's legacy SRTM/NED datasets.
+        description: Name of the DEM to use for processing. `copernicus` will use the Copernicus GLO-30 Public DEM.
         type: string
         enum:
           - copernicus
-          - legacy
     radiometry:
       api_schema:
         default:  gamma0
@@ -90,6 +89,15 @@ RTC_GAMMA:
         description: Include a false-color RGB decomposition in the product package for dual-pol granules (ignored for single-pol granules)
         default: false
         type: boolean
+  cost_profiles:
+    EDC:
+      cost_parameter: resolution
+      cost_table:
+        30.0: 5.0
+        20.0: 15.0
+        10.0: 60.0
+    DEFAULT:
+      cost: 1.0
   validators:
     - check_dem_coverage
   tasks:

@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from http import HTTPStatus
 
-from test_api.conftest import DEFAULT_USERNAME, login, make_db_record, make_job, setup_requests_mock, submit_batch
+from test_api.conftest import DEFAULT_USERNAME, login, make_job, setup_requests_mock, submit_batch
 
 from dynamo.util import format_time
 
@@ -112,24 +112,22 @@ def test_submit_many_jobs(client, tables):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_submit_exceeds_quota(client, tables, monkeypatch):
+def test_submit_exceeds_remaining_credits(client, tables, monkeypatch):
     login(client)
-    time_for_previous_month = format_time(datetime.now(timezone.utc) - timedelta(days=32))
-    job_from_previous_month = make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266',
-                                             request_time=time_for_previous_month)
-    tables.jobs_table.put_item(Item=job_from_previous_month)
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
 
-    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
-    batch = [make_job() for ii in range(25)]
-    setup_requests_mock(batch)
+    batch1 = [make_job() for _ in range(20)]
+    setup_requests_mock(batch1)
 
-    response = submit_batch(client, batch)
-    assert response.status_code == HTTPStatus.OK
+    response1 = submit_batch(client, batch1)
+    assert response1.status_code == HTTPStatus.OK
 
-    response = submit_batch(client)
-    assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert '25 jobs' in response.json['detail']
-    assert '0 jobs' in response.json['detail']
+    batch2 = [make_job() for _ in range(10)]
+    setup_requests_mock(batch2)
+
+    response2 = submit_batch(client, batch2)
+    assert response2.status_code == HTTPStatus.BAD_REQUEST
+    assert response2.json['detail'] == 'These jobs would cost 10.0 credits, but you have only 5.0 remaining.'
 
 
 def test_submit_without_jobs(client):

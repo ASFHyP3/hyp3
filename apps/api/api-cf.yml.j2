@@ -12,8 +12,11 @@ Parameters:
   AuthAlgorithm:
     Type: String
 
-  MonthlyJobQuotaPerUser:
+  DefaultCreditsPerUser:
     Type: Number
+
+  ResetCreditsMonthly:
+    Type: String
 
   SystemAvailable:
     Type: String
@@ -40,9 +43,6 @@ Outputs:
 
   Url:
     Value: {{ '!Sub "https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/ui"' if security_environment == 'EDC' else '!Sub "https://${CustomDomainName}/ui"' }}
-
-  ApiId:
-    Value: !Ref RestApi
 
 Resources:
 
@@ -161,13 +161,15 @@ Resources:
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
           - Effect: Allow
             Action:
-              - dynamodb:PutItem
+              - dynamodb:BatchWriteItem
               - dynamodb:Query
               - dynamodb:GetItem
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
           - Effect: Allow
             Action:
               - dynamodb:GetItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UsersTable}*"
 
   Lambda:
@@ -179,7 +181,8 @@ Resources:
           USERS_TABLE_NAME: !Ref UsersTable
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITHM: !Ref AuthAlgorithm
-          MONTHLY_JOB_QUOTA_PER_USER: !Ref MonthlyJobQuotaPerUser
+          DEFAULT_CREDITS_PER_USER: !Ref DefaultCreditsPerUser
+          RESET_CREDITS_MONTHLY: !Ref ResetCreditsMonthly
           SYSTEM_AVAILABLE: !Ref SystemAvailable
       Code: src/
       Handler: hyp3_api.lambda_handler.handler

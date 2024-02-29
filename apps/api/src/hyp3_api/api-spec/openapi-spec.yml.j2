@@ -7,7 +7,25 @@ info:
 security:
   - EarthDataLogin: []
 
+{% if security_environment == 'EDC' %}
+# See https://github.com/ASFHyP3/hyp3/pull/2009 for context.
+servers:
+  - url: /
+  - url: /api
+{% endif %}
+
 paths:
+
+  /costs:
+    get:
+      description: Get table of job costs.
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/costs"
 
   /jobs:
 
@@ -53,7 +71,7 @@ paths:
         - name: job_type
           in: query
           schema:
-            $ref: "./job_parameters.yml#components/schemas/job_type"
+            $ref: "./job_parameters.yml#/components/schemas/job_type"
         - name: start_token
           in: query
           schema:
@@ -99,6 +117,10 @@ paths:
 components:
   schemas:
 
+    costs:
+      description: Table of job costs.
+      type: object
+
     post_jobs_body:
       description: List for new jobs to submit for processing.
       type: object
@@ -126,36 +148,24 @@ components:
           $ref: "#/components/schemas/next_url"
 
     user:
-      description: Information about a user (quota, user id)
+      description: Information about a user
       type: object
       required:
         - user_id
-        - quota
+        - remaining_credits
       additionalProperties: false
       properties:
         user_id:
           $ref: "#/components/schemas/user_id"
-        quota:
-          $ref: "#/components/schemas/quota"
+        remaining_credits:
+          $ref: "#/components/schemas/credits"
         job_names:
-          $ref: "#components/schemas/job_names_list"
+          $ref: "#/components/schemas/job_names_list"
 
-    quota:
-      description: Containes the limit of jobs per month and the amount remaining for a user.
-      type: object
-      required:
-        - max_jobs_per_month
-        - remaining
-      additionalProperties: false
-      properties:
-        max_jobs_per_month:
-          type: integer
-          minimum: 0
-          nullable: true
-        remaining:
-          type: integer
-          minimum: 0
-          nullable: true
+    credits:
+      description: Processing credits for running jobs.
+      type: number
+      minimum: 0
 
     job_names_list:
       type: array
@@ -168,74 +178,12 @@ components:
       minItems: 1
       maxItems: 200
       items:
-        $ref: "./job_parameters.yml#components/schemas/new_job"
+        $ref: "./job_parameters.yml#/components/schemas/new_job"
 
     list_of_jobs:
       type: array
       items:
         $ref: "#/components/schemas/job"
-
-    search_parameters:
-      description: parameters used to find data from the ASF Search API
-      additionalProperties: false
-      type: object
-      required:
-        - start
-        - end
-      properties:
-        start:
-          $ref: "#/components/schemas/datetime"
-        end:
-          $ref: "#/components/schemas/datetime"
-        platform:
-          type: string
-          enum:
-            - S1
-            - SA
-            - SB
-        processingLevel:
-          type: string
-          enum:
-            - GRD_HD
-            - SLC
-        beamMode:
-          type: array
-          minItems: 1
-          items:
-            type: string
-            enum:
-              - IW
-        intersectsWith:
-          $ref: "#/components/schemas/intersectsWith"
-        frame:
-          type: array
-          minItems: 1
-          items:
-            type: integer
-            minimum: 1
-            maximum: 1360
-        relativeOrbit:
-          type: array
-          minItems: 1
-          items:
-            type: integer
-            minimum: 1
-            maximum: 175
-        polarization:
-          type: array
-          minItems: 1
-          items:
-            type: string
-            enum:
-              - VV
-              - VV+VH
-              - HH
-              - HH+HV
-        flightDirection:
-          type: string
-          enum:
-            - ASCENDING
-            - DESCENDING
 
     job:
       description: Contains information about a submitted job.
@@ -254,9 +202,9 @@ components:
         user_id:
           $ref: "#/components/schemas/user_id"
         job_type:
-          $ref: "./job_parameters.yml#components/schemas/job_type"
+          $ref: "./job_parameters.yml#/components/schemas/job_type"
         job_parameters:
-          $ref: "./job_parameters.yml#components/schemas/job_parameters"
+          $ref: "./job_parameters.yml#/components/schemas/job_parameters"
         request_time:
           $ref: "#/components/schemas/datetime"
         status_code:
@@ -280,6 +228,8 @@ components:
           $ref: "#/components/schemas/processing_times"
         priority:
           $ref: "#/components/schemas/priority"
+        credit_cost:
+          $ref: "#/components/schemas/credits"
 
     validate_only:
       type: boolean
@@ -301,12 +251,6 @@ components:
       type: string
       format: date-time
       example: "2020-06-04T18:00:03+00:00"
-
-    intersectsWith:
-      description: Area-of-interest as a WKT string.
-      type: string
-      format: wkt
-      example: POINT(0 0)
 
     status_code:
       description: Status of a submitted job.

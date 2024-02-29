@@ -11,7 +11,6 @@ from hyp3_api import CMR_URL
 from hyp3_api.util import get_granules
 
 DEM_COVERAGE = None
-DEM_COVERAGE_LEGACY = None
 
 
 class GranuleValidationError(Exception):
@@ -22,22 +21,12 @@ with open(Path(__file__).parent / 'job_validation_map.yml') as f:
     JOB_VALIDATION_MAP = yaml.safe_load(f.read())
 
 
-def has_sufficient_coverage(granule: Polygon, buffer: float = 0.15, threshold: float = 0.2, legacy=False):
-    if legacy:
-        global DEM_COVERAGE_LEGACY
-        if DEM_COVERAGE_LEGACY is None:
-            DEM_COVERAGE_LEGACY = get_multipolygon_from_geojson('dem_coverage_map_legacy.geojson')
+def has_sufficient_coverage(granule: Polygon):
+    global DEM_COVERAGE
+    if DEM_COVERAGE is None:
+        DEM_COVERAGE = get_multipolygon_from_geojson('dem_coverage_map_cop30.geojson')
 
-        buffered_granule = granule.buffer(buffer)
-        covered_area = buffered_granule.intersection(DEM_COVERAGE_LEGACY).area
-
-        return covered_area / buffered_granule.area >= threshold
-    else:
-        global DEM_COVERAGE
-        if DEM_COVERAGE is None:
-            DEM_COVERAGE = get_multipolygon_from_geojson('dem_coverage_map_cop30.geojson')
-
-        return granule.intersects(DEM_COVERAGE)
+    return granule.intersects(DEM_COVERAGE)
 
 
 def get_cmr_metadata(granules):
@@ -79,14 +68,13 @@ def check_granules_exist(granules, granule_metadata):
         raise GranuleValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 
 
-def check_dem_coverage(job, granule_metadata):
-    legacy = job['job_parameters'].get('dem_name') == 'legacy'
-    bad_granules = [g['name'] for g in granule_metadata if not has_sufficient_coverage(g['polygon'], legacy=legacy)]
+def check_dem_coverage(granule_metadata):
+    bad_granules = [g['name'] for g in granule_metadata if not has_sufficient_coverage(g['polygon'])]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
-def check_same_burst_ids(job, granule_metadata):
+def check_same_burst_ids(granule_metadata):
     ref_burst_id, sec_burst_id = [granule['name'].split('_')[1] for granule in granule_metadata]
     if ref_burst_id != sec_burst_id:
         raise GranuleValidationError(
@@ -94,7 +82,7 @@ def check_same_burst_ids(job, granule_metadata):
         )
 
 
-def check_valid_polarizations(job, granule_metadata):
+def check_valid_polarizations(granule_metadata):
     ref_polarization, sec_polarization = [granule['name'].split('_')[4] for granule in granule_metadata]
     if ref_polarization != sec_polarization:
         raise GranuleValidationError(
@@ -102,6 +90,17 @@ def check_valid_polarizations(job, granule_metadata):
         )
     if ref_polarization != 'VV' and ref_polarization != 'HH':
         raise GranuleValidationError(f'Only VV and HH polarizations are currently supported, got: {ref_polarization}')
+
+
+def check_not_antimeridian(granule_metadata):
+    for granule in granule_metadata:
+        bbox = granule['polygon'].bounds
+        if abs(bbox[0] - bbox[2]) > 180.0 and bbox[0] * bbox[2] < 0.0:
+            msg = (
+                f'Granule {granule["name"]} crosses the antimeridian.'
+                ' Processing across the antimeridian is not currently supported.'
+            )
+            raise GranuleValidationError(msg)
 
 
 def format_points(point_string):
@@ -128,4 +127,4 @@ def validate_jobs(jobs):
             job_granule_metadata = [granule for granule in granule_metadata if granule['name'] in get_granules([job])]
             module = sys.modules[__name__]
             validator = getattr(module, validator_name)
-            validator(job, job_granule_metadata)
+            validator(job_granule_metadata)
