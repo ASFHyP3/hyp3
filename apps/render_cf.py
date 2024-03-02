@@ -48,12 +48,15 @@ def render_default_params_by_job_type(job_types: dict) -> None:
 
 
 def render_costs(job_types: dict, cost_profile: str) -> None:
-    costs = {
-        job_type: job_spec['cost_profiles'][cost_profile]
+    costs = [
+        {
+            'job_type': job_type,
+            **job_spec['cost_profiles'][cost_profile],
+        }
         for job_type, job_spec in job_types.items()
-    }
-    with open(Path('lib') / 'dynamo' / 'dynamo' / 'costs.yml', 'w') as f:
-        yaml.safe_dump(costs, f)
+    ]
+    with open(Path('lib') / 'dynamo' / 'dynamo' / 'costs.json', 'w') as f:
+        json.dump(costs, f, indent=2)
 
 
 def main():
