@@ -25,7 +25,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/costs"
+                $ref: "#/components/schemas/costs_response"
 
   /jobs:
 
@@ -117,9 +117,34 @@ paths:
 components:
   schemas:
 
-    costs:
-      description: Table of job costs.
-      type: object
+    costs_response:
+      description: List of job costs.
+      type: array
+      items:
+        type: object
+        required:
+          - job_type
+        properties:
+          job_type:
+            $ref: "./job_parameters.yml#/components/schemas/job_type"
+          cost:
+            $ref: "#/components/schemas/credits"
+          cost_parameter:
+            type: string
+          cost_table:
+            type: array
+            items:
+              type: object
+              required:
+                - parameter_value
+                - cost
+              properties:
+                parameter_value:
+                  oneOf:
+                    - type: string
+                    - type: number
+                cost:
+                  $ref: "#/components/schemas/credits"
 
     post_jobs_body:
       description: List for new jobs to submit for processing.
