@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [6.4.0]
 
+### Changed
+- Reduced vcpu limits for EDC deployments from 1,500/3,000 to 1,200/2,400.
+
 ### Removed
 - The `disable-private-dns` lambda function added in v4.3.2 has been removed; the underlying issue has been resolved in
   the Earthdata Cloud platform. Fixes [#1956](https://github.com/ASFHyP3/hyp3/issues/1956).
