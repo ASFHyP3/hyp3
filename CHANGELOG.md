@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.3.0]
+
+### Changed
+- Reduced vcpu limits for EDC deployments from 1,500/3,000 to 1,200/2,400.
+
 ## [6.2.0]
 
 HyP3 is in the process of transitioning from a monthly job quota to a credits system. [HyP3 v6.0.0](https://github.com/ASFHyP3/hyp3/releases/tag/v6.0.0) implemented the new credits system without changing the number of jobs that users can run per month. This release implements the capability to assign a different credit cost to each type of job, again without actually changing the number of jobs that users can run per month.
