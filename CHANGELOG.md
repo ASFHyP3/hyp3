@@ -4,11 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [6.3.0]
+## [6.4.0]
 
 ### Removed
 - The `disable-private-dns` lambda function added in v4.3.2 has been removed; the underlying issue has been resolved in
   the Earthdata Cloud platform. Fixes [#1956](https://github.com/ASFHyP3/hyp3/issues/1956).
+
+## [6.3.0]
+
+### Changed
+- `/costs` API endpoint now returns a list of job cost dictionaries, instead of a dictionary of dictionaries.
+- Cost table parameters are now contained within the `parameter_value` dictionary key.
+- Cost table costs are now contained within the `cost` dictionary key.
 
 ## [6.2.0]
 
