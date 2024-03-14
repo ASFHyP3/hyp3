@@ -6,14 +6,13 @@ from pathlib import Path
 from typing import List, Optional
 from uuid import uuid4
 
-import yaml
 from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
-costs_file = Path(__file__).parent / 'costs.yml'
-COSTS = convert_floats_to_decimals(yaml.safe_load(costs_file.read_text()))
+costs_file = Path(__file__).parent / 'costs.json'
+COSTS = convert_floats_to_decimals(json.loads(costs_file.read_text()))
 
 default_params_file = Path(__file__).parent / 'default_params_by_job_type.json'
 if default_params_file.exists():
@@ -99,18 +98,24 @@ def _prepare_job_for_database(
     return prepared_job
 
 
-def _get_credit_cost(job: dict, costs: dict) -> Decimal:
+def _get_credit_cost(job: dict, costs: list[dict]) -> Decimal:
     job_type = job['job_type']
-    cost_definition = costs[job_type]
+    for cost_definition in costs:
+        if cost_definition['job_type'] == job_type:
 
-    if cost_definition.keys() not in ({'cost_parameter', 'cost_table'}, {'cost'}):
-        raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
+            if cost_definition.keys() not in ({'job_type', 'cost_parameter', 'cost_table'}, {'job_type', 'cost'}):
+                raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
 
-    if 'cost_parameter' in cost_definition:
-        parameter_value = job['job_parameters'][cost_definition['cost_parameter']]
-        return cost_definition['cost_table'][parameter_value]
+            if 'cost_parameter' in cost_definition:
+                cost_parameter = cost_definition['cost_parameter']
+                parameter_value = job['job_parameters'][cost_parameter]
+                for item in cost_definition['cost_table']:
+                    if item['parameter_value'] == parameter_value:
+                        return item['cost']
+                raise ValueError(f'Cost not found for job type {job_type} with {cost_parameter} == {parameter_value}')
 
-    return cost_definition['cost']
+            return cost_definition['cost']
+    raise ValueError(f'Cost not found for job type {job_type}')
 
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):
