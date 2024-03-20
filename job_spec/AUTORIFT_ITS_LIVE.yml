@@ -44,7 +44,7 @@ AUTORIFT:
         default: '""'
         type: string
         enum:
-          - ""
+          - '""'
           - "its-live-data"
           - "its-live-data-test"
   cost_profiles:
