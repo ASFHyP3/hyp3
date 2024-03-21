@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A `publish` parameter to `AUTORIFT_ITS_LIVE` and `AUTORIFT_ITS_LIVE_TEST` that specifies if product should be uploaded to ITS_LIVE open data bucket
 - Access key secrets to `AUTORIFT_ITS_LIVE` and `AUTORIFT_ITS_LIVE_TEST` that allow for S3 upload of products
 
+### Changed
+- Update throughput for ACCESS deployments by factor of 4 (from 1000 to 4000 vcpus).
+
 ## [6.4.0]
 
 ### Changed
