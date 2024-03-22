@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [6.5.0]
 
 ### Added
-- A `publish` parameter to `AUTORIFT_ITS_LIVE` and `AUTORIFT_ITS_LIVE_TEST` that specifies if product should be uploaded to ITS_LIVE open data bucket
-- Access key secrets to `AUTORIFT_ITS_LIVE` and `AUTORIFT_ITS_LIVE_TEST` that allow for S3 upload of products
+- A `publish_bucket` parameter to `AUTORIFT_ITS_LIVE` and `AUTORIFT_ITS_LIVE_TEST` that specifies if product should be uploaded to either the ITS_LIVE open data bucket or test bucket.
+- Access key secrets to `AUTORIFT_ITS_LIVE` and `AUTORIFT_ITS_LIVE_TEST` that allow for S3 upload of products.
 
 ## [6.4.0]
 
