@@ -38,6 +38,15 @@ AUTORIFT:
         description: Shapefile for determining the correct search parameters by geographic location. Path to shapefile must be understood by GDAL.
         type: string
         default: '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+    publish_bucket:
+      api_schema:
+        description: Publish the resulting product to the ITS_LIVE AWS Open Data (or test) S3 Bucket
+        default: '""'
+        type: string
+        enum:
+          - '""'
+          - "its-live-data"
+          - "its-live-data-test"
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -52,6 +61,8 @@ AUTORIFT:
         - Ref::bucket_prefix
         - --parameter-file
         - Ref::parameter_file
+        - --publish-bucket
+        - Ref::publish_bucket
         - --naming-scheme
         - ITS_LIVE_PROD
         - Ref::granules
@@ -63,3 +74,5 @@ AUTORIFT:
         - EARTHDATA_PASSWORD
         - ESA_USERNAME
         - ESA_PASSWORD
+        - UPLOAD_ACCESS_KEY_ID
+        - UPLOAD_ACCESS_KEY_SECRET

@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.5.0]
+
+### Added
+- A `publish_bucket` parameter to `AUTORIFT_ITS_LIVE` and `AUTORIFT_ITS_LIVE_TEST` that specifies if product should be uploaded to either the ITS_LIVE open data bucket or test bucket.
+- Access key secrets to `AUTORIFT_ITS_LIVE` and `AUTORIFT_ITS_LIVE_TEST` that allow for S3 upload of products.
+
+### Changed
+- Update throughput for ACCESS deployments by factor of 4 (from 1000 to 4000 vcpus).
+
+## [6.4.0]
+
+### Changed
+- Reduced vcpu limits for EDC deployments from 1,500/3,000 to 1,200/2,400.
+
+### Removed
+- The `disable-private-dns` lambda function added in v4.3.2 has been removed; the underlying issue has been resolved in
+  the Earthdata Cloud platform. Fixes [#1956](https://github.com/ASFHyP3/hyp3/issues/1956).
+
 ## [6.3.0]
 
 ### Changed
