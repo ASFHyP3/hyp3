@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.1.0]
+### Added
+- A `hyp3-its-live-test` deployment to [`deploy-enterprise-test.yml`](.github/workflows/deploy-enterprise-test.yml) for ITS_LIVE testing in preparation for some significant ITS_LIVE project development
+
+### Removed
+- The `AUTORIFT_ITS_LIVE_TEST.yml` job spec which supported running test versions of the AUTORIFT jobs in the production hyp3-its-live deployment
+
 ## [7.0.0]
 
 This release marks the final transition to the new credits system. These changes apply to the production HyP3 API at <https://hyp3-api.asf.alaska.edu>. Read the [announcement](https://hyp3-docs.asf.alaska.edu/using/credits/) for full details.
