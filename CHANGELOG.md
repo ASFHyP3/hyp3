@@ -13,6 +13,11 @@ This release marks the final transition to the new credits system. These changes
 - Each type of job now costs a different number of credits, as shown in the table [here](https://hyp3-docs.asf.alaska.edu/using/credits/).
 - Users are now given an allotment of 10,000 credits per month.
 
+## [6.5.1]
+
+### Fixed
+- Added a Lambda function that sets `Private DNS names enabled` to false for VPC endpoint in EDC.
+
 ## [6.5.0]
 
 ### Added
