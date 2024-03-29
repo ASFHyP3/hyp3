@@ -4,7 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.0.0]
+
+This release marks the final transition to the new credits system. These changes apply to the production HyP3 API at <https://hyp3-api.asf.alaska.edu>. Read the [announcement](https://hyp3-docs.asf.alaska.edu/using/credits/) for full details.
+
+### Changed
+
+- Each type of job now costs a different number of credits, as shown in the table [here](https://hyp3-docs.asf.alaska.edu/using/credits/).
+- Users are now given an allotment of 10,000 credits per month.
+
 ## [6.5.1]
+
 ### Fixed
 - Added a Lambda function that sets `Private DNS names enabled` to false for VPC endpoint in EDC.
 
