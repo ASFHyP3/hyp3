@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [7.1.0]
+### Added
+- A `hyp3-a19-jpl-test` deployment to [`deploy-enterprise-test.yml`](.github/workflows/deploy-enterprise-test.yml) for ARIA testing of the `m6id[n]` instance families
+
+### Changed
+
+- The `INSAR_ISCE_TEST.yml` job spec now only differs from the `INSAR_ISCE.yml` with respect to the `++omp-num-threads` parameter, because the value is specific to a particular instance family
+
 ## [7.0.0]
 
 This release marks the final transition to the new credits system. These changes apply to the production HyP3 API at <https://hyp3-api.asf.alaska.edu>. Read the [announcement](https://hyp3-docs.asf.alaska.edu/using/credits/) for full details.
