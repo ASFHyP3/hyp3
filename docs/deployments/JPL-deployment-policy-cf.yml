@@ -30,6 +30,7 @@ Resources:
               - s3:*
               - secretsmanager:*
               - sns:*
+              - sqs:*
               - ssm:GetParameters
               - states:*
               - sts:AssumeRole
