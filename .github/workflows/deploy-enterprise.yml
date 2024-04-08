@@ -42,7 +42,7 @@ jobs:
             default_credits_per_user: 0
             reset_credits_monthly: true
             cost_profile: DEFAULT
-            job_files: job_spec/INSAR_ISCE.yml
+            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 4000
             expanded_max_vcpus: 4000
@@ -59,7 +59,7 @@ jobs:
             default_credits_per_user: 0
             reset_credits_monthly: true
             cost_profile: DEFAULT
-            job_files: job_spec/INSAR_ISCE.yml
+            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 1000
             expanded_max_vcpus: 1000
@@ -76,7 +76,7 @@ jobs:
             default_credits_per_user: 0
             reset_credits_monthly: true
             cost_profile: DEFAULT
-            job_files: job_spec/INSAR_ISCE.yml
+            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600

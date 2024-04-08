@@ -1,4 +1,4 @@
-INSAR_ISCE:
+INSAR_ISCE_TEST:
   required_parameters:
     - granules
     - secondary_granules
@@ -89,15 +89,18 @@ INSAR_ISCE:
     bucket_prefix:
       default:  '""'
   cost_profiles:
+    EDC:
+      cost: 1.0
     DEFAULT:
       cost: 1.0
   validators: []
   tasks:
     - name: ''
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
+      image_tag: test
       command:
         - ++omp-num-threads
-        - '2'  # 2 for the m instance family; 4 for the c
+        - '4'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -132,6 +135,7 @@ INSAR_ISCE:
         - ESA_PASSWORD
     - name: TROPOSPHERE
       image: ghcr.io/dbekaert/raider
+      image_tag: test
       command:
         - ++process
         - calcDelaysGUNW
