@@ -5,7 +5,7 @@
 -r requirements-apps-start-execution-worker.txt
 -r requirements-apps-disable-private-dns.txt
 -r requirements-apps-update-db.txt
-boto3==1.34.81
+boto3==1.34.82
 jinja2==3.1.3
 moto[dynamodb]==5.0.5
 pytest==8.1.1
