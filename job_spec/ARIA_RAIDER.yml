@@ -4,7 +4,7 @@ ARIA_RAIDER:
   parameters:
     job_id:
       api_schema:
-        description: HyP3 Job Id for a INSAR_ISCE job that's successfully completed the DockerizedTopsApp step
+        description: HyP3 Job Id for a INSAR_ISCE job that has successfully completed the DockerizedTopsApp step
         type: string
         format: uuid
         example: 27836b79-e5b2-4d8f-932f-659724ea02c3
@@ -20,6 +20,8 @@ ARIA_RAIDER:
           - GMAO
           - HRES
           - HRRR
+    bucket_prefix:
+      default:  '""'
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -34,7 +36,7 @@ ARIA_RAIDER:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
-        - --job-id
+        - --input-bucket-prefix
         - Ref::job_id
         - --weather-model
         - Ref::weather_model
