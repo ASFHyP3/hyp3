@@ -1,13 +1,20 @@
 ARIA_RAIDER:
   required_parameters:
-    - job_id
+    - granules
   parameters:
-    job_id:
+    granules:
+      default:  '""'
       api_schema:
-        description: HyP3 Job Id for a INSAR_ISCE job that has successfully completed the DockerizedTopsApp step
-        type: string
-        format: uuid
-        example: 27836b79-e5b2-4d8f-932f-659724ea02c3
+        type: array
+        minItems: 1
+        maxItems: 1
+        example:
+          - 27836b79-e5b2-4d8f-932f-659724ea02c3
+        items:
+          description: HyP3 Job ID (granule) for a INSAR_ISCE job that has successfully completed the DockerizedTopsApp step
+          type: string
+          format: uuid
+          example: 27836b79-e5b2-4d8f-932f-659724ea02c3
     weather_model:
       api_schema:
         description: Weather model used to generate tropospheric delay estimations.
@@ -36,10 +43,10 @@ ARIA_RAIDER:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
-        - --input-bucket-prefix
-        - Ref::job_id
         - --weather-model
         - Ref::weather_model
+        - --input-bucket-prefix
+        - Ref::granules
       timeout: 10800
       vcpu: 1
       memory: 7500

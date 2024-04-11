@@ -2,6 +2,7 @@ import json
 import os
 import sys
 from pathlib import Path
+from uuid import UUID
 
 import requests
 import yaml
@@ -56,8 +57,16 @@ def get_cmr_metadata(granules):
     return granules
 
 
+def is_uuid(val):
+    try:
+        UUID(val, version=4)
+    except ValueError:
+        return False
+    return True
+
+
 def is_third_party_granule(granule):
-    return granule.startswith('S2') or granule.startswith('L')
+    return granule.startswith('S2') or granule.startswith('L') or is_uuid(granule)
 
 
 def check_granules_exist(granules, granule_metadata):
