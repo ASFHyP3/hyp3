@@ -15,6 +15,7 @@ def test_get_granules():
             {'job_parameters': {'granules': ['C', 'D']}},
             {'job_parameters': {'granules': ['C', 'D', 'E']}},
             {'job_parameters': {'granules': ['F', 'F']}},
+            {'job_parameters': {}},
         ]
     ) == {'A', 'B', 'C', 'D', 'E', 'F'}
 
