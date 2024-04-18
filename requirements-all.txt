@@ -15,6 +15,6 @@ flake8==7.0.0
 flake8-import-order==0.18.2
 flake8-blind-except==0.2.1
 flake8-builtins==2.5.0
-setuptools==69.2.0
+setuptools==69.5.1
 openapi-spec-validator==0.7.1
 cfn-lint==0.86.3
