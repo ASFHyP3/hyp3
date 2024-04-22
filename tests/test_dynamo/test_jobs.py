@@ -286,7 +286,9 @@ def test_put_jobs(tables, monkeypatch):
     ]
 
 
-def test_put_jobs_unapproved_user(tables):
+def test_put_jobs_unapproved_user(tables, monkeypatch):
+    monkeypatch.setenv('REQUIRE_USER_APPROVAL', 'true')
+
     tables.users_table.put_item(Item={'user_id': 'approved_user', 'remaining_credits': 1, 'approved': True})
 
     with pytest.raises(dynamo.jobs.UnapprovedUserError):

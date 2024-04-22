@@ -50,7 +50,9 @@ def test_get_or_create_user_create(tables, monkeypatch):
     assert user == 'create_user_return_value'
 
 
-def test_create_user(tables):
+def test_create_user(tables, monkeypatch):
+    monkeypatch.setenv('REQUIRE_USER_APPROVAL', 'true')
+
     user = dynamo.user._create_user(
         user_id='foo',
         default_credits=Decimal(25),

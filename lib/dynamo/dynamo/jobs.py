@@ -35,7 +35,7 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     request_time = format_time(datetime.now(timezone.utc))
 
     user_record = dynamo.user.get_or_create_user(user_id)
-    if not user_record['approved']:
+    if environ['REQUIRE_USER_APPROVAL'] == 'true' and not user_record['approved']:
         # TODO: include instructions for how to apply
         raise UnapprovedUserError(f'User {user_id} is not approved for processing')
 

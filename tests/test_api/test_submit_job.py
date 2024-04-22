@@ -130,8 +130,9 @@ def test_submit_exceeds_remaining_credits(client, tables, monkeypatch):
     assert response2.json['detail'] == 'These jobs would cost 10.0 credits, but you have only 5.0 remaining.'
 
 
-def test_submit_unapproved_user(client, tables):
+def test_submit_unapproved_user(client, tables, monkeypatch):
     login(client)
+    monkeypatch.setenv('REQUIRE_USER_APPROVAL', 'true')
 
     batch = [make_job()]
     setup_requests_mock(batch)
