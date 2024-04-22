@@ -286,6 +286,17 @@ def test_put_jobs(tables, monkeypatch):
     ]
 
 
+def test_put_jobs_unapproved_user(tables):
+    tables.users_table.put_item(Item={'user_id': 'approved_user', 'remaining_credits': 1, 'approved': True})
+
+    with pytest.raises(dynamo.jobs.UnapprovedUserError):
+        dynamo.jobs.put_jobs('unapproved_user', [{}])
+    assert tables.jobs_table.scan()['Items'] == []
+
+    dynamo.jobs.put_jobs('approved_user', [{}])
+    assert len(tables.jobs_table.scan()['Items']) == 1
+
+
 def test_put_jobs_default_params(tables):
     default_params = {
         'JOB_TYPE_A': {'a1': 'a1_default', 'a2': 'a2_default'},

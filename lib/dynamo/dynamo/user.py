@@ -41,7 +41,12 @@ def _get_current_month() -> str:
 
 
 def _create_user(user_id: str, default_credits: Decimal, current_month: str, users_table) -> dict:
-    user = {'user_id': user_id, 'remaining_credits': default_credits, 'month_of_last_credits_reset': current_month}
+    user = {
+        'user_id': user_id,
+        'remaining_credits': default_credits,
+        'month_of_last_credits_reset': current_month,
+        'approved': False,
+    }
     try:
         users_table.put_item(Item=user, ConditionExpression='attribute_not_exists(user_id)')
     except botocore.exceptions.ClientError as e:

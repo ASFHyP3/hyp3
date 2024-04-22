@@ -22,6 +22,10 @@ else:
     DEFAULT_PARAMS_BY_JOB_TYPE = {}
 
 
+class UnapprovedUserError(Exception):
+    """Raised when trying to submit jobs as an unapproved user."""
+
+
 class InsufficientCreditsError(Exception):
     """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
 
@@ -31,6 +35,10 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     request_time = format_time(datetime.now(timezone.utc))
 
     user_record = dynamo.user.get_or_create_user(user_id)
+    if not user_record['approved']:
+        # TODO: include instructions for how to apply
+        raise UnapprovedUserError(f'User {user_id} is not approved for processing')
+
     remaining_credits = user_record['remaining_credits']
     priority_override = user_record.get('priority_override')
 

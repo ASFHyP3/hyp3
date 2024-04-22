@@ -58,7 +58,12 @@ def test_create_user(tables):
         users_table=tables.users_table
     )
 
-    assert user == {'user_id': 'foo', 'remaining_credits': Decimal(25), 'month_of_last_credits_reset': '2024-02'}
+    assert user == {
+        'user_id': 'foo',
+        'remaining_credits': Decimal(25),
+        'month_of_last_credits_reset': '2024-02',
+        'approved': False,
+    }
     assert tables.users_table.scan()['Items'] == [user]
 
 
