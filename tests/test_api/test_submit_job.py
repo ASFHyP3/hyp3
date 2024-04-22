@@ -140,6 +140,10 @@ def test_submit_unapproved_user(client, tables):
     assert response.status_code == HTTPStatus.FORBIDDEN
     assert response.json['detail'] == 'User test_username is not approved for processing'
 
+    tables.users_table.put_item(Item={'user_id': 'test_username', 'remaining_credits': 1, 'approved': True})
+    response = submit_batch(client, batch)
+    assert response.status_code == HTTPStatus.OK
+
 
 def test_submit_without_jobs(client):
     login(client)
