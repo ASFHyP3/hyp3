@@ -130,6 +130,17 @@ def test_submit_exceeds_remaining_credits(client, tables, monkeypatch):
     assert response2.json['detail'] == 'These jobs would cost 10.0 credits, but you have only 5.0 remaining.'
 
 
+def test_submit_unapproved_user(client, tables):
+    login(client)
+
+    batch = [make_job()]
+    setup_requests_mock(batch)
+
+    response = submit_batch(client, batch)
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json['detail'] == 'User test_username is not approved for processing'
+
+
 def test_submit_without_jobs(client):
     login(client)
     batch = []
