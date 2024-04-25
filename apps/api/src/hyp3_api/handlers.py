@@ -87,7 +87,8 @@ def get_user(user):
         abort(problem_format(403, str(e)))
     return {
         'user_id': user,
+        'application_status': user_record['application_status'],
         'remaining_credits': user_record['remaining_credits'],
         # TODO: count this as jobs are submitted, not every time `/user` is queried
-        'job_names': get_names_for_user(user)
+        'job_names': get_names_for_user(user),
     }
