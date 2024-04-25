@@ -46,19 +46,26 @@ def _get_current_month() -> str:
     return datetime.now(tz=timezone.utc).strftime('%Y-%m')
 
 
-# TODO: use this function somewhere or delete it
-def _create_user(user_id: str, default_credits: Decimal, current_month: str, users_table) -> dict:
-    user = {'user_id': user_id, 'remaining_credits': default_credits, 'month_of_last_credits_reset': current_month}
+# TODO: call this function for the user registration endpoint
+def create_user(user_id: str, users_table) -> dict:
+    user = {'user_id': user_id, 'remaining_credits': Decimal(0), 'month_of_last_credits_reset': '0'}
     try:
         users_table.put_item(Item=user, ConditionExpression='attribute_not_exists(user_id)')
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
+            # TODO: replace this with a different exception and convert it to a client error
+            #  for the user registration endpoint
             raise DatabaseConditionException(f'Failed to create user {user_id}')
         raise
     return user
 
 
 def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> dict:
+    # TODO:
+    #  if application_status is APPROVED:
+    #    take the current approach
+    #  elif application_status is PENDING or REJECTED:
+    #    set remaining_credits and month of last reset to 0 (like in create_user)
     if (
             os.environ['RESET_CREDITS_MONTHLY'] == 'true'
             and user['month_of_last_credits_reset'] < current_month  # noqa: W503
