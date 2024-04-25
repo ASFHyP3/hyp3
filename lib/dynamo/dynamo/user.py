@@ -48,7 +48,12 @@ def _get_current_month() -> str:
 
 # TODO: call this function for the user registration endpoint
 def create_user(user_id: str, users_table) -> dict:
-    user = {'user_id': user_id, 'remaining_credits': Decimal(0), 'month_of_last_credits_reset': '0'}
+    user = {
+        'user_id': user_id,
+        'remaining_credits': Decimal(0),
+        'month_of_last_credits_reset': '0',
+        'application_status': APPLICATION_PENDING,
+    }
     try:
         users_table.put_item(Item=user, ConditionExpression='attribute_not_exists(user_id)')
     except botocore.exceptions.ClientError as e:
