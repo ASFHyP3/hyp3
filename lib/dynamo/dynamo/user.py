@@ -12,34 +12,37 @@ class DatabaseConditionException(Exception):
     """Raised when a DynamoDB condition expression check fails."""
 
 
-def get_or_create_user(user_id: str) -> dict:
+class UnapprovedUserError(Exception):
+    """Raised when the user is not approved for processing."""
+
+
+def get_user(user_id: str) -> dict:
     current_month = _get_current_month()
     default_credits = Decimal(os.environ['DEFAULT_CREDITS_PER_USER'])
 
     users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     user = users_table.get_item(Key={'user_id': user_id}).get('Item')
 
-    if user is not None:
-        user = _reset_credits_if_needed(
-            user=user,
-            default_credits=default_credits,
-            current_month=current_month,
-            users_table=users_table,
+    if user is None:
+        raise UnapprovedUserError(
+            # TODO: replace <url> with registration form URL
+            f'User {user_id} has not yet applied for a monthly credit allotment.'
+            ' Please visit <url> to submit your application.'
         )
-    else:
-        user = _create_user(
-            user_id=user_id,
-            default_credits=default_credits,
-            current_month=current_month,
-            users_table=users_table,
-        )
-    return user
+
+    return _reset_credits_if_needed(
+        user=user,
+        default_credits=default_credits,
+        current_month=current_month,
+        users_table=users_table,
+    )
 
 
 def _get_current_month() -> str:
     return datetime.now(tz=timezone.utc).strftime('%Y-%m')
 
 
+# TODO: use this function somewhere or delete it
 def _create_user(user_id: str, default_credits: Decimal, current_month: str, users_table) -> dict:
     user = {'user_id': user_id, 'remaining_credits': default_credits, 'month_of_last_credits_reset': current_month}
     try:

@@ -30,7 +30,16 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
-    user_record = dynamo.user.get_or_create_user(user_id)
+    user_record = dynamo.user.get_user(user_id)
+
+    if user_record['application_status'] == 'PENDING':
+        raise dynamo.user.UnapprovedUserError(f'User {user_id} has a pending application, please try again later.')
+    elif user_record['application_status'] == 'REJECTED':
+        raise dynamo.user.UnapprovedUserError(
+            f'Unfortunately, the application for user {user_id} has been rejected.'
+            ' If you believe this was a mistake, please email ASF User Services at: uso@asf.alaska.edu'
+        )
+
     remaining_credits = user_record['remaining_credits']
     priority_override = user_record.get('priority_override')
 
