@@ -9,6 +9,7 @@ from uuid import uuid4
 from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
+from dynamo.user import APPLICATION_APPROVED, APPLICATION_PENDING, APPLICATION_REJECTED
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
 costs_file = Path(__file__).parent / 'costs.json'
@@ -32,13 +33,16 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
 
     user_record = dynamo.user.get_user(user_id)
 
-    if user_record['application_status'] == 'PENDING':
+    application_status = user_record['application_status']
+    if application_status == APPLICATION_PENDING:
         raise dynamo.user.UnapprovedUserError(f'User {user_id} has a pending application, please try again later.')
-    elif user_record['application_status'] == 'REJECTED':
+    elif application_status == APPLICATION_REJECTED:
         raise dynamo.user.UnapprovedUserError(
             f'Unfortunately, the application for user {user_id} has been rejected.'
             ' If you believe this was a mistake, please email ASF User Services at: uso@asf.alaska.edu'
         )
+    elif application_status != APPLICATION_APPROVED:
+        raise ValueError(f'User {user_id} has an invalid application status: {application_status}')
 
     remaining_credits = user_record['remaining_credits']
     priority_override = user_record.get('priority_override')

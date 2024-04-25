@@ -7,6 +7,10 @@ import botocore.exceptions
 
 from dynamo.util import DYNAMODB_RESOURCE
 
+APPLICATION_APPROVED = 'APPROVED'
+APPLICATION_PENDING = 'PENDING'
+APPLICATION_REJECTED = 'REJECTED'
+
 
 class DatabaseConditionException(Exception):
     """Raised when a DynamoDB condition expression check fails."""
