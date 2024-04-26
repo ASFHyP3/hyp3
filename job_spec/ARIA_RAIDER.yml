@@ -1,0 +1,55 @@
+ARIA_RAIDER:
+  required_parameters:
+    - job_id
+  parameters:
+    job_id:
+      api_schema:
+        description: HyP3 job ID for an INSAR_ISCE job that has successfully completed the DockerizedTopsApp step
+        type: string
+        format: uuid
+        example: 27836b79-e5b2-4d8f-932f-659724ea02c3
+    weather_model:
+      api_schema:
+        description: Weather model used to generate tropospheric delay estimations.
+        default: None
+        type: string
+        enum:
+          - None
+          - ERA5
+          - ERA5T
+          - GMAO
+          - HRES
+          - HRRR
+    bucket_prefix:
+      default:  '""'
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  tasks:
+    - name: ''
+      image: ghcr.io/dbekaert/raider
+      command:
+        - ++process
+        - calcDelaysGUNW
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --weather-model
+        - Ref::weather_model
+        - --input-bucket-prefix
+        - Ref::job_id
+      timeout: 10800
+      vcpu: 1
+      memory: 7500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
+        - ESA_USERNAME
+        - ESA_PASSWORD
+        - RAIDER_ECMWF_ERA5_UID
+        - RAIDER_ECMWF_ERA5_API_KEY
+        - RAIDER_HRES_EMAIL
+        - RAIDER_HRES_API_KEY
+        - RAIDER_HRES_URL

@@ -1,9 +1,7 @@
 from http.client import responses
-from uuid import UUID
 
 import requests
 from flask import abort, jsonify, request
-from jsonschema import draft4_format_checker
 
 import dynamo
 from hyp3_api import util
@@ -20,15 +18,6 @@ def problem_format(status, message):
     response.headers['Content-Type'] = 'application/problem+json'
     response.status_code = status
     return response
-
-
-@draft4_format_checker.checks('uuid')
-def is_uuid(val):
-    try:
-        UUID(val, version=4)
-    except ValueError:
-        return False
-    return True
 
 
 def post_jobs(body, user):
