@@ -2,11 +2,10 @@ from http.client import responses
 
 import requests
 from flask import abort, jsonify, request
-from jsonschema import draft4_format_checker
 
 import dynamo
 from hyp3_api import util
-from hyp3_api.validation import GranuleValidationError, is_uuid, validate_jobs
+from hyp3_api.validation import GranuleValidationError, validate_jobs
 
 
 def problem_format(status, message):
@@ -19,9 +18,6 @@ def problem_format(status, message):
     response.headers['Content-Type'] = 'application/problem+json'
     response.status_code = status
     return response
-
-
-is_uuid = draft4_format_checker.checks('uuid')(is_uuid)
 
 
 def post_jobs(body, user):

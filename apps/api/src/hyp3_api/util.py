@@ -8,12 +8,8 @@ class TokenDeserializeError(Exception):
     """Raised when paging results and `start_token` fails to deserialize"""
 
 
-def get_granules(jobs):
-    granules = set()
-    for job in jobs:
-        for granule in job['job_parameters']['granules']:
-            granules.add(granule)
-    return granules
+def get_granules(jobs: list[dict]) -> set[str]:
+    return {granule for job in jobs for granule in job['job_parameters'].get('granules', [])}
 
 
 def serialize(payload: dict):
