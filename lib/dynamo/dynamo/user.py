@@ -16,6 +16,10 @@ class DatabaseConditionException(Exception):
     """Raised when a DynamoDB condition expression check fails."""
 
 
+class UserAlreadyExistsError(Exception):
+    """Raised when an existing user attempts to re-register."""
+
+
 class UnapprovedUserError(Exception):
     """Raised when the user is not approved for processing."""
 
@@ -46,23 +50,24 @@ def _get_current_month() -> str:
     return datetime.now(tz=timezone.utc).strftime('%Y-%m')
 
 
-# TODO: call this function for the user registration endpoint
-def create_user(user_id: str, users_table) -> dict:
-    user = {
+def create_user(user_id: str, body: dict) -> dict:
+    users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
+    body.update({
         'user_id': user_id,
         'remaining_credits': Decimal(0),
         'month_of_last_credits_reset': '0',
         'application_status': APPLICATION_PENDING,
-    }
+    })
     try:
-        users_table.put_item(Item=user, ConditionExpression='attribute_not_exists(user_id)')
+        users_table.put_item(Item=body, ConditionExpression='attribute_not_exists(user_id)')
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-            # TODO: replace this with a different exception and convert it to a client error
-            #  for the user registration endpoint
-            raise DatabaseConditionException(f'Failed to create user {user_id}')
+            raise UserAlreadyExistsError(f'User {user_id} has already submitted an application.')
         raise
-    return user
+    # TODO: should we perhaps return the entire user record here,
+    #  minus any fields that we don't want them to see, e.g. priority?
+    #  And same for the GET /user endpoint?
+    return {}
 
 
 def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> dict:

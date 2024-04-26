@@ -31,6 +31,17 @@ def is_uuid(val):
     return True
 
 
+def register(body, user):
+    print(body)
+
+    try:
+        payload = dynamo.user.create_user(user, body)
+    except dynamo.user.UserAlreadyExistsError as e:
+        # TODO is there a more specific status code to use here?
+        abort(problem_format(400, str(e)))
+    return payload
+
+
 def post_jobs(body, user):
     print(body)
 
