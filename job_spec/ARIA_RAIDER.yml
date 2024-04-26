@@ -3,7 +3,6 @@ ARIA_RAIDER:
     - job_id
   parameters:
     job_id:
-      default:  '""'
       api_schema:
         description: HyP3 job ID for an INSAR_ISCE job that has successfully completed the DockerizedTopsApp step
         type: string
