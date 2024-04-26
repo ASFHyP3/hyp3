@@ -66,13 +66,9 @@ def create_user(user_id: str, users_table) -> dict:
 
 
 def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> dict:
-    # TODO:
-    #  if application_status is APPROVED:
-    #    take the current approach
-    #  elif application_status is PENDING or REJECTED:
-    #    set remaining_credits and month of last reset to 0 (like in create_user)
     if (
             os.environ['RESET_CREDITS_MONTHLY'] == 'true'
+            and user['application_status'] == APPLICATION_APPROVED
             and user['month_of_last_credits_reset'] < current_month  # noqa: W503
             and user['remaining_credits'] is not None  # noqa: W503
     ):
@@ -81,16 +77,39 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
         try:
             users_table.put_item(
                 Item=user,
-                ConditionExpression='month_of_last_credits_reset < :current_month'
-                                    ' AND attribute_type(remaining_credits, :number)',
+                ConditionExpression=(
+                    'application_status = :approved'
+                    ' month_of_last_credits_reset < :current_month'
+                    ' AND attribute_type(remaining_credits, :number)'
+                ),
                 ExpressionAttributeValues={
+                    ':approved': APPLICATION_APPROVED,
                     ':current_month': current_month,
                     ':number': 'N',
                 },
             )
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-                raise DatabaseConditionException(f'Failed to perform monthly credits reset for user {user["user_id"]}')
+                raise DatabaseConditionException(
+                    f'Failed to perform monthly credit reset for approved user {user["user_id"]}'
+                )
+            raise
+    elif user['application_status'] != APPLICATION_APPROVED:
+        # TODO should we also check RESET_CREDITS_MONTHLY for this case? should we perhaps get rid of that
+        #  variable for now since hyp3-enterprise-test is the only deployment that sets it false?
+        user['month_of_last_credits_reset'] = '0'
+        user['remaining_credits'] = Decimal(0)
+        try:
+            users_table.put_item(
+                Item=user,
+                ConditionExpression='NOT (application_status = :approved)',
+                ExpressionAttributeValues={':approved': APPLICATION_APPROVED},
+            )
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
+                raise DatabaseConditionException(
+                    f'Failed to perform monthly credit reset for unapproved user {user["user_id"]}'
+                )
             raise
     return user
 
