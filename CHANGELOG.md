@@ -8,9 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - A `hyp3-its-live-test` deployment to [`deploy-enterprise-test.yml`](.github/workflows/deploy-enterprise-test.yml) for ITS_LIVE testing in preparation for some significant ITS_LIVE project development
 - A `hyp3-a19-jpl-test` deployment to [`deploy-enterprise-test.yml`](.github/workflows/deploy-enterprise-test.yml) for ARIA testing of the `m6id[n]` instance families
+- An `ARIA_RAIDER` job spec that allows RAIDER processing of previous INSAR_ISCE job that either did not include a weather model or failed on the RAiDER step.
+- `ARIA_RAIDER` jobs are now available in the `hyp3-a19-jpl` and `hyp3-a19-jpl-test` deployments.
 
 ### Changed
 - The `INSAR_ISCE_TEST.yml` job spec now only differs from the `INSAR_ISCE.yml` with respect to the `++omp-num-threads` parameter, because the value is specific to a particular instance family
+- Job specs are no longer required to include the `granules` parameter.
 
 ### Removed
 - The `AUTORIFT_ITS_LIVE_TEST.yml` job spec which supported running test versions of the AUTORIFT jobs in the production hyp3-its-live deployment
