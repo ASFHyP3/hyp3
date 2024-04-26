@@ -24,6 +24,26 @@ class UnapprovedUserError(Exception):
     """Raised when the user is not approved for processing."""
 
 
+def create_user(user_id: str, body: dict) -> dict:
+    users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
+    body.update({
+        'user_id': user_id,
+        'remaining_credits': Decimal(0),
+        'month_of_last_credits_reset': '0',
+        'application_status': APPLICATION_PENDING,
+    })
+    try:
+        users_table.put_item(Item=body, ConditionExpression='attribute_not_exists(user_id)')
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
+            raise UserAlreadyExistsError(f'User {user_id} has already submitted an application.')
+        raise
+    # TODO: should we perhaps return the entire user record here,
+    #  minus any fields that we don't want them to see, e.g. priority?
+    #  And same for the GET /user endpoint?
+    return {}
+
+
 def get_user(user_id: str) -> dict:
     current_month = _get_current_month()
     default_credits = Decimal(os.environ['DEFAULT_CREDITS_PER_USER'])
@@ -48,26 +68,6 @@ def get_user(user_id: str) -> dict:
 
 def _get_current_month() -> str:
     return datetime.now(tz=timezone.utc).strftime('%Y-%m')
-
-
-def create_user(user_id: str, body: dict) -> dict:
-    users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
-    body.update({
-        'user_id': user_id,
-        'remaining_credits': Decimal(0),
-        'month_of_last_credits_reset': '0',
-        'application_status': APPLICATION_PENDING,
-    })
-    try:
-        users_table.put_item(Item=body, ConditionExpression='attribute_not_exists(user_id)')
-    except botocore.exceptions.ClientError as e:
-        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-            raise UserAlreadyExistsError(f'User {user_id} has already submitted an application.')
-        raise
-    # TODO: should we perhaps return the entire user record here,
-    #  minus any fields that we don't want them to see, e.g. priority?
-    #  And same for the GET /user endpoint?
-    return {}
 
 
 def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> dict:
