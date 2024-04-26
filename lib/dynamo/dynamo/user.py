@@ -7,53 +7,73 @@ import botocore.exceptions
 
 from dynamo.util import DYNAMODB_RESOURCE
 
+APPLICATION_APPROVED = 'APPROVED'
+APPLICATION_PENDING = 'PENDING'
+APPLICATION_REJECTED = 'REJECTED'
+
 
 class DatabaseConditionException(Exception):
     """Raised when a DynamoDB condition expression check fails."""
 
 
-def get_or_create_user(user_id: str) -> dict:
+class UserAlreadyExistsError(Exception):
+    """Raised when an existing user attempts to re-register."""
+
+
+class UnapprovedUserError(Exception):
+    """Raised when the user is not approved for processing."""
+
+
+def create_user(user_id: str, body: dict) -> dict:
+    users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
+    body.update({
+        'user_id': user_id,
+        'remaining_credits': Decimal(0),
+        'month_of_last_credits_reset': '0',
+        'application_status': APPLICATION_PENDING,
+    })
+    try:
+        users_table.put_item(Item=body, ConditionExpression='attribute_not_exists(user_id)')
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
+            raise UserAlreadyExistsError(f'User {user_id} has already submitted an application.')
+        raise
+    # TODO: should we perhaps return the entire user record here,
+    #  minus any fields that we don't want them to see, e.g. priority?
+    #  And same for the GET /user endpoint?
+    return {}
+
+
+def get_user(user_id: str) -> dict:
     current_month = _get_current_month()
     default_credits = Decimal(os.environ['DEFAULT_CREDITS_PER_USER'])
 
     users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     user = users_table.get_item(Key={'user_id': user_id}).get('Item')
 
-    if user is not None:
-        user = _reset_credits_if_needed(
-            user=user,
-            default_credits=default_credits,
-            current_month=current_month,
-            users_table=users_table,
+    if user is None:
+        raise UnapprovedUserError(
+            # TODO: replace <url> with registration form URL
+            f'User {user_id} has not yet applied for a monthly credit allotment.'
+            ' Please visit <url> to submit your application.'
         )
-    else:
-        user = _create_user(
-            user_id=user_id,
-            default_credits=default_credits,
-            current_month=current_month,
-            users_table=users_table,
-        )
-    return user
+
+    return _reset_credits_if_needed(
+        user=user,
+        default_credits=default_credits,
+        current_month=current_month,
+        users_table=users_table,
+    )
 
 
 def _get_current_month() -> str:
     return datetime.now(tz=timezone.utc).strftime('%Y-%m')
 
 
-def _create_user(user_id: str, default_credits: Decimal, current_month: str, users_table) -> dict:
-    user = {'user_id': user_id, 'remaining_credits': default_credits, 'month_of_last_credits_reset': current_month}
-    try:
-        users_table.put_item(Item=user, ConditionExpression='attribute_not_exists(user_id)')
-    except botocore.exceptions.ClientError as e:
-        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-            raise DatabaseConditionException(f'Failed to create user {user_id}')
-        raise
-    return user
-
-
 def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> dict:
     if (
             os.environ['RESET_CREDITS_MONTHLY'] == 'true'
+            and user['application_status'] == APPLICATION_APPROVED
             and user['month_of_last_credits_reset'] < current_month  # noqa: W503
             and user['remaining_credits'] is not None  # noqa: W503
     ):
@@ -62,16 +82,39 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
         try:
             users_table.put_item(
                 Item=user,
-                ConditionExpression='month_of_last_credits_reset < :current_month'
-                                    ' AND attribute_type(remaining_credits, :number)',
+                ConditionExpression=(
+                    'application_status = :approved'
+                    ' month_of_last_credits_reset < :current_month'
+                    ' AND attribute_type(remaining_credits, :number)'
+                ),
                 ExpressionAttributeValues={
+                    ':approved': APPLICATION_APPROVED,
                     ':current_month': current_month,
                     ':number': 'N',
                 },
             )
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-                raise DatabaseConditionException(f'Failed to perform monthly credits reset for user {user["user_id"]}')
+                raise DatabaseConditionException(
+                    f'Failed to perform monthly credit reset for approved user {user["user_id"]}'
+                )
+            raise
+    elif user['application_status'] != APPLICATION_APPROVED:
+        # TODO should we also check RESET_CREDITS_MONTHLY for this case? should we perhaps get rid of that
+        #  variable for now since hyp3-enterprise-test is the only deployment that sets it false?
+        user['month_of_last_credits_reset'] = '0'
+        user['remaining_credits'] = Decimal(0)
+        try:
+            users_table.put_item(
+                Item=user,
+                ConditionExpression='NOT (application_status = :approved)',
+                ExpressionAttributeValues={':approved': APPLICATION_APPROVED},
+            )
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
+                raise DatabaseConditionException(
+                    f'Failed to perform monthly credit reset for unapproved user {user["user_id"]}'
+                )
             raise
     return user
 

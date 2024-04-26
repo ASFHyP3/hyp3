@@ -32,6 +32,8 @@ def post_jobs(body, user):
 
     try:
         body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], dry_run=body.get('validate_only'))
+    except dynamo.user.UnapprovedUserError as e:
+        abort(problem_format(403, str(e)))
     except dynamo.jobs.InsufficientCreditsError as e:
         abort(problem_format(400, str(e)))
     return body
@@ -67,11 +69,26 @@ def get_names_for_user(user):
     return sorted(list(names))
 
 
+def post_user(body, user):
+    print(body)
+
+    try:
+        payload = dynamo.user.create_user(user, body)
+    except dynamo.user.UserAlreadyExistsError as e:
+        # TODO is there a more specific status code to use here?
+        abort(problem_format(400, str(e)))
+    return payload
+
+
 def get_user(user):
-    user_record = dynamo.user.get_or_create_user(user)
+    try:
+        user_record = dynamo.user.get_user(user)
+    except dynamo.user.UnapprovedUserError as e:
+        abort(problem_format(403, str(e)))
     return {
         'user_id': user,
+        'application_status': user_record['application_status'],
         'remaining_credits': user_record['remaining_credits'],
         # TODO: count this as jobs are submitted, not every time `/user` is queried
-        'job_names': get_names_for_user(user)
+        'job_names': get_names_for_user(user),
     }
