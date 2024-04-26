@@ -1,6 +1,7 @@
 ARIA_RAIDER:
   required_parameters:
     - job_id
+    - weather_model
   parameters:
     job_id:
       api_schema:
@@ -11,10 +12,8 @@ ARIA_RAIDER:
     weather_model:
       api_schema:
         description: Weather model used to generate tropospheric delay estimations.
-        default: None
         type: string
         enum:
-          - None
           - ERA5
           - ERA5T
           - GMAO
