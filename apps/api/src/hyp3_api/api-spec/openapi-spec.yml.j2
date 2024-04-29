@@ -104,6 +104,22 @@ paths:
                 $ref: "#/components/schemas/job"
 
   /user:
+    post:
+      description: Submit an application for processing approval.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/post_user_body"
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+
     get:
       description: Get information about the logged in user.
       responses:
@@ -171,6 +187,16 @@ components:
           $ref: "#/components/schemas/list_of_jobs"
         next:
           $ref: "#/components/schemas/next_url"
+
+    post_user_body:
+      description: Application for processing approval.
+      type: object
+      required:
+        - use_case
+      additionalProperties: false
+      properties:
+        use_case:
+          type: string
 
     user:
       description: Information about a user
