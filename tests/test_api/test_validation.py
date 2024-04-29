@@ -266,6 +266,10 @@ def test_validate_jobs():
                 'granules': [granule_with_dem_coverage, granule_without_dem_coverage],
             }
         },
+        {
+            'job_type': 'ARIA_RAIDER',
+            'job_parameters': {}
+        },
     ]
     validation.validate_jobs(jobs)
 

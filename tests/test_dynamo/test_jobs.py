@@ -279,7 +279,7 @@ def test_put_jobs(tables, monkeypatch):
         assert job['execution_started'] is False
         assert job['credit_cost'] == 1
 
-    assert tables.jobs_table.scan()['Items'] == jobs
+    assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
 
     assert tables.users_table.scan()['Items'] == [
         {'user_id': 'user1', 'remaining_credits': 7, 'month_of_last_credits_reset': '2024-02'}
@@ -328,7 +328,7 @@ def test_put_jobs_default_params(tables):
     assert jobs[10]['job_parameters'] == {'c1': 'foo'}
     assert jobs[11]['job_parameters'] == {'n1': 'foo'}
 
-    assert tables.jobs_table.scan()['Items'] == jobs
+    assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
 
 
 def test_put_jobs_costs(tables):
@@ -412,7 +412,7 @@ def test_put_jobs_costs(tables):
     assert jobs[6]['credit_cost'] == Decimal('5.0')
     assert jobs[7]['credit_cost'] == Decimal('0.4')
 
-    assert tables.jobs_table.scan()['Items'] == jobs
+    assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
     assert tables.users_table.scan()['Items'] == [{'user_id': 'user1', 'remaining_credits': Decimal('11.7')}]
 
 
@@ -422,7 +422,7 @@ def test_put_jobs_user_exists(tables):
     jobs = dynamo.jobs.put_jobs('user1', [{}, {}])
 
     assert len(jobs) == 2
-    assert tables.jobs_table.scan()['Items'] == jobs
+    assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
     assert tables.users_table.scan()['Items'] == [{'user_id': 'user1', 'remaining_credits': 3}]
 
 

@@ -18,13 +18,12 @@ jobs:
             domain: hyp3-its-live.asf.alaska.edu
             template_bucket: cf-templates-3o5lnspmwmzg-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 45
+            product_lifetime_in_days: 14
             default_credits_per_user: 0
             reset_credits_monthly: true
             cost_profile: DEFAULT
             job_files: >-
               job_spec/AUTORIFT_ITS_LIVE.yml
-              job_spec/AUTORIFT_ITS_LIVE_TEST.yml
               job_spec/S1_CORRECTION_ITS_LIVE.yml
             instance_types: r6id.xlarge,r6idn.xlarge,r5dn.xlarge,r5d.xlarge
             default_max_vcpus: 10000
@@ -42,7 +41,9 @@ jobs:
             default_credits_per_user: 0
             reset_credits_monthly: true
             cost_profile: DEFAULT
-            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
+            job_files: >-
+              job_spec/ARIA_RAIDER.yml
+              job_spec/INSAR_ISCE.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 4000
             expanded_max_vcpus: 4000
@@ -59,7 +60,7 @@ jobs:
             default_credits_per_user: 0
             reset_credits_monthly: true
             cost_profile: DEFAULT
-            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
+            job_files: job_spec/INSAR_ISCE.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 1000
             expanded_max_vcpus: 1000
@@ -76,7 +77,7 @@ jobs:
             default_credits_per_user: 0
             reset_credits_monthly: true
             cost_profile: DEFAULT
-            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
+            job_files: job_spec/INSAR_ISCE.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
