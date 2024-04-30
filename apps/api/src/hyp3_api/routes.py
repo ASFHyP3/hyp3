@@ -148,11 +148,10 @@ def jobs_get_by_job_id(job_id):
     return jsonify(handlers.get_job_by_id(job_id))
 
 
-@app.route('/user', methods=['POST'])
+@app.route('/user', methods=['PATCH'])
 @openapi
-def user_post():
-    # TODO: add to API spec
-    return jsonify(handlers.post_user(request.get_json(), g.user))
+def user_patch():
+    return jsonify(handlers.patch_user(request.get_json(), g.user))
 
 
 @app.route('/user', methods=['GET'])
