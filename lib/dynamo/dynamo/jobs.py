@@ -9,7 +9,7 @@ from uuid import uuid4
 from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
-from dynamo.user import APPLICATION_APPROVED, APPLICATION_PENDING, APPLICATION_REJECTED
+from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
 costs_file = Path(__file__).parent / 'costs.json'
@@ -31,9 +31,15 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
-    user_record = dynamo.user.get_user(user_id)
+    user_record = dynamo.user.get_or_create_user(user_id)
 
     application_status = user_record['application_status']
+    if application_status == APPLICATION_NOT_STARTED:
+        # TODO replace <url> with URL to the application form for the given deployment
+        raise dynamo.user.UnapprovedUserError(
+            f'User {user_id} has not yet applied for a monthly credit allotment.'
+            ' Please visit <url> to submit your application.'
+        )
     if application_status == APPLICATION_PENDING:
         raise dynamo.user.UnapprovedUserError(f'User {user_id} has a pending application, please try again later.')
     elif application_status == APPLICATION_REJECTED:

@@ -104,13 +104,13 @@ paths:
                 $ref: "#/components/schemas/job"
 
   /user:
-    post:
-      description: Submit an application for processing approval.
+    patch:
+      description: Submit or update an application for processing approval.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/post_user_body"
+              $ref: "#/components/schemas/patch_user_body"
         required: true
       responses:
         "200":
@@ -188,7 +188,7 @@ components:
         next:
           $ref: "#/components/schemas/next_url"
 
-    post_user_body:
+    patch_user_body:
       description: Application for processing approval.
       type: object
       required:

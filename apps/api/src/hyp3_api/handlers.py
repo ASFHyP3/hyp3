@@ -69,22 +69,18 @@ def get_names_for_user(user):
     return sorted(list(names))
 
 
-def post_user(body, user):
+def patch_user(body, user):
     print(body)
-
     try:
-        payload = dynamo.user.create_user(user, body)
-    except dynamo.user.UserAlreadyExistsError as e:
-        # TODO is there a more specific status code to use here?
-        abort(problem_format(400, str(e)))
+        payload = dynamo.user.update_user(user, body)
+    except dynamo.user.CannotUpdateUserError as e:
+        # TODO is this the appropriate status code?
+        abort(problem_format(403, str(e)))
     return payload
 
 
 def get_user(user):
-    try:
-        user_record = dynamo.user.get_user(user)
-    except dynamo.user.UnapprovedUserError as e:
-        abort(problem_format(403, str(e)))
+    user_record = dynamo.user.get_or_create_user(user)
     return {
         'user_id': user,
         'application_status': user_record['application_status'],
