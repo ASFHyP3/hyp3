@@ -80,11 +80,7 @@ def patch_user(body, user):
 
 
 def get_user(user):
-    # TODO: update so as not to raise 403
-    try:
-        user_record = dynamo.user.get_user(user)
-    except dynamo.user.UnapprovedUserError as e:
-        abort(problem_format(403, str(e)))
+    user_record = dynamo.user.get_or_create_user(user)
     return {
         'user_id': user,
         'application_status': user_record['application_status'],
