@@ -33,6 +33,7 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
 
     user_record = dynamo.user.get_or_create_user(user_id)
 
+    # TODO factor out helper func
     application_status = user_record['application_status']
     if application_status == APPLICATION_NOT_STARTED:
         # TODO replace <url> with URL to the application form for the given deployment
