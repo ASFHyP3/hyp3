@@ -37,7 +37,7 @@ def update_user(user_id: str, body: dict) -> dict:
         try:
             users_table.update_item(
                 Key={'user_id': user_id},
-                UpdateExpression='SET use_case = :use_case',
+                UpdateExpression='SET use_case = :use_case, application_status = :pending',
                 ConditionExpression='application_status IN (:not_started, :pending)',
                 ExpressionAttributeValues={
                     ':use_case': body['use_case'],
