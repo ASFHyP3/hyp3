@@ -32,7 +32,7 @@ def post_jobs(body, user):
 
     try:
         body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], dry_run=body.get('validate_only'))
-    except dynamo.user.UnapprovedUserError as e:
+    except dynamo.jobs.UnapprovedUserError as e:
         abort(problem_format(403, str(e)))
     except dynamo.jobs.InsufficientCreditsError as e:
         abort(problem_format(400, str(e)))
@@ -73,7 +73,7 @@ def patch_user(body: dict, user: str) -> None:
     print(body)
     try:
         dynamo.user.update_user(user, body)
-    except dynamo.user.CannotUpdateUserError as e:
+    except dynamo.user.ApplicationClosedError as e:
         # TODO is this the appropriate status code?
         abort(problem_format(403, str(e)))
 

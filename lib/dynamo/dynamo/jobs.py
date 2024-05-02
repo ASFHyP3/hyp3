@@ -23,6 +23,10 @@ else:
     DEFAULT_PARAMS_BY_JOB_TYPE = {}
 
 
+class UnapprovedUserError(Exception):
+    """Raised when the user is not approved for processing."""
+
+
 class InsufficientCreditsError(Exception):
     """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
 
@@ -33,23 +37,7 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
 
     user_record = dynamo.user.get_or_create_user(user_id)
 
-    # TODO factor out helper func
-    application_status = user_record['application_status']
-    if application_status == APPLICATION_NOT_STARTED:
-        # TODO replace <url> with URL to the application form for the given deployment
-        raise dynamo.user.UnapprovedUserError(
-            f'User {user_id} has not yet applied for a monthly credit allotment.'
-            ' Please visit <url> to submit your application.'
-        )
-    if application_status == APPLICATION_PENDING:
-        raise dynamo.user.UnapprovedUserError(f'User {user_id} has a pending application, please try again later.')
-    elif application_status == APPLICATION_REJECTED:
-        raise dynamo.user.UnapprovedUserError(
-            f'Unfortunately, the application for user {user_id} has been rejected.'
-            ' If you believe this was a mistake, please email ASF User Services at: uso@asf.alaska.edu'
-        )
-    elif application_status != APPLICATION_APPROVED:
-        raise ValueError(f'User {user_id} has an invalid application status: {application_status}')
+    _raise_for_application_status(user_record['application_status'], user_record['user_id'])
 
     remaining_credits = user_record['remaining_credits']
     priority_override = user_record.get('priority_override')
@@ -82,6 +70,28 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
                 batch.put_item(Item=convert_floats_to_decimals(prepared_job))
 
     return prepared_jobs
+
+
+def _raise_for_application_status(application_status: str, user_id: str) -> None:
+    if application_status == APPLICATION_NOT_STARTED:
+        # TODO replace <url> with URL to the application form for the given deployment
+        raise UnapprovedUserError(
+            f'User {user_id} has not yet applied for a monthly credit allotment.'
+            ' Please visit <url> to submit your application.'
+        )
+    if application_status == APPLICATION_PENDING:
+        raise UnapprovedUserError(
+            f'User {user_id} has a pending application, please try again later.'
+        )
+    if application_status == APPLICATION_REJECTED:
+        raise UnapprovedUserError(
+            f'Unfortunately, the application for user {user_id} has been rejected.'
+            ' If you believe this was a mistake, please email ASF User Services at: uso@asf.alaska.edu'
+        )
+    if application_status != APPLICATION_APPROVED:
+        raise ValueError(
+            f'User {user_id} has an invalid application status: {application_status}'
+        )
 
 
 def _prepare_job_for_database(
