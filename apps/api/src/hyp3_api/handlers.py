@@ -69,14 +69,13 @@ def get_names_for_user(user):
     return sorted(list(names))
 
 
-def patch_user(body, user):
+def patch_user(body: dict, user: str) -> None:
     print(body)
     try:
-        payload = dynamo.user.update_user(user, body)
+        dynamo.user.update_user(user, body)
     except dynamo.user.CannotUpdateUserError as e:
         # TODO is this the appropriate status code?
         abort(problem_format(403, str(e)))
-    return payload
 
 
 def get_user(user):

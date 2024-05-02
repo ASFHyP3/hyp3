@@ -28,7 +28,7 @@ class CannotUpdateUserError(Exception):
     """Raised when the user record cannot be updated."""
 
 
-def update_user(user_id: str, body: dict) -> dict:
+def update_user(user_id: str, body: dict) -> None:
     # TODO also set derived EDL fields
     user = get_or_create_user(user_id)
     application_status = user['application_status']
@@ -58,8 +58,6 @@ def update_user(user_id: str, body: dict) -> dict:
         raise CannotUpdateUserError(f'The application for user {user_id} has already been approved.')
     else:
         raise ValueError(f'User {user_id} has an invalid application status: {application_status}')
-    # TODO return updated user record
-    return {}
 
 
 def get_or_create_user(user_id: str) -> dict:
