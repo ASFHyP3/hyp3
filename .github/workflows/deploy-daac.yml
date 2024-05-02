@@ -22,7 +22,6 @@ jobs:
             image_tag: latest
             product_lifetime_in_days: 14
             default_credits_per_user: 10000
-            reset_credits_monthly: true
             cost_profile: EDC
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml job_spec/INSAR_ISCE_BURST.yml
@@ -41,7 +40,6 @@ jobs:
             image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 10000
-            reset_credits_monthly: true
             cost_profile: EDC
             deploy_ref: refs/heads/develop
             job_files: >-
@@ -90,7 +88,6 @@ jobs:
           SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           DEFAULT_CREDITS_PER_USER: ${{ matrix.default_credits_per_user }}
-          RESET_CREDITS_MONTHLY: ${{ matrix.reset_credits_monthly }}
           COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
           DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}

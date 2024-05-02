@@ -114,8 +114,7 @@ def _create_user(user_id: str, users_table) -> dict:
 
 def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> dict:
     if (
-            os.environ['RESET_CREDITS_MONTHLY'] == 'true'
-            and user['application_status'] == APPLICATION_APPROVED
+            user['application_status'] == APPLICATION_APPROVED
             and user['_month_of_last_credit_reset'] < current_month  # noqa: W503
             and user['remaining_credits'] is not None  # noqa: W503
     ):
@@ -143,8 +142,6 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
                 )
             raise
     elif user['application_status'] != APPLICATION_APPROVED:
-        # TODO should we also check RESET_CREDITS_MONTHLY for this case? should we perhaps get rid of that
-        #  variable for now since hyp3-enterprise-test is the only deployment that sets it false?
         user['_month_of_last_credit_reset'] = '0'
         user['remaining_credits'] = Decimal(0)
         try:

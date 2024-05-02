@@ -77,8 +77,6 @@ def test_create_user_already_exists(tables):
 
 
 def test_reset_credits(tables, monkeypatch):
-    monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'true')
-
     original_user_record = {
         'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-01'
     }
@@ -96,8 +94,6 @@ def test_reset_credits(tables, monkeypatch):
 
 
 def test_reset_credits_override(tables, monkeypatch):
-    monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'true')
-
     original_user_record = {
         'user_id': 'foo',
         'remaining_credits': Decimal(10),
@@ -122,28 +118,7 @@ def test_reset_credits_override(tables, monkeypatch):
     assert tables.users_table.scan()['Items'] == [user]
 
 
-def test_reset_credits_no_reset(tables, monkeypatch):
-    monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'false')
-
-    original_user_record = {
-        'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-01'
-    }
-    tables.users_table.put_item(Item=original_user_record)
-
-    user = dynamo.user._reset_credits_if_needed(
-        user=original_user_record,
-        default_credits=Decimal(25),
-        current_month='2024-02',
-        users_table=tables.users_table,
-    )
-
-    assert user == {'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-01'}
-    assert tables.users_table.scan()['Items'] == [user]
-
-
 def test_reset_credits_same_month(tables, monkeypatch):
-    monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'true')
-
     original_user_record = {
         'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-02'
     }
@@ -161,8 +136,6 @@ def test_reset_credits_same_month(tables, monkeypatch):
 
 
 def test_reset_credits_infinite_credits(tables, monkeypatch):
-    monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'true')
-
     original_user_record = {
         'user_id': 'foo', 'remaining_credits': None, 'month_of_last_credits_reset': '2024-01'
     }
@@ -180,7 +153,6 @@ def test_reset_credits_infinite_credits(tables, monkeypatch):
 
 
 def test_reset_credits_failed_same_month(tables, monkeypatch):
-    monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'true')
     tables.users_table.put_item(
         Item={'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-02'}
     )
@@ -199,7 +171,6 @@ def test_reset_credits_failed_same_month(tables, monkeypatch):
 
 
 def test_reset_credits_failed_infinite_credits(tables, monkeypatch):
-    monkeypatch.setenv('RESET_CREDITS_MONTHLY', 'true')
     tables.users_table.put_item(
         Item={'user_id': 'foo', 'remaining_credits': None, 'month_of_last_credits_reset': '2024-01'}
     )
