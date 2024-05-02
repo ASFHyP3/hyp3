@@ -151,6 +151,7 @@ def jobs_get_by_job_id(job_id):
 @app.route('/user', methods=['PATCH'])
 @openapi
 def user_patch():
+    # TODO: return user fields
     handlers.patch_user(request.get_json(), g.user)
     return {}
 

@@ -21,6 +21,8 @@ class ApplicationClosedError(Exception):
     """Raised when the user attempts to update an application that has already been approved or rejected."""
 
 
+# TODO: return the user record via the ReturnValues param:
+#  https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/table/update_item.html
 def update_user(user_id: str, body: dict) -> None:
     # TODO also set derived EDL fields
     user = get_or_create_user(user_id)
