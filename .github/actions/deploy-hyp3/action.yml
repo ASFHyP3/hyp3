@@ -38,9 +38,6 @@ inputs:
   DEFAULT_CREDITS_PER_USER:
     description: "The default number of credits given to a new user"
     required: true
-  RESET_CREDITS_MONTHLY:
-    description: "Whether to reset each user's remaining credits each month"
-    required: true
   COST_PROFILE:
     description: "Job spec cost profile"
     required: true
@@ -126,7 +123,6 @@ runs:
                 $ORIGIN_ACCESS_IDENTITY_ID \
                 $DISTRIBUTION_URL \
                 DefaultCreditsPerUser='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
-                ResetCreditsMonthly='${{ inputs.RESET_CREDITS_MONTHLY }}' \
                 DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
                 ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
                 MonthlyBudget='${{ inputs.MONTHLY_BUDGET }}' \

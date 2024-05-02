@@ -20,7 +20,6 @@ jobs:
             image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 10
-            reset_credits_monthly: true
             cost_profile: EDC
             deploy_ref: refs/heads/whitelisting-sandbox
             job_files: >-
@@ -68,7 +67,6 @@ jobs:
           SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           DEFAULT_CREDITS_PER_USER: ${{ matrix.default_credits_per_user }}
-          RESET_CREDITS_MONTHLY: ${{ matrix.reset_credits_monthly }}
           COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
           DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}

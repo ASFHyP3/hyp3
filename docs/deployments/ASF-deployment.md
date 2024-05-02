@@ -93,6 +93,5 @@ aws cloudformation deploy \
         DomainName=<domain-name> \
         CertificateArn=<certificate-arn> \
         SecretArn=<secret-arn> \
-        DefaultCreditsPerUser=0 \
-        ResetCreditsMonthly=true
+        DefaultCreditsPerUser=0
 ```
