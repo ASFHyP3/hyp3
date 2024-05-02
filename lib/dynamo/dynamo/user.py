@@ -16,16 +16,9 @@ APPLICATION_REJECTED = 'REJECTED'
 class DatabaseConditionException(Exception):
     """Raised when a DynamoDB condition expression check fails."""
 
-# TODO: should the following two exception types just be based on the HTTP error code that should be raised,
-#  e.g. 403Error?
 
-
-class UnapprovedUserError(Exception):
-    """Raised when the user is not approved for processing."""
-
-
-class CannotUpdateUserError(Exception):
-    """Raised when the user record cannot be updated."""
+class ApplicationClosedError(Exception):
+    """Raised when the user attempts to update an application that has already been approved or rejected."""
 
 
 def update_user(user_id: str, body: dict) -> None:
@@ -50,12 +43,12 @@ def update_user(user_id: str, body: dict) -> None:
                 raise DatabaseConditionException(f'Failed to update record for user {user_id}')
             raise
     elif application_status == APPLICATION_REJECTED:
-        raise CannotUpdateUserError(
+        raise ApplicationClosedError(
             f'Unfortunately, the application for user {user_id} has been rejected.'
             ' If you believe this was a mistake, please email ASF User Services at: uso@asf.alaska.edu'
         )
     elif application_status == APPLICATION_APPROVED:
-        raise CannotUpdateUserError(f'The application for user {user_id} has already been approved.')
+        raise ApplicationClosedError(f'The application for user {user_id} has already been approved.')
     else:
         raise ValueError(f'User {user_id} has an invalid application status: {application_status}')
 
