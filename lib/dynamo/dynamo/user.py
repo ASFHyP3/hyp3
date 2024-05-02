@@ -126,9 +126,10 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
                 Item=user,
                 ConditionExpression=(
                     'application_status = :approved'
-                    ' AND _month_of_last_credit_reset < :current_month'
+                    ' AND #month_of_last_credit_reset < :current_month'
                     ' AND attribute_type(remaining_credits, :number)'
                 ),
+                ExpressionAttributeNames={'#month_of_last_credit_reset': '_month_of_last_credit_reset'},
                 ExpressionAttributeValues={
                     ':approved': APPLICATION_APPROVED,
                     ':current_month': current_month,
