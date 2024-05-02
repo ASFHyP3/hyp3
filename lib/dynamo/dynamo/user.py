@@ -34,7 +34,7 @@ def update_user(user_id: str, earthdata_info: dict, body: dict) -> None:
             users_table.update_item(
                 Key={'user_id': user_id},
                 UpdateExpression=(
-                    'SET email_address = :email_address, first_name = :first_name, last_name = :last_name'
+                    'SET email_address = :email_address, first_name = :first_name, last_name = :last_name,'
                     ' country = :country, use_case = :use_case, application_status = :pending'
                 ),
                 ConditionExpression='application_status IN (:not_started, :pending)',
