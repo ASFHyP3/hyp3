@@ -202,16 +202,32 @@ components:
       description: Information about a user
       type: object
       required:
-        - user_id
+        - application_status
+        - job_names
         - remaining_credits
+        - user_id
       additionalProperties: false
       properties:
-        user_id:
-          $ref: "#/components/schemas/user_id"
-        remaining_credits:
+        application_status:
+          type: string
+        country:
+          type: string
+        credits_per_month:
           $ref: "#/components/schemas/credits"
+        email_address:
+          type: string
+        first_name:
+          type: string
         job_names:
           $ref: "#/components/schemas/job_names_list"
+        last_name:
+          type: string
+        remaining_credits:
+          $ref: "#/components/schemas/credits"
+        use_case:
+          type: string
+        user_id:
+          $ref: "#/components/schemas/user_id"
 
     credits:
       description: Processing credits for running jobs.
