@@ -60,31 +60,32 @@ def get_job_by_id(job_id):
     return job
 
 
-def get_names_for_user(user):
+def patch_user(body: dict, user: str, earthdata_info: dict) -> dict:
+    print(body)
+    try:
+        user_record = dynamo.user.update_user(user, earthdata_info, body)
+    except dynamo.user.ApplicationClosedError as e:
+        abort(problem_format(403, str(e)))
+    return _user_response(user_record)
+
+
+def get_user(user):
+    user_record = dynamo.user.get_or_create_user(user)
+    return _user_response(user_record)
+
+
+def _user_response(user_record: dict) -> dict:
+    # TODO: count this as jobs are submitted, not every time `/user` is queried
+    job_names = _get_names_for_user(user_record['user_id'])
+    payload = {key: user_record[key] for key in user_record if not key.startswith('_')}
+    payload['job_names'] = job_names
+    return payload
+
+
+def _get_names_for_user(user):
     jobs, next_key = dynamo.jobs.query_jobs(user)
     while next_key is not None:
         new_jobs, next_key = dynamo.jobs.query_jobs(user, start_key=next_key)
         jobs.extend(new_jobs)
     names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))
-
-
-def patch_user(body: dict, user: str, earthdata_info: dict) -> None:
-    print(body)
-    try:
-        dynamo.user.update_user(user, earthdata_info, body)
-    except dynamo.user.ApplicationClosedError as e:
-        # TODO is this the appropriate status code?
-        abort(problem_format(403, str(e)))
-
-
-def get_user(user):
-    user_record = dynamo.user.get_or_create_user(user)
-    return {
-        'user_id': user,
-        'application_status': user_record['application_status'],
-        'use_case': user_record.get('use_case'),
-        'remaining_credits': user_record['remaining_credits'],
-        # TODO: count this as jobs are submitted, not every time `/user` is queried
-        'job_names': get_names_for_user(user),
-    }
