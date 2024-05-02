@@ -152,6 +152,7 @@ def jobs_get_by_job_id(job_id):
 @openapi
 def user_patch():
     handlers.patch_user(request.get_json(), g.user)
+    return jsonify(success=True)
 
 
 @app.route('/user', methods=['GET'])
