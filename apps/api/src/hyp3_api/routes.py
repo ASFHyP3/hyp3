@@ -152,9 +152,7 @@ def jobs_get_by_job_id(job_id):
 @app.route('/user', methods=['PATCH'])
 @openapi
 def user_patch():
-    # TODO: return user fields
-    handlers.patch_user(request.get_json(), g.user, g.earthdata_info)
-    return {}
+    return jsonify(handlers.patch_user(request.get_json(), g.user, g.earthdata_info))
 
 
 @app.route('/user', methods=['GET'])
