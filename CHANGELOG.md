@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.1.1]
+### Changed
+- Reduced `start_execution_manager` batch size from 600 jobs to 500 jobs. Fixes [#2241](https://github.com/ASFHyP3/hyp3/issues/2241).
+
 ## [7.1.0]
 ### Added
 - A `hyp3-its-live-test` deployment to [`deploy-enterprise-test.yml`](.github/workflows/deploy-enterprise-test.yml) for ITS_LIVE testing in preparation for some significant ITS_LIVE project development
