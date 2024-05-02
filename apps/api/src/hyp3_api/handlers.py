@@ -69,10 +69,10 @@ def get_names_for_user(user):
     return sorted(list(names))
 
 
-def patch_user(body: dict, user: str) -> None:
+def patch_user(body: dict, user: str, earthdata_info: dict) -> None:
     print(body)
     try:
-        dynamo.user.update_user(user, body)
+        dynamo.user.update_user(user, earthdata_info, body)
     except dynamo.user.ApplicationClosedError as e:
         # TODO is this the appropriate status code?
         abort(problem_format(403, str(e)))

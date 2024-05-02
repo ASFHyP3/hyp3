@@ -4,6 +4,7 @@ from decimal import Decimal
 from os import environ
 
 import botocore.exceptions
+import requests
 
 from dynamo.util import DYNAMODB_RESOURCE
 
@@ -23,8 +24,8 @@ class ApplicationClosedError(Exception):
 
 # TODO: return the user record via the ReturnValues param:
 #  https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/table/update_item.html
-def update_user(user_id: str, body: dict) -> None:
-    # TODO also set derived EDL fields
+def update_user(user_id: str, earthdata_info: dict, body: dict) -> None:
+    email_address, country = _get_email_country(user_id, earthdata_info)
     user = get_or_create_user(user_id)
     application_status = user['application_status']
     if application_status in (APPLICATION_NOT_STARTED, APPLICATION_PENDING):
@@ -32,9 +33,16 @@ def update_user(user_id: str, body: dict) -> None:
         try:
             users_table.update_item(
                 Key={'user_id': user_id},
-                UpdateExpression='SET use_case = :use_case, application_status = :pending',
+                UpdateExpression=(
+                    'SET email_address = :email_address, first_name = :first_name, last_name = :last_name'
+                    ' country = :country, use_case = :use_case, application_status = :pending'
+                ),
                 ConditionExpression='application_status IN (:not_started, :pending)',
                 ExpressionAttributeValues={
+                    ':email_address': email_address,
+                    ':first_name': earthdata_info['first_name'],
+                    ':last_name': earthdata_info['last_name'],
+                    ':country': country,
                     ':use_case': body['use_case'],
                     ':not_started': APPLICATION_NOT_STARTED,
                     ':pending': APPLICATION_PENDING
@@ -53,6 +61,14 @@ def update_user(user_id: str, body: dict) -> None:
         raise ApplicationClosedError(f'The application for user {user_id} has already been approved.')
     else:
         raise ValueError(f'User {user_id} has an invalid application status: {application_status}')
+
+
+def _get_email_country(user_id: str, earthdata_info: dict) -> tuple[str, str]:
+    url = f'https://urs.earthdata.nasa.gov/api/users/{user_id}'
+    response = requests.get(url, headers={'Authorization': f'Bearer {earthdata_info["urs-access-token"]}'})
+    response.raise_for_status()
+    payload = response.json()
+    return payload['email_address'], payload['country']
 
 
 def get_or_create_user(user_id: str) -> dict:
