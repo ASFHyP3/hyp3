@@ -102,17 +102,15 @@ def _create_user(user_id: str, users_table) -> dict:
 
 
 def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> dict:
-    # TODO replace put_item with update_item?
     if (
             user['application_status'] == APPLICATION_APPROVED
             and user.get('_month_of_last_credit_reset', '0') < current_month  # noqa: W503
             and user['remaining_credits'] is not None  # noqa: W503
     ):
-        user['_month_of_last_credit_reset'] = current_month
-        user['remaining_credits'] = user.get('credits_per_month', default_credits)
         try:
-            users_table.put_item(
-                Item=user,
+            user = users_table.update_item(
+                Key={'user_id': user['user_id']},
+                UpdateExpression='SET remaining_credits = :credits, #month_of_last_credit_reset = :current_month',
                 ConditionExpression=(
                     'application_status = :approved'
                     ' AND (attribute_not_exists(#month_of_last_credit_reset)'
@@ -122,10 +120,12 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
                 ExpressionAttributeNames={'#month_of_last_credit_reset': '_month_of_last_credit_reset'},
                 ExpressionAttributeValues={
                     ':approved': APPLICATION_APPROVED,
+                    ':credits': user.get('credits_per_month', default_credits),
                     ':current_month': current_month,
                     ':number': 'N',
                 },
-            )
+                ReturnValues='ALL_NEW',
+            )['Attributes']
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
                 raise DatabaseConditionException(
@@ -133,14 +133,15 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
                 )
             raise
     elif user['application_status'] != APPLICATION_APPROVED and user['remaining_credits'] != Decimal(0):
-        user.pop('_month_of_last_credit_reset', None)
-        user['remaining_credits'] = Decimal(0)
         try:
-            users_table.put_item(
-                Item=user,
-                ConditionExpression='NOT (application_status = :approved) AND NOT (remaining_credits = :zero)',
+            user = users_table.update_item(
+                Key={'user_id': user['user_id']},
+                UpdateExpression='SET remaining_credits = :zero REMOVE #month_of_last_credit_reset',
+                ConditionExpression='application_status <> :approved AND remaining_credits <> :zero',
+                ExpressionAttributeNames={'#month_of_last_credit_reset': '_month_of_last_credit_reset'},
                 ExpressionAttributeValues={':approved': APPLICATION_APPROVED, ':zero': Decimal(0)},
-            )
+                ReturnValues='ALL_NEW',
+            )['Attributes']
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
                 raise DatabaseConditionException(
