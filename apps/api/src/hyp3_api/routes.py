@@ -42,7 +42,7 @@ def authenticate_user():
     payload = auth.decode_token(cookie)
     if payload is not None:
         g.user = payload['urs-user-id']
-        g.earthdata_info = {key: payload[key] for key in ['first_name', 'last_name', 'urs-access-token']}
+        g.edl_access_token = payload['urs-access-token']
     else:
         if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
             abort(handlers.problem_format(401, 'No authorization token provided'))
@@ -152,7 +152,7 @@ def jobs_get_by_job_id(job_id):
 @app.route('/user', methods=['PATCH'])
 @openapi
 def user_patch():
-    return jsonify(handlers.patch_user(request.get_json(), g.user, g.earthdata_info))
+    return jsonify(handlers.patch_user(request.get_json(), g.user, g.edl_access_token))
 
 
 @app.route('/user', methods=['GET'])
