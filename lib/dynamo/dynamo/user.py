@@ -137,7 +137,7 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
             user = users_table.update_item(
                 Key={'user_id': user['user_id']},
                 UpdateExpression='SET remaining_credits = :zero REMOVE #month_of_last_credit_reset',
-                ConditionExpression='NOT (application_status = :approved) AND NOT (remaining_credits = :zero)',
+                ConditionExpression='application_status <> :approved AND remaining_credits <> :zero',
                 ExpressionAttributeNames={'#month_of_last_credit_reset': '_month_of_last_credit_reset'},
                 ExpressionAttributeValues={':approved': APPLICATION_APPROVED, ':zero': Decimal(0)},
                 ReturnValues='ALL_NEW',
