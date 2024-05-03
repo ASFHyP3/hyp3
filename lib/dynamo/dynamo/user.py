@@ -22,11 +22,11 @@ class ApplicationClosedError(Exception):
     """Raised when the user attempts to update an application that has already been approved or rejected."""
 
 
-def update_user(user_id: str, urs_access_token: str, body: dict) -> dict:
+def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
     user = get_or_create_user(user_id)
     application_status = user['application_status']
     if application_status in (APPLICATION_NOT_STARTED, APPLICATION_PENDING):
-        edl_profile = _get_edl_profile(user_id, urs_access_token)
+        edl_profile = _get_edl_profile(user_id, edl_access_token)
         users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
         try:
             user = users_table.update_item(
@@ -57,9 +57,9 @@ def update_user(user_id: str, urs_access_token: str, body: dict) -> dict:
     raise ValueError(f'User {user_id} has an invalid application status: {application_status}')
 
 
-def _get_edl_profile(user_id: str, urs_access_token: str) -> dict:
+def _get_edl_profile(user_id: str, edl_access_token: str) -> dict:
     url = f'https://urs.earthdata.nasa.gov/api/users/{user_id}'
-    response = requests.get(url, headers={'Authorization': f'Bearer {urs_access_token}'})
+    response = requests.get(url, headers={'Authorization': f'Bearer {edl_access_token}'})
     response.raise_for_status()
     return response.json()
 

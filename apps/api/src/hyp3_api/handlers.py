@@ -60,10 +60,10 @@ def get_job_by_id(job_id):
     return job
 
 
-def patch_user(body: dict, user: str, urs_access_token: str) -> dict:
+def patch_user(body: dict, user: str, edl_access_token: str) -> dict:
     print(body)
     try:
-        user_record = dynamo.user.update_user(user, urs_access_token, body)
+        user_record = dynamo.user.update_user(user, edl_access_token, body)
     except dynamo.user.ApplicationClosedError as e:
         abort(problem_format(403, str(e)))
     return _user_response(user_record)
