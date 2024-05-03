@@ -91,12 +91,7 @@ def _get_current_month() -> str:
 
 
 def _create_user(user_id: str, users_table) -> dict:
-    user = {
-        'user_id': user_id,
-        'remaining_credits': Decimal(0),
-        '_month_of_last_credit_reset': '0',
-        'application_status': APPLICATION_NOT_STARTED
-    }
+    user = {'user_id': user_id, 'remaining_credits': Decimal(0), 'application_status': APPLICATION_NOT_STARTED}
     try:
         users_table.put_item(Item=user, ConditionExpression='attribute_not_exists(user_id)')
     except botocore.exceptions.ClientError as e:
@@ -107,9 +102,10 @@ def _create_user(user_id: str, users_table) -> dict:
 
 
 def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> dict:
+    # TODO replace put_item with update_item?
     if (
             user['application_status'] == APPLICATION_APPROVED
-            and user['_month_of_last_credit_reset'] < current_month  # noqa: W503
+            and user.get('_month_of_last_credit_reset', '0') < current_month  # noqa: W503
             and user['remaining_credits'] is not None  # noqa: W503
     ):
         user['_month_of_last_credit_reset'] = current_month
@@ -119,7 +115,8 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
                 Item=user,
                 ConditionExpression=(
                     'application_status = :approved'
-                    ' AND #month_of_last_credit_reset < :current_month'
+                    ' AND (attribute_not_exists(#month_of_last_credit_reset)'
+                    '      OR #month_of_last_credit_reset < :current_month)'
                     ' AND attribute_type(remaining_credits, :number)'
                 ),
                 ExpressionAttributeNames={'#month_of_last_credit_reset': '_month_of_last_credit_reset'},
@@ -136,7 +133,7 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
                 )
             raise
     elif user['application_status'] != APPLICATION_APPROVED and user['remaining_credits'] != Decimal(0):
-        user['_month_of_last_credit_reset'] = '0'
+        del user['_month_of_last_credit_reset']
         user['remaining_credits'] = Decimal(0)
         try:
             users_table.put_item(
