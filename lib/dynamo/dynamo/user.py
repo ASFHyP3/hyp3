@@ -135,14 +135,14 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
                     f'Failed to perform monthly credit reset for approved user {user["user_id"]}'
                 )
             raise
-    elif user['application_status'] != APPLICATION_APPROVED:
+    elif user['application_status'] != APPLICATION_APPROVED and user['remaining_credits'] != Decimal(0):
         user['_month_of_last_credit_reset'] = '0'
         user['remaining_credits'] = Decimal(0)
         try:
             users_table.put_item(
                 Item=user,
-                ConditionExpression='NOT (application_status = :approved)',
-                ExpressionAttributeValues={':approved': APPLICATION_APPROVED},
+                ConditionExpression='NOT (application_status = :approved) AND NOT (remaining_credits = :zero)',
+                ExpressionAttributeValues={':approved': APPLICATION_APPROVED, ':zero': Decimal(0)},
             )
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
