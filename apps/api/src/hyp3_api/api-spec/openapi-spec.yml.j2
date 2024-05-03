@@ -210,18 +210,10 @@ components:
       properties:
         application_status:
           $ref: "#/components/schemas/application_status"
-        country:
-          $ref: "#/components/schemas/country"
         credits_per_month:
           $ref: "#/components/schemas/credits"
-        email_address:
-          $ref: "#/components/schemas/email_address"
-        first_name:
-          $ref: "#/components/schemas/first_name"
         job_names:
           $ref: "#/components/schemas/job_names_list"
-        last_name:
-          $ref: "#/components/schemas/last_name"
         remaining_credits:
           $ref: "#/components/schemas/credits"
         use_case:
@@ -239,35 +231,15 @@ components:
         - REJECTED
       example: PENDING
 
-    country:
-      description: Earthdata Login country.
-      type: string
-      example: United States
-
     credits:
       description: Processing credits for running jobs.
       type: number
       minimum: 0
 
-    email_address:
-      description: Earthdata Login email address.
-      type: string
-      example: user@example.com
-
-    first_name:
-      description: Earthdata Login first name.
-      type: string
-      example: First
-
     job_names_list:
       type: array
       items:
         $ref: "#/components/schemas/name"
-
-    last_name:
-      description: Earthdata Login last name.
-      type: string
-      example: Last
 
     list_of_new_jobs:
       description: Contains a list of new job objects.
