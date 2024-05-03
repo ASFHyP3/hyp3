@@ -41,5 +41,17 @@ def tables(table_properties):
         yield tables
 
 
+@pytest.fixture
+def approved_user(tables):
+    user = {
+        'user_id': 'approved_user',
+        'remaining_credits': 10000,
+        'application_status': 'APPROVED',
+        '_month_of_last_credit_reset': '2024-01-01',
+    }
+    tables.users_table.put_item(Item=user)
+    return user
+
+
 def list_have_same_elements(l1, l2):
     return [item for item in l1 if item not in l2] == [] == [item for item in l2 if item not in l1]
