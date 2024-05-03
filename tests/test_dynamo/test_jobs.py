@@ -257,8 +257,15 @@ def test_get_credit_cost_validate_keys():
         dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_F'}, costs)
 
 
-def test_put_jobs(tables, monkeypatch):
-    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '10')
+def test_put_jobs(tables):
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'user1',
+            'remaining_credits': Decimal(10),
+            '_month_of_last_credit_reset': '2024-02',
+            'application_status': 'APPROVED',
+        }
+    )
     payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
 
     with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
@@ -281,12 +288,23 @@ def test_put_jobs(tables, monkeypatch):
 
     assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
 
-    assert tables.users_table.scan()['Items'] == [
-        {'user_id': 'user1', 'remaining_credits': 7, 'month_of_last_credits_reset': '2024-02'}
-    ]
+    assert tables.users_table.scan()['Items'] == [{
+        'user_id': 'user1',
+        'remaining_credits': 7,
+        '_month_of_last_credit_reset': '2024-02',
+        'application_status': 'APPROVED',
+    }]
 
 
 def test_put_jobs_default_params(tables):
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'user1',
+            'remaining_credits': Decimal(0),
+            '_month_of_last_credit_reset': '0',
+            'application_status': 'APPROVED',
+        }
+    )
     default_params = {
         'JOB_TYPE_A': {'a1': 'a1_default', 'a2': 'a2_default'},
         'JOB_TYPE_B': {'b1': 'b1_default'},
@@ -332,7 +350,15 @@ def test_put_jobs_default_params(tables):
 
 
 def test_put_jobs_costs(tables):
-    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': Decimal(100)})
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'user1',
+            'credits_per_month': Decimal(100),
+            'remaining_credits': Decimal(0),
+            '_month_of_last_credit_reset': '0',
+            'application_status': 'APPROVED',
+        }
+    )
 
     costs = [
         {
@@ -413,17 +439,7 @@ def test_put_jobs_costs(tables):
     assert jobs[7]['credit_cost'] == Decimal('0.4')
 
     assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
-    assert tables.users_table.scan()['Items'] == [{'user_id': 'user1', 'remaining_credits': Decimal('11.7')}]
-
-
-def test_put_jobs_user_exists(tables):
-    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 5})
-
-    jobs = dynamo.jobs.put_jobs('user1', [{}, {}])
-
-    assert len(jobs) == 2
-    assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
-    assert tables.users_table.scan()['Items'] == [{'user_id': 'user1', 'remaining_credits': 3}]
+    assert tables.users_table.scan()['Items'][0]['remaining_credits'] == Decimal('11.7')
 
 
 def test_put_jobs_insufficient_credits(tables, monkeypatch):
