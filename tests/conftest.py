@@ -47,7 +47,6 @@ def approved_user(tables):
     user = {
         'user_id': 'approved_user',
         'remaining_credits': Decimal(0),
-        '_month_of_last_credit_reset': '0',
         'application_status': 'APPROVED',
     }
     tables.users_table.put_item(Item=user)
