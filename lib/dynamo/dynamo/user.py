@@ -22,25 +22,20 @@ class ApplicationClosedError(Exception):
     """Raised when the user attempts to update an application that has already been approved or rejected."""
 
 
-def update_user(user_id: str, earthdata_info: dict, body: dict) -> dict:
+def update_user(user_id: str, urs_access_token: str, body: dict) -> dict:
     user = get_or_create_user(user_id)
     application_status = user['application_status']
     if application_status in (APPLICATION_NOT_STARTED, APPLICATION_PENDING):
-        email_address, country = _get_email_country(user_id, earthdata_info)
+        edl_profile = _get_edl_profile(user_id, urs_access_token)
         users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
         try:
             user = users_table.update_item(
                 Key={'user_id': user_id},
-                UpdateExpression=(
-                    'SET email_address = :email_address, first_name = :first_name, last_name = :last_name,'
-                    ' country = :country, use_case = :use_case, application_status = :pending'
-                ),
+                UpdateExpression='SET #edl_profile = :edl_profile, use_case = :use_case, application_status = :pending',
                 ConditionExpression='application_status IN (:not_started, :pending)',
+                ExpressionAttributeNames={'#edl_profile': '_edl_profile'},
                 ExpressionAttributeValues={
-                    ':email_address': email_address,
-                    ':first_name': earthdata_info['first_name'],
-                    ':last_name': earthdata_info['last_name'],
-                    ':country': country,
+                    ':edl_profile': edl_profile,
                     ':use_case': body['use_case'],
                     ':not_started': APPLICATION_NOT_STARTED,
                     ':pending': APPLICATION_PENDING
@@ -62,12 +57,11 @@ def update_user(user_id: str, earthdata_info: dict, body: dict) -> dict:
     raise ValueError(f'User {user_id} has an invalid application status: {application_status}')
 
 
-def _get_email_country(user_id: str, earthdata_info: dict) -> tuple[str, str]:
+def _get_edl_profile(user_id: str, urs_access_token: str) -> dict:
     url = f'https://urs.earthdata.nasa.gov/api/users/{user_id}'
-    response = requests.get(url, headers={'Authorization': f'Bearer {earthdata_info["urs-access-token"]}'})
+    response = requests.get(url, headers={'Authorization': f'Bearer {urs_access_token}'})
     response.raise_for_status()
-    payload = response.json()
-    return payload['email_address'], payload['country']
+    return response.json()
 
 
 def get_or_create_user(user_id: str) -> dict:
