@@ -43,14 +43,14 @@ def tables(table_properties):
 
 
 @pytest.fixture
-def approved_user(tables):
+def approved_user(tables) -> str:
     user = {
         'user_id': 'approved_user',
         'remaining_credits': Decimal(0),
         'application_status': 'APPROVED',
     }
     tables.users_table.put_item(Item=user)
-    return user
+    return user['user_id']
 
 
 def list_have_same_elements(l1, l2):
