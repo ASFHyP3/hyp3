@@ -133,7 +133,7 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
                 )
             raise
     elif user['application_status'] != APPLICATION_APPROVED and user['remaining_credits'] != Decimal(0):
-        del user['_month_of_last_credit_reset']
+        user.pop('_month_of_last_credit_reset', None)
         user['remaining_credits'] = Decimal(0)
         try:
             users_table.put_item(
