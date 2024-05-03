@@ -1,3 +1,4 @@
+from decimal import Decimal
 from os import environ, path
 
 import pytest
@@ -45,9 +46,8 @@ def tables(table_properties):
 def approved_user(tables):
     user = {
         'user_id': 'approved_user',
-        'remaining_credits': 10000,
+        'remaining_credits': Decimal(0),
         'application_status': 'APPROVED',
-        '_month_of_last_credit_reset': '2024-01-01',
     }
     tables.users_table.put_item(Item=user)
     return user
