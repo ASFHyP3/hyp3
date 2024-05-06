@@ -289,6 +289,55 @@ def test_put_jobs(tables, monkeypatch, approved_user):
     }]
 
 
+def test_put_jobs_application_status(tables):
+    payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
+
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            'application_status': dynamo.user.APPLICATION_NOT_STARTED,
+        }
+    )
+    with pytest.raises(
+            dynamo.jobs.UnapprovedUserError, match=r'^User foo has not yet applied for a monthly credit allotment.*'):
+        dynamo.jobs.put_jobs('foo', payload)
+    assert tables.jobs_table.scan()['Items'] == []
+
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            'application_status': dynamo.user.APPLICATION_PENDING,
+        }
+    )
+    with pytest.raises(dynamo.jobs.UnapprovedUserError, match=r'^User foo has a pending application.*'):
+        dynamo.jobs.put_jobs('foo', payload)
+    assert tables.jobs_table.scan()['Items'] == []
+
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            'application_status': dynamo.user.APPLICATION_REJECTED,
+        }
+    )
+    with pytest.raises(dynamo.jobs.UnapprovedUserError, match=r'.*application for user foo has been rejected.*'):
+        dynamo.jobs.put_jobs('foo', payload)
+    assert tables.jobs_table.scan()['Items'] == []
+
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            'application_status': 'bar',
+        }
+    )
+    with pytest.raises(ValueError, match=r'^User foo has an invalid application status: bar$'):
+        dynamo.jobs.put_jobs('foo', payload)
+    assert tables.jobs_table.scan()['Items'] == []
+
+
 def test_put_jobs_default_params(tables, approved_user):
     default_params = {
         'JOB_TYPE_A': {'a1': 'a1_default', 'a2': 'a2_default'},
