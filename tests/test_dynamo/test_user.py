@@ -5,7 +5,153 @@ import botocore.exceptions
 import pytest
 
 import dynamo.user
-from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED
+from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
+
+
+def test_update_user(tables):
+    with unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
+        mock_get_edl_profile.return_value = {'key': 'value'}
+        user = dynamo.user.update_user(
+            'foo',
+            'test-edl-access-token',
+            {'use_case': 'I want data.'},
+        )
+        mock_get_edl_profile.assert_called_once_with('foo', 'test-edl-access-token')
+
+    assert user == {
+        'user_id': 'foo',
+        'remaining_credits': Decimal(0),
+        'application_status': APPLICATION_PENDING,
+        '_edl_profile': {'key': 'value'},
+        'use_case': 'I want data.',
+    }
+    assert tables.users_table.scan()['Items'] == [user]
+
+
+def test_update_user_not_started(tables):
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(5),
+            'application_status': APPLICATION_NOT_STARTED,
+        }
+    )
+    with unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
+        mock_get_edl_profile.return_value = {'key': 'value'}
+        user = dynamo.user.update_user(
+            'foo',
+            'test-edl-access-token',
+            {'use_case': 'I want data.'},
+        )
+        mock_get_edl_profile.assert_called_once_with('foo', 'test-edl-access-token')
+
+    assert user == {
+        'user_id': 'foo',
+        'remaining_credits': Decimal(0),
+        'application_status': APPLICATION_PENDING,
+        '_edl_profile': {'key': 'value'},
+        'use_case': 'I want data.',
+    }
+    assert tables.users_table.scan()['Items'] == [user]
+
+
+def test_update_user_pending(tables):
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(5),
+            'application_status': APPLICATION_PENDING,
+            '_edl_profile': {'key': 'old_value'},
+            'use_case': 'Old use case.',
+        }
+    )
+    with unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
+        mock_get_edl_profile.return_value = {'key': 'new_value'}
+        user = dynamo.user.update_user(
+            'foo',
+            'test-edl-access-token',
+            {'use_case': 'New use case.'},
+        )
+        mock_get_edl_profile.assert_called_once_with('foo', 'test-edl-access-token')
+
+    assert user == {
+        'user_id': 'foo',
+        'remaining_credits': Decimal(0),
+        'application_status': APPLICATION_PENDING,
+        '_edl_profile': {'key': 'new_value'},
+        'use_case': 'New use case.',
+    }
+    assert tables.users_table.scan()['Items'] == [user]
+
+
+def test_update_user_rejected(tables):
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(5),
+            'application_status': APPLICATION_REJECTED,
+        }
+    )
+    with pytest.raises(dynamo.user.ApplicationClosedError, match=r'.*application for user foo has been rejected.*'):
+        dynamo.user.update_user(
+            'foo',
+            'test-edl-access-token',
+            {'use_case': 'I want data.'},
+        )
+    assert tables.users_table.scan()['Items'] == [{
+        'user_id': 'foo',
+        'remaining_credits': Decimal(0),
+        'application_status': APPLICATION_REJECTED,
+    }]
+
+
+def test_update_user_approved(tables, monkeypatch):
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(10),
+            'application_status': APPLICATION_APPROVED,
+        }
+    )
+    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
+        mock_get_current_month.return_value = '2024-02'
+        with pytest.raises(
+                dynamo.user.ApplicationClosedError, match=r'^The application for user foo has already been approved.$'):
+            dynamo.user.update_user(
+                'foo',
+                'test-edl-access-token',
+                {'use_case': 'I want data.'},
+            )
+        mock_get_current_month.assert_called_once_with()
+
+    assert tables.users_table.scan()['Items'] == [{
+        'user_id': 'foo',
+        'remaining_credits': Decimal(25),
+        '_month_of_last_credit_reset': '2024-02',
+        'application_status': APPLICATION_APPROVED,
+    }]
+
+
+def test_update_user_invalid_status(tables):
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(5),
+            'application_status': 'bar',
+        }
+    )
+    with pytest.raises(ValueError, match=r'^User foo has an invalid application status: bar$'):
+        dynamo.user.update_user(
+            'foo',
+            'test-edl-access-token',
+            {'use_case': 'I want data.'},
+        )
+    assert tables.users_table.scan()['Items'] == [{
+        'user_id': 'foo',
+        'remaining_credits': Decimal(0),
+        'application_status': 'bar',
+    }]
 
 
 def test_get_or_create_user_reset(tables, monkeypatch):
