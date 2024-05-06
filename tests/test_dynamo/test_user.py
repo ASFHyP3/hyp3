@@ -154,6 +154,35 @@ def test_update_user_invalid_status(tables):
     }]
 
 
+def test_update_user_failed_application_status(tables):
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'application_status': 'bar',
+        }
+    )
+    with unittest.mock.patch('dynamo.user.get_or_create_user') as mock_get_or_create_user, \
+            unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
+        mock_get_or_create_user.return_value = {
+            'user_id': 'foo',
+            'application_status': APPLICATION_NOT_STARTED,
+        }
+        mock_get_edl_profile.return_value = {'key': 'new_value'}
+        with pytest.raises(dynamo.user.DatabaseConditionException):
+            dynamo.user.update_user(
+                'foo',
+                'test-edl-access-token',
+                {'use_case': 'New use case.'},
+            )
+        mock_get_or_create_user.assert_called_once_with('foo')
+        mock_get_edl_profile.assert_called_once_with('foo', 'test-edl-access-token')
+
+    assert tables.users_table.scan()['Items'] == [{
+        'user_id': 'foo',
+        'application_status': 'bar',
+    }]
+
+
 def test_get_or_create_user_reset(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
     tables.users_table.put_item(Item={'user_id': 'foo'})
