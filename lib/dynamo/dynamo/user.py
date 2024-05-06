@@ -24,11 +24,6 @@ class ApplicationClosedError(Exception):
 
 def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
     user = get_or_create_user(user_id)
-    return _update_user(user, edl_access_token, body)
-
-
-def _update_user(user: dict, edl_access_token: str, body: dict) -> dict:
-    user_id = user['user_id']
     application_status = user['application_status']
     if application_status in (APPLICATION_NOT_STARTED, APPLICATION_PENDING):
         edl_profile = _get_edl_profile(user_id, edl_access_token)
