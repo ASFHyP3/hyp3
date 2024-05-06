@@ -5,6 +5,7 @@ import botocore.exceptions
 import pytest
 
 import dynamo.user
+from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED
 
 
 def test_get_or_create_user_reset(tables, monkeypatch):
@@ -51,14 +52,11 @@ def test_get_or_create_user_create(tables, monkeypatch):
 
 
 def test_create_user(tables):
-    user = dynamo.user._create_user(
-        user_id='foo',
-        default_credits=Decimal(25),
-        current_month='2024-02',
-        users_table=tables.users_table
-    )
+    user = dynamo.user._create_user(user_id='foo', users_table=tables.users_table)
 
-    assert user == {'user_id': 'foo', 'remaining_credits': Decimal(25), 'month_of_last_credits_reset': '2024-02'}
+    assert user == {
+        'user_id': 'foo', 'remaining_credits': Decimal(0), 'application_status': APPLICATION_NOT_STARTED
+    }
     assert tables.users_table.scan()['Items'] == [user]
 
 
@@ -66,19 +64,16 @@ def test_create_user_already_exists(tables):
     tables.users_table.put_item(Item={'user_id': 'foo'})
 
     with pytest.raises(dynamo.user.DatabaseConditionException):
-        dynamo.user._create_user(
-            user_id='foo',
-            default_credits=Decimal(25),
-            current_month='2024-02',
-            users_table=tables.users_table
-        )
+        dynamo.user._create_user(user_id='foo', users_table=tables.users_table)
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo'}]
 
 
 def test_reset_credits(tables, monkeypatch):
     original_user_record = {
-        'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-01'
+        'user_id': 'foo',
+        'remaining_credits': Decimal(10),
+        'application_status': APPLICATION_APPROVED,
     }
     tables.users_table.put_item(Item=original_user_record)
 
@@ -89,7 +84,12 @@ def test_reset_credits(tables, monkeypatch):
         users_table=tables.users_table,
     )
 
-    assert user == {'user_id': 'foo', 'remaining_credits': Decimal(25), 'month_of_last_credits_reset': '2024-02'}
+    assert user == {
+        'user_id': 'foo',
+        'remaining_credits': Decimal(25),
+        '_month_of_last_credit_reset': '2024-02',
+        'application_status': APPLICATION_APPROVED,
+    }
     assert tables.users_table.scan()['Items'] == [user]
 
 
@@ -98,7 +98,7 @@ def test_reset_credits_override(tables, monkeypatch):
         'user_id': 'foo',
         'remaining_credits': Decimal(10),
         'credits_per_month': Decimal(50),
-        'month_of_last_credits_reset': '2024-01',
+        'application_status': APPLICATION_APPROVED,
     }
     tables.users_table.put_item(Item=original_user_record)
 
@@ -113,14 +113,18 @@ def test_reset_credits_override(tables, monkeypatch):
         'user_id': 'foo',
         'remaining_credits': Decimal(50),
         'credits_per_month': Decimal(50),
-        'month_of_last_credits_reset': '2024-02',
+        '_month_of_last_credit_reset': '2024-02',
+        'application_status': APPLICATION_APPROVED,
     }
     assert tables.users_table.scan()['Items'] == [user]
 
 
 def test_reset_credits_same_month(tables, monkeypatch):
     original_user_record = {
-        'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-02'
+        'user_id': 'foo',
+        'remaining_credits': Decimal(10),
+        '_month_of_last_credit_reset': '2024-02',
+        'application_status': APPLICATION_APPROVED,
     }
     tables.users_table.put_item(Item=original_user_record)
 
@@ -131,13 +135,20 @@ def test_reset_credits_same_month(tables, monkeypatch):
         users_table=tables.users_table,
     )
 
-    assert user == {'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-02'}
+    assert user == {
+        'user_id': 'foo',
+        'remaining_credits': Decimal(10),
+        '_month_of_last_credit_reset': '2024-02',
+        'application_status': APPLICATION_APPROVED,
+    }
     assert tables.users_table.scan()['Items'] == [user]
 
 
 def test_reset_credits_infinite_credits(tables, monkeypatch):
     original_user_record = {
-        'user_id': 'foo', 'remaining_credits': None, 'month_of_last_credits_reset': '2024-01'
+        'user_id': 'foo',
+        'remaining_credits': None,
+        'application_status': APPLICATION_APPROVED,
     }
     tables.users_table.put_item(Item=original_user_record)
 
@@ -148,44 +159,71 @@ def test_reset_credits_infinite_credits(tables, monkeypatch):
         users_table=tables.users_table,
     )
 
-    assert user == {'user_id': 'foo', 'remaining_credits': None, 'month_of_last_credits_reset': '2024-01'}
+    assert user == {
+        'user_id': 'foo',
+        'remaining_credits': None,
+        'application_status': APPLICATION_APPROVED,
+    }
     assert tables.users_table.scan()['Items'] == [user]
 
 
 def test_reset_credits_failed_same_month(tables, monkeypatch):
     tables.users_table.put_item(
-        Item={'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-02'}
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(10),
+            '_month_of_last_credit_reset': '2024-02',
+            'application_status': APPLICATION_APPROVED,
+        }
     )
 
     with pytest.raises(dynamo.user.DatabaseConditionException):
         dynamo.user._reset_credits_if_needed(
-            user={'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-01'},
+            user={
+                'user_id': 'foo',
+                'remaining_credits': Decimal(10),
+                '_month_of_last_credit_reset': '2024-01',
+                'application_status': APPLICATION_APPROVED,
+            },
             default_credits=Decimal(25),
             current_month='2024-02',
             users_table=tables.users_table,
         )
 
-    assert tables.users_table.scan()['Items'] == [
-        {'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-02'}
-    ]
+    assert tables.users_table.scan()['Items'] == [{
+        'user_id': 'foo',
+        'remaining_credits': Decimal(10),
+        '_month_of_last_credit_reset': '2024-02',
+        'application_status': APPLICATION_APPROVED,
+    }]
 
 
 def test_reset_credits_failed_infinite_credits(tables, monkeypatch):
     tables.users_table.put_item(
-        Item={'user_id': 'foo', 'remaining_credits': None, 'month_of_last_credits_reset': '2024-01'}
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': None,
+            'application_status': APPLICATION_APPROVED,
+        }
     )
 
     with pytest.raises(dynamo.user.DatabaseConditionException):
         dynamo.user._reset_credits_if_needed(
-            user={'user_id': 'foo', 'remaining_credits': Decimal(10), 'month_of_last_credits_reset': '2024-01'},
+            user={
+                'user_id': 'foo',
+                'remaining_credits': Decimal(10),
+                'application_status': APPLICATION_APPROVED,
+            },
             default_credits=Decimal(25),
             current_month='2024-02',
             users_table=tables.users_table,
         )
 
-    assert tables.users_table.scan()['Items'] == [
-        {'user_id': 'foo', 'remaining_credits': None, 'month_of_last_credits_reset': '2024-01'}
-    ]
+    assert tables.users_table.scan()['Items'] == [{
+        'user_id': 'foo',
+        'remaining_credits': None,
+        'application_status': APPLICATION_APPROVED,
+    }]
 
 
 def test_decrement_credits(tables):
