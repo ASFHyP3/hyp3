@@ -5,6 +5,8 @@ import pytest
 import yaml
 from moto import mock_aws
 
+from dynamo.user import APPLICATION_APPROVED
+
 
 @pytest.fixture
 def table_properties():
@@ -47,7 +49,7 @@ def approved_user(tables) -> str:
     user = {
         'user_id': 'approved_user',
         'remaining_credits': Decimal(0),
-        'application_status': 'APPROVED',
+        'application_status': APPLICATION_APPROVED,
     }
     tables.users_table.put_item(Item=user)
     return user['user_id']

@@ -3,6 +3,7 @@ from http import HTTPStatus
 
 from test_api.conftest import USER_URI, login, make_db_record
 
+from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_REJECTED
 from dynamo.util import format_time
 
 
@@ -12,14 +13,14 @@ def test_get_new_user(client, tables, monkeypatch):
     assert response.status_code == HTTPStatus.OK
     assert response.json == {
         'user_id': 'user',
-        'application_status': 'NOT STARTED',
+        'application_status': APPLICATION_NOT_STARTED,
         'remaining_credits': 0,
         'job_names': [],
     }
 
 
 def test_get_rejected_user(client, tables):
-    user = {'user_id': 'user', 'remaining_credits': 100, 'application_status': 'REJECTED'}
+    user = {'user_id': 'user', 'remaining_credits': 100, 'application_status': APPLICATION_REJECTED}
     tables.users_table.put_item(Item=user)
 
     login(client, 'user')
@@ -27,7 +28,7 @@ def test_get_rejected_user(client, tables):
     assert response.status_code == HTTPStatus.OK
     assert response.json == {
         'user_id': 'user',
-        'application_status': 'REJECTED',
+        'application_status': APPLICATION_REJECTED,
         'remaining_credits': 0,
         'job_names': [],
     }
@@ -38,7 +39,7 @@ def test_get_user_with_jobs(client, tables):
     user = {
         'user_id': user_id,
         'remaining_credits': 20,
-        'application_status': 'APPROVED',
+        'application_status': APPLICATION_APPROVED,
         'credits_per_month': 50,
         '_month_of_last_credit_reset': '2024-01-01',
         '_foo': 'bar',
@@ -60,7 +61,7 @@ def test_get_user_with_jobs(client, tables):
     assert response.status_code == HTTPStatus.OK
     assert response.json == {
         'user_id': 'user_with_jobs',
-        'application_status': 'APPROVED',
+        'application_status': APPLICATION_APPROVED,
         'credits_per_month': 50,
         'remaining_credits': 50,
         'job_names': [

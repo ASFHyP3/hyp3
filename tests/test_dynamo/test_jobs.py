@@ -6,6 +6,14 @@ import pytest
 from conftest import list_have_same_elements
 
 import dynamo
+from dynamo.exceptions import (
+    InsufficientCreditsError,
+    InvalidApplicationStatusError,
+    NotStartedApplicationError,
+    PendingApplicationError,
+    RejectedApplicationError,
+)
+from dynamo.user import APPLICATION_APPROVED
 
 
 def test_query_jobs_by_user(tables):
@@ -285,7 +293,7 @@ def test_put_jobs(tables, monkeypatch, approved_user):
         'user_id': approved_user,
         'remaining_credits': Decimal(7),
         '_month_of_last_credit_reset': '2024-02',
-        'application_status': 'APPROVED',
+        'application_status': APPLICATION_APPROVED,
     }]
 
 
@@ -299,8 +307,7 @@ def test_put_jobs_application_status(tables):
             'application_status': dynamo.user.APPLICATION_NOT_STARTED,
         }
     )
-    with pytest.raises(
-            dynamo.jobs.UnapprovedUserError, match=r'^User foo has not yet applied for a monthly credit allotment.*'):
+    with pytest.raises(NotStartedApplicationError):
         dynamo.jobs.put_jobs('foo', payload)
     assert tables.jobs_table.scan()['Items'] == []
 
@@ -311,7 +318,7 @@ def test_put_jobs_application_status(tables):
             'application_status': dynamo.user.APPLICATION_PENDING,
         }
     )
-    with pytest.raises(dynamo.jobs.UnapprovedUserError, match=r'^User foo has a pending application.*'):
+    with pytest.raises(PendingApplicationError):
         dynamo.jobs.put_jobs('foo', payload)
     assert tables.jobs_table.scan()['Items'] == []
 
@@ -322,7 +329,7 @@ def test_put_jobs_application_status(tables):
             'application_status': dynamo.user.APPLICATION_REJECTED,
         }
     )
-    with pytest.raises(dynamo.jobs.UnapprovedUserError, match=r'.*application for user foo has been rejected.*'):
+    with pytest.raises(RejectedApplicationError):
         dynamo.jobs.put_jobs('foo', payload)
     assert tables.jobs_table.scan()['Items'] == []
 
@@ -333,7 +340,7 @@ def test_put_jobs_application_status(tables):
             'application_status': 'bar',
         }
     )
-    with pytest.raises(ValueError, match=r'^User foo has an invalid application status: bar$'):
+    with pytest.raises(InvalidApplicationStatusError):
         dynamo.jobs.put_jobs('foo', payload)
     assert tables.jobs_table.scan()['Items'] == []
 
@@ -472,7 +479,7 @@ def test_put_jobs_insufficient_credits(tables, monkeypatch, approved_user):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '1')
     payload = [{'name': 'name1'}, {'name': 'name2'}]
 
-    with pytest.raises(dynamo.jobs.InsufficientCreditsError):
+    with pytest.raises(InsufficientCreditsError):
         dynamo.jobs.put_jobs(approved_user, payload)
 
     assert tables.jobs_table.scan()['Items'] == []
@@ -483,7 +490,9 @@ def test_put_jobs_infinite_credits(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '1')
     payload = [{'name': 'name1'}, {'name': 'name2'}]
 
-    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': None, 'application_status': 'APPROVED'})
+    tables.users_table.put_item(
+        Item={'user_id': 'user1', 'remaining_credits': None, 'application_status': APPLICATION_APPROVED}
+    )
 
     jobs = dynamo.jobs.put_jobs('user1', payload)
 
@@ -494,7 +503,9 @@ def test_put_jobs_infinite_credits(tables, monkeypatch):
 
 def test_put_jobs_priority_override(tables):
     payload = [{'name': 'name1'}, {'name': 'name2'}]
-    user = {'user_id': 'user1', 'priority_override': 100, 'remaining_credits': 3, 'application_status': 'APPROVED'}
+    user = {
+        'user_id': 'user1', 'priority_override': 100, 'remaining_credits': 3, 'application_status': APPLICATION_APPROVED
+    }
     tables.users_table.put_item(Item=user)
 
     jobs = dynamo.jobs.put_jobs('user1', payload)
@@ -503,7 +514,12 @@ def test_put_jobs_priority_override(tables):
     for job in jobs:
         assert job['priority'] == 100
 
-    user = {'user_id': 'user1', 'priority_override': 550, 'remaining_credits': None, 'application_status': 'APPROVED'}
+    user = {
+        'user_id': 'user1',
+        'priority_override': 550,
+        'remaining_credits': None,
+        'application_status': APPLICATION_APPROVED
+    }
     tables.users_table.put_item(Item=user)
 
     jobs = dynamo.jobs.put_jobs('user1', payload)

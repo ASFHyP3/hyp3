@@ -2,8 +2,9 @@ import unittest.mock
 from decimal import Decimal
 from http import HTTPStatus
 
-from dynamo.user import APPLICATION_PENDING, APPLICATION_REJECTED
 from test_api.conftest import DEFAULT_ACCESS_TOKEN, USER_URI, login
+
+from dynamo.user import APPLICATION_PENDING, APPLICATION_REJECTED
 
 
 def test_patch_new_user(client, tables):

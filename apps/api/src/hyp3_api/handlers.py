@@ -4,6 +4,7 @@ import requests
 from flask import abort, jsonify, request
 
 import dynamo
+from dynamo.exceptions import InsufficientCreditsError, UnexpectedApplicationStatusError
 from hyp3_api import util
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
@@ -32,9 +33,9 @@ def post_jobs(body, user):
 
     try:
         body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], dry_run=body.get('validate_only'))
-    except dynamo.jobs.UnapprovedUserError as e:
+    except UnexpectedApplicationStatusError as e:
         abort(problem_format(403, str(e)))
-    except dynamo.jobs.InsufficientCreditsError as e:
+    except InsufficientCreditsError as e:
         abort(problem_format(400, str(e)))
     return body
 
@@ -64,7 +65,7 @@ def patch_user(body: dict, user: str, edl_access_token: str) -> dict:
     print(body)
     try:
         user_record = dynamo.user.update_user(user, edl_access_token, body)
-    except dynamo.user.ApplicationClosedError as e:
+    except UnexpectedApplicationStatusError as e:
         abort(problem_format(403, str(e)))
     return _user_response(user_record)
 
