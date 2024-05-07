@@ -369,6 +369,7 @@ def test_reset_credits_to_zero(tables):
     original_user_record = {
         'user_id': 'foo',
         'remaining_credits': Decimal(10),
+        'credits_per_month': Decimal(50),
         '_month_of_last_credit_reset': '2024-02',
         'application_status': 'bar',
     }
