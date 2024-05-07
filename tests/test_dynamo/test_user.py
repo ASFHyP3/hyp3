@@ -237,7 +237,7 @@ def test_create_user_already_exists(tables):
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo'}]
 
 
-def test_reset_credits(tables, monkeypatch):
+def test_reset_credits(tables):
     original_user_record = {
         'user_id': 'foo',
         'remaining_credits': Decimal(10),
@@ -261,7 +261,7 @@ def test_reset_credits(tables, monkeypatch):
     assert tables.users_table.scan()['Items'] == [user]
 
 
-def test_reset_credits_month_exists(tables, monkeypatch):
+def test_reset_credits_month_exists(tables):
     original_user_record = {
         'user_id': 'foo',
         'remaining_credits': Decimal(10),
@@ -286,7 +286,7 @@ def test_reset_credits_month_exists(tables, monkeypatch):
     assert tables.users_table.scan()['Items'] == [user]
 
 
-def test_reset_credits_override(tables, monkeypatch):
+def test_reset_credits_override(tables):
     original_user_record = {
         'user_id': 'foo',
         'remaining_credits': Decimal(10),
@@ -312,7 +312,7 @@ def test_reset_credits_override(tables, monkeypatch):
     assert tables.users_table.scan()['Items'] == [user]
 
 
-def test_reset_credits_same_month(tables, monkeypatch):
+def test_reset_credits_same_month(tables):
     original_user_record = {
         'user_id': 'foo',
         'remaining_credits': Decimal(10),
@@ -337,7 +337,7 @@ def test_reset_credits_same_month(tables, monkeypatch):
     assert tables.users_table.scan()['Items'] == [user]
 
 
-def test_reset_credits_infinite_credits(tables, monkeypatch):
+def test_reset_credits_infinite_credits(tables):
     original_user_record = {
         'user_id': 'foo',
         'remaining_credits': None,
@@ -437,7 +437,7 @@ def test_reset_credits_failed_not_approved(tables):
     }]
 
 
-def test_reset_credits_failed_same_month(tables, monkeypatch):
+def test_reset_credits_failed_same_month(tables):
     tables.users_table.put_item(
         Item={
             'user_id': 'foo',
@@ -468,7 +468,7 @@ def test_reset_credits_failed_same_month(tables, monkeypatch):
     }]
 
 
-def test_reset_credits_failed_infinite_credits(tables, monkeypatch):
+def test_reset_credits_failed_infinite_credits(tables):
     tables.users_table.put_item(
         Item={
             'user_id': 'foo',
