@@ -12,9 +12,10 @@ def decode_token(token) -> Optional[dict]:
         return None
 
 
-def get_mock_jwt_cookie(user: str, lifetime_in_seconds: int):
+def get_mock_jwt_cookie(user: str, lifetime_in_seconds: int, access_token: str) -> str:
     payload = {
         'urs-user-id': user,
+        'urs-access-token': access_token,
         'exp': int(time.time()) + lifetime_in_seconds,
     }
     value = jwt.encode(

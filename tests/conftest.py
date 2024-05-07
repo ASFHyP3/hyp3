@@ -1,3 +1,4 @@
+from decimal import Decimal
 from os import environ, path
 
 import pytest
@@ -39,6 +40,17 @@ def tables(table_properties):
             )
         tables = Tables()
         yield tables
+
+
+@pytest.fixture
+def approved_user(tables) -> str:
+    user = {
+        'user_id': 'approved_user',
+        'remaining_credits': Decimal(0),
+        'application_status': 'APPROVED',
+    }
+    tables.users_table.put_item(Item=user)
+    return user['user_id']
 
 
 def list_have_same_elements(l1, l2):
