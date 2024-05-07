@@ -11,7 +11,7 @@ from dynamo.exceptions import (
 )
 from dynamo.util import DYNAMODB_RESOURCE
 
-APPLICATION_NOT_STARTED = 'NOT STARTED'
+APPLICATION_NOT_STARTED = 'NOT_STARTED'
 APPLICATION_PENDING = 'PENDING'
 APPLICATION_APPROVED = 'APPROVED'
 APPLICATION_REJECTED = 'REJECTED'
@@ -63,19 +63,15 @@ def get_or_create_user(user_id: str) -> dict:
     users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     user = users_table.get_item(Key={'user_id': user_id}).get('Item')
 
-    if user is not None:
-        user = _reset_credits_if_needed(
-            user=user,
-            default_credits=default_credits,
-            current_month=current_month,
-            users_table=users_table,
-        )
-    else:
-        user = _create_user(
-            user_id=user_id,
-            users_table=users_table,
-        )
-    return user
+    if user is None:
+        user = _create_user(user_id, users_table)
+
+    return _reset_credits_if_needed(
+        user=user,
+        default_credits=default_credits,
+        current_month=current_month,
+        users_table=users_table,
+    )
 
 
 def _get_current_month() -> str:
@@ -83,7 +79,11 @@ def _get_current_month() -> str:
 
 
 def _create_user(user_id: str, users_table) -> dict:
-    user = {'user_id': user_id, 'remaining_credits': Decimal(0), 'application_status': APPLICATION_NOT_STARTED}
+    user = {
+        'user_id': user_id,
+        'remaining_credits': Decimal(0),
+        'application_status': os.environ['DEFAULT_APPLICATION_STATUS'],
+    }
     try:
         users_table.put_item(Item=user, ConditionExpression='attribute_not_exists(user_id)')
     except botocore.exceptions.ClientError as e:

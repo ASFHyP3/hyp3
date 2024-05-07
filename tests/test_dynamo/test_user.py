@@ -188,52 +188,58 @@ def test_update_user_failed_application_status(tables):
     }]
 
 
-def test_get_or_create_user_reset(tables, monkeypatch):
-    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
-    tables.users_table.put_item(Item={'user_id': 'foo'})
+def test_get_or_create_user_existing_user(tables):
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            'application_status': APPLICATION_APPROVED,
+        }
+    )
 
-    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month, \
-            unittest.mock.patch('dynamo.user._reset_credits_if_needed') as mock_reset_credits_if_needed:
+    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
         mock_get_current_month.return_value = '2024-02'
-        mock_reset_credits_if_needed.return_value = 'reset_credits_return_value'
-
-        user = dynamo.user.get_or_create_user('foo')
-
+        user = dynamo.user.get_or_create_user(user_id='foo')
         mock_get_current_month.assert_called_once_with()
-        mock_reset_credits_if_needed.assert_called_once_with(
-            user={'user_id': 'foo'},
-            default_credits=Decimal(25),
-            current_month='2024-02',
-            users_table=tables.users_table,
-        )
-
-    assert user == 'reset_credits_return_value'
-
-
-def test_get_or_create_user_create(tables):
-    with unittest.mock.patch('dynamo.user._create_user') as mock_create_user:
-        mock_create_user.return_value = 'create_user_return_value'
-
-        user = dynamo.user.get_or_create_user('foo')
-
-        mock_create_user.assert_called_once_with(
-            user_id='foo',
-            users_table=tables.users_table,
-        )
-
-    assert user == 'create_user_return_value'
-
-
-def test_create_user(tables):
-    user = dynamo.user._create_user(user_id='foo', users_table=tables.users_table)
 
     assert user == {
-        'user_id': 'foo', 'remaining_credits': Decimal(0), 'application_status': APPLICATION_NOT_STARTED
+        'user_id': 'foo',
+        'remaining_credits': Decimal(25),
+        '_month_of_last_credit_reset': '2024-02',
+        'application_status': APPLICATION_APPROVED,
     }
     assert tables.users_table.scan()['Items'] == [user]
 
 
-def test_create_user_already_exists(tables):
+def test_get_or_create_user_new_user(tables):
+    user = dynamo.user.get_or_create_user(user_id='foo')
+
+    assert user == {
+        'user_id': 'foo',
+        'remaining_credits': Decimal(0),
+        'application_status': APPLICATION_NOT_STARTED,
+    }
+    assert tables.users_table.scan()['Items'] == [user]
+
+
+def test_get_or_create_user_default_application_status_approved(tables, monkeypatch):
+    monkeypatch.setenv('DEFAULT_APPLICATION_STATUS', APPLICATION_APPROVED)
+
+    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
+        mock_get_current_month.return_value = '2024-02'
+        user = dynamo.user.get_or_create_user(user_id='foo')
+        mock_get_current_month.assert_called_once_with()
+
+    assert user == {
+        'user_id': 'foo',
+        'remaining_credits': Decimal(25),
+        '_month_of_last_credit_reset': '2024-02',
+        'application_status': APPLICATION_APPROVED,
+    }
+    assert tables.users_table.scan()['Items'] == [user]
+
+
+def test_create_user_failed_already_exists(tables):
     tables.users_table.put_item(Item={'user_id': 'foo'})
 
     with pytest.raises(DatabaseConditionException):

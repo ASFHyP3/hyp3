@@ -36,6 +36,15 @@ Parameters:
     Type: Number
     MinValue: 0
 
+  DefaultApplicationStatus:
+    Description: The default status for new user applications.
+    Type: String
+    AllowedValues:
+      - NOT_STARTED
+      - PENDING
+      - APPROVED
+      - REJECTED
+
   SystemAvailable:
     Description: Set to false to shutdown system, API will run and provide errors to users, but will not accept jobs.
     Type: String
@@ -116,6 +125,7 @@ Resources:
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
         DefaultCreditsPerUser: !Ref DefaultCreditsPerUser
+        DefaultApplicationStatus: !Ref DefaultApplicationStatus
         SystemAvailable: !Ref SystemAvailable
         {% if security_environment == 'EDC' %}
         VpcId: !Ref VpcId
