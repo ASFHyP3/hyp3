@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
+from decimal import Decimal
 from http import HTTPStatus
 
-from test_api.conftest import DEFAULT_USERNAME, login, make_job, setup_requests_mock, submit_batch
+from test_api.conftest import login, make_job, setup_requests_mock, submit_batch
 
+from dynamo.user import APPLICATION_PENDING
 from dynamo.util import format_time
 
 
@@ -128,6 +130,24 @@ def test_submit_exceeds_remaining_credits(client, approved_user, monkeypatch):
     response2 = submit_batch(client, batch2)
     assert response2.status_code == HTTPStatus.BAD_REQUEST
     assert response2.json['detail'] == 'These jobs would cost 10.0 credits, but you have only 5.0 remaining.'
+
+
+def test_submit_unapproved_user(client, tables):
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            'application_status': APPLICATION_PENDING,
+        }
+    )
+    login(client, username='foo')
+
+    batch = [make_job()]
+    setup_requests_mock(batch)
+
+    response = submit_batch(client, batch)
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json['detail'] == 'User foo has a pending application, please try again later.'
 
 
 def test_submit_without_jobs(client):
