@@ -20,8 +20,7 @@ jobs:
             image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 10
-            # TODO set back to NOT_STARTED
-            default_application_status: APPROVED
+            default_application_status: NOT_STARTED
             cost_profile: EDC
             deploy_ref: refs/heads/whitelisting-sandbox
             job_files: >-
