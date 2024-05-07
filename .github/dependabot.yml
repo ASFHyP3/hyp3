@@ -5,15 +5,15 @@
 
 version: 2
 updates:
-  - package-ecosystem: "pip"
-    directory: "/"
+  - package-ecosystem: pip
+    directory: /
     schedule:
-      interval: "daily"
+      interval: weekly
     labels:
-      - "bumpless"
-  - package-ecosystem: "github-actions"
-    directory: "/"
+      - bumpless
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "daily"
+      interval: weekly
     labels:
-      - "bumpless"
+      - bumpless
