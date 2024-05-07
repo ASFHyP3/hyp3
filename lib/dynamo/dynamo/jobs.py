@@ -9,6 +9,13 @@ from uuid import uuid4
 from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
+from dynamo.exceptions import (
+    InsufficientCreditsError,
+    InvalidApplicationStatusError,
+    NotStartedApplicationError,
+    PendingApplicationError,
+    RejectedApplicationError,
+)
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
@@ -21,14 +28,6 @@ if default_params_file.exists():
 else:
     # Allows mocking with unittest.mock.patch
     DEFAULT_PARAMS_BY_JOB_TYPE = {}
-
-
-class UnapprovedUserError(Exception):
-    """Raised when the user is not approved for processing."""
-
-
-class InsufficientCreditsError(Exception):
-    """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
 
 
 def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
@@ -74,24 +73,13 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
 
 def _raise_for_application_status(application_status: str, user_id: str) -> None:
     if application_status == APPLICATION_NOT_STARTED:
-        # TODO replace <url> with URL to the application form for the given deployment
-        raise UnapprovedUserError(
-            f'User {user_id} has not yet applied for a monthly credit allotment.'
-            ' Please visit <url> to submit your application.'
-        )
+        raise NotStartedApplicationError(user_id)
     if application_status == APPLICATION_PENDING:
-        raise UnapprovedUserError(
-            f'User {user_id} has a pending application, please try again later.'
-        )
+        raise PendingApplicationError(user_id)
     if application_status == APPLICATION_REJECTED:
-        raise UnapprovedUserError(
-            f'Unfortunately, the application for user {user_id} has been rejected.'
-            ' If you believe this was a mistake, please email ASF User Services at: uso@asf.alaska.edu'
-        )
+        raise RejectedApplicationError(user_id)
     if application_status != APPLICATION_APPROVED:
-        raise ValueError(
-            f'User {user_id} has an invalid application status: {application_status}'
-        )
+        raise InvalidApplicationStatusError(user_id, application_status)
 
 
 def _prepare_job_for_database(

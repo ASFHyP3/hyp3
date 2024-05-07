@@ -6,6 +6,13 @@ import pytest
 from conftest import list_have_same_elements
 
 import dynamo
+from dynamo.exceptions import (
+    InsufficientCreditsError,
+    NotStartedApplicationError,
+    PendingApplicationError,
+    RejectedApplicationError,
+    InvalidApplicationStatusError,
+)
 
 
 def test_query_jobs_by_user(tables):
@@ -299,8 +306,7 @@ def test_put_jobs_application_status(tables):
             'application_status': dynamo.user.APPLICATION_NOT_STARTED,
         }
     )
-    with pytest.raises(
-            dynamo.jobs.UnapprovedUserError, match=r'^User foo has not yet applied for a monthly credit allotment.*'):
+    with pytest.raises(NotStartedApplicationError):
         dynamo.jobs.put_jobs('foo', payload)
     assert tables.jobs_table.scan()['Items'] == []
 
@@ -311,7 +317,7 @@ def test_put_jobs_application_status(tables):
             'application_status': dynamo.user.APPLICATION_PENDING,
         }
     )
-    with pytest.raises(dynamo.jobs.UnapprovedUserError, match=r'^User foo has a pending application.*'):
+    with pytest.raises(PendingApplicationError):
         dynamo.jobs.put_jobs('foo', payload)
     assert tables.jobs_table.scan()['Items'] == []
 
@@ -322,7 +328,7 @@ def test_put_jobs_application_status(tables):
             'application_status': dynamo.user.APPLICATION_REJECTED,
         }
     )
-    with pytest.raises(dynamo.jobs.UnapprovedUserError, match=r'.*application for user foo has been rejected.*'):
+    with pytest.raises(RejectedApplicationError):
         dynamo.jobs.put_jobs('foo', payload)
     assert tables.jobs_table.scan()['Items'] == []
 
@@ -333,7 +339,7 @@ def test_put_jobs_application_status(tables):
             'application_status': 'bar',
         }
     )
-    with pytest.raises(ValueError, match=r'^User foo has an invalid application status: bar$'):
+    with pytest.raises(InvalidApplicationStatusError):
         dynamo.jobs.put_jobs('foo', payload)
     assert tables.jobs_table.scan()['Items'] == []
 
@@ -472,7 +478,7 @@ def test_put_jobs_insufficient_credits(tables, monkeypatch, approved_user):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '1')
     payload = [{'name': 'name1'}, {'name': 'name2'}]
 
-    with pytest.raises(dynamo.jobs.InsufficientCreditsError):
+    with pytest.raises(InsufficientCreditsError):
         dynamo.jobs.put_jobs(approved_user, payload)
 
     assert tables.jobs_table.scan()['Items'] == []

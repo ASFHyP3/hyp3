@@ -6,20 +6,15 @@ from os import environ
 import botocore.exceptions
 import requests
 
+from dynamo.exceptions import (
+    DatabaseConditionException, RejectedApplicationError, ApprovedApplicationError, InvalidApplicationStatusError
+)
 from dynamo.util import DYNAMODB_RESOURCE
 
 APPLICATION_NOT_STARTED = 'NOT STARTED'
 APPLICATION_PENDING = 'PENDING'
 APPLICATION_APPROVED = 'APPROVED'
 APPLICATION_REJECTED = 'REJECTED'
-
-
-class DatabaseConditionException(Exception):
-    """Raised when a DynamoDB condition expression check fails."""
-
-
-class ApplicationClosedError(Exception):
-    """Raised when the user attempts to update an application that has already been approved or rejected."""
 
 
 def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
@@ -48,13 +43,10 @@ def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
             raise
         return user
     if application_status == APPLICATION_REJECTED:
-        raise ApplicationClosedError(
-            f'Unfortunately, the application for user {user_id} has been rejected.'
-            ' If you believe this was a mistake, please email ASF User Services at: uso@asf.alaska.edu'
-        )
+        raise RejectedApplicationError(user_id)
     if application_status == APPLICATION_APPROVED:
-        raise ApplicationClosedError(f'The application for user {user_id} has already been approved.')
-    raise ValueError(f'User {user_id} has an invalid application status: {application_status}')
+        raise ApprovedApplicationError(user_id)
+    raise InvalidApplicationStatusError(user_id, application_status)
 
 
 def _get_edl_profile(user_id: str, edl_access_token: str) -> dict:

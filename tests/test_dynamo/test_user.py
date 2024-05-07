@@ -5,6 +5,12 @@ import botocore.exceptions
 import pytest
 
 import dynamo.user
+from dynamo.exceptions import (
+    DatabaseConditionException,
+    RejectedApplicationError,
+    ApprovedApplicationError,
+    InvalidApplicationStatusError,
+)
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 
 
@@ -92,7 +98,7 @@ def test_update_user_rejected(tables):
             'application_status': APPLICATION_REJECTED,
         }
     )
-    with pytest.raises(dynamo.user.ApplicationClosedError, match=r'.*application for user foo has been rejected.*'):
+    with pytest.raises(RejectedApplicationError):
         dynamo.user.update_user(
             'foo',
             'test-edl-access-token',
@@ -116,8 +122,7 @@ def test_update_user_approved(tables, monkeypatch):
     )
     with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
         mock_get_current_month.return_value = '2024-02'
-        with pytest.raises(
-                dynamo.user.ApplicationClosedError, match=r'^The application for user foo has already been approved.$'):
+        with pytest.raises(ApprovedApplicationError):
             dynamo.user.update_user(
                 'foo',
                 'test-edl-access-token',
@@ -141,7 +146,7 @@ def test_update_user_invalid_status(tables):
             'application_status': 'bar',
         }
     )
-    with pytest.raises(ValueError, match=r'^User foo has an invalid application status: bar$'):
+    with pytest.raises(InvalidApplicationStatusError):
         dynamo.user.update_user(
             'foo',
             'test-edl-access-token',
@@ -168,7 +173,7 @@ def test_update_user_failed_application_status(tables):
             'application_status': APPLICATION_NOT_STARTED,
         }
         mock_get_edl_profile.return_value = {'key': 'new_value'}
-        with pytest.raises(dynamo.user.DatabaseConditionException):
+        with pytest.raises(DatabaseConditionException):
             dynamo.user.update_user(
                 'foo',
                 'test-edl-access-token',
@@ -231,7 +236,7 @@ def test_create_user(tables):
 def test_create_user_already_exists(tables):
     tables.users_table.put_item(Item={'user_id': 'foo'})
 
-    with pytest.raises(dynamo.user.DatabaseConditionException):
+    with pytest.raises(DatabaseConditionException):
         dynamo.user._create_user(user_id='foo', users_table=tables.users_table)
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo'}]
@@ -418,7 +423,7 @@ def test_reset_credits_failed_not_approved(tables):
         }
     )
 
-    with pytest.raises(dynamo.user.DatabaseConditionException):
+    with pytest.raises(DatabaseConditionException):
         dynamo.user._reset_credits_if_needed(
             user={
                 'user_id': 'foo',
@@ -447,7 +452,7 @@ def test_reset_credits_failed_same_month(tables):
         }
     )
 
-    with pytest.raises(dynamo.user.DatabaseConditionException):
+    with pytest.raises(DatabaseConditionException):
         dynamo.user._reset_credits_if_needed(
             user={
                 'user_id': 'foo',
@@ -477,7 +482,7 @@ def test_reset_credits_failed_infinite_credits(tables):
         }
     )
 
-    with pytest.raises(dynamo.user.DatabaseConditionException):
+    with pytest.raises(DatabaseConditionException):
         dynamo.user._reset_credits_if_needed(
             user={
                 'user_id': 'foo',
@@ -506,7 +511,7 @@ def test_reset_credits_failed_approved(tables):
         }
     )
 
-    with pytest.raises(dynamo.user.DatabaseConditionException):
+    with pytest.raises(DatabaseConditionException):
         dynamo.user._reset_credits_if_needed(
             user={
                 'user_id': 'foo',
@@ -537,7 +542,7 @@ def test_reset_credits_failed_zero_credits(tables):
         }
     )
 
-    with pytest.raises(dynamo.user.DatabaseConditionException):
+    with pytest.raises(DatabaseConditionException):
         dynamo.user._reset_credits_if_needed(
             user={
                 'user_id': 'foo',
@@ -586,7 +591,7 @@ def test_decrement_credits_invalid_cost(tables):
 def test_decrement_credits_cost_too_high(tables):
     tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': Decimal(1)})
 
-    with pytest.raises(dynamo.user.DatabaseConditionException):
+    with pytest.raises(DatabaseConditionException):
         dynamo.user.decrement_credits('foo', 2)
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(1)}]
@@ -595,7 +600,7 @@ def test_decrement_credits_cost_too_high(tables):
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
 
-    with pytest.raises(dynamo.user.DatabaseConditionException):
+    with pytest.raises(DatabaseConditionException):
         dynamo.user.decrement_credits('foo', 1)
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
@@ -615,7 +620,7 @@ def test_decrement_credits_infinite_credits(tables):
 
 
 def test_decrement_credits_user_does_not_exist(tables):
-    with pytest.raises(dynamo.user.DatabaseConditionException):
+    with pytest.raises(DatabaseConditionException):
         dynamo.user.decrement_credits('foo', 1)
 
     assert tables.users_table.scan()['Items'] == []
