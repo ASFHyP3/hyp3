@@ -13,6 +13,7 @@ from dynamo.exceptions import (
     RejectedApplicationError,
     InvalidApplicationStatusError,
 )
+from dynamo.user import APPLICATION_APPROVED
 
 
 def test_query_jobs_by_user(tables):
@@ -292,7 +293,7 @@ def test_put_jobs(tables, monkeypatch, approved_user):
         'user_id': approved_user,
         'remaining_credits': Decimal(7),
         '_month_of_last_credit_reset': '2024-02',
-        'application_status': 'APPROVED',
+        'application_status': APPLICATION_APPROVED,
     }]
 
 
@@ -489,7 +490,9 @@ def test_put_jobs_infinite_credits(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '1')
     payload = [{'name': 'name1'}, {'name': 'name2'}]
 
-    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': None, 'application_status': 'APPROVED'})
+    tables.users_table.put_item(
+        Item={'user_id': 'user1', 'remaining_credits': None, 'application_status': APPLICATION_APPROVED}
+    )
 
     jobs = dynamo.jobs.put_jobs('user1', payload)
 
@@ -500,7 +503,9 @@ def test_put_jobs_infinite_credits(tables, monkeypatch):
 
 def test_put_jobs_priority_override(tables):
     payload = [{'name': 'name1'}, {'name': 'name2'}]
-    user = {'user_id': 'user1', 'priority_override': 100, 'remaining_credits': 3, 'application_status': 'APPROVED'}
+    user = {
+        'user_id': 'user1', 'priority_override': 100, 'remaining_credits': 3, 'application_status': APPLICATION_APPROVED
+    }
     tables.users_table.put_item(Item=user)
 
     jobs = dynamo.jobs.put_jobs('user1', payload)
@@ -509,7 +514,12 @@ def test_put_jobs_priority_override(tables):
     for job in jobs:
         assert job['priority'] == 100
 
-    user = {'user_id': 'user1', 'priority_override': 550, 'remaining_credits': None, 'application_status': 'APPROVED'}
+    user = {
+        'user_id': 'user1',
+        'priority_override': 550,
+        'remaining_credits': None,
+        'application_status': APPLICATION_APPROVED
+    }
     tables.users_table.put_item(Item=user)
 
     jobs = dynamo.jobs.put_jobs('user1', payload)
