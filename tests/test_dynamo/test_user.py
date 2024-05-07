@@ -6,10 +6,10 @@ import pytest
 
 import dynamo.user
 from dynamo.exceptions import (
-    DatabaseConditionException,
-    RejectedApplicationError,
     ApprovedApplicationError,
+    DatabaseConditionException,
     InvalidApplicationStatusError,
+    RejectedApplicationError,
 )
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 

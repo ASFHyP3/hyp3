@@ -7,7 +7,7 @@ import botocore.exceptions
 import requests
 
 from dynamo.exceptions import (
-    DatabaseConditionException, RejectedApplicationError, ApprovedApplicationError, InvalidApplicationStatusError
+    ApprovedApplicationError, DatabaseConditionException, InvalidApplicationStatusError, RejectedApplicationError
 )
 from dynamo.util import DYNAMODB_RESOURCE
 

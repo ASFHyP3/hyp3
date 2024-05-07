@@ -8,10 +8,10 @@ from conftest import list_have_same_elements
 import dynamo
 from dynamo.exceptions import (
     InsufficientCreditsError,
+    InvalidApplicationStatusError,
     NotStartedApplicationError,
     PendingApplicationError,
     RejectedApplicationError,
-    InvalidApplicationStatusError,
 )
 from dynamo.user import APPLICATION_APPROVED
 
