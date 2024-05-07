@@ -20,6 +20,8 @@ jobs:
             image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 10
+            # TODO set back to NOT_STARTED
+            default_application_status: APPROVED
             cost_profile: EDC
             deploy_ref: refs/heads/whitelisting-sandbox
             job_files: >-
@@ -67,6 +69,7 @@ jobs:
           SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           DEFAULT_CREDITS_PER_USER: ${{ matrix.default_credits_per_user }}
+          DEFAULT_APPLICATION_STATUS: ${{ matrix.default_application_status }}
           COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
           DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}

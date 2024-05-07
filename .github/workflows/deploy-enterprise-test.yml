@@ -20,6 +20,7 @@ jobs:
             image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 0
+            default_application_status: APPROVED
             cost_profile: DEFAULT
             deploy_ref: refs/heads/develop
             job_files: >-
@@ -43,6 +44,7 @@ jobs:
             image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 0
+            default_application_status: APPROVED
             cost_profile: DEFAULT
             job_files: >-
               job_spec/ARIA_RAIDER.yml
@@ -61,6 +63,7 @@ jobs:
             image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 0
+            default_application_status: APPROVED
             cost_profile: DEFAULT
             job_files: >-
               job_spec/AUTORIFT_ITS_LIVE.yml
@@ -106,6 +109,7 @@ jobs:
           SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           DEFAULT_CREDITS_PER_USER: ${{ matrix.default_credits_per_user }}
+          DEFAULT_APPLICATION_STATUS: ${{ matrix.default_application_status }}
           COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
           DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}
