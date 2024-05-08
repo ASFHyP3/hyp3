@@ -65,4 +65,4 @@ def test_patch_rejected_user(client, tables):
     response = client.patch(USER_URI, json={'use_case': 'I want data.'})
 
     assert response.status_code == HTTPStatus.FORBIDDEN
-    assert 'application for user foo has been rejected' in response.json['detail']
+    assert 'has been rejected' in response.json['detail']

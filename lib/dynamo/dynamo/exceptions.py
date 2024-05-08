@@ -18,30 +18,32 @@ class InvalidApplicationStatusError(Exception):
 
 class UnexpectedApplicationStatusError(Exception):
     """Raised for an unexpected user application status."""
+    help_url = 'https://hyp3-docs.asf.alaska.edu/using/requesting_access'
 
 
 class NotStartedApplicationError(UnexpectedApplicationStatusError):
     def __init__(self, user_id: str):
-        # TODO replace <url> with URL to the application form for the given deployment
         super().__init__(
-            f'User {user_id} has not yet applied for a monthly credit allotment.'
-            ' Please visit <url> to submit your application.'
+            f'{user_id} must request access before submitting jobs. Visit {self.help_url}'
         )
 
 
 class PendingApplicationError(UnexpectedApplicationStatusError):
     def __init__(self, user_id: str):
-        super().__init__(f'User {user_id} has a pending application, please try again later.')
+        super().__init__(
+            f"{user_id}'s request for access is pending review. For more information, visit {self.help_url}"
+        )
 
 
 class ApprovedApplicationError(UnexpectedApplicationStatusError):
     def __init__(self, user_id: str):
-        super().__init__(f'The application for user {user_id} has already been approved.')
+        super().__init__(
+            f"{user_id}'s request for access is already approved. For more information, visit {self.help_url}"
+        )
 
 
 class RejectedApplicationError(UnexpectedApplicationStatusError):
     def __init__(self, user_id: str):
         super().__init__(
-            f'The application for user {user_id} has been rejected.'
-            ' For more information, please email ASF User Services at: uso@asf.alaska.edu'
+            f"{user_id}'s request for access has been rejected. For more information, visit {self.help_url}"
         )
