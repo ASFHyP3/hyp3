@@ -104,6 +104,22 @@ paths:
                 $ref: "#/components/schemas/job"
 
   /user:
+    patch:
+      description: Submit or update an application for processing approval.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/patch_user_body"
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+
     get:
       description: Get information about the logged in user.
       responses:
@@ -172,20 +188,48 @@ components:
         next:
           $ref: "#/components/schemas/next_url"
 
+    patch_user_body:
+      description: Application for processing approval.
+      type: object
+      required:
+        - use_case
+      additionalProperties: false
+      properties:
+        use_case:
+          $ref: "#/components/schemas/use_case"
+
     user:
       description: Information about a user
       type: object
       required:
-        - user_id
+        - application_status
+        - job_names
         - remaining_credits
+        - user_id
       additionalProperties: false
       properties:
-        user_id:
-          $ref: "#/components/schemas/user_id"
-        remaining_credits:
+        application_status:
+          $ref: "#/components/schemas/application_status"
+        credits_per_month:
           $ref: "#/components/schemas/credits"
         job_names:
           $ref: "#/components/schemas/job_names_list"
+        remaining_credits:
+          $ref: "#/components/schemas/credits"
+        use_case:
+          $ref: "#/components/schemas/use_case"
+        user_id:
+          $ref: "#/components/schemas/user_id"
+
+    application_status:
+      description: Status of an application for processing approval.
+      type: string
+      enum:
+        - NOT_STARTED
+        - PENDING
+        - APPROVED
+        - REJECTED
+      example: PENDING
 
     credits:
       description: Processing credits for running jobs.
@@ -265,6 +309,11 @@ components:
       type: string
       format: uuid
       example: 27836b79-e5b2-4d8f-932f-659724ea02c3
+
+    use_case:
+      description: Reason for wanting to use HyP3.
+      type: string
+      example: I want to process data.
 
     user_id:
       description: Username from Earthdata Login.

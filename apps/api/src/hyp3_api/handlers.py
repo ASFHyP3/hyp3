@@ -4,6 +4,7 @@ import requests
 from flask import abort, jsonify, request
 
 import dynamo
+from dynamo.exceptions import InsufficientCreditsError, UnexpectedApplicationStatusError
 from hyp3_api import util
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
@@ -32,7 +33,9 @@ def post_jobs(body, user):
 
     try:
         body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], dry_run=body.get('validate_only'))
-    except dynamo.jobs.InsufficientCreditsError as e:
+    except UnexpectedApplicationStatusError as e:
+        abort(problem_format(403, str(e)))
+    except InsufficientCreditsError as e:
         abort(problem_format(400, str(e)))
     return body
 
@@ -58,20 +61,32 @@ def get_job_by_id(job_id):
     return job
 
 
-def get_names_for_user(user):
+def patch_user(body: dict, user: str, edl_access_token: str) -> dict:
+    print(body)
+    try:
+        user_record = dynamo.user.update_user(user, edl_access_token, body)
+    except UnexpectedApplicationStatusError as e:
+        abort(problem_format(403, str(e)))
+    return _user_response(user_record)
+
+
+def get_user(user):
+    user_record = dynamo.user.get_or_create_user(user)
+    return _user_response(user_record)
+
+
+def _user_response(user_record: dict) -> dict:
+    # TODO: count this as jobs are submitted, not every time `/user` is queried
+    job_names = _get_names_for_user(user_record['user_id'])
+    payload = {key: user_record[key] for key in user_record if not key.startswith('_')}
+    payload['job_names'] = job_names
+    return payload
+
+
+def _get_names_for_user(user):
     jobs, next_key = dynamo.jobs.query_jobs(user)
     while next_key is not None:
         new_jobs, next_key = dynamo.jobs.query_jobs(user, start_key=next_key)
         jobs.extend(new_jobs)
     names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))
-
-
-def get_user(user):
-    user_record = dynamo.user.get_or_create_user(user)
-    return {
-        'user_id': user,
-        'remaining_credits': user_record['remaining_credits'],
-        # TODO: count this as jobs are submitted, not every time `/user` is queried
-        'job_names': get_names_for_user(user)
-    }

@@ -39,9 +39,10 @@ def check_system_available():
 @app.before_request
 def authenticate_user():
     cookie = request.cookies.get('asf-urs')
-    auth_info = auth.decode_token(cookie)
-    if auth_info is not None:
-        g.user = auth_info['sub']
+    payload = auth.decode_token(cookie)
+    if payload is not None:
+        g.user = payload['urs-user-id']
+        g.edl_access_token = payload['urs-access-token']
     else:
         if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
             abort(handlers.problem_format(401, 'No authorization token provided'))
@@ -146,6 +147,12 @@ def jobs_get():
 @openapi
 def jobs_get_by_job_id(job_id):
     return jsonify(handlers.get_job_by_id(job_id))
+
+
+@app.route('/user', methods=['PATCH'])
+@openapi
+def user_patch():
+    return jsonify(handlers.patch_user(request.get_json(), g.user, g.edl_access_token))
 
 
 @app.route('/user', methods=['GET'])

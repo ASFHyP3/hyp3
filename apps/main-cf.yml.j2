@@ -36,12 +36,12 @@ Parameters:
     Type: Number
     MinValue: 0
 
-  ResetCreditsMonthly:
-    Description: "Whether to reset each user's remaining credits each month"
+  DefaultApplicationStatus:
+    Description: The default status for new user applications.
     Type: String
     AllowedValues:
-      - false
-      - true
+      - NOT_STARTED
+      - APPROVED
 
   SystemAvailable:
     Description: Set to false to shutdown system, API will run and provide errors to users, but will not accept jobs.
@@ -123,7 +123,7 @@ Resources:
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
         DefaultCreditsPerUser: !Ref DefaultCreditsPerUser
-        ResetCreditsMonthly: !Ref ResetCreditsMonthly
+        DefaultApplicationStatus: !Ref DefaultApplicationStatus
         SystemAvailable: !Ref SystemAvailable
         {% if security_environment == 'EDC' %}
         VpcId: !Ref VpcId
