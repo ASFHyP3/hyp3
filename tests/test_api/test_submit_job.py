@@ -147,7 +147,7 @@ def test_submit_unapproved_user(client, tables):
 
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.FORBIDDEN
-    assert response.json['detail'] == 'User foo has a pending application, please try again later.'
+    assert 'request for access is pending review' in response.json['detail']
 
 
 def test_submit_without_jobs(client):
