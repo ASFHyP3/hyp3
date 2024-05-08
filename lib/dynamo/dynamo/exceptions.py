@@ -32,14 +32,14 @@ class NotStartedApplicationError(UnexpectedApplicationStatusError):
 class PendingApplicationError(UnexpectedApplicationStatusError):
     def __init__(self, user_id: str):
         super().__init__(
-            f"{user_id}'s request for access is being processed. For more information, visit {self.help_url}"
+            f"{user_id}'s request for access is pending review. For more information, visit {self.help_url}"
         )
 
 
 class ApprovedApplicationError(UnexpectedApplicationStatusError):
     def __init__(self, user_id: str):
         super().__init__(
-            f'{user_id} is already approved for processing. For more information, visit {self.help_url}'
+            f"{user_id}'s request for access is already approved. For more information, visit {self.help_url}"
         )
 
 
