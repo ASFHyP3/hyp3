@@ -16,7 +16,6 @@ class InvalidApplicationStatusError(Exception):
         super().__init__(f'User {user_id} has an invalid application status: {application_status}')
 
 
-
 class UnexpectedApplicationStatusError(Exception):
     """Raised for an unexpected user application status."""
     help_url = 'https://hyp3-docs.asf.alaska.edu/using/request_access'
