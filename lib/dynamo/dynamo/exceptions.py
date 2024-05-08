@@ -18,7 +18,7 @@ class InvalidApplicationStatusError(Exception):
 
 class UnexpectedApplicationStatusError(Exception):
     """Raised for an unexpected user application status."""
-    help_url = 'https://hyp3-docs.asf.alaska.edu/using/request_access'
+    help_url = 'https://hyp3-docs.asf.alaska.edu/using/requesting_access'
 
 
 class NotStartedApplicationError(UnexpectedApplicationStatusError):
