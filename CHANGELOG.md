@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [7.2.0]
 
-This release includes changes to support an upcoming user whitelisting feature. A new user will be required to submit an application for a monthly credit allotment and will not be able to submit HyP3 jobs until an operator has manually reviewed and approved the application. As of this release, all new and existing users are automatically approved without being required to submit an application, but this will change in the near future.
+This release includes changes to support an upcoming user whitelisting feature. A new user will be required to apply for HyP3 access and will not be able to submit jobs until an operator has manually reviewed and approved the application. As of this release, all new and existing users are automatically approved without being required to submit an application, but this will change in the near future.
 
 ⚠️ Important notes for HyP3 deployment operators:
 - Changing a user's application status (e.g. to approve or reject a new user) requires manually updating the value of the `application_status` field in the Users table.
@@ -17,11 +17,11 @@ This release includes changes to support an upcoming user whitelisting feature. 
   - Rename field `notes` to `_notes`.
 
 ### Added
-- A new `PATCH /user` endpoint with a single `use_case` parameter allows the user to submit an application for a monthly credit allotment or update a pending application. The structure for a successful response is the same as for `GET /user`.
+- A new `PATCH /user` endpoint with a single `use_case` parameter allows the user to submit an application or update a pending application. The structure for a successful response is the same as for `GET /user`.
 - A new `default_application_status` deployment parameter specifies the default status for new user applications. The parameter has been set to `APPROVED` for all deployments.
 
 ### Changed
-- The `POST /jobs` endpoint now returns a `403` response if the user has not been approved for a monthly credit allotment.
+- The `POST /jobs` endpoint now returns a `403` response if the user has not been approved.
 - The response schema for the `GET /user` endpoint now includes:
   - A required `application_status` field representing the status of the user's application: `NOT_STARTED`, `PENDING`, `APPROVED`, or `REJECTED`.
   - An optional `use_case` field containing the use case submitted with the user's application.
