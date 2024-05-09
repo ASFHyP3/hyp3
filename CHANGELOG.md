@@ -17,7 +17,7 @@ This release includes changes to support an upcoming user whitelisting feature. 
   - Rename field `notes` to `_notes`.
 
 ### Added
-- A new `PATCH /user` endpoint with a single `use_case` parameter allows the user to submit an application or update a pending application. The structure for a successful response is the same as for `GET /user`.
+- A new `POST /user` endpoint with a single `use_case` parameter allows the user to submit an application. The structure for a successful response is the same as for `GET /user`.
 - A new `default_application_status` deployment parameter specifies the default status for new user applications. The parameter has been set to `APPROVED` for all deployments.
 
 ### Changed
