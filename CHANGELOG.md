@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- The `PATCH /user` endpoint has been replaced by a `POST /user` endpoint that allows the user to submit a new application for HyP3 access. This endpoint is intended to be invoked via an HTML form.
+
 ## [7.2.0]
 
 This release includes changes to support an upcoming user whitelisting feature. A new user will be required to apply for HyP3 access and will not be able to submit jobs until an operator has manually reviewed and approved the application. As of this release, all new and existing users are automatically approved without being required to submit an application, but this will change in the near future.
@@ -17,7 +22,7 @@ This release includes changes to support an upcoming user whitelisting feature. 
   - Rename field `notes` to `_notes`.
 
 ### Added
-- A new `POST /user` endpoint with a single `use_case` parameter allows the user to submit an application.
+- A new `PATCH /user` endpoint with a single `use_case` parameter allows the user to submit an application or update a pending application. The structure for a successful response is the same as for `GET /user`.
 - A new `default_application_status` deployment parameter specifies the default status for new user applications. The parameter has been set to `APPROVED` for all deployments.
 
 ### Changed
