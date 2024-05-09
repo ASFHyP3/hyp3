@@ -1,7 +1,7 @@
 from http.client import responses
 
 import requests
-from flask import abort, jsonify, request
+from flask import Response, abort, jsonify, request
 
 import dynamo
 from dynamo.exceptions import InsufficientCreditsError, UnexpectedApplicationStatusError
@@ -66,8 +66,7 @@ def post_user(body: dict, user: str, edl_access_token: str) -> None:
     try:
         dynamo.user.create_user_application(user, edl_access_token, body)
     except UnexpectedApplicationStatusError as e:
-        # TODO: don't return json from a form-encoded endpoint
-        abort(problem_format(403, str(e)))
+        abort(Response(str(e), 403))
 
 
 def get_user(user):

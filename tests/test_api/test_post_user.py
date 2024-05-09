@@ -50,7 +50,7 @@ def test_post_user_pending(client, tables):
     response = client.post(USER_URI, data={'use_case': 'I want data.'})
 
     assert response.status_code == HTTPStatus.FORBIDDEN
-    assert 'is pending review' in response.json['detail']
+    assert b'is pending review' in response.data
 
 
 def test_post_user_rejected(client, tables):
@@ -66,7 +66,7 @@ def test_post_user_rejected(client, tables):
     response = client.post(USER_URI, data={'use_case': 'I want data.'})
 
     assert response.status_code == HTTPStatus.FORBIDDEN
-    assert 'has been rejected' in response.json['detail']
+    assert b'has been rejected' in response.data
 
 
 def test_post_user_approved(client, tables):
@@ -82,4 +82,4 @@ def test_post_user_approved(client, tables):
     response = client.post(USER_URI, data={'use_case': 'I want data.'})
 
     assert response.status_code == HTTPStatus.FORBIDDEN
-    assert 'is already approved' in response.json['detail']
+    assert b'is already approved' in response.data
