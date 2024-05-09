@@ -7,7 +7,11 @@ import botocore.exceptions
 import requests
 
 from dynamo.exceptions import (
-    ApprovedApplicationError, DatabaseConditionException, InvalidApplicationStatusError, RejectedApplicationError
+    ApprovedApplicationError,
+    DatabaseConditionException,
+    InvalidApplicationStatusError,
+    PendingApplicationError,
+    RejectedApplicationError,
 )
 from dynamo.util import DYNAMODB_RESOURCE
 
@@ -17,17 +21,17 @@ APPLICATION_APPROVED = 'APPROVED'
 APPLICATION_REJECTED = 'REJECTED'
 
 
-def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
+def create_user_application(user_id: str, edl_access_token: str, body: dict) -> dict:
     user = get_or_create_user(user_id)
     application_status = user['application_status']
-    if application_status in (APPLICATION_NOT_STARTED, APPLICATION_PENDING):
+    if application_status == APPLICATION_NOT_STARTED:
         edl_profile = _get_edl_profile(user_id, edl_access_token)
         users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
         try:
             user = users_table.update_item(
                 Key={'user_id': user_id},
                 UpdateExpression='SET #edl_profile = :edl_profile, use_case = :use_case, application_status = :pending',
-                ConditionExpression='application_status IN (:not_started, :pending)',
+                ConditionExpression='application_status = :not_started',
                 ExpressionAttributeNames={'#edl_profile': '_edl_profile'},
                 ExpressionAttributeValues={
                     ':edl_profile': edl_profile,
@@ -42,6 +46,8 @@ def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
                 raise DatabaseConditionException(f'Failed to update record for user {user_id}')
             raise
         return user
+    if application_status == APPLICATION_PENDING:
+        raise PendingApplicationError(user_id)
     if application_status == APPLICATION_REJECTED:
         raise RejectedApplicationError(user_id)
     if application_status == APPLICATION_APPROVED:
