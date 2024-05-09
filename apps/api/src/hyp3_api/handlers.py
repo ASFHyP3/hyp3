@@ -66,7 +66,7 @@ def post_user(body: dict, user: str, edl_access_token: str) -> None:
     try:
         dynamo.user.create_user_application(user, edl_access_token, body)
     except UnexpectedApplicationStatusError as e:
-        # TODO is it OK to return error response as JSON?
+        # TODO: don't return json from a form-encoded endpoint
         abort(problem_format(403, str(e)))
 
 
