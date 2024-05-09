@@ -15,7 +15,7 @@ def test_post_user(client, tables):
         mock_get_edl_profile.assert_called_once_with('foo', DEFAULT_ACCESS_TOKEN)
 
     assert response.status_code == HTTPStatus.OK
-    assert response.data == b'Application for user foo was successfully submitted.'
+    assert response.data == b'<p>Application for <code>foo</code> was successfully submitted.</p>'
 
 
 def test_post_user_not_started(client, tables):
@@ -34,7 +34,7 @@ def test_post_user_not_started(client, tables):
         mock_get_edl_profile.assert_called_once_with('foo', DEFAULT_ACCESS_TOKEN)
 
     assert response.status_code == HTTPStatus.OK
-    assert response.data == b'Application for user foo was successfully submitted.'
+    assert response.data == b'<p>Application for <code>foo</code> was successfully submitted.</p>'
 
 
 def test_post_user_pending(client, tables):
