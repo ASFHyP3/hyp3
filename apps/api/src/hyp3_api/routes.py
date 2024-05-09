@@ -152,7 +152,9 @@ def jobs_get_by_job_id(job_id):
 @app.route('/user', methods=['POST'])
 @openapi
 def user_post():
-    return jsonify(handlers.post_user(request.get_json(), g.user, g.edl_access_token))
+    handlers.post_user(request.form, g.user, g.edl_access_token)
+    # TODO: better message
+    return f'Application for user {g.user} was successfully submitted.'
 
 
 @app.route('/user', methods=['GET'])

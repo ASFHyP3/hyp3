@@ -61,13 +61,13 @@ def get_job_by_id(job_id):
     return job
 
 
-def post_user(body: dict, user: str, edl_access_token: str) -> dict:
+def post_user(body: dict, user: str, edl_access_token: str) -> None:
     print(body)
     try:
-        user_record = dynamo.user.create_user_application(user, edl_access_token, body)
+        dynamo.user.create_user_application(user, edl_access_token, body)
     except UnexpectedApplicationStatusError as e:
+        # TODO is it OK to return error response as JSON?
         abort(problem_format(403, str(e)))
-    return _user_response(user_record)
 
 
 def get_user(user):
