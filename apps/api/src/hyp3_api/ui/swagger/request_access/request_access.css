@@ -10,6 +10,8 @@ body {
   text-align: left;
   background-color: white;
   padding: 20px;
+  border: none;
+  border-radius: 4px;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, 0.19);
 }
 
