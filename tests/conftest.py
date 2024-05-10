@@ -1,8 +1,11 @@
+from decimal import Decimal
 from os import environ, path
 
 import pytest
 import yaml
 from moto import mock_aws
+
+from dynamo.user import APPLICATION_APPROVED
 
 
 @pytest.fixture
@@ -39,6 +42,17 @@ def tables(table_properties):
             )
         tables = Tables()
         yield tables
+
+
+@pytest.fixture
+def approved_user(tables) -> str:
+    user = {
+        'user_id': 'approved_user',
+        'remaining_credits': Decimal(0),
+        'application_status': APPLICATION_APPROVED,
+    }
+    tables.users_table.put_item(Item=user)
+    return user['user_id']
 
 
 def list_have_same_elements(l1, l2):

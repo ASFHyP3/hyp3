@@ -9,6 +9,14 @@ from uuid import uuid4
 from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
+from dynamo.exceptions import (
+    InsufficientCreditsError,
+    InvalidApplicationStatusError,
+    NotStartedApplicationError,
+    PendingApplicationError,
+    RejectedApplicationError,
+)
+from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, format_time, get_request_time_expression
 
 costs_file = Path(__file__).parent / 'costs.json'
@@ -22,15 +30,14 @@ else:
     DEFAULT_PARAMS_BY_JOB_TYPE = {}
 
 
-class InsufficientCreditsError(Exception):
-    """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
-
-
 def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = format_time(datetime.now(timezone.utc))
 
     user_record = dynamo.user.get_or_create_user(user_id)
+
+    _raise_for_application_status(user_record['application_status'], user_record['user_id'])
+
     remaining_credits = user_record['remaining_credits']
     priority_override = user_record.get('priority_override')
 
@@ -62,6 +69,17 @@ def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
                 batch.put_item(Item=convert_floats_to_decimals(prepared_job))
 
     return prepared_jobs
+
+
+def _raise_for_application_status(application_status: str, user_id: str) -> None:
+    if application_status == APPLICATION_NOT_STARTED:
+        raise NotStartedApplicationError(user_id)
+    if application_status == APPLICATION_PENDING:
+        raise PendingApplicationError(user_id)
+    if application_status == APPLICATION_REJECTED:
+        raise RejectedApplicationError(user_id)
+    if application_status != APPLICATION_APPROVED:
+        raise InvalidApplicationStatusError(user_id, application_status)
 
 
 def _prepare_job_for_database(

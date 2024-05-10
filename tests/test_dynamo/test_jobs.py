@@ -6,6 +6,14 @@ import pytest
 from conftest import list_have_same_elements
 
 import dynamo
+from dynamo.exceptions import (
+    InsufficientCreditsError,
+    InvalidApplicationStatusError,
+    NotStartedApplicationError,
+    PendingApplicationError,
+    RejectedApplicationError,
+)
+from dynamo.user import APPLICATION_APPROVED
 
 
 def test_query_jobs_by_user(tables):
@@ -257,14 +265,14 @@ def test_get_credit_cost_validate_keys():
         dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_F'}, costs)
 
 
-def test_put_jobs(tables, monkeypatch):
+def test_put_jobs(tables, monkeypatch, approved_user):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '10')
     payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
 
     with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
         mock_get_current_month.return_value = '2024-02'
 
-        jobs = dynamo.jobs.put_jobs('user1', payload)
+        jobs = dynamo.jobs.put_jobs(approved_user, payload)
 
         mock_get_current_month.assert_called_once_with()
 
@@ -274,19 +282,70 @@ def test_put_jobs(tables, monkeypatch):
             'name', 'job_id', 'user_id', 'status_code', 'execution_started', 'request_time', 'priority', 'credit_cost'
         }
         assert job['request_time'] <= dynamo.util.format_time(datetime.now(timezone.utc))
-        assert job['user_id'] == 'user1'
+        assert job['user_id'] == approved_user
         assert job['status_code'] == 'PENDING'
         assert job['execution_started'] is False
         assert job['credit_cost'] == 1
 
     assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
 
-    assert tables.users_table.scan()['Items'] == [
-        {'user_id': 'user1', 'remaining_credits': 7, 'month_of_last_credits_reset': '2024-02'}
-    ]
+    assert tables.users_table.scan()['Items'] == [{
+        'user_id': approved_user,
+        'remaining_credits': Decimal(7),
+        '_month_of_last_credit_reset': '2024-02',
+        'application_status': APPLICATION_APPROVED,
+    }]
 
 
-def test_put_jobs_default_params(tables):
+def test_put_jobs_application_status(tables):
+    payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
+
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            'application_status': dynamo.user.APPLICATION_NOT_STARTED,
+        }
+    )
+    with pytest.raises(NotStartedApplicationError):
+        dynamo.jobs.put_jobs('foo', payload)
+    assert tables.jobs_table.scan()['Items'] == []
+
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            'application_status': dynamo.user.APPLICATION_PENDING,
+        }
+    )
+    with pytest.raises(PendingApplicationError):
+        dynamo.jobs.put_jobs('foo', payload)
+    assert tables.jobs_table.scan()['Items'] == []
+
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            'application_status': dynamo.user.APPLICATION_REJECTED,
+        }
+    )
+    with pytest.raises(RejectedApplicationError):
+        dynamo.jobs.put_jobs('foo', payload)
+    assert tables.jobs_table.scan()['Items'] == []
+
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            'application_status': 'bar',
+        }
+    )
+    with pytest.raises(InvalidApplicationStatusError):
+        dynamo.jobs.put_jobs('foo', payload)
+    assert tables.jobs_table.scan()['Items'] == []
+
+
+def test_put_jobs_default_params(tables, approved_user):
     default_params = {
         'JOB_TYPE_A': {'a1': 'a1_default', 'a2': 'a2_default'},
         'JOB_TYPE_B': {'b1': 'b1_default'},
@@ -313,7 +372,7 @@ def test_put_jobs_default_params(tables):
     ]
     with unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params), \
             unittest.mock.patch('dynamo.jobs.COSTS', costs):
-        jobs = dynamo.jobs.put_jobs('user1', payload)
+        jobs = dynamo.jobs.put_jobs(approved_user, payload)
 
     assert 'job_parameters' not in jobs[0]
     assert jobs[1]['job_parameters'] == {'a1': 'a1_default', 'a2': 'a2_default'}
@@ -331,8 +390,8 @@ def test_put_jobs_default_params(tables):
     assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
 
 
-def test_put_jobs_costs(tables):
-    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': Decimal(100)})
+def test_put_jobs_costs(tables, monkeypatch, approved_user):
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '100')
 
     costs = [
         {
@@ -390,7 +449,7 @@ def test_put_jobs_costs(tables):
     ]
     with unittest.mock.patch('dynamo.jobs.COSTS', costs), \
             unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params):
-        jobs = dynamo.jobs.put_jobs('user1', payload)
+        jobs = dynamo.jobs.put_jobs(approved_user, payload)
 
     assert len(jobs) == 8
 
@@ -413,39 +472,27 @@ def test_put_jobs_costs(tables):
     assert jobs[7]['credit_cost'] == Decimal('0.4')
 
     assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
-    assert tables.users_table.scan()['Items'] == [{'user_id': 'user1', 'remaining_credits': Decimal('11.7')}]
+    assert tables.users_table.scan()['Items'][0]['remaining_credits'] == Decimal('11.7')
 
 
-def test_put_jobs_user_exists(tables):
-    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 5})
-
-    jobs = dynamo.jobs.put_jobs('user1', [{}, {}])
-
-    assert len(jobs) == 2
-    assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
-    assert tables.users_table.scan()['Items'] == [{'user_id': 'user1', 'remaining_credits': 3}]
-
-
-def test_put_jobs_insufficient_credits(tables, monkeypatch):
+def test_put_jobs_insufficient_credits(tables, monkeypatch, approved_user):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '1')
     payload = [{'name': 'name1'}, {'name': 'name2'}]
 
-    with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
-        mock_get_current_month.return_value = '2024-02'
-        with pytest.raises(dynamo.jobs.InsufficientCreditsError):
-            dynamo.jobs.put_jobs('user1', payload)
+    with pytest.raises(InsufficientCreditsError):
+        dynamo.jobs.put_jobs(approved_user, payload)
 
     assert tables.jobs_table.scan()['Items'] == []
-    assert tables.users_table.scan()['Items'] == [
-        {'user_id': 'user1', 'remaining_credits': 1, 'month_of_last_credits_reset': '2024-02'}
-    ]
+    assert tables.users_table.scan()['Items'][0]['remaining_credits'] == 1
 
 
 def test_put_jobs_infinite_credits(tables, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '1')
     payload = [{'name': 'name1'}, {'name': 'name2'}]
 
-    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': None})
+    tables.users_table.put_item(
+        Item={'user_id': 'user1', 'remaining_credits': None, 'application_status': APPLICATION_APPROVED}
+    )
 
     jobs = dynamo.jobs.put_jobs('user1', payload)
 
@@ -456,7 +503,10 @@ def test_put_jobs_infinite_credits(tables, monkeypatch):
 
 def test_put_jobs_priority_override(tables):
     payload = [{'name': 'name1'}, {'name': 'name2'}]
-    tables.users_table.put_item(Item={'user_id': 'user1', 'priority_override': 100, 'remaining_credits': 3})
+    user = {
+        'user_id': 'user1', 'priority_override': 100, 'remaining_credits': 3, 'application_status': APPLICATION_APPROVED
+    }
+    tables.users_table.put_item(Item=user)
 
     jobs = dynamo.jobs.put_jobs('user1', payload)
 
@@ -464,7 +514,13 @@ def test_put_jobs_priority_override(tables):
     for job in jobs:
         assert job['priority'] == 100
 
-    tables.users_table.put_item(Item={'user_id': 'user1', 'priority_override': 550, 'remaining_credits': None})
+    user = {
+        'user_id': 'user1',
+        'priority_override': 550,
+        'remaining_credits': None,
+        'application_status': APPLICATION_APPROVED
+    }
+    tables.users_table.put_item(Item=user)
 
     jobs = dynamo.jobs.put_jobs('user1', payload)
 
@@ -473,31 +529,31 @@ def test_put_jobs_priority_override(tables):
         assert job['priority'] == 550
 
 
-def test_put_jobs_priority(tables):
-    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 7})
+def test_put_jobs_priority(tables, monkeypatch, approved_user):
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '7')
 
-    jobs = dynamo.jobs.put_jobs(user_id='user1', jobs=[{}, {}, {}])
+    jobs = dynamo.jobs.put_jobs(user_id=approved_user, jobs=[{}, {}, {}])
     assert jobs[0]['priority'] == 7
     assert jobs[1]['priority'] == 6
     assert jobs[2]['priority'] == 5
 
-    jobs.extend(dynamo.jobs.put_jobs(user_id='user1', jobs=[{}, {}, {}, {}]))
+    jobs.extend(dynamo.jobs.put_jobs(user_id=approved_user, jobs=[{}, {}, {}, {}]))
     assert jobs[3]['priority'] == 4
     assert jobs[4]['priority'] == 3
     assert jobs[5]['priority'] == 2
     assert jobs[6]['priority'] == 1
 
 
-def test_put_jobs_priority_extra_credits(tables):
-    tables.users_table.put_item(Item={'user_id': 'user1', 'remaining_credits': 10_003})
+def test_put_jobs_priority_extra_credits(tables, monkeypatch, approved_user):
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '10003')
 
-    jobs = dynamo.jobs.put_jobs(user_id='user1', jobs=[{}])
+    jobs = dynamo.jobs.put_jobs(user_id=approved_user, jobs=[{}])
     assert jobs[0]['priority'] == 9999
 
-    jobs.extend(dynamo.jobs.put_jobs(user_id='user1', jobs=[{}]))
+    jobs.extend(dynamo.jobs.put_jobs(user_id=approved_user, jobs=[{}]))
     assert jobs[1]['priority'] == 9999
 
-    jobs.extend(dynamo.jobs.put_jobs(user_id='user1', jobs=[{}] * 6))
+    jobs.extend(dynamo.jobs.put_jobs(user_id=approved_user, jobs=[{}] * 6))
     assert jobs[2]['priority'] == 9999
     assert jobs[3]['priority'] == 9999
     assert jobs[4]['priority'] == 9999
@@ -506,11 +562,11 @@ def test_put_jobs_priority_extra_credits(tables):
     assert jobs[7]['priority'] == 9996
 
 
-def test_put_jobs_decrement_credits_failure(tables):
+def test_put_jobs_decrement_credits_failure(tables, approved_user):
     with unittest.mock.patch('dynamo.user.decrement_credits') as mock_decrement_credits:
         mock_decrement_credits.side_effect = Exception('test error')
         with pytest.raises(Exception, match=r'^test error$'):
-            dynamo.jobs.put_jobs('user1', [{'name': 'job1'}])
+            dynamo.jobs.put_jobs(approved_user, [{'name': 'job1'}])
 
     assert tables.jobs_table.scan()['Items'] == []
 

@@ -14,6 +14,7 @@ USER_URI = '/user'
 
 DEFAULT_JOB_ID = 'myJobId'
 DEFAULT_USERNAME = 'test_username'
+DEFAULT_ACCESS_TOKEN = 'test_access_token'
 
 CMR_URL_RE = re.compile(f'{CMR_URL}.*')
 
@@ -24,11 +25,11 @@ def client():
         yield test_client
 
 
-def login(client, username=DEFAULT_USERNAME):
+def login(client, username=DEFAULT_USERNAME, access_token=DEFAULT_ACCESS_TOKEN):
     client.set_cookie(
         domain='localhost',
         key=AUTH_COOKIE,
-        value=auth.get_mock_jwt_cookie(username, lifetime_in_seconds=10_000)
+        value=auth.get_mock_jwt_cookie(username, lifetime_in_seconds=10_000, access_token=access_token)
     )
 
 
