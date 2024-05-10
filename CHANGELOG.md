@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.2.1]
+
+### Fixed
+- Added missing `requests` dependency to lib/dyanmo/setup.py. Fixes [#2269](https://github.com/ASFHyP3/hyp3/issues/2269).
+
 ## [7.2.0]
 
 This release includes changes to support an upcoming user whitelisting feature. A new user will be required to apply for HyP3 access and will not be able to submit jobs until an operator has manually reviewed and approved the application. As of this release, all new and existing users are automatically approved without being required to submit an application, but this will change in the near future.
