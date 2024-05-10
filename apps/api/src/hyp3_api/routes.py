@@ -5,13 +5,14 @@ from os import environ
 from pathlib import Path
 
 import yaml
-from flask import abort, g, jsonify, make_response, redirect, render_template, request
+from flask import Response, abort, g, jsonify, make_response, redirect, render_template, request
 from flask_cors import CORS
 from openapi_core import OpenAPI
 from openapi_core.contrib.flask.decorators import FlaskOpenAPIViewDecorator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 
 import dynamo
+from dynamo.exceptions import UnexpectedApplicationStatusError
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
 
@@ -157,7 +158,13 @@ def jobs_get_by_job_id(job_id):
 @app.route('/user', methods=['POST'])
 @openapi
 def user_post():
-    return handlers.post_user(request.form, g.user, g.edl_access_token)
+    try:
+        handlers.post_user(request.form, g.user, g.edl_access_token)
+    except UnexpectedApplicationStatusError as e:
+        # TODO: format response message as HTML and verify still shows as 403 in network tab
+        abort(Response(str(e), 403))
+    # TODO: customize success.html for username
+    return render_template(str(Path('request_access') / 'success.html'))
 
 
 @app.route('/user', methods=['GET'])

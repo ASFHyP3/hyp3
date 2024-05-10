@@ -1,7 +1,7 @@
 from http.client import responses
 
 import requests
-from flask import Response, abort, jsonify, request
+from flask import abort, jsonify, request
 
 import dynamo
 from dynamo.exceptions import InsufficientCreditsError, UnexpectedApplicationStatusError
@@ -61,15 +61,9 @@ def get_job_by_id(job_id):
     return job
 
 
-def post_user(body: dict, user: str, edl_access_token: str) -> str:
+def post_user(body: dict, user: str, edl_access_token: str) -> None:
     print(body)
-    try:
-        dynamo.user.create_user_application(user, edl_access_token, body)
-    except UnexpectedApplicationStatusError as e:
-        # TODO: format response message as HTML
-        abort(Response(str(e), 403))
-    # TODO: more informative message
-    return f'<p>Application for <code>{user}</code> was successfully submitted.</p>'
+    dynamo.user.create_user_application(user, edl_access_token, body)
 
 
 def get_user(user):
