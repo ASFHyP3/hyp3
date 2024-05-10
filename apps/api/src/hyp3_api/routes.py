@@ -68,6 +68,11 @@ def render_ui():
     return render_template('index.html')
 
 
+@app.route('/request_access')
+def render_request_access():
+    return render_template(str(Path('request_access') / 'request_access.html'))
+
+
 @app.errorhandler(404)
 def error404(_):
     return handlers.problem_format(404, 'The requested URL was not found on the server.'
