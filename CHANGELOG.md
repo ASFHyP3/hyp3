@@ -4,10 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [7.2.1]
 
-### Changed
-- The `PATCH /user` endpoint has been replaced by a `POST /user` endpoint that allows the user to submit a new application for HyP3 access. This endpoint is intended to be invoked via an HTML form.
+### Fixed
+- Added missing `requests` dependency to lib/dyanmo/setup.py. Fixes [#2269](https://github.com/ASFHyP3/hyp3/issues/2269).
 
 ## [7.2.0]
 
