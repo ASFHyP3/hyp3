@@ -22,16 +22,15 @@ def render_templates(job_types, security_environment, api_name):
     )
 
     for template_file in Path('.').glob('**/*.j2'):
-        # TODO: less hacky way to do this?
-        if template_file.parent == Path('apps') / 'api' / 'src' / 'hyp3_api' / 'ui' / 'swagger' / 'request_access':
-            continue
-
         template = env.get_template(str(template_file))
 
         output = template.render(
             job_types=job_types,
             security_environment=security_environment,
             api_name=api_name,
+            user_id='test_user',
+            email_address='email_address',
+            help_url='help_url',  # TODO: use the real help url
             json=json,
             snake_to_pascal_case=snake_to_pascal_case,
         )

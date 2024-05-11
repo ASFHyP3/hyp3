@@ -159,6 +159,7 @@ def jobs_get_by_job_id(job_id):
 @app.route('/user', methods=['POST'])
 @openapi
 def user_post():
+    # TODO: use jinja template inheritance for all the .html files under request_access/
     # TODO define this url somewhere else
     help_url = UnexpectedApplicationStatusError.help_url
     try:
