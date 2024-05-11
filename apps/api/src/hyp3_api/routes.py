@@ -12,7 +12,7 @@ from openapi_core.contrib.flask.decorators import FlaskOpenAPIViewDecorator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 
 import dynamo
-from dynamo.exceptions import UnexpectedApplicationStatusError
+from dynamo.exceptions import UnexpectedApplicationStatusError, PendingApplicationError
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
 
@@ -158,15 +158,27 @@ def jobs_get_by_job_id(job_id):
 @app.route('/user', methods=['POST'])
 @openapi
 def user_post():
+    # TODO define this url somewhere else
+    help_url = UnexpectedApplicationStatusError.help_url
     try:
         user_record = handlers.post_user(request.form, g.user, g.edl_access_token)
-    except UnexpectedApplicationStatusError as e:
-        # TODO: format response message as HTML and verify still shows as 403 in network tab
-        abort(Response(str(e), 403))
+    except PendingApplicationError:
+        abort(
+            Response(
+                render_template(
+                    str(Path('request_access') / 'error.html.j2'),
+                    user_id=g.user,
+                    help_url=help_url,
+                ),
+                403
+            )
+        )
+    # TODO handle other exception types, generalize error.html.j2 for other application statuses
     return render_template(
         str(Path('request_access') / 'success.html.j2'),
         user_id=g.user,
         email_address=user_record['_edl_profile']['email_address'],
+        help_url=help_url,
     )
 
 

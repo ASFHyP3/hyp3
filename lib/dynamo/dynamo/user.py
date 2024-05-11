@@ -21,7 +21,6 @@ APPLICATION_APPROVED = 'APPROVED'
 APPLICATION_REJECTED = 'REJECTED'
 
 
-# TODO: do we still want to return the user record from this function?
 def create_user_application(user_id: str, edl_access_token: str, body: dict) -> dict:
     user = get_or_create_user(user_id)
     application_status = user['application_status']
