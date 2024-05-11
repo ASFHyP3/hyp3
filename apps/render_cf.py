@@ -22,6 +22,10 @@ def render_templates(job_types, security_environment, api_name):
     )
 
     for template_file in Path('.').glob('**/*.j2'):
+        # TODO: less hacky way to do this?
+        if template_file.parent == Path('apps') / 'api' / 'src' / 'hyp3_api' / 'ui' / 'swagger' / 'request_access':
+            continue
+
         template = env.get_template(str(template_file))
 
         output = template.render(
