@@ -61,9 +61,9 @@ def get_job_by_id(job_id):
     return job
 
 
-def post_user(body: dict, user: str, edl_access_token: str) -> None:
+def post_user(body: dict, user: str, edl_access_token: str) -> dict:
     print(body)
-    dynamo.user.create_user_application(user, edl_access_token, body)
+    return dynamo.user.create_user_application(user, edl_access_token, body)
 
 
 def get_user(user):

@@ -159,12 +159,15 @@ def jobs_get_by_job_id(job_id):
 @openapi
 def user_post():
     try:
-        handlers.post_user(request.form, g.user, g.edl_access_token)
+        user_record = handlers.post_user(request.form, g.user, g.edl_access_token)
     except UnexpectedApplicationStatusError as e:
         # TODO: format response message as HTML and verify still shows as 403 in network tab
         abort(Response(str(e), 403))
-    # TODO: customize success.html for username
-    return render_template(str(Path('request_access') / 'success.html'))
+    return render_template(
+        str(Path('request_access') / 'success.html.j2'),
+        user_id=g.user,
+        email_address=user_record['_edl_profile']['email_address'],
+    )
 
 
 @app.route('/user', methods=['GET'])
