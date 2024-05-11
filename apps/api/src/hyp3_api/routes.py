@@ -12,7 +12,8 @@ from openapi_core.contrib.flask.decorators import FlaskOpenAPIViewDecorator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 
 import dynamo
-from dynamo.exceptions import UnexpectedApplicationStatusError, PendingApplicationError
+from dynamo.exceptions import UnexpectedApplicationStatusError, PendingApplicationError, RejectedApplicationError, \
+    ApprovedApplicationError
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
 
@@ -166,14 +167,35 @@ def user_post():
         abort(
             Response(
                 render_template(
-                    str(Path('request_access') / 'error.html.j2'),
+                    str(Path('request_access') / 'error_pending.html.j2'),
                     user_id=g.user,
                     help_url=help_url,
                 ),
                 403
             )
         )
-    # TODO handle other exception types, generalize error.html.j2 for other application statuses
+    except RejectedApplicationError:
+        abort(
+            Response(
+                render_template(
+                    str(Path('request_access') / 'error_rejected.html.j2'),
+                    user_id=g.user,
+                    help_url=help_url,
+                ),
+                403
+            )
+        )
+    except ApprovedApplicationError:
+        abort(
+            Response(
+                render_template(
+                    str(Path('request_access') / 'error_approved.html.j2'),
+                    user_id=g.user,
+                    help_url=help_url,
+                ),
+                403
+            )
+        )
     return render_template(
         str(Path('request_access') / 'success.html.j2'),
         user_id=g.user,
