@@ -163,6 +163,8 @@ def user_post():
     help_url = UnexpectedApplicationStatusError.help_url
     try:
         user_record = handlers.post_user(request.form, g.user, g.edl_access_token)
+    # TODO: revise dynamo.exceptions now that messages are not used here
+    # TODO: factor out helper function for abort(Response(...))
     except PendingApplicationError:
         abort(
             Response(
