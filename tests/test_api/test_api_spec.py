@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from test_api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login
+from test_api.conftest import AUTH_COOKIE, JOBS_URI, REQUEST_ACCESS_URI, USER_URI, login
 
 from hyp3_api import auth
 
@@ -37,10 +37,10 @@ def test_not_logged_in(client):
 
 
 def test_request_access_not_logged_in(client):
-    response = client.options('/request_access')
+    response = client.options(REQUEST_ACCESS_URI)
     assert response.status_code == HTTPStatus.OK
 
-    response = client.get('/request_access')
+    response = client.get(REQUEST_ACCESS_URI)
     assert response.location == (
         'https://urs.earthdata.nasa.gov/oauth/authorize?response_type=code'
         '&client_id=BO_n7nTIlMljdvU6kRRB3g'
