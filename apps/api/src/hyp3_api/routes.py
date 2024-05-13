@@ -13,10 +13,10 @@ from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 
 import dynamo
 from dynamo.exceptions import (
-    ApprovedApplicationError,
-    PendingApplicationError,
-    RejectedApplicationError,
-    UnexpectedApplicationStatusError,
+    ResubmitApprovedApplicationError,
+    ResubmitPendingApplicationError,
+    ResubmitRejectedApplicationError,
+    UnapprovedUserError,
 )
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
@@ -29,7 +29,7 @@ CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=
 AUTHENTICATED_ROUTES = ['/jobs', '/user']
 
 # TODO define this url somewhere else
-HELP_URL = UnexpectedApplicationStatusError.help_url
+HELP_URL = UnapprovedUserError.help_url
 
 
 @app.before_request
@@ -168,12 +168,11 @@ def jobs_get_by_job_id(job_id):
 def user_post():
     try:
         user_record = handlers.post_user(request.form, g.user, g.edl_access_token)
-    # TODO: revise dynamo.exceptions now that messages are not used here
-    except PendingApplicationError:
+    except ResubmitPendingApplicationError:
         _user_post_error('error_pending.html')
-    except RejectedApplicationError:
+    except ResubmitRejectedApplicationError:
         _user_post_error('error_rejected.html')
-    except ApprovedApplicationError:
+    except ResubmitApprovedApplicationError:
         _user_post_error('error_approved.html')
     return render_template(
         str(Path('request_access') / 'success.html'),

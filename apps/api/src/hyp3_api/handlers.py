@@ -4,7 +4,7 @@ import requests
 from flask import abort, jsonify, request
 
 import dynamo
-from dynamo.exceptions import InsufficientCreditsError, UnexpectedApplicationStatusError
+from dynamo.exceptions import InsufficientCreditsError, UnapprovedUserError
 from hyp3_api import util
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
@@ -33,7 +33,7 @@ def post_jobs(body, user):
 
     try:
         body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], dry_run=body.get('validate_only'))
-    except UnexpectedApplicationStatusError as e:
+    except UnapprovedUserError as e:
         abort(problem_format(403, str(e)))
     except InsufficientCreditsError as e:
         abort(problem_format(400, str(e)))

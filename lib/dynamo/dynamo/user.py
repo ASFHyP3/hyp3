@@ -7,11 +7,11 @@ import botocore.exceptions
 import requests
 
 from dynamo.exceptions import (
-    ApprovedApplicationError,
     DatabaseConditionException,
     InvalidApplicationStatusError,
-    PendingApplicationError,
-    RejectedApplicationError,
+    ResubmitApprovedApplicationError,
+    ResubmitPendingApplicationError,
+    ResubmitRejectedApplicationError,
 )
 from dynamo.util import DYNAMODB_RESOURCE
 
@@ -47,11 +47,11 @@ def create_user_application(user_id: str, edl_access_token: str, body: dict) -> 
             raise
         return user
     if application_status == APPLICATION_PENDING:
-        raise PendingApplicationError(user_id)
+        raise ResubmitPendingApplicationError(user_id)
     if application_status == APPLICATION_REJECTED:
-        raise RejectedApplicationError(user_id)
+        raise ResubmitRejectedApplicationError(user_id)
     if application_status == APPLICATION_APPROVED:
-        raise ApprovedApplicationError(user_id)
+        raise ResubmitApprovedApplicationError(user_id)
     raise InvalidApplicationStatusError(user_id, application_status)
 
 
