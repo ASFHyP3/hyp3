@@ -49,9 +49,16 @@ def authenticate_user():
     if payload is not None:
         g.user = payload['urs-user-id']
         g.edl_access_token = payload['urs-access-token']
-    else:
-        if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
-            abort(handlers.problem_format(401, 'No authorization token provided'))
+    elif request.path == '/request_access' and request.method != 'OPTIONS':
+        return redirect(
+            'https://urs.earthdata.nasa.gov/oauth/authorize?response_type=code'
+            '&client_id=BO_n7nTIlMljdvU6kRRB3g'
+            '&redirect_uri=https://auth.asf.alaska.edu/login'
+            # TODO don't hard-code API
+            '&state=https://hyp3-whitelisting-sandbox.asf.alaska.edu/request_access'
+        )
+    elif any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
+        abort(handlers.problem_format(401, 'No authorization token provided'))
 
 
 @app.route('/')

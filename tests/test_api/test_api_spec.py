@@ -36,6 +36,16 @@ def test_not_logged_in(client):
                 assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
+def test_request_access_not_logged_in(client):
+    response = client.options('/request_access')
+    assert response.status_code == HTTPStatus.OK
+
+    response = client.get('/request_access')
+    # TODO: assert full redirect url
+    assert 'earthdata' in response.location
+    assert response.status_code == HTTPStatus.FOUND
+
+
 def test_invalid_cookie(client):
     for uri in ENDPOINTS:
         client.set_cookie(
