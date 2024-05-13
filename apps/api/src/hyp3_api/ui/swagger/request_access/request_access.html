@@ -7,8 +7,14 @@
 </head>
 <body>
     <div id="content">
-        {% block content %}
-        {% endblock %}
+        <div id="content-header">
+            <a class="logo" href="https://asf.alaska.edu/" title="ASF" target="_blank"><img src="{{ url_for('static', filename='request_access/asf-logo.png') }}" alt="logo"></a>
+            <a class="logo" href="https://hyp3-docs.asf.alaska.edu/" title="HyP3" target="_blank"><img src="{{ url_for('static', filename='request_access/hyp3-logo.png') }}" alt="logo"></a>
+        </div>
+        <div id="content-body">
+            {% block content %}
+            {% endblock %}
+        </div>
     </div>
 </body>
 </html>
