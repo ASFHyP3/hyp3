@@ -10,12 +10,13 @@ from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATI
 def test_post_user(client, tables):
     login(client, 'foo')
     with unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
-        mock_get_edl_profile.return_value = {}
+        mock_get_edl_profile.return_value = {'email_address': 'foo@example.com'}
         response = client.post(USER_URI, data={'use_case': 'I want data.'})
         mock_get_edl_profile.assert_called_once_with('foo', DEFAULT_ACCESS_TOKEN)
 
     assert response.status_code == HTTPStatus.OK
-    assert response.data == b'<p>Application for <code>foo</code> was successfully submitted.</p>'
+    assert b'successfully requested access to HyP3 for <b>foo</b>' in response.data
+    assert b'email you at <b>foo@example.com</b>' in response.data
 
 
 def test_post_user_not_started(client, tables):
@@ -29,12 +30,13 @@ def test_post_user_not_started(client, tables):
 
     login(client, 'foo')
     with unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
-        mock_get_edl_profile.return_value = {}
+        mock_get_edl_profile.return_value = {'email_address': 'foo@example.com'}
         response = client.post(USER_URI, data={'use_case': 'I want data.'})
         mock_get_edl_profile.assert_called_once_with('foo', DEFAULT_ACCESS_TOKEN)
 
     assert response.status_code == HTTPStatus.OK
-    assert response.data == b'<p>Application for <code>foo</code> was successfully submitted.</p>'
+    assert b'successfully requested access to HyP3 for <b>foo</b>' in response.data
+    assert b'email you at <b>foo@example.com</b>' in response.data
 
 
 def test_post_user_pending(client, tables):
@@ -50,7 +52,7 @@ def test_post_user_pending(client, tables):
     response = client.post(USER_URI, data={'use_case': 'I want data.'})
 
     assert response.status_code == HTTPStatus.FORBIDDEN
-    assert b'is pending review' in response.data
+    assert b"<b>foo</b>'s request for access is pending review" in response.data
 
 
 def test_post_user_rejected(client, tables):
@@ -66,7 +68,7 @@ def test_post_user_rejected(client, tables):
     response = client.post(USER_URI, data={'use_case': 'I want data.'})
 
     assert response.status_code == HTTPStatus.FORBIDDEN
-    assert b'has been rejected' in response.data
+    assert b"<b>foo</b>'s request for access has been rejected" in response.data
 
 
 def test_post_user_approved(client, tables):
@@ -82,4 +84,4 @@ def test_post_user_approved(client, tables):
     response = client.post(USER_URI, data={'use_case': 'I want data.'})
 
     assert response.status_code == HTTPStatus.FORBIDDEN
-    assert b'is already approved' in response.data
+    assert b"<b>foo</b>'s request for access has already been approved" in response.data
