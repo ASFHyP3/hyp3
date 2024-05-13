@@ -1,5 +1,7 @@
 """Custom exceptions for the dynamo library."""
 
+REQUESTING_ACCESS_URL = 'https://hyp3-docs.asf.alaska.edu/using/requesting_access'
+
 
 class DatabaseConditionException(Exception):
     """Raised when a DynamoDB condition expression check fails."""
@@ -30,26 +32,24 @@ class InsufficientCreditsError(Exception):
 
 class UnapprovedUserError(Exception):
     """Raised when an unapproved user attempts to submit jobs."""
-    # TODO define this url elsewhere
-    help_url = 'https://hyp3-docs.asf.alaska.edu/using/requesting_access'
 
 
 class NotStartedApplicationError(UnapprovedUserError):
     def __init__(self, user_id: str):
         super().__init__(
-            f'{user_id} must request access before submitting jobs. Visit {self.help_url}'
+            f'{user_id} must request access before submitting jobs. Visit {REQUESTING_ACCESS_URL}'
         )
 
 
 class PendingApplicationError(UnapprovedUserError):
     def __init__(self, user_id: str):
         super().__init__(
-            f"{user_id}'s request for access is pending review. For more information, visit {self.help_url}"
+            f"{user_id}'s request for access is pending review. For more information, visit {REQUESTING_ACCESS_URL}"
         )
 
 
 class RejectedApplicationError(UnapprovedUserError):
     def __init__(self, user_id: str):
         super().__init__(
-            f"{user_id}'s request for access has been rejected. For more information, visit {self.help_url}"
+            f"{user_id}'s request for access has been rejected. For more information, visit {REQUESTING_ACCESS_URL}"
         )

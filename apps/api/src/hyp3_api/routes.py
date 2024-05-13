@@ -13,10 +13,10 @@ from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 
 import dynamo
 from dynamo.exceptions import (
+    REQUESTING_ACCESS_URL,
     ResubmitApprovedApplicationError,
     ResubmitPendingApplicationError,
     ResubmitRejectedApplicationError,
-    UnapprovedUserError,
 )
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
@@ -27,9 +27,6 @@ api_spec = OpenAPI.from_dict(api_spec_dict)
 CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
 
 AUTHENTICATED_ROUTES = ['/jobs', '/user']
-
-# TODO define this url somewhere else
-HELP_URL = UnapprovedUserError.help_url
 
 
 @app.before_request
@@ -178,7 +175,7 @@ def user_post():
         str(Path('request_access') / 'success.html'),
         user_id=g.user,
         email_address=user_record['_edl_profile']['email_address'],
-        help_url=HELP_URL,
+        help_url=REQUESTING_ACCESS_URL,
     )
 
 
@@ -188,7 +185,7 @@ def _user_post_error(template_name: str) -> None:
             render_template(
                 str(Path('request_access') / template_name),
                 user_id=g.user,
-                help_url=HELP_URL,
+                help_url=REQUESTING_ACCESS_URL,
             ),
             403
         )
