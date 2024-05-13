@@ -12,8 +12,12 @@ from openapi_core.contrib.flask.decorators import FlaskOpenAPIViewDecorator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 
 import dynamo
-from dynamo.exceptions import UnexpectedApplicationStatusError, PendingApplicationError, RejectedApplicationError, \
-    ApprovedApplicationError
+from dynamo.exceptions import (
+    ApprovedApplicationError,
+    PendingApplicationError,
+    RejectedApplicationError,
+    UnexpectedApplicationStatusError,
+)
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
 
@@ -23,6 +27,9 @@ api_spec = OpenAPI.from_dict(api_spec_dict)
 CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
 
 AUTHENTICATED_ROUTES = ['/jobs', '/user']
+
+# TODO define this url somewhere else
+HELP_URL = UnexpectedApplicationStatusError.help_url
 
 
 @app.before_request
@@ -159,50 +166,33 @@ def jobs_get_by_job_id(job_id):
 @app.route('/user', methods=['POST'])
 @openapi
 def user_post():
-    # TODO define this url somewhere else
-    help_url = UnexpectedApplicationStatusError.help_url
     try:
         user_record = handlers.post_user(request.form, g.user, g.edl_access_token)
     # TODO: revise dynamo.exceptions now that messages are not used here
-    # TODO: factor out helper function for abort(Response(...))
     except PendingApplicationError:
-        abort(
-            Response(
-                render_template(
-                    str(Path('request_access') / 'error_pending.html'),
-                    user_id=g.user,
-                    help_url=help_url,
-                ),
-                403
-            )
-        )
+        _user_post_error('error_pending.html')
     except RejectedApplicationError:
-        abort(
-            Response(
-                render_template(
-                    str(Path('request_access') / 'error_rejected.html'),
-                    user_id=g.user,
-                    help_url=help_url,
-                ),
-                403
-            )
-        )
+        _user_post_error('error_rejected.html')
     except ApprovedApplicationError:
-        abort(
-            Response(
-                render_template(
-                    str(Path('request_access') / 'error_approved.html'),
-                    user_id=g.user,
-                    help_url=help_url,
-                ),
-                403
-            )
-        )
+        _user_post_error('error_approved.html')
     return render_template(
         str(Path('request_access') / 'success.html'),
         user_id=g.user,
         email_address=user_record['_edl_profile']['email_address'],
-        help_url=help_url,
+        help_url=HELP_URL,
+    )
+
+
+def _user_post_error(template_name: str) -> None:
+    abort(
+        Response(
+            render_template(
+                str(Path('request_access') / template_name),
+                user_id=g.user,
+                help_url=HELP_URL,
+            ),
+            403
+        )
     )
 
 
