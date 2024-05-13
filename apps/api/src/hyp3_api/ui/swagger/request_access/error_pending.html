@@ -1,18 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Request access to HyP3</title>
-    <link rel="stylesheet" href="/ui/request_access/request_access.css">
-</head>
-<body>
-    <div id="form">
-        <p>
-            <b>{{ user_id }}</b>'s request for access is pending review.
-        </p>
-        <p>
-            For more information, visit <a href="{{ help_url }}">{{ help_url }}</a>.
-        </p>
-    </div>
-</body>
-</html>
+{% extends "request_access/request_access.html" %}
+{% block form %}
+<p>
+    <b>{{ user_id }}</b>'s request for access is pending review.
+</p>
+<p>
+    For more information, visit <a href="{{ help_url }}">{{ help_url }}</a>.
+</p>
+{% endblock %}
