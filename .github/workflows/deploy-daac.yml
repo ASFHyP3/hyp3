@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - environment: hyp3-edc-prod
-            domain: ''
+            domain: 'hyp3-api.asf.alaska.edu'
             api_name: hyp3
             template_bucket: cf-templates-118mtzosmrltk-us-west-2
             image_tag: latest
@@ -35,7 +35,7 @@ jobs:
             distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
 
           - environment: hyp3-edc-uat
-            domain: ''
+            domain: 'hyp3-test-api.asf.alaska.edu'
             api_name: hyp3-test
             template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
             image_tag: test

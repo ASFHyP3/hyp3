@@ -41,8 +41,12 @@ def test_request_access_not_logged_in(client):
     assert response.status_code == HTTPStatus.OK
 
     response = client.get('/request_access')
-    # TODO: assert full redirect url
-    assert 'earthdata' in response.location
+    assert response.location == (
+        'https://urs.earthdata.nasa.gov/oauth/authorize?response_type=code'
+        '&client_id=BO_n7nTIlMljdvU6kRRB3g'
+        '&redirect_uri=https://auth.asf.alaska.edu/login'
+        '&state=https://hyp3-domain-name/request_access'
+    )
     assert response.status_code == HTTPStatus.FOUND
 
 

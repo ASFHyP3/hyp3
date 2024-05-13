@@ -1,5 +1,8 @@
 Parameters:
 
+  DomainName:
+    Type: String
+
   JobsTable:
     Type: String
 
@@ -32,9 +35,6 @@ Parameters:
     Type: CommaDelimitedList
 
   {% else %}
-  DomainName:
-    Type: String
-
   CertificateArn:
     Type: String
   {% endif %}
@@ -177,6 +177,7 @@ Resources:
     Properties:
       Environment:
         Variables:
+          DOMAIN_NAME: !Ref DomainName
           JOBS_TABLE_NAME: !Ref JobsTable
           USERS_TABLE_NAME: !Ref UsersTable
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
