@@ -49,6 +49,8 @@ Resources:
   RestApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
+      BinaryMediaTypes:
+        - image/png
       EndpointConfiguration:
         Types:
           - {{ 'PRIVATE' if security_environment == 'EDC' else 'REGIONAL' }}
