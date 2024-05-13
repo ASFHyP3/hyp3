@@ -4,6 +4,11 @@ body {
   font-family: sans-serif;
 }
 
+h1 {
+  font-weight: normal;
+  margin-top: -5px;
+}
+
 #content {
   width: 50%;
   display: inline-block;
