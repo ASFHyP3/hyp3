@@ -1,0 +1,13 @@
+{% extends "request_access/request_access.html" %}
+{% block form %}
+<p>TODO: intro text</p>
+<form action="/user" method="post">
+    <p>
+        <label for="use_case">Use Case:</label>
+        <textarea name="use_case" rows="5"></textarea>
+    </p>
+    <p>
+        <input type="submit" value="Submit" />
+    </p>
+</form>
+{% endblock %}

@@ -72,7 +72,7 @@ def render_ui():
 
 @app.route('/request_access')
 def render_request_access():
-    return render_template(str(Path('request_access') / 'request_access.html'))
+    return render_template(str(Path('request_access') / 'form.html'))
 
 
 @app.errorhandler(404)
@@ -170,7 +170,7 @@ def user_post():
         abort(
             Response(
                 render_template(
-                    str(Path('request_access') / 'error_pending.html.j2'),
+                    str(Path('request_access') / 'error_pending.html'),
                     user_id=g.user,
                     help_url=help_url,
                 ),
@@ -181,7 +181,7 @@ def user_post():
         abort(
             Response(
                 render_template(
-                    str(Path('request_access') / 'error_rejected.html.j2'),
+                    str(Path('request_access') / 'error_rejected.html'),
                     user_id=g.user,
                     help_url=help_url,
                 ),
@@ -192,7 +192,7 @@ def user_post():
         abort(
             Response(
                 render_template(
-                    str(Path('request_access') / 'error_approved.html.j2'),
+                    str(Path('request_access') / 'error_approved.html'),
                     user_id=g.user,
                     help_url=help_url,
                 ),
@@ -200,7 +200,7 @@ def user_post():
             )
         )
     return render_template(
-        str(Path('request_access') / 'success.html.j2'),
+        str(Path('request_access') / 'success.html'),
         user_id=g.user,
         email_address=user_record['_edl_profile']['email_address'],
         help_url=help_url,

@@ -3,20 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Request access to HyP3</title>
-    <link rel="stylesheet" href="/ui/request_access/request_access.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='request_access/request_access.css') }}">
 </head>
 <body>
     <div id="form">
-        <p>TODO: intro text</p>
-        <form action="/user" method="post">
-            <p>
-                <label for="use_case">Use Case:</label>
-                <textarea name="use_case" rows="5"></textarea>
-            </p>
-            <p>
-                <input type="submit" value="Submit" />
-            </p>
-        </form>
+        {% block form %}
+        {% endblock %}
     </div>
 </body>
 </html>
