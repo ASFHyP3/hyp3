@@ -28,9 +28,6 @@ def render_templates(job_types, security_environment, api_name):
             job_types=job_types,
             security_environment=security_environment,
             api_name=api_name,
-            user_id='test_user',
-            email_address='email_address',
-            help_url='help_url',  # TODO: use the real help url
             json=json,
             snake_to_pascal_case=snake_to_pascal_case,
         )
