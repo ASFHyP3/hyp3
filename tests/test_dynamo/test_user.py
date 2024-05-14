@@ -16,7 +16,7 @@ from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATI
 
 
 def test_create_user_application(tables):
-    with unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
+    with unittest.mock.patch('dynamo.user.get_edl_profile') as mock_get_edl_profile:
         mock_get_edl_profile.return_value = {'key': 'value'}
         user = dynamo.user.create_user_application(
             'foo',
@@ -43,7 +43,7 @@ def test_create_user_application_not_started(tables):
             'application_status': APPLICATION_NOT_STARTED,
         }
     )
-    with unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
+    with unittest.mock.patch('dynamo.user.get_edl_profile') as mock_get_edl_profile:
         mock_get_edl_profile.return_value = {'key': 'value'}
         user = dynamo.user.create_user_application(
             'foo',
@@ -160,7 +160,7 @@ def test_create_user_application_inconsistent_application_status(tables):
         }
     )
     with unittest.mock.patch('dynamo.user.get_or_create_user') as mock_get_or_create_user, \
-            unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
+            unittest.mock.patch('dynamo.user.get_edl_profile') as mock_get_edl_profile:
         mock_get_or_create_user.return_value = {
             'user_id': 'foo',
             'application_status': APPLICATION_NOT_STARTED,

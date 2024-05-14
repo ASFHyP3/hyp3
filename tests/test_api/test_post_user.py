@@ -9,7 +9,7 @@ from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATI
 
 def test_post_user(client, tables):
     login(client, 'foo')
-    with unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
+    with unittest.mock.patch('dynamo.user.get_edl_profile') as mock_get_edl_profile:
         mock_get_edl_profile.return_value = {'email_address': 'foo@example.com'}
         response = client.post(USER_URI, data={'use_case': 'I want data.'})
         mock_get_edl_profile.assert_called_once_with('foo', DEFAULT_ACCESS_TOKEN)
@@ -29,7 +29,7 @@ def test_post_user_not_started(client, tables):
     )
 
     login(client, 'foo')
-    with unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
+    with unittest.mock.patch('dynamo.user.get_edl_profile') as mock_get_edl_profile:
         mock_get_edl_profile.return_value = {'email_address': 'foo@example.com'}
         response = client.post(USER_URI, data={'use_case': 'I want data.'})
         mock_get_edl_profile.assert_called_once_with('foo', DEFAULT_ACCESS_TOKEN)

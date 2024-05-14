@@ -25,7 +25,7 @@ def create_user_application(user_id: str, edl_access_token: str, body: dict) -> 
     user = get_or_create_user(user_id)
     application_status = user['application_status']
     if application_status == APPLICATION_NOT_STARTED:
-        edl_profile = _get_edl_profile(user_id, edl_access_token)
+        edl_profile = get_edl_profile(user_id, edl_access_token)
         users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
         try:
             user = users_table.update_item(
@@ -55,7 +55,7 @@ def create_user_application(user_id: str, edl_access_token: str, body: dict) -> 
     raise InvalidApplicationStatusError(user_id, application_status)
 
 
-def _get_edl_profile(user_id: str, edl_access_token: str) -> dict:
+def get_edl_profile(user_id: str, edl_access_token: str) -> dict:
     url = f'https://urs.earthdata.nasa.gov/api/users/{user_id}'
     response = requests.get(url, headers={'Authorization': f'Bearer {edl_access_token}'})
     response.raise_for_status()

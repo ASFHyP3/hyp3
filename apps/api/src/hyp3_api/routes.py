@@ -49,8 +49,8 @@ def authenticate_user():
     payload = auth.decode_token(cookie)
     if payload is not None:
         g.user = payload['urs-user-id']
-        g.edl_access_token = payload['urs-access-token']
-    # TODO: is there already a way to determine if the app is running locally (but not via pytest?)
+        if os.getenv('DISABLE_EDL_REDIRECT') != 'true':
+            g.edl_access_token = payload['urs-access-token']
     elif os.getenv('DISABLE_EDL_REDIRECT') != 'true' \
             and request.path == '/request_access' \
             and request.method != 'OPTIONS':
@@ -87,7 +87,27 @@ def render_ui():
 
 @app.route('/request_access')
 def render_request_access():
-    return render_template(str(Path('request_access') / 'form.html'))
+    if os.getenv('DISABLE_EDL_REDIRECT') != 'true':
+        edl_profile = dynamo.user.get_edl_profile(g.user, g.edl_access_token)
+    else:
+        edl_profile = {
+            'email_address': 'user@example.com',
+            'first_name': 'First',
+            'middle_initial': 'M',
+            'last_name': 'Last',
+            'organization': 'Organization',
+            'country': 'Country',
+        }
+    return render_template(
+        str(Path('request_access') / 'form.html'),
+        user_id=g.user,
+        email_address=edl_profile['email_address'],
+        first_name=edl_profile.get('first_name', ''),
+        middle_initial=edl_profile.get('middle_initial', ''),
+        last_name=edl_profile.get('last_name', ''),
+        organization=edl_profile.get('organization', ''),
+        country=edl_profile.get('country', ''),
+    )
 
 
 @app.errorhandler(404)
