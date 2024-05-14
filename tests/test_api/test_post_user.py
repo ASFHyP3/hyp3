@@ -15,7 +15,7 @@ def test_post_user(client, tables):
         mock_get_edl_profile.assert_called_once_with('foo', DEFAULT_ACCESS_TOKEN)
 
     assert response.status_code == HTTPStatus.OK
-    assert b'successfully requested access to HyP3 for <b>foo</b>' in response.data
+    assert b'successfully requested access for <b>foo</b>' in response.data
     assert b'email you at <b>foo@example.com</b>' in response.data
 
 
@@ -35,7 +35,7 @@ def test_post_user_not_started(client, tables):
         mock_get_edl_profile.assert_called_once_with('foo', DEFAULT_ACCESS_TOKEN)
 
     assert response.status_code == HTTPStatus.OK
-    assert b'successfully requested access to HyP3 for <b>foo</b>' in response.data
+    assert b'successfully requested access for <b>foo</b>' in response.data
     assert b'email you at <b>foo@example.com</b>' in response.data
 
 
