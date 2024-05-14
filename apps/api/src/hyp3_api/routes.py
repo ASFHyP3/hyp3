@@ -50,7 +50,10 @@ def authenticate_user():
     if payload is not None:
         g.user = payload['urs-user-id']
         g.edl_access_token = payload['urs-access-token']
-    elif request.path == '/request_access' and request.method != 'OPTIONS':
+    # TODO: is there already a way to determine if the app is running locally (but not via pytest?)
+    elif os.getenv('DISABLE_EDL_REDIRECT') != 'true' \
+            and request.path == '/request_access' \
+            and request.method != 'OPTIONS':
         domain_name = os.environ['DOMAIN_NAME']
         return redirect(
             'https://urs.earthdata.nasa.gov/oauth/authorize?response_type=code'

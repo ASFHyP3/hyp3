@@ -29,7 +29,7 @@ tests: render
 
 run: render
 	export $$(xargs < tests/cfg.env); \
-	python apps/api/src/hyp3_api/__main__.py
+	DISABLE_EDL_REDIRECT=true python apps/api/src/hyp3_api/__main__.py
 
 install:
 	python -m pip install -r requirements-all.txt
