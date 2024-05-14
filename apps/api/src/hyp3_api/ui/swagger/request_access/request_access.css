@@ -60,12 +60,11 @@ h2 {
 
 textarea {
   resize: vertical;
-  width: 100%;
-  margin: 8px 0;
+  width: 99%;
+  margin-top: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-family: sans-serif;
-  padding: 8px;
 }
 
 input[type=submit] {
