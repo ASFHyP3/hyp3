@@ -9,26 +9,32 @@
     processed using <a href="https://hyp3-docs.asf.alaska.edu/" target="_blank">ASF's cloud-native HyP3 platform</a>. Once processing
     is complete, the products can be downloaded for use in a variety of analysis workflows.</p>
 <p>These services are provided at no cost to the user, and anyone can request access.
-    To ensure that the processing is equitably distributed throughout the user community,
-    each user can only register one Earthdata Login account for use when submitting On-Demand processing jobs. If you
-    do not already have Earthdata Login credentials, you will need to
-    <a href="https://urs.earthdata.nasa.gov/users/new" target="_blank">register here</a> before submitting this form.
+    To ensure that processing is equitably distributed throughout the user community,
+    each user can only register one Earthdata Login account for use with ASF's On-Demand service.
 </p>
 
 <form action="/user" method="post">
-    <h2>Verify Earthdata Login profile details</h2>
+    <h2>Verify Earthdata Login Profile Information</h2>
 
-    <p>Please review your Earthdata Login Profile entries below. Note that the email listed is what ASF will use to
-        notify you of your approval status. If any of these entries need to be modified, update your
-        <a href="https://urs.earthdata.nasa.gov/profile" target="_blank">Earthdata Login Profile</a> before submitting this form.</p>
-    <p>TODO: Earthdata Login first name</p>
-    <p>TODO: Earthdata Login last name</p>
-    <p>TODO: Earthdata Login username</p>
-    <p>TODO: Earthdata Login email</p>
+    <p>
+        Please review your Earthdata Login profile information below.
+        Note that we will use the email address listed to notify you of your approval status.
+        If any of this information is incorrect, please update your
+        <a href="https://urs.earthdata.nasa.gov/profile" target="_blank">Earthdata Login profile</a>
+        and then refresh this page to view your updated information.
+    </p>
+
+    <div id="edl-profile">
+        <p><b>Name:</b> {{ first_name }} {{ middle_initial }} {{ last_name }}</p>
+        <p><b>Username:</b> {{ user_id }}</p>
+        <p><b>Email Address:</b> {{ email_address }}</p>
+        <p><b>Organization:</b> {{ organization }}</p>
+        <p><b>Country:</b> {{ country }}</p>
+    </div>
 
     <p>Check this box to verify that your Earthdata Login profile information is correct.</p>
-        <input type="checkbox" id="edlinfo" name="edlinfo" value="Yes" required>
-        <label for="edlinfo"> Yes, my Earthdata Login profile information is correct.</label>
+    <input type="checkbox" id="edlinfo" required>
+    <label for="edlinfo"> Yes, my Earthdata Login profile information is correct.</label>
 
     <h2>Use Case</h2>
 
@@ -37,6 +43,7 @@
 
     <details>
         <summary class="expandable-summary">Use Case Examples</summary>
+<!--        TODO: visually separate examples-->
         <div class="expandable-content">
             <p>I am a master's student in volcanology at the University of ___, and would like to analyze inflation
                 dynamics of volcanoes in my area using InSAR time series analysis with mintpy software.
@@ -54,7 +61,7 @@
     </details>
 
     <p>
-        <textarea name="use_case" rows="5" required></textarea>
+        <textarea name="use_case" rows="5" placeholder="Enter your use case here." required></textarea>
     </p>
     <p>
         <input type="submit" value="Submit" />
