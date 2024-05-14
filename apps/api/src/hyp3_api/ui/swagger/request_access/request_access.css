@@ -14,7 +14,7 @@ h2 {
   margin-top: 10px;
 }
 
-.content {
+.section {
   width: 50%;
   display: inline-block;
   overflow: hidden;
@@ -25,13 +25,13 @@ h2 {
   border-radius: 8px;
 }
 
-.content-header {
+.section-header {
   background: rgb(101, 102, 92);
   background: linear-gradient(180deg, rgba(101, 102, 92, 1) 0%, rgba(106, 106, 106, 1) 100%);
   padding: 20px;
 }
 
-.content-body {
+.section-body {
   padding: 20px;
   border: solid;
   border-color: #d9d9d9;
@@ -39,7 +39,7 @@ h2 {
   border-width: 1px;
 }
 
-#main-content-body {
+#main-section-body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   border-top: none;

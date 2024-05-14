@@ -1,6 +1,6 @@
 {% extends "request_access/request_access.html" %}
 
-{% block content %}
+{% block main_section_body %}
 <h1>{{ title }}</h1>
 <p>
     Thank you for your interest in <a href="https://hyp3-docs.asf.alaska.edu/" target="_blank">ASF's On-Demand processing service</a>.
@@ -18,10 +18,10 @@
 </p>
 {% endblock %}
 
-{% block more_content %}
+{% block additional_sections %}
 <form action="/user" method="post">
-    <div class="content">
-        <div class="content-body">
+    <div class="section">
+        <div class="section-body">
             <h2>Verify Earthdata Login Profile Information</h2>
             <p>
                 Please review your Earthdata Login profile information below.
@@ -42,8 +42,8 @@
             <label for="edlinfo">Yes, my Earthdata Login profile information is correct.</label>
         </div>
     </div>
-    <div class="content">
-        <div class="content-body">
+    <div class="section">
+        <div class="section-body">
             <h2>Use Case</h2>
             <p>
                 Please provide a short description (1-5 sentences) of how and why you would like to use ASF's On-Demand products.
