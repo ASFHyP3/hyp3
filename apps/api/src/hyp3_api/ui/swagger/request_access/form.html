@@ -1,6 +1,8 @@
 {% extends "request_access/request_access.html" %}
 {% block content %}
 
+<h1>{{ title }}</h1>
+
 <p>Thank you for your interest in <a href="https://hyp3-docs.asf.alaska.edu/">ASF’s On-Demand processing service</a>.</p>
 <p> This service allows users to submit Sentinel-1 acquisitions for processing to analysis-ready products,
     including Radiometric Terrain Corrected (RTC) SAR Backscatter and Interferometric SAR (InSAR). Products are
@@ -92,7 +94,7 @@ for (i = 0; i < coll.length; i++) {
 
 <form action="/user" method="post">
     <p>
-        <textarea name="use_case" rows="5"></textarea>
+        <textarea name="use_case" rows="5" required></textarea>
     </p>
     <p>
         <input type="submit" value="Submit" />

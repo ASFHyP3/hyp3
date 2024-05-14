@@ -11,6 +11,7 @@ AUTH_COOKIE = 'asf-urs'
 COSTS_URI = '/costs'
 JOBS_URI = '/jobs'
 USER_URI = '/user'
+REQUEST_ACCESS_URI = '/request_access'
 
 DEFAULT_JOB_ID = 'myJobId'
 DEFAULT_USERNAME = 'test_username'

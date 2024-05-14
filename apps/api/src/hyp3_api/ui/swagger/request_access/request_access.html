@@ -1,14 +1,21 @@
+{% set title %}Access Request for On Demand Processing using HyP3{% endset %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Access Request for On Demand Processing using HyP3</title>
+    <title>{{ title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='request_access/request_access.css') }}">
 </head>
 <body>
     <div id="content">
-        {% block content %}
-        {% endblock %}
+        <div id="content-header">
+            <a class="logo" href="https://asf.alaska.edu/" title="ASF" target="_blank"><img src="{{ url_for('static', filename='request_access/asf-logo.png') }}" alt="logo"></a>
+            <a class="logo" href="https://hyp3-docs.asf.alaska.edu/" title="HyP3" target="_blank"><img src="{{ url_for('static', filename='request_access/hyp3-logo.png') }}" alt="logo"></a>
+        </div>
+        <div id="content-body">
+            {% block content %}
+            {% endblock %}
+        </div>
     </div>
 </body>
 </html>

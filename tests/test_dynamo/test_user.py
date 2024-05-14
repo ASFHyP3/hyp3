@@ -6,11 +6,11 @@ import pytest
 
 import dynamo.user
 from dynamo.exceptions import (
-    ApprovedApplicationError,
     DatabaseConditionException,
     InvalidApplicationStatusError,
-    PendingApplicationError,
-    RejectedApplicationError,
+    ResubmitApprovedApplicationError,
+    ResubmitPendingApplicationError,
+    ResubmitRejectedApplicationError,
 )
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 
@@ -70,7 +70,7 @@ def test_create_user_application_pending(tables):
             'application_status': APPLICATION_PENDING,
         }
     )
-    with pytest.raises(PendingApplicationError):
+    with pytest.raises(ResubmitPendingApplicationError):
         dynamo.user.create_user_application(
             'foo',
             'test-edl-access-token',
@@ -91,7 +91,7 @@ def test_create_user_application_rejected(tables):
             'application_status': APPLICATION_REJECTED,
         }
     )
-    with pytest.raises(RejectedApplicationError):
+    with pytest.raises(ResubmitRejectedApplicationError):
         dynamo.user.create_user_application(
             'foo',
             'test-edl-access-token',
@@ -115,7 +115,7 @@ def test_create_user_application_approved(tables, monkeypatch):
     )
     with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
         mock_get_current_month.return_value = '2024-02'
-        with pytest.raises(ApprovedApplicationError):
+        with pytest.raises(ResubmitApprovedApplicationError):
             dynamo.user.create_user_application(
                 'foo',
                 'test-edl-access-token',

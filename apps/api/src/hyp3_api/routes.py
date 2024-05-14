@@ -1,5 +1,6 @@
 import datetime
 import json
+import os
 from decimal import Decimal
 from os import environ
 from pathlib import Path
@@ -13,10 +14,10 @@ from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 
 import dynamo
 from dynamo.exceptions import (
-    ApprovedApplicationError,
-    PendingApplicationError,
-    RejectedApplicationError,
-    UnexpectedApplicationStatusError,
+    REQUESTING_ACCESS_URL,
+    ResubmitApprovedApplicationError,
+    ResubmitPendingApplicationError,
+    ResubmitRejectedApplicationError,
 )
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
@@ -27,9 +28,6 @@ api_spec = OpenAPI.from_dict(api_spec_dict)
 CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
 
 AUTHENTICATED_ROUTES = ['/jobs', '/user']
-
-# TODO define this url somewhere else
-HELP_URL = UnexpectedApplicationStatusError.help_url
 
 
 @app.before_request
@@ -52,9 +50,16 @@ def authenticate_user():
     if payload is not None:
         g.user = payload['urs-user-id']
         g.edl_access_token = payload['urs-access-token']
-    else:
-        if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
-            abort(handlers.problem_format(401, 'No authorization token provided'))
+    elif request.path == '/request_access' and request.method != 'OPTIONS':
+        domain_name = os.environ['DOMAIN_NAME']
+        return redirect(
+            'https://urs.earthdata.nasa.gov/oauth/authorize?response_type=code'
+            '&client_id=BO_n7nTIlMljdvU6kRRB3g'
+            '&redirect_uri=https://auth.asf.alaska.edu/login'
+            f'&state=https://{domain_name}/request_access'
+        )
+    elif any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
+        abort(handlers.problem_format(401, 'No authorization token provided'))
 
 
 @app.route('/')
@@ -168,18 +173,17 @@ def jobs_get_by_job_id(job_id):
 def user_post():
     try:
         user_record = handlers.post_user(request.form, g.user, g.edl_access_token)
-    # TODO: revise dynamo.exceptions now that messages are not used here
-    except PendingApplicationError:
+    except ResubmitPendingApplicationError:
         _user_post_error('error_pending.html')
-    except RejectedApplicationError:
+    except ResubmitRejectedApplicationError:
         _user_post_error('error_rejected.html')
-    except ApprovedApplicationError:
+    except ResubmitApprovedApplicationError:
         _user_post_error('error_approved.html')
     return render_template(
         str(Path('request_access') / 'success.html'),
         user_id=g.user,
         email_address=user_record['_edl_profile']['email_address'],
-        help_url=HELP_URL,
+        help_url=REQUESTING_ACCESS_URL,
     )
 
 
@@ -189,7 +193,7 @@ def _user_post_error(template_name: str) -> None:
             render_template(
                 str(Path('request_access') / template_name),
                 user_id=g.user,
-                help_url=HELP_URL,
+                help_url=REQUESTING_ACCESS_URL,
             ),
             403
         )
