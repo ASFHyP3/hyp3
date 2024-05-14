@@ -87,7 +87,9 @@ def render_ui():
 
 @app.route('/request_access')
 def render_request_access():
-    return render_template(str(Path('request_access') / 'form.html'))
+    return render_template(
+        str(Path('request_access') / 'form.html'),
+    )
 
 
 @app.errorhandler(404)
