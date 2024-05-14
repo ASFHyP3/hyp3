@@ -4,19 +4,20 @@
 <!-- TODO: adjust h1 and h2 sizes and perhaps revise the title to be shorter -->
 <h1>{{ title }}</h1>
 <p>
-    Thank you for your interest in <a href="https://hyp3-docs.asf.alaska.edu/" target="_blank">ASF's On-Demand processing service</a>.
+    Thank you for your interest in <a href="https://hyp3-docs.asf.alaska.edu/" target="_blank">ASF's On Demand processing service</a>.
 </p>
 <p>
     <!-- TODO: revise to be more concise -->
-    This service allows users to submit Sentinel-1 acquisitions for processing to analysis-ready products,
+    This service allows users to submit Sentinel-1 acquisitions for conversion to analysis-ready products,
     including Radiometric Terrain Corrected (RTC) SAR Backscatter and Interferometric SAR (InSAR).
-    Products are processed using <a href="https://hyp3-docs.asf.alaska.edu/" target="_blank">ASF's cloud-native HyP3 platform</a>.
-    Once processing is complete, the products can be downloaded for use in a variety of analysis workflows.
+    Products are generated using <a href="https://hyp3-docs.asf.alaska.edu/" target="_blank">HyP3</a>,
+    ASF's cloud-based processing platform.
+    Finished products can be downloaded for use in a variety of analysis workflows.
 </p>
 <p>
     These services are provided at no cost to the user, and anyone can request access.
     To ensure that processing is equitably distributed throughout the user community,
-    each user can only register one Earthdata Login account for use with ASF's On-Demand service.
+    each user can only register one Earthdata Login account for use with ASF's On Demand service.
 </p>
 {% endblock %}
 
@@ -24,7 +25,7 @@
 <form action="/user" method="post">
     <div class="section">
         <div class="section-body">
-            <h2>Verify Earthdata Login Profile Information</h2>
+            <h2>Verify your Earthdata Login profile information</h2>
             <p>
                 Please review your Earthdata Login profile information below.
                 Note that we will use the email address listed to notify you of your approval status.
@@ -39,20 +40,21 @@
                 <p><b>Organization:</b> {{ organization }}</p>
                 <p><b>Country:</b> {{ country }}</p>
             </div>
-            <p>Check this box to verify that your Earthdata Login profile information is correct.</p>
-            <input type="checkbox" id="edlinfo" required>
-            <label for="edlinfo">Yes, my Earthdata Login profile information is correct.</label>
+            <p>
+                <input type="checkbox" id="edlinfo" required>
+                <label for="edlinfo">Yes, my Earthdata Login profile information is correct.</label>
+            </p>
         </div>
     </div>
     <div class="section">
         <div class="section-body">
-            <h2>Use Case</h2>
+            <h2>How do you want to use our service?</h2>
             <p>
-                Please provide a short description (1-5 sentences) of how and why you would like to use ASF's On-Demand products.
+                Please provide a short description (1-5 sentences) of how and why you would like to use ASF's On Demand products.
                 Expand the section below for some examples.
             </p>
             <details>
-                <summary class="expandable-summary">Use Case Examples</summary>
+                <summary class="expandable-summary">Examples</summary>
                 <div class="expandable-content">
                     <p><i>Example 1:</i></p>
                     <p>I am a master's student in volcanology at the University of ___, and would like to analyze inflation
@@ -67,11 +69,11 @@
                     <p><i>Example 3:</i></p>
                     <p>I'm a hydrologist for a government agency that monitors water resources. I have worked with SAR extensively,
                         and could process my own analysis-ready products, but a colleague mentioned this service to me. It would be a
-                        more efficient use of my time to use On-Demand InSAR and RTC products for monitoring groundwater use and
+                        more efficient use of my time to use On Demand InSAR and RTC products for monitoring groundwater use and
                         surface water extent dynamics.</p>
                 </div>
             </details>
-            <p><textarea name="use_case" rows="5" placeholder="Enter your use case here." required></textarea></p>
+            <p><textarea name="use_case" rows="5" placeholder="Enter your response here." required></textarea></p>
             <p><input type="submit" value="Submit" /></p>
         </div>
     </div>
