@@ -2,6 +2,10 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
+  DomainName:
+    Description: DNS domain name that will be used to invoke this api.
+    Type: String
+
   VpcId:
     Type: AWS::EC2::VPC::Id
 
@@ -85,10 +89,6 @@ Parameters:
     Default: r6id.xlarge
 
   {% if security_environment != 'EDC' %}
-  DomainName:
-    Description: DNS domain name that will be used to invoke this api.
-    Type: String
-
   CertificateArn:
     Description: ARN of Certificate in AWS Certificate Manager setup previously for this domain name.
     Type: String
@@ -118,6 +118,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
+        DomainName: !Ref DomainName
         JobsTable: !Ref JobsTable
         UsersTable: !Ref UsersTable
         AuthPublicKey: !Ref AuthPublicKey
@@ -130,7 +131,6 @@ Resources:
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% else %}
-        DomainName: !Ref DomainName
         CertificateArn: !Ref CertificateArn
         {% endif %}
       TemplateURL: api/api-cf.yml
