@@ -26,7 +26,7 @@
             <h2>Verify your Earthdata Login profile information</h2>
             <p>
                 Please review your Earthdata Login profile information below.
-                We will notify you of your approval status by sending an email to <b>{{ email_address }}</b>.
+                We will use the email address listed to notify you of your approval status.
             </p>
             <p>
                 If any of this information is incorrect, please update your
@@ -40,10 +40,10 @@
                 <p><b>Organization:</b> {{ organization }}</p>
                 <p><b>Country:</b> {{ country }}</p>
             </div>
-            <p>
+            <div class="checkbox">
                 <input type="checkbox" id="edlinfo" required>
-                <label for="edlinfo">Yes, my Earthdata Login profile information is correct.</label>
-            </p>
+                <label class="checkbox-label" for="edlinfo">Yes, my Earthdata Login profile information is correct and I will monitor <b>{{ email_address}}</b> for status updates.</label>
+            </div>
         </div>
     </div>
     <div class="section">

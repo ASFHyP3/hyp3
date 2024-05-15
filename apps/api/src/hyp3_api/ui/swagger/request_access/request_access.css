@@ -96,6 +96,20 @@ input[type=submit]:hover {
   background-color: #0d65f2;
 }
 
+.checkbox {
+  margin-top: 20px;
+}
+
+input[type="checkbox"] {
+  position: absolute;
+}
+
+.checkbox-label {
+  margin-left: 1.8em;
+  margin-top: -0.2em;
+  display: inline-block;
+}
+
 .expandable-summary {
   background-color: #777;
   color: white;
