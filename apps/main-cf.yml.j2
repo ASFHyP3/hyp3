@@ -356,6 +356,18 @@ Resources:
         - AttributeName: user_id
           KeyType: HASH
 
+  # TODO: do we like this name?
+  AccessCodesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: access_code
+          AttributeType: S
+      KeySchema:
+        - AttributeName: access_code
+          KeyType: HASH
+
   {% if security_environment == 'EDC' %}
   DisablePrivateDNS:
     Type: AWS::CloudFormation::Stack
