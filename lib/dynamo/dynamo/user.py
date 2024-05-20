@@ -70,6 +70,7 @@ def _get_updated_application_status(access_code: Optional[str]) -> str:
     if item is None:
         raise AccessCodeError(f'{access_code} is not a valid access code')
 
+    # TODO is this our preferred expiration time format?
     if format_time(datetime.now(timezone.utc)) >= item['expires']:
         raise AccessCodeError(f'Access code {access_code} expired on {item["expires"]}')
 
