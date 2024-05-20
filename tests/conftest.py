@@ -7,6 +7,8 @@ from moto import mock_aws
 
 from dynamo.user import APPLICATION_APPROVED
 
+# TODO: mock AccessCodesTable
+
 
 @pytest.fixture
 def table_properties():
