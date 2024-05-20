@@ -26,6 +26,7 @@ def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
     user = get_or_create_user(user_id)
     application_status = user['application_status']
     if application_status in (APPLICATION_NOT_STARTED, APPLICATION_PENDING):
+        # TODO: add access_code to user record
         updated_application_status = _get_updated_application_status(body.get('access_code'))
         edl_profile = _get_edl_profile(user_id, edl_access_token)
         users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
