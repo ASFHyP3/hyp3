@@ -2,7 +2,6 @@ import os
 from datetime import datetime, timezone
 from decimal import Decimal
 from os import environ
-from typing import Optional
 
 import botocore.exceptions
 import requests
@@ -26,8 +25,16 @@ def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
     user = get_or_create_user(user_id)
     application_status = user['application_status']
     if application_status in (APPLICATION_NOT_STARTED, APPLICATION_PENDING):
-        # TODO: add access_code to user record
-        updated_application_status = _get_updated_application_status(body.get('access_code'))
+        access_code = body.get('access_code')
+        if access_code:
+            _validate_access_code(access_code)
+            updated_application_status = APPLICATION_APPROVED
+            access_code_expression = ', access_code = :access_code'
+            access_code_value = {':access_code': access_code}
+        else:
+            updated_application_status = APPLICATION_PENDING
+            access_code_expression = ''
+            access_code_value = {}
         edl_profile = _get_edl_profile(user_id, edl_access_token)
         users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
         try:
@@ -37,6 +44,7 @@ def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
                     'SET #edl_profile = :edl_profile,'
                     '    use_case = :use_case,'
                     '    application_status = :updated_application_status'
+                    f'{access_code_expression}'
                 ),
                 ConditionExpression='application_status IN (:not_started, :pending)',
                 ExpressionAttributeNames={'#edl_profile': '_edl_profile'},
@@ -46,6 +54,7 @@ def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
                     ':not_started': APPLICATION_NOT_STARTED,
                     ':pending': APPLICATION_PENDING,
                     ':updated_application_status': updated_application_status,
+                    **access_code_value
                 },
                 ReturnValues='ALL_NEW',
             )['Attributes']
@@ -61,10 +70,7 @@ def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
     raise InvalidApplicationStatusError(user_id, application_status)
 
 
-def _get_updated_application_status(access_code: Optional[str]) -> str:
-    if access_code is None:
-        return APPLICATION_PENDING
-
+def _validate_access_code(access_code: str) -> None:
     access_codes_table = DYNAMODB_RESOURCE.Table(environ['ACCESS_CODES_TABLE_NAME'])
     item = access_codes_table.get_item(Key={'access_code': access_code}).get('Item')
 
@@ -74,8 +80,6 @@ def _get_updated_application_status(access_code: Optional[str]) -> str:
     # TODO is this our preferred expiration time format?
     if format_time(datetime.now(timezone.utc)) >= item['expires']:
         raise AccessCodeError(f'Access code {access_code} expired on {item["expires"]}')
-
-    return APPLICATION_APPROVED
 
 
 def _get_edl_profile(user_id: str, edl_access_token: str) -> dict:
