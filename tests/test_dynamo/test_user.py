@@ -189,6 +189,7 @@ def test_update_user_failed_application_status(tables):
     }]
 
 
+# TODO: split into multiple tests
 def test_update_user_access_code(tables):
     tables.access_codes_table.put_item(Item={'access_code': '123', 'expires': '2024-05-21T20:01:04+00:00'})
 
