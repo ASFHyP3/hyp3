@@ -21,11 +21,15 @@ def get_request_time_expression(start, end):
         return key.lte(formatted_end)
 
 
-def format_time(time: datetime):
+def format_time(time: datetime) -> str:
     if time.tzinfo is None:
         raise ValueError(f'missing tzinfo for datetime {time}')
     utc_time = time.astimezone(timezone.utc)
     return utc_time.isoformat(timespec='seconds')
+
+
+def current_time() -> str:
+    return format_time(datetime.now(timezone.utc))
 
 
 def convert_floats_to_decimals(element):

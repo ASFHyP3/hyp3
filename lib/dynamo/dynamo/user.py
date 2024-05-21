@@ -13,7 +13,7 @@ from dynamo.exceptions import (
     InvalidApplicationStatusError,
     RejectedApplicationError,
 )
-from dynamo.util import DYNAMODB_RESOURCE, format_time
+from dynamo.util import DYNAMODB_RESOURCE, current_time
 
 APPLICATION_NOT_STARTED = 'NOT_STARTED'
 APPLICATION_PENDING = 'PENDING'
@@ -77,8 +77,7 @@ def _validate_access_code(access_code: str) -> None:
     if item is None:
         raise AccessCodeError(f'{access_code} is not a valid access code')
 
-    # TODO is this our preferred expiration time format?
-    if format_time(datetime.now(timezone.utc)) >= item['expires']:
+    if current_time() >= item['expires']:
         raise AccessCodeError(f'Access code {access_code} expired on {item["expires"]}')
 
 
