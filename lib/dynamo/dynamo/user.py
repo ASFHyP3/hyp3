@@ -6,6 +6,7 @@ from os import environ
 import botocore.exceptions
 import requests
 
+import dynamo.util
 from dynamo.exceptions import (
     AccessCodeError,
     ApprovedApplicationError,
@@ -13,7 +14,7 @@ from dynamo.exceptions import (
     InvalidApplicationStatusError,
     RejectedApplicationError,
 )
-from dynamo.util import DYNAMODB_RESOURCE, current_time
+from dynamo.util import DYNAMODB_RESOURCE
 
 APPLICATION_NOT_STARTED = 'NOT_STARTED'
 APPLICATION_PENDING = 'PENDING'
@@ -62,7 +63,9 @@ def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
             if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
                 raise DatabaseConditionException(f'Failed to update record for user {user_id}')
             raise
-        return user
+        # TODO: better way to reset credits for Approved users?
+        #return user
+        return get_or_create_user(user_id)
     if application_status == APPLICATION_REJECTED:
         raise RejectedApplicationError(user_id)
     if application_status == APPLICATION_APPROVED:
@@ -77,7 +80,7 @@ def _validate_access_code(access_code: str) -> None:
     if item is None:
         raise AccessCodeError(f'{access_code} is not a valid access code')
 
-    if current_time() >= item['expires']:
+    if dynamo.util.current_time() >= item['expires']:
         raise AccessCodeError(f'Access code {access_code} expired on {item["expires"]}')
 
 
