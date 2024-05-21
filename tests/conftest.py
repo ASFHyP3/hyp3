@@ -7,14 +7,13 @@ from moto import mock_aws
 
 from dynamo.user import APPLICATION_APPROVED
 
-# TODO: mock AccessCodesTable
-
 
 @pytest.fixture
 def table_properties():
     class TableProperties:
         jobs_table = get_table_properties_from_template('JobsTable')
         users_table = get_table_properties_from_template('UsersTable')
+        access_codes_table = get_table_properties_from_template('AccessCodesTable')
     return TableProperties()
 
 
@@ -41,6 +40,10 @@ def tables(table_properties):
             users_table = DYNAMODB_RESOURCE.create_table(
                 TableName=environ['USERS_TABLE_NAME'],
                 **table_properties.users_table,
+            )
+            access_codes_table = DYNAMODB_RESOURCE.create_table(
+                TableName=environ['ACCESS_CODES_TABLE_NAME'],
+                **table_properties.access_codes_table,
             )
         tables = Tables()
         yield tables
