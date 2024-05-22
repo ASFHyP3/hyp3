@@ -115,3 +115,18 @@ def test_patch_user_access_code_expired(client, tables):
 
     assert response.status_code == HTTPStatus.FORBIDDEN
     assert 'expired' in response.json['detail']
+
+
+def test_patch_user_access_code_invalid(client, tables):
+    tables.access_codes_table.put_item(
+        Item={'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3', 'expires': ''}
+    )
+    login(client, 'foo')
+
+    response = client.patch(
+        USER_URI,
+        json={'use_case': 'I want data.', 'access_code': '580ef99b-0e16-46b6-8902-c3586f2a8065'}
+    )
+
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert 'not a valid access code' in response.json['detail']
