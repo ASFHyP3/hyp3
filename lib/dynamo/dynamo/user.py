@@ -93,7 +93,6 @@ def _get_edl_profile(user_id: str, edl_access_token: str) -> dict:
 
 def get_or_create_user(user_id: str) -> dict:
     current_month = _get_current_month()
-    default_credits = Decimal(os.environ['DEFAULT_CREDITS_PER_USER'])
 
     users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     user = users_table.get_item(Key={'user_id': user_id}).get('Item')
@@ -103,7 +102,6 @@ def get_or_create_user(user_id: str) -> dict:
 
     return _reset_credits_if_needed(
         user=user,
-        default_credits=default_credits,
         current_month=current_month,
         users_table=users_table,
     )
@@ -128,7 +126,7 @@ def _create_user(user_id: str, users_table) -> dict:
     return user
 
 
-def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> dict:
+def _reset_credits_if_needed(user: dict, current_month: str, users_table) -> dict:
     if (
             user['application_status'] == APPLICATION_APPROVED
             and user.get('_month_of_last_credit_reset', '0') < current_month  # noqa: W503
@@ -147,7 +145,7 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
                 ExpressionAttributeNames={'#month_of_last_credit_reset': '_month_of_last_credit_reset'},
                 ExpressionAttributeValues={
                     ':approved': APPLICATION_APPROVED,
-                    ':credits': user.get('credits_per_month', default_credits),
+                    ':credits': user.get('credits_per_month', Decimal(os.environ['DEFAULT_CREDITS_PER_USER'])),
                     ':current_month': current_month,
                     ':number': 'N',
                 },

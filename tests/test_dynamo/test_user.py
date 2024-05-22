@@ -339,7 +339,6 @@ def test_reset_credits(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -364,7 +363,6 @@ def test_reset_credits_month_exists(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -389,7 +387,6 @@ def test_reset_credits_override(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -415,7 +412,6 @@ def test_reset_credits_same_month(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -439,7 +435,6 @@ def test_reset_credits_infinite_credits(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -464,7 +459,6 @@ def test_reset_credits_to_zero(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -488,7 +482,6 @@ def test_reset_credits_already_at_zero(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -518,7 +511,6 @@ def test_reset_credits_failed_not_approved(tables):
                 'remaining_credits': Decimal(10),
                 'application_status': APPLICATION_APPROVED,
             },
-            default_credits=Decimal(25),
             current_month='2024-02',
             users_table=tables.users_table,
         )
@@ -548,7 +540,6 @@ def test_reset_credits_failed_same_month(tables):
                 '_month_of_last_credit_reset': '2024-01',
                 'application_status': APPLICATION_APPROVED,
             },
-            default_credits=Decimal(25),
             current_month='2024-02',
             users_table=tables.users_table,
         )
@@ -577,7 +568,6 @@ def test_reset_credits_failed_infinite_credits(tables):
                 'remaining_credits': Decimal(10),
                 'application_status': APPLICATION_APPROVED,
             },
-            default_credits=Decimal(25),
             current_month='2024-02',
             users_table=tables.users_table,
         )
@@ -607,7 +597,6 @@ def test_reset_credits_failed_approved(tables):
                 '_month_of_last_credit_reset': '2024-02',
                 'application_status': 'bar',
             },
-            default_credits=Decimal(25),
             current_month='2024-02',
             users_table=tables.users_table,
         )
@@ -638,7 +627,6 @@ def test_reset_credits_failed_zero_credits(tables):
                 '_month_of_last_credit_reset': '2024-02',
                 'application_status': 'bar',
             },
-            default_credits=Decimal(25),
             current_month='2024-02',
             users_table=tables.users_table,
         )
