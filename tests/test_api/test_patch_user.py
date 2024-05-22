@@ -4,7 +4,7 @@ from http import HTTPStatus
 
 from test_api.conftest import DEFAULT_ACCESS_TOKEN, USER_URI, login
 
-from dynamo.user import APPLICATION_PENDING, APPLICATION_REJECTED
+from dynamo.user import APPLICATION_APPROVED, APPLICATION_PENDING, APPLICATION_REJECTED
 
 
 def test_patch_new_user(client, tables):
@@ -66,3 +66,34 @@ def test_patch_rejected_user(client, tables):
 
     assert response.status_code == HTTPStatus.FORBIDDEN
     assert 'has been rejected' in response.json['detail']
+
+
+def test_patch_user_access_code(client, tables):
+    tables.access_codes_table.put_item(
+        Item={'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3', 'expires': '2024-05-21T20:01:04+00:00'}
+    )
+    login(client, 'foo')
+
+    with unittest.mock.patch('dynamo.util.current_time') as mock_current_time, \
+            unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
+
+        mock_current_time.return_value = '2024-05-21T20:01:03+00:00'
+        mock_get_edl_profile.return_value = {}
+
+        response = client.patch(
+            USER_URI,
+            json={'use_case': 'I want data.', 'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3'}
+        )
+
+        mock_current_time.assert_called_once_with()
+        mock_get_edl_profile.assert_called_once_with('foo', DEFAULT_ACCESS_TOKEN)
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json == {
+        'user_id': 'foo',
+        'application_status': APPLICATION_APPROVED,
+        'remaining_credits': Decimal(25),
+        'job_names': [],
+        'use_case': 'I want data.',
+        'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3',
+    }
