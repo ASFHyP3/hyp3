@@ -63,9 +63,7 @@ def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
             if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
                 raise DatabaseConditionException(f'Failed to update record for user {user_id}')
             raise
-        # TODO: better way to reset credits for Approved users?
-        #return user
-        return get_or_create_user(user_id)
+        return _reset_credits_if_needed(user=user, current_month=_get_current_month(), users_table=users_table)
     if application_status == APPLICATION_REJECTED:
         raise RejectedApplicationError(user_id)
     if application_status == APPLICATION_APPROVED:
@@ -92,19 +90,13 @@ def _get_edl_profile(user_id: str, edl_access_token: str) -> dict:
 
 
 def get_or_create_user(user_id: str) -> dict:
-    current_month = _get_current_month()
-
     users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     user = users_table.get_item(Key={'user_id': user_id}).get('Item')
 
     if user is None:
         user = _create_user(user_id, users_table)
 
-    return _reset_credits_if_needed(
-        user=user,
-        current_month=current_month,
-        users_table=users_table,
-    )
+    return _reset_credits_if_needed(user=user, current_month=_get_current_month(), users_table=users_table)
 
 
 def _get_current_month() -> str:
