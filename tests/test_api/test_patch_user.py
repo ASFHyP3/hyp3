@@ -97,3 +97,21 @@ def test_patch_user_access_code(client, tables):
         'use_case': 'I want data.',
         'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3',
     }
+
+
+def test_patch_user_access_code_expired(client, tables):
+    tables.access_codes_table.put_item(
+        Item={'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3', 'expires': '2024-05-21T20:01:04+00:00'}
+    )
+    login(client, 'foo')
+
+    with unittest.mock.patch('dynamo.util.current_time') as mock_current_time:
+        mock_current_time.return_value = '2024-05-21T20:01:04+00:00'
+        response = client.patch(
+            USER_URI,
+            json={'use_case': 'I want data.', 'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3'}
+        )
+        mock_current_time.assert_called_once_with()
+
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert 'expired' in response.json['detail']
