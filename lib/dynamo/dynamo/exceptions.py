@@ -5,6 +5,10 @@ class DatabaseConditionException(Exception):
     """Raised when a DynamoDB condition expression check fails."""
 
 
+class AccessCodeError(Exception):
+    """Raised when a user application includes an invalid or expired access code."""
+
+
 class InsufficientCreditsError(Exception):
     """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
 

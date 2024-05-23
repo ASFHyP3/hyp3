@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.3.0]
+
+This release adds support for access codes. If a user specifies an active access code when they apply for HyP3 access, they will be granted automatic approval without the need for a HyP3 operator to review their application.
+
+If you operate a HyP3 deployment, you can create a new access code by adding an item to the `AccessCodesTable` DynamoDB table for your deployment, with any string for the `access_code` attribute and an ISO-formatted UTC timestamp for the `start_date` and `end_date` attributes, e.g. `2024-06-01T00:00:00+00:00` and `2024-06-02T00:00:00+00:00` for an access code that becomes active on June 1, 2024 and expires on June 2, 2024.
+
+### Added
+- The `PATCH /user` endpoint now includes an optional `access_code` parameter and returns a `403` response if given an invalid or inactive access code.
+
 ## [7.2.1]
 
 ### Fixed
