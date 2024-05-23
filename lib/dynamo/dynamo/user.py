@@ -79,7 +79,11 @@ def _validate_access_code(access_code: str) -> None:
     if item is None:
         raise AccessCodeError(f'{access_code} is not a valid access code')
 
-    if dynamo.util.current_utc_time() >= item['end_date']:
+    now = dynamo.util.current_utc_time()
+    if now < item['start_date']:
+        raise AccessCodeError(f'Access code {access_code} will become active on {item["start_date"]}')
+
+    if now >= item['end_date']:
         raise AccessCodeError(f'Access code {access_code} expired on {item["end_date"]}')
 
 

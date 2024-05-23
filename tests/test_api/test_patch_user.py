@@ -70,7 +70,7 @@ def test_patch_rejected_user(client, tables):
 
 def test_patch_user_access_code(client, tables):
     tables.access_codes_table.put_item(
-        Item={'access_code': '123', 'end_date': '2024-05-21T20:01:04+00:00'}
+        Item={'access_code': '123', 'start_date': '2024-05-21T20:01:03+00:00', 'end_date': '2024-05-21T20:01:04+00:00'}
     )
     login(client, 'foo')
 
@@ -99,9 +99,27 @@ def test_patch_user_access_code(client, tables):
     }
 
 
+def test_patch_user_access_code_start_date(client, tables):
+    tables.access_codes_table.put_item(
+        Item={'access_code': '123', 'start_date': '2024-05-21T20:01:03+00:00'}
+    )
+    login(client, 'foo')
+
+    with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time:
+        mock_current_utc_time.return_value = '2024-05-21T20:01:02+00:00'
+        response = client.patch(
+            USER_URI,
+            json={'use_case': 'I want data.', 'access_code': '123'}
+        )
+        mock_current_utc_time.assert_called_once_with()
+
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert 'will become active' in response.json['detail']
+
+
 def test_patch_user_access_code_end_date(client, tables):
     tables.access_codes_table.put_item(
-        Item={'access_code': '123', 'end_date': '2024-05-21T20:01:04+00:00'}
+        Item={'access_code': '123', 'start_date': '2024-05-21T20:01:03+00:00', 'end_date': '2024-05-21T20:01:04+00:00'}
     )
     login(client, 'foo')
 

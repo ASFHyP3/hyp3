@@ -190,7 +190,9 @@ def test_update_user_failed_application_status(tables):
 
 
 def test_update_user_access_code(tables):
-    tables.access_codes_table.put_item(Item={'access_code': '123', 'end_date': '2024-05-21T20:01:04+00:00'})
+    tables.access_codes_table.put_item(
+        Item={'access_code': '123', 'start_date': '2024-05-21T20:01:03+00:00', 'end_date': '2024-05-21T20:01:04+00:00'}
+    )
 
     with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time, \
             unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month, \
@@ -222,8 +224,28 @@ def test_update_user_access_code(tables):
     assert tables.users_table.scan()['Items'] == [user]
 
 
+def test_update_user_access_code_start_date(tables):
+    tables.access_codes_table.put_item(Item={'access_code': '123', 'start_date': '2024-05-21T20:01:03+00:00'})
+
+    with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time:
+        mock_current_utc_time.return_value = '2024-05-21T20:01:02+00:00'
+        with pytest.raises(AccessCodeError, match=r'.*will become active.*'):
+            dynamo.user.update_user(
+                'foo',
+                'test-edl-access-token',
+                {'use_case': 'I want data.', 'access_code': '123'}
+            )
+        mock_current_utc_time.assert_called_once_with()
+
+    assert tables.users_table.scan()['Items'] == [
+        {'user_id': 'foo', 'remaining_credits': Decimal(0), 'application_status': APPLICATION_NOT_STARTED}
+    ]
+
+
 def test_update_user_access_code_end_date(tables):
-    tables.access_codes_table.put_item(Item={'access_code': '123', 'end_date': '2024-05-21T20:01:04+00:00'})
+    tables.access_codes_table.put_item(
+        Item={'access_code': '123', 'start_date': '2024-05-21T20:01:03+00:00', 'end_date': '2024-05-21T20:01:04+00:00'}
+    )
 
     with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time:
         mock_current_utc_time.return_value = '2024-05-21T20:01:05+00:00'
