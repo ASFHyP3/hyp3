@@ -222,7 +222,7 @@ def test_update_user_access_code(tables):
     assert tables.users_table.scan()['Items'] == [user]
 
 
-def test_update_user_access_code_expired(tables):
+def test_update_user_access_code_end_date(tables):
     tables.access_codes_table.put_item(Item={'access_code': '123', 'end_date': '2024-05-21T20:01:04+00:00'})
 
     with unittest.mock.patch('dynamo.util.current_time') as mock_current_time:
