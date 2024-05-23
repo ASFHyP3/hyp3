@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This release adds support for access codes. If a user specifies a valid, unexpired access code when they apply for HyP3 access, they will be granted automatic approval without the need for a HyP3 operator to review their application. An access code is a UUID and expires at a particular datetime.
 
-If you operate a HyP3 deployment, you can create a new access code by adding an item to the `AccessCodesTable` DynamoDB table for your deployment, with a new UUID for the `access_code` attribute and an ISO-formatted UTC timestamp for the `expires` attribute, e.g. `2024-06-01T00:00:00+00:00` for an access code that expires on June 1, 2024.
+If you operate a HyP3 deployment, you can create a new access code by adding an item to the `AccessCodesTable` DynamoDB table for your deployment, with a new UUID for the `access_code` attribute and an ISO-formatted UTC timestamp for the `end_date` attribute, e.g. `2024-06-01T00:00:00+00:00` for an access code that expires on June 1, 2024.
 
 ### Added
 - The `PATCH /user` endpoint now includes an optional `access_code` parameter and returns a `403` response if given an invalid or expired access code.

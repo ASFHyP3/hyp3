@@ -70,7 +70,7 @@ def test_patch_rejected_user(client, tables):
 
 def test_patch_user_access_code(client, tables):
     tables.access_codes_table.put_item(
-        Item={'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3', 'expires': '2024-05-21T20:01:04+00:00'}
+        Item={'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3', 'end_date': '2024-05-21T20:01:04+00:00'}
     )
     login(client, 'foo')
 
@@ -101,7 +101,7 @@ def test_patch_user_access_code(client, tables):
 
 def test_patch_user_access_code_expired(client, tables):
     tables.access_codes_table.put_item(
-        Item={'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3', 'expires': '2024-05-21T20:01:04+00:00'}
+        Item={'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3', 'end_date': '2024-05-21T20:01:04+00:00'}
     )
     login(client, 'foo')
 
@@ -119,7 +119,7 @@ def test_patch_user_access_code_expired(client, tables):
 
 def test_patch_user_access_code_invalid(client, tables):
     tables.access_codes_table.put_item(
-        Item={'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3', 'expires': ''}
+        Item={'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3'}
     )
     login(client, 'foo')
 

@@ -190,7 +190,7 @@ def test_update_user_failed_application_status(tables):
 
 
 def test_update_user_access_code(tables):
-    tables.access_codes_table.put_item(Item={'access_code': '123', 'expires': '2024-05-21T20:01:04+00:00'})
+    tables.access_codes_table.put_item(Item={'access_code': '123', 'end_date': '2024-05-21T20:01:04+00:00'})
 
     with unittest.mock.patch('dynamo.util.current_time') as mock_current_time, \
             unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month, \
@@ -223,7 +223,7 @@ def test_update_user_access_code(tables):
 
 
 def test_update_user_access_code_expired(tables):
-    tables.access_codes_table.put_item(Item={'access_code': '123', 'expires': '2024-05-21T20:01:04+00:00'})
+    tables.access_codes_table.put_item(Item={'access_code': '123', 'end_date': '2024-05-21T20:01:04+00:00'})
 
     with unittest.mock.patch('dynamo.util.current_time') as mock_current_time:
         mock_current_time.return_value = '2024-05-21T20:01:05+00:00'
@@ -255,7 +255,7 @@ def test_update_user_access_code_expired(tables):
 
 
 def test_update_user_access_code_invalid(tables):
-    tables.access_codes_table.put_item(Item={'access_code': '123', 'expires': ''})
+    tables.access_codes_table.put_item(Item={'access_code': '123'})
 
     with pytest.raises(AccessCodeError, match=r'.*not a valid access code.*'):
         dynamo.user.update_user(
