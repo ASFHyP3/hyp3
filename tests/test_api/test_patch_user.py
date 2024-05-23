@@ -74,10 +74,10 @@ def test_patch_user_access_code(client, tables):
     )
     login(client, 'foo')
 
-    with unittest.mock.patch('dynamo.util.current_time') as mock_current_time, \
+    with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time, \
             unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
 
-        mock_current_time.return_value = '2024-05-21T20:01:03+00:00'
+        mock_current_utc_time.return_value = '2024-05-21T20:01:03+00:00'
         mock_get_edl_profile.return_value = {}
 
         response = client.patch(
@@ -85,7 +85,7 @@ def test_patch_user_access_code(client, tables):
             json={'use_case': 'I want data.', 'access_code': '123'}
         )
 
-        mock_current_time.assert_called_once_with()
+        mock_current_utc_time.assert_called_once_with()
         mock_get_edl_profile.assert_called_once_with('foo', DEFAULT_ACCESS_TOKEN)
 
     assert response.status_code == HTTPStatus.OK
@@ -105,13 +105,13 @@ def test_patch_user_access_code_end_date(client, tables):
     )
     login(client, 'foo')
 
-    with unittest.mock.patch('dynamo.util.current_time') as mock_current_time:
-        mock_current_time.return_value = '2024-05-21T20:01:04+00:00'
+    with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time:
+        mock_current_utc_time.return_value = '2024-05-21T20:01:04+00:00'
         response = client.patch(
             USER_URI,
             json={'use_case': 'I want data.', 'access_code': '123'}
         )
-        mock_current_time.assert_called_once_with()
+        mock_current_utc_time.assert_called_once_with()
 
     assert response.status_code == HTTPStatus.FORBIDDEN
     assert 'expired' in response.json['detail']
