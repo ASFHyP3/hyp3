@@ -6,6 +6,7 @@ import pytest
 
 import dynamo.user
 from dynamo.exceptions import (
+    AccessCodeError,
     ApprovedApplicationError,
     DatabaseConditionException,
     InvalidApplicationStatusError,
@@ -188,6 +189,108 @@ def test_update_user_failed_application_status(tables):
     }]
 
 
+def test_update_user_access_code(tables):
+    tables.access_codes_table.put_item(
+        Item={'access_code': '123', 'start_date': '2024-05-21T20:01:03+00:00', 'end_date': '2024-05-21T20:01:04+00:00'}
+    )
+
+    with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time, \
+            unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month, \
+            unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
+
+        mock_current_utc_time.return_value = '2024-05-21T20:01:03+00:00'
+        mock_get_current_month.return_value = '2024-05'
+        mock_get_edl_profile.return_value = {'key': 'value'}
+
+        user = dynamo.user.update_user(
+            'foo',
+            'test-edl-access-token',
+            {'use_case': 'I want data.', 'access_code': '123'}
+        )
+
+        mock_current_utc_time.assert_called_once_with()
+        assert mock_get_current_month.mock_calls == [unittest.mock.call()] * 2
+        mock_get_edl_profile.assert_called_once_with('foo', 'test-edl-access-token')
+
+    assert user == {
+        'user_id': 'foo',
+        'remaining_credits': Decimal(25),
+        '_month_of_last_credit_reset': '2024-05',
+        'application_status': APPLICATION_APPROVED,
+        '_edl_profile': {'key': 'value'},
+        'use_case': 'I want data.',
+        'access_code': '123',
+    }
+    assert tables.users_table.scan()['Items'] == [user]
+
+
+def test_update_user_access_code_start_date(tables):
+    tables.access_codes_table.put_item(Item={'access_code': '123', 'start_date': '2024-05-21T20:01:03+00:00'})
+
+    with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time:
+        mock_current_utc_time.return_value = '2024-05-21T20:01:02+00:00'
+        with pytest.raises(AccessCodeError, match=r'.*will become active.*'):
+            dynamo.user.update_user(
+                'foo',
+                'test-edl-access-token',
+                {'use_case': 'I want data.', 'access_code': '123'}
+            )
+        mock_current_utc_time.assert_called_once_with()
+
+    assert tables.users_table.scan()['Items'] == [
+        {'user_id': 'foo', 'remaining_credits': Decimal(0), 'application_status': APPLICATION_NOT_STARTED}
+    ]
+
+
+def test_update_user_access_code_end_date(tables):
+    tables.access_codes_table.put_item(
+        Item={'access_code': '123', 'start_date': '2024-05-21T20:01:03+00:00', 'end_date': '2024-05-21T20:01:04+00:00'}
+    )
+
+    with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time:
+        mock_current_utc_time.return_value = '2024-05-21T20:01:05+00:00'
+        with pytest.raises(AccessCodeError, match=r'.*expired.*'):
+            dynamo.user.update_user(
+                'foo',
+                'test-edl-access-token',
+                {'use_case': 'I want data.', 'access_code': '123'}
+            )
+        mock_current_utc_time.assert_called_once_with()
+
+    assert tables.users_table.scan()['Items'] == [
+        {'user_id': 'foo', 'remaining_credits': Decimal(0), 'application_status': APPLICATION_NOT_STARTED}
+    ]
+
+    with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time:
+        mock_current_utc_time.return_value = '2024-05-21T20:01:04+00:00'
+        with pytest.raises(AccessCodeError, match=r'.*expired.*'):
+            dynamo.user.update_user(
+                'foo',
+                'test-edl-access-token',
+                {'use_case': 'I want data.', 'access_code': '123'}
+            )
+        mock_current_utc_time.assert_called_once_with()
+
+    assert tables.users_table.scan()['Items'] == [
+        {'user_id': 'foo', 'remaining_credits': Decimal(0), 'application_status': APPLICATION_NOT_STARTED}
+    ]
+
+
+def test_update_user_access_code_invalid(tables):
+    tables.access_codes_table.put_item(Item={'access_code': '123'})
+
+    with pytest.raises(AccessCodeError, match=r'.*not a valid access code.*'):
+        dynamo.user.update_user(
+            'foo',
+            'test-edl-access-token',
+            {'use_case': 'I want data.', 'access_code': '456'}
+        )
+
+    assert tables.users_table.scan()['Items'] == [
+        {'user_id': 'foo', 'remaining_credits': Decimal(0), 'application_status': APPLICATION_NOT_STARTED}
+    ]
+
+
 def test_get_or_create_user_existing_user(tables):
     tables.users_table.put_item(
         Item={
@@ -258,7 +361,6 @@ def test_reset_credits(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -283,7 +385,6 @@ def test_reset_credits_month_exists(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -308,7 +409,6 @@ def test_reset_credits_override(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -334,7 +434,6 @@ def test_reset_credits_same_month(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -358,7 +457,6 @@ def test_reset_credits_infinite_credits(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -383,7 +481,6 @@ def test_reset_credits_to_zero(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -407,7 +504,6 @@ def test_reset_credits_already_at_zero(tables):
 
     user = dynamo.user._reset_credits_if_needed(
         user=original_user_record,
-        default_credits=Decimal(25),
         current_month='2024-02',
         users_table=tables.users_table,
     )
@@ -437,7 +533,6 @@ def test_reset_credits_failed_not_approved(tables):
                 'remaining_credits': Decimal(10),
                 'application_status': APPLICATION_APPROVED,
             },
-            default_credits=Decimal(25),
             current_month='2024-02',
             users_table=tables.users_table,
         )
@@ -467,7 +562,6 @@ def test_reset_credits_failed_same_month(tables):
                 '_month_of_last_credit_reset': '2024-01',
                 'application_status': APPLICATION_APPROVED,
             },
-            default_credits=Decimal(25),
             current_month='2024-02',
             users_table=tables.users_table,
         )
@@ -496,7 +590,6 @@ def test_reset_credits_failed_infinite_credits(tables):
                 'remaining_credits': Decimal(10),
                 'application_status': APPLICATION_APPROVED,
             },
-            default_credits=Decimal(25),
             current_month='2024-02',
             users_table=tables.users_table,
         )
@@ -526,7 +619,6 @@ def test_reset_credits_failed_approved(tables):
                 '_month_of_last_credit_reset': '2024-02',
                 'application_status': 'bar',
             },
-            default_credits=Decimal(25),
             current_month='2024-02',
             users_table=tables.users_table,
         )
@@ -557,7 +649,6 @@ def test_reset_credits_failed_zero_credits(tables):
                 '_month_of_last_credit_reset': '2024-02',
                 'application_status': 'bar',
             },
-            default_credits=Decimal(25),
             current_month='2024-02',
             users_table=tables.users_table,
         )

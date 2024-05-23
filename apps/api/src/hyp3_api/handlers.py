@@ -4,7 +4,7 @@ import requests
 from flask import abort, jsonify, request
 
 import dynamo
-from dynamo.exceptions import InsufficientCreditsError, UnexpectedApplicationStatusError
+from dynamo.exceptions import AccessCodeError, InsufficientCreditsError, UnexpectedApplicationStatusError
 from hyp3_api import util
 from hyp3_api.validation import GranuleValidationError, validate_jobs
 
@@ -65,6 +65,8 @@ def patch_user(body: dict, user: str, edl_access_token: str) -> dict:
     print(body)
     try:
         user_record = dynamo.user.update_user(user, edl_access_token, body)
+    except AccessCodeError as e:
+        abort(problem_format(403, str(e)))
     except UnexpectedApplicationStatusError as e:
         abort(problem_format(403, str(e)))
     return _user_response(user_record)

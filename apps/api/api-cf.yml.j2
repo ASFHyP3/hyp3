@@ -6,6 +6,9 @@ Parameters:
   UsersTable:
     Type: String
 
+  AccessCodesTable:
+    Type: String
+
   AuthPublicKey:
     Type: String
 
@@ -171,6 +174,10 @@ Resources:
               - dynamodb:PutItem
               - dynamodb:UpdateItem
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UsersTable}*"
+          - Effect: Allow
+            Action:
+              - dynamodb:GetItem
+            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${AccessCodesTable}*"
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -179,6 +186,7 @@ Resources:
         Variables:
           JOBS_TABLE_NAME: !Ref JobsTable
           USERS_TABLE_NAME: !Ref UsersTable
+          ACCESS_CODES_TABLE_NAME: !Ref AccessCodesTable
           AUTH_PUBLIC_KEY: !Ref AuthPublicKey
           AUTH_ALGORITHM: !Ref AuthAlgorithm
           DEFAULT_CREDITS_PER_USER: !Ref DefaultCreditsPerUser

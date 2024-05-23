@@ -6,8 +6,13 @@ from os import environ
 import botocore.exceptions
 import requests
 
+import dynamo.util
 from dynamo.exceptions import (
-    ApprovedApplicationError, DatabaseConditionException, InvalidApplicationStatusError, RejectedApplicationError
+    AccessCodeError,
+    ApprovedApplicationError,
+    DatabaseConditionException,
+    InvalidApplicationStatusError,
+    RejectedApplicationError,
 )
 from dynamo.util import DYNAMODB_RESOURCE
 
@@ -21,19 +26,36 @@ def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
     user = get_or_create_user(user_id)
     application_status = user['application_status']
     if application_status in (APPLICATION_NOT_STARTED, APPLICATION_PENDING):
+        access_code = body.get('access_code')
+        if access_code:
+            _validate_access_code(access_code)
+            updated_application_status = APPLICATION_APPROVED
+            access_code_expression = ', access_code = :access_code'
+            access_code_value = {':access_code': access_code}
+        else:
+            updated_application_status = APPLICATION_PENDING
+            access_code_expression = ''
+            access_code_value = {}
         edl_profile = _get_edl_profile(user_id, edl_access_token)
         users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
         try:
             user = users_table.update_item(
                 Key={'user_id': user_id},
-                UpdateExpression='SET #edl_profile = :edl_profile, use_case = :use_case, application_status = :pending',
+                UpdateExpression=(
+                    'SET #edl_profile = :edl_profile,'
+                    '    use_case = :use_case,'
+                    '    application_status = :updated_application_status'
+                    f'{access_code_expression}'
+                ),
                 ConditionExpression='application_status IN (:not_started, :pending)',
                 ExpressionAttributeNames={'#edl_profile': '_edl_profile'},
                 ExpressionAttributeValues={
                     ':edl_profile': edl_profile,
                     ':use_case': body['use_case'],
                     ':not_started': APPLICATION_NOT_STARTED,
-                    ':pending': APPLICATION_PENDING
+                    ':pending': APPLICATION_PENDING,
+                    ':updated_application_status': updated_application_status,
+                    **access_code_value
                 },
                 ReturnValues='ALL_NEW',
             )['Attributes']
@@ -41,12 +63,28 @@ def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
             if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
                 raise DatabaseConditionException(f'Failed to update record for user {user_id}')
             raise
+        user = _reset_credits_if_needed(user=user, current_month=_get_current_month(), users_table=users_table)
         return user
     if application_status == APPLICATION_REJECTED:
         raise RejectedApplicationError(user_id)
     if application_status == APPLICATION_APPROVED:
         raise ApprovedApplicationError(user_id)
     raise InvalidApplicationStatusError(user_id, application_status)
+
+
+def _validate_access_code(access_code: str) -> None:
+    access_codes_table = DYNAMODB_RESOURCE.Table(environ['ACCESS_CODES_TABLE_NAME'])
+    item = access_codes_table.get_item(Key={'access_code': access_code}).get('Item')
+
+    if item is None:
+        raise AccessCodeError(f'{access_code} is not a valid access code')
+
+    now = dynamo.util.current_utc_time()
+    if now < item['start_date']:
+        raise AccessCodeError(f'Access code {access_code} will become active on {item["start_date"]}')
+
+    if now >= item['end_date']:
+        raise AccessCodeError(f'Access code {access_code} expired on {item["end_date"]}')
 
 
 def _get_edl_profile(user_id: str, edl_access_token: str) -> dict:
@@ -57,21 +95,13 @@ def _get_edl_profile(user_id: str, edl_access_token: str) -> dict:
 
 
 def get_or_create_user(user_id: str) -> dict:
-    current_month = _get_current_month()
-    default_credits = Decimal(os.environ['DEFAULT_CREDITS_PER_USER'])
-
     users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     user = users_table.get_item(Key={'user_id': user_id}).get('Item')
 
     if user is None:
         user = _create_user(user_id, users_table)
 
-    return _reset_credits_if_needed(
-        user=user,
-        default_credits=default_credits,
-        current_month=current_month,
-        users_table=users_table,
-    )
+    return _reset_credits_if_needed(user=user, current_month=_get_current_month(), users_table=users_table)
 
 
 def _get_current_month() -> str:
@@ -93,7 +123,7 @@ def _create_user(user_id: str, users_table) -> dict:
     return user
 
 
-def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month: str, users_table) -> dict:
+def _reset_credits_if_needed(user: dict, current_month: str, users_table) -> dict:
     if (
             user['application_status'] == APPLICATION_APPROVED
             and user.get('_month_of_last_credit_reset', '0') < current_month  # noqa: W503
@@ -112,7 +142,7 @@ def _reset_credits_if_needed(user: dict, default_credits: Decimal, current_month
                 ExpressionAttributeNames={'#month_of_last_credit_reset': '_month_of_last_credit_reset'},
                 ExpressionAttributeValues={
                     ':approved': APPLICATION_APPROVED,
-                    ':credits': user.get('credits_per_month', default_credits),
+                    ':credits': user.get('credits_per_month', Decimal(os.environ['DEFAULT_CREDITS_PER_USER'])),
                     ':current_month': current_month,
                     ':number': 'N',
                 },
