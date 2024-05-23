@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [7.3.0]
 
+### Added
+* Turn off hyp3 ACCESS spend by zeroing the max VCPUs in the associated deployment.
+* Reduce product lifetime in hyp3 ACCESS deployment to 14 days.
+
+## [7.3.0]
+
 This release adds support for access codes. If a user specifies an active access code when they apply for HyP3 access, they will be granted automatic approval without the need for a HyP3 operator to review their application.
 
 If you operate a HyP3 deployment, you can create a new access code by adding an item to the `AccessCodesTable` DynamoDB table for your deployment, with any string for the `access_code` attribute and an ISO-formatted UTC timestamp for the `start_date` and `end_date` attributes, e.g. `2024-06-01T00:00:00+00:00` and `2024-06-02T00:00:00+00:00` for an access code that becomes active on June 1, 2024 and expires on June 2, 2024.
