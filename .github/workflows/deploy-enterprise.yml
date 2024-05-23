@@ -37,7 +37,7 @@ jobs:
             domain: hyp3-a19-jpl.asf.alaska.edu
             template_bucket: cf-templates-v4pvone059de-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 30
+            product_lifetime_in_days: 14
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
