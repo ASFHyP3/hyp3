@@ -63,7 +63,8 @@ def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
             if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
                 raise DatabaseConditionException(f'Failed to update record for user {user_id}')
             raise
-        return _reset_credits_if_needed(user=user, current_month=_get_current_month(), users_table=users_table)
+        user = _reset_credits_if_needed(user=user, current_month=_get_current_month(), users_table=users_table)
+        return user
     if application_status == APPLICATION_REJECTED:
         raise RejectedApplicationError(user_id)
     if application_status == APPLICATION_APPROVED:
