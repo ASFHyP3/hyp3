@@ -37,7 +37,7 @@ jobs:
             domain: hyp3-a19-jpl.asf.alaska.edu
             template_bucket: cf-templates-v4pvone059de-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 180
+            product_lifetime_in_days: 14
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
@@ -45,8 +45,8 @@ jobs:
               job_spec/ARIA_RAIDER.yml
               job_spec/INSAR_ISCE.yml
             instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
-            default_max_vcpus: 4000
-            expanded_max_vcpus: 4000
+            default_max_vcpus: 0
+            expanded_max_vcpus: 0
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
