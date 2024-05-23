@@ -12,8 +12,10 @@ If you operate a HyP3 deployment, you can create a new access code by adding an 
 
 ### Added
 - The `PATCH /user` endpoint now includes an optional `access_code` parameter and returns a `403` response if given an invalid or inactive access code.
-* Turn off hyp3 ACCESS spend by zeroing the max VCPUs in the associated deployment.
-* Reduce product lifetime in hyp3 ACCESS deployment to 14 days.
+
+### Changed
+- Turn off hyp3 ACCESS spend by zeroing the max VCPUs in the associated deployment.
+- Reduce product lifetime in hyp3 ACCESS deployment to 14 days.
 
 ## [7.2.1]
 
