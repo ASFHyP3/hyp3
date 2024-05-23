@@ -13,7 +13,7 @@ from dynamo.exceptions import (
     RejectedApplicationError,
 )
 from dynamo.user import APPLICATION_APPROVED
-from dynamo.util import current_time
+from dynamo.util import current_utc_time
 
 
 def test_query_jobs_by_user(tables):
@@ -281,7 +281,7 @@ def test_put_jobs(tables, monkeypatch, approved_user):
         assert set(job.keys()) == {
             'name', 'job_id', 'user_id', 'status_code', 'execution_started', 'request_time', 'priority', 'credit_cost'
         }
-        assert job['request_time'] <= current_time()
+        assert job['request_time'] <= current_utc_time()
         assert job['user_id'] == approved_user
         assert job['status_code'] == 'PENDING'
         assert job['execution_started'] is False

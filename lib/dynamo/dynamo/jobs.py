@@ -16,7 +16,7 @@ from dynamo.exceptions import (
     RejectedApplicationError,
 )
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
-from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, current_time, get_request_time_expression
+from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, current_utc_time, get_request_time_expression
 
 costs_file = Path(__file__).parent / 'costs.json'
 COSTS = convert_floats_to_decimals(json.loads(costs_file.read_text()))
@@ -31,7 +31,7 @@ else:
 
 def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
-    request_time = current_time()
+    request_time = current_utc_time()
 
     user_record = dynamo.user.get_or_create_user(user_id)
 

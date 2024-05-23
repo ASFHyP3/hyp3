@@ -4,7 +4,7 @@ from http import HTTPStatus
 from test_api.conftest import login, make_job, setup_requests_mock, submit_batch
 
 from dynamo.user import APPLICATION_PENDING
-from dynamo.util import current_time
+from dynamo.util import current_utc_time
 
 
 def test_submit_one_job(client, approved_user):
@@ -16,7 +16,7 @@ def test_submit_one_job(client, approved_user):
     jobs = response.json['jobs']
     assert len(jobs) == 1
     assert jobs[0]['status_code'] == 'PENDING'
-    assert jobs[0]['request_time'] <= current_time()
+    assert jobs[0]['request_time'] <= current_utc_time()
     assert jobs[0]['user_id'] == approved_user
 
 

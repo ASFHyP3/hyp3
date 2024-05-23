@@ -28,7 +28,7 @@ def format_time(time: datetime) -> str:
     return utc_time.isoformat(timespec='seconds')
 
 
-def current_time() -> str:
+def current_utc_time() -> str:
     return format_time(datetime.now(timezone.utc))
 
 
