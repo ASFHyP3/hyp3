@@ -70,7 +70,7 @@ def test_patch_rejected_user(client, tables):
 
 def test_patch_user_access_code(client, tables):
     tables.access_codes_table.put_item(
-        Item={'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3', 'end_date': '2024-05-21T20:01:04+00:00'}
+        Item={'access_code': '123', 'end_date': '2024-05-21T20:01:04+00:00'}
     )
     login(client, 'foo')
 
@@ -82,7 +82,7 @@ def test_patch_user_access_code(client, tables):
 
         response = client.patch(
             USER_URI,
-            json={'use_case': 'I want data.', 'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3'}
+            json={'use_case': 'I want data.', 'access_code': '123'}
         )
 
         mock_current_time.assert_called_once_with()
@@ -95,13 +95,13 @@ def test_patch_user_access_code(client, tables):
         'remaining_credits': Decimal(25),
         'job_names': [],
         'use_case': 'I want data.',
-        'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3',
+        'access_code': '123',
     }
 
 
 def test_patch_user_access_code_expired(client, tables):
     tables.access_codes_table.put_item(
-        Item={'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3', 'end_date': '2024-05-21T20:01:04+00:00'}
+        Item={'access_code': '123', 'end_date': '2024-05-21T20:01:04+00:00'}
     )
     login(client, 'foo')
 
@@ -109,7 +109,7 @@ def test_patch_user_access_code_expired(client, tables):
         mock_current_time.return_value = '2024-05-21T20:01:04+00:00'
         response = client.patch(
             USER_URI,
-            json={'use_case': 'I want data.', 'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3'}
+            json={'use_case': 'I want data.', 'access_code': '123'}
         )
         mock_current_time.assert_called_once_with()
 
@@ -119,13 +119,13 @@ def test_patch_user_access_code_expired(client, tables):
 
 def test_patch_user_access_code_invalid(client, tables):
     tables.access_codes_table.put_item(
-        Item={'access_code': '27836b79-e5b2-4d8f-932f-659724ea02c3'}
+        Item={'access_code': '123'}
     )
     login(client, 'foo')
 
     response = client.patch(
         USER_URI,
-        json={'use_case': 'I want data.', 'access_code': '580ef99b-0e16-46b6-8902-c3586f2a8065'}
+        json={'use_case': 'I want data.', 'access_code': '456'}
     )
 
     assert response.status_code == HTTPStatus.FORBIDDEN
