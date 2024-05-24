@@ -197,6 +197,8 @@ components:
       properties:
         use_case:
           $ref: "#/components/schemas/use_case"
+        access_code:
+          $ref: "#/components/schemas/access_code"
 
     user:
       description: Information about a user
@@ -314,6 +316,11 @@ components:
       description: Reason for wanting to use HyP3.
       type: string
       example: I want to process data.
+
+    access_code:
+      description: Grants automatic user approval while the code remains active.
+      type: string
+      example: 123
 
     user_id:
       description: Username from Earthdata Login.

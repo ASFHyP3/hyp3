@@ -120,6 +120,7 @@ Resources:
       Parameters:
         JobsTable: !Ref JobsTable
         UsersTable: !Ref UsersTable
+        AccessCodesTable: !Ref AccessCodesTable
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
         DefaultCreditsPerUser: !Ref DefaultCreditsPerUser
@@ -354,6 +355,17 @@ Resources:
           AttributeType: S
       KeySchema:
         - AttributeName: user_id
+          KeyType: HASH
+
+  AccessCodesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: access_code
+          AttributeType: S
+      KeySchema:
+        - AttributeName: access_code
           KeyType: HASH
 
   {% if security_environment == 'EDC' %}
