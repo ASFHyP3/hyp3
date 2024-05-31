@@ -1,0 +1,44 @@
+INSAR_ISCE_BURST:
+  required_parameters:
+    - granules
+  parameters:
+    granules:
+      default:  '""'
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 6
+        example:
+          - S1A_IW_RAW__0SDV_20231229T134339_20231229T134411_051870_064437_4F42-RAW
+          - S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38-RAW
+        items:
+          description: Name of the Level-0 Sentinel-1 scenes to process
+          type: string
+          pattern: "^S1[AB]_IW_RAW.*-RAW" 
+          minLength: 70
+          maxLength: 70
+          example: S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38-RAW
+    bucket_prefix:
+      default:  '""'
+  cost_profiles:
+    EDC:
+      cost: 1.0
+    DEFAULT:
+      cost: 1.0
+  tasks:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-back-projection
+      command:
+        - ++process
+        - back_projection
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+      timeout: 10800
+      vcpu: 1
+      memory: 31500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
+        - ESA_USERNAME
+        - ESA_PASSWORD
