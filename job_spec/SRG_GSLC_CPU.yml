@@ -20,6 +20,7 @@ INSAR_ISCE_BURST:
           example: S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38-RAW
     bucket_prefix:
       default:  '""'
+  validators:
   cost_profiles:
     EDC:
       cost: 1.0
