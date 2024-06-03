@@ -42,6 +42,8 @@ def get_cmr_metadata(granules):
             'SENTINEL-1A_DP_GRD_HIGH',
             'SENTINEL-1B_DP_GRD_HIGH',
             'SENTINEL-1_BURSTS',
+            'SENTINEL-1A_RAW',
+            'SENTINEL-1B_RAW',
         ],
         'page_size': 2000,
     }
