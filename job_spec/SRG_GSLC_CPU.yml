@@ -17,7 +17,7 @@ SRG_GSLC_CPU:
           pattern: "^S1[AB]_IW_RAW.*"
           minLength: 71
           maxLength: 71
-          example: S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38-RAW
+          example: S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38
     bucket_prefix:
       default:  '""'
   validators: []
