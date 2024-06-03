@@ -1,4 +1,4 @@
-INSAR_ISCE_BURST:
+SRG_GSLC_CPU:
   required_parameters:
     - granules
   parameters:
@@ -14,7 +14,7 @@ INSAR_ISCE_BURST:
         items:
           description: Name of the Level-0 Sentinel-1 scenes to process
           type: string
-          pattern: "^S1[AB]_IW_RAW.*-RAW" 
+          pattern: "^S1[AB]_IW_RAW.*-RAW"
           minLength: 71
           maxLength: 71
           example: S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38-RAW
