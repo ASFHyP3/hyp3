@@ -14,9 +14,9 @@ SRG_GSLC_CPU:
         items:
           description: Name of the Level-0 Sentinel-1 scenes to process
           type: string
-          pattern: "^S1[AB]_IW_RAW.*"
-          minLength: 71
-          maxLength: 71
+          pattern: "^S1[AB]_IW_RAW"
+          minLength: 67
+          maxLength: 67
           example: S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38
     bucket_prefix:
       default:  '""'
