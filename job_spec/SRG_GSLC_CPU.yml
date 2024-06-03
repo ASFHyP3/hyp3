@@ -35,6 +35,8 @@ SRG_GSLC_CPU:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
+        - Ref::bucket_prefix
+        - Ref::granules
       timeout: 10800
       vcpu: 1
       memory: 31500
