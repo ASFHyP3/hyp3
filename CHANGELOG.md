@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * The `SRG_GSLC_CPU` job spec
 * The `SRG_GSLC_CPU` job type to the `hyp3-lavas` and `hyp3-lavas-test` HyP3 deployments
 
+### Changed
+- The `hyp3-tibet-jpl` deployment now uses the `m6id[n]` instance families and includes the `ARIA_RAIDER` job spec
+
 ## [7.4.0]
 
 ### Added
