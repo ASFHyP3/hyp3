@@ -1,0 +1,85 @@
+ITS_LIVE_S1_BURST:
+  required_parameters:
+    - granules
+  parameters:
+    granules:
+      default:  '""'
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 1
+        example:
+          # FIXME whatever bursts look like
+          - S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+        items:
+          description: The name of the Sentinel-1 SLC granule to process
+          type: string
+          pattern: "^S1[AB]_IW_SLC__1S[SD][VH]"
+          minLength: 67
+          maxLength: 67
+          example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+    bucket_prefix:
+      default:  '""'
+    parameter_file:
+      api_schema:
+        description: Shapefile for determining the correct search parameters by geographic location. Path to shapefile must be understood by GDAL.
+        type: string
+        default: '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+    publish_bucket:
+      api_schema:
+        description: Publish the resulting product to the ITS_LIVE AWS Open Data (or test) S3 Bucket
+        default: '""'
+        type: string
+        enum:
+          - '""'
+          - "its-live-data"
+          - "its-live-data-test"
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  tasks:
+    - name: OPERA_S1_GEOCODE
+      image: ghcr.io/asfhyp3/hyp3-opera-rtc
+      command:
+        - ++process
+        # FIXME: Goecode both or geocode one then two?
+        - geocode_multiple_bursts
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - Ref::granules
+      timeout: 10800
+      vcpu: 1
+      memory: 31500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
+        - ESA_USERNAME
+        - ESA_PASSWORD
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-autorift
+      command:
+        - ++process
+        - autorift_s1_bursts
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --parameter-file
+        - Ref::parameter_file
+        - --publish-bucket
+        - Ref::publish_bucket
+        - --naming-scheme
+        - ITS_LIVE_PROD
+      timeout: 10800
+      vcpu: 1
+      memory: 31500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
+        - ESA_USERNAME
+        - ESA_PASSWORD
+        - PUBLISH_ACCESS_KEY_ID
+        - PUBLISH_SECRET_ACCESS_KEY
