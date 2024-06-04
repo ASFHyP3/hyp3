@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.5.0]
+
+### Added
+* The `SRG_GSLC_CPU` job spec
+* The `SRG_GSLC_CPU` job type to the `hyp3-lavas` and `hyp3-lavas-test` HyP3 deployments
+
+### Changed
+- The `hyp3-tibet-jpl` deployment now uses the `m6id[n]` instance families and includes the `ARIA_RAIDER` job spec
+
 ## [7.4.0]
 
 ### Added

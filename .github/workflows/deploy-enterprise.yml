@@ -60,8 +60,10 @@ jobs:
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
-            job_files: job_spec/INSAR_ISCE.yml
-            instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
+            job_files: >-
+              job_spec/ARIA_RAIDER.yml
+              job_spec/INSAR_ISCE_TEST.yml
+            instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
             default_max_vcpus: 1000
             expanded_max_vcpus: 1000
             required_surplus: 0
@@ -232,7 +234,9 @@ jobs:
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
-            job_files: job_spec/INSAR_ISCE_BURST.yml
+            job_files: >-
+              job_spec/INSAR_ISCE_BURST.yml
+              job_spec/SRG_GSLC_CPU.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
