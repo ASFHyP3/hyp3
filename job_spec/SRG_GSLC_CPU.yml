@@ -22,8 +22,6 @@ SRG_GSLC_CPU:
       default:  '""'
   validators: []
   cost_profiles:
-    EDC:
-      cost: 1.0
     DEFAULT:
       cost: 1.0
   tasks:
