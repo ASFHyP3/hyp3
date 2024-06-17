@@ -107,6 +107,6 @@ jobs:
   call-bump-version-workflow:
     if: github.ref == 'refs/heads/main'
     needs: deploy
-    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.11.0
+    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.11.1
     secrets:
       USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
