@@ -17,4 +17,4 @@ flake8-blind-except==0.2.1
 flake8-builtins==2.5.0
 setuptools==70.0.0
 openapi-spec-validator==0.7.1
-cfn-lint==0.87.5
+cfn-lint==0.87.7
