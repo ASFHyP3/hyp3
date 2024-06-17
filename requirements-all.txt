@@ -10,7 +10,7 @@ jinja2==3.1.4
 moto[dynamodb]==5.0.9
 pytest==8.2.2
 PyYAML==6.0.1
-responses==0.25.2
+responses==0.25.3
 flake8==7.1.0
 flake8-import-order==0.18.2
 flake8-blind-except==0.2.1
