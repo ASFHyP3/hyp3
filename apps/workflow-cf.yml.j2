@@ -58,6 +58,8 @@ Resources:
         ResourceRequirements:
           - Type: VCPU
             Value: "{{ task['vcpu'] }}"
+          - Type: GPU
+            Value: 1
           - Type: MEMORY
             Value: "{{ task['memory'] }}"
         Command:
