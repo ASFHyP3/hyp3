@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [7.6.0]
+
+### Changed
+- Reduced throughput for `hyp3-its-live` to prevent Sentinel-2 processing from being rate limited (10,000 -> 2,000 vCPUs).
+
 ## [7.5.0]
 
 ### Added
