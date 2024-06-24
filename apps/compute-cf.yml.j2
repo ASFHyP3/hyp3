@@ -61,26 +61,6 @@ Resources:
             cloud-init-per instance mkfs_ssd mkfs.ext4 /dev/nvme1n1
             mount /dev/nvme1n1 /var/lib/docker
 
-            DRIVER_VERSION=550.54.14
-            dnf install -y kernel-devel-$(uname -r) kernel-headers-$(uname -r) kernel-modules-extra
-            curl -fSsl -O https://us.download.nvidia.com/tesla/$DRIVER_VERSION/NVIDIA-Linux-x86_64-$DRIVER_VERSION.run
-            chmod +x NVIDIA-Linux-x86_64-$DRIVER_VERSION.run
-            ./NVIDIA-Linux-x86_64-$DRIVER_VERSION.run --tmpdir . --silent
-            rm ./NVIDIA-Linux-x86_64-$DRIVER_VERSION.run 
-
-            dnf install -y docker git
-            systemctl start docker
-            systemctl enable docker
-            usermod -aG docker ec2-user
-
-            dnf config-manager --add-repo https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo
-            dnf install -y nvidia-container-toolkit
-            nvidia-ctk runtime configure --runtime=docker
-            systemctl restart docker
-
-            dnf install -y git
-
-            dnf clean all && rm -rf /var/cache/dnf/*
             --==BOUNDARY==--
 
   ComputeEnvironment:
