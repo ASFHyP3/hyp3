@@ -26,7 +26,8 @@ SRG_GSLC_CPU:
       cost: 1.0
   tasks:
     - name: ''
-      image: ghcr.io/asfhyp3/hyp3-back-projection:0.5.2.gpu
+      image: ghcr.io/asfhyp3/hyp3-back-projection
+      image_tag: 0.5.2.gpu
       command:
         - ++process
         - back_projection
