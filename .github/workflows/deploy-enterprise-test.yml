@@ -87,7 +87,7 @@ jobs:
             job_files: >-
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/SRG_GSLC_CPU.yml
-            instance_types: g4dn.2xlarge
+            instance_types: g6.2xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
