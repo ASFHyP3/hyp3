@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [7.7.0]
 
+### Added
+- `ARIA_AUTORIFT.yml` job spec for Solid Earth offset tracking in the ARIA JPL deployments
+
 ### Changed
 - Increased throughput for `hyp3-a19-jpl` (0 -> 4,000 vCPUs) to support continued processing of ARIA GUNW products.
 - The `hyp3-a19-jpl` and `hyp3-nisar-jpl` deployments now use the `m6id[n]` instance families to reduce the high number of spot interruptions seen with wth `c6id` instance family.
