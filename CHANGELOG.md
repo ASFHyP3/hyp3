@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [7.7.0]
 
 ### Added
-- `ARIA_AUTORIFT.yml` job spec for Sold Earth offset tracking in the ARIA JPL deployments
+- `ARIA_AUTORIFT.yml` job spec for Solid Earth offset tracking in the ARIA JPL deployments
 
 ### Changed
 - Increased throughput for `hyp3-a19-jpl` (0 -> 4,000 vCPUs) to support continued processing of ARIA GUNW products.
