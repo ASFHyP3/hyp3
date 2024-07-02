@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.7.0]
+
+### Changed
+- Increased throughput for `hyp3-a19-jpl` (0 -> 4,000 vCPUs) to support continued processing of ARIA GUNW products.
+- The `hyp3-a19-jpl` and `hyp3-nisar-jpl` deployments now use the `m6id[n]` instance families to reduce the high number of spot interruptions seen with wth `c6id` instance family.
+
+### Removed
+- The `INSAR_ISCE_TEST.yml` job spec, which only differed from `INSAR_ISCE.yml` in support of different instance families, has been removed now that all ARIA JPL deployments are using the same instance families again.
+
+
 ## [7.6.0]
 
 ### Changed
