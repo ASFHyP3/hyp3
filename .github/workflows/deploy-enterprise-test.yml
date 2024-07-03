@@ -47,8 +47,9 @@ jobs:
             default_application_status: APPROVED
             cost_profile: DEFAULT
             job_files: >-
+              job_spec/ARIA_AUTORIFT.yml
               job_spec/ARIA_RAIDER.yml
-              job_spec/INSAR_ISCE_TEST.yml
+              job_spec/INSAR_ISCE.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -78,7 +79,7 @@ jobs:
 
           - environment: hyp3-lavas-test
             domain: hyp3-lavas-test.asf.alaska.edu
-            template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2 
+            template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 0
