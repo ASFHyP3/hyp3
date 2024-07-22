@@ -1,3 +1,3 @@
-boto3==1.34.144
+boto3==1.34.146
 ./lib/dynamo/
 ./lib/lambda_logging/
