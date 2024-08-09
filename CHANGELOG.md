@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.7.1]
+
+### Removed
+- The `ESA_USERNAME` and `ESA_PASSWORD` secrets have been removed from the job specs that no longer require them (those that use the `hyp3-gamma`, `hyp3-isce2`, `hyp3-autorift`, or `hyp3-back-projection` images).
+
+
 ## [7.7.0]
 
 ### Added

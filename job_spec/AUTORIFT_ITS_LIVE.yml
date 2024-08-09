@@ -72,7 +72,5 @@ AUTORIFT:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD
         - PUBLISH_ACCESS_KEY_ID
         - PUBLISH_SECRET_ACCESS_KEY
