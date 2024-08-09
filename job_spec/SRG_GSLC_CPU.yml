@@ -41,5 +41,3 @@ SRG_GSLC_CPU:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD
