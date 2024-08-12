@@ -1,4 +1,4 @@
-SRG_GSLC_CPU:
+SRG_GSLC:
   required_parameters:
     - granules
   parameters:
