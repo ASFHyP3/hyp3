@@ -97,8 +97,6 @@ WATER_MAP_EQ:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/water-map-equal-percent-solution
       command:

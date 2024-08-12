@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [7.7.1]
+
+### Removed
+- The `ESA_USERNAME` and `ESA_PASSWORD` secrets have been removed from the job specs that no longer require them (those that use the `hyp3-gamma`, `hyp3-isce2`, `hyp3-autorift`, or `hyp3-back-projection` images).
+
+
+## [7.7.0]
+
+### Added
+- `ARIA_AUTORIFT.yml` job spec for Solid Earth offset tracking in the ARIA JPL deployments
+
+### Changed
+- Increased throughput for `hyp3-a19-jpl` (0 -> 4,000 vCPUs) to support continued processing of ARIA GUNW products.
+- The `hyp3-a19-jpl` and `hyp3-nisar-jpl` deployments now use the `m6id[n]` instance families to reduce the high number of spot interruptions seen with wth `c6id` instance family.
+- Increased available vCPUs for DAAC deployments.
+
+### Removed
+- The `INSAR_ISCE_TEST.yml` job spec, which only differed from `INSAR_ISCE.yml` in support of different instance families, has been removed now that all ARIA JPL deployments are using the same instance families again.
+
+
+## [7.6.0]
+
+### Changed
+- Reduced throughput for `hyp3-its-live` to prevent Sentinel-2 processing from being rate limited (10,000 -> 2,000 vCPUs).
+
 ## [7.5.0]
 
 ### Added
