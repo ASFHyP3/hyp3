@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.7.2]
+
+### Change
+- Renamed the `SRG_GSLC_CPU` job to `SRG_GSLC`
+- Changed the `SRG_GSLC` job to use the `hyp3-srg` image, rather than `hyp3-back-projection` since the repository was renamed.
+
+
 ## [7.7.1]
 
 ### Removed

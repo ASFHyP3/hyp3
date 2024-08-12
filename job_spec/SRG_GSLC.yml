@@ -1,4 +1,4 @@
-SRG_GSLC_CPU:
+SRG_GSLC:
   required_parameters:
     - granules
   parameters:
@@ -26,7 +26,7 @@ SRG_GSLC_CPU:
       cost: 1.0
   tasks:
     - name: ''
-      image: ghcr.io/asfhyp3/hyp3-back-projection
+      image: ghcr.io/asfhyp3/hyp3-srg
       command:
         - ++process
         - back_projection
