@@ -9,7 +9,10 @@ class TokenDeserializeError(Exception):
 
 
 def get_granules(jobs: list[dict]) -> set[str]:
-    return {granule for job in jobs for granule in job['job_parameters'].get('granules', [])}
+    granules = {granule for job in jobs for granule in job['job_parameters'].get('granules', [])}
+    granules.union({granule for job in jobs for granule in job['job_parameters'].get('reference', [])})
+    granules.union({granule for job in jobs for granule in job['job_parameters'].get('secondary', [])})
+    return granules
 
 
 def serialize(payload: dict):
