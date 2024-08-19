@@ -20,7 +20,7 @@ def test_get_granules():
             {'job_parameters': {'secondary': []}},
             {'job_parameters': {}},
         ]
-    ) == set({'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'})
+    ) == {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'}
 
 
 def test_serialize_token():
