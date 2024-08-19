@@ -34,6 +34,7 @@ INSAR_MULTI_BURST:
           type: string
           pattern: '^((S1_\d{6}_IW\d_\d{8}T\d{6}_[VH]{2}_([\dA-F]){4}-BURST)($|[ \t]+))+$'
           minLength: 43
+          maxLength: 43
           example: S1_136231_IW2_20200616T022313_VV_5D11-BURST
     bucket_prefix:
       default:  '""'
