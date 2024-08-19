@@ -11,7 +11,7 @@ class TokenDeserializeError(Exception):
 def get_granules(jobs: list[dict]) -> set[str]:
     granules = set()
     for key in ['granules', 'reference', 'secondary']:
-        granules.union({granule for job in jobs for granule in job['job_parameters'].get(key, [])})
+        granules = granules.union({granule for job in jobs for granule in job['job_parameters'].get(key, [])})
     return granules
 
 
