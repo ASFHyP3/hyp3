@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [7.8.0]
 
 ### Added
-- Added `INSAR_MULTI_BURST` job type that can merge adjacent bursts into an SLC and then perform InSAR.
+- Added `INSAR_MULTI_BURST` job type to `hyp3-test` that can merge adjacent bursts into an SLC and then perform InSAR.
 
 
 ## [7.7.2]
