@@ -100,59 +100,186 @@ def test_check_dem_coverage():
 
 
 def test_check_same_burst_ids():
-    valid_case = [
-        {
-            'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
-        },
-        {
-            'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
-        }
+    valid_cases = [
+        [
+            {
+                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+            }
+        ],
+        [
+            {
+                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136232_IW2_20200604T022316_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+            },
+            {
+                'name': 'S1_136232_IW2_20200616T022315_VV_5D11-BURST'
+            }
+        ],
+        [
+            {
+                'name': 'S1_136232_IW2_20200616T022315_VV_5D11-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+            },
+            {
+                'name': 'S1_136232_IW2_20200604T022316_VV_7C85-BURST'
+            },
+        ]
     ]
-    invalid_case = [
-        {
-            'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
-        },
-        {
-            'name': 'S1_136232_IW2_20200616T022313_HH_5D11-BURST'
-        }
+    invalid_cases = [
+        [
+            {
+                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136232_IW2_20200616T022313_HH_5D11-BURST'
+            }
+        ],
+        [
+            {
+                'name': 'S1_136232_IW2_20200616T022315_VV_5D11-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+            },
+            {
+                'name': 'S1_136233_IW2_20200604T022316_VV_7C85-BURST'
+            },
+        ],
+        [
+            {
+                'name': 'S1_136232_IW2_20200616T022315_VV_5D11-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+            },
+            {
+                'name': 'S1_136232_IW2_20200604T022316_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136233_IW2_20200604T022316_VV_7C85-BURST'
+            },
+        ]
     ]
-
-    validation.check_same_burst_ids(valid_case)
-    with raises(validation.GranuleValidationError, match=r'.*do not have the same burst ID.*'):
-        validation.check_same_burst_ids(invalid_case)
+    for valid_case in valid_cases:
+        validation.check_same_burst_ids(valid_case)
+    for invalid_case in invalid_cases:
+        with raises(validation.GranuleValidationError, match=r'.*burst IDs with no matching pairs*'):
+            validation.check_same_burst_ids(invalid_case)
 
 
 def test_check_valid_polarizations():
-    valid_case = [
-        {
-            'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
-        },
-        {
-            'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
-        }
+    valid_cases = [
+        [
+            {
+                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+            }
+        ],
+        [
+            {
+                'name': 'S1_136231_IW2_20200604T022312_HH_7C85-BURST'
+            },
+            {
+                'name': 'S1_136232_IW2_20200604T022316_HH_7C85-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200616T022313_HH_5D11-BURST'
+            },
+            {
+                'name': 'S1_136232_IW2_20200616T022315_HH_5D11-BURST'
+            }
+        ],
+        [
+            {
+                'name': 'S1_136232_IW2_20200616T022315_VV_5D11-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+            },
+            {
+                'name': 'S1_136232_IW2_20200604T022316_VV_7C85-BURST'
+            },
+        ]
     ]
-    different_polarizations = [
-        {
-            'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
-        },
-        {
-            'name': 'S1_136231_IW2_20200616T022313_HH_5D11-BURST'
-        }
+    invalid_cases_no_match = [
+        [
+            {
+                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136232_IW2_20200616T022313_HH_5D11-BURST'
+            }
+        ],
+        [
+            {
+                'name': 'S1_136232_IW2_20200616T022315_HH_5D11-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+            },
+            {
+                'name': 'S1_136232_IW2_20200604T022316_HH_7C85-BURST'
+            },
+        ]
     ]
-    unsupported_polarizations = [
-        {
-            'name': 'S1_136231_IW2_20200604T022312_VH_7C85-BURST'
-        },
-        {
-            'name': 'S1_136231_IW2_20200616T022313_VH_5D11-BURST'
-        }
+    invalid_cases_unsupported = [
+        [
+            {
+                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+            },
+            {
+                'name': 'S1_136232_IW2_20200616T022315_VH_5D11-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200604T022312_VH_7C85-BURST'
+            },
+        ],
+        [
+            {
+                'name': 'S1_136232_IW2_20200616T022315_HV_5D11-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200604T022312_HV_7C85-BURST'
+            },
+        ]
     ]
-
-    validation.check_valid_polarizations(valid_case)
-    with raises(validation.GranuleValidationError, match=r'.*do not have the same polarization.*'):
-        validation.check_valid_polarizations(different_polarizations)
-    with raises(validation.GranuleValidationError, match=r'.*Only VV and HH.*'):
-        validation.check_valid_polarizations(unsupported_polarizations)
+    for valid_case in valid_cases:
+        validation.check_valid_polarizations(valid_case)
+    for (invalid_case_no_match, invalid_case_unsupported) in zip(invalid_cases_no_match, invalid_cases_unsupported):
+        with raises(validation.GranuleValidationError, match=r'.*need to have the same polarization*'):
+            validation.check_valid_polarizations(invalid_case_no_match)
+        with raises(validation.GranuleValidationError, match=r'.*currently supported*'):
+            validation.check_valid_polarizations(invalid_case_unsupported)
 
 
 def test_check_granules_exist():
