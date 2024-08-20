@@ -92,7 +92,9 @@ def check_valid_polarizations(granule_metadata):
             f'The requested scenes need to have the same polarization, got: {", ".join(polarizations)}'
         )
     if not polarizations.issubset({'VV', 'HH'}):
-        raise GranuleValidationError(f'Only VV and HH polarizations are currently supported, got: {polarizations.pop()}')
+        raise GranuleValidationError(
+            f'Only VV and HH polarizations are currently supported, got: {polarizations.pop()}'
+        )
 
 
 def check_not_antimeridian(granule_metadata):
