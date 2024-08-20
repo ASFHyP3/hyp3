@@ -77,21 +77,22 @@ def check_dem_coverage(granule_metadata):
 
 
 def check_same_burst_ids(granule_metadata):
-    ref_burst_id, sec_burst_id = [granule['name'].split('_')[1] for granule in granule_metadata]
-    if ref_burst_id != sec_burst_id:
+    burst_ids = [granule['name'].split('_')[1] for granule in granule_metadata]
+    not_matching = [burst_id for burst_id in set(burst_ids) if burst_ids.count(burst_id) == 1]
+    if not_matching:
         raise GranuleValidationError(
-            f'The requested scenes do not have the same burst ID: {ref_burst_id} and {sec_burst_id}'
+            f'The requests scenes have burst IDs with no matching pairs: {not_matching}.'
         )
 
 
 def check_valid_polarizations(granule_metadata):
-    ref_polarization, sec_polarization = [granule['name'].split('_')[4] for granule in granule_metadata]
-    if ref_polarization != sec_polarization:
+    polarizations = set(granule['name'].split('_')[4] for granule in granule_metadata)
+    if len(polarizations) > 1:
         raise GranuleValidationError(
-            f'The requested scenes do not have the same polarization: {ref_polarization} and {sec_polarization}'
+            f'The requested scenes need to have the same polarization, got: {", ".join(polarizations)}'
         )
-    if ref_polarization != 'VV' and ref_polarization != 'HH':
-        raise GranuleValidationError(f'Only VV and HH polarizations are currently supported, got: {ref_polarization}')
+    if not polarizations.issubset({'VV', 'HH'}):
+        raise GranuleValidationError(f'Only VV and HH polarizations are currently supported, got: {polarizations.pop()}')
 
 
 def check_not_antimeridian(granule_metadata):
