@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [8.0.0]
 
-### Added
-- `INSAR_ISCE_BURST` now has the ability to process multiple adjacent bursts into one interferogram.
-
 ### Changed
-- `INSAR_ISCE_BURST` now takes in `reference` and `secondary` parameters rather than `granules`.
+- `INSAR_ISCE_BURST` now has the ability to process multiple adjacent bursts into one interferogram.
+- `INSAR_ISCE_BURST` now uses `reference` and `secondary` parameters which each accept a list of 1 or more scene names.
+
+# Removed
+- `INSAR_ISCE_BURST` no longer accepts a `granules` parameter.
 
 
 ## [7.7.2]
