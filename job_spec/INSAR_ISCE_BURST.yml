@@ -9,10 +9,7 @@ INSAR_ISCE_BURST:
         type: array
         minItems: 1
         maxItems: 30
-        examples:
-          - S1_136231_IW2_20200604T022312_VV_7C85-BURST
-          - S1_136232_IW2_20200604T022315_VV_7C85-BURST
-        examples:
+        example:
           - S1_136231_IW2_20200604T022312_VV_7C85-BURST
         items:
           description: Name of the reference Sentinel-1 SLC IW burst granule to process
@@ -27,12 +24,9 @@ INSAR_ISCE_BURST:
       api_schema:
         type: array
         minItems: 1
-        maxItems: 50
-        examples:
+        maxItems: 30
+        example:
           - S1_136231_IW2_20200616T022313_VV_5D11-BURST
-          - S1_136232_IW2_20200616T022316_VV_5D11-BURST
-        examples:
-          - S1_136232_IW2_20200616T022316_VV_5D11-BURST
         items:
           description: Name of the secondary Sentinel-1 SLC IW burst granule to process
           type: string
