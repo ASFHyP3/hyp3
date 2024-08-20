@@ -30,7 +30,7 @@ INSAR_MULTI_BURST:
           - S1_136231_IW2_20200616T022313_VV_5D11-BURST
           - S1_136232_IW2_20200616T022316_VV_5D11-BURST
         items:
-          description: Name of the secondary Sentinel-1 SLC IW burst granule to process
+          description: Name of the secondary Sentinel-1 SLC IW burst granule(s) to process
           type: string
           pattern: '^((S1_\d{6}_IW\d_\d{8}T\d{6}_[VH]{2}_([\dA-F]){4}-BURST)($|[ \t]+))+$'
           minLength: 43
