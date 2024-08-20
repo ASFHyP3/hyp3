@@ -252,10 +252,10 @@ def test_check_valid_polarizations():
     invalid_cases_unsupported = [
         [
             {
-                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+                'name': 'S1_136231_IW2_20200604T022312_VH_7C85-BURST'
             },
             {
-                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+                'name': 'S1_136231_IW2_20200616T022313_VH_5D11-BURST'
             },
             {
                 'name': 'S1_136232_IW2_20200616T022315_VH_5D11-BURST'
