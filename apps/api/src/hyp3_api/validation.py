@@ -70,22 +70,26 @@ def check_granules_exist(granules, granule_metadata):
         raise GranuleValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 
 
-def check_dem_coverage(granule_metadata):
+def check_dem_coverage(_, granule_metadata):
     bad_granules = [g['name'] for g in granule_metadata if not has_sufficient_coverage(g['polygon'])]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
-def check_same_burst_ids(granule_metadata):
-    burst_ids = [granule['name'].split('_')[1] for granule in granule_metadata]
-    not_matching = [burst_id for burst_id in set(burst_ids) if burst_ids.count(burst_id) != 2]
-    if not_matching:
+def check_same_burst_ids(job, _):
+    ref_ids = [ref.split('_')[1] for ref in job['job_parameters'].get('reference', [])]
+    sec_ids = [sec.split('_')[1] for sec in job['job_parameters'].get('secondary', [])]
+    if ref_ids != sec_ids:
         raise GranuleValidationError(
-            f'The requested scenes have burst IDs with no matching pairs: {not_matching}.'
+            f'The requested scenes have burst IDs with no matching pairs.'
+        )
+    if len(set(ref_ids)) != len(ref_ids):
+        raise GranuleValidationError(
+            f'The requested scenes have more than 1 pair with the same burst ID.'
         )
 
 
-def check_valid_polarizations(granule_metadata):
+def check_valid_polarizations(_, granule_metadata):
     polarizations = set(granule['name'].split('_')[4] for granule in granule_metadata)
     if len(polarizations) > 1:
         raise GranuleValidationError(
@@ -97,7 +101,7 @@ def check_valid_polarizations(granule_metadata):
         )
 
 
-def check_not_antimeridian(granule_metadata):
+def check_not_antimeridian(_, granule_metadata):
     for granule in granule_metadata:
         bbox = granule['polygon'].bounds
         if abs(bbox[0] - bbox[2]) > 180.0 and bbox[0] * bbox[2] < 0.0:
@@ -132,4 +136,4 @@ def validate_jobs(jobs):
             job_granule_metadata = [granule for granule in granule_metadata if granule['name'] in get_granules([job])]
             module = sys.modules[__name__]
             validator = getattr(module, validator_name)
-            validator(job_granule_metadata)
+            validator(job, job_granule_metadata)
