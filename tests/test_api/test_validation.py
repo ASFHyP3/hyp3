@@ -161,7 +161,7 @@ def test_check_same_burst_ids():
             }
         }
     ]
-    invalid_jobs_duplicate =  [
+    invalid_jobs_duplicate = [
         {
             'job_parameters': {
                 'reference': [
@@ -196,7 +196,8 @@ def test_check_same_burst_ids():
             validation.check_same_burst_ids(invalid_job, {})
     for invalid_job in invalid_jobs_duplicate:
         with raises(validation.GranuleValidationError, match=r'.*more than 1 pair with the same burst ID*'):
-                validation.check_same_burst_ids(invalid_job, {})
+            validation.check_same_burst_ids(invalid_job, {})
+
 
 def test_check_valid_polarizations():
     valid_cases = [
@@ -371,6 +372,7 @@ def test_validate_jobs():
 
     valid_ref_burst = 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
     valid_sec_burst = 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+    invalid_sec_burst = 'S1_136232_IW2_20200616T022313_VV_5D11-BURST'
 
     granule_polygon_pairs = [
         (granule_with_dem_coverage,
@@ -412,6 +414,13 @@ def test_validate_jobs():
             'job_type': 'ARIA_RAIDER',
             'job_parameters': {}
         },
+        {
+            'job_type': 'INSAR_ISCE_BURST',
+            'job_parameters': {
+                'reference': [valid_ref_burst],
+                'secondary': [valid_sec_burst]
+            }
+        }
     ]
     validation.validate_jobs(jobs)
 
@@ -431,6 +440,18 @@ def test_validate_jobs():
             'job_type': 'RTC_GAMMA',
             'job_parameters': {
                 'granules': [granule_without_dem_coverage],
+            }
+        }
+    ]
+    with raises(validation.GranuleValidationError):
+        validation.validate_jobs(jobs)
+
+    jobs = [
+        {
+            'job_type': 'INSAR_ISCE_BURST',
+            'job_parameters': {
+                'reference': [valid_ref_burst],
+                'secondary': [invalid_sec_burst]
             }
         }
     ]
