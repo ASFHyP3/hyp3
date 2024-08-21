@@ -78,7 +78,7 @@ def check_dem_coverage(granule_metadata):
 
 def check_same_burst_ids(granule_metadata):
     burst_ids = [granule['name'].split('_')[1] for granule in granule_metadata]
-    not_matching = [burst_id for burst_id in set(burst_ids) if burst_ids.count(burst_id) == 1]
+    not_matching = [burst_id for burst_id in set(burst_ids) if burst_ids.count(burst_id) != 2]
     if not_matching:
         raise GranuleValidationError(
             f'The requested scenes have burst IDs with no matching pairs: {not_matching}.'
