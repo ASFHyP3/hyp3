@@ -81,11 +81,11 @@ def check_same_burst_ids(job, _):
     sec_ids = [sec.split('_')[1] for sec in job['job_parameters'].get('secondary', [])]
     if ref_ids != sec_ids:
         raise GranuleValidationError(
-            f'The requested scenes have burst IDs with no matching pairs.'
+            'The requested scenes have burst IDs with no matching pairs.'
         )
     if len(set(ref_ids)) != len(ref_ids):
         raise GranuleValidationError(
-            f'The requested scenes have more than 1 pair with the same burst ID.'
+            'The requested scenes have more than 1 pair with the same burst ID.'
         )
 
 
