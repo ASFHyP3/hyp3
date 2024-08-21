@@ -17,8 +17,7 @@ INSAR_ISCE_BURST:
           pattern: '^((S1_\d{6}_IW\d_\d{8}T\d{6}_[VH]{2}_([\dA-F]){4}-BURST)($|[ \t]+))+$'
           minLength: 43
           maxLength: 43
-          example: 
-            - S1_136231_IW2_20200604T022312_VV_7C85-BURST
+          example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
     secondary:
       default:  '""'
       api_schema:
