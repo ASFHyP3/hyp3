@@ -149,6 +149,17 @@ def test_check_same_burst_ids():
         ],
         [
             {
+                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+            },
+            {
+                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+            }
+        ],
+        [
+            {
                 'name': 'S1_136232_IW2_20200616T022315_VV_5D11-BURST'
             },
             {
