@@ -81,7 +81,7 @@ def check_same_burst_ids(granule_metadata):
     not_matching = [burst_id for burst_id in set(burst_ids) if burst_ids.count(burst_id) == 1]
     if not_matching:
         raise GranuleValidationError(
-            f'The requests scenes have burst IDs with no matching pairs: {not_matching}.'
+            f'The requested scenes have burst IDs with no matching pairs: {not_matching}.'
         )
 
 
