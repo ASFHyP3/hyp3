@@ -120,20 +120,20 @@ def test_check_same_burst_ids():
             }
         }
     ]
+    invalid_job_different_lengths = {
+        'job_parameters': {
+            'reference': ['S1_136231_IW2_20200604T022312_VV_7C85-BURST'],
+            'secondary': [
+                'S1_136232_IW2_20200616T022313_VV_5D11-BURST',
+                'S1_136233_IW2_20200616T022313_VV_5D11-BURST'
+            ]
+        }
+    }
     invalid_jobs_not_matching = [
         {
             'job_parameters': {
                 'reference': ['S1_136231_IW2_20200604T022312_VV_7C85-BURST'],
                 'secondary': ['S1_136232_IW2_20200616T022313_VV_5D11-BURST']
-            }
-        },
-        {
-            'job_parameters': {
-                'reference': ['S1_136231_IW2_20200604T022312_VV_7C85-BURST'],
-                'secondary': [
-                    'S1_136232_IW2_20200616T022313_VV_5D11-BURST',
-                    'S1_136233_IW2_20200616T022313_VV_5D11-BURST'
-                ]
             }
         },
         {
@@ -191,108 +191,99 @@ def test_check_same_burst_ids():
     ]
     for valid_job in valid_jobs:
         validation.check_same_burst_ids(valid_job, {})
+    with raises(validation.GranuleValidationError, match=r'.*Number of reference and secondary scenes must match*'):
+        validation.check_same_burst_ids(invalid_job_different_lengths, {})
     for invalid_job in invalid_jobs_not_matching:
-        with raises(validation.GranuleValidationError, match=r'.*burst IDs with no matching pairs*'):
+        with raises(validation.GranuleValidationError, match=r'.*Burst IDs do not match*'):
             validation.check_same_burst_ids(invalid_job, {})
     for invalid_job in invalid_jobs_duplicate:
-        with raises(validation.GranuleValidationError, match=r'.*more than 1 pair with the same burst ID*'):
+        with raises(validation.GranuleValidationError, match=r'.*The requested scenes have more than 1 pair*'):
             validation.check_same_burst_ids(invalid_job, {})
 
 
 def test_check_valid_polarizations():
-    valid_cases = [
-        [
-            {
-                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
-            },
-            {
-                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+    valid_jobs = [
+        {
+            'job_parameters': {
+                'reference': ['S1_136231_IW2_20200604T022312_VV_7C85-BURST'],
+                'secondary': ['S1_136231_IW2_20200616T022313_VV_5D11-BURST']
             }
-        ],
-        [
-            {
-                'name': 'S1_136231_IW2_20200604T022312_HH_7C85-BURST'
-            },
-            {
-                'name': 'S1_136232_IW2_20200604T022316_HH_7C85-BURST'
-            },
-            {
-                'name': 'S1_136231_IW2_20200616T022313_HH_5D11-BURST'
-            },
-            {
-                'name': 'S1_136232_IW2_20200616T022315_HH_5D11-BURST'
+        },
+        {
+            'job_parameters': {
+                'reference': [
+                    'S1_136231_IW2_20200604T022312_HH_7C85-BURST',
+                    'S1_136232_IW2_20200616T022315_HH_5D11-BURST'
+                ],
+                'secondary': [
+                    'S1_136231_IW2_20200616T022313_HH_5411-BURST',
+                    'S1_136232_IW2_20200616T022345_HH_5D13-BURST'
+                ]
             }
-        ],
-        [
-            {
-                'name': 'S1_136232_IW2_20200616T022315_VV_5D11-BURST'
-            },
-            {
-                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
-            },
-            {
-                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
-            },
-            {
-                'name': 'S1_136232_IW2_20200604T022316_VV_7C85-BURST'
-            },
-        ]
+        }
     ]
-    invalid_cases_no_match = [
-        [
-            {
-                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
-            },
-            {
-                'name': 'S1_136232_IW2_20200616T022313_HH_5D11-BURST'
+    invalid_jobs_not_matching = [
+        {
+            'job_parameters': {
+                'reference': ['S1_136231_IW2_20200604T022312_VV_7C85-BURST'],
+                'secondary': ['S1_136232_IW2_20200616T022313_HH_5D11-BURST']
             }
-        ],
-        [
-            {
-                'name': 'S1_136232_IW2_20200616T022315_HH_5D11-BURST'
-            },
-            {
-                'name': 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
-            },
-            {
-                'name': 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
-            },
-            {
-                'name': 'S1_136232_IW2_20200604T022316_HH_7C85-BURST'
-            },
-        ]
+        },
+        {
+            'job_parameters': {
+                'reference': [
+                    'S1_136231_IW2_20200604T022312_VV_7C85-BURST',
+                    'S1_136232_IW2_20200604T123455_VV_ABC5-BURST'
+                ],
+                'secondary': [
+                    'S1_136231_IW2_20200617T022313_VV_5D11-BURST',
+                    'S1_136233_IW2_20200617T123213_HH_5E13-BURST'
+                ]
+            }
+        },
+        {
+            'job_parameters': {
+                'reference': [
+                    'S1_136232_IW2_20200604T022312_VV_7C85-BURST',
+                    'S1_136231_IW2_20200604T123455_HH_ABC5-BURST'
+                ],
+                'secondary': [
+                    'S1_136231_IW2_20200617T022313_VV_5D11-BURST',
+                    'S1_136233_IW2_20200617T123213_HH_5E13-BURST'
+                ]
+            }
+        }
     ]
-    invalid_cases_unsupported = [
-        [
-            {
-                'name': 'S1_136231_IW2_20200604T022312_VH_7C85-BURST'
-            },
-            {
-                'name': 'S1_136231_IW2_20200616T022313_VH_5D11-BURST'
-            },
-            {
-                'name': 'S1_136232_IW2_20200616T022315_VH_5D11-BURST'
-            },
-            {
-                'name': 'S1_136231_IW2_20200604T022312_VH_7C85-BURST'
-            },
-        ],
-        [
-            {
-                'name': 'S1_136232_IW2_20200616T022315_HV_5D11-BURST'
-            },
-            {
-                'name': 'S1_136231_IW2_20200604T022312_HV_7C85-BURST'
-            },
-        ]
+    invalid_jobs_unsupported = [
+        {
+            'job_parameters': {
+                'reference': ['S1_136231_IW2_20200604T022312_VH_7C85-BURST'],
+                'secondary': ['S1_136231_IW2_20200617T022313_VH_5D11-BURST']
+            }
+        },
+        {
+            'job_parameters': {
+                'reference': [
+                    'S1_136231_IW2_20200604T022312_HV_7C85-BURST',
+                    'S1_136231_IW2_20200604T123455_HV_ABC5-BURST',
+                    'S1_136232_IW2_20200604T125455_HV_ABC6-BURST',
+                ],
+                'secondary': [
+                    'S1_136231_IW2_20200617T022313_HV_5D11-BURST',
+                    'S1_136231_IW2_20200617T123213_HV_5E13-BURST',
+                    'S1_136232_IW2_20200604T123475_HV_ABC7-BURST',
+                ]
+            }
+        }
     ]
-    for valid_case in valid_cases:
-        validation.check_valid_polarizations({}, valid_case)
-    for (invalid_case_no_match, invalid_case_unsupported) in zip(invalid_cases_no_match, invalid_cases_unsupported):
+    for valid_job in valid_jobs:
+        validation.check_valid_polarizations(valid_job, {})
+    for invalid_job in invalid_jobs_not_matching:
         with raises(validation.GranuleValidationError, match=r'.*need to have the same polarization*'):
-            validation.check_valid_polarizations({}, invalid_case_no_match)
+            validation.check_valid_polarizations(invalid_job, {})
+    for invalid_job in invalid_jobs_unsupported: 
         with raises(validation.GranuleValidationError, match=r'.*currently supported*'):
-            validation.check_valid_polarizations({}, invalid_case_unsupported)
+            validation.check_valid_polarizations(invalid_job, {})
 
 
 def test_check_granules_exist():
@@ -370,9 +361,15 @@ def test_validate_jobs():
     granule_with_dem_coverage = 'S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8'
     granule_without_dem_coverage = 'S1A_IW_GRDH_1SDV_20201219T222530_20201219T222555_035761_042F72_8378'
 
-    valid_ref_burst = 'S1_136231_IW2_20200604T022312_VV_7C85-BURST'
-    valid_sec_burst = 'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
-    invalid_sec_burst = 'S1_136232_IW2_20200616T022313_VV_5D11-BURST'
+    valid_burst_pair = (
+        'S1_136231_IW2_20200604T022312_VV_7C85-BURST',
+        'S1_136231_IW2_20200616T022313_VV_5D11-BURST'
+    )
+
+    invalid_burst_pair = (
+        'S1_136231_IW2_20200616T022313_VV_5D11-BURST',
+        'S1_136232_IW2_20200604T022315_VV_7C85-BURST'
+    )
 
     granule_polygon_pairs = [
         (granule_with_dem_coverage,
@@ -417,8 +414,8 @@ def test_validate_jobs():
         {
             'job_type': 'INSAR_ISCE_BURST',
             'job_parameters': {
-                'reference': [valid_ref_burst],
-                'secondary': [valid_sec_burst]
+                'reference': [valid_burst_pair[0]],
+                'secondary': [valid_burst_pair[1]]
             }
         }
     ]
@@ -450,8 +447,8 @@ def test_validate_jobs():
         {
             'job_type': 'INSAR_ISCE_BURST',
             'job_parameters': {
-                'reference': [valid_ref_burst],
-                'secondary': [invalid_sec_burst]
+                'reference': [invalid_burst_pair[0]],
+                'secondary': [invalid_burst_pair[1]]
             }
         }
     ]

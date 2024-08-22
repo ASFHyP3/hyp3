@@ -77,20 +77,30 @@ def check_dem_coverage(_, granule_metadata):
 
 
 def check_same_burst_ids(job, _):
-    ref_ids = [ref.split('_')[1] for ref in job['job_parameters'].get('reference', [])]
-    sec_ids = [sec.split('_')[1] for sec in job['job_parameters'].get('secondary', [])]
+    refs = job['job_parameters']['reference']
+    secs = job['job_parameters']['secondary']
+    ref_ids = [ref.split('_')[1] for ref in refs]
+    sec_ids = [sec.split('_')[1] for sec in secs]
+    if len(ref_ids) != len(sec_ids):
+        error_message = (
+             f'Number of reference and secondary scenes must match, got: '
+             f'{len(ref_ids)} references and {len(sec_ids)} secondaries'
+        )
+        raise GranuleValidationError(error_message)
     if ref_ids != sec_ids:
+        bad_id_index = [ref_ids.index(ref) for (ref, sec) in zip(ref_ids, sec_ids) if ref != sec][0]
         raise GranuleValidationError(
-            'The requested scenes have burst IDs with no matching pairs.'
+            f'Burst IDs do not match for {refs[bad_id_index]} and {secs[bad_id_index]}.'
         )
     if len(set(ref_ids)) != len(ref_ids):
+        duplicate_pair_id = [ref_id for ref_id in ref_ids if ref_ids.count(ref_id) > 1][0]
         raise GranuleValidationError(
-            'The requested scenes have more than 1 pair with the same burst ID.'
+            f'The requested scenes have more than 1 pair with the following burst ID: {duplicate_pair_id}.'
         )
 
 
-def check_valid_polarizations(_, granule_metadata):
-    polarizations = set(granule['name'].split('_')[4] for granule in granule_metadata)
+def check_valid_polarizations(job, _):
+    polarizations = set(granule.split('_')[4] for granule in get_granules([job]))
     if len(polarizations) > 1:
         raise GranuleValidationError(
             f'The requested scenes need to have the same polarization, got: {", ".join(polarizations)}'
