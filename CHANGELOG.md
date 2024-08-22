@@ -5,10 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [7.8.0]
+## [8.0.0]
 
-### Added
-- Added `INSAR_MULTI_BURST` job type to `hyp3-test` that can merge adjacent bursts into an SLC and then perform InSAR.
+### Changed
+- `INSAR_ISCE_BURST` now accepts `reference` and `secondary` parameters, each of which is a list containing a single granule name. In a future release, `INSAR_ISCE_BURST` will support processing multiple adjacent bursts into one interferogram, and each parameter will be a list of one or more granule names.
+
+### Removed
+- `INSAR_ISCE_BURST` no longer accepts a `granules` parameter.
 
 
 ## [7.7.2]
