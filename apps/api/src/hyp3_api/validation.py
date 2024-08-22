@@ -92,7 +92,7 @@ def check_same_burst_ids(job, _):
                 f'Burst IDs do not match for {refs[i]} and {secs[i]}.'
             )
     if len(set(ref_ids)) != len(ref_ids):
-        duplicate_pair_id = [ref_id for ref_id in ref_ids if ref_ids.count(ref_id) > 1][0]
+        duplicate_pair_id = next(ref_id for ref_id in ref_ids if ref_ids.count(ref_id) > 1)
         raise GranuleValidationError(
             f'The requested scenes have more than 1 pair with the following burst ID: {duplicate_pair_id}.'
         )
