@@ -87,11 +87,11 @@ def check_same_burst_ids(job, _):
             f'{len(ref_ids)} references and {len(sec_ids)} secondaries'
         )
         raise GranuleValidationError(error_message)
-    if ref_ids != sec_ids:
-        bad_id_index = [ref_ids.index(ref) for (ref, sec) in zip(ref_ids, sec_ids) if ref != sec][0]
-        raise GranuleValidationError(
-            f'Burst IDs do not match for {refs[bad_id_index]} and {secs[bad_id_index]}.'
-        )
+    for i in range(len(ref_ids)):
+        if ref_ids[i] != sec_ids[i]:
+            raise GranuleValidationError(
+                f'Burst IDs do not match for {refs[i]} and {secs[i]}.'
+            )
     if len(set(ref_ids)) != len(ref_ids):
         duplicate_pair_id = [ref_id for ref_id in ref_ids if ref_ids.count(ref_id) > 1][0]
         raise GranuleValidationError(
