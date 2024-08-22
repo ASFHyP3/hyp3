@@ -281,7 +281,7 @@ def test_check_valid_polarizations():
     for invalid_job in invalid_jobs_not_matching:
         with raises(validation.GranuleValidationError, match=r'.*need to have the same polarization*'):
             validation.check_valid_polarizations(invalid_job, {})
-    for invalid_job in invalid_jobs_unsupported: 
+    for invalid_job in invalid_jobs_unsupported:
         with raises(validation.GranuleValidationError, match=r'.*currently supported*'):
             validation.check_valid_polarizations(invalid_job, {})
 
