@@ -82,11 +82,10 @@ def check_same_burst_ids(job, _):
     ref_ids = [ref.split('_')[1] for ref in refs]
     sec_ids = [sec.split('_')[1] for sec in secs]
     if len(ref_ids) != len(sec_ids):
-        error_message = (
+        raise GranuleValidationError(
             f'Number of reference and secondary scenes must match, got: '
             f'{len(ref_ids)} references and {len(sec_ids)} secondaries'
         )
-        raise GranuleValidationError(error_message)
     for i in range(len(ref_ids)):
         if ref_ids[i] != sec_ids[i]:
             raise GranuleValidationError(
