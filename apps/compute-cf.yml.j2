@@ -69,7 +69,7 @@ Resources:
 
   # TODO: Render a compute environment for each job spec.
   {% for job_type, job_spec in job_types.items() %}
-  {{ job_type }}ComputeEnvironment:
+  {{ job_spec['compute_environment']['name'] }}:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       ServiceRole: !GetAtt BatchServiceRole.Arn
@@ -80,10 +80,10 @@ Resources:
         MinvCpus: 0 # TODO: vCPU count per instance?
         MaxvCpus: !Ref MaxvCpus
         InstanceTypes: 
-        {% for instance_type in job_spec['instance_types'] %}
+        {% for instance_type in job_spec['compute_environment']['instance_types'] %}
           - {{ instance_type }}
         {% endfor %}
-        ImageId: {{ job_spec['ami_id'] }}
+        ImageId: {{ job_spec['compute_environment']['ami_id'] }}
         Subnets: !Ref SubnetIds
         InstanceRole: !Ref InstanceProfile
         SecurityGroupIds:
@@ -95,7 +95,6 @@ Resources:
           Name: !Ref AWS::StackName
 
   {% endfor %}
-
   SchedulingPolicy:
     Type: AWS::Batch::SchedulingPolicy
 

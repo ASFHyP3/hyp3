@@ -52,13 +52,15 @@ ARIA_RAIDER:
         - RAIDER_HRES_EMAIL
         - RAIDER_HRES_API_KEY
         - RAIDER_HRES_URL
-  instance_types:
-    - r6id.xlarge
-    - r6id.2xlarge
-    - r6id.4xlarge
-    - r6id.8xlarge
-    - r6idn.xlarge
-    - r6idn.2xlarge
-    - r6idn.4xlarge 
-    - r6idn.8xlarge
-  ami_id: abc1234abc1234.aws.com
+  compute_environment:
+    name: 'AriaRaiderComputeEnvironment'
+    instance_types:
+      - r6id.xlarge
+      - r6id.2xlarge
+      - r6id.4xlarge
+      - r6id.8xlarge
+      - r6idn.xlarge
+      - r6idn.2xlarge
+      - r6idn.4xlarge 
+      - r6idn.8xlarge
+    ami_id: abc1234abc1234.aws.com
