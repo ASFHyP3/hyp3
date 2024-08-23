@@ -47,3 +47,8 @@ SRG_GSLC:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
+  instance_types:
+    - g4dn.xlarge
+    - g4dn.2xlarge
+    - g6.xlarge
+  ami_id: instance_with_gpu_support.aws.com
