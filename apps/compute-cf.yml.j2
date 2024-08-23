@@ -1,5 +1,9 @@
 AWSTemplateFormatVersion: 2010-09-09
 
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html
+# TODO: This is where the instance AMI and Type are specified. To have multiple instance types and amis per deployment, this
+#       will need to support that. 
+
 Parameters:
 
   VpcId:
@@ -63,18 +67,47 @@ Resources:
 
             --==BOUNDARY==--
 
-  ComputeEnvironment:
+  # TODO: For per-instance instance types and AMIs, we will likely need
+  #       multiple Compute Environments and Job Queues.
+  # ComputeEnvironment:
+  #   Type: AWS::Batch::ComputeEnvironment
+  #   Properties:
+  #     ServiceRole: !GetAtt BatchServiceRole.Arn
+  #     Type: MANAGED
+  #     ComputeResources:
+  #       Type: SPOT
+  #       AllocationStrategy: SPOT_PRICE_CAPACITY_OPTIMIZED
+  #       MinvCpus: 0
+  #       MaxvCpus: !Ref MaxvCpus
+  #       InstanceTypes: !Ref InstanceTypes
+  #       ImageId: !Ref AmiId
+  #       Subnets: !Ref SubnetIds
+  #       InstanceRole: !Ref InstanceProfile
+  #       SecurityGroupIds:
+  #         - !Ref SecurityGroup
+  #       LaunchTemplate:
+  #         LaunchTemplateId: !Ref LaunchTemplate
+  #         Version: !GetAtt LaunchTemplate.LatestVersionNumber
+  #       Tags:
+  #         Name: !Ref AWS::StackName
+
+    # TODO: Render a compute environment for each job spec.
+  {% for job_spec in job_specs.items() %}
+  {{ job_type }}ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       ServiceRole: !GetAtt BatchServiceRole.Arn
       Type: MANAGED
       ComputeResources:
-        Type: SPOT
+        Type: SPOT # TODO: Type and Allocation Strategy per Instance?
         AllocationStrategy: SPOT_PRICE_CAPACITY_OPTIMIZED
-        MinvCpus: 0
+        MinvCpus: 0 # TODO: vCPU count per instance?
         MaxvCpus: !Ref MaxvCpus
-        InstanceTypes: !Ref InstanceTypes
-        ImageId: !Ref AmiId
+        InstanceTypes: 
+        {% for instance_type in job_spec['instance_types'].items() %}
+          - {{ instance_type }}
+        {% endfor %}
+        ImageId: {{ job_spec['ami_id'] }}
         Subnets: !Ref SubnetIds
         InstanceRole: !Ref InstanceProfile
         SecurityGroupIds:
@@ -84,6 +117,7 @@ Resources:
           Version: !GetAtt LaunchTemplate.LatestVersionNumber
         Tags:
           Name: !Ref AWS::StackName
+  {% endfor %}
 
   SchedulingPolicy:
     Type: AWS::Batch::SchedulingPolicy
