@@ -68,14 +68,4 @@ INSAR_ISCE_BURST:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
   compute_environment:
-    name: 'InsarIsceBurstComputeEnvironment'
-    instance_types:
-      - r6id.xlarge
-      - r6id.2xlarge
-      - r6id.4xlarge
-      - r6id.8xlarge
-      - r6idn.xlarge
-      - r6idn.2xlarge
-      - r6idn.4xlarge 
-      - r6idn.8xlarge
-    ami_id: abc1234abc1234.aws.com
+    name: 'SharedComputeEnvironment'
