@@ -70,31 +70,47 @@ def check_granules_exist(granules, granule_metadata):
         raise GranuleValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 
 
-def check_dem_coverage(granule_metadata):
+def check_dem_coverage(_, granule_metadata):
     bad_granules = [g['name'] for g in granule_metadata if not has_sufficient_coverage(g['polygon'])]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
-def check_same_burst_ids(granule_metadata):
-    ref_burst_id, sec_burst_id = [granule['name'].split('_')[1] for granule in granule_metadata]
-    if ref_burst_id != sec_burst_id:
+def check_same_burst_ids(job, _):
+    refs = job['job_parameters']['reference']
+    secs = job['job_parameters']['secondary']
+    ref_ids = [ref.split('_')[1] for ref in refs]
+    sec_ids = [sec.split('_')[1] for sec in secs]
+    if len(ref_ids) != len(sec_ids):
         raise GranuleValidationError(
-            f'The requested scenes do not have the same burst ID: {ref_burst_id} and {sec_burst_id}'
+            f'Number of reference and secondary scenes must match, got: '
+            f'{len(ref_ids)} references and {len(sec_ids)} secondaries'
+        )
+    for i in range(len(ref_ids)):
+        if ref_ids[i] != sec_ids[i]:
+            raise GranuleValidationError(
+                f'Burst IDs do not match for {refs[i]} and {secs[i]}.'
+            )
+    if len(set(ref_ids)) != len(ref_ids):
+        duplicate_pair_id = next(ref_id for ref_id in ref_ids if ref_ids.count(ref_id) > 1)
+        raise GranuleValidationError(
+            f'The requested scenes have more than 1 pair with the following burst ID: {duplicate_pair_id}.'
         )
 
 
-def check_valid_polarizations(granule_metadata):
-    ref_polarization, sec_polarization = [granule['name'].split('_')[4] for granule in granule_metadata]
-    if ref_polarization != sec_polarization:
+def check_valid_polarizations(job, _):
+    polarizations = set(granule.split('_')[4] for granule in get_granules([job]))
+    if len(polarizations) > 1:
         raise GranuleValidationError(
-            f'The requested scenes do not have the same polarization: {ref_polarization} and {sec_polarization}'
+            f'The requested scenes need to have the same polarization, got: {", ".join(polarizations)}'
         )
-    if ref_polarization != 'VV' and ref_polarization != 'HH':
-        raise GranuleValidationError(f'Only VV and HH polarizations are currently supported, got: {ref_polarization}')
+    if not polarizations.issubset({'VV', 'HH'}):
+        raise GranuleValidationError(
+            f'Only VV and HH polarizations are currently supported, got: {polarizations.pop()}'
+        )
 
 
-def check_not_antimeridian(granule_metadata):
+def check_not_antimeridian(_, granule_metadata):
     for granule in granule_metadata:
         bbox = granule['polygon'].bounds
         if abs(bbox[0] - bbox[2]) > 180.0 and bbox[0] * bbox[2] < 0.0:
@@ -129,4 +145,4 @@ def validate_jobs(jobs):
             job_granule_metadata = [granule for granule in granule_metadata if granule['name'] in get_granules([job])]
             module = sys.modules[__name__]
             validator = getattr(module, validator_name)
-            validator(job_granule_metadata)
+            validator(job, job_granule_metadata)
