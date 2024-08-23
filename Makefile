@@ -34,6 +34,8 @@ run: render
 install:
 	python -m pip install -r requirements-all.txt
 
+
+# TODO: This is where render is called and provided the job type files
 files ?= job_spec/*.yml
 security_environment ?= ASF
 api_name ?= local

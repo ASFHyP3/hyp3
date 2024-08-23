@@ -51,6 +51,7 @@ Parameters:
       - false
       - true
 
+  # TODO: Mutliple Instance Type Support
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -79,6 +80,7 @@ Parameters:
     MinValue: 0
     Default: 0
 
+  # TODO: Mutliple Instance Type Support
   InstanceTypes:
     Description: EC2 instance types to include in AWS Batch Compute Environment
     Type: CommaDelimitedList
@@ -136,6 +138,9 @@ Resources:
         {% endif %}
       TemplateURL: api/api-cf.yml
 
+  # TODO: Mutliple Instance Type Support
+  #       compute-cf.yml needs to support per-job
+  #       instance and ami types.
   Cluster:
     Type: AWS::CloudFormation::Stack
     Properties:

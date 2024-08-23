@@ -26,11 +26,13 @@ jobs:
             cost_profile: EDC
             deploy_ref: refs/heads/main
             job_files: job_spec/AUTORIFT.yml job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml job_spec/INSAR_ISCE_BURST.yml
+            # TODO: Instance types will need to be moved to the Job Spec file.
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1500
             expanded_max_vcpus: 3000
             required_surplus: 2000
             security_environment: EDC
+            # TODO: AMIs will need to be moved to the Job Spec file.
             ami_id: image_id_ecs_amz2
             distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
 

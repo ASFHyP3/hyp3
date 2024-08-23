@@ -30,6 +30,7 @@ SRG_GSLC:
       command:
         - ++process
         - back_projection
+        - --gpu
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -38,6 +39,11 @@ SRG_GSLC:
       timeout: 10800
       vcpu: 1
       memory: 31500
+      # TODO: GPU Resource Requirment is specified here,
+      #       but the instance type and AMI come from
+      #       compute-cf.yml
+      #       https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-jobdefinition-resourcerequirement.html
+      gpu: 1
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
