@@ -118,9 +118,6 @@ Resources:
           Effect: Allow
       ManagedPolicyArns:
         - !Ref StepFunctionPolicy
-        {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
-        - !Ref {{ job_spec['compute_environment']['name'] }}StepFunctionPolicy
-        {% endfor %}
 
   StepFunctionPolicy:
     Type: {{ 'Custom::JplPolicy' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::ManagedPolicy' }}
