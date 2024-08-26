@@ -207,7 +207,7 @@
       "Parameters": {
         "JobDefinition": "{{ '${'+ snake_to_pascal_case(task['name']) + '}' }}",
         "JobName.$": "$.job_id",
-        "JobQueue": "${JobQueueArn}",
+        "JobQueue": "{{ '${'+ job_spec['compute_environment']['name'] +'JobQueueArn}' }}",
         "ShareIdentifier": "default",
         "SchedulingPriorityOverride.$": "$.priority",
         "Parameters.$": "$.job_parameters",

@@ -2,8 +2,13 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  JobQueueArn:
+  SharedJobQueueArn:
     Type: String
+
+  {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name']%}
+  {{ job_spec['compute_environment']['name'] }}JobQueueArn:
+    Type: String
+  {% endfor %}
 
   JobsTable:
     Type: String
@@ -33,8 +38,14 @@ Parameters:
 
 Outputs:
 
-  StepFunctionArn:
-    Value: !Ref StepFunction
+  SharedStepFunctionArn:
+    Value: !Ref SharedStepFunction
+
+  {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name']%}
+  {{ job_spec['compute_environment']['name'] }}StepFunctionArn:
+    Value: !Ref {{ job_spec['compute_environment']['name'] }}StepFunction
+  {% endfor %}
+
 
 Resources:
   {% for job_type, job_spec in job_types.items() %}
@@ -76,13 +87,16 @@ Resources:
   {% endfor %}
   {% endfor %}
 
-  StepFunction:
+  SharedStepFunction:
     Type: AWS::StepFunctions::StateMachine
     Properties:
       RoleArn: !GetAtt StepFunctionRole.Arn
       DefinitionS3Location: step-function.json
       DefinitionSubstitutions:
-        JobQueueArn: !Ref JobQueueArn
+        SharedJobQueueArn: !Ref SharedJobQueueArn
+        {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+        {{ job_spec['compute_environment']['name'] }}JobQueueArn: !Ref {{ job_spec['compute_environment']['name'] }}JobQueueArn
+        {% endfor %}
         {% for job_type, job_spec in job_types.items() %}
         {% for task in job_spec['tasks'] %}
         {{ snake_to_pascal_case(task['name']) }}: !Ref {{ snake_to_pascal_case(task['name']) }}
@@ -109,6 +123,9 @@ Resources:
           Effect: Allow
       ManagedPolicyArns:
         - !Ref StepFunctionPolicy
+        {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+        - !Ref {{ job_spec['compute_environment']['name'] }}StepFunctionPolicy
+        {% endfor %}
 
   StepFunctionPolicy:
     Type: {{ 'Custom::JplPolicy' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::ManagedPolicy' }}
@@ -123,7 +140,10 @@ Resources:
           - Effect: Allow
             Action: batch:SubmitJob
             Resource:
-              - !Ref JobQueueArn
+              - !Ref SharedJobQueueArn
+              {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name']%}
+              - !Ref {{ job_spec['compute_environment']['name'] }}JobQueueArn
+              {% endfor %}
               {% for job_type, job_spec in job_types.items() %}
               {% for task in job_spec['tasks'] %}
               - !Ref {{ snake_to_pascal_case(task['name']) }}

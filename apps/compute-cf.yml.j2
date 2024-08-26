@@ -27,11 +27,22 @@ Parameters:
 
 Outputs:
 
-  ComputeEnvironmentArn:
-    Value: !Ref ComputeEnvironment
+  SharedComputeEnvironmentArn:
+    Value: !Ref SharedComputeEnvironment
 
-  JobQueueArn:
-    Value: !Ref BatchJobQueue
+  SharedJobQueueArn:
+    Value: !Ref SharedBatchJobQueue
+
+  {% for job_type, job_spec in job_types.items() %}
+  {% if 'Shared' not in job_spec['compute_environment']['name'] %}
+  {{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn:
+    Value: !Ref {{ job_spec['compute_environment']['name'] }}ComputeEnvironment
+
+  {{ job_spec['compute_environment']['name'] }}JobQueueArn:
+    Value: !Ref {{ job_spec['compute_environment']['name'] }}BatchJobQueue
+
+  {% endif %}
+  {% endfor %}
 
   TaskRoleArn:
     Value: !GetAtt TaskRole.Arn
@@ -89,18 +100,28 @@ Resources:
           Tags:
             Name: !Ref AWS::StackName
 
-  # TODO: Render a compute environment for each job spec.
-  {% for job_type, job_spec in job_types.items() %}
-  {% if 'SharedComputeEnvironment' not in job_spec['compute_environment']['name'] %}
-  {{ job_spec['compute_environment']['name'] }}:
+  SharedBatchJobQueue:
+    Type: AWS::Batch::JobQueue
+    Properties:
+      Priority: 1
+      ComputeEnvironmentOrder:
+        - ComputeEnvironment: !Ref SharedComputeEnvironment
+          Order: 1
+      SchedulingPolicyArn: !Ref SchedulingPolicy
+
+  SchedulingPolicy:
+    Type: AWS::Batch::SchedulingPolicy
+
+  {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+  {{ job_spec['compute_environment']['name'] }}ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       ServiceRole: !GetAtt BatchServiceRole.Arn
       Type: MANAGED
       ComputeResources:
-        Type: SPOT # TODO: Type and Allocation Strategy per Instance?
+        Type: SPOT
         AllocationStrategy: SPOT_PRICE_CAPACITY_OPTIMIZED
-        MinvCpus: 0 # TODO: vCPU count per instance?
+        MinvCpus: 0
         MaxvCpus: !Ref MaxvCpus
         InstanceTypes: 
         {% for instance_type in job_spec['compute_environment']['instance_types'] %}
@@ -117,19 +138,16 @@ Resources:
         Tags:
           Name: !Ref AWS::StackName
 
-  {% endif %}
-  {% endfor %}
-  SchedulingPolicy:
-    Type: AWS::Batch::SchedulingPolicy
-
-  BatchJobQueue:
+  {{ job_spec['compute_environment']['name'] }}JobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
       Priority: 1
       ComputeEnvironmentOrder:
-        - ComputeEnvironment: !Ref ComputeEnvironment
+        - ComputeEnvironment: !Ref {{ job_spec['compute_environment']['name'] }}ComputeEnvironment
           Order: 1
       SchedulingPolicyArn: !Ref SchedulingPolicy
+  
+  {% endfor %}
 
   TaskRole:
     Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}

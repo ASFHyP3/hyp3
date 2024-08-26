@@ -5,6 +5,11 @@ Parameters:
   ComputeEnvironmentArn:
     Type: String
 
+  {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+  {{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn:
+    Type: String
+  {% endfor %}
+
   DefaultMaxvCpus:
     Type: Number
     MinValue: 0
@@ -79,7 +84,11 @@ Resources:
             Resource: "*"
           - Effect: Allow
             Action: batch:UpdateComputeEnvironment
-            Resource: !Ref ComputeEnvironmentArn
+            Resource: 
+            - !Ref ComputeEnvironmentArn
+            {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+            - !Ref {{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn
+            {% endfor %}
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -118,6 +127,10 @@ Resources:
       Targets:
         - Arn: !GetAtt Lambda.Arn
           Id: lambda
+        {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+        - Arn: !GetAtt {{ job_spec['compute_environment']['name'] }}Lambda.arn
+          Id:  {{ job_spec['compute_environment']['name'] }}lambda
+        {% endfor %}
 
   EventPermission:
     Type: AWS::Lambda::Permission
@@ -126,3 +139,43 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt Schedule.Arn
+
+  {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+  {{ job_spec['compute_environment']['name'] }}Lambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Environment:
+        Variables:
+          COMPUTE_ENVIRONMENT_ARN: !Ref {{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn
+          MONTHLY_BUDGET: !Ref MonthlyBudget
+          DEFAULT_MAX_VCPUS: !Ref DefaultMaxvCpus
+          EXPANDED_MAX_VCPUS: !Ref ExpandedMaxvCpus
+          REQUIRED_SURPLUS: !Ref RequiredSurplus
+      Code: src/
+      Handler: scale_cluster.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt Role.Arn
+      Runtime: python3.9
+      Timeout: 30
+      {% if security_environment == 'EDC' %}
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetIds: !Ref SubnetIds
+      {% endif %}
+
+   {{ job_spec['compute_environment']['name'] }}EventInvokeConfig:
+    Type: AWS::Lambda::EventInvokeConfig
+    Properties:
+      FunctionName: !Ref {{ job_spec['compute_environment']['name'] }}Lambda
+      Qualifier: $LATEST
+      MaximumRetryAttempts: 0
+
+   {{ job_spec['compute_environment']['name'] }}EventPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt  {{ job_spec['compute_environment']['name'] }}Lambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt Schedule.Arn
+  {% endfor %}

@@ -51,7 +51,6 @@ Parameters:
       - false
       - true
 
-  # TODO: Mutliple Instance Type Support
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -80,7 +79,6 @@ Parameters:
     MinValue: 0
     Default: 0
 
-  # TODO: Mutliple Instance Type Support
   InstanceTypes:
     Description: EC2 instance types to include in AWS Batch Compute Environment
     Type: CommaDelimitedList
@@ -138,9 +136,6 @@ Resources:
         {% endif %}
       TemplateURL: api/api-cf.yml
 
-  # TODO: Mutliple Instance Type Support
-  #       compute-cf.yml needs to support per-job
-  #       instance and ami types.
   Cluster:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -158,7 +153,10 @@ Resources:
     Condition: ScaleCluster
     Properties:
       Parameters:
-        ComputeEnvironmentArn: !GetAtt Cluster.Outputs.ComputeEnvironmentArn
+        ComputeEnvironmentArn: !GetAtt Cluster.Outputs.SharedComputeEnvironmentArn
+        {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+        {{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn: !GetAtt Cluster.Outputs.{{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn
+        {% endfor %}
         DefaultMaxvCpus: !Ref DefaultMaxvCpus
         ExpandedMaxvCpus: !Ref ExpandedMaxvCpus
         MonthlyBudget: !Ref MonthlyBudget
@@ -173,7 +171,10 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        JobQueueArn: !GetAtt Cluster.Outputs.SharedJobQueueArn
+        {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+        {{ job_spec['compute_environment']['name'] }}JobQueueArn: !GetAtt Cluster.Outputs.{{ job_spec['compute_environment']['name'] }}JobQueueArn
+        {% endfor %}
         JobsTable: !Ref JobsTable
         {% if security_environment == 'EDC' %}
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
@@ -185,7 +186,10 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        SharedJobQueueArn: !GetAtt Cluster.Outputs.SharedJobQueueArn
+        {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+        {{ job_spec['compute_environment']['name'] }}JobQueueArn: !GetAtt Cluster.Outputs.{{ job_spec['compute_environment']['name'] }}JobQueueArn
+        {% endfor %}
         TaskRoleArn: !GetAtt Cluster.Outputs.TaskRoleArn
         JobsTable: !Ref JobsTable
         Bucket: !Ref ContentBucket
@@ -202,7 +206,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        StepFunctionArn: !GetAtt StepFunction.Outputs.StepFunctionArn
+        SharedStepFunctionArn: !GetAtt StepFunction.Outputs.StepFunctionArn
       TemplateURL: monitoring-cf.yml
 
   LogBucket:
