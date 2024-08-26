@@ -128,7 +128,7 @@ Resources:
         - Arn: !GetAtt Lambda.Arn
           Id: lambda
         {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
-        - Arn: !GetAtt {{ job_spec['compute_environment']['name'] }}Lambda.arn
+        - Arn: !GetAtt {{ job_spec['compute_environment']['name'] }}Lambda.Arn
           Id:  {{ job_spec['compute_environment']['name'] }}lambda
         {% endfor %}
 
