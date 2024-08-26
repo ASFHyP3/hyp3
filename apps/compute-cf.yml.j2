@@ -31,7 +31,7 @@ Outputs:
     Value: !Ref SharedComputeEnvironment
 
   SharedJobQueueArn:
-    Value: !Ref SharedBatchJobQueue
+    Value: !Ref SharedJobQueue
 
   {% for job_type, job_spec in job_types.items() %}
   {% if 'Shared' not in job_spec['compute_environment']['name'] %}
@@ -39,7 +39,7 @@ Outputs:
     Value: !Ref {{ job_spec['compute_environment']['name'] }}ComputeEnvironment
 
   {{ job_spec['compute_environment']['name'] }}JobQueueArn:
-    Value: !Ref {{ job_spec['compute_environment']['name'] }}BatchJobQueue
+    Value: !Ref {{ job_spec['compute_environment']['name'] }}JobQueue
 
   {% endif %}
   {% endfor %}
@@ -100,7 +100,7 @@ Resources:
           Tags:
             Name: !Ref AWS::StackName
 
-  SharedBatchJobQueue:
+  SharedJobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
       Priority: 1
