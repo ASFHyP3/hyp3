@@ -48,4 +48,5 @@ SRG_GSLC:
       - g4dn.xlarge
       - g4dn.2xlarge
       - g6.xlarge
-    ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
+    # Image ID for this image: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+    ami_id: ami-0ca2af66da8e56876
