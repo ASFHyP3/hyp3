@@ -164,14 +164,14 @@ Resources:
         SubnetIds: !Ref SubnetIds
       {% endif %}
 
-   {{ job_spec['compute_environment']['name'] }}EventInvokeConfig:
+  {{ job_spec['compute_environment']['name'] }}EventInvokeConfig:
     Type: AWS::Lambda::EventInvokeConfig
     Properties:
       FunctionName: !Ref {{ job_spec['compute_environment']['name'] }}Lambda
       Qualifier: $LATEST
       MaximumRetryAttempts: 0
 
-   {{ job_spec['compute_environment']['name'] }}EventPermission:
+  {{ job_spec['compute_environment']['name'] }}EventPermission:
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName: !GetAtt  {{ job_spec['compute_environment']['name'] }}Lambda.Arn
