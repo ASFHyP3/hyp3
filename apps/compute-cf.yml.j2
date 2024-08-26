@@ -1,9 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
 
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html
-# TODO: This is where the instance AMI and Type are specified. To have multiple instance types and amis per deployment, this
-#       will need to support that. 
-
 Parameters:
 
   VpcId:
@@ -145,8 +141,8 @@ Resources:
       ComputeResources:
         Type: SPOT
         AllocationStrategy: SPOT_PRICE_CAPACITY_OPTIMIZED
-          MinvCpus: 0
-          MaxvCpus: !Ref MaxvCpus
+        MinvCpus: 0
+        MaxvCpus: !Ref MaxvCpus
         InstanceTypes:
         {% for instance_type in job_spec['compute_environment']['instance_types'] %}
           - {{ instance_type }}
