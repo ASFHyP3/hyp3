@@ -204,4 +204,4 @@ WATER_MAP:
       vcpu: 1
       memory: 126000
   compute_environment:
-    name: 'SharedComputeEnvironment'
+    name: 'Shared'

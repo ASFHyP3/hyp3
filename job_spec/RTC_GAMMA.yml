@@ -143,4 +143,4 @@ RTC_GAMMA:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
   compute_environment:
-    name: 'SharedComputeEnvironment'
+    name: 'Shared'

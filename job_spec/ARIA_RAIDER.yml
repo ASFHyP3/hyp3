@@ -53,4 +53,4 @@ ARIA_RAIDER:
         - RAIDER_HRES_API_KEY
         - RAIDER_HRES_URL
   compute_environment:
-    name: 'SharedComputeEnvironment'
+    name: 'Shared'

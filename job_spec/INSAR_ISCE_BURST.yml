@@ -68,4 +68,4 @@ INSAR_ISCE_BURST:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
   compute_environment:
-    name: 'SharedComputeEnvironment'
+    name: 'Shared'

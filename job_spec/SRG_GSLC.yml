@@ -48,7 +48,7 @@ SRG_GSLC:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
   compute_environment:
-    name: 'SrgGslcComputeEnvironment'
+    name: 'SrgGslc'
     instance_types:
       - g4dn.xlarge
       - g4dn.2xlarge

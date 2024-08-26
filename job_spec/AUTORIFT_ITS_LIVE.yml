@@ -75,4 +75,4 @@ AUTORIFT:
         - PUBLISH_ACCESS_KEY_ID
         - PUBLISH_SECRET_ACCESS_KEY
   compute_environment:
-    name: 'SharedComputeEnvironment'
+    name: 'Shared'
