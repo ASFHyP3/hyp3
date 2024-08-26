@@ -38,13 +38,8 @@ Parameters:
 
 Outputs:
 
-  SharedStepFunctionArn:
-    Value: !Ref SharedStepFunction
-
-  {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name']%}
-  {{ job_spec['compute_environment']['name'] }}StepFunctionArn:
-    Value: !Ref {{ job_spec['compute_environment']['name'] }}StepFunction
-  {% endfor %}
+  StepFunctionArn:
+    Value: !Ref StepFunction
 
 
 Resources:
@@ -87,7 +82,7 @@ Resources:
   {% endfor %}
   {% endfor %}
 
-  SharedStepFunction:
+  StepFunction:
     Type: AWS::StepFunctions::StateMachine
     Properties:
       RoleArn: !GetAtt StepFunctionRole.Arn
