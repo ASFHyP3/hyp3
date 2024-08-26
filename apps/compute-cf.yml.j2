@@ -58,7 +58,7 @@ Resources:
       GroupDescription: !Sub "Security group for ${AWS::StackName} machines"
       VpcId: !Ref VpcId
 
-  LaunchTemplate:
+  SharedLaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
@@ -95,8 +95,8 @@ Resources:
           SecurityGroupIds:
             - !Ref SecurityGroup
           LaunchTemplate:
-            LaunchTemplateId: !Ref LaunchTemplate
-            Version: !GetAtt LaunchTemplate.LatestVersionNumber
+            LaunchTemplateId: !Ref SharedLaunchTemplate
+            Version: !GetAtt SharedLaunchTemplate.LatestVersionNumber
           Tags:
             Name: !Ref AWS::StackName
 
@@ -113,6 +113,30 @@ Resources:
     Type: AWS::Batch::SchedulingPolicy
 
   {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+  {{ job_spec['compute_environment']['name'] }}LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        MetadataOptions:
+          HttpTokens: required
+        UserData:
+          Fn::Base64: |-
+            Content-Type: multipart/mixed; boundary="==BOUNDARY=="
+            MIME-Version: 1.0
+
+            --==BOUNDARY==
+            Content-Type: text/cloud-boothook; charset="us-ascii"
+
+            #!/bin/bash
+            cloud-init-per instance mkfs_ssd mkfs.ext4 /dev/nvme1n1
+            mount /dev/nvme1n1 /var/lib/docker
+
+            {% for command in job_spec['compute_environment']['user_data_commands'] %}
+            {{ command }}
+            {% endfor %}
+
+            --==BOUNDARY==--
+  
   {{ job_spec['compute_environment']['name'] }}ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
@@ -121,9 +145,9 @@ Resources:
       ComputeResources:
         Type: SPOT
         AllocationStrategy: SPOT_PRICE_CAPACITY_OPTIMIZED
-        MinvCpus: 0
-        MaxvCpus: !Ref MaxvCpus
-        InstanceTypes: 
+          MinvCpus: 0
+          MaxvCpus: !Ref MaxvCpus
+        InstanceTypes:
         {% for instance_type in job_spec['compute_environment']['instance_types'] %}
           - {{ instance_type }}
         {% endfor %}
@@ -133,8 +157,8 @@ Resources:
         SecurityGroupIds:
           - !Ref SecurityGroup
         LaunchTemplate:
-          LaunchTemplateId: !Ref LaunchTemplate
-          Version: !GetAtt LaunchTemplate.LatestVersionNumber
+          LaunchTemplateId: !Ref {{ job_spec['compute_environment']['name'] }}LaunchTemplate
+          Version: !GetAtt {{ job_spec['compute_environment']['name'] }}LaunchTemplate.LatestVersionNumber
         Tags:
           Name: !Ref AWS::StackName
 

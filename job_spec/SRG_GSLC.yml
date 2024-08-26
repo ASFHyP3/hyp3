@@ -43,10 +43,28 @@ SRG_GSLC:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
   compute_environment:
-    name: 'SrgGslc'
+    name: SrgGslc
     instance_types:
       - g4dn.xlarge
       - g4dn.2xlarge
       - g6.xlarge
     # Image ID for this image: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
     ami_id: ami-0ca2af66da8e56876
+    user_data_commands:
+      - DRIVER_VERSION=550.54.14
+      - dnf install -y kernel-devel-$(uname -r) kernel-headers-$(uname -r) kernel-modules-extra
+      - curl -fSsl -O https://us.download.nvidia.com/tesla/$DRIVER_VERSION/NVIDIA-Linux-x86_64-$DRIVER_VERSION.run
+      - chmod +x NVIDIA-Linux-x86_64-$DRIVER_VERSION.run
+      - ./NVIDIA-Linux-x86_64-$DRIVER_VERSION.run --tmpdir . --silent
+      - rm ./NVIDIA-Linux-x86_64-$DRIVER_VERSION.run 
+      - dnf install -y docker git
+      - systemctl start docker
+      - systemctl enable docker
+      - usermod -aG docker ec2-user
+      - dnf config-manager --add-repo https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo
+      - dnf install -y nvidia-container-toolkit
+      - nvidia-ctk runtime configure --runtime=docker
+      - systemctl restart docker
+      - dnf install -y git
+      - dnf clean all && rm -rf /var/cache/dnf/*
+      - reboot
