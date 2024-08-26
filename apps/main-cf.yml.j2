@@ -206,7 +206,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        SharedStepFunctionArn: !GetAtt StepFunction.Outputs.StepFunctionArn
+        StepFunctionArn: !GetAtt StepFunction.Outputs.StepFunctionArn
       TemplateURL: monitoring-cf.yml
 
   LogBucket:
