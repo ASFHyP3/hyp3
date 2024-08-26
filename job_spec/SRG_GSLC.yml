@@ -39,11 +39,6 @@ SRG_GSLC:
       timeout: 10800
       vcpu: 1
       memory: 31500
-      # TODO: GPU Resource Requirment is specified here,
-      #       but the instance type and AMI come from
-      #       compute-cf.yml
-      #       https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-jobdefinition-resourcerequirement.html
-      gpu: 1
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
@@ -53,4 +48,4 @@ SRG_GSLC:
       - g4dn.xlarge
       - g4dn.2xlarge
       - g6.xlarge
-    ami_id: instance_with_gpu_support.aws.com
+    ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
