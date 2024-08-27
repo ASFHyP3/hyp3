@@ -34,7 +34,6 @@ run: render
 install:
 	python -m pip install -r requirements-all.txt
 
-
 files ?= job_spec/*.yml
 security_environment ?= ASF
 api_name ?= local
