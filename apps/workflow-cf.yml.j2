@@ -66,6 +66,8 @@ Resources:
             Value: "{{ task['vcpu'] }}"
           - Type: MEMORY
             Value: "{{ task['memory'] }}"
+          - Type: GPU
+            Value: "{{ task['gpu'] if 'gpu' in task else 0 }}"
         Command:
           {% for command in task['command'] %}
           - {{ command }}

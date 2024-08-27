@@ -38,6 +38,7 @@ SRG_GSLC:
         - Ref::granules
       timeout: 10800
       vcpu: 1
+      gpu: 1
       memory: 31500
       secrets:
         - EARTHDATA_USERNAME
