@@ -6,7 +6,8 @@ Parameters:
     Type: String
 
   {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
-  {{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn:
+  {% set name = job_spec['compute_environment']['name'] %}
+  {{ name }}ComputeEnvironmentArn:
     Type: String
   {% endfor %}
 
@@ -128,8 +129,9 @@ Resources:
         - Arn: !GetAtt Lambda.Arn
           Id: lambda
         {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
-        - Arn: !GetAtt {{ job_spec['compute_environment']['name'] }}Lambda.Arn
-          Id:  {{ job_spec['compute_environment']['name'] }}lambda
+        {% set name = job_spec['compute_environment']['name'] %}
+        - Arn: !GetAtt {{ name }}Lambda.Arn
+          Id:  {{ name }}lambda
         {% endfor %}
 
   EventPermission:
@@ -141,12 +143,13 @@ Resources:
       SourceArn: !GetAtt Schedule.Arn
 
   {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
-  {{ job_spec['compute_environment']['name'] }}Lambda:
+  {% set name = job_spec['compute_environment']['name'] %}
+  {{ name }}Lambda:
     Type: AWS::Lambda::Function
     Properties:
       Environment:
         Variables:
-          COMPUTE_ENVIRONMENT_ARN: !Ref {{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn
+          COMPUTE_ENVIRONMENT_ARN: !Ref {{name }}ComputeEnvironmentArn
           MONTHLY_BUDGET: !Ref MonthlyBudget
           DEFAULT_MAX_VCPUS: !Ref DefaultMaxvCpus
           EXPANDED_MAX_VCPUS: !Ref ExpandedMaxvCpus
@@ -164,17 +167,17 @@ Resources:
         SubnetIds: !Ref SubnetIds
       {% endif %}
 
-  {{ job_spec['compute_environment']['name'] }}EventInvokeConfig:
+  {{ name }}EventInvokeConfig:
     Type: AWS::Lambda::EventInvokeConfig
     Properties:
-      FunctionName: !Ref {{ job_spec['compute_environment']['name'] }}Lambda
+      FunctionName: !Ref {{ name }}Lambda
       Qualifier: $LATEST
       MaximumRetryAttempts: 0
 
-  {{ job_spec['compute_environment']['name'] }}EventPermission:
+  {{ name }}EventPermission:
     Type: AWS::Lambda::Permission
     Properties:
-      FunctionName: !GetAtt  {{ job_spec['compute_environment']['name'] }}Lambda.Arn
+      FunctionName: !GetAtt  {{ name }}Lambda.Arn
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt Schedule.Arn
