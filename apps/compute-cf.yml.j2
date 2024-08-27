@@ -29,15 +29,14 @@ Outputs:
   SharedJobQueueArn:
     Value: !Ref SharedJobQueue
 
-  {% for job_type, job_spec in job_types.items() %}
-  {% if 'Shared' not in job_spec['compute_environment']['name'] %}
-  {{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn:
-    Value: !Ref {{ job_spec['compute_environment']['name'] }}ComputeEnvironment
+  {% for job_type, job_spec in job_types.items()  if 'Shared' not in job_spec['compute_environment']['name'] %}
+  {% set job_name = job_spec['compute_environment']['name'] %}
+  {{ job_name }}ComputeEnvironmentArn:
+    Value: !Ref {{ job_name }}ComputeEnvironment
 
-  {{ job_spec['compute_environment']['name'] }}JobQueueArn:
-    Value: !Ref {{ job_spec['compute_environment']['name'] }}JobQueue
+  {{ job_name }}JobQueueArn:
+    Value: !Ref {{ job_name }}JobQueue
 
-  {% endif %}
   {% endfor %}
 
   TaskRoleArn:
@@ -109,7 +108,11 @@ Resources:
     Type: AWS::Batch::SchedulingPolicy
 
   {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
-  {{ job_spec['compute_environment']['name'] }}LaunchTemplate:
+  {% set env = job_spec['compute_environment'] %}
+  {% set job_name = env['name'] %}
+  {% set instance_types = env['instance_types'] if 'instance_types' in env else ['!Ref InstanceTypes'] %}
+  {% set ami_id = env['ami_id'] if 'ami_id' in env else '!Ref AmiId' %}
+  {{ job_name }}LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
@@ -133,7 +136,7 @@ Resources:
 
             --==BOUNDARY==--
   
-  {{ job_spec['compute_environment']['name'] }}ComputeEnvironment:
+  {{ job_name }}ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       ServiceRole: !GetAtt BatchServiceRole.Arn
@@ -144,26 +147,26 @@ Resources:
         MinvCpus: 0
         MaxvCpus: !Ref MaxvCpus
         InstanceTypes:
-        {% for instance_type in job_spec['compute_environment']['instance_types'] %}
+        {% for instance_type in instance_types %}
           - {{ instance_type }}
         {% endfor %}
-        ImageId: {{ job_spec['compute_environment']['ami_id'] }}
+        ImageId: {{ ami_id }}
         Subnets: !Ref SubnetIds
         InstanceRole: !Ref InstanceProfile
         SecurityGroupIds:
           - !Ref SecurityGroup
         LaunchTemplate:
-          LaunchTemplateId: !Ref {{ job_spec['compute_environment']['name'] }}LaunchTemplate
-          Version: !GetAtt {{ job_spec['compute_environment']['name'] }}LaunchTemplate.LatestVersionNumber
+          LaunchTemplateId: !Ref {{ job_name }}LaunchTemplate
+          Version: !GetAtt {{ job_name }}LaunchTemplate.LatestVersionNumber
         Tags:
           Name: !Ref AWS::StackName
 
-  {{ job_spec['compute_environment']['name'] }}JobQueue:
+  {{ job_name }}JobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
       Priority: 1
       ComputeEnvironmentOrder:
-        - ComputeEnvironment: !Ref {{ job_spec['compute_environment']['name'] }}ComputeEnvironment
+        - ComputeEnvironment: !Ref {{ job_name }}ComputeEnvironment
           Order: 1
       SchedulingPolicyArn: !Ref SchedulingPolicy
   

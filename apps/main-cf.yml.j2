@@ -155,7 +155,8 @@ Resources:
       Parameters:
         ComputeEnvironmentArn: !GetAtt Cluster.Outputs.SharedComputeEnvironmentArn
         {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
-        {{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn: !GetAtt Cluster.Outputs.{{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn
+        {% set job_name = job_spec['compute_environment']['name'] %}
+        {{ job_name }}ComputeEnvironmentArn: !GetAtt Cluster.Outputs.{{ job_name }}ComputeEnvironmentArn
         {% endfor %}
         DefaultMaxvCpus: !Ref DefaultMaxvCpus
         ExpandedMaxvCpus: !Ref ExpandedMaxvCpus
@@ -173,7 +174,8 @@ Resources:
       Parameters:
         JobQueueArn: !GetAtt Cluster.Outputs.SharedJobQueueArn
         {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
-        {{ job_spec['compute_environment']['name'] }}JobQueueArn: !GetAtt Cluster.Outputs.{{ job_spec['compute_environment']['name'] }}JobQueueArn
+        {% set job_name = job_spec['compute_environment']['name'] %}
+        {{ job_name }}JobQueueArn: !GetAtt Cluster.Outputs.{{ job_name }}JobQueueArn
         {% endfor %}
         JobsTable: !Ref JobsTable
         {% if security_environment == 'EDC' %}
@@ -188,7 +190,8 @@ Resources:
       Parameters:
         SharedJobQueueArn: !GetAtt Cluster.Outputs.SharedJobQueueArn
         {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
-        {{ job_spec['compute_environment']['name'] }}JobQueueArn: !GetAtt Cluster.Outputs.{{ job_spec['compute_environment']['name'] }}JobQueueArn
+        {% set job_name = job_spec['compute_environment']['name'] %}
+        {{ job_name }}JobQueueArn: !GetAtt Cluster.Outputs.{{ job_name }}JobQueueArn
         {% endfor %}
         TaskRoleArn: !GetAtt Cluster.Outputs.TaskRoleArn
         JobsTable: !Ref JobsTable
