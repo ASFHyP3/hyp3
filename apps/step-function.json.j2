@@ -208,7 +208,7 @@
         "JobDefinition": "{{ '${'+ snake_to_pascal_case(task['name']) + '}' }}",
         "JobName.$": "$.job_id",
         {% set name = job_spec['compute_environment']['name'] %}
-        {% set job_queue = name + 'JobQueueArn' if 'Default' not in name else 'JobQueueArn' %}
+        {% set job_queue = name + 'JobQueueArn' if 'Default' != name else 'JobQueueArn' %}
         "JobQueue": "{{ '${'+ job_queue +'}' }}",
         "ShareIdentifier": "default",
         "SchedulingPriorityOverride.$": "$.priority",

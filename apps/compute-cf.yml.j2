@@ -29,7 +29,7 @@ Outputs:
   JobQueueArn:
     Value: !Ref JobQueue
 
-  {% for job_type, job_spec in job_types.items()  if 'Default' not in job_spec['compute_environment']['name'] %}
+  {% for job_type, job_spec in job_types.items()  if 'Default' != job_spec['compute_environment']['name'] %}
   {% set name = job_spec['compute_environment']['name'] %}
   {{ name }}ComputeEnvironmentArn:
     Value: !Ref {{ name }}ComputeEnvironment
@@ -107,7 +107,7 @@ Resources:
   SchedulingPolicy:
     Type: AWS::Batch::SchedulingPolicy
 
-  {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name'] %}
+  {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
   {% set env = job_spec['compute_environment'] %}
   {% set name = env['name'] %}
   {% set instance_types = env['instance_types'] if 'instance_types' in env else ['!Ref InstanceTypes'] %}

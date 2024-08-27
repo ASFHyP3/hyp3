@@ -5,7 +5,7 @@ Parameters:
   JobQueueArn:
     Type: String
 
-  {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name']%}
+  {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name']%}
   {{ job_spec['compute_environment']['name'] }}JobQueueArn:
     Type: String
   {% endfor %}
@@ -91,7 +91,7 @@ Resources:
       DefinitionS3Location: step-function.json
       DefinitionSubstitutions:
         JobQueueArn: !Ref JobQueueArn
-        {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name'] %}
+        {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
         {% set name = job_spec['compute_environment']['name'] %}
         {{ name }}JobQueueArn: !Ref {{ name }}JobQueueArn
         {% endfor %}
@@ -136,7 +136,7 @@ Resources:
             Action: batch:SubmitJob
             Resource:
               - !Ref JobQueueArn
-              {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name']%}
+              {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name']%}
               - !Ref {{ job_spec['compute_environment']['name'] }}JobQueueArn
               {% endfor %}
               {% for job_type, job_spec in job_types.items() %}
