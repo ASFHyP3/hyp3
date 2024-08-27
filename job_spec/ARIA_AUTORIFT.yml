@@ -62,4 +62,4 @@ AUTORIFT:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
   compute_environment:
-    name: 'Shared'
+    name: 'Default'

@@ -153,8 +153,8 @@ Resources:
     Condition: ScaleCluster
     Properties:
       Parameters:
-        ComputeEnvironmentArn: !GetAtt Cluster.Outputs.SharedComputeEnvironmentArn
-        {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+        ComputeEnvironmentArn: !GetAtt Cluster.Outputs.ComputeEnvironmentArn
+        {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name'] %}
         {% set name = job_spec['compute_environment']['name'] %}
         {{ name }}ComputeEnvironmentArn: !GetAtt Cluster.Outputs.{{ name }}ComputeEnvironmentArn
         {% endfor %}
@@ -172,8 +172,8 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        JobQueueArn: !GetAtt Cluster.Outputs.SharedJobQueueArn
-        {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+        JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name'] %}
         {% set name = job_spec['compute_environment']['name'] %}
         {{ name }}JobQueueArn: !GetAtt Cluster.Outputs.{{ name }}JobQueueArn
         {% endfor %}
@@ -188,8 +188,8 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
-        SharedJobQueueArn: !GetAtt Cluster.Outputs.SharedJobQueueArn
-        {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+        JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name'] %}
         {% set name = job_spec['compute_environment']['name'] %}
         {{ name }}JobQueueArn: !GetAtt Cluster.Outputs.{{ name }}JobQueueArn
         {% endfor %}

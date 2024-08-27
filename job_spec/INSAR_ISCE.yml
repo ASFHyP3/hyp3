@@ -155,4 +155,4 @@ INSAR_ISCE:
         - RAIDER_HRES_API_KEY
         - RAIDER_HRES_URL
   compute_environment:
-    name: 'Shared'
+    name: 'Default'

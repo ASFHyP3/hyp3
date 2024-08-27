@@ -114,4 +114,4 @@ WATER_MAP_EQ:
       vcpu: 1
       memory: 126000
   compute_environment:
-    name: 'Shared'
+    name: 'Default'

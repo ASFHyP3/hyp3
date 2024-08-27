@@ -2,10 +2,10 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  SharedJobQueueArn:
+  JobQueueArn:
     Type: String
 
-  {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name']%}
+  {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name']%}
   {{ job_spec['compute_environment']['name'] }}JobQueueArn:
     Type: String
   {% endfor %}
@@ -90,8 +90,8 @@ Resources:
       RoleArn: !GetAtt StepFunctionRole.Arn
       DefinitionS3Location: step-function.json
       DefinitionSubstitutions:
-        SharedJobQueueArn: !Ref SharedJobQueueArn
-        {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+        JobQueueArn: !Ref JobQueueArn
+        {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name'] %}
         {% set name = job_spec['compute_environment']['name'] %}
         {{ name }}JobQueueArn: !Ref {{ name }}JobQueueArn
         {% endfor %}
@@ -135,8 +135,8 @@ Resources:
           - Effect: Allow
             Action: batch:SubmitJob
             Resource:
-              - !Ref SharedJobQueueArn
-              {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name']%}
+              - !Ref JobQueueArn
+              {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name']%}
               - !Ref {{ job_spec['compute_environment']['name'] }}JobQueueArn
               {% endfor %}
               {% for job_type, job_spec in job_types.items() %}

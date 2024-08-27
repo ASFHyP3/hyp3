@@ -5,7 +5,7 @@ Parameters:
   ComputeEnvironmentArn:
     Type: String
 
-  {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+  {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name'] %}
   {% set name = job_spec['compute_environment']['name'] %}
   {{ name }}ComputeEnvironmentArn:
     Type: String
@@ -87,7 +87,7 @@ Resources:
             Action: batch:UpdateComputeEnvironment
             Resource: 
             - !Ref ComputeEnvironmentArn
-            {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+            {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name'] %}
             - !Ref {{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn
             {% endfor %}
 
@@ -128,7 +128,7 @@ Resources:
       Targets:
         - Arn: !GetAtt Lambda.Arn
           Id: lambda
-        {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+        {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name'] %}
         {% set name = job_spec['compute_environment']['name'] %}
         - Arn: !GetAtt {{ name }}Lambda.Arn
           Id:  {{ name }}lambda
@@ -142,7 +142,7 @@ Resources:
       Principal: events.amazonaws.com
       SourceArn: !GetAtt Schedule.Arn
 
-  {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+  {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name'] %}
   {% set name = job_spec['compute_environment']['name'] %}
   {{ name }}Lambda:
     Type: AWS::Lambda::Function

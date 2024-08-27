@@ -23,13 +23,13 @@ Parameters:
 
 Outputs:
 
-  SharedComputeEnvironmentArn:
-    Value: !Ref SharedComputeEnvironment
+  ComputeEnvironmentArn:
+    Value: !Ref ComputeEnvironment
 
-  SharedJobQueueArn:
-    Value: !Ref SharedJobQueue
+  JobQueueArn:
+    Value: !Ref JobQueue
 
-  {% for job_type, job_spec in job_types.items()  if 'Shared' not in job_spec['compute_environment']['name'] %}
+  {% for job_type, job_spec in job_types.items()  if 'Default' not in job_spec['compute_environment']['name'] %}
   {% set name = job_spec['compute_environment']['name'] %}
   {{ name }}ComputeEnvironmentArn:
     Value: !Ref {{ name }}ComputeEnvironment
@@ -53,7 +53,7 @@ Resources:
       GroupDescription: !Sub "Security group for ${AWS::StackName} machines"
       VpcId: !Ref VpcId
 
-  SharedLaunchTemplate:
+  LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
@@ -73,69 +73,45 @@ Resources:
 
             --==BOUNDARY==--
 
-  SharedComputeEnvironment:
-      Type: AWS::Batch::ComputeEnvironment
-      Properties:
-        ServiceRole: !GetAtt BatchServiceRole.Arn
-        Type: MANAGED
-        ComputeResources:
-          Type: SPOT
-          AllocationStrategy: SPOT_PRICE_CAPACITY_OPTIMIZED
-          MinvCpus: 0
-          MaxvCpus: !Ref MaxvCpus
-          InstanceTypes: !Ref InstanceTypes
-          ImageId: !Ref AmiId
-          Subnets: !Ref SubnetIds
-          InstanceRole: !Ref InstanceProfile
-          SecurityGroupIds:
-            - !Ref SecurityGroup
-          LaunchTemplate:
-            LaunchTemplateId: !Ref SharedLaunchTemplate
-            Version: !GetAtt SharedLaunchTemplate.LatestVersionNumber
-          Tags:
-            Name: !Ref AWS::StackName
+  ComputeEnvironment:
+    Type: AWS::Batch::ComputeEnvironment
+    Properties:
+      ServiceRole: !GetAtt BatchServiceRole.Arn
+      Type: MANAGED
+      ComputeResources:
+        Type: SPOT
+        AllocationStrategy: SPOT_PRICE_CAPACITY_OPTIMIZED
+        MinvCpus: 0
+        MaxvCpus: !Ref MaxvCpus
+        InstanceTypes: !Ref InstanceTypes
+        ImageId: !Ref AmiId
+        Subnets: !Ref SubnetIds
+        InstanceRole: !Ref InstanceProfile
+        SecurityGroupIds:
+          - !Ref SecurityGroup
+        LaunchTemplate:
+          LaunchTemplateId: !Ref LaunchTemplate
+          Version: !GetAtt LaunchTemplate.LatestVersionNumber
+        Tags:
+          Name: !Ref AWS::StackName
 
-  SharedJobQueue:
+  JobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
       Priority: 1
       ComputeEnvironmentOrder:
-        - ComputeEnvironment: !Ref SharedComputeEnvironment
+        - ComputeEnvironment: !Ref ComputeEnvironment
           Order: 1
       SchedulingPolicyArn: !Ref SchedulingPolicy
 
   SchedulingPolicy:
     Type: AWS::Batch::SchedulingPolicy
 
-  {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
+  {% for job_type, job_spec in job_types.items() if 'Default' not in job_spec['compute_environment']['name'] %}
   {% set env = job_spec['compute_environment'] %}
   {% set name = env['name'] %}
   {% set instance_types = env['instance_types'] if 'instance_types' in env else ['!Ref InstanceTypes'] %}
   {% set ami_id = env['ami_id'] if 'ami_id' in env else '!Ref AmiId' %}
-  {{ name }}LaunchTemplate:
-    Type: AWS::EC2::LaunchTemplate
-    Properties:
-      LaunchTemplateData:
-        MetadataOptions:
-          HttpTokens: required
-        UserData:
-          Fn::Base64: |-
-            Content-Type: multipart/mixed; boundary="==BOUNDARY=="
-            MIME-Version: 1.0
-
-            --==BOUNDARY==
-            Content-Type: text/cloud-boothook; charset="us-ascii"
-
-            #!/bin/bash
-            cloud-init-per instance mkfs_ssd mkfs.ext4 /dev/nvme1n1
-            mount /dev/nvme1n1 /var/lib/docker
-
-            {% for command in job_spec['compute_environment']['user_data_commands'] %}
-            {{ command }}
-            {% endfor %}
-
-            --==BOUNDARY==--
-  
   {{ name }}ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
@@ -156,8 +132,8 @@ Resources:
         SecurityGroupIds:
           - !Ref SecurityGroup
         LaunchTemplate:
-          LaunchTemplateId: !Ref {{ name }}LaunchTemplate
-          Version: !GetAtt {{ name }}LaunchTemplate.LatestVersionNumber
+          LaunchTemplateId: !Ref LaunchTemplate
+          Version: !GetAtt LaunchTemplate.LatestVersionNumber
         Tags:
           Name: !Ref AWS::StackName
 
