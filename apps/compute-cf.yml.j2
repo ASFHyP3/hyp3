@@ -30,12 +30,12 @@ Outputs:
     Value: !Ref SharedJobQueue
 
   {% for job_type, job_spec in job_types.items()  if 'Shared' not in job_spec['compute_environment']['name'] %}
-  {% set job_name = job_spec['compute_environment']['name'] %}
-  {{ job_name }}ComputeEnvironmentArn:
-    Value: !Ref {{ job_name }}ComputeEnvironment
+  {% set name = job_spec['compute_environment']['name'] %}
+  {{ name }}ComputeEnvironmentArn:
+    Value: !Ref {{ name }}ComputeEnvironment
 
-  {{ job_name }}JobQueueArn:
-    Value: !Ref {{ job_name }}JobQueue
+  {{ name }}JobQueueArn:
+    Value: !Ref {{ name }}JobQueue
 
   {% endfor %}
 
@@ -109,10 +109,10 @@ Resources:
 
   {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
   {% set env = job_spec['compute_environment'] %}
-  {% set job_name = env['name'] %}
+  {% set name = env['name'] %}
   {% set instance_types = env['instance_types'] if 'instance_types' in env else ['!Ref InstanceTypes'] %}
   {% set ami_id = env['ami_id'] if 'ami_id' in env else '!Ref AmiId' %}
-  {{ job_name }}LaunchTemplate:
+  {{ name }}LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
@@ -136,7 +136,7 @@ Resources:
 
             --==BOUNDARY==--
   
-  {{ job_name }}ComputeEnvironment:
+  {{ name }}ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       ServiceRole: !GetAtt BatchServiceRole.Arn
@@ -156,17 +156,17 @@ Resources:
         SecurityGroupIds:
           - !Ref SecurityGroup
         LaunchTemplate:
-          LaunchTemplateId: !Ref {{ job_name }}LaunchTemplate
-          Version: !GetAtt {{ job_name }}LaunchTemplate.LatestVersionNumber
+          LaunchTemplateId: !Ref {{ name }}LaunchTemplate
+          Version: !GetAtt {{ name }}LaunchTemplate.LatestVersionNumber
         Tags:
           Name: !Ref AWS::StackName
 
-  {{ job_name }}JobQueue:
+  {{ name }}JobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
       Priority: 1
       ComputeEnvironmentOrder:
-        - ComputeEnvironment: !Ref {{ job_name }}ComputeEnvironment
+        - ComputeEnvironment: !Ref {{ name }}ComputeEnvironment
           Order: 1
       SchedulingPolicyArn: !Ref SchedulingPolicy
   

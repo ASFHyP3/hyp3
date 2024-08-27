@@ -90,7 +90,8 @@ Resources:
       DefinitionSubstitutions:
         SharedJobQueueArn: !Ref SharedJobQueueArn
         {% for job_type, job_spec in job_types.items() if 'Shared' not in job_spec['compute_environment']['name'] %}
-        {{ job_spec['compute_environment']['name'] }}JobQueueArn: !Ref {{ job_spec['compute_environment']['name'] }}JobQueueArn
+        {% set name = job_spec['compute_environment']['name'] %}
+        {{ name }}JobQueueArn: !Ref {{ name }}JobQueueArn
         {% endfor %}
         {% for job_type, job_spec in job_types.items() %}
         {% for task in job_spec['tasks'] %}
