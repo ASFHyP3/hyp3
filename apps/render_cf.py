@@ -67,11 +67,6 @@ def main():
     parser.add_argument('-c', '--cost-profile', default='DEFAULT', choices=['DEFAULT', 'EDC'])
     args = parser.parse_args()
 
-    # TODO: Job Types are provided here, by the Makefile.
-    #       The Job Types will need to contain a parsable field
-    #       that contains the information needed for per-instance
-    #       AMIs, types, and resources.
-
     job_types = {}
     for file in args.job_spec_files:
         job_types.update(yaml.safe_load(file.read_text()))
