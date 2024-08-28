@@ -49,4 +49,3 @@ SRG_GSLC:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-
