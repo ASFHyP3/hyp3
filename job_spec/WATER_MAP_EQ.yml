@@ -58,6 +58,8 @@ WATER_MAP_EQ:
       cost: 1.0
   validators:
     - check_dem_coverage
+  compute_environment:
+    name: 'Default'
   tasks:
     - name: RTC
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
@@ -113,5 +115,4 @@ WATER_MAP_EQ:
       timeout: 36000
       vcpu: 1
       memory: 126000
-  compute_environment:
-    name: 'Default'
+

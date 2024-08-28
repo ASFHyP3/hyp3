@@ -51,6 +51,8 @@ AUTORIFT:
     DEFAULT:
       cost: 1.0
   validators: []
+  compute_environment:
+    name: 'Default'
   tasks:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
@@ -74,5 +76,3 @@ AUTORIFT:
         - EARTHDATA_PASSWORD
         - PUBLISH_ACCESS_KEY_ID
         - PUBLISH_SECRET_ACCESS_KEY
-  compute_environment:
-    name: 'Default'
