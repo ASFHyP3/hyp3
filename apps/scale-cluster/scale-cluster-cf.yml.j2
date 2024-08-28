@@ -144,12 +144,18 @@ Resources:
 
   {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
   {% set name = job_spec['compute_environment']['name'] %}
+  {{ name }}LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub {{ "/aws/lambda/${"+ name +"LogGroup}" }}
+      RetentionInDays: 90
+  
   {{ name }}Lambda:
     Type: AWS::Lambda::Function
     Properties:
       Environment:
         Variables:
-          COMPUTE_ENVIRONMENT_ARN: !Ref {{name }}ComputeEnvironmentArn
+          COMPUTE_ENVIRONMENT_ARN: !Ref {{ name }}ComputeEnvironmentArn
           MONTHLY_BUDGET: !Ref MonthlyBudget
           DEFAULT_MAX_VCPUS: !Ref DefaultMaxvCpus
           EXPANDED_MAX_VCPUS: !Ref ExpandedMaxvCpus

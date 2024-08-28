@@ -27,7 +27,7 @@ Outputs:
     Value: !Ref ComputeEnvironment
 
   JobQueueArn:
-    Value: !Ref JobQueue
+    Value: !Ref BatchJobQueue
 
   {% for job_type, job_spec in job_types.items()  if 'Default' != job_spec['compute_environment']['name'] %}
   {% set name = job_spec['compute_environment']['name'] %}
@@ -95,7 +95,7 @@ Resources:
         Tags:
           Name: !Ref AWS::StackName
 
-  JobQueue:
+  BatchJobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
       Priority: 1
