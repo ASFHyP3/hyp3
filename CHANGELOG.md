@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [7.8.0]
 
 ### Added
-- Support for per-job specification of instance types and AMIs.
+- Allow overriding certain AWS Batch compute environment parameters (including instance types and AMI) within a job spec.
+- Allow job spec tasks to require GPU resource requirements.
 
 
 ## [7.7.2]
