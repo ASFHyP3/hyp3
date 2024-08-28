@@ -9,7 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Allow overriding certain AWS Batch compute environment parameters (including instance types and AMI) within a job spec.
-- Allow job spec tasks to require GPU resource requirements.
+- Allow job spec tasks to require GPU resources.
+
+### Changed
+- The `SRG_GSLC` job type now runs within a GPU environment.
 
 
 ## [7.7.2]
