@@ -69,5 +69,3 @@ INSAR_ISCE_BURST:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-  compute_environment:
-    name: 'Default'
