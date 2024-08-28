@@ -86,10 +86,10 @@ Resources:
           - Effect: Allow
             Action: batch:UpdateComputeEnvironment
             Resource: 
-            - !Ref ComputeEnvironmentArn
-            {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
-            - !Ref {{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn
-            {% endfor %}
+              - !Ref ComputeEnvironmentArn
+              {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
+              - !Ref {{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn
+              {% endfor %}
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -147,7 +147,7 @@ Resources:
   {{ name }}LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub {{ "/aws/lambda/${"+ name +"Lambda}" }}
+      LogGroupName: !Sub {{ "/aws/lambda/${" + name + "Lambda}" }}
       RetentionInDays: 90
   
   {{ name }}Lambda:

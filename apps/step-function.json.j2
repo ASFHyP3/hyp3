@@ -209,7 +209,7 @@
         "JobName.$": "$.job_id",
         {% set name = job_spec['compute_environment']['name'] %}
         {% set job_queue = name + 'JobQueueArn' if 'Default' != name else 'JobQueueArn' %}
-        "JobQueue": "{{ '${'+ job_queue +'}' }}",
+        "JobQueue": "{{ '${' + job_queue + '}' }}",
         "ShareIdentifier": "default",
         "SchedulingPriorityOverride.$": "$.priority",
         "Parameters.$": "$.job_parameters",
