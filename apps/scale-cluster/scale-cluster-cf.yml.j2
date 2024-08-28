@@ -147,7 +147,7 @@ Resources:
   {{ name }}LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub {{ "/aws/lambda/${"+ name +"LogGroup}" }}
+      LogGroupName: !Sub {{ "/aws/lambda/${"+ name +"Lambda}" }}
       RetentionInDays: 90
   
   {{ name }}Lambda:
