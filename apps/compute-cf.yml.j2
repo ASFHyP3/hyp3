@@ -112,14 +112,16 @@ Resources:
   {% set name = env['name'] %}
   {% set instance_types = env['instance_types'] if 'instance_types' in env else ['!Ref InstanceTypes'] %}
   {% set ami_id = env['ami_id'] if 'ami_id' in env else '!Ref AmiId' %}
+  {% set type = env['allocation_type'] if 'allocation_type' in env else 'SPOT' %}
+  {% set strategy = env['allocation_strategy'] if 'allocation_strategy' in env else 'SPOT_PRICE_CAPACITY_OPTIMIZED' %}
   {{ name }}ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       ServiceRole: !GetAtt BatchServiceRole.Arn
       Type: MANAGED
       ComputeResources:
-        Type: SPOT
-        AllocationStrategy: SPOT_PRICE_CAPACITY_OPTIMIZED
+        Type: {{ type }}
+        AllocationStrategy: {{ strategy }}
         MinvCpus: 0
         MaxvCpus: !Ref MaxvCpus
         InstanceTypes:
