@@ -109,7 +109,7 @@ Resources:
   {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
   {% set env = job_spec['compute_environment'] %}
   {% set name = env['name'] %}
-  {% set instance_types = env['instance_types'] if 'instance_types' in env else ['!Ref InstanceTypes'] %}
+  {% set instance_types = env['instance_types'].split(',') if 'instance_types' in env else '!Ref InstanceTypes' %}
   {% set ami_id = env['ami_id'] if 'ami_id' in env else '!Ref AmiId' %}
   {% set type = env['allocation_type'] if 'allocation_type' in env else 'SPOT' %}
   {% set strategy = env['allocation_strategy'] if 'allocation_strategy' in env else 'SPOT_PRICE_CAPACITY_OPTIMIZED' %}
@@ -123,10 +123,7 @@ Resources:
         AllocationStrategy: {{ strategy }}
         MinvCpus: 0
         MaxvCpus: !Ref MaxvCpus
-        InstanceTypes:
-        {% for instance_type in instance_types %}
-          - {{ instance_type }}
-        {% endfor %}
+        InstanceTypes: {{ instance_types }}
         ImageId: {{ ami_id }}
         Subnets: !Ref SubnetIds
         InstanceRole: !Ref InstanceProfile
@@ -146,7 +143,7 @@ Resources:
         - ComputeEnvironment: !Ref {{ name }}ComputeEnvironment
           Order: 1
       SchedulingPolicyArn: !Ref SchedulingPolicy
-  
+
   {% endfor %}
 
   TaskRole:
