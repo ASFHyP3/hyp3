@@ -29,6 +29,15 @@ Outputs:
   JobQueueArn:
     Value: !Ref BatchJobQueue
 
+  {% for job_type, job_spec in job_types.items()  if 'Default' != job_spec['compute_environment']['name'] %}
+  {% set name = job_spec['compute_environment']['name'] %}
+  {{ name }}ComputeEnvironmentArn:
+    Value: !Ref {{ name }}ComputeEnvironment
+
+  {{ name }}JobQueueArn:
+    Value: !Ref {{ name }}JobQueue
+  {% endfor %}
+
   TaskRoleArn:
     Value: !GetAtt TaskRole.Arn
 
@@ -85,9 +94,6 @@ Resources:
         Tags:
           Name: !Ref AWS::StackName
 
-  SchedulingPolicy:
-    Type: AWS::Batch::SchedulingPolicy
-
   BatchJobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
@@ -96,6 +102,52 @@ Resources:
         - ComputeEnvironment: !Ref ComputeEnvironment
           Order: 1
       SchedulingPolicyArn: !Ref SchedulingPolicy
+
+  SchedulingPolicy:
+    Type: AWS::Batch::SchedulingPolicy
+
+  {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
+  {% set env = job_spec['compute_environment'] %}
+  {% set name = env['name'] %}
+  {% set instance_types = env['instance_types'] if 'instance_types' in env else ['!Ref InstanceTypes'] %}
+  {% set ami_id = env['ami_id'] if 'ami_id' in env else '!Ref AmiId' %}
+  {% set type = env['allocation_type'] if 'allocation_type' in env else 'SPOT' %}
+  {% set strategy = env['allocation_strategy'] if 'allocation_strategy' in env else 'SPOT_PRICE_CAPACITY_OPTIMIZED' %}
+  {{ name }}ComputeEnvironment:
+    Type: AWS::Batch::ComputeEnvironment
+    Properties:
+      ServiceRole: !GetAtt BatchServiceRole.Arn
+      Type: MANAGED
+      ComputeResources:
+        Type: {{ type }}
+        AllocationStrategy: {{ strategy }}
+        MinvCpus: 0
+        MaxvCpus: !Ref MaxvCpus
+        InstanceTypes:
+        {% for instance_type in instance_types %}
+          - {{ instance_type }}
+        {% endfor %}
+        ImageId: {{ ami_id }}
+        Subnets: !Ref SubnetIds
+        InstanceRole: !Ref InstanceProfile
+        SecurityGroupIds:
+          - !Ref SecurityGroup
+        LaunchTemplate:
+          LaunchTemplateId: !Ref LaunchTemplate
+          Version: !GetAtt LaunchTemplate.LatestVersionNumber
+        Tags:
+          Name: !Ref AWS::StackName
+
+  {{ name }}JobQueue:
+    Type: AWS::Batch::JobQueue
+    Properties:
+      Priority: 1
+      ComputeEnvironmentOrder:
+        - ComputeEnvironment: !Ref {{ name }}ComputeEnvironment
+          Order: 1
+      SchedulingPolicyArn: !Ref SchedulingPolicy
+  
+  {% endfor %}
 
   TaskRole:
     Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}

@@ -42,6 +42,8 @@ AUTORIFT:
     DEFAULT:
       cost: 1.0
   validators: []
+  compute_environment:
+    name: 'Default'
   tasks:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift

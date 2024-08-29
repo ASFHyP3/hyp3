@@ -92,6 +92,8 @@ INSAR_ISCE:
     DEFAULT:
       cost: 1.0
   validators: []
+  compute_environment:
+    name: 'Default'
   tasks:
     - name: ''
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
