@@ -99,7 +99,7 @@ INSAR_ISCE:
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
       command:
         - ++omp-num-threads
-        - '2'  # 2 for the m instance family; 4 for the c
+        - '4'  # 2 for the m instance family; 4 for the c
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix

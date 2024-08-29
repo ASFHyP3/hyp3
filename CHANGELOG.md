@@ -4,7 +4,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
 ## [7.8.0]
 
 ### Added
@@ -13,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - The `SRG_GSLC` job type now runs within a GPU environment.
+- Revert ARIA hyp3 deployments back to C-instance family - including the job-spec CLI parameter `omp-num-threads` to ensure multiple jobs fit on single instance.
 
 
 ## [7.7.2]
