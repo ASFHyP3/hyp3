@@ -93,7 +93,9 @@ INSAR_ISCE:
       cost: 1.0
   validators: []
   compute_environment:
-    name: 'Default'
+    name: 'Aria'
+    allocation_type: EC2
+    allocation_strategy: BEST_FIT_PROGRESSIVE
   tasks:
     - name: ''
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
