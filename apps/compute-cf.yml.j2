@@ -123,7 +123,7 @@ Resources:
         AllocationStrategy: {{ strategy }}
         MinvCpus: 0
         MaxvCpus: !Ref MaxvCpus
-        InstanceTypes: {{ instance_type }}
+        InstanceTypes: {{ instance_types }}
         ImageId: {{ ami_id }}
         Subnets: !Ref SubnetIds
         InstanceRole: !Ref InstanceProfile
