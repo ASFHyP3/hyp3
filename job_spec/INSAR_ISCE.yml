@@ -93,7 +93,7 @@ INSAR_ISCE:
       cost: 1.0
   validators: []
   compute_environment:
-    name: 'Aria'
+    name: 'InsarIsceAria'
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
   tasks:
