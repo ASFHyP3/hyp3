@@ -138,7 +138,7 @@ Resources:
             Action: batch:SubmitJob
             Resource:
               - !Ref JobQueueArn
-              {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name']%}
+              {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
               - !Ref {{ job_spec['compute_environment']['name'] }}JobQueueArn
               {% endfor %}
               {% for job_type, job_spec in job_types.items() %}
