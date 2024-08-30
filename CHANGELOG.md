@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [7.8.0]
+
+### Added
+- Allow overriding certain AWS Batch compute environment parameters (including instance types and AMI) within a job spec.
+- Allow job spec tasks to require GPU resources.
+
+### Changed
+- The `SRG_GSLC` job type now runs within a GPU environment.
+- Revert ARIA hyp3 deployments back to C-instance family - including the job-spec CLI parameter `omp-num-threads` to ensure multiple jobs fit on single instance.
+- Deployments with INSAR_ISCE.yml job specs will now use a dedicated compute environment with on-demand instances instead of spot instances for INSAR_ISCE jobs.
+
 ## [7.7.2]
 
 ### Change

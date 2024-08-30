@@ -92,12 +92,16 @@ INSAR_ISCE:
     DEFAULT:
       cost: 1.0
   validators: []
+  compute_environment:
+    name: 'InsarIsceAria'
+    allocation_type: EC2
+    allocation_strategy: BEST_FIT_PROGRESSIVE
   tasks:
     - name: ''
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
       command:
         - ++omp-num-threads
-        - '2'  # 2 for the m instance family; 4 for the c
+        - '4'  # 2 for the m instance family; 4 for the c
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
