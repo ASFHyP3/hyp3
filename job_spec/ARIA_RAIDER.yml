@@ -25,6 +25,8 @@ ARIA_RAIDER:
     DEFAULT:
       cost: 1.0
   validators: []
+  compute_environment:
+    name: 'Default'
   tasks:
     - name: ''
       image: ghcr.io/dbekaert/raider

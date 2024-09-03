@@ -5,6 +5,11 @@ Parameters:
   JobQueueArn:
     Type: String
 
+  {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
+  {{ job_spec['compute_environment']['name'] }}JobQueueArn:
+    Type: String
+  {% endfor %}
+
   JobsTable:
     Type: String
 
@@ -95,6 +100,9 @@ Resources:
         detail:
           jobQueue:
             - !Ref JobQueueArn
+            {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
+            - !Ref {{ job_spec['compute_environment']['name'] }}JobQueueArn
+            {% endfor %}
           status:
             - RUNNING
       Targets:

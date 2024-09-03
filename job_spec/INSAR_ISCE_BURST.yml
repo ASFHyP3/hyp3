@@ -59,6 +59,8 @@ INSAR_ISCE_BURST:
     - check_valid_polarizations
     - check_same_burst_ids
     - check_not_antimeridian 
+  compute_environment:
+    name: 'Default'
   tasks:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2

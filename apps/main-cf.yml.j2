@@ -154,6 +154,10 @@ Resources:
     Properties:
       Parameters:
         ComputeEnvironmentArn: !GetAtt Cluster.Outputs.ComputeEnvironmentArn
+        {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
+        {% set name = job_spec['compute_environment']['name'] %}
+        {{ name }}ComputeEnvironmentArn: !GetAtt Cluster.Outputs.{{ name }}ComputeEnvironmentArn
+        {% endfor %}
         DefaultMaxvCpus: !Ref DefaultMaxvCpus
         ExpandedMaxvCpus: !Ref ExpandedMaxvCpus
         MonthlyBudget: !Ref MonthlyBudget
@@ -169,6 +173,10 @@ Resources:
     Properties:
       Parameters:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
+        {% set name = job_spec['compute_environment']['name'] %}
+        {{ name }}JobQueueArn: !GetAtt Cluster.Outputs.{{ name }}JobQueueArn
+        {% endfor %}
         JobsTable: !Ref JobsTable
         {% if security_environment == 'EDC' %}
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
@@ -181,6 +189,10 @@ Resources:
     Properties:
       Parameters:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
+        {% set name = job_spec['compute_environment']['name'] %}
+        {{ name }}JobQueueArn: !GetAtt Cluster.Outputs.{{ name }}JobQueueArn
+        {% endfor %}
         TaskRoleArn: !GetAtt Cluster.Outputs.TaskRoleArn
         JobsTable: !Ref JobsTable
         Bucket: !Ref ContentBucket

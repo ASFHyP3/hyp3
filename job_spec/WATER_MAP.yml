@@ -116,6 +116,8 @@ WATER_MAP:
       cost: 1.0
   validators:
     - check_dem_coverage
+  compute_environment:
+    name: 'Default'
   tasks:
     - name: RTC
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
