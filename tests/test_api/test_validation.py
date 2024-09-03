@@ -118,6 +118,18 @@ def test_check_same_burst_ids():
                     'S1_136232_IW2_20200616T022345_VV_5D13-BURST'
                 ]
             }
+        },
+        {
+            'job_parameters': {
+                'reference': [
+                    'S1_136231_IW2_20200604T022312_VV_7C85-BURST',
+                    'S1_136231_IW3_20200616T022315_VV_5D11-BURST'
+                ],
+                'secondary': [
+                    'S1_136231_IW2_20200616T022313_VV_5411-BURST',
+                    'S1_136231_IW3_20200616T022345_VV_5D13-BURST'
+                ]
+            }
         }
     ]
     invalid_job_different_lengths = {
