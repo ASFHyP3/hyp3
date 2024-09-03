@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.8.1]
+
+### Fixed
+- Upgraded to flask-cors v5.0.0 from v4.0.1. Resolves [CVE-2024-6221](https://github.com/ASFHyP3/hyp3/security/dependabot/17).
 
 ## [7.8.0]
 
