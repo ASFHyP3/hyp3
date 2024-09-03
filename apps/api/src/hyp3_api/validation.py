@@ -79,8 +79,8 @@ def check_dem_coverage(_, granule_metadata):
 def check_same_burst_ids(job, _):
     refs = job['job_parameters']['reference']
     secs = job['job_parameters']['secondary']
-    ref_ids = [ref.split('_')[1] for ref in refs]
-    sec_ids = [sec.split('_')[1] for sec in secs]
+    ref_ids = ['_'.join([ref.split('_')[1], ref.split('_')[2]]) for ref in refs]
+    sec_ids = ['_'.join([sec.split('_')[1], sec.split('_')[2]]) for sec in secs]
     if len(ref_ids) != len(sec_ids):
         raise GranuleValidationError(
             f'Number of reference and secondary scenes must match, got: '
