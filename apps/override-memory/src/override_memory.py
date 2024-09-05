@@ -18,10 +18,10 @@ def get_resource_requirements(memory: str) -> dict:
 def lambda_handler(event: dict, _) -> dict:
     job_type, job_parameters = event['job_type'], event['job_parameters']
 
-    if job_type == 'AUTORIFT' and job_parameters['granules'][0].startswith('S2'):
+    if job_type == 'AUTORIFT' and job_parameters['granules'].startswith('S2'):
         return get_resource_requirements(AUTORIFT_S2_MEMORY)
 
-    if job_type == 'AUTORIFT' and job_parameters['granules'][0].startswith('L'):
+    if job_type == 'AUTORIFT' and job_parameters['granules'].startswith('L'):
         return get_resource_requirements(AUTORIFT_LANDSAT_MEMORY)
 
     if job_type == 'RTC_GAMMA' and job_parameters['resolution'] in ['10', '20']:

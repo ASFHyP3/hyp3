@@ -21,7 +21,7 @@ def test_override_memory_autorift_s2():
     assert lambda_handler(
         {
             'job_type': 'AUTORIFT',
-            'job_parameters': {'granules': ['S2B_MSIL1C_20200105T152259_N0208_R039_T13CES_20200105T181230']},
+            'job_parameters': {'granules': 'S2B_'},
         },
         None,
     ) == {
@@ -38,7 +38,7 @@ def test_override_memory_autorift_landsat():
     assert lambda_handler(
         {
             'job_type': 'AUTORIFT',
-            'job_parameters': {'granules': ['LC08_L1GT_118112_20210107_20210107_02_T2']},
+            'job_parameters': {'granules': 'LC08_'},
         },
         None,
     ) == {
