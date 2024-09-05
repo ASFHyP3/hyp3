@@ -1,10 +1,10 @@
-AUTORIFT_S2_MEMORY = 7875
-AUTORIFT_LANDSAT_MEMORY = 15750
-RTC_GAMMA_10M_MEMORY = 63200
-WATER_MAP_10M_MEMORY = 126000
+AUTORIFT_S2_MEMORY = '7875'
+AUTORIFT_LANDSAT_MEMORY = '15750'
+RTC_GAMMA_10M_MEMORY = '63200'
+WATER_MAP_10M_MEMORY = '126000'
 
 
-def get_resource_requirements(memory: int) -> dict:
+def get_resource_requirements(memory: str) -> dict:
     return {
         'ResourceRequirements': [
             {
