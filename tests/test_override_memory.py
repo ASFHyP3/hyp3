@@ -1,6 +1,6 @@
 from override_memory import (
-    AUTORIFT_S2_MEMORY,
     AUTORIFT_LANDSAT_MEMORY,
+    AUTORIFT_S2_MEMORY,
     RTC_GAMMA_10M_MEMORY,
     WATER_MAP_10M_MEMORY,
     lambda_handler,
