@@ -83,7 +83,7 @@ INSAR_ISCE_BURST:
         - Ref::secondary
       timeout: 5400
       vcpu: 1
-      memory: 15500
+      memory: 7600
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
