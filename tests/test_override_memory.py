@@ -17,7 +17,7 @@ def test_override_memory_default():
     ) == {}
 
 
-def test_override_memory_autorift():
+def test_override_memory_autorift_s2():
     assert lambda_handler(
         {
             'job_type': 'AUTORIFT',
@@ -32,6 +32,9 @@ def test_override_memory_autorift():
             }
         ]
     }
+
+
+def test_override_memory_autorift_landsat():
     assert lambda_handler(
         {
             'job_type': 'AUTORIFT',
@@ -48,7 +51,7 @@ def test_override_memory_autorift():
     }
 
 
-def test_override_memory_rtc_gamma():
+def test_override_memory_rtc_gamma_10m():
     assert lambda_handler(
         {
             'job_type': 'RTC_GAMMA',
@@ -79,7 +82,7 @@ def test_override_memory_rtc_gamma():
     }
 
 
-def test_override_memory_water_map():
+def test_override_memory_water_map_10m():
     assert lambda_handler(
         {
             'job_type': 'WATER_MAP',
