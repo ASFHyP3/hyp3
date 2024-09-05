@@ -36,153 +36,23 @@
       "Type": "Pass",
       "InputPath": "$.job_id",
       "ResultPath": "$.job_parameters.bucket_prefix",
-      "Next": "INSPECT_MEMORY_REQUIREMENTS"
+      "Next": "OVERRIDE_MEMORY"
     },
-    "INSPECT_MEMORY_REQUIREMENTS": {
-      "Type": "Choice",
-      "Choices": [
+    "OVERRIDE_MEMORY": {
+      "Type": "Task",
+      "Resource": "${OverrideMemoryLambdaArn}",
+      "Parameters": {
+        "job_type.$": "$.job_type",
+        "job_parameters.$": "$.job_parameters"
+      },
+      "Retry": [
         {
-          "And": [
-            {
-              "Variable": "$.job_type",
-              "StringEquals": "AUTORIFT"
-            },
-            {
-              "Variable": "$.job_parameters.granules",
-              "StringMatches": "S2*"
-            }
+          "ErrorEquals": [
+            "States.ALL"
           ],
-          "Next": "USE_SENTINEL2_MEMORY"
-        },
-        {
-          "And": [
-            {
-              "Variable": "$.job_type",
-              "StringEquals": "AUTORIFT"
-            },
-            {
-              "Variable": "$.job_parameters.granules",
-              "StringMatches": "L*"
-            }
-          ],
-          "Next": "USE_LANDSAT_MEMORY"
-        },
-        {
-          "And": [
-            {
-              "Variable": "$.job_type",
-              "StringEquals": "RTC_GAMMA"
-            },
-            {
-              "Variable": "$.job_parameters.resolution",
-              "IsPresent": true
-            },
-            {
-              "Or": [
-                {
-                  "Variable": "$.job_parameters.resolution",
-                  "StringEquals": "10"
-                },
-                {
-                  "Variable": "$.job_parameters.resolution",
-                  "StringEquals": "20"
-                }
-              ]
-            }
-          ],
-          "Next": "USE_10M_RTC_MEMORY"
-        },
-        {
-          "And": [
-            {
-              "Or": [
-                {
-                  "Variable": "$.job_type",
-                  "StringEquals": "WATER_MAP"
-                },
-                {
-                  "Variable": "$.job_type",
-                  "StringEquals": "WATER_MAP_EQ"
-                }
-              ]
-            },
-            {
-              "Variable": "$.job_parameters.resolution",
-              "IsPresent": true
-            },
-            {
-              "Or": [
-                {
-                  "Variable": "$.job_parameters.resolution",
-                  "StringEquals": "10"
-                },
-                {
-                  "Variable": "$.job_parameters.resolution",
-                  "StringEquals": "20"
-                }
-              ]
-            }
-          ],
-          "Next": "USE_10M_WATER_MAP_MEMORY"
+          "MaxAttempts": 2
         }
       ],
-      "Default": "USE_DEFAULT_MEMORY"
-    },
-    "USE_SENTINEL2_MEMORY": {
-      "Type": "Pass",
-      "Result": {
-        "ResourceRequirements": [
-          {
-            "Type": "MEMORY",
-            "Value": "7875"
-          }
-        ]
-      },
-      "ResultPath": "$.container_overrides",
-      "Next": "INSPECT_JOB_TYPE"
-    },
-    "USE_LANDSAT_MEMORY": {
-      "Type": "Pass",
-      "Result": {
-        "ResourceRequirements": [
-          {
-            "Type": "MEMORY",
-            "Value": "15750"
-          }
-        ]
-      },
-      "ResultPath": "$.container_overrides",
-      "Next": "INSPECT_JOB_TYPE"
-    },
-    "USE_10M_RTC_MEMORY": {
-      "Type": "Pass",
-      "Result": {
-        "ResourceRequirements": [
-          {
-            "Type": "MEMORY",
-            "Value": "63200"
-          }
-        ]
-      },
-      "ResultPath": "$.container_overrides",
-      "Next": "INSPECT_JOB_TYPE"
-    },
-    "USE_10M_WATER_MAP_MEMORY": {
-      "Type": "Pass",
-      "Result": {
-        "ResourceRequirements": [
-          {
-            "Type": "MEMORY",
-            "Value": "126000"
-          }
-        ]
-      },
-      "ResultPath": "$.container_overrides",
-      "Next": "INSPECT_JOB_TYPE"
-    },
-    "USE_DEFAULT_MEMORY": {
-      "Type": "Pass",
-      "Result": {},
       "ResultPath": "$.container_overrides",
       "Next": "INSPECT_JOB_TYPE"
     },
