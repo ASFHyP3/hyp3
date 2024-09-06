@@ -17,6 +17,10 @@ def test_set_container_overrides_default():
     ) == {}
 
 
+def test_set_container_overrides_insar_isce_burst():
+    raise NotImplementedError()
+
+
 def test_set_container_overrides_autorift_s2():
     assert lambda_handler(
         {
