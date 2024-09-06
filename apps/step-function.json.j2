@@ -53,6 +53,15 @@
           "MaxAttempts": 2
         }
       ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "JOB_FAILED",
+          "ResultPath": "$.container_overrides",
+        }
+      ],
       "ResultPath": "$.container_overrides",
       "Next": "INSPECT_JOB_TYPE"
     },

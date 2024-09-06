@@ -21,7 +21,7 @@ def get_insar_isce_burst_memory(job_parameters: dict) -> str:
     # - refine based on more data
     # - refactor lookup structure and/or pull out constants?
     # - can we slightly reduce the 500M padding in order to bump up some of the intervals?
-    bursts = len(job_parameters['reference'])
+    bursts = len(job_parameters['reference'].split(' '))
     looks = job_parameters['looks']
     if looks == '5x1':
         if bursts < 2:
