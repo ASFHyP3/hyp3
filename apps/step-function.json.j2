@@ -36,11 +36,11 @@
       "Type": "Pass",
       "InputPath": "$.job_id",
       "ResultPath": "$.job_parameters.bucket_prefix",
-      "Next": "OVERRIDE_MEMORY"
+      "Next": "SET_CONTAINER_OVERRIDES"
     },
-    "OVERRIDE_MEMORY": {
+    "SET_CONTAINER_OVERRIDES": {
       "Type": "Task",
-      "Resource": "${OverrideMemoryLambdaArn}",
+      "Resource": "${SetContainerOverridesLambdaArn}",
       "Parameters": {
         "job_type.$": "$.job_type",
         "job_parameters.$": "$.job_parameters"

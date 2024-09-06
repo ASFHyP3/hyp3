@@ -1,4 +1,4 @@
-from override_memory import (
+from set_container_overrides import (
     AUTORIFT_LANDSAT_MEMORY,
     AUTORIFT_S2_MEMORY,
     RTC_GAMMA_10M_MEMORY,
@@ -7,7 +7,7 @@ from override_memory import (
 )
 
 
-def test_override_memory_default():
+def test_set_container_overrides_default():
     assert lambda_handler(
         {
             'job_type': 'foo',
@@ -17,7 +17,7 @@ def test_override_memory_default():
     ) == {}
 
 
-def test_override_memory_autorift_s2():
+def test_set_container_overrides_autorift_s2():
     assert lambda_handler(
         {
             'job_type': 'AUTORIFT',
@@ -34,7 +34,7 @@ def test_override_memory_autorift_s2():
     }
 
 
-def test_override_memory_autorift_landsat():
+def test_set_container_overrides_autorift_landsat():
     assert lambda_handler(
         {
             'job_type': 'AUTORIFT',
@@ -51,7 +51,7 @@ def test_override_memory_autorift_landsat():
     }
 
 
-def test_override_memory_rtc_gamma_10m():
+def test_set_container_overrides_rtc_gamma_10m():
     assert lambda_handler(
         {
             'job_type': 'RTC_GAMMA',
@@ -82,7 +82,7 @@ def test_override_memory_rtc_gamma_10m():
     }
 
 
-def test_override_memory_water_map_10m():
+def test_set_container_overrides_water_map_10m():
     assert lambda_handler(
         {
             'job_type': 'WATER_MAP',
