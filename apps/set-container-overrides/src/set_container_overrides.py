@@ -23,7 +23,7 @@ def get_insar_isce_burst_memory(job_parameters: dict) -> str:
     bursts = len(job_parameters['reference'])
     looks = job_parameters['looks']
     if looks == '5x1':
-        if bursts < 3:
+        if bursts < 2:
             return '7500'
         if bursts < 5:
             return '15500'
