@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - The `INSAR_ISCE.yml` job spec now reserved 16 GB memory for running the DockerizedTopsApp task.
-- The `ARIA-AUTORIFT.yml` job spec now specifies the optimum number of OpenMP threads.
+- The `ARIA_AUTORIFT.yml` job spec now specifies the optimum number of OpenMP threads.
 - The `hyp3-a19-jpl-test` deployment now uses spot `r6id[n]` instances in the default compute environment.
 
 ## [7.8.1]
