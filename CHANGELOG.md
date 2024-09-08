@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The `INSAR_ISCE.yml` job spec now reserved 16 GB memory for running the DockerizedTopsApp task.
 - The `hyp3-a19-jpl-test` deployment now uses on-demand `m6id[n]` instances.
 
-
 ## [7.8.1]
 
 ### Fixed
