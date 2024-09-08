@@ -49,7 +49,7 @@ AUTORIFT:
       image: ghcr.io/asfhyp3/hyp3-autorift
       command:
         - ++omp-num-threads
-        - '4'
+        - '4'  # 4 vCPUs per 32 GB RAM for the R instance family
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
