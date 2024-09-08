@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.9.0]
+
+### Changed
+- The `INSAR_ISCE.yml` job spec now reserved 16 GB memory for running the DockerizedTopsApp task.
+- The `hyp3-a19-jpl-test` deployment now uses on-demand `m6id[n]` instances.
+
+
 ## [7.8.1]
 
 ### Fixed
