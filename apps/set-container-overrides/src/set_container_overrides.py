@@ -26,21 +26,24 @@ def get_insar_isce_burst_memory(job_parameters: dict) -> str:
     if looks == '5x1':
         if bursts < 2:
             return '7500'
-        if bursts < 5:
+        if bursts < 4:
             return '15500'
-        if bursts < 13:
+        if bursts < 11:
             return '31500'
         if bursts < 26:
             return '63500'
     if looks == '10x2':
         if bursts < 10:
             return '7500'
-        if bursts < 23:
+        if bursts < 21:
             return '15500'
         if bursts < 31:
             return '31500'
     if looks == '20x4':
-        return '7500'
+        if bursts < 23:
+            return '7500'
+        if bursts < 31:
+            return '15500'
     raise ValueError(f'No memory value for {bursts} bursts and {looks} looks')
 
 
