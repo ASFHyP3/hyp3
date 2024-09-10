@@ -30,7 +30,7 @@ def get_insar_isce_burst_memory(job_parameters: dict) -> str:
             return '15500'
         if bursts < 11:
             return '31500'
-        if bursts < 26:
+        if bursts < 25:
             return '63500'
     if looks == '10x2':
         if bursts < 10:
