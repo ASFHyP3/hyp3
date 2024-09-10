@@ -1,2 +1,2 @@
-boto3==1.35.10
+boto3==1.35.15
 ./lib/lambda_logging/
