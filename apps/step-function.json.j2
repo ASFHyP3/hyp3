@@ -36,11 +36,11 @@
       "Type": "Pass",
       "InputPath": "$.job_id",
       "ResultPath": "$.job_parameters.bucket_prefix",
-      "Next": "SET_CONTAINER_OVERRIDES"
+      "Next": "SET_BATCH_OVERRIDES"
     },
-    "SET_CONTAINER_OVERRIDES": {
+    "SET_BATCH_OVERRIDES": {
       "Type": "Task",
-      "Resource": "${SetContainerOverridesLambdaArn}",
+      "Resource": "${SetBatchOverridesLambdaArn}",
       "Parameters": {
         "job_type.$": "$.job_type",
         "job_parameters.$": "$.job_parameters"

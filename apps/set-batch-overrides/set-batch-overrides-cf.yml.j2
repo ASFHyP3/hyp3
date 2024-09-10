@@ -63,7 +63,7 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Code: src/
-      Handler: set_container_overrides.lambda_handler
+      Handler: set_batch_overrides.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.9

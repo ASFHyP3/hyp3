@@ -1,4 +1,4 @@
-from set_container_overrides import (
+from set_batch_overrides import (
     AUTORIFT_LANDSAT_MEMORY,
     AUTORIFT_S2_MEMORY,
     RTC_GAMMA_10M_MEMORY,
@@ -7,7 +7,7 @@ from set_container_overrides import (
 )
 
 
-def test_set_container_overrides_default():
+def test_set_batch_overrides_default():
     assert lambda_handler(
         {
             'job_type': 'foo',
@@ -17,11 +17,11 @@ def test_set_container_overrides_default():
     ) == {}
 
 
-def test_set_container_overrides_insar_isce_burst():
+def test_set_batch_overrides_insar_isce_burst():
     raise NotImplementedError()
 
 
-def test_set_container_overrides_autorift_s2():
+def test_set_batch_overrides_autorift_s2():
     assert lambda_handler(
         {
             'job_type': 'AUTORIFT',
@@ -38,7 +38,7 @@ def test_set_container_overrides_autorift_s2():
     }
 
 
-def test_set_container_overrides_autorift_landsat():
+def test_set_batch_overrides_autorift_landsat():
     assert lambda_handler(
         {
             'job_type': 'AUTORIFT',
@@ -55,7 +55,7 @@ def test_set_container_overrides_autorift_landsat():
     }
 
 
-def test_set_container_overrides_rtc_gamma_10m():
+def test_set_batch_overrides_rtc_gamma_10m():
     assert lambda_handler(
         {
             'job_type': 'RTC_GAMMA',
@@ -86,7 +86,7 @@ def test_set_container_overrides_rtc_gamma_10m():
     }
 
 
-def test_set_container_overrides_water_map_10m():
+def test_set_batch_overrides_water_map_10m():
     assert lambda_handler(
         {
             'job_type': 'WATER_MAP',
