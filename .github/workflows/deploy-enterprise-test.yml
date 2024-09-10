@@ -69,7 +69,7 @@ jobs:
             job_files: >-
               job_spec/AUTORIFT_ITS_LIVE.yml
               job_spec/S1_CORRECTION_ITS_LIVE.yml
-            instance_types: r6id.xlarge,r6idn.xlarge,r5dn.xlarge,r5d.xlarge
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0

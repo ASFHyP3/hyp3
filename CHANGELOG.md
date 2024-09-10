@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [7.9.0]
 
 ### Changed
-- The `INSAR_ISCE.yml` job spec now reserved 16 GB memory for running the DockerizedTopsApp task.
 - The `ARIA_AUTORIFT.yml` job spec now specifies the optimum number of OpenMP threads and uses a dedicated compute environment with `r6id[n]` spot instances.
-- The `hyp3-a19-jpl-test`, `hyp3-a19-jpl`, `hyp3-tibet-jpl`, and `hyp3-nisar-jpl` deployments now uses on-demand `m6id[n]` instances.
+- The `AUTORIFT_ITS_LIVE.yml` job spec now specifies the optimum number of OpenMP threads.
+- The `INSAR_ISCE.yml` job spec now reserved 16 GB memory for running the DockerizedTopsApp task.
+- The `hyp3-a19-jpl-test`, `hyp3-a19-jpl`, `hyp3-tibet-jpl`, and `hyp3-nisar-jpl` ARIA deployments now uses on-demand `m6id[n]` instances.
+- The `hyp3-its-live-test` deployment now uses a greater variety of `r6id[n]` instances.
 
 ## [7.8.1]
 
