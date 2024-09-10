@@ -81,7 +81,7 @@ INSAR_ISCE_BURST:
         - Ref::reference
         - --secondary
         - Ref::secondary
-      timeout: 43200 # 12 hr
+      timeout: 126000 # 35 hours
       vcpu: 1
       memory: 7600
       secrets:

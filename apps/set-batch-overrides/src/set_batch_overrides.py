@@ -17,7 +17,6 @@ def get_resource_requirements(memory: str) -> dict:
 
 def get_insar_isce_burst_memory(job_parameters: dict) -> str:
     # TODO:
-    # - update max bursts in job spec and/or add validator to allow diff # of bursts depending on looks?
     # - refine based on more data
     # - refactor lookup structure and/or pull out constants?
     # - can we slightly reduce the 500M padding in order to bump up some of the intervals?
@@ -32,6 +31,8 @@ def get_insar_isce_burst_memory(job_parameters: dict) -> str:
             return '31500'
         if bursts < 25:
             return '63500'
+        if bursts < 31:
+            return '127500'
     if looks == '10x2':
         if bursts < 10:
             return '7500'
