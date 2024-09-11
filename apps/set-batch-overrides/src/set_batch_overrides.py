@@ -19,8 +19,8 @@ INSAR_ISCE_BURST_OMP_NUM_THREADS = {
 }
 
 
-def get_resource_requirements(memory: str, omp_num_threads: str = None) -> dict:
-    resource_requirements = {
+def get_container_overrides(memory: str, omp_num_threads: str = None) -> dict:
+    container_overrides = {
         'ResourceRequirements': [
             {
                 'Type': 'MEMORY',
@@ -29,8 +29,8 @@ def get_resource_requirements(memory: str, omp_num_threads: str = None) -> dict:
         ]
     }
     if omp_num_threads is not None:
-        resource_requirements['Environment'] = [{'Name': 'OMP_NUM_THREADS', 'Value': omp_num_threads}]
-    return resource_requirements
+        container_overrides['Environment'] = [{'Name': 'OMP_NUM_THREADS', 'Value': omp_num_threads}]
+    return container_overrides
 
 
 def get_insar_isce_burst_memory(job_parameters: dict) -> str:
@@ -68,18 +68,18 @@ def lambda_handler(event: dict, _) -> dict:
     if job_type == 'INSAR_ISCE_BURST':
         memory = get_insar_isce_burst_memory(job_parameters)
         omp_num_threads = INSAR_ISCE_BURST_OMP_NUM_THREADS[memory]
-        return get_resource_requirements(memory, omp_num_threads)
+        return get_container_overrides(memory, omp_num_threads)
 
     if job_type == 'AUTORIFT' and job_parameters['granules'].startswith('S2'):
-        return get_resource_requirements(AUTORIFT_S2_MEMORY)
+        return get_container_overrides(AUTORIFT_S2_MEMORY)
 
     if job_type == 'AUTORIFT' and job_parameters['granules'].startswith('L'):
-        return get_resource_requirements(AUTORIFT_LANDSAT_MEMORY)
+        return get_container_overrides(AUTORIFT_LANDSAT_MEMORY)
 
     if job_type == 'RTC_GAMMA' and job_parameters['resolution'] in ['10', '20']:
-        return get_resource_requirements(RTC_GAMMA_10M_MEMORY)
+        return get_container_overrides(RTC_GAMMA_10M_MEMORY)
 
     if job_type in ['WATER_MAP', 'WATER_MAP_EQ'] and job_parameters['resolution'] in ['10', '20']:
-        return get_resource_requirements(WATER_MAP_10M_MEMORY)
+        return get_container_overrides(WATER_MAP_10M_MEMORY)
 
     return {}
