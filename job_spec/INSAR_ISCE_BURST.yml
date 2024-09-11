@@ -67,8 +67,6 @@ INSAR_ISCE_BURST:
       command:
         - ++process
         - insar_tops_burst
-        - ++omp-num-threads
-        - '1'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix

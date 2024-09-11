@@ -41,7 +41,8 @@ def test_set_batch_overrides_insar_isce_burst_5x1():
                 'Type': 'MEMORY',
                 'Value': INSAR_ISCE_BURST_MEMORY_8G,
             }
-        ]
+        ],
+        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '1'}],
     }
     for n in range(2, 4):
         assert lambda_handler(mock_insar_isce_burst_job('5x1', bursts=n), None) == {
@@ -50,7 +51,8 @@ def test_set_batch_overrides_insar_isce_burst_5x1():
                     'Type': 'MEMORY',
                     'Value': INSAR_ISCE_BURST_MEMORY_16G,
                 }
-            ]
+            ],
+            'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '2'}],
         }
     for n in range(4, 11):
         assert lambda_handler(mock_insar_isce_burst_job('5x1', bursts=n), None) == {
@@ -59,7 +61,8 @@ def test_set_batch_overrides_insar_isce_burst_5x1():
                     'Type': 'MEMORY',
                     'Value': INSAR_ISCE_BURST_MEMORY_32G,
                 }
-            ]
+            ],
+            'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '4'}],
         }
     for n in range(11, 25):
         assert lambda_handler(mock_insar_isce_burst_job('5x1', bursts=n), None) == {
@@ -68,7 +71,8 @@ def test_set_batch_overrides_insar_isce_burst_5x1():
                     'Type': 'MEMORY',
                     'Value': INSAR_ISCE_BURST_MEMORY_64G,
                 }
-            ]
+            ],
+            'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '8'}],
         }
     for n in range(25, 31):
         assert lambda_handler(mock_insar_isce_burst_job('5x1', bursts=n), None) == {
@@ -77,7 +81,8 @@ def test_set_batch_overrides_insar_isce_burst_5x1():
                     'Type': 'MEMORY',
                     'Value': INSAR_ISCE_BURST_MEMORY_128G,
                 }
-            ]
+            ],
+            'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '16'}],
         }
 
 
@@ -89,7 +94,8 @@ def test_set_batch_overrides_insar_isce_burst_10x2():
                     'Type': 'MEMORY',
                     'Value': INSAR_ISCE_BURST_MEMORY_8G,
                 }
-            ]
+            ],
+            'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '1'}],
         }
     for n in range(10, 21):
         assert lambda_handler(mock_insar_isce_burst_job('10x2', bursts=n), None) == {
@@ -98,7 +104,8 @@ def test_set_batch_overrides_insar_isce_burst_10x2():
                     'Type': 'MEMORY',
                     'Value': INSAR_ISCE_BURST_MEMORY_16G,
                 }
-            ]
+            ],
+            'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '2'}],
         }
     for n in range(21, 31):
         assert lambda_handler(mock_insar_isce_burst_job('10x2', bursts=n), None) == {
@@ -107,7 +114,8 @@ def test_set_batch_overrides_insar_isce_burst_10x2():
                     'Type': 'MEMORY',
                     'Value': INSAR_ISCE_BURST_MEMORY_32G,
                 }
-            ]
+            ],
+            'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '4'}],
         }
 
 
@@ -119,7 +127,8 @@ def test_set_batch_overrides_insar_isce_burst_20x4():
                     'Type': 'MEMORY',
                     'Value': INSAR_ISCE_BURST_MEMORY_8G,
                 }
-            ]
+            ],
+            'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '1'}],
         }
     for n in range(23, 31):
         assert lambda_handler(mock_insar_isce_burst_job('20x4', bursts=n), None) == {
@@ -128,7 +137,8 @@ def test_set_batch_overrides_insar_isce_burst_20x4():
                     'Type': 'MEMORY',
                     'Value': INSAR_ISCE_BURST_MEMORY_16G,
                 }
-            ]
+            ],
+            'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '2'}],
         }
 
 

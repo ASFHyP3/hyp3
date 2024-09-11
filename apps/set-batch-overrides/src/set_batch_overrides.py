@@ -9,9 +9,17 @@ INSAR_ISCE_BURST_MEMORY_32G = '31500'
 INSAR_ISCE_BURST_MEMORY_64G = '63500'
 INSAR_ISCE_BURST_MEMORY_128G = '127500'
 
+INSAR_ISCE_BURST_OMP_NUM_THREADS = {
+    INSAR_ISCE_BURST_MEMORY_8G: '1',
+    INSAR_ISCE_BURST_MEMORY_16G: '2',
+    INSAR_ISCE_BURST_MEMORY_32G: '4',
+    INSAR_ISCE_BURST_MEMORY_64G: '8',
+    INSAR_ISCE_BURST_MEMORY_128G: '16',
+}
 
-def get_resource_requirements(memory: str) -> dict:
-    return {
+
+def get_resource_requirements(memory: str, omp_num_threads: str = None) -> dict:
+    resource_requirements = {
         'ResourceRequirements': [
             {
                 'Type': 'MEMORY',
@@ -19,6 +27,9 @@ def get_resource_requirements(memory: str) -> dict:
             }
         ]
     }
+    if omp_num_threads is not None:
+        resource_requirements['Environment'] = [{'Name': 'OMP_NUM_THREADS', 'Value': omp_num_threads}]
+    return resource_requirements
 
 
 def get_insar_isce_burst_memory(job_parameters: dict) -> str:
@@ -54,7 +65,9 @@ def lambda_handler(event: dict, _) -> dict:
     job_type, job_parameters = event['job_type'], event['job_parameters']
 
     if job_type == 'INSAR_ISCE_BURST':
-        return get_resource_requirements(get_insar_isce_burst_memory(job_parameters))
+        memory = get_insar_isce_burst_memory(job_parameters)
+        omp_num_threads = INSAR_ISCE_BURST_OMP_NUM_THREADS[memory]
+        return get_resource_requirements(memory, omp_num_threads)
 
     if job_type == 'AUTORIFT' and job_parameters['granules'].startswith('S2'):
         return get_resource_requirements(AUTORIFT_S2_MEMORY)
