@@ -1,10 +1,27 @@
+import pytest
+
 from set_batch_overrides import (
     AUTORIFT_LANDSAT_MEMORY,
     AUTORIFT_S2_MEMORY,
     RTC_GAMMA_10M_MEMORY,
     WATER_MAP_10M_MEMORY,
+    INSAR_ISCE_BURST_MEMORY_8G,
+    INSAR_ISCE_BURST_MEMORY_16G,
+    INSAR_ISCE_BURST_MEMORY_32G,
+    INSAR_ISCE_BURST_MEMORY_64G,
+    INSAR_ISCE_BURST_MEMORY_128G,
     lambda_handler,
 )
+
+
+def mock_insar_isce_burst_job(looks: str, bursts: int) -> dict:
+    return {
+        'job_type': 'INSAR_ISCE_BURST',
+        'job_parameters': {
+            'looks': looks,
+            'reference': ' '.join('foo' for _ in range(bursts)),
+        }
+    }
 
 
 def test_set_batch_overrides_default():
@@ -17,8 +34,110 @@ def test_set_batch_overrides_default():
     ) == {}
 
 
-def test_set_batch_overrides_insar_isce_burst():
-    raise NotImplementedError()
+def test_set_batch_overrides_insar_isce_burst_5x1():
+    assert lambda_handler(mock_insar_isce_burst_job('5x1', bursts=1), None) == {
+        'ResourceRequirements': [
+            {
+                'Type': 'MEMORY',
+                'Value': INSAR_ISCE_BURST_MEMORY_8G,
+            }
+        ]
+    }
+    for n in range(2, 4):
+        assert lambda_handler(mock_insar_isce_burst_job('5x1', bursts=n), None) == {
+            'ResourceRequirements': [
+                {
+                    'Type': 'MEMORY',
+                    'Value': INSAR_ISCE_BURST_MEMORY_16G,
+                }
+            ]
+        }
+    for n in range(4, 11):
+        assert lambda_handler(mock_insar_isce_burst_job('5x1', bursts=n), None) == {
+            'ResourceRequirements': [
+                {
+                    'Type': 'MEMORY',
+                    'Value': INSAR_ISCE_BURST_MEMORY_32G,
+                }
+            ]
+        }
+    for n in range(11, 25):
+        assert lambda_handler(mock_insar_isce_burst_job('5x1', bursts=n), None) == {
+            'ResourceRequirements': [
+                {
+                    'Type': 'MEMORY',
+                    'Value': INSAR_ISCE_BURST_MEMORY_64G,
+                }
+            ]
+        }
+    for n in range(25, 31):
+        assert lambda_handler(mock_insar_isce_burst_job('5x1', bursts=n), None) == {
+            'ResourceRequirements': [
+                {
+                    'Type': 'MEMORY',
+                    'Value': INSAR_ISCE_BURST_MEMORY_128G,
+                }
+            ]
+        }
+
+
+def test_set_batch_overrides_insar_isce_burst_10x2():
+    for n in range(1, 10):
+        assert lambda_handler(mock_insar_isce_burst_job('10x2', bursts=n), None) == {
+            'ResourceRequirements': [
+                {
+                    'Type': 'MEMORY',
+                    'Value': INSAR_ISCE_BURST_MEMORY_8G,
+                }
+            ]
+        }
+    for n in range(10, 21):
+        assert lambda_handler(mock_insar_isce_burst_job('10x2', bursts=n), None) == {
+            'ResourceRequirements': [
+                {
+                    'Type': 'MEMORY',
+                    'Value': INSAR_ISCE_BURST_MEMORY_16G,
+                }
+            ]
+        }
+    for n in range(21, 31):
+        assert lambda_handler(mock_insar_isce_burst_job('10x2', bursts=n), None) == {
+            'ResourceRequirements': [
+                {
+                    'Type': 'MEMORY',
+                    'Value': INSAR_ISCE_BURST_MEMORY_32G,
+                }
+            ]
+        }
+
+
+def test_set_batch_overrides_insar_isce_burst_20x4():
+    for n in range(1, 23):
+        assert lambda_handler(mock_insar_isce_burst_job('20x4', bursts=n), None) == {
+            'ResourceRequirements': [
+                {
+                    'Type': 'MEMORY',
+                    'Value': INSAR_ISCE_BURST_MEMORY_8G,
+                }
+            ]
+        }
+    for n in range(23, 31):
+        assert lambda_handler(mock_insar_isce_burst_job('20x4', bursts=n), None) == {
+            'ResourceRequirements': [
+                {
+                    'Type': 'MEMORY',
+                    'Value': INSAR_ISCE_BURST_MEMORY_16G,
+                }
+            ]
+        }
+
+
+def test_set_batch_overrides_insar_isce_burst_value_error():
+    with pytest.raises(ValueError, match=r'^No memory value for.*'):
+        lambda_handler(mock_insar_isce_burst_job('20x4', bursts=31), None)
+
+    with pytest.raises(ValueError, match=r'^No memory value for.*'):
+        lambda_handler(mock_insar_isce_burst_job('foo', bursts=1), None)
 
 
 def test_set_batch_overrides_autorift_s2():

@@ -2,6 +2,7 @@ AUTORIFT_S2_MEMORY = '7875'
 AUTORIFT_LANDSAT_MEMORY = '15750'
 RTC_GAMMA_10M_MEMORY = '63200'
 WATER_MAP_10M_MEMORY = '126000'
+
 INSAR_ISCE_BURST_MEMORY_8G = '7500'
 INSAR_ISCE_BURST_MEMORY_16G = '15500'
 INSAR_ISCE_BURST_MEMORY_32G = '31500'
@@ -21,8 +22,8 @@ def get_resource_requirements(memory: str) -> dict:
 
 
 def get_insar_isce_burst_memory(job_parameters: dict) -> str:
-    bursts = len(job_parameters['reference'].split(' '))
     looks = job_parameters['looks']
+    bursts = len(job_parameters['reference'].split(' '))
     if looks == '5x1':
         if bursts < 2:
             return INSAR_ISCE_BURST_MEMORY_8G
