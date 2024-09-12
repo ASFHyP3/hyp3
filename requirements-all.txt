@@ -5,9 +5,9 @@
 -r requirements-apps-start-execution-worker.txt
 -r requirements-apps-disable-private-dns.txt
 -r requirements-apps-update-db.txt
-boto3==1.35.10
+boto3==1.35.15
 jinja2==3.1.4
-moto[dynamodb]==5.0.12
+moto[dynamodb]==5.0.14
 pytest==8.3.2
 PyYAML==6.0.2
 responses==0.25.3
@@ -15,6 +15,6 @@ flake8==7.1.1
 flake8-import-order==0.18.2
 flake8-blind-except==0.2.1
 flake8-builtins==2.5.0
-setuptools==74.1.0
+setuptools==74.1.2
 openapi-spec-validator==0.7.1
-cfn-lint==1.11.1
+cfn-lint==1.12.4
