@@ -21,7 +21,7 @@ SRG_GSLC:
     bucket_prefix:
       default:  '""'
     bounds:
-      default: '"0.0 0.0 0.0 0.0"'
+      default: '""'
       api_schema:
         type: array
         minItems: 4
