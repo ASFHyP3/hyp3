@@ -53,6 +53,7 @@ SRG_GSLC:
         - ++process
         - back_projection
         - --bounds
+        - Ref::bounds
         - --gpu
         - --bucket
         - '!Ref Bucket'
