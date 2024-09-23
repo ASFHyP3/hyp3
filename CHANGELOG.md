@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - The `SRG_GSLC` job now takes in a `--bounds` argument that determines the extent of the DEM used in back projection.
 
-
 ## [7.9.0]
 
 ### Changed
