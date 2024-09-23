@@ -20,6 +20,22 @@ SRG_GSLC:
           example: S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38
     bucket_prefix:
       default:  '""'
+    bounds:
+      default: [0.0, 0.0, 0.0, 0.0]
+      api_schema:
+        type: array
+        minItems: 4
+        maxItems: 4
+        example:
+          - -116.583
+          - 35.714
+          - -113.209
+          - 38.138
+        items:
+          description: min lon, min lat, max lon, max lat in EPSG:4326
+          type: float
+          pattern: "^[+-]?([0-9]*[.])?[0-9]+"
+          example: -116.583
   validators: []
   cost_profiles:
     DEFAULT:
@@ -32,10 +48,11 @@ SRG_GSLC:
   tasks:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-srg
-      image_tag: 0.7.0.gpu
+      image_tag: latest.gpu
       command:
         - ++process
         - back_projection
+        - --bounds
         - --gpu
         - --bucket
         - '!Ref Bucket'
