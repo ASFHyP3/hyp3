@@ -23,7 +23,7 @@ SRG_GSLC:
     bounds:
       api_schema:
         type: array
-        default: '"0.0 0.0 0.0 0.0"'
+        default: [0.0, 0.0, 0.0, 0.0]
         minItems: 4
         maxItems: 4
         example:
