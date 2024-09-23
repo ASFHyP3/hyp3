@@ -33,8 +33,7 @@ SRG_GSLC:
           - 38.138
         items:
           description: min lon, min lat, max lon, max lat in EPSG:4326
-          type: float
-          pattern: "^[+-]?([0-9]*[.])?[0-9]+"
+          type: number
           example: -116.583
   validators: []
   cost_profiles:
