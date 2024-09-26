@@ -81,6 +81,18 @@ Resources:
                 Action: s3:PutObject
                 Resource: !Sub "arn:aws:s3:::${TemplateBucketName}/*"
 
+              - Effect: Allow
+                Action:
+                  - cloudformation:SetStackPolicy
+                  - cloudformation:CreateStack
+                  - cloudformation:UpdateStack
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:GetTemplateSummary
+                Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+
   ApiGatewayLoggingRole:
     Type: AWS::IAM::Role
     Properties:
