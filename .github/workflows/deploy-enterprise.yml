@@ -212,25 +212,6 @@ jobs:
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
-          - environment: hyp3-pdc
-            domain: hyp3-pdc.asf.alaska.edu
-            template_bucket: cf-templates-tlsr0tnnqt5t-us-west-2
-            image_tag: latest
-            # TODO product lifetime could be much shorter since they all get transferred to a separate
-            # S3 bucket, but maybe we want to allow for a backlog of products-to-be-transferred?
-            product_lifetime_in_days: 14
-            default_credits_per_user: 0
-            default_application_status: APPROVED
-            cost_profile: DEFAULT
-            job_files: job_spec/WATER_MAP.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
-            required_surplus: 0
-            security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
-
           - environment: hyp3-lavas
             domain: hyp3-lavas.asf.alaska.edu
             template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
