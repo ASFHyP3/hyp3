@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.9.3]
+### Fixed
+- Added missing cloudformation:DeleteStack permission to cloudformation deployment role in ASF-deployment-ci-cf.yml .
+
+## [7.9.2]
+
+### Removed
+- Deleted the `hyp3-pdc` deployment in preparation for archiving the [hyp3-flood-monitoring](https://github.com/ASFHyP3/hyp3-flood-monitoring) project.
+
+### Fixed
+- Copied cloudformation permissions from user to cloudformation deployment role in ASF-deployment-ci-cf.yml to address
+  breaking AWS IAM change when deploying nested stacks via a cloudformation role.
+
+## [7.9.1]
+
+### Changed
+- The `SRG_GSLC` job now takes in a `--bounds` argument that determines the extent of the DEM used in back projection.
+
 ## [7.9.0]
 
 ### Changed
