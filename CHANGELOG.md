@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Job validator functions now accept two parameters: the job dictionary and the granule metadata.
-  - New job parameters `reference` and `secondary` are now supported in addition to the existing `granules` parameter.
+  - Validation now supports `reference` and `secondary` job parameters in addition to the existing `granules` parameter.
 - Burst InSAR validators now support multi-burst jobs.
 - Replaced the step function's `INSPECT_MEMORY_REQUIREMENTS` step with a new `SET_BATCH_OVERRIDES` step, which calls a Lambda function to dynamically calculate [Batch container overrides](https://docs.aws.amazon.com/batch/latest/APIReference/API_ContainerOverrides.html) based on job type and parameters.
 
