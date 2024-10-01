@@ -47,15 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Revert ARIA hyp3 deployments back to C-instance family - including the job-spec CLI parameter `omp-num-threads` to ensure multiple jobs fit on single instance.
 - Deployments with INSAR_ISCE.yml job specs will now use a dedicated compute environment with on-demand instances instead of spot instances for INSAR_ISCE jobs.
 
-## [8.0.0]
-
-### Changed
-- `INSAR_ISCE_BURST` now accepts `reference` and `secondary` parameters, each of which is a list containing a single granule name. In a future release, `INSAR_ISCE_BURST` will support processing multiple adjacent bursts into one interferogram, and each parameter will be a list of one or more granule names.
-- All previous `INSAR_ISCE_BURST` jobs have been reformatted to replace the `granules` parameter with the `reference` and `secondary` parameters.
-
-### Removed
-- `INSAR_ISCE_BURST` no longer accepts a `granules` parameter.
-
 
 ## [7.7.2]
 
