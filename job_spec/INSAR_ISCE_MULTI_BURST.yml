@@ -9,6 +9,7 @@ INSAR_ISCE_MULTI_BURST:
         type: array
         minItems: 1
         maxItems: 30
+        # TODO: provide an example with multiple bursts
         example:
           - S1_136231_IW2_20200604T022312_VV_7C85-BURST
         items:
