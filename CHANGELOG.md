@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.10.0]
+
+### Added
+- Added a new `INSAR_ISCE_MULTI_BURST` job type for running multi-burst InSAR. Currently, this job type is restricted to a special `hyp3-multi-burst-sandbox` deployment for HyP3 operators. However, this is an important step toward eventually making multi-burst InSAR available for general users.
+
+### Changed
+- Job validator functions now accept two parameters: the job dictionary and the granule metadata.
+- Granule metadata validation now supports `reference` and `secondary` job parameters in addition to the existing `granules` parameter.
+- Burst InSAR validators now support multi-burst jobs.
+- Replaced the step function's `INSPECT_MEMORY_REQUIREMENTS` step with a new `SET_BATCH_OVERRIDES` step, which calls a Lambda function to dynamically calculate [Batch container overrides](https://docs.aws.amazon.com/batch/latest/APIReference/API_ContainerOverrides.html) based on job type and parameters.
+
 ## [7.9.3]
 ### Fixed
 - Added missing cloudformation:DeleteStack permission to cloudformation deployment role in ASF-deployment-ci-cf.yml .
