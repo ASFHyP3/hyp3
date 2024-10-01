@@ -142,9 +142,8 @@ def convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
     for job in jobs:
         if job['job_type'] == 'INSAR_ISCE_BURST':
             job_parameters = job['job_parameters']
-            job_parameters['reference'], job_parameters['secondary'] = (
-                [granule] for granule in job_parameters.pop('granules')
-            )
+            ref, sec = job_parameters.pop('granules')
+            job_parameters['reference'], job_parameters['secondary'] = [ref], [sec]
     return jobs
 
 
