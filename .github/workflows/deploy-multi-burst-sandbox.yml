@@ -25,6 +25,7 @@ jobs:
             deploy_ref: refs/heads/multi-burst-sandbox
             job_files: >-
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
               job_spec/AUTORIFT.yml
               job_spec/RTC_GAMMA.yml
               job_spec/WATER_MAP.yml

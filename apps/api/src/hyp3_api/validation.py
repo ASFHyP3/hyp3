@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+from copy import deepcopy
 from pathlib import Path
 
 import requests
@@ -135,7 +136,20 @@ def get_multipolygon_from_geojson(input_file):
     return MultiPolygon(polygons)
 
 
-def validate_jobs(jobs):
+def convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
+    jobs = deepcopy(jobs)
+    for job in jobs:
+        if job['job_type'] == 'INSAR_ISCE_BURST':
+            job_parameters = job['job_parameters']
+            job_parameters['reference'], job_parameters['secondary'] = (
+                [granule] for granule in job_parameters.pop('granules')
+            )
+    return jobs
+
+
+def validate_jobs(jobs: list[dict]) -> None:
+    jobs = convert_single_burst_jobs(jobs)
+
     granules = get_granules(jobs)
     granule_metadata = get_cmr_metadata(granules)
 

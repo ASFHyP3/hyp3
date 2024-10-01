@@ -16,7 +16,8 @@ from set_batch_overrides import (
 
 def mock_insar_isce_burst_job(looks: str, bursts: int) -> dict:
     return {
-        'job_type': 'INSAR_ISCE_BURST',
+        # TODO rename to INSAR_ISCE_BURST after the two burst types are merged
+        'job_type': 'INSAR_ISCE_MULTI_BURST',
         'job_parameters': {
             'looks': looks,
             'reference': ' '.join('foo' for _ in range(bursts)),

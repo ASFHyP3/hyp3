@@ -424,10 +424,18 @@ def test_validate_jobs():
             'job_parameters': {}
         },
         {
-            'job_type': 'INSAR_ISCE_BURST',
+            # TODO rename to INSAR_ISCE_BURST after the two burst types are merged
+            'job_type': 'INSAR_ISCE_MULTI_BURST',
             'job_parameters': {
                 'reference': [valid_burst_pair[0]],
                 'secondary': [valid_burst_pair[1]]
+            }
+        },
+        {
+            # TODO remove this test case after the two burst types are merged
+            'job_type': 'INSAR_ISCE_BURST',
+            'job_parameters': {
+                'granules': [valid_burst_pair[0], valid_burst_pair[1]]
             }
         }
     ]
@@ -457,10 +465,23 @@ def test_validate_jobs():
 
     jobs = [
         {
-            'job_type': 'INSAR_ISCE_BURST',
+            # TODO rename to INSAR_ISCE_BURST after the two burst types are merged
+            'job_type': 'INSAR_ISCE_MULTI_BURST',
             'job_parameters': {
                 'reference': [invalid_burst_pair[0]],
                 'secondary': [invalid_burst_pair[1]]
+            }
+        }
+    ]
+    with raises(validation.GranuleValidationError):
+        validation.validate_jobs(jobs)
+
+    # TODO remove this test case after the two burst types are merged
+    jobs = [
+        {
+            'job_type': 'INSAR_ISCE_BURST',
+            'job_parameters': {
+                'granules': [invalid_burst_pair[0], invalid_burst_pair[1]]
             }
         }
     ]
