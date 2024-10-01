@@ -103,6 +103,7 @@ Resources:
         {% endfor %}
         {% endfor %}
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
+        SetBatchOverridesLambdaArn: !GetAtt SetBatchOverrides.Outputs.LambdaArn
         GetFilesLambdaArn: !GetAtt GetFiles.Outputs.LambdaArn
         CheckProcessingTimeLambdaArn: !GetAtt CheckProcessingTime.Outputs.LambdaArn
         UploadLogLambdaArn: !GetAtt UploadLog.Outputs.LambdaArn
@@ -162,6 +163,7 @@ Resources:
             Action: lambda:InvokeFunction
             Resource:
              - !GetAtt UpdateDB.Outputs.LambdaArn
+             - !GetAtt SetBatchOverrides.Outputs.LambdaArn
              - !GetAtt GetFiles.Outputs.LambdaArn
              - !GetAtt CheckProcessingTime.Outputs.LambdaArn
              - !GetAtt UploadLog.Outputs.LambdaArn
@@ -176,6 +178,16 @@ Resources:
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
       TemplateURL: update-db/update-db-cf.yml
+
+  SetBatchOverrides:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      {% if security_environment == 'EDC' %}
+      Parameters:
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+      {% endif %}
+      TemplateURL: set-batch-overrides/set-batch-overrides-cf.yml
 
   GetFiles:
     Type: AWS::CloudFormation::Stack
