@@ -1,10 +1,9 @@
-name: Deploy DAAC Stacks to AWS
+name: Deploy Multi-Burst Sandbox Stack to AWS
 
 on:
   push:
     branches:
-      - main
-      - develop
+      - multi-burst-sandbox
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -15,51 +14,29 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-edc-prod
-            domain: ''
-            api_name: hyp3
-            template_bucket: cf-templates-118mtzosmrltk-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 14
-            default_credits_per_user: 10000
-            default_application_status: APPROVED
-            cost_profile: EDC
-            deploy_ref: refs/heads/main
-            job_files: >-
-              job_spec/AUTORIFT.yml
-              job_spec/INSAR_GAMMA.yml
-              job_spec/RTC_GAMMA.yml
-              job_spec/INSAR_ISCE_BURST.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 1500
-            expanded_max_vcpus: 3000
-            required_surplus: 2000
-            security_environment: EDC
-            ami_id: image_id_ecs_amz2
-            distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
-
-          - environment: hyp3-edc-uat
-            domain: ''
-            api_name: hyp3-test
-            template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
+          - environment: hyp3-multi-burst-sandbox
+            domain: hyp3-multi-burst-sandbox.asf.alaska.edu
+            template_bucket: cf-templates-1hz9ldhhl4ahu-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
-            default_credits_per_user: 10000
+            default_credits_per_user: 0
             default_application_status: APPROVED
-            cost_profile: EDC
-            deploy_ref: refs/heads/develop
+            cost_profile: DEFAULT
+            deploy_ref: refs/heads/multi-burst-sandbox
             job_files: >-
-              job_spec/AUTORIFT.yml
-              job_spec/INSAR_GAMMA.yml
-              job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
+              job_spec/AUTORIFT.yml
+              job_spec/RTC_GAMMA.yml
+              job_spec/WATER_MAP.yml
+              job_spec/WATER_MAP_EQ.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 1500
-            expanded_max_vcpus: 3000
-            required_surplus: 2000
-            security_environment: EDC
-            ami_id: image_id_ecs_amz2
-            distribution_url: 'https://d1riv60tezqha9.cloudfront.net'
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+            distribution_url: ''
 
     environment:
       name: ${{ matrix.environment }}
@@ -80,12 +57,11 @@ jobs:
           python-version: 3.9
 
       - uses: ./.github/actions/deploy-hyp3
-        if: github.ref == matrix.deploy_ref
         with:
           TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
           STACK_NAME: ${{ matrix.environment }}
           DOMAIN_NAME: ${{ matrix.domain }}
-          API_NAME: ${{ matrix.api_name }}
+          API_NAME: ${{ matrix.environment }}
           CERTIFICATE_ARN:  ${{ secrets.CERTIFICATE_ARN }}
           IMAGE_TAG: ${{ matrix.image_tag }}
           PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
@@ -107,10 +83,3 @@ jobs:
           INSTANCE_TYPES: ${{ matrix.instance_types }}
           DISTRIBUTION_URL: ${{ matrix.distribution_url }}
           AUTH_PUBLIC_KEY: ${{ secrets.AUTH_PUBLIC_KEY }}
-
-  call-bump-version-workflow:
-    if: github.ref == 'refs/heads/main'
-    needs: deploy
-    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.11.2
-    secrets:
-      USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
