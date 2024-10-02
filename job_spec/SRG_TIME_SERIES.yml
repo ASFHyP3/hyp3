@@ -48,32 +48,29 @@ SRG_TIME_SERIES:
     # Image ID for: /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
     ami_id: ami-0729c079aae647cb3
   steps:
-    - name: CREATE_GSLC_PRODUCTS
+    - name: BACK_PROJECTION
       type: Map
       items: granules
-      steps:
-        - name: BACK_PROJECTION
-          type: Task
-          image: ghcr.io/asfhyp3/hyp3-srg
-          image_tag: latest.gpu
-          command:
-            - ++process
-            - back_projection
-            - --bounds
-            - Ref::bounds
-            - --gpu
-            - --bucket
-            - '!Ref Bucket'
-            - --bucket-prefix
-            - Ref::bucket_prefix
-            - Ref::granules # TODO determine syntax for passing an individual granule
-          timeout: 10800
-          vcpu: 1
-          gpu: 1
-          memory: 30500
-          secrets:
-            - EARTHDATA_USERNAME
-            - EARTHDATA_PASSWORD
+      image: ghcr.io/asfhyp3/hyp3-srg
+      image_tag: latest.gpu
+      command:
+        - ++process
+        - back_projection
+        - --bounds
+        - Ref::bounds
+        - --gpu
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - Ref::granules # TODO figure out syntax for passing an individual granule
+      timeout: 10800
+      vcpu: 1
+      gpu: 1
+      memory: 30500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
     - name: TIME_SERIES
       type: Task
       image: ghcr.io/asfhyp3/hyp3-srg
