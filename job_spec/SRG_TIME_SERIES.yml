@@ -1,0 +1,84 @@
+SRG_TIME_SERIES:
+  required_parameters:
+    - granules
+  parameters:
+    granules:
+      default:  '""'
+      api_schema:
+        type: array
+        minItems: 1
+        # TODO determine appropriate max
+        maxItems: 6
+        example:
+          - S1A_IW_RAW__0SDV_20231229T134339_20231229T134411_051870_064437_4F42
+          - S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38
+        items:
+          description: Name of the Level-0 Sentinel-1 scenes to process
+          type: string
+          pattern: "^S1[AB]_IW_RAW"
+          minLength: 67
+          maxLength: 67
+          example: S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38
+    bucket_prefix:
+      default:  '""'
+    bounds:
+      default:  '""'
+      api_schema:
+        type: array
+        default: [0.0, 0.0, 0.0, 0.0]
+        minItems: 4
+        maxItems: 4
+        example:
+          - -116.583
+          - 35.714
+          - -113.209
+          - 38.138
+        items:
+          description: min lon, min lat, max lon, max lat in EPSG:4326
+          type: number
+          example: -116.583
+  validators: []
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  compute_environment:
+    # TODO do we need to use different compute environments for back_projection and time_series?
+    name: SrgGslc # TODO rename?
+    instance_types: g6.2xlarge
+    # Image ID for: /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
+    ami_id: ami-0729c079aae647cb3
+  steps:
+    - name: CREATE_GSLC_PRODUCTS
+      type: Map
+      steps:
+        - name: BACK_PROJECTION
+          type: Task
+          image: ghcr.io/asfhyp3/hyp3-srg
+          image_tag: latest.gpu
+          command:
+            - ++process
+            - back_projection
+            - --bounds
+            - Ref::bounds
+            - --gpu
+            - --bucket
+            - '!Ref Bucket'
+            - --bucket-prefix
+            - Ref::bucket_prefix
+            - Ref::granules
+          timeout: 10800
+          vcpu: 1
+          gpu: 1
+          memory: 30500
+          secrets:
+            - EARTHDATA_USERNAME
+            - EARTHDATA_PASSWORD
+    - name: TIME_SERIES
+      type: Task
+      image: ghcr.io/asfhyp3/hyp3-srg
+      image_tag: latest.gpu # TODO use GPU for time series?
+      command:
+        - ++process
+        - time_series
+        # TODO remaining command arguments
+      # TODO remaining task fields
