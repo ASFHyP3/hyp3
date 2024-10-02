@@ -50,6 +50,7 @@ SRG_TIME_SERIES:
   steps:
     - name: CREATE_GSLC_PRODUCTS
       type: Map
+      items: granules
       steps:
         - name: BACK_PROJECTION
           type: Task
@@ -65,7 +66,7 @@ SRG_TIME_SERIES:
             - '!Ref Bucket'
             - --bucket-prefix
             - Ref::bucket_prefix
-            - Ref::granules
+            - Ref::granules # TODO determine syntax for passing an individual granule
           timeout: 10800
           vcpu: 1
           gpu: 1
