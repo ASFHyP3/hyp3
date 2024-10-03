@@ -16,8 +16,6 @@ from set_batch_overrides import (
 
 def mock_insar_isce_burst_job(looks: str, bursts: int) -> dict:
     return {
-        # TODO https://github.com/ASFHyP3/hyp3/issues/2442
-        #  rename to INSAR_ISCE_BURST after the two burst types are merged
         'job_type': 'INSAR_ISCE_MULTI_BURST',
         'job_parameters': {
             'looks': looks,
