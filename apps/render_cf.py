@@ -11,7 +11,84 @@ def snake_to_pascal_case(input_string: str):
     return ''.join([i.title() for i in split_string])
 
 
+def get_steps_for_jobs(job_types: dict) -> dict:
+    steps = {}
+    for job_spec in job_types.values():
+        steps.update(get_steps_for_job(job_spec))
+    return steps
+
+
+def get_steps_for_job(job_spec: dict) -> dict:
+    steps = {}
+    tasks = job_spec["tasks"]
+    for i in range(len(tasks)):
+        task = tasks[i]
+        next_step_name = tasks[i + 1]["name"] if i < len(tasks) - 1 else "GET_FILES"
+        steps[task["name"]] = get_step_for_task(task, i, next_step_name, job_spec)
+    return steps
+
+
+def get_step_for_task(task: dict, index: int, next_step_name: str, job_spec: dict) -> dict:
+    if "map" in task:
+        return get_step_for_map_task(task, index, next_step_name, job_spec)
+    return get_step_for_normal_task(task, index, next_step_name, job_spec)
+
+
+def get_step_for_normal_task(task: dict, index: int, next_step_name: str, job_spec: dict) -> dict:
+    compute_environment = job_spec["compute_environment"]["name"]
+    job_queue = "JobQueueArn" if compute_environment == "Default" else compute_environment + "JobQueueArn"
+    return {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::batch:submitJob.sync",
+        "Parameters": {
+            "JobDefinition": "${"+ snake_to_pascal_case(task["name"]) + "}",
+            "JobName.$": "$.job_id",
+            "JobQueue": "${" + job_queue + "}",
+            "ShareIdentifier": "default",
+            "SchedulingPriorityOverride.$": "$.priority",
+            "Parameters.$": "$.job_parameters",
+            "ContainerOverrides.$": "$.container_overrides",
+            "RetryStrategy": {
+                "Attempts": 3
+            },
+        },
+        "ResultPath": f"$.results.processing_results.step_{index}",
+        "Next": next_step_name,
+        "Retry": [
+            {
+                "ErrorEquals": [
+                    "Batch.ServerException",
+                    "Batch.AWSBatchException"
+                ],
+                "MaxAttempts": 2
+            },
+            {
+                "ErrorEquals": [
+                    "States.ALL"
+                ],
+                "MaxAttempts": 0
+            }
+        ],
+        "Catch": [
+            {
+                "ErrorEquals": [
+                    "States.ALL"
+                ],
+                "Next": "PROCESSING_FAILED",
+                "ResultPath": f"$.results.processing_results.step_{index}"
+            }
+        ],
+    }
+
+
+def get_step_for_map_task(task: dict, index: int, next_step_name: str, job_spec: dict) -> dict:
+    # TODO
+    pass
+
+
 def render_templates(job_types, security_environment, api_name):
+    job_steps = get_steps_for_jobs(job_types)
+
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader('./'),
         autoescape=jinja2.select_autoescape(default=True, disabled_extensions=('j2',)),
@@ -30,7 +107,11 @@ def render_templates(job_types, security_environment, api_name):
             api_name=api_name,
             json=json,
             snake_to_pascal_case=snake_to_pascal_case,
+            job_steps=job_steps,
         )
+
+        if str(template_file).endswith('.json.j2'):
+            output = json.dumps(json.loads(output), indent=2)
 
         template_file.with_suffix('').write_text(output)
 
