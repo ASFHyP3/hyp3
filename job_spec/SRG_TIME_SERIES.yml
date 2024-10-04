@@ -61,7 +61,7 @@ SRG_TIME_SERIES:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::bucket_prefix/granules
         - Ref::granule
       timeout: 10800
       vcpu: 1
