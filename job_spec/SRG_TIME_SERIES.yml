@@ -49,7 +49,7 @@ SRG_TIME_SERIES:
     ami_id: ami-0729c079aae647cb3
   tasks:
     - name: BACK_PROJECTION
-      for: granules
+      map: for granule in granules
       image: ghcr.io/asfhyp3/hyp3-srg
       image_tag: latest.gpu
       command:
@@ -62,7 +62,7 @@ SRG_TIME_SERIES:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
-        - Ref::granules # TODO figure out syntax for passing an individual granule
+        - Ref::granule
       timeout: 10800
       vcpu: 1
       gpu: 1
@@ -70,11 +70,14 @@ SRG_TIME_SERIES:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-    - name: TIME_SERIES
+    - name: ''
       image: ghcr.io/asfhyp3/hyp3-srg
       image_tag: latest.gpu # TODO use GPU for time series?
       command:
         - ++process
         - time_series
         # TODO remaining command arguments
-      # TODO remaining task fields
+      timeout: 0 # TODO
+      vcpu: 1
+      memory: 0 # TODO
+      # TODO secrets?
