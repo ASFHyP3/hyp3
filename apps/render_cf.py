@@ -56,6 +56,7 @@ def get_step_for_map_task(task: dict, job_spec: dict) -> dict:
     job_parameters = get_job_parameters(item, items, job_spec)
     submit_job_step = get_step_for_batch_submit_job(task, job_spec)
     submit_job_step['End'] = True
+    submit_job_step_name = task['name'] + '_SUBMIT_JOB'
     return {
         'Type': 'Map',
         'ItemsPath': f'$.job_parameters.{items}',
@@ -66,9 +67,9 @@ def get_step_for_map_task(task: dict, job_spec: dict) -> dict:
             'job_parameters': job_parameters,
         },
         'ItemProcessor': {
-            'StartAt': task['name'],
+            'StartAt': submit_job_step_name,
             'States': {
-                task['name'] + '_TASK': submit_job_step,
+                submit_job_step_name: submit_job_step,
             }
         }
     }
