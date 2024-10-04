@@ -89,6 +89,8 @@ def get_job_parameters(item: str, items: str, job_spec: dict) -> dict:
         if param != items
     }
     job_parameters[f'{item}.$'] = '$$.Map.Item.Value'
+    # TODO: concat items sub-prefix to bucket_prefix in the job spec rather than here?
+    job_parameters['bucket_prefix.$'] = "States.Format('{}/{}', $.job_parameters.bucket_prefix, " + items + ")"
     return job_parameters
 
 

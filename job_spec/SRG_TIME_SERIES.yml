@@ -77,7 +77,14 @@ SRG_TIME_SERIES:
       command:
         - ++process
         - time_series
-        # TODO remaining command arguments
+        - --bounds
+        - Ref::bounds
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --gslc-bucket-prefix
+        - 'granules'
       timeout: 86400 # TODO
       vcpu: 1
       memory: 30500 # TODO
