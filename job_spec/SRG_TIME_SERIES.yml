@@ -77,7 +77,7 @@ SRG_TIME_SERIES:
         - ++process
         - time_series
         # TODO remaining command arguments
-      timeout: 0 # TODO
+      timeout: 86400 # TODO
       vcpu: 1
-      memory: 0 # TODO
+      memory: 30500 # TODO
       # TODO secrets?
