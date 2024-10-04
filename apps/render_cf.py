@@ -59,7 +59,7 @@ def get_step_for_map_task(task: dict, job_spec: dict) -> dict:
     submit_job_step_name = task['name'] + '_SUBMIT_JOB'
     return {
         'Type': 'Map',
-        'ItemsPath': f'$.job_parameters.{items}',
+        'ItemsPath': f'$.original_job_parameters.{items}',
         'ItemSelector': {
             'job_id.$': '$.job_id',
             'priority.$': '$.priority',
