@@ -41,23 +41,29 @@ SRG_TIME_SERIES:
     DEFAULT:
       cost: 1.0
   compute_environment:
-    # TODO use different compute environments for back_projection and time_series
-    # TODO use same compute env as SRG_GSLC.yml
-    name: SrgBackProjection
-    instance_types: g6.2xlarge
-    # Image ID for: /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
-    ami_id: ami-0729c079aae647cb3
+    name: 'Default'
+# TODO revert compute_environment
+#  compute_environment:
+#    # TODO use different compute environments for back_projection and time_series
+#    # TODO use same compute env as SRG_GSLC.yml
+#    name: SrgBackProjection
+#    instance_types: g6.2xlarge
+#    # Image ID for: /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
+#    ami_id: ami-0729c079aae647cb3
   tasks:
     - name: BACK_PROJECTION
       map: for granule in granules
       image: ghcr.io/asfhyp3/hyp3-srg
-      image_tag: latest.gpu
+      # TODO revert image_tag
+      #image_tag: latest.gpu
+      image_tag: 0.8.1.dev13_g0de6d63
       command:
         - ++process
         - back_projection
         - --bounds
         - Ref::bounds
-        - --gpu
+        # TODO revert --gpu
+        #- --gpu
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -65,7 +71,8 @@ SRG_TIME_SERIES:
         - Ref::granule
       timeout: 10800
       vcpu: 1
-      gpu: 1
+      # TODO revert gpu
+      #gpu: 1
       memory: 30500
       secrets:
         - EARTHDATA_USERNAME
@@ -73,7 +80,7 @@ SRG_TIME_SERIES:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-srg
       # TODO decide on appropriate image_tag
-      image_tag: 0.8.1.dev12_gd765228
+      image_tag: 0.8.1.dev13_g0de6d63
       command:
         - ++process
         - time_series
