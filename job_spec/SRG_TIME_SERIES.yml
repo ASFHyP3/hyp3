@@ -41,8 +41,9 @@ SRG_TIME_SERIES:
     DEFAULT:
       cost: 1.0
   compute_environment:
-    # TODO do we need to use different compute environments for back_projection and time_series?
-    name: SrgGslc # TODO rename?
+    # TODO use different compute environments for back_projection and time_series
+    # TODO use same compute env as SRG_GSLC.yml
+    name: SrgBackProjection
     instance_types: g6.2xlarge
     # Image ID for: /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
     ami_id: ami-0729c079aae647cb3
