@@ -51,9 +51,7 @@ SRG_TIME_SERIES:
     - name: BACK_PROJECTION
       map: for granule in granules
       image: ghcr.io/asfhyp3/hyp3-srg
-      # TODO: revert image_tag when done testing
-      #image_tag: latest.gpu
-      image_tag: 0.8.1.dev11_ge4608fc
+      image_tag: latest.gpu
       command:
         - ++process
         - back_projection
@@ -74,7 +72,8 @@ SRG_TIME_SERIES:
         - EARTHDATA_PASSWORD
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-srg
-      image_tag: latest.gpu # TODO use GPU for time series?
+      # TODO decide on appropriate image_tag
+      image_tag: 0.8.1.dev11_ge4608fc
       command:
         - ++process
         - time_series

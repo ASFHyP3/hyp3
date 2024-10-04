@@ -49,6 +49,10 @@ Resources:
     Type: AWS::Batch::JobDefinition
     Properties:
       Type: container
+      Parameters:
+        {% for k, v in job_spec['parameters'].items() %}
+        {{ k }}: {{ v.get('default') or v['api_schema'].get('default') }}
+        {% endfor %}
       ContainerProperties:
         Image: {% if 'image_tag' in task -%}
             "{{ task['image'] }}:{{ task['image_tag'] }}"
