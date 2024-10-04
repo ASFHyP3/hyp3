@@ -3,7 +3,7 @@ name: Deploy Multi-Burst Sandbox Stack to AWS
 on:
   push:
     branches:
-      - multi-burst-sandbox
+      - srg
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 

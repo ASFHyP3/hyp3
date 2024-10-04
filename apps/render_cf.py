@@ -68,7 +68,7 @@ def get_step_for_map_task(task: dict, job_spec: dict) -> dict:
         'ItemProcessor': {
             'StartAt': task['name'],
             'States': {
-                task['name']: submit_job_step,
+                task['name'] + '_TASK': submit_job_step,
             }
         }
     }
