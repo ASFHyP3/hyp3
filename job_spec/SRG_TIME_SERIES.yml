@@ -73,7 +73,7 @@ SRG_TIME_SERIES:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-srg
       # TODO decide on appropriate image_tag
-      image_tag: 0.8.1.dev11_ge4608fc
+      image_tag: 0.8.1.dev12_gd765228
       command:
         - ++process
         - time_series
