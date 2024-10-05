@@ -90,8 +90,7 @@ SRG_TIME_SERIES:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
-        - --gslc-bucket-prefix
-        - 'granules'
+        - --use-granules-from-s3
       timeout: 86400 # TODO
       vcpu: 1
       memory: 30500 # TODO
