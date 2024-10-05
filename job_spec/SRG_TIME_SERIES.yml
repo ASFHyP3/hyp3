@@ -69,7 +69,9 @@ SRG_TIME_SERIES:
         - --bucket-prefix
         - Ref::bucket_prefix
         - Ref::granule
-      timeout: 10800
+      # TODO revert timeout for gpu env
+      #timeout: 10800
+      timeout: 86400
       vcpu: 1
       # TODO revert gpu
       #gpu: 1
