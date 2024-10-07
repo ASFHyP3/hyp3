@@ -32,7 +32,7 @@ def get_step_for_task(task: dict, index: int, next_step_name: str, job_spec: dic
     if 'map' in task:
         step = get_step_for_map_task(task, job_spec)
     else:
-        step = get_step_for_batch_submit_job(task, job_spec)
+        step = get_step_for_batch_submit_job(task)
     step.update(
         {
             'Catch': [
@@ -54,7 +54,7 @@ def get_step_for_task(task: dict, index: int, next_step_name: str, job_spec: dic
 def get_step_for_map_task(task: dict, job_spec: dict) -> dict:
     item, items = parse_task_map(task['map'])
     job_parameters = get_job_parameters(item, items, job_spec)
-    submit_job_step = get_step_for_batch_submit_job(task, job_spec)
+    submit_job_step = get_step_for_batch_submit_job(task)
     submit_job_step['End'] = True
     submit_job_step_name = task['name'] + '_SUBMIT_JOB'
     return {
@@ -92,8 +92,13 @@ def get_job_parameters(item: str, items: str, job_spec: dict) -> dict:
     return job_parameters
 
 
-def get_step_for_batch_submit_job(task: dict, job_spec: dict) -> dict:
-    compute_environment = job_spec['compute_environment']['name']
+def get_step_for_batch_submit_job(task: dict) -> dict:
+    compute_environment = None
+    if 'compute_environment' in task:
+        if 'from_file' in task['compute_environment']:
+            compute_environment = task['compute_environment']['from_file']
+        else:
+            compute_environment = task['compute_environment']['name']
     job_queue = 'JobQueueArn' if compute_environment == 'Default' else compute_environment + 'JobQueueArn'
     return {
         'Type': 'Task',
@@ -128,7 +133,7 @@ def get_step_for_batch_submit_job(task: dict, job_spec: dict) -> dict:
     }
 
 
-def render_templates(job_types, security_environment, api_name):
+def render_templates(job_types, compute_envs, security_environment, api_name):
     job_steps = get_steps_for_jobs(job_types)
 
     env = jinja2.Environment(
@@ -146,6 +151,7 @@ def render_templates(job_types, security_environment, api_name):
 
         output = template.render(
             job_types=job_types,
+            compute_envs_from_files=compute_envs,
             security_environment=security_environment,
             api_name=api_name,
             json=json,
@@ -186,6 +192,7 @@ def render_costs(job_types: dict, cost_profile: str) -> None:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
+    parser.add_argument('-e', '--compute-environment-files', nargs='+', type=Path)
     parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL', 'JPL-public'])
     parser.add_argument('-n', '--api-name', required=True)
     parser.add_argument('-c', '--cost-profile', default='DEFAULT', choices=['DEFAULT', 'EDC'])
@@ -199,9 +206,13 @@ def main():
         for task in job_spec['tasks']:
             task['name'] = job_type + '_' + task['name'] if task['name'] else job_type
 
+    compute_envs_from_files = {}
+    for file in args.compute_environment_files:
+        compute_envs_from_files.update(yaml.safe_load(file.read_text())['compute_environments'])
+
     render_default_params_by_job_type(job_types)
     render_costs(job_types, args.cost_profile)
-    render_templates(job_types, args.security_environment, args.api_name)
+    render_templates(job_types, compute_envs_from_files, args.security_environment, args.api_name)
 
 
 if __name__ == '__main__':

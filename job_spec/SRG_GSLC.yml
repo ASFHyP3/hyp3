@@ -56,10 +56,8 @@ SRG_GSLC:
         - Ref::bucket_prefix
         - Ref::granules
       timeout: 10800
-      # TODO: This compute env should come from a file, since it will be duped
-      #       in the time-series workflow.
       compute_environment:
-        from_file: SRG_GSLC
+        from_file: SrgGslc
       vcpu: 1
       gpu: 1
       memory: 30500
