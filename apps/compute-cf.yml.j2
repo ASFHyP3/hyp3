@@ -2,17 +2,20 @@ AWSTemplateFormatVersion: 2010-09-09
 
 
 {%- set compute_envs = [] -%}
+{%- set compute_env_names = [] -%}
 {%- for job_type, job_spec in job_types.items() -%}
   {%- for task in job_spec['tasks'] -%}
     {% set env = task['compute_environment'] %}
-    {% if 'name' in env and env['name'] != 'Default' %}
+    {% if 'name' in env and env['name'] != 'Default' and env['name'] not in compute_env_names %}
       {%- do compute_envs.append(env) -%}
+      {%- do compute_env_names.append(env['name']) -%}
     {% endif %}
-    {% if 'from_file' in env %}
+    {% if 'from_file' in env and env['from_file'] not in compute_env_names %}
       {% set name = env['from_file'] %}
       {% set env = compute_envs_from_files[name] %}
       {% do env.update({'name': name}) %}
       {% do compute_envs.append(env) %}
+      {% do compute_env_names.append(name) %}
     {% endif %}
   {% endfor %}
 {% endfor %}
