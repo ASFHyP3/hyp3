@@ -26,7 +26,7 @@ build: render
 test_file ?= tests/
 tests: render
 	export $$(xargs < tests/cfg.env); \
-	pytest -vv $(test_file)
+	pytest $(test_file)
 
 run: render
 	export $$(xargs < tests/cfg.env); \
