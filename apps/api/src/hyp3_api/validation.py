@@ -136,7 +136,6 @@ def get_multipolygon_from_geojson(input_file):
     return MultiPolygon(polygons)
 
 
-# TODO https://github.com/ASFHyP3/hyp3/issues/2442 remove this function after two burst types are merged
 def convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
     jobs = deepcopy(jobs)
     for job in jobs:
