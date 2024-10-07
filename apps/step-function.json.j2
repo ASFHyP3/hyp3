@@ -78,53 +78,8 @@
       ],
       "Default": "JOB_FAILED"
     },
-    {% for job_type, job_spec in job_types.items() %}
-    {% for task in job_spec['tasks'] %}
-    "{{ task['name'] }}": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::batch:submitJob.sync",
-      "Parameters": {
-        "JobDefinition": "{{ '${'+ snake_to_pascal_case(task['name']) + '}' }}",
-        "JobName.$": "$.job_id",
-        {% set name = task['compute_environment']['name'] %}
-        {% set job_queue = name + 'JobQueueArn' if 'Default' != name else 'JobQueueArn' %}
-        "JobQueue": "{{ '${' + job_queue + '}' }}",
-        "ShareIdentifier": "default",
-        "SchedulingPriorityOverride.$": "$.priority",
-        "Parameters.$": "$.job_parameters",
-        "ContainerOverrides.$": "$.container_overrides",
-        "RetryStrategy": {
-          "Attempts": 3
-        }
-      },
-      "ResultPath": "$.results.processing_results.step_{{ loop.index0 }}",
-      "Next": "{% if not loop.last %}{{ loop.nextitem['name'] }}{% else %}GET_FILES{% endif %}",
-      "Retry": [
-        {
-          "ErrorEquals": [
-            "Batch.ServerException",
-            "Batch.AWSBatchException"
-          ],
-          "MaxAttempts": 2
-        },
-        {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "MaxAttempts": 0
-        }
-      ],
-      "Catch": [
-        {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "Next": "PROCESSING_FAILED",
-          "ResultPath": "$.results.processing_results.step_{{ loop.index0 }}"
-        }
-      ]
-    },
-    {% endfor %}
+    {% for name, body in job_steps.items() %}
+    "{{ name }}": {{ json.dumps(body) }},
     {% endfor %}
     "PROCESSING_FAILED": {
       "Type": "Pass",

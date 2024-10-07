@@ -3,7 +3,7 @@ name: Deploy Multi-Burst Sandbox Stack to AWS
 on:
   push:
     branches:
-      - multi-burst-sandbox
+      - srg
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -25,11 +25,8 @@ jobs:
             deploy_ref: refs/heads/multi-burst-sandbox
             job_files: >-
               job_spec/INSAR_ISCE_BURST.yml
-              job_spec/INSAR_ISCE_MULTI_BURST.yml
-              job_spec/AUTORIFT.yml
-              job_spec/RTC_GAMMA.yml
-              job_spec/WATER_MAP.yml
-              job_spec/WATER_MAP_EQ.yml
+              job_spec/SRG_GSLC.yml
+              job_spec/SRG_TIME_SERIES.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
