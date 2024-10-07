@@ -51,8 +51,6 @@ AUTORIFT:
     DEFAULT:
       cost: 1.0
   validators: []
-  compute_environment:
-    name: 'Default'
   tasks:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
@@ -71,6 +69,8 @@ AUTORIFT:
         - ITS_LIVE_PROD
         - Ref::granules
       timeout: 10800
+      compute_environment:
+        name: 'Default'
       vcpu: 1
       memory: 31500
       secrets:

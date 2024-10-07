@@ -116,8 +116,6 @@ WATER_MAP:
       cost: 1.0
   validators:
     - check_dem_coverage
-  compute_environment:
-    name: 'Default'
   tasks:
     - name: RTC
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
@@ -152,6 +150,8 @@ WATER_MAP:
         - 'copernicus'
         - Ref::granules
       timeout: 36000
+      compute_environment:
+        name: 'Default'
       vcpu: 1
       memory: 31500
       secrets:
@@ -177,6 +177,8 @@ WATER_MAP:
         - --membership-threshold
         - Ref::membership_threshold
       timeout: 36000
+      compute_environment:
+        name: 'Default'
       vcpu: 1
       memory: 126000
     - name: FLOOD_MAP
@@ -203,5 +205,7 @@ WATER_MAP:
         - --minimization-metric
         - Ref::minimization_metric
       timeout: 86400
+      compute_environment:
+        name: 'Default'
       vcpu: 1
       memory: 126000

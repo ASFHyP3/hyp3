@@ -42,9 +42,6 @@ AUTORIFT:
     DEFAULT:
       cost: 1.0
   validators: []
-  compute_environment:
-    name: 'AriaAutorift'
-    instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
   tasks:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
@@ -61,6 +58,9 @@ AUTORIFT:
         - ITS_LIVE_OD
         - Ref::granules
       timeout: 10800
+      compute_environment:
+        name: 'AriaAutorift'
+        instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
       vcpu: 1
       memory: 31500
       secrets:

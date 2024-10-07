@@ -82,8 +82,6 @@ INSAR_GAMMA:
       cost: 1.0
   validators:
     - check_dem_coverage
-  compute_environment:
-    name: 'Default'
   tasks:
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
@@ -116,6 +114,8 @@ INSAR_GAMMA:
         - Ref::phase_filter_parameter
         - Ref::granules
       timeout: 10800
+      compute_environment:
+        name: 'Default'
       vcpu: 1
       memory: 31500
       secrets:

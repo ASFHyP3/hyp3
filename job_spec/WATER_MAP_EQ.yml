@@ -58,8 +58,6 @@ WATER_MAP_EQ:
       cost: 1.0
   validators:
     - check_dem_coverage
-  compute_environment:
-    name: 'Default'
   tasks:
     - name: RTC
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
@@ -94,6 +92,8 @@ WATER_MAP_EQ:
         - 'copernicus'
         - Ref::granules
       timeout: 36000
+      compute_environment:
+        name: 'Default'
       vcpu: 1
       memory: 31500
       secrets:
@@ -113,5 +113,7 @@ WATER_MAP_EQ:
         - --hand-fraction
         - Ref::hand_fraction
       timeout: 36000
+      compute_environment:
+        name: 'Default'
       vcpu: 1
       memory: 126000
