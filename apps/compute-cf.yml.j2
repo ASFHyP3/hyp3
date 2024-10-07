@@ -1,5 +1,16 @@
 AWSTemplateFormatVersion: 2010-09-09
 
+
+{%- set compute_envs = [] -%}
+{%- for job_type, job_spec in job_types.items() -%}
+{%- for task in job_spec['tasks'] if task['compute_environment']['name'] != 'Default' -%}
+
+{%- do compute_envs.append(task['compute_environment']) -%}
+
+{% endfor %}
+{% endfor %}
+
+
 Parameters:
 
   VpcId:
@@ -29,8 +40,8 @@ Outputs:
   JobQueueArn:
     Value: !Ref BatchJobQueue
 
-  {% for job_type, job_spec in job_types.items()  if 'Default' != job_spec['compute_environment']['name'] %}
-  {% set name = job_spec['compute_environment']['name'] %}
+  {% for env in compute_envs %}
+  {% set name = env['name'] %}
   {{ name }}ComputeEnvironmentArn:
     Value: !Ref {{ name }}ComputeEnvironment
 
@@ -106,8 +117,7 @@ Resources:
   SchedulingPolicy:
     Type: AWS::Batch::SchedulingPolicy
 
-  {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
-  {% set env = job_spec['compute_environment'] %}
+  {% for env in compute_envs %}
   {% set name = env['name'] %}
   {% set instance_types = env['instance_types'].split(',') if 'instance_types' in env else '!Ref InstanceTypes' %}
   {% set ami_id = env['ami_id'] if 'ami_id' in env else '!Ref AmiId' %}

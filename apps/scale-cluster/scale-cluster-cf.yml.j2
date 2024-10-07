@@ -1,12 +1,20 @@
 AWSTemplateFormatVersion: 2010-09-09
 
+{%- set compute_env_names = [] -%}
+{%- for job_type, job_spec in job_types.items() -%}
+{%- for task in job_spec['tasks'] if task['compute_environment']['name'] != 'Default' -%}
+
+{%- do compute_env_names.append(task['compute_environment']['name']) -%}
+
+{% endfor %}
+{% endfor %}
+
 Parameters:
 
   ComputeEnvironmentArn:
     Type: String
 
-  {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
-  {% set name = job_spec['compute_environment']['name'] %}
+  {% for name in compute_env_names %}
   {{ name }}ComputeEnvironmentArn:
     Type: String
   {% endfor %}
@@ -87,8 +95,8 @@ Resources:
             Action: batch:UpdateComputeEnvironment
             Resource: 
               - !Ref ComputeEnvironmentArn
-              {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
-              - !Ref {{ job_spec['compute_environment']['name'] }}ComputeEnvironmentArn
+              {% for name in compute_env_names %}
+              - !Ref {{ name }}ComputeEnvironmentArn
               {% endfor %}
 
   Lambda:
@@ -128,8 +136,7 @@ Resources:
       Targets:
         - Arn: !GetAtt Lambda.Arn
           Id: lambda
-        {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
-        {% set name = job_spec['compute_environment']['name'] %}
+        {% for name in compute_env_names %}
         - Arn: !GetAtt {{ name }}Lambda.Arn
           Id:  {{ name }}lambda
         {% endfor %}
@@ -142,8 +149,7 @@ Resources:
       Principal: events.amazonaws.com
       SourceArn: !GetAtt Schedule.Arn
 
-  {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
-  {% set name = job_spec['compute_environment']['name'] %}
+  {% for name in compute_env_names %}
   {{ name }}LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:

@@ -1,5 +1,14 @@
 AWSTemplateFormatVersion: 2010-09-09
 
+{%- set compute_env_names = [] -%}
+{%- for job_type, job_spec in job_types.items() -%}
+{%- for task in job_spec['tasks'] if task['compute_environment']['name'] != 'Default' -%}
+
+{%- do compute_env_names.append(task['compute_environment']['name']) -%}
+
+{% endfor %}
+{% endfor %}
+
 Parameters:
 
   VpcId:
@@ -154,8 +163,7 @@ Resources:
     Properties:
       Parameters:
         ComputeEnvironmentArn: !GetAtt Cluster.Outputs.ComputeEnvironmentArn
-        {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
-        {% set name = job_spec['compute_environment']['name'] %}
+        {% for name in compute_env_names %}
         {{ name }}ComputeEnvironmentArn: !GetAtt Cluster.Outputs.{{ name }}ComputeEnvironmentArn
         {% endfor %}
         DefaultMaxvCpus: !Ref DefaultMaxvCpus
@@ -173,8 +181,7 @@ Resources:
     Properties:
       Parameters:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
-        {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
-        {% set name = job_spec['compute_environment']['name'] %}
+        {% for name in compute_env_names %}
         {{ name }}JobQueueArn: !GetAtt Cluster.Outputs.{{ name }}JobQueueArn
         {% endfor %}
         JobsTable: !Ref JobsTable
@@ -189,8 +196,7 @@ Resources:
     Properties:
       Parameters:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
-        {% for job_type, job_spec in job_types.items() if 'Default' != job_spec['compute_environment']['name'] %}
-        {% set name = job_spec['compute_environment']['name'] %}
+        {% for name in compute_env_names %}
         {{ name }}JobQueueArn: !GetAtt Cluster.Outputs.{{ name }}JobQueueArn
         {% endfor %}
         TaskRoleArn: !GetAtt Cluster.Outputs.TaskRoleArn
