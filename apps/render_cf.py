@@ -19,6 +19,7 @@ def render_templates(job_types, security_environment, api_name):
         trim_blocks=True,
         lstrip_blocks=True,
         keep_trailing_newline=True,
+        extensions=['jinja2.ext.do'],
     )
 
     for template_file in Path('.').glob('**/*.j2'):
