@@ -92,10 +92,6 @@ INSAR_ISCE:
     DEFAULT:
       cost: 1.0
   validators: []
-  compute_environment:
-    name: 'InsarIsceAria'
-    allocation_type: EC2
-    allocation_strategy: BEST_FIT_PROGRESSIVE
   tasks:
     - name: ''
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
@@ -128,7 +124,7 @@ INSAR_ISCE:
         - Ref::unfiltered_coherence
       timeout: 21600
       compute_environment:
-        name: 'Default'
+        import: 'InsarIsceAria'
       vcpu: 1
       memory: 15500
       secrets:
@@ -149,7 +145,8 @@ INSAR_ISCE:
         - Ref::weather_model
       timeout: 10800
       compute_environment:
-        name: 'Default'
+        # TODO: Do we want this to use this env or Default?
+        import: 'InsarIsceAria'
       vcpu: 1
       memory: 7500
       secrets:
