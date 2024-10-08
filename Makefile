@@ -36,7 +36,7 @@ install:
 	python -m pip install -r requirements-all.txt
 
 files ?= job_spec/*.yml
-compute_env_files ?= job_spec/compute_environments/*.yml
+compute_env_files ?= job_spec/config/compute_environments.yml
 security_environment ?= ASF
 api_name ?= local
 cost_profile ?= DEFAULT
