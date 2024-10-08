@@ -41,7 +41,7 @@ ARIA_RAIDER:
         - Ref::job_id
       timeout: 10800
       compute_environment:
-        name: 'Default'
+        import: 'Default'
       vcpu: 1
       memory: 7500
       secrets:

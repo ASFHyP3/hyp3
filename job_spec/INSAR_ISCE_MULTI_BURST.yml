@@ -80,7 +80,7 @@ INSAR_ISCE_MULTI_BURST:
         - Ref::secondary
       timeout: 126000 # 35 hours
       compute_environment:
-        name: 'Default'
+        import: 'Default'
       vcpu: 1
       memory: 4 # Memory is always overridden by the step function
       secrets:

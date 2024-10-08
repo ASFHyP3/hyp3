@@ -63,7 +63,7 @@ INSAR_ISCE_BURST:
         - Ref::granules
       timeout: 5400
       compute_environment:
-        name: 'Default'
+        import: 'Default'
       vcpu: 1
       memory: 7600
       secrets:

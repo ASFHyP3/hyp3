@@ -1,26 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
 
-
-{%- set compute_envs = [] -%}
-{%- set compute_env_names = [] -%}
-{%- for job_type, job_spec in job_types.items() -%}
-  {%- for task in job_spec['tasks'] -%}
-    {% set env = task['compute_environment'] %}
-    {% if 'name' in env and env['name'] != 'Default' and env['name'] not in compute_env_names %}
-      {%- do compute_envs.append(env) -%}
-      {%- do compute_env_names.append(env['name']) -%}
-    {% endif %}
-    {% if 'import' in env and env['import'] not in compute_env_names %}
-      {% set name = env['import'] %}
-      {% set env = compute_env_imports[name] %}
-      {% do env.update({'name': name}) %}
-      {% do compute_envs.append(env) %}
-      {% do compute_env_names.append(name) %}
-    {% endif %}
-  {% endfor %}
-{% endfor %}
-
-
 Parameters:
 
   VpcId:

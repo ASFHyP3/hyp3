@@ -151,7 +151,8 @@ def render_templates(job_types, compute_envs, security_environment, api_name):
 
         output = template.render(
             job_types=job_types,
-            compute_env_imports=compute_envs,
+            compute_envs=compute_envs,
+            compute_env_names=[env['name'] for env in compute_envs],
             security_environment=security_environment,
             api_name=api_name,
             json=json,
@@ -163,6 +164,29 @@ def render_templates(job_types, compute_envs, security_environment, api_name):
             output = json.dumps(json.loads(output), indent=2)
 
         template_file.with_suffix('').write_text(output)
+
+
+def get_compute_environments(job_types, compute_env_files):
+    compute_envs = []
+    compute_env_names = []
+    for _, job_spec in job_types.items():
+        for task in job_spec['tasks']:
+            compute_env = task['compute_environment']
+            if 'name' in compute_env:
+                name = compute_env['name']
+                if name in compute_env_names:
+                    raise ValueError(f'Compute environments must have unique names but the following is defined more than once: {name}.')
+                compute_envs.append(compute_env)
+                compute_env_names.append(name)
+
+    for file in compute_env_files:
+        compute_envs_from_file = yaml.safe_load(file.read_text())['compute_environments']
+        for compute_env_name in compute_envs_from_file:
+            compute_env = compute_envs_from_file[compute_env_name]
+            compute_env['name'] = compute_env_name
+            compute_envs.append(compute_env)
+
+    return compute_envs
 
 
 def render_default_params_by_job_type(job_types: dict) -> None:
@@ -210,9 +234,11 @@ def main():
     for file in args.compute_environment_files:
         compute_envs_from_files.update(yaml.safe_load(file.read_text())['compute_environments'])
 
+    compute_envs = get_compute_environments(job_types, args.compute_environment_files)
+
     render_default_params_by_job_type(job_types)
     render_costs(job_types, args.cost_profile)
-    render_templates(job_types, compute_envs_from_files, args.security_environment, args.api_name)
+    render_templates(job_types, compute_envs, args.security_environment, args.api_name)
 
 
 if __name__ == '__main__':

@@ -93,7 +93,7 @@ WATER_MAP_EQ:
         - Ref::granules
       timeout: 36000
       compute_environment:
-        name: 'Default'
+        import: 'Default'
       vcpu: 1
       memory: 31500
       secrets:
@@ -114,6 +114,6 @@ WATER_MAP_EQ:
         - Ref::hand_fraction
       timeout: 36000
       compute_environment:
-        name: 'Default'
+        import: 'Default'
       vcpu: 1
       memory: 126000

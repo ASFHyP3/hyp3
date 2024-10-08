@@ -70,7 +70,7 @@ AUTORIFT:
         - Ref::granules
       timeout: 10800
       compute_environment:
-        name: 'Default'
+        import: 'Default'
       vcpu: 1
       memory: 31500
       secrets:

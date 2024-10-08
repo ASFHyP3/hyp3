@@ -95,7 +95,7 @@ SRG_TIME_SERIES:
         - --use-granules-from-s3
       timeout: 86400 # TODO
       compute_environment:
-        name: 'Default'
+        import: 'Default'
       vcpu: 1
       memory: 30500 # TODO
       # TODO secrets?

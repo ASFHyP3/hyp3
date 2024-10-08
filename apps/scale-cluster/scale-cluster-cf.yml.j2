@@ -1,18 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
 
-{%- set compute_env_names = [] -%}
-{%- for job_type, job_spec in job_types.items() -%}
-  {%- for task in job_spec['tasks'] -%}
-    {% set env = task['compute_environment'] %}
-    {%  if 'name' in env and env['name'] != 'Default' %}
-      {%- do compute_env_names.append(env['name']) -%}
-    {% endif %}
-    {% if 'import' in env and env['import'] not in compute_env_names %}
-      {%- do compute_env_names.append(env['import']) -%}
-    {% endif %}
-  {% endfor %}
-{% endfor %}
-
 Parameters:
 
   ComputeEnvironmentArn:
