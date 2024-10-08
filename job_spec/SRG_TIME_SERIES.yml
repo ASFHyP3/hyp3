@@ -71,7 +71,7 @@ SRG_TIME_SERIES:
       #timeout: 10800
       timeout: 86400
       compute_environment:
-        from_file: 'SrgGslc'
+        import: 'SrgGslc'
       vcpu: 1
       # TODO revert gpu
       #gpu: 1

@@ -95,8 +95,8 @@ def get_job_parameters(item: str, items: str, job_spec: dict) -> dict:
 def get_step_for_batch_submit_job(task: dict) -> dict:
     compute_environment = None
     if 'compute_environment' in task:
-        if 'from_file' in task['compute_environment']:
-            compute_environment = task['compute_environment']['from_file']
+        if 'import' in task['compute_environment']:
+            compute_environment = task['compute_environment']['import']
         else:
             compute_environment = task['compute_environment']['name']
     job_queue = 'JobQueueArn' if compute_environment == 'Default' else compute_environment + 'JobQueueArn'
@@ -151,7 +151,7 @@ def render_templates(job_types, compute_envs, security_environment, api_name):
 
         output = template.render(
             job_types=job_types,
-            compute_envs_from_files=compute_envs,
+            compute_env_imports=compute_envs,
             security_environment=security_environment,
             api_name=api_name,
             json=json,

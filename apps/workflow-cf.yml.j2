@@ -7,8 +7,8 @@ AWSTemplateFormatVersion: 2010-09-09
     {%  if 'name' in env and env['name'] != 'Default' %}
       {%- do compute_env_names.append(env['name']) -%}
     {% endif %}
-    {% if 'from_file' in env and env['from_file'] not in compute_env_names %}
-      {%- do compute_env_names.append(env['from_file']) -%}
+    {% if 'import' in env and env['import'] not in compute_env_names %}
+      {%- do compute_env_names.append(env['import']) -%}
     {% endif %}
   {% endfor %}
 {% endfor %}
