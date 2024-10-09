@@ -167,24 +167,38 @@ def render_templates(job_types, compute_envs, security_environment, api_name):
 def get_compute_environments(job_types: dict, compute_env_file: Path) -> list[dict]:
     compute_envs = []
     compute_env_names = []
+    compute_env_imports = set()
     for _, job_spec in job_types.items():
         for task in job_spec['tasks']:
             compute_env = task['compute_environment']
             if 'name' in compute_env:
                 name = compute_env['name']
                 if name in compute_env_names:
-                    raise ValueError(f'Compute environments must have unique names but the following is defined more than once: {name}.')
+                    raise NameError(
+                        f'Compute envs must have unique names but the following is defined more than once: {name}.'
+                    )
                 compute_envs.append(compute_env)
                 compute_env_names.append(name)
+            elif 'import' in compute_env and compute_env['import'] != 'Default':
+                compute_env_imports.add(compute_env['import'])
 
     if compute_env_file:
         compute_envs_from_file = yaml.safe_load(compute_env_file.read_text())['compute_environments']
         for name in compute_envs_from_file:
             if name in compute_env_names:
-                raise ValueError(f'Compute environments must have unique names but the following is defined more than once: {name}.')
+                raise NameError(
+                    f'Compute envs must have unique names but the following is defined more than once: {name}.'
+                )
             compute_env = compute_envs_from_file[name]
             compute_env['name'] = name
             compute_envs.append(compute_env)
+            compute_env_names.append(name)
+
+    for name in compute_env_imports:
+        if name not in compute_envs_from_file:
+            raise NotImplementedError(
+                f'The following compute env is imported but not defined in the compute envs file: {name}.'
+            )
 
     return compute_envs
 
