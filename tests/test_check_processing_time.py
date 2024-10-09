@@ -49,6 +49,24 @@ def test_get_time_from_result():
     assert check_processing_time.get_time_from_result(result) == 5.7
 
 
+def test_get_time_from_result_list():
+    result = [
+        {
+            'Attempts': [
+                {'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 1000},
+                {'Container': {}, 'StartedAt': 3000, 'StatusReason': '', 'StoppedAt': 8900}
+            ]
+        },
+        {
+            'Attempts': [
+                {'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 3000},
+                {'Container': {}, 'StartedAt': 4000, 'StatusReason': '', 'StoppedAt': 4200}
+            ]
+        },
+    ]
+    assert check_processing_time.get_time_from_result(result) == [5.9, 0.2]
+
+
 def test_get_time_from_result_failed():
     result = {
         'Error': 'States.TaskFailed',
@@ -76,6 +94,20 @@ def test_lambda_handler():
                          '{"Container": {}, "StartedAt": 1500, "StatusReason": "", "StoppedAt": 2000}, '
                          '{"Container": {}, "StartedAt": 3000, "StatusReason": "", "StoppedAt": 9400}]}'
             },
+            'step_2': [
+                {
+                    'Attempts': [
+                        {'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 1000},
+                        {'Container': {}, 'StartedAt': 3000, 'StatusReason': '', 'StoppedAt': 8900}
+                    ]
+                },
+                {
+                    'Attempts': [
+                        {'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 3000},
+                        {'Container': {}, 'StartedAt': 4000, 'StatusReason': '', 'StoppedAt': 4200}
+                    ]
+                },
+            ]
         }
     }
-    assert check_processing_time.lambda_handler(event, None) == [5.7, 6.4]
+    assert check_processing_time.lambda_handler(event, None) == [5.7, 6.4, [5.9, 0.2]]
