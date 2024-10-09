@@ -258,7 +258,7 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v4.2.0
+      - uses: actions/checkout@v4.2.1
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
