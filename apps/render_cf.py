@@ -166,7 +166,7 @@ def render_templates(job_types, compute_envs, security_environment, api_name):
         template_file.with_suffix('').write_text(output)
 
 
-def get_compute_environments(job_types, compute_env_files):
+def get_compute_environments(job_types: dict, compute_env_file: Path) -> list[dict]:
     compute_envs = []
     compute_env_names = []
     for _, job_spec in job_types.items():
@@ -179,12 +179,11 @@ def get_compute_environments(job_types, compute_env_files):
                 compute_envs.append(compute_env)
                 compute_env_names.append(name)
 
-    for file in compute_env_files:
-        compute_envs_from_file = yaml.safe_load(file.read_text())['compute_environments']
-        for compute_env_name in compute_envs_from_file:
-            compute_env = compute_envs_from_file[compute_env_name]
-            compute_env['name'] = compute_env_name
-            compute_envs.append(compute_env)
+    compute_envs_from_file = yaml.safe_load(compute_env_file.read_text())['compute_environments']
+    for compute_env_name in compute_envs_from_file:
+        compute_env = compute_envs_from_file[compute_env_name]
+        compute_env['name'] = compute_env_name
+        compute_envs.append(compute_env)
 
     return compute_envs
 
@@ -216,7 +215,7 @@ def render_costs(job_types: dict, cost_profile: str) -> None:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
-    parser.add_argument('-e', '--compute-environment-files', nargs='+', type=Path)
+    parser.add_argument('-e', '--compute-environment-file', type=Path)
     parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL', 'JPL-public'])
     parser.add_argument('-n', '--api-name', required=True)
     parser.add_argument('-c', '--cost-profile', default='DEFAULT', choices=['DEFAULT', 'EDC'])
@@ -230,11 +229,7 @@ def main():
         for task in job_spec['tasks']:
             task['name'] = job_type + '_' + task['name'] if task['name'] else job_type
 
-    compute_envs_from_files = {}
-    for file in args.compute_environment_files:
-        compute_envs_from_files.update(yaml.safe_load(file.read_text())['compute_environments'])
-
-    compute_envs = get_compute_environments(job_types, args.compute_environment_files)
+    compute_envs = get_compute_environments(job_types, args.compute_environment_file)
 
     render_default_params_by_job_type(job_types)
     render_costs(job_types, args.cost_profile)
