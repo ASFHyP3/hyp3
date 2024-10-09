@@ -181,6 +181,8 @@ def get_compute_environments(job_types: dict, compute_env_file: Path) -> list[di
 
     compute_envs_from_file = yaml.safe_load(compute_env_file.read_text())['compute_environments']
     for compute_env_name in compute_envs_from_file:
+        if compute_env_name in compute_env_names:
+            raise ValueError(f'Compute environments must have unique names but the following is defined more than once: {name}.')
         compute_env = compute_envs_from_file[compute_env_name]
         compute_env['name'] = compute_env_name
         compute_envs.append(compute_env)
