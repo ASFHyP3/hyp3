@@ -1,4 +1,5 @@
 import json
+from typing import Union
 
 
 def get_time_from_attempts(attempts: list[dict]) -> float:
@@ -9,15 +10,17 @@ def get_time_from_attempts(attempts: list[dict]) -> float:
     return (final_attempt['StoppedAt'] - final_attempt['StartedAt']) / 1000
 
 
-def get_time_from_result(result: dict) -> float:
+def get_time_from_result(result: Union[list, dict]) -> Union[list, float]:
+    if isinstance(result, list):
+        return [get_time_from_result(item) for item in result]
+
     if 'Attempts' in result:
-        attempts = result['Attempts']
-    else:
-        attempts = json.loads(result['Cause'])['Attempts']
-    return get_time_from_attempts(attempts)
+        return get_time_from_attempts(result['Attempts'])
+
+    return get_time_from_attempts(json.loads(result['Cause'])['Attempts'])
 
 
-def lambda_handler(event, context) -> list[float]:
-    results_dict = event['processing_results']
-    results = [results_dict[key] for key in sorted(results_dict.keys())]
-    return list(map(get_time_from_result, results))
+def lambda_handler(event, _) -> list[Union[list, float]]:
+    processing_results = event['processing_results']
+    result_list = [processing_results[key] for key in sorted(processing_results.keys())]
+    return get_time_from_result(result_list)
