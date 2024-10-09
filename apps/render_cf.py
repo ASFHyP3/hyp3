@@ -93,12 +93,10 @@ def get_job_parameters(item: str, items: str, job_spec: dict) -> dict:
 
 
 def get_step_for_batch_submit_job(task: dict) -> dict:
-    compute_environment = None
-    if 'compute_environment' in task:
-        if 'import' in task['compute_environment']:
-            compute_environment = task['compute_environment']['import']
-        else:
-            compute_environment = task['compute_environment']['name']
+    if 'import' in task['compute_environment']:
+        compute_environment = task['compute_environment']['import']
+    else:
+        compute_environment = task['compute_environment']['name']
     job_queue = 'JobQueueArn' if compute_environment == 'Default' else compute_environment + 'JobQueueArn'
     return {
         'Type': 'Task',
