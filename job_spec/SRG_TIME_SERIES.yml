@@ -36,25 +36,18 @@ SRG_TIME_SERIES:
           description: min lon, min lat, max lon, max lat in EPSG:4326
           type: number
           example: -116.583
+  # TODO validators
   validators: []
   cost_profiles:
     DEFAULT:
       cost: 1.0
-# TODO revert compute_environment
-#  compute_environment:
-#    # TODO use different compute environments for back_projection and time_series
-#    # TODO use same compute env as SRG_GSLC.yml
-#    name: SrgBackProjection
-#    instance_types: g6.2xlarge
-#    # Image ID for: /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
-#    ami_id: ami-0729c079aae647cb3
   tasks:
     - name: BACK_PROJECTION
       map: for granule in granules
       image: ghcr.io/asfhyp3/hyp3-srg
       # TODO revert image_tag
       #image_tag: latest.gpu
-      image_tag: 0.8.1.dev16_g3983395
+      image_tag: 0.8.1.dev20_g0eb9d69
       command:
         - ++process
         - back_projection
@@ -66,12 +59,15 @@ SRG_TIME_SERIES:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
+        - --use-gslc-prefix
         - Ref::granule
       # TODO revert timeout for gpu env
       #timeout: 10800
       timeout: 86400
       compute_environment:
-        import: 'SrgGslc'
+        # TODO revert import
+        #import: SrgGslc
+        import: Default
       vcpu: 1
       # TODO revert gpu
       #gpu: 1
@@ -81,8 +77,8 @@ SRG_TIME_SERIES:
         - EARTHDATA_PASSWORD
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-srg
-      # TODO decide on appropriate image_tag
-      image_tag: 0.8.1.dev16_g3983395
+      # TODO image tag
+      image_tag: 0.8.1.dev20_g0eb9d69
       command:
         - ++process
         - time_series
@@ -92,10 +88,10 @@ SRG_TIME_SERIES:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
-        - --use-granules-from-s3
+        - --use-gslc-prefix
       timeout: 86400 # TODO
       compute_environment:
-        import: 'Default'
+        import: Default
       vcpu: 1
       memory: 30500 # TODO
       # TODO secrets?
