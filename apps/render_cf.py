@@ -174,7 +174,7 @@ def get_compute_environments(job_types: dict, compute_env_file: Path) -> list[di
             if 'name' in compute_env:
                 name = compute_env['name']
                 if name in compute_env_names:
-                    raise NameError(
+                    raise ValueError(
                         f'Compute envs must have unique names but the following is defined more than once: {name}.'
                     )
                 compute_envs.append(compute_env)
