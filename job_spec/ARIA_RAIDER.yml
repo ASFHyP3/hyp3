@@ -41,7 +41,8 @@ ARIA_RAIDER:
         - Ref::job_id
       timeout: 10800
       compute_environment:
-        import: 'Default'
+        name: 'AriaRaider'
+        instance_types: m6id.xlarge, m6id.2xlarge, m6id.4xlarge, m6id.8xlarge, m6idn.xlarge, m6idn.2xlarge, m6idn.4xlarge, m6idn.8xlarge
       vcpu: 1
       memory: 7500
       secrets:
