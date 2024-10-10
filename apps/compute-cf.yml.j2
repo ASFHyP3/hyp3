@@ -29,8 +29,7 @@ Outputs:
   JobQueueArn:
     Value: !Ref BatchJobQueue
 
-  {% for env in compute_envs %}
-  {% set name = env['name'] %}
+  {% for name in compute_env_names %}
   {{ name }}ComputeEnvironmentArn:
     Value: !Ref {{ name }}ComputeEnvironment
 
