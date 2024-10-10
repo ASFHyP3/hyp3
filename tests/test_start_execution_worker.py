@@ -63,6 +63,16 @@ def test_submit_jobs():
             'float_field': 10.1,
             'integer_field': 10,
             'job_parameters': {
+                'granules': [
+                    'granule1',
+                    'granule2',
+                ],
+                'string_field': 'value1',
+                'boolean_field': True,
+                'float_field': 10.1,
+                'integer_field': 10,
+            },
+            'batch_job_parameters': {
                 'granules': 'granule1 granule2',
                 'string_field': 'value1',
                 'boolean_field': 'True',
@@ -76,7 +86,8 @@ def test_submit_jobs():
     expected_input_job1 = json.dumps(
         {
             'job_id': 'job1',
-            'job_parameters': {'granules': 'granule1'},
+            'job_parameters': {'granules': ['granule1']},
+            'batch_job_parameters': {'granules': 'granule1'},
         },
         sort_keys=True,
     )

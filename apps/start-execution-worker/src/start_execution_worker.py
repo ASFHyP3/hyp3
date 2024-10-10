@@ -25,12 +25,7 @@ def submit_jobs(jobs: list[dict]) -> None:
     for job in jobs:
         # Convert parameters to strings so they can be passed to Batch; see:
         # https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html#Batch-SubmitJob-request-parameters
-
-        # TODO: instead, assign the stringified params to a batch_job_parameters key, and keep the original job_parameters
-        #  value unchanged; will require searching for usage of job_parameters in step-function.json.j2 and render_cf.py
-        #  and updating how they're used
-        job['original_job_parameters'] = job['job_parameters']
-        job['job_parameters'] = convert_parameters_to_strings(job['job_parameters'])
+        job['batch_job_parameters'] = convert_parameters_to_strings(job['job_parameters'])
         STEP_FUNCTION.start_execution(
             stateMachineArn=step_function_arn,
             input=json.dumps(job, sort_keys=True),

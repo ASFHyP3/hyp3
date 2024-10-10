@@ -35,7 +35,7 @@ def get_container_overrides(memory: str, omp_num_threads: str = None) -> dict:
 
 def get_insar_isce_burst_memory(job_parameters: dict) -> str:
     looks = job_parameters['looks']
-    bursts = len(job_parameters['reference'].split(' '))
+    bursts = len(job_parameters['reference'])
     if looks == '5x1':
         if bursts < 2:
             return INSAR_ISCE_BURST_MEMORY_8G
@@ -70,16 +70,16 @@ def lambda_handler(event: dict, _) -> dict:
         omp_num_threads = INSAR_ISCE_BURST_OMP_NUM_THREADS[memory]
         return get_container_overrides(memory, omp_num_threads)
 
-    if job_type == 'AUTORIFT' and job_parameters['granules'].startswith('S2'):
+    if job_type == 'AUTORIFT' and job_parameters['granules'][0].startswith('S2'):
         return get_container_overrides(AUTORIFT_S2_MEMORY)
 
-    if job_type == 'AUTORIFT' and job_parameters['granules'].startswith('L'):
+    if job_type == 'AUTORIFT' and job_parameters['granules'][0].startswith('L'):
         return get_container_overrides(AUTORIFT_LANDSAT_MEMORY)
 
-    if job_type == 'RTC_GAMMA' and job_parameters['resolution'] in ['10', '20']:
+    if job_type == 'RTC_GAMMA' and job_parameters['resolution'] in [10, 20]:
         return get_container_overrides(RTC_GAMMA_10M_MEMORY)
 
-    if job_type in ['WATER_MAP', 'WATER_MAP_EQ'] and job_parameters['resolution'] in ['10', '20']:
+    if job_type in ['WATER_MAP', 'WATER_MAP_EQ'] and job_parameters['resolution'] in [10, 20]:
         return get_container_overrides(WATER_MAP_10M_MEMORY)
 
     return {}

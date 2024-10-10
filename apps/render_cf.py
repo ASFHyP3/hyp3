@@ -54,18 +54,18 @@ def get_step_for_task(task: dict, index: int, next_step_name: str, job_spec: dic
 
 def get_step_for_map_task(task: dict, job_spec: dict) -> dict:
     item, items = parse_task_map(task['map'])
-    job_parameters = get_job_parameters(item, items, job_spec)
+    batch_job_parameters = get_batch_job_parameters(item, items, job_spec)
     submit_job_step = get_step_for_batch_submit_job(task)
     submit_job_step['End'] = True
     submit_job_step_name = task['name'] + '_SUBMIT_JOB'
     return {
         'Type': 'Map',
-        'ItemsPath': f'$.original_job_parameters.{items}',
+        'ItemsPath': f'$.job_parameters.{items}',
         'ItemSelector': {
             'job_id.$': '$.job_id',
             'priority.$': '$.priority',
             'container_overrides.$': '$.container_overrides',
-            'job_parameters': job_parameters,
+            'batch_job_parameters': batch_job_parameters,
         },
         'ItemProcessor': {
             'StartAt': submit_job_step_name,
@@ -83,14 +83,14 @@ def parse_task_map(task_map: str) -> tuple[str, str]:
     return tokens[1], tokens[3]
 
 
-def get_job_parameters(item: str, items: str, job_spec: dict) -> dict:
-    job_parameters = {
-        f'{param}.$': f'$.job_parameters.{param}'
+def get_batch_job_parameters(item: str, items: str, job_spec: dict) -> dict:
+    batch_job_parameters = {
+        f'{param}.$': f'$.batch_job_parameters.{param}'
         for param in job_spec['parameters']
         if param != items
     }
-    job_parameters[f'{item}.$'] = '$$.Map.Item.Value'
-    return job_parameters
+    batch_job_parameters[f'{item}.$'] = '$$.Map.Item.Value'
+    return batch_job_parameters
 
 
 def get_step_for_batch_submit_job(task: dict) -> dict:
@@ -108,7 +108,7 @@ def get_step_for_batch_submit_job(task: dict) -> dict:
             'JobQueue': '${' + job_queue + '}',
             'ShareIdentifier': 'default',
             'SchedulingPriorityOverride.$': '$.priority',
-            'Parameters.$': '$.job_parameters',
+            'Parameters.$': '$.batch_job_parameters',
             'ContainerOverrides.$': '$.container_overrides',
             'RetryStrategy': {
                 'Attempts': 3
