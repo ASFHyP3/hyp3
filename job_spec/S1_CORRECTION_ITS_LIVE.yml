@@ -29,8 +29,6 @@ S1_CORRECTION_TEST:
     DEFAULT:
       cost: 1.0
   validators: []
-  compute_environment:
-    name: 'Default'
   tasks:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
@@ -49,6 +47,8 @@ S1_CORRECTION_TEST:
         - '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
         - Ref::granules
       timeout: 10800
+      compute_environment:
+        import: 'Default'
       vcpu: 1
       memory: 15750
       secrets:

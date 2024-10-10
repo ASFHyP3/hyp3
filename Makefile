@@ -36,11 +36,12 @@ install:
 	python -m pip install -r requirements-all.txt
 
 files ?= job_spec/*.yml
+compute_env_file ?= job_spec/config/compute_environments.yml
 security_environment ?= ASF
 api_name ?= local
 cost_profile ?= DEFAULT
 render:
-	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -s $(security_environment) -n $(api_name) -c $(cost_profile)
+	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -e $(compute_env_file) -s $(security_environment) -n $(api_name) -c $(cost_profile)
 
 static: flake8 openapi-validate cfn-lint
 

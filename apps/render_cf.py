@@ -1,6 +1,7 @@
 import argparse
 import json
 from pathlib import Path
+from typing import Optional
 
 import jinja2
 import yaml
@@ -32,7 +33,7 @@ def get_step_for_task(task: dict, index: int, next_step_name: str, job_spec: dic
     if 'map' in task:
         step = get_step_for_map_task(task, job_spec)
     else:
-        step = get_step_for_batch_submit_job(task, job_spec)
+        step = get_step_for_batch_submit_job(task)
     step.update(
         {
             'Catch': [
@@ -54,7 +55,7 @@ def get_step_for_task(task: dict, index: int, next_step_name: str, job_spec: dic
 def get_step_for_map_task(task: dict, job_spec: dict) -> dict:
     item, items = parse_task_map(task['map'])
     job_parameters = get_job_parameters(item, items, job_spec)
-    submit_job_step = get_step_for_batch_submit_job(task, job_spec)
+    submit_job_step = get_step_for_batch_submit_job(task)
     submit_job_step['End'] = True
     submit_job_step_name = task['name'] + '_SUBMIT_JOB'
     return {
@@ -92,8 +93,11 @@ def get_job_parameters(item: str, items: str, job_spec: dict) -> dict:
     return job_parameters
 
 
-def get_step_for_batch_submit_job(task: dict, job_spec: dict) -> dict:
-    compute_environment = job_spec['compute_environment']['name']
+def get_step_for_batch_submit_job(task: dict) -> dict:
+    if 'import' in task['compute_environment']:
+        compute_environment = task['compute_environment']['import']
+    else:
+        compute_environment = task['compute_environment']['name']
     job_queue = 'JobQueueArn' if compute_environment == 'Default' else compute_environment + 'JobQueueArn'
     return {
         'Type': 'Task',
@@ -128,7 +132,7 @@ def get_step_for_batch_submit_job(task: dict, job_spec: dict) -> dict:
     }
 
 
-def render_templates(job_types, security_environment, api_name):
+def render_templates(job_types, compute_envs, security_environment, api_name):
     job_steps = get_steps_for_jobs(job_types)
 
     env = jinja2.Environment(
@@ -138,6 +142,7 @@ def render_templates(job_types, security_environment, api_name):
         trim_blocks=True,
         lstrip_blocks=True,
         keep_trailing_newline=True,
+        extensions=['jinja2.ext.do'],
     )
 
     for template_file in Path('.').glob('**/*.j2'):
@@ -145,6 +150,8 @@ def render_templates(job_types, security_environment, api_name):
 
         output = template.render(
             job_types=job_types,
+            compute_envs=compute_envs,
+            compute_env_names=[env['name'] for env in compute_envs],
             security_environment=security_environment,
             api_name=api_name,
             json=json,
@@ -156,6 +163,49 @@ def render_templates(job_types, security_environment, api_name):
             output = json.dumps(json.loads(output), indent=2)
 
         template_file.with_suffix('').write_text(output)
+
+
+def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) -> list[dict]:
+    compute_envs = []
+    compute_env_names = set()
+    compute_env_imports = set()
+    for _, job_spec in job_types.items():
+        for task in job_spec['tasks']:
+            compute_env = task['compute_environment']
+            if 'name' in compute_env:
+                name = compute_env['name']
+                assert name != 'Default'
+                if name in compute_env_names:
+                    raise ValueError(
+                        f'Compute envs must have unique names but the following is defined more than once: {name}.'
+                    )
+                compute_envs.append(compute_env)
+                compute_env_names.add(name)
+            elif 'import' in compute_env and compute_env['import'] != 'Default':
+                compute_env_imports.add(compute_env['import'])
+            else:
+                assert compute_env['import'] == 'Default'
+
+    if compute_env_file:
+        compute_envs_from_file = yaml.safe_load(compute_env_file.read_text())['compute_environments']
+        for name in compute_envs_from_file:
+            assert name != 'Default'
+            if name in compute_env_names:
+                raise ValueError(
+                    f'Compute envs must have unique names but the following is defined more than once: {name}.'
+                )
+            compute_env = compute_envs_from_file[name]
+            compute_env['name'] = name
+            compute_envs.append(compute_env)
+            compute_env_names.add(name)
+
+    for name in compute_env_imports:
+        if name not in compute_envs_from_file:
+            raise ValueError(
+                f'The following compute env is imported but not defined in the compute envs file: {name}.'
+            )
+
+    return compute_envs
 
 
 def render_default_params_by_job_type(job_types: dict) -> None:
@@ -185,6 +235,7 @@ def render_costs(job_types: dict, cost_profile: str) -> None:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
+    parser.add_argument('-e', '--compute-environment-file', type=Path)
     parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL', 'JPL-public'])
     parser.add_argument('-n', '--api-name', required=True)
     parser.add_argument('-c', '--cost-profile', default='DEFAULT', choices=['DEFAULT', 'EDC'])
@@ -198,9 +249,11 @@ def main():
         for task in job_spec['tasks']:
             task['name'] = job_type + '_' + task['name'] if task['name'] else job_type
 
+    compute_envs = get_compute_environments(job_types, args.compute_environment_file)
+
     render_default_params_by_job_type(job_types)
     render_costs(job_types, args.cost_profile)
-    render_templates(job_types, args.security_environment, args.api_name)
+    render_templates(job_types, compute_envs, args.security_environment, args.api_name)
 
 
 if __name__ == '__main__':

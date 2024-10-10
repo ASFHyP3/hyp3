@@ -60,8 +60,6 @@ INSAR_ISCE_MULTI_BURST:
     - check_valid_polarizations
     - check_same_burst_ids
     - check_not_antimeridian
-  compute_environment:
-    name: 'Default'
   tasks:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2
@@ -81,6 +79,8 @@ INSAR_ISCE_MULTI_BURST:
         - --secondary
         - Ref::secondary
       timeout: 126000 # 35 hours
+      compute_environment:
+        import: 'Default'
       vcpu: 1
       memory: 4 # Memory is always overridden by the step function
       secrets:

@@ -40,8 +40,6 @@ SRG_TIME_SERIES:
   cost_profiles:
     DEFAULT:
       cost: 1.0
-  compute_environment:
-    name: 'Default'
 # TODO revert compute_environment
 #  compute_environment:
 #    # TODO use different compute environments for back_projection and time_series
@@ -72,6 +70,8 @@ SRG_TIME_SERIES:
       # TODO revert timeout for gpu env
       #timeout: 10800
       timeout: 86400
+      compute_environment:
+        import: 'SrgGslc'
       vcpu: 1
       # TODO revert gpu
       #gpu: 1
@@ -94,6 +94,8 @@ SRG_TIME_SERIES:
         - Ref::bucket_prefix
         - --use-granules-from-s3
       timeout: 86400 # TODO
+      compute_environment:
+        import: 'Default'
       vcpu: 1
       memory: 30500 # TODO
       # TODO secrets?

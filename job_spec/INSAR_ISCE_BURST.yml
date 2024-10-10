@@ -44,8 +44,6 @@ INSAR_ISCE_BURST:
     - check_valid_polarizations
     - check_same_burst_ids
     - check_not_antimeridian 
-  compute_environment:
-    name: 'Default'
   tasks:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2
@@ -64,6 +62,8 @@ INSAR_ISCE_BURST:
         - Ref::looks
         - Ref::granules
       timeout: 5400
+      compute_environment:
+        import: 'Default'
       vcpu: 1
       memory: 7600
       secrets:
