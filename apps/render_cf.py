@@ -1,6 +1,7 @@
 import argparse
 import json
 from pathlib import Path
+from typing import Optional
 
 import jinja2
 import yaml
@@ -166,7 +167,7 @@ def render_templates(job_types, compute_envs, security_environment, api_name):
 
 def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) -> list[dict]:
     compute_envs = []
-    compute_env_names = []
+    compute_env_names = set()
     compute_env_imports = set()
     for _, job_spec in job_types.items():
         for task in job_spec['tasks']:
@@ -178,7 +179,7 @@ def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) 
                         f'Compute envs must have unique names but the following is defined more than once: {name}.'
                     )
                 compute_envs.append(compute_env)
-                compute_env_names.append(name)
+                compute_env_names.add(name)
             elif 'import' in compute_env and compute_env['import'] != 'Default':
                 compute_env_imports.add(compute_env['import'])
             else:
@@ -194,7 +195,7 @@ def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) 
             compute_env = compute_envs_from_file[name]
             compute_env['name'] = name
             compute_envs.append(compute_env)
-            compute_env_names.append(name)
+            compute_env_names.add(name)
 
     for name in compute_env_imports:
         if name not in compute_envs_from_file:
