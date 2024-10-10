@@ -33,12 +33,6 @@ Parameters:
 
 Resources:
 
-  LogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${Lambda}"
-      RetentionInDays: 90
-
   Role:
     Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}
     Properties:
