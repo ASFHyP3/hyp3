@@ -25,12 +25,10 @@ jobs:
             job_files: >-
               job_spec/AUTORIFT_ITS_LIVE.yml
               job_spec/S1_CORRECTION_ITS_LIVE.yml
-            instance_types: r6id.xlarge,r6idn.xlarge,r5dn.xlarge,r5d.xlarge
             default_max_vcpus: 2000  # Max: 10,406
             expanded_max_vcpus: 2000  # Max: 10,406
             required_surplus: 0
             security_environment: JPL-public
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-a19-jpl
