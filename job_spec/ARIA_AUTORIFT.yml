@@ -61,7 +61,7 @@ AUTORIFT:
       compute_environment:
         name: 'AriaAutorift'
         instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-        ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+        ami_id: ami-0d3bb50d3c35f67d4 # Amazon Linux 2023
       vcpu: 1
       memory: 31500
       secrets:
