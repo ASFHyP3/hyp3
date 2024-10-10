@@ -174,6 +174,7 @@ def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) 
             compute_env = task['compute_environment']
             if 'name' in compute_env:
                 name = compute_env['name']
+                assert name != 'Default'
                 if name in compute_env_names:
                     raise ValueError(
                         f'Compute envs must have unique names but the following is defined more than once: {name}.'
