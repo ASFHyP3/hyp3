@@ -43,6 +43,7 @@ ARIA_RAIDER:
       compute_environment:
         name: 'AriaRaider'
         instance_types: m6id.xlarge, m6id.2xlarge, m6id.4xlarge, m6id.8xlarge, m6idn.xlarge, m6idn.2xlarge, m6idn.4xlarge, m6idn.8xlarge
+        ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
       vcpu: 1
       memory: 7500
       secrets:

@@ -2,7 +2,7 @@ compute_environments:
   # Format is the same as in the job_spec(s), except the name becomes the key.
   Default:
     instance_types: r6id.xlarge, r6id.2xlarge, r6id.4xlarge, r6id.8xlarge, r6idn.xlarge, r6idn.2xlarge, r6idn.4xlarge, r6idn.8xlarge
-    ami_id: image_id_ecs_amz2
+    ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
     allocation_type: SPOT
     allocation_strategy: SPOT_PRICE_CAPACITY_OPTIMIZED
   SrgGslc:
@@ -12,3 +12,4 @@ compute_environments:
     instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
+    ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
