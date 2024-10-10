@@ -30,12 +30,10 @@ jobs:
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/WATER_MAP.yml
               job_spec/WATER_MAP_EQ.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-a19-jpl-test
@@ -50,12 +48,10 @@ jobs:
               job_spec/ARIA_AUTORIFT.yml
               job_spec/ARIA_RAIDER.yml
               job_spec/INSAR_ISCE.yml
-            instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: JPL-public
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
           - environment: hyp3-its-live-test
@@ -69,7 +65,6 @@ jobs:
             job_files: >-
               job_spec/AUTORIFT_ITS_LIVE.yml
               job_spec/S1_CORRECTION_ITS_LIVE.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -88,12 +83,10 @@ jobs:
             job_files: >-
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/SRG_GSLC.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
     environment:
@@ -137,7 +130,5 @@ jobs:
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
           ORIGIN_ACCESS_IDENTITY_ID: ${{ secrets.ORIGIN_ACCESS_IDENTITY_ID }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
-          AMI_ID: ${{ matrix.ami_id }}
-          INSTANCE_TYPES: ${{ matrix.instance_types }}
           DISTRIBUTION_URL: ${{ matrix.distribution_url }}
           AUTH_PUBLIC_KEY: ${{ secrets.AUTH_PUBLIC_KEY }}
