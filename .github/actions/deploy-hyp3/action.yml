@@ -65,12 +65,6 @@ inputs:
   SECURITY_ENVIRONMENT:
     description: "Modify resources/configurations for ASF (default), EDC, or JPL security environments"
     required: true
-  AMI_ID:
-    description: "Name of the Systems Manager parameter from which to retrieve the current Ami Id"
-    required: true
-  INSTANCE_TYPES:
-    description: "Comma separated list of supported EC2 instance types"
-    required: true
   DISTRIBUTION_URL:
     description: "CloudFront Distribution URL for Earthdata Cloud environments"
     required: true
@@ -131,5 +125,3 @@ runs:
                 ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
                 MonthlyBudget='${{ inputs.MONTHLY_BUDGET }}' \
                 RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
-                AmiId='${{ inputs.AMI_ID }}' \
-                InstanceTypes='${{ inputs.INSTANCE_TYPES }}'
