@@ -196,7 +196,7 @@ def get_compute_environments(job_types: dict, compute_env_file: Path) -> list[di
 
     for name in compute_env_imports:
         if name not in compute_envs_from_file:
-            raise NotImplementedError(
+            raise ValueError(
                 f'The following compute env is imported but not defined in the compute envs file: {name}.'
             )
 
