@@ -189,6 +189,7 @@ def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) 
     if compute_env_file:
         compute_envs_from_file = yaml.safe_load(compute_env_file.read_text())['compute_environments']
         for name in compute_envs_from_file:
+            assert name != 'Default'
             if name in compute_env_names:
                 raise ValueError(
                     f'Compute envs must have unique names but the following is defined more than once: {name}.'
