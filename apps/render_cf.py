@@ -181,6 +181,8 @@ def get_compute_environments(job_types: dict, compute_env_file: Path) -> list[di
                 compute_env_names.append(name)
             elif 'import' in compute_env and compute_env['import'] != 'Default':
                 compute_env_imports.add(compute_env['import'])
+            else:
+                assert compute_env['import'] == 'Default'
 
     if compute_env_file:
         compute_envs_from_file = yaml.safe_load(compute_env_file.read_text())['compute_environments']
