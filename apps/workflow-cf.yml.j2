@@ -2,9 +2,6 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  JobQueueArn:
-    Type: String
-
   {% for name in compute_env_names %}
   {{ name }}JobQueueArn:
     Type: String
@@ -92,7 +89,6 @@ Resources:
       RoleArn: !GetAtt StepFunctionRole.Arn
       DefinitionS3Location: step-function.json
       DefinitionSubstitutions:
-        JobQueueArn: !Ref JobQueueArn
         {% for name in compute_env_names %}
         {{ name }}JobQueueArn: !Ref {{ name }}JobQueueArn
         {% endfor %}
@@ -137,7 +133,6 @@ Resources:
           - Effect: Allow
             Action: batch:SubmitJob
             Resource:
-              - !Ref JobQueueArn
               {% for name in compute_env_names %}
               - !Ref {{ name }}JobQueueArn
               {% endfor %}

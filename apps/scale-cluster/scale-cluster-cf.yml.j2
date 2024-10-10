@@ -2,9 +2,6 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  ComputeEnvironmentArn:
-    Type: String
-
   {% for name in compute_env_names %}
   {{ name }}ComputeEnvironmentArn:
     Type: String
@@ -85,40 +82,9 @@ Resources:
           - Effect: Allow
             Action: batch:UpdateComputeEnvironment
             Resource: 
-              - !Ref ComputeEnvironmentArn
               {% for name in compute_env_names %}
               - !Ref {{ name }}ComputeEnvironmentArn
               {% endfor %}
-
-  Lambda:
-    Type: AWS::Lambda::Function
-    Properties:
-      Environment:
-        Variables:
-          COMPUTE_ENVIRONMENT_ARN: !Ref ComputeEnvironmentArn
-          MONTHLY_BUDGET: !Ref MonthlyBudget
-          DEFAULT_MAX_VCPUS: !Ref DefaultMaxvCpus
-          EXPANDED_MAX_VCPUS: !Ref ExpandedMaxvCpus
-          REQUIRED_SURPLUS: !Ref RequiredSurplus
-      Code: src/
-      Handler: scale_cluster.lambda_handler
-      MemorySize: 128
-      Role: !GetAtt Role.Arn
-      Runtime: python3.9
-      Timeout: 30
-      {% if security_environment == 'EDC' %}
-      VpcConfig:
-        SecurityGroupIds:
-          - !Ref SecurityGroupId
-        SubnetIds: !Ref SubnetIds
-      {% endif %}
-
-  EventInvokeConfig:
-    Type: AWS::Lambda::EventInvokeConfig
-    Properties:
-      FunctionName: !Ref Lambda
-      Qualifier: $LATEST
-      MaximumRetryAttempts: 0
 
   Schedule:
     Type: AWS::Events::Rule
@@ -131,14 +97,6 @@ Resources:
         - Arn: !GetAtt {{ name }}Lambda.Arn
           Id:  {{ name }}lambda
         {% endfor %}
-
-  EventPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !GetAtt Lambda.Arn
-      Action: lambda:InvokeFunction
-      Principal: events.amazonaws.com
-      SourceArn: !GetAtt Schedule.Arn
 
   {% for name in compute_env_names %}
   {{ name }}LogGroup:

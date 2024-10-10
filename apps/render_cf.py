@@ -98,7 +98,7 @@ def get_step_for_batch_submit_job(task: dict) -> dict:
         compute_environment = task['compute_environment']['import']
     else:
         compute_environment = task['compute_environment']['name']
-    job_queue = 'JobQueueArn' if compute_environment == 'Default' else compute_environment + 'JobQueueArn'
+    job_queue = compute_environment + 'JobQueueArn'
     return {
         'Type': 'Task',
         'Resource': 'arn:aws:states:::batch:submitJob.sync',
@@ -180,10 +180,12 @@ def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) 
                     )
                 compute_envs.append(compute_env)
                 compute_env_names.add(name)
-            elif 'import' in compute_env and compute_env['import'] != 'Default':
+            elif 'import' in compute_env:
                 compute_env_imports.add(compute_env['import'])
             else:
-                assert compute_env['import'] == 'Default'
+                raise ValueError(
+                    f'The compute env must be defined with `name` or be imported with `import`.'
+                )
 
     if compute_env_file:
         compute_envs_from_file = yaml.safe_load(compute_env_file.read_text())['compute_environments']

@@ -12,22 +12,10 @@ Parameters:
     Type: Number
     MinValue: 0
 
-  AmiId:
-    Type: AWS::EC2::Image::Id
-
   ContentBucket:
     Type: String
 
-  InstanceTypes:
-    Type: CommaDelimitedList
-
 Outputs:
-
-  ComputeEnvironmentArn:
-    Value: !Ref ComputeEnvironment
-
-  JobQueueArn:
-    Value: !Ref BatchJobQueue
 
   {% for name in compute_env_names %}
   {{ name }}ComputeEnvironmentArn:
@@ -70,37 +58,6 @@ Resources:
             mount /dev/nvme1n1 /var/lib/docker
 
             --==BOUNDARY==--
-
-  ComputeEnvironment:
-    Type: AWS::Batch::ComputeEnvironment
-    Properties:
-      ServiceRole: !GetAtt BatchServiceRole.Arn
-      Type: MANAGED
-      ComputeResources:
-        Type: SPOT
-        AllocationStrategy: SPOT_PRICE_CAPACITY_OPTIMIZED
-        MinvCpus: 0
-        MaxvCpus: !Ref MaxvCpus
-        InstanceTypes: !Ref InstanceTypes
-        ImageId: !Ref AmiId
-        Subnets: !Ref SubnetIds
-        InstanceRole: !Ref InstanceProfile
-        SecurityGroupIds:
-          - !Ref SecurityGroup
-        LaunchTemplate:
-          LaunchTemplateId: !Ref LaunchTemplate
-          Version: !GetAtt LaunchTemplate.LatestVersionNumber
-        Tags:
-          Name: !Ref AWS::StackName
-
-  BatchJobQueue:
-    Type: AWS::Batch::JobQueue
-    Properties:
-      Priority: 1
-      ComputeEnvironmentOrder:
-        - ComputeEnvironment: !Ref ComputeEnvironment
-          Order: 1
-      SchedulingPolicyArn: !Ref SchedulingPolicy
 
   SchedulingPolicy:
     Type: AWS::Batch::SchedulingPolicy

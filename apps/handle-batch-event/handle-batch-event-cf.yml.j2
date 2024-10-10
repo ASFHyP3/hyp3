@@ -2,9 +2,6 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
 
-  JobQueueArn:
-    Type: String
-
   {% for name in compute_env_names %}
   {{ name }}JobQueueArn:
     Type: String
@@ -99,7 +96,6 @@ Resources:
           - Batch Job State Change
         detail:
           jobQueue:
-            - !Ref JobQueueArn
             {% for name in compute_env_names %}
             - !Ref {{ name }}JobQueueArn
             {% endfor %}
