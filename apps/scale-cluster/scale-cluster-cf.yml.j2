@@ -91,8 +91,6 @@ Resources:
     Properties:
       ScheduleExpression: "rate(30 minutes)"
       Targets:
-        - Arn: !GetAtt Lambda.Arn
-          Id: lambda
         {% for name in compute_env_names %}
         - Arn: !GetAtt {{ name }}Lambda.Arn
           Id:  {{ name }}lambda
