@@ -164,7 +164,7 @@ def render_templates(job_types, compute_envs, security_environment, api_name):
         template_file.with_suffix('').write_text(output)
 
 
-def get_compute_environments(job_types: dict, compute_env_file: Path) -> list[dict]:
+def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) -> list[dict]:
     compute_envs = []
     compute_env_names = []
     compute_env_imports = set()
