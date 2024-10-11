@@ -47,30 +47,24 @@ SRG_TIME_SERIES:
       image: ghcr.io/asfhyp3/hyp3-srg
       # TODO revert image_tag
       #image_tag: latest.gpu
-      image_tag: 0.8.1.dev20_g0eb9d69
+      image_tag: 0.8.1.dev21_g991363d
       command:
         - ++process
         - back_projection
         - --bounds
         - Ref::bounds
-        # TODO revert --gpu
-        #- --gpu
+        - --gpu
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
         - --use-gslc-prefix
         - Ref::granule
-      # TODO revert timeout for gpu env
-      #timeout: 10800
-      timeout: 86400
+      timeout: 10800
       compute_environment:
-        # TODO revert import
-        #import: SrgGslc
-        import: Default
+        import: SrgGslc
       vcpu: 1
-      # TODO revert gpu
-      #gpu: 1
+      gpu: 1
       memory: 30500
       secrets:
         - EARTHDATA_USERNAME
@@ -78,7 +72,7 @@ SRG_TIME_SERIES:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-srg
       # TODO image tag
-      image_tag: 0.8.1.dev20_g0eb9d69
+      image_tag: 0.8.1.dev21_g991363d
       command:
         - ++process
         - time_series
