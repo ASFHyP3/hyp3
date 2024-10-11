@@ -510,11 +510,7 @@ def test_check_bounds_formatting():
 
 
 def test_check_granules_intersecting_bounds():
-    job = {
-            'job_parameters': {
-                "bounds": [-10, 0, 10, 10]
-            }
-        }
+    job = {'job_parameters': {"bounds": [-10, 0, 10, 10]}}
     valid_granule_metadata = [
         {'name': 'intersects1', 'polygon': Polygon.from_bounds(-10.0, 0.0, 10.0, 10.0)},
         {'name': 'intersects2', 'polygon': Polygon.from_bounds(-9.0, -1.0, 20.0, 11.0)},
@@ -529,5 +525,5 @@ def test_check_granules_intersecting_bounds():
     ]
     validation.check_granules_intersecting_bounds(job, valid_granule_metadata)
     error_pattern = r".*bounds: \['does_not_intersect1', 'does_not_intersect2', 'does_not_intersect3'\]*"
-    with raises(validation.GranuleValidationError,  match=error_pattern):
+    with raises(validation.GranuleValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job, invalid_granule_metadata)

@@ -103,7 +103,7 @@ def get_step_for_batch_submit_job(task: dict) -> dict:
         'Type': 'Task',
         'Resource': 'arn:aws:states:::batch:submitJob.sync',
         'Parameters': {
-            'JobDefinition': '${'+ snake_to_pascal_case(task['name']) + '}',
+            'JobDefinition': '${' + snake_to_pascal_case(task['name']) + '}',
             'JobName.$': '$.job_id',
             'JobQueue': '${' + job_queue + '}',
             'ShareIdentifier': 'default',

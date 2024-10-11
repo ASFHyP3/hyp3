@@ -21,6 +21,7 @@ class GranuleValidationError(Exception):
 class BoundsValidationError(Exception):
     pass
 
+
 with open(Path(__file__).parent / 'job_validation_map.yml') as f:
     JOB_VALIDATION_MAP = yaml.safe_load(f.read())
 
@@ -141,7 +142,7 @@ def get_multipolygon_from_geojson(input_file):
 
 def check_bounds_formatting(job, _):
     bounds = job['job_parameters']['bounds']
-    if bounds == [0.0, 0.0, 0.0, 0.0]: 
+    if bounds == [0.0, 0.0, 0.0, 0.0]:
         pass
     is_invalid_order = bounds[0] >= bounds[2] or bounds[1] >= bounds[3]
     if is_invalid_order:
