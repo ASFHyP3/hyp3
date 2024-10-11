@@ -515,7 +515,7 @@ def test_check_bounds_formatting():
 
 
 def test_check_granules_intersecting_bounds():
-    job_with_specified_bounds = {'job_parameters': {"bounds": [-10, 0, 10, 10]}}
+    job_with_specified_bounds = {'job_parameters': {'bounds': [-10, 0, 10, 10]}}
     job_with_default_bounds = {'job_parameters': {'bounds': [0, 0, 0, 0]}}
     valid_granule_metadata = [
         {'name': 'intersects1', 'polygon': Polygon.from_bounds(-10.0, 0.0, 10.0, 10.0)},
