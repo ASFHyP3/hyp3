@@ -18,6 +18,9 @@ class GranuleValidationError(Exception):
     pass
 
 
+class BoundsValidationError(Exception):
+    pass
+
 with open(Path(__file__).parent / 'job_validation_map.yml') as f:
     JOB_VALIDATION_MAP = yaml.safe_load(f.read())
 
@@ -134,6 +137,42 @@ def get_multipolygon_from_geojson(input_file):
         shp = json.load(f)['features'][0]['geometry']
     polygons = [x.buffer(0) for x in shape(shp).buffer(0).geoms]
     return MultiPolygon(polygons)
+
+
+def check_bounds_formatting(job, _):
+    bounds = job['job_parameters']['bounds']
+    if bounds == [0.0, 0.0, 0.0, 0.0]: 
+        pass
+    is_invalid_order = bounds[0] >= bounds[2] or bounds[1] >= bounds[3]
+    if is_invalid_order:
+        raise BoundsValidationError(
+            'Invalid order for bounds. Bounds should be ordered [min lon, min lat, max lon, max lat].'
+        )
+
+    def bad_lat(lat):
+        return lat > 90 or lat < -90
+
+    def bad_lon(lon):
+        return lon > 180 or lon < -180
+
+    has_invalid_value = [bad_lon(bounds[0]), bad_lon(bounds[2]), bad_lat(bounds[1]), bad_lat(bounds[3])]
+    if sum(has_invalid_value):
+        raise BoundsValidationError(
+            'Invalid lat/lon value in bounds. Bounds should be ordered [min lon, min lat, max lon, max lat].'
+        )
+
+
+def check_granules_intersecting_bounds(job, granule_metadata):
+    bounds = job['job_parameters']['bounds']
+    bad_granules = []
+    for granule in granule_metadata:
+        bbox = granule['polygon']
+        if not bbox.intersection(Polygon.from_bounds(bounds[0], bounds[1], bounds[2], bounds[3])):
+            bad_granules.append(granule['name'])
+    if bad_granules:
+        raise GranuleValidationError(
+            f'The following granules do not intersect the provided bounds: {bad_granules}.'
+        )
 
 
 def convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
