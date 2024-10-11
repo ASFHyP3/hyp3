@@ -144,8 +144,8 @@ def check_bounds_formatting(job, _):
     bounds = job['job_parameters']['bounds']
     if bounds == [0.0, 0.0, 0.0, 0.0]:
         pass
-    is_invalid_order = bounds[0] >= bounds[2] or bounds[1] >= bounds[3]
-    if is_invalid_order:
+
+    if bounds[0] >= bounds[2] or bounds[1] >= bounds[3]:
         raise BoundsValidationError(
             'Invalid order for bounds. Bounds should be ordered [min lon, min lat, max lon, max lat].'
         )
