@@ -495,10 +495,14 @@ def test_check_bounds_formatting():
     invalid_jobs_bad_order = [
         {'job_parameters': {'bounds': [10, 0, -10, 10]}},
         {'job_parameters': {'bounds': [-10, 10, 10, 0]}},
+        {'job_parameters': {'bounds': [10, 0, 10, 10]}},
+        {'job_parameters': {'bounds': [-10, 0, 10, 0]}},
     ]
     invalid_jobs_bad_values = [
         {'job_parameters': {'bounds': [-10, 0, 10, 100]}},
         {'job_parameters': {'bounds': [-200, 0, 10, 10]}},
+        {'job_parameters': {'bounds': [-10, -100, 10, 80]}},
+        {'job_parameters': {'bounds': [-100, 0, 200, 10]}},
     ]
     for valid_job in valid_jobs:
         validation.check_bounds_formatting(valid_job, {})
