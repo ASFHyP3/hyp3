@@ -24,6 +24,7 @@ SRG_GSLC:
       default:  '""'
       api_schema:
         type: array
+        description: Bounds for extent of processing formatted like [min lon, min lat, max lon, max lat] in EPSG:4326. Setting to [0, 0, 0, 0] will use the extent of the first granule.
         default: [0.0, 0.0, 0.0, 0.0]
         minItems: 4
         maxItems: 4
@@ -33,7 +34,6 @@ SRG_GSLC:
           - -113.209
           - 38.138
         items:
-          description: min lon, min lat, max lon, max lat in EPSG:4326
           type: number
           example: -116.583
   validators: [
