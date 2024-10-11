@@ -156,8 +156,7 @@ def check_bounds_formatting(job, _):
     def bad_lon(lon):
         return lon > 180 or lon < -180
 
-    has_invalid_value = [bad_lon(bounds[0]), bad_lon(bounds[2]), bad_lat(bounds[1]), bad_lat(bounds[3])]
-    if sum(has_invalid_value):
+    if any([bad_lon(bounds[0]), bad_lon(bounds[2]), bad_lat(bounds[1]), bad_lat(bounds[3])]):
         raise BoundsValidationError(
             'Invalid lat/lon value in bounds. Bounds should be ordered [min lon, min lat, max lon, max lat].'
         )
