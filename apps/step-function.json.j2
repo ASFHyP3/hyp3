@@ -72,13 +72,13 @@
         {
           "Variable": "$.job_type",
           "StringEquals": "{{ job_type }}",
-          "Next": "{{ job_spec['tasks'][0]['name'] }}"
+          "Next": "{{ job_spec['steps'][0]['name'] }}"
         }{% if not loop.last %},{% endif %}
         {% endfor %}
       ],
       "Default": "JOB_FAILED"
     },
-    {% for name, body in job_steps.items() %}
+    {% for name, body in job_states.items() %}
     "{{ name }}": {{ json.dumps(body) }},
     {% endfor %}
     "PROCESSING_FAILED": {

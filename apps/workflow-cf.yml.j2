@@ -44,8 +44,8 @@ Outputs:
 
 Resources:
   {% for job_type, job_spec in job_types.items() %}
-  {% for task in job_spec['tasks'] %}
-  {{ snake_to_pascal_case(task['name']) }}:
+  {% for job_step in job_spec['steps'] %}
+  {{ snake_to_pascal_case(job_step['name']) }}:
     Type: AWS::Batch::JobDefinition
     Properties:
       Type: container
@@ -54,35 +54,35 @@ Resources:
         {{ k }}: {{ v.get('default') or v['api_schema'].get('default') }}
         {% endfor %}
       ContainerProperties:
-        Image: {% if 'image_tag' in task -%}
-            "{{ task['image'] }}:{{ task['image_tag'] }}"
+        Image: {% if 'image_tag' in job_step -%}
+            "{{ job_step['image'] }}:{{ job_step['image_tag'] }}"
           {% else -%}
-            !Sub "{{ task['image'] }}:${ImageTag}"
+            !Sub "{{ job_step['image'] }}:${ImageTag}"
           {% endif %}
         JobRoleArn: !Ref TaskRoleArn
         ExecutionRoleArn: !GetAtt ExecutionRole.Arn
         ResourceRequirements:
           - Type: VCPU
-            Value: "{{ task['vcpu'] }}"
+            Value: "{{ job_step['vcpu'] }}"
           - Type: MEMORY
-            Value: "{{ task['memory'] }}"
-          {% if 'gpu' in task %}
+            Value: "{{ job_step['memory'] }}"
+          {% if 'gpu' in job_step %}
           - Type: GPU
-            Value: "{{ task['gpu'] }}"
+            Value: "{{ job_step['gpu'] }}"
           {% endif %}
         Command:
-          {% for command in task['command'] %}
+          {% for command in job_step['command'] %}
           - {{ command }}
           {% endfor %}
-        {% if task.get('secrets') %}
+        {% if job_step.get('secrets') %}
         Secrets:
-          {% for secret in task['secrets'] %}
+          {% for secret in job_step['secrets'] %}
           - Name: {{ secret }}
             ValueFrom: !Sub "${SecretArn}:{{ secret }}::"
           {% endfor %}
         {% endif %}
       Timeout:
-        AttemptDurationSeconds: {{ task['timeout'] }}
+        AttemptDurationSeconds: {{ job_step['timeout'] }}
   {% endfor %}
   {% endfor %}
 
@@ -97,8 +97,8 @@ Resources:
         {{ name }}JobQueueArn: !Ref {{ name }}JobQueueArn
         {% endfor %}
         {% for job_type, job_spec in job_types.items() %}
-        {% for task in job_spec['tasks'] %}
-        {{ snake_to_pascal_case(task['name']) }}: !Ref {{ snake_to_pascal_case(task['name']) }}
+        {% for job_step in job_spec['steps'] %}
+        {{ snake_to_pascal_case(job_step['name']) }}: !Ref {{ snake_to_pascal_case(job_step['name']) }}
         {% endfor %}
         {% endfor %}
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
@@ -142,8 +142,8 @@ Resources:
               - !Ref {{ name }}JobQueueArn
               {% endfor %}
               {% for job_type, job_spec in job_types.items() %}
-              {% for task in job_spec['tasks'] %}
-              - !Ref {{ snake_to_pascal_case(task['name']) }}
+              {% for job_step in job_spec['steps'] %}
+              - !Ref {{ snake_to_pascal_case(job_step['name']) }}
               {% endfor %}
               {% endfor %}
           - Effect: Allow

@@ -60,7 +60,7 @@ INSAR_ISCE_MULTI_BURST:
     - check_valid_polarizations
     - check_same_burst_ids
     - check_not_antimeridian
-  tasks:
+  steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2
       command:

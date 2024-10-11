@@ -41,7 +41,7 @@ SRG_TIME_SERIES:
   cost_profiles:
     DEFAULT:
       cost: 1.0
-  tasks:
+  steps:
     - name: BACK_PROJECTION
       map: for granule in granules
       image: ghcr.io/asfhyp3/hyp3-srg

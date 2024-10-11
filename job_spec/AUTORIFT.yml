@@ -39,7 +39,7 @@ AUTORIFT:
     DEFAULT:
       cost: 1.0
   validators: []
-  tasks:
+  steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
       command:

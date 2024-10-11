@@ -12,29 +12,29 @@ def snake_to_pascal_case(input_string: str):
     return ''.join([i.title() for i in split_string])
 
 
-def get_steps_for_jobs(job_types: dict) -> dict:
-    steps = {}
+def get_states_for_jobs(job_types: dict) -> dict:
+    states = {}
     for job_spec in job_types.values():
-        steps.update(get_steps_for_job(job_spec))
-    return steps
+        states.update(get_states_for_job(job_spec))
+    return states
 
 
-def get_steps_for_job(job_spec: dict) -> dict:
-    steps = {}
-    tasks = job_spec['tasks']
-    for i in range(len(tasks)):
-        task = tasks[i]
-        next_step_name = tasks[i + 1]['name'] if i < len(tasks) - 1 else 'GET_FILES'
-        steps[task['name']] = get_step_for_task(task, i, next_step_name, job_spec)
-    return steps
+def get_states_for_job(job_spec: dict) -> dict:
+    states = {}
+    job_steps = job_spec['steps']
+    for i in range(len(job_steps)):
+        job_step = job_steps[i]
+        next_state_name = job_steps[i + 1]['name'] if i < len(job_steps) - 1 else 'GET_FILES'
+        states[job_step['name']] = get_state_for_job_step(job_step, i, next_state_name, job_spec)
+    return states
 
 
-def get_step_for_task(task: dict, index: int, next_step_name: str, job_spec: dict) -> dict:
-    if 'map' in task:
-        step = get_step_for_map_task(task, job_spec)
+def get_state_for_job_step(job_step: dict, index: int, next_state_name: str, job_spec: dict) -> dict:
+    if 'map' in job_step:
+        state = get_map_state(job_step, job_spec)
     else:
-        step = get_step_for_batch_submit_job(task)
-    step.update(
+        state = get_batch_submit_job_state(job_step)
+    state.update(
         {
             'Catch': [
                 {
@@ -46,18 +46,18 @@ def get_step_for_task(task: dict, index: int, next_step_name: str, job_spec: dic
                 },
             ],
             'ResultPath': f'$.results.processing_results.step_{index}',
-            'Next': next_step_name,
+            'Next': next_state_name,
         }
     )
-    return step
+    return state
 
 
-def get_step_for_map_task(task: dict, job_spec: dict) -> dict:
-    item, items = parse_task_map(task['map'])
+def get_map_state(job_step: dict, job_spec: dict) -> dict:
+    item, items = parse_job_step_map(job_step['map'])
     batch_job_parameters = get_batch_job_parameters(item, items, job_spec)
-    submit_job_step = get_step_for_batch_submit_job(task)
-    submit_job_step['End'] = True
-    submit_job_step_name = task['name'] + '_SUBMIT_JOB'
+    submit_job_state = get_batch_submit_job_state(job_step)
+    submit_job_state['End'] = True
+    submit_job_state_name = job_step['name'] + '_SUBMIT_JOB'
     return {
         'Type': 'Map',
         'ItemsPath': f'$.job_parameters.{items}',
@@ -68,16 +68,16 @@ def get_step_for_map_task(task: dict, job_spec: dict) -> dict:
             'batch_job_parameters': batch_job_parameters,
         },
         'ItemProcessor': {
-            'StartAt': submit_job_step_name,
+            'StartAt': submit_job_state_name,
             'States': {
-                submit_job_step_name: submit_job_step,
+                submit_job_state_name: submit_job_state,
             }
         }
     }
 
 
-def parse_task_map(task_map: str) -> tuple[str, str]:
-    tokens = task_map.split(' ')
+def parse_job_step_map(job_step_map: str) -> tuple[str, str]:
+    tokens = job_step_map.split(' ')
     assert len(tokens) == 4
     assert tokens[0], tokens[2] == ('for', 'in')
     return tokens[1], tokens[3]
@@ -93,17 +93,17 @@ def get_batch_job_parameters(item: str, items: str, job_spec: dict) -> dict:
     return batch_job_parameters
 
 
-def get_step_for_batch_submit_job(task: dict) -> dict:
-    if 'import' in task['compute_environment']:
-        compute_environment = task['compute_environment']['import']
+def get_batch_submit_job_state(job_step: dict) -> dict:
+    if 'import' in job_step['compute_environment']:
+        compute_environment = job_step['compute_environment']['import']
     else:
-        compute_environment = task['compute_environment']['name']
+        compute_environment = job_step['compute_environment']['name']
     job_queue = 'JobQueueArn' if compute_environment == 'Default' else compute_environment + 'JobQueueArn'
     return {
         'Type': 'Task',
         'Resource': 'arn:aws:states:::batch:submitJob.sync',
         'Parameters': {
-            'JobDefinition': '${'+ snake_to_pascal_case(task['name']) + '}',
+            'JobDefinition': '${' + snake_to_pascal_case(job_step['name']) + '}',
             'JobName.$': '$.job_id',
             'JobQueue': '${' + job_queue + '}',
             'ShareIdentifier': 'default',
@@ -133,7 +133,7 @@ def get_step_for_batch_submit_job(task: dict) -> dict:
 
 
 def render_templates(job_types, compute_envs, security_environment, api_name):
-    job_steps = get_steps_for_jobs(job_types)
+    job_states = get_states_for_jobs(job_types)
 
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader('./'),
@@ -156,7 +156,7 @@ def render_templates(job_types, compute_envs, security_environment, api_name):
             api_name=api_name,
             json=json,
             snake_to_pascal_case=snake_to_pascal_case,
-            job_steps=job_steps,
+            job_states=job_states,
         )
 
         if str(template_file).endswith('.json.j2'):
@@ -170,8 +170,8 @@ def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) 
     compute_env_names = set()
     compute_env_imports = set()
     for _, job_spec in job_types.items():
-        for task in job_spec['tasks']:
-            compute_env = task['compute_environment']
+        for job_step in job_spec['steps']:
+            compute_env = job_step['compute_environment']
             if 'name' in compute_env:
                 name = compute_env['name']
                 assert name != 'Default'
@@ -246,8 +246,8 @@ def main():
         job_types.update(yaml.safe_load(file.read_text()))
 
     for job_type, job_spec in job_types.items():
-        for task in job_spec['tasks']:
-            task['name'] = job_type + '_' + task['name'] if task['name'] else job_type
+        for job_step in job_spec['steps']:
+            job_step['name'] = job_type + '_' + job_step['name'] if job_step['name'] else job_type
 
     compute_envs = get_compute_environments(job_types, args.compute_environment_file)
 

@@ -25,7 +25,7 @@ ARIA_RAIDER:
     DEFAULT:
       cost: 1.0
   validators: []
-  tasks:
+  steps:
     - name: ''
       image: ghcr.io/dbekaert/raider
       command:
