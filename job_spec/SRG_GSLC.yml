@@ -43,7 +43,7 @@ SRG_GSLC:
   cost_profiles:
     DEFAULT:
       cost: 1.0
-  tasks:
+  steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-srg
       image_tag: latest.gpu
