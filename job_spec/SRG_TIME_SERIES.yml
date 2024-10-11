@@ -37,7 +37,10 @@ SRG_TIME_SERIES:
           type: number
           example: -116.583
   # TODO validators
-  validators: []
+  validators: [
+    check_bounds_formatting,
+    check_granules_intersecting_bounds
+  ]
   cost_profiles:
     DEFAULT:
       cost: 1.0
