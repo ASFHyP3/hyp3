@@ -483,3 +483,56 @@ def test_validate_jobs():
     ]
     with raises(validation.GranuleValidationError):
         validation.validate_jobs(jobs)
+
+
+def test_check_bounds_formatting():
+    valid_jobs = [
+        {'job_parameters': {'bounds': [-10, 0, 10, 10]}},
+        {'job_parameters': {'bounds': [-180, -90, -170, -80]}},
+        {'job_parameters': {'bounds': [170, 75, 180, 90]}},
+        {'job_parameters': {'bounds': [0, 0, 0, 0]}}
+    ]
+    invalid_jobs_bad_order = [
+        {'job_parameters': {'bounds': [10, 0, -10, 10]}},
+        {'job_parameters': {'bounds': [-10, 10, 10, 0]}},
+        {'job_parameters': {'bounds': [10, 0, 10, 10]}},
+        {'job_parameters': {'bounds': [-10, 0, 10, 0]}},
+    ]
+    invalid_jobs_bad_values = [
+        {'job_parameters': {'bounds': [-10, 0, 10, 100]}},
+        {'job_parameters': {'bounds': [-200, 0, 10, 10]}},
+        {'job_parameters': {'bounds': [-10, -100, 10, 80]}},
+        {'job_parameters': {'bounds': [-100, 0, 200, 10]}},
+    ]
+    for valid_job in valid_jobs:
+        validation.check_bounds_formatting(valid_job, {})
+    for invalid_job in invalid_jobs_bad_order:
+        with raises(validation.BoundsValidationError, match=r'.*Invalid order for bounds.*'):
+            validation.check_bounds_formatting(invalid_job, {})
+    for invalid_job in invalid_jobs_bad_values:
+        with raises(validation.BoundsValidationError, match=r'.*Invalid lon/lat value(s)*'):
+            validation.check_bounds_formatting(invalid_job, {})
+
+
+def test_check_granules_intersecting_bounds():
+    job_with_specified_bounds = {'job_parameters': {'bounds': [-10, 0, 10, 10]}}
+    job_with_default_bounds = {'job_parameters': {'bounds': [0, 0, 0, 0]}}
+    valid_granule_metadata = [
+        {'name': 'intersects1', 'polygon': Polygon.from_bounds(-10.0, 0.0, 10.0, 10.0)},
+        {'name': 'intersects2', 'polygon': Polygon.from_bounds(-9.0, -1.0, 20.0, 11.0)},
+        {'name': 'intersects3', 'polygon': Polygon.from_bounds(0.0, 5.0, 15.0, 15.0)}
+    ]
+    invalid_granule_metadata = [
+        {'name': 'intersects1', 'polygon': Polygon.from_bounds(-10.0, 0.0, 10.0, 10.0)},
+        {'name': 'does_not_intersect1', 'polygon': Polygon.from_bounds(10.1, -10, 20.0, -0.1)},
+        {'name': 'intersects2', 'polygon': Polygon.from_bounds(-9.0, -1.0, 20.0, 11.0)},
+        {'name': 'does_not_intersect2', 'polygon': Polygon.from_bounds(-80.0, 20.0, -60.0, 90.0)},
+        {'name': 'does_not_intersect3', 'polygon': Polygon.from_bounds(100.0, -50.0, 120.0, -0.1)},
+    ]
+    validation.check_granules_intersecting_bounds(job_with_specified_bounds, valid_granule_metadata)
+    validation.check_granules_intersecting_bounds(job_with_default_bounds, valid_granule_metadata)
+    error_pattern = r".*bounds: \['does_not_intersect1', 'does_not_intersect2', 'does_not_intersect3'\]*"
+    with raises(validation.GranuleValidationError, match=error_pattern):
+        validation.check_granules_intersecting_bounds(job_with_specified_bounds, invalid_granule_metadata)
+    with raises(validation.GranuleValidationError, match=error_pattern):
+        validation.check_granules_intersecting_bounds(job_with_default_bounds, invalid_granule_metadata)
