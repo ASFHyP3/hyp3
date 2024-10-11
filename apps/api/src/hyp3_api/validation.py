@@ -163,11 +163,11 @@ def check_bounds_formatting(job, _):
 
 
 def check_granules_intersecting_bounds(job, granule_metadata):
-    bounds = job['job_parameters']['bounds']
+    bounds = Polygon.from_bounds(*job['job_parameters']['bounds'])
     bad_granules = []
     for granule in granule_metadata:
         bbox = granule['polygon']
-        if not bbox.intersection(Polygon.from_bounds(bounds[0], bounds[1], bounds[2], bounds[3])):
+        if not bbox.intersection(bounds):
             bad_granules.append(granule['name'])
     if bad_granules:
         raise GranuleValidationError(
