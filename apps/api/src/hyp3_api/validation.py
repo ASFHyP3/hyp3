@@ -143,7 +143,7 @@ def get_multipolygon_from_geojson(input_file):
 def check_bounds_formatting(job, _):
     bounds = job['job_parameters']['bounds']
     if bounds == [0.0, 0.0, 0.0, 0.0]:
-        pass
+        return
 
     if bounds[0] >= bounds[2] or bounds[1] >= bounds[3]:
         raise BoundsValidationError(
@@ -158,12 +158,16 @@ def check_bounds_formatting(job, _):
 
     if any([bad_lon(bounds[0]), bad_lon(bounds[2]), bad_lat(bounds[1]), bad_lat(bounds[3])]):
         raise BoundsValidationError(
-            'Invalid lat/lon value in bounds. Bounds should be ordered [min lon, min lat, max lon, max lat].'
+            'Invalid lon/lat value(s) in bounds. Bounds should be ordered [min lon, min lat, max lon, max lat].'
         )
 
 
 def check_granules_intersecting_bounds(job, granule_metadata):
-    bounds = Polygon.from_bounds(*job['job_parameters']['bounds'])
+    bounds = job['job_parameters']['bounds']
+    if bounds == [0.0, 0.0, 0.0, 0.0]:
+        bounds = granule_metadata[0]['polygon']
+    else:
+        bounds = Polygon.from_bounds(*bounds)
     bad_granules = []
     for granule in granule_metadata:
         bbox = granule['polygon']
