@@ -49,7 +49,7 @@ SRG_TIME_SERIES:
       image: ghcr.io/asfhyp3/hyp3-srg
       # TODO revert image_tag
       #image_tag: latest.gpu
-      image_tag: 0.8.1.dev26_g096e7e7.gpu
+      image_tag: 0.8.1.dev29_g94579f4.gpu
       command:
         - ++process
         - back_projection
