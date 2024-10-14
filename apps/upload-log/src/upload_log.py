@@ -58,7 +58,6 @@ def write_log_to_s3(bucket, prefix, content):
 
 
 def lambda_handler(event, context):
-    # TODO handle all results, not just the last one
     results_dict = event['processing_results']
     result = results_dict[max(results_dict.keys())]
 
