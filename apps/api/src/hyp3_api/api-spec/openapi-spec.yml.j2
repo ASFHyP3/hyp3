@@ -408,17 +408,17 @@ components:
 
     processing_times:
       description: >
-        A list of run times for the job's processing steps in the order that they were executed. For example,
-        a job comprised of a single processing step would yield a list containing one processing time, while a job
-        comprised of three processing steps would yield a list containing three processing times. An empty list
-        represents a failure to calculate processing times.
+        List of run times for the job's processing steps in the order that they were executed.
+        An empty list represents a failure to calculate processing times.
       type: array
       items:
-        $ref: '#/components/schemas/processing_time_in_seconds'
+        oneOf:
+          - $ref: "#/components/schemas/processing_times"
+          - $ref: '#/components/schemas/processing_time_in_seconds'
 
     processing_time_in_seconds:
       description: >
-        Run time in seconds for a particular processing step's final attempt (regardless of whether it succeeded).
+        Run time in seconds for a processing step's final attempt (regardless of whether it succeeded).
         A value of zero indicates that there were no attempts.
       type: number
       minimum: 0
