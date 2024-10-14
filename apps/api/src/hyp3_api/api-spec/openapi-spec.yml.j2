@@ -413,8 +413,12 @@ components:
       type: array
       items:
         oneOf:
-          - $ref: "#/components/schemas/processing_times"
+          - type: array
+            items:
+              $ref: '#/components/schemas/processing_time_in_seconds'
+            example: [200, 100, 150]
           - $ref: '#/components/schemas/processing_time_in_seconds'
+
 
     processing_time_in_seconds:
       description: >
@@ -422,6 +426,7 @@ components:
         A value of zero indicates that there were no attempts.
       type: number
       minimum: 0
+      example: 50
 
   securitySchemes:
     EarthDataLogin:
