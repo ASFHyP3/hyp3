@@ -180,7 +180,7 @@ def check_granules_intersecting_bounds(job, granule_metadata):
 
 
 def check_same_relative_orbits(job, granule_metadata):
-    relative_orbit_numbers = []
+    relative_orbit_number = None
     for granule in granule_metadata:
         name = granule['name'].split('_')
         absolute_orbit = name[7]
@@ -188,12 +188,12 @@ def check_same_relative_orbits(job, granule_metadata):
             relative_orbit = str(((int(absolute_orbit) - 73) % 175) + 1)
         else:
             relative_orbit = str(((int(absolute_orbit) - 27) % 175) + 1)
-        if not relative_orbit_numbers:
-            relative_orbit_numbers.append(relative_orbit)
-        if relative_orbit not in relative_orbit_numbers:   
+        if not relative_orbit_number:
+            relative_orbit_number = relative_orbit
+        if relative_orbit != relative_orbit_number:   
             raise GranuleValidationError(
                 f'Relative orbit number for {granule["name"]} does not match that of the previous granules: '
-                f'{relative_orbit} is not {relative_orbit_numbers[0]}.'
+                f'{relative_orbit} is not {relative_orbit_number}.'
             )
 
 
