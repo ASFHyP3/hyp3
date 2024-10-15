@@ -184,6 +184,7 @@ def check_same_relative_orbits(job, granule_metadata):
     for granule in granule_metadata:
         name_split = granule['name'].split('_')
         absolute_orbit = name_split[7]
+        # "Relationship between relative and absolute orbit numbers": https://sentiwiki.copernicus.eu/web/s1-products
         offset = 73 if name_split[0] == 'S1A' else 27
         relative_orbit = str(((int(absolute_orbit) - offset) % 175) + 1)
         if not relative_orbit_number:
