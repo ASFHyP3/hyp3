@@ -114,6 +114,10 @@ def get_batch_submit_job_state(job_step: dict) -> dict:
                 'Attempts': 3
             },
         },
+        'ResultSelector': {
+            'start.$': '$.Attempts[0:].StartedAt',
+            'stop.$': '$.Attempts[0:].StoppedAt',
+        },
         'Retry': [
             {
                 'ErrorEquals': [
