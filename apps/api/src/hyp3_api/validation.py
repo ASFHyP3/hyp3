@@ -182,12 +182,10 @@ def check_granules_intersecting_bounds(job, granule_metadata):
 def check_same_relative_orbits(job, granule_metadata):
     relative_orbit_number = None
     for granule in granule_metadata:
-        name = granule['name'].split('_')
-        absolute_orbit = name[7]
-        if name[0] == 'S1A':
-            relative_orbit = str(((int(absolute_orbit) - 73) % 175) + 1)
-        else:
-            relative_orbit = str(((int(absolute_orbit) - 27) % 175) + 1)
+        name_split = granule['name'].split('_')
+        absolute_orbit = name_split[7]
+        offset = 73 if name_split[0] == 'S1A' else 27
+        relative_orbit = str(((int(absolute_orbit) - offset) % 175) + 1)
         if not relative_orbit_number:
             relative_orbit_number = relative_orbit
         if relative_orbit != relative_orbit_number:
