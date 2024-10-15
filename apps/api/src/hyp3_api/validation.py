@@ -179,6 +179,24 @@ def check_granules_intersecting_bounds(job, granule_metadata):
         )
 
 
+def check_same_relative_orbits(job, granule_metadata):
+    relative_orbit_numbers = []
+    for granule in granule_metadata:
+        name = granule['name'].split('_')
+        absolute_orbit = name[7]
+        if name[0] == 'S1A':
+            relative_orbit = str(((int(absolute_orbit) - 73) % 175) + 1)
+        else:
+            relative_orbit = str(((int(absolute_orbit) - 27) % 175) + 1)
+        if not relative_orbit_numbers:
+            relative_orbit_numbers.append(relative_orbit)
+        else:
+            if relative_orbit not in relative_orbit_numbers:
+                raise GranuleValidationError(
+                    f'The relative orbit number for {granule["name"]} does not match the previous granules: {relative_orbit} is not {relative_orbit_numbers[0]}.'
+                )
+
+
 def convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
     jobs = deepcopy(jobs)
     for job in jobs:

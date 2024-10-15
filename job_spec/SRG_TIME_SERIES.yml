@@ -38,7 +38,8 @@ SRG_TIME_SERIES:
           example: -116.583
   validators: [
     check_bounds_formatting,
-    check_granules_intersecting_bounds
+    check_granules_intersecting_bounds,
+    check_same_relative_orbits
   ]
   cost_profiles:
     DEFAULT:
