@@ -547,7 +547,7 @@ def check_same_relative_orbits():
     ]
     invalid_granule_metadata = valid_granule_metadata
     invalid_granule_metadata.append(
-        {'name': 'S1B_IW_RAW__0SDV_20200623T161535_20200623T161607_012345_02A10F_7FD6'} # 23
+        {'name': 'S1B_IW_RAW__0SDV_20200623T161535_20200623T161607_012345_02A10F_7FD6'}
     )
     validation.check_same_relative_orbits({}, valid_granule_metadata)
     error_pattern = r'.*23 is not 87.*'

@@ -190,7 +190,7 @@ def check_same_relative_orbits(job, granule_metadata):
             relative_orbit = str(((int(absolute_orbit) - 27) % 175) + 1)
         if not relative_orbit_number:
             relative_orbit_number = relative_orbit
-        if relative_orbit != relative_orbit_number:   
+        if relative_orbit != relative_orbit_number:
             raise GranuleValidationError(
                 f'Relative orbit number for {granule["name"]} does not match that of the previous granules: '
                 f'{relative_orbit} is not {relative_orbit_number}.'
