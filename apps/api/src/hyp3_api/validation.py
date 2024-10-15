@@ -190,11 +190,10 @@ def check_same_relative_orbits(job, granule_metadata):
             relative_orbit = str(((int(absolute_orbit) - 27) % 175) + 1)
         if not relative_orbit_numbers:
             relative_orbit_numbers.append(relative_orbit)
-        else:
-            if relative_orbit not in relative_orbit_numbers:
-                raise GranuleValidationError(
-                    f'The relative orbit number for {granule["name"]} does not match the previous granules: {relative_orbit} is not {relative_orbit_numbers[0]}.'
-                )
+        if relative_orbit not in relative_orbit_numbers:
+            raise GranuleValidationError(
+                f'The relative orbit number for {granule["name"]} does not match the previous granules: {relative_orbit} is not {relative_orbit_numbers[0]}.'
+            )
 
 
 def convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
