@@ -84,8 +84,10 @@ def get_map_state(job_spec: dict, job_step: dict, excluded_parameters: set[str])
 def get_batch_submit_job_state(job_spec: dict, job_step: dict, excluded_parameters: set[str] = None) -> dict:
     if not excluded_parameters:
         batch_job_parameters = '$.batch_job_parameters'
+        parameters_key = 'Parameters.$'
     else:
         batch_job_parameters = get_batch_job_parameters(job_spec, excluded_parameters)
+        parameters_key = 'Parameters'
     if 'import' in job_step['compute_environment']:
         compute_environment = job_step['compute_environment']['import']
     else:
@@ -100,7 +102,7 @@ def get_batch_submit_job_state(job_spec: dict, job_step: dict, excluded_paramete
             'JobQueue': '${' + job_queue + '}',
             'ShareIdentifier': 'default',
             'SchedulingPriorityOverride.$': '$.priority',
-            'Parameters.$': batch_job_parameters,
+            parameters_key: batch_job_parameters,
             'ContainerOverrides.$': '$.container_overrides',
             'RetryStrategy': {
                 'Attempts': 3
