@@ -137,12 +137,7 @@ def parse_job_step_map(job_step_map: str) -> tuple[str, str]:
 
 
 def get_batch_job_parameters(job_spec: dict, job_step: dict, map_item: str = None) -> dict:
-    ref_prefix = 'Ref::'
-    param_names = {
-        arg.removeprefix(ref_prefix)
-        for arg in job_step['command']
-        if arg.startswith(ref_prefix)
-    }
+    param_names = get_batch_param_names_for_job_step(job_step)
     batch_params = {
         f'{param}.$': f'$.batch_job_parameters.{param}'
         for param in job_spec['parameters']
@@ -152,6 +147,15 @@ def get_batch_job_parameters(job_spec: dict, job_step: dict, map_item: str = Non
         assert map_item in param_names
         batch_params[f'{map_item}.$'] = '$$.Map.Item.Value'
     return batch_params
+
+
+def get_batch_param_names_for_job_step(job_step: dict) -> set[str]:
+    ref_prefix = 'Ref::'
+    return {
+        arg.removeprefix(ref_prefix)
+        for arg in job_step['command']
+        if arg.startswith(ref_prefix)
+    }
 
 
 def render_templates(job_types, compute_envs, security_environment, api_name):
@@ -230,6 +234,17 @@ def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) 
     return compute_envs
 
 
+def render_batch_params_by_job_type(job_types: dict) -> None:
+    batch_params_by_job_type = {}
+    for job_type, job_spec in job_types.items():
+        params = set()
+        for job_step in job_spec['steps']:
+            params.update(get_batch_param_names_for_job_step(job_step))
+        batch_params_by_job_type[job_type] = list(params)
+    with (Path('apps') / 'start-execution-worker' / 'src' / 'batch_params_by_job_type.json').open('w') as f:
+        json.dump(batch_params_by_job_type, f, indent=2)
+
+
 def render_default_params_by_job_type(job_types: dict) -> None:
     default_params_by_job_type = {
         job_type: {
@@ -273,6 +288,7 @@ def main():
 
     compute_envs = get_compute_environments(job_types, args.compute_environment_file)
 
+    render_batch_params_by_job_type(job_types)
     render_default_params_by_job_type(job_types)
     render_costs(job_types, args.cost_profile)
     render_templates(job_types, compute_envs, args.security_environment, args.api_name)
