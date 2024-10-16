@@ -180,19 +180,19 @@ def check_granules_intersecting_bounds(job, granule_metadata):
 
 
 def check_same_relative_orbits(job, granule_metadata):
-    relative_orbit_number = None
+    previous_relative_orbit = None
     for granule in granule_metadata:
         name_split = granule['name'].split('_')
         absolute_orbit = name_split[7]
         # "Relationship between relative and absolute orbit numbers": https://sentiwiki.copernicus.eu/web/s1-products
         offset = 73 if name_split[0] == 'S1A' else 27
-        relative_orbit = str(((int(absolute_orbit) - offset) % 175) + 1)
-        if not relative_orbit_number:
-            relative_orbit_number = relative_orbit
-        if relative_orbit != relative_orbit_number:
+        relative_orbit = ((int(absolute_orbit) - offset) % 175) + 1
+        if not previous_relative_orbit:
+            previous_relative_orbit = relative_orbit
+        if relative_orbit != previous_relative_orbit:
             raise GranuleValidationError(
                 f'Relative orbit number for {granule["name"]} does not match that of the previous granules: '
-                f'{relative_orbit} is not {relative_orbit_number}.'
+                f'{relative_orbit} is not {previous_relative_orbit}.'
             )
 
 
