@@ -538,7 +538,8 @@ def test_check_granules_intersecting_bounds():
         validation.check_granules_intersecting_bounds(job_with_default_bounds, invalid_granule_metadata)
 
 
-def check_same_relative_orbits():
+def test_check_same_relative_orbits():
+    # FIXME: this test fails
     valid_granule_metadata = [
         {'name': 'S1A_IW_RAW__0SDV_20201015T161622_20201015T161654_034809_040E95_AF3C'},
         {'name': 'S1A_IW_RAW__0SDV_20200816T161620_20200816T161652_033934_03EFCE_5730'},
