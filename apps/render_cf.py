@@ -30,7 +30,7 @@ def get_states_for_job(job_spec: dict) -> dict:
 
 
 def get_state_for_job_step(job_step: dict, index: int, next_state_name: str, job_spec: dict) -> dict:
-    excluded_parameters = set(job_step.get('excluded_parameters', []))
+    excluded_parameters = set(job_step.get('exclude_parameters', []))
     if 'map' in job_step:
         state = get_map_state(job_spec, job_step, excluded_parameters)
     else:
