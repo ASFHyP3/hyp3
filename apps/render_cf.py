@@ -30,11 +30,10 @@ def get_states_for_job(job_spec: dict) -> dict:
 
 
 def get_state_for_job_step(job_step: dict, index: int, next_state_name: str, job_spec: dict) -> dict:
-    excluded_parameters = set(job_step.get('exclude_parameters', []))
     if 'map' in job_step:
-        state = get_map_state(job_spec, job_step, excluded_parameters)
+        state = get_map_state(job_spec, job_step)
     else:
-        state = get_batch_submit_job_state(job_spec, job_step, excluded_parameters)
+        state = get_batch_submit_job_state(job_spec, job_step, filter_batch_params=True)
     state.update(
         {
             'Catch': [
@@ -53,12 +52,10 @@ def get_state_for_job_step(job_step: dict, index: int, next_state_name: str, job
     return state
 
 
-def get_map_state(job_spec: dict, job_step: dict, excluded_parameters: set[str]) -> dict:
+def get_map_state(job_spec: dict, job_step: dict) -> dict:
     item, items = parse_job_step_map(job_step['map'])
 
-    excluded_parameters.add(items)
-    batch_job_parameters = get_batch_job_parameters(job_spec, excluded_parameters)
-    batch_job_parameters[f'{item}.$'] = '$$.Map.Item.Value'
+    batch_job_parameters = get_batch_job_parameters(job_spec, job_step, map_item=item)
 
     submit_job_state = get_batch_submit_job_state(job_spec, job_step)
     submit_job_state['End'] = True
@@ -81,12 +78,12 @@ def get_map_state(job_spec: dict, job_step: dict, excluded_parameters: set[str])
     }
 
 
-def get_batch_submit_job_state(job_spec: dict, job_step: dict, excluded_parameters: set[str] = None) -> dict:
-    if not excluded_parameters:
+def get_batch_submit_job_state(job_spec: dict, job_step: dict, filter_batch_params = False) -> dict:
+    if not filter_batch_params:
         batch_job_parameters = '$.batch_job_parameters'
         parameters_key = 'Parameters.$'
     else:
-        batch_job_parameters = get_batch_job_parameters(job_spec, excluded_parameters)
+        batch_job_parameters = get_batch_job_parameters(job_spec, job_step)
         parameters_key = 'Parameters'
     if 'import' in job_step['compute_environment']:
         compute_environment = job_step['compute_environment']['import']
@@ -137,12 +134,22 @@ def parse_job_step_map(job_step_map: str) -> tuple[str, str]:
     return tokens[1], tokens[3]
 
 
-def get_batch_job_parameters(job_spec: dict, excluded_parameters: set[str]) -> dict:
-    return {
+def get_batch_job_parameters(job_spec: dict, job_step: dict, map_item: str = None) -> dict:
+    ref_prefix = 'Ref::'
+    param_names = {
+        arg.removeprefix(ref_prefix)
+        for arg in job_step['command']
+        if arg.startswith(ref_prefix)
+    }
+    batch_params = {
         f'{param}.$': f'$.batch_job_parameters.{param}'
         for param in job_spec['parameters']
-        if param not in excluded_parameters
+        if param in param_names
     }
+    if map_item is not None:
+        assert map_item in param_names
+        batch_params[f'{map_item}.$'] = '$$.Map.Item.Value'
+    return batch_params
 
 
 def render_templates(job_types, compute_envs, security_environment, api_name):

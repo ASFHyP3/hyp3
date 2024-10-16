@@ -74,8 +74,6 @@ SRG_TIME_SERIES:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
     - name: ''
-      exclude_parameters:
-        - granules
       image: ghcr.io/asfhyp3/hyp3-srg
       # TODO image tag
       image_tag: 0.8.1.dev47_g2d96d14.cpu
