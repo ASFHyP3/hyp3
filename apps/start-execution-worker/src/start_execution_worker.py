@@ -33,7 +33,7 @@ def submit_jobs(jobs: list[dict]) -> None:
     for job in jobs:
         # Convert parameters to strings so they can be passed to Batch; see:
         # https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html#Batch-SubmitJob-request-parameters
-        job['batch_job_parameters'] = get_batch_job_parameters(job['job_parameters'])
+        job['batch_job_parameters'] = get_batch_job_parameters(job)
         STEP_FUNCTION.start_execution(
             stateMachineArn=step_function_arn,
             input=json.dumps(job, sort_keys=True),
