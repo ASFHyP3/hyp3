@@ -30,10 +30,11 @@ def get_states_for_job(job_spec: dict) -> dict:
 
 
 def get_state_for_job_step(job_step: dict, index: int, next_state_name: str, job_spec: dict) -> dict:
+    excluded_parameters = set(job_step.get('excluded_parameters', []))
     if 'map' in job_step:
-        state = get_map_state(job_step, job_spec)
+        state = get_map_state(job_spec, job_step, excluded_parameters)
     else:
-        state = get_batch_submit_job_state(job_step)
+        state = get_batch_submit_job_state(job_spec, job_step, excluded_parameters)
     state.update(
         {
             'Catch': [
@@ -52,10 +53,14 @@ def get_state_for_job_step(job_step: dict, index: int, next_state_name: str, job
     return state
 
 
-def get_map_state(job_step: dict, job_spec: dict) -> dict:
+def get_map_state(job_spec: dict, job_step: dict, excluded_parameters: set[str]) -> dict:
     item, items = parse_job_step_map(job_step['map'])
-    batch_job_parameters = get_batch_job_parameters(item, items, job_spec)
-    submit_job_state = get_batch_submit_job_state(job_step)
+
+    excluded_parameters.add(items)
+    batch_job_parameters = get_batch_job_parameters(job_spec, excluded_parameters)
+    batch_job_parameters[f'{item}.$'] = '$$.Map.Item.Value'
+
+    submit_job_state = get_batch_submit_job_state(job_spec, job_step)
     submit_job_state['End'] = True
     submit_job_state_name = job_step['name'] + '_SUBMIT_JOB'
     return {
@@ -76,24 +81,11 @@ def get_map_state(job_step: dict, job_spec: dict) -> dict:
     }
 
 
-def parse_job_step_map(job_step_map: str) -> tuple[str, str]:
-    tokens = job_step_map.split(' ')
-    assert len(tokens) == 4
-    assert tokens[0], tokens[2] == ('for', 'in')
-    return tokens[1], tokens[3]
-
-
-def get_batch_job_parameters(item: str, items: str, job_spec: dict) -> dict:
-    batch_job_parameters = {
-        f'{param}.$': f'$.batch_job_parameters.{param}'
-        for param in job_spec['parameters']
-        if param != items
-    }
-    batch_job_parameters[f'{item}.$'] = '$$.Map.Item.Value'
-    return batch_job_parameters
-
-
-def get_batch_submit_job_state(job_step: dict) -> dict:
+def get_batch_submit_job_state(job_spec: dict, job_step: dict, excluded_parameters: set[str] = None) -> dict:
+    if not excluded_parameters:
+        batch_job_parameters = '$.batch_job_parameters'
+    else:
+        batch_job_parameters = get_batch_job_parameters(job_spec, excluded_parameters)
     if 'import' in job_step['compute_environment']:
         compute_environment = job_step['compute_environment']['import']
     else:
@@ -108,7 +100,7 @@ def get_batch_submit_job_state(job_step: dict) -> dict:
             'JobQueue': '${' + job_queue + '}',
             'ShareIdentifier': 'default',
             'SchedulingPriorityOverride.$': '$.priority',
-            'Parameters.$': '$.batch_job_parameters',
+            'Parameters.$': batch_job_parameters,
             'ContainerOverrides.$': '$.container_overrides',
             'RetryStrategy': {
                 'Attempts': 3
@@ -133,6 +125,21 @@ def get_batch_submit_job_state(job_step: dict) -> dict:
                 'MaxAttempts': 0
             }
         ]
+    }
+
+
+def parse_job_step_map(job_step_map: str) -> tuple[str, str]:
+    tokens = job_step_map.split(' ')
+    assert len(tokens) == 4
+    assert tokens[0], tokens[2] == ('for', 'in')
+    return tokens[1], tokens[3]
+
+
+def get_batch_job_parameters(job_spec: dict, excluded_parameters: set[str]) -> dict:
+    return {
+        f'{param}.$': f'$.batch_job_parameters.{param}'
+        for param in job_spec['parameters']
+        if param not in excluded_parameters
     }
 
 
