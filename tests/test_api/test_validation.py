@@ -539,18 +539,17 @@ def test_check_granules_intersecting_bounds():
 
 
 def test_check_same_relative_orbits():
-    # FIXME: this test fails
     valid_granule_metadata = [
         {'name': 'S1A_IW_RAW__0SDV_20201015T161622_20201015T161654_034809_040E95_AF3C'},
         {'name': 'S1A_IW_RAW__0SDV_20200816T161620_20200816T161652_033934_03EFCE_5730'},
         {'name': 'S1B_IW_RAW__0SDV_20200810T161537_20200810T161610_022863_02B66A_F7D7'},
         {'name': 'S1B_IW_RAW__0SDV_20200623T161535_20200623T161607_022163_02A10F_7FD6'}
     ]
-    invalid_granule_metadata = valid_granule_metadata
+    invalid_granule_metadata = valid_granule_metadata.copy()
     invalid_granule_metadata.append(
         {'name': 'S1B_IW_RAW__0SDV_20200623T161535_20200623T161607_012345_02A10F_7FD6'}
     )
     validation.check_same_relative_orbits({}, valid_granule_metadata)
-    error_pattern = r'.*23 is not 87.*'
+    error_pattern = r'.*69 is not 87.*'
     with raises(validation.GranuleValidationError, match=error_pattern):
         validation.check_same_relative_orbits({}, invalid_granule_metadata)
