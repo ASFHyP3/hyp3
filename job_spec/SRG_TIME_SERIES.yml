@@ -3,7 +3,6 @@ SRG_TIME_SERIES:
     - granules
   parameters:
     granules:
-      default:  '""'
       api_schema:
         type: array
         minItems: 1
@@ -19,10 +18,7 @@ SRG_TIME_SERIES:
           minLength: 67
           maxLength: 67
           example: S1A_IW_RAW__0SDV_20240629T020812_20240629T020845_054532_06A2F8_8276
-    bucket_prefix:
-      default:  '""'
     bounds:
-      default:  '""'
       api_schema:
         type: array
         description: Bounds for extent of processing, formatted like [min lon, min lat, max lon, max lat] in EPSG:4326. Setting to [0, 0, 0, 0] will use the extent of the first granule.

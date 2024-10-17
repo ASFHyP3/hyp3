@@ -3,7 +3,6 @@ INSAR_ISCE_BURST:
     - granules
   parameters:
     granules:
-      default:  '""'
       api_schema:
         type: array
         minItems: 2
@@ -18,8 +17,6 @@ INSAR_ISCE_BURST:
           minLength: 43
           maxLength: 43
           example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
-    bucket_prefix:
-      default:  '""'
     apply_water_mask:
       api_schema:
         description: Sets pixels over coastal and large inland waterbodies as invalid for phase unwrapping. 

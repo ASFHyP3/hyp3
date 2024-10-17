@@ -249,7 +249,7 @@ def render_default_params_by_job_type(job_types: dict) -> None:
     default_params_by_job_type = {
         job_type: {
             key: value['api_schema']['default'] for key, value in job_spec['parameters'].items()
-            if key not in job_spec['required_parameters'] and 'api_schema' in value
+            if key not in job_spec['required_parameters']
         }
         for job_type, job_spec in job_types.items()
     }
