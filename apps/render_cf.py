@@ -137,14 +137,15 @@ def parse_job_step_map(job_step_map: str) -> tuple[str, str]:
 
 
 def get_batch_job_parameters(job_spec: dict, job_step: dict, map_item: str = None) -> dict:
-    param_names = get_batch_param_names_for_job_step(job_step)
+    job_params = ['bucket_prefix', *job_spec['parameters'].keys()]
+    step_params = get_batch_param_names_for_job_step(job_step)
     batch_params = {
         f'{param}.$': f'$.batch_job_parameters.{param}'
-        for param in job_spec['parameters']
-        if param in param_names
+        for param in job_params
+        if param in step_params
     }
     if map_item is not None:
-        assert map_item in param_names
+        assert map_item in step_params
         batch_params[f'{map_item}.$'] = '$$.Map.Item.Value'
     return batch_params
 
