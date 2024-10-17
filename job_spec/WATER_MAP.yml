@@ -3,7 +3,6 @@ WATER_MAP:
     - granules
   parameters:
     granules:
-      default: '""'
       api_schema:
         type: array
         minItems: 1
@@ -22,8 +21,6 @@ WATER_MAP:
               minLength: 67
               maxLength: 67
               example: S1A_IW_SLC__1SDV_20211110T234815_20211110T234842_040516_04CE0A_E717
-    bucket_prefix:
-      default:  '""'
     resolution:
       api_schema:
         default:  30.0

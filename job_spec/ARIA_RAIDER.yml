@@ -19,8 +19,6 @@ ARIA_RAIDER:
           - GMAO
           - HRES
           - HRRR
-    bucket_prefix:
-      default:  '""'
   cost_profiles:
     DEFAULT:
       cost: 1.0
