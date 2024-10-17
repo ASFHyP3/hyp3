@@ -10,7 +10,11 @@ from lambda_logging import log_exceptions, logger
 STEP_FUNCTION = boto3.client('stepfunctions')
 
 batch_params_file = Path(__file__).parent / 'batch_params_by_job_type.json'
-BATCH_PARAMS_BY_JOB_TYPE = json.loads(batch_params_file.read_text())
+if batch_params_file.exists():
+    BATCH_PARAMS_BY_JOB_TYPE = json.loads(batch_params_file.read_text())
+else:
+    # Allows mocking with unittest.mock.patch
+    BATCH_PARAMS_BY_JOB_TYPE = {}
 
 
 def convert_to_string(obj: Any) -> str:
