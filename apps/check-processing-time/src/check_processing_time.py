@@ -15,7 +15,6 @@ def get_time_from_result(result: Union[list, dict]) -> Union[list, float]:
         return [get_time_from_result(item) for item in result]
 
     if 'start' in result:
-        # TODO: update tests
         attempts = [{'StartedAt': start, 'StoppedAt': stop} for start, stop in zip(result['start'], result['stop'])]
         return get_time_from_attempts(attempts)
 
