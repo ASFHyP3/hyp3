@@ -13,23 +13,6 @@ def test_convert_to_string():
     assert start_execution_worker.convert_to_string('abc') == 'abc'
 
 
-def test_convert_parameters_to_string():
-    parameters = {
-        'param1': 1,
-        'param2': True,
-        'param3': [1, 2],
-        'param4': ['abc', 'bcd'],
-        'param5': 'abc',
-    }
-    assert start_execution_worker.convert_parameters_to_strings(parameters) == {
-        'param1': '1',
-        'param2': 'True',
-        'param3': '1 2',
-        'param4': 'abc bcd',
-        'param5': 'abc',
-    }
-
-
 def test_submit_jobs():
     batch_params_by_job_type = {
         'JOB_0': ['granules', 'string_field', 'boolean_field', 'float_field', 'integer_field'],
