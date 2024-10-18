@@ -271,8 +271,6 @@ def render_costs(job_types: dict, cost_profile: str) -> None:
 
 
 def validate_job_spec(job_type: str, job_spec: dict) -> None:
-    # Non-comprehensive job spec validator. More checks could be added if we want to be more thorough.
-
     expected_fields = sorted(['required_parameters', 'parameters', 'cost_profiles', 'validators', 'steps'])
     actual_fields = sorted(job_spec.keys())
     if actual_fields != expected_fields:
