@@ -41,12 +41,24 @@ def test_no_attempts():
 
 def test_get_time_from_result():
     result = {
-        'Attempts': [
-            {'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 1000},
-            {'Container': {}, 'StartedAt': 3000, 'StatusReason': '', 'StoppedAt': 8700}
-        ]
+        'start': [500, 3000],
+        'stop': [1000, 8700],
     }
     assert check_processing_time.get_time_from_result(result) == 5.7
+
+
+def test_get_time_from_result_list():
+    result = [
+        {
+            'start': [500, 3000],
+            'stop': [1000, 8900],
+        },
+        {
+            'start': [500, 4000],
+            'stop': [3000, 4200],
+        },
+    ]
+    assert check_processing_time.get_time_from_result(result) == [5.9, 0.2]
 
 
 def test_get_time_from_result_failed():
@@ -64,10 +76,8 @@ def test_lambda_handler():
     event = {
         'processing_results': {
             'step_0': {
-                'Attempts': [
-                    {'Container': {}, 'StartedAt': 500, 'StatusReason': '', 'StoppedAt': 1000},
-                    {'Container': {}, 'StartedAt': 3000, 'StatusReason': '', 'StoppedAt': 8700}
-                ]
+                'start': [500, 3000],
+                'stop': [1000, 8700],
             },
             'step_1': {
                 'Error': 'States.TaskFailed',
@@ -76,6 +86,16 @@ def test_lambda_handler():
                          '{"Container": {}, "StartedAt": 1500, "StatusReason": "", "StoppedAt": 2000}, '
                          '{"Container": {}, "StartedAt": 3000, "StatusReason": "", "StoppedAt": 9400}]}'
             },
+            'step_2': [
+                {
+                    'start': [500, 3000],
+                    'stop': [1000, 8900],
+                },
+                {
+                    'start': [500, 4000],
+                    'stop': [3000, 4200],
+                },
+            ]
         }
     }
-    assert check_processing_time.lambda_handler(event, None) == [5.7, 6.4]
+    assert check_processing_time.lambda_handler(event, None) == [5.7, 6.4, [5.9, 0.2]]

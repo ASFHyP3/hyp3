@@ -3,7 +3,6 @@ AUTORIFT:
     - granules
   parameters:
     granules:
-      default:  '""'
       api_schema:
         type: array
         minItems: 2
@@ -31,8 +30,6 @@ AUTORIFT:
               minLength: 40
               maxLength: 40
               example: LC08_L1GT_118112_20210107_20210107_02_T2
-    bucket_prefix:
-      default:  '""'
     parameter_file:
       api_schema:
         description: Shapefile for determining the correct search parameters by geographic location. Path to shapefile must be understood by GDAL.
@@ -42,10 +39,7 @@ AUTORIFT:
     DEFAULT:
       cost: 1.0
   validators: []
-  compute_environment:
-    name: 'AriaAutorift'
-    instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-  tasks:
+  steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
       command:
@@ -61,6 +55,9 @@ AUTORIFT:
         - ITS_LIVE_OD
         - Ref::granules
       timeout: 10800
+      compute_environment:
+        name: 'AriaAutorift'
+        instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
       vcpu: 1
       memory: 31500
       secrets:

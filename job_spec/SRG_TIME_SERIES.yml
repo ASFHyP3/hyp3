@@ -1,4 +1,4 @@
-SRG_GSLC:
+SRG_TIME_SERIES:
   required_parameters:
     - granules
   parameters:
@@ -6,17 +6,18 @@ SRG_GSLC:
       api_schema:
         type: array
         minItems: 1
-        maxItems: 6
+        maxItems: 600
         example:
-          - S1A_IW_RAW__0SDV_20231229T134339_20231229T134411_051870_064437_4F42
-          - S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38
+          - S1A_IW_RAW__0SDV_20240629T020812_20240629T020845_054532_06A2F8_8276
+          - S1A_IW_RAW__0SDV_20240723T020812_20240723T020844_054882_06AF26_2CE5
+          - S1A_IW_RAW__0SDV_20240804T020812_20240804T020844_055057_06B527_1346
         items:
           description: Name of the Level-0 Sentinel-1 scenes to process
           type: string
           pattern: "^S1[AB]_IW_RAW"
           minLength: 67
           maxLength: 67
-          example: S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38
+          example: S1A_IW_RAW__0SDV_20240629T020812_20240629T020845_054532_06A2F8_8276
     bounds:
       api_schema:
         type: array
@@ -25,13 +26,13 @@ SRG_GSLC:
         minItems: 4
         maxItems: 4
         example:
-          - -116.583
-          - 35.714
-          - -113.209
-          - 38.138
+          - -124.41473278572731
+          - 37.098700238673814
+          - -120.9825007499895
+          - 39.52359974376425
         items:
           type: number
-          example: -116.583
+          example: -124.41473278572731
   validators: [
     check_bounds_formatting,
     check_granules_intersecting_bounds,
@@ -41,9 +42,10 @@ SRG_GSLC:
     DEFAULT:
       cost: 1.0
   steps:
-    - name: ''
+    - name: BACK_PROJECTION
+      map: for granule in granules
       image: ghcr.io/asfhyp3/hyp3-srg
-      image_tag: latest.gpu
+      image_tag: test.gpu
       command:
         - ++process
         - back_projection
@@ -54,13 +56,32 @@ SRG_GSLC:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
-        - Ref::granules
+        - --use-gslc-prefix
+        - Ref::granule
       timeout: 10800
       compute_environment:
-        import: 'SrgGslc'
+        import: SrgGslc
       vcpu: 1
       gpu: 1
       memory: 30500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-srg
+      image_tag: test.cpu
+      command:
+        - ++process
+        - time_series
+        - --bounds
+        - Ref::bounds
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --use-gslc-prefix
+      timeout: 21600 # 6 hr
+      compute_environment:
+        import: Default
+      vcpu: 1
+      memory: 30500

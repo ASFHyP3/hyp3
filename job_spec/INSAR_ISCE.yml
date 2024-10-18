@@ -5,7 +5,6 @@ INSAR_ISCE:
     - frame_id
   parameters:
     granules:
-      default:  '""'
       api_schema:
         type: array
         minItems: 1
@@ -17,7 +16,6 @@ INSAR_ISCE:
           maxLength: 67
           example: S1B_IW_SLC__1SDV_20210723T014947_20210723T015014_027915_0354B4_B3A9
     secondary_granules:
-      default: '""'
       api_schema:
         type: array
         minItems: 1
@@ -86,17 +84,11 @@ INSAR_ISCE:
           - GMAO
           - HRES
           - HRRR
-    bucket_prefix:
-      default:  '""'
   cost_profiles:
     DEFAULT:
       cost: 1.0
   validators: []
-  compute_environment:
-    name: 'InsarIsceAria'
-    allocation_type: EC2
-    allocation_strategy: BEST_FIT_PROGRESSIVE
-  tasks:
+  steps:
     - name: ''
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
       command:
@@ -127,6 +119,8 @@ INSAR_ISCE:
         - --unfiltered-coherence
         - Ref::unfiltered_coherence
       timeout: 21600
+      compute_environment:
+        import: 'InsarIsceAria'
       vcpu: 1
       memory: 15500
       secrets:
@@ -146,6 +140,8 @@ INSAR_ISCE:
         - --weather-model
         - Ref::weather_model
       timeout: 10800
+      compute_environment:
+        import: 'InsarIsceAria'
       vcpu: 1
       memory: 7500
       secrets:

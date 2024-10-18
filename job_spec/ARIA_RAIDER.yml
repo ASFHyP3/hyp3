@@ -19,15 +19,11 @@ ARIA_RAIDER:
           - GMAO
           - HRES
           - HRRR
-    bucket_prefix:
-      default:  '""'
   cost_profiles:
     DEFAULT:
       cost: 1.0
   validators: []
-  compute_environment:
-    name: 'Default'
-  tasks:
+  steps:
     - name: ''
       image: ghcr.io/dbekaert/raider
       command:
@@ -42,6 +38,8 @@ ARIA_RAIDER:
         - --input-bucket-prefix
         - Ref::job_id
       timeout: 10800
+      compute_environment:
+        import: 'Default'
       vcpu: 1
       memory: 7500
       secrets:
