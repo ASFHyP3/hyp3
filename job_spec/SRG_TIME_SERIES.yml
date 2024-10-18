@@ -45,7 +45,6 @@ SRG_TIME_SERIES:
     - name: BACK_PROJECTION
       map: for granule in granules
       image: ghcr.io/asfhyp3/hyp3-srg
-      image_tag: test.gpu
       command:
         - ++process
         - back_projection
@@ -69,7 +68,6 @@ SRG_TIME_SERIES:
         - EARTHDATA_PASSWORD
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-srg
-      image_tag: test.cpu
       command:
         - ++process
         - time_series

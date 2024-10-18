@@ -43,7 +43,6 @@ SRG_GSLC:
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-srg
-      image_tag: latest.gpu
       command:
         - ++process
         - back_projection
