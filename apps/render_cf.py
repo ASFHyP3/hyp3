@@ -78,7 +78,7 @@ def get_map_state(job_spec: dict, step: dict) -> dict:
     }
 
 
-def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params = False) -> dict:
+def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params=False) -> dict:
     if filter_batch_params:
         batch_job_parameters = get_batch_job_parameters(job_spec, step)
         parameters_key = 'Parameters'
@@ -288,7 +288,8 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
         actual_param_fields = sorted(param_dict.keys())
         if actual_param_fields != expected_param_fields:
             raise ValueError(
-                f"parameter '{param_name}' for {job_type} has fields {actual_param_fields} but should have {expected_param_fields}"
+                f"parameter '{param_name}' for {job_type} has fields {actual_param_fields} "
+                f"but should have {expected_param_fields}"
             )
 
 
