@@ -7,10 +7,6 @@
 #   allocation_type: ...
 #   allocation_strategy: ...
 
-# Note that the name must be unique, i.e. a compute environment that is defined in a job spec using
-# the `name` key cannot also be defined here, UNLESS it is not imported in the same deployment. 
-# "UNLESS" is due to the fact that compute environments defined here are only parsed if they are imported.
-
 # Once the environment is defined here, it can be imported in the job spec step
 # by using the `import` key:
 
@@ -21,6 +17,11 @@
 #       ...
 #       compute_environment:
 #         import: 'ExampleComputeEnvName'
+
+# Note that the name must be unique, i.e. a compute environment that is defined in a job spec using
+# the `name` key cannot also be defined here, unless it is not imported in the same deployment (envs here
+# are only rendered if they are imported). Also note that the name should be in pascal case to avoid
+# cfn-lint errors.
 
 compute_environments:
   # Default is defined per-deployment in the deployment actions. 
