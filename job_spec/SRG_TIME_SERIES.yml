@@ -83,9 +83,8 @@ SRG_TIME_SERIES:
         - --bucket-prefix
         - Ref::bucket_prefix
         - --use-gslc-prefix
-      timeout: 86400 # TODO
+      timeout: 21600 # 6 hr
       compute_environment:
         import: Default
       vcpu: 1
-      memory: 30500 # TODO
-      # TODO secrets?
+      memory: 30500 # TODO how much is needed?
