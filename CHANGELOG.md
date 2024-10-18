@@ -24,8 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
     The `compute_environment` field can still be used to define a custom compute environment directly within the job spec, as before.
 - Other changes to the job spec syntax:
-  - The `tasks` key has been renamed to `steps`.
-  - Parameters no longer contain a top-level `default` key. The `default` key within each parameter's `api_schema` mapping is still supported.
+  - The `tasks` field has been renamed to `steps`.
+  - Parameters no longer contain a top-level `default` field. The `default` field within each parameter's `api_schema` mapping is still supported.
   - Job specs no longer explicitly define a `bucket_prefix` parameter. Instead, `bucket_prefix` is automatically defined and can still be referenced as `Ref::bucket_prefix` within each step's `command` field.
 
 ## [7.12.0]
