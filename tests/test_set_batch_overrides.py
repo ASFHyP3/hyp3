@@ -19,7 +19,7 @@ def mock_insar_isce_burst_job(looks: str, bursts: int) -> dict:
         'job_type': 'INSAR_ISCE_MULTI_BURST',
         'job_parameters': {
             'looks': looks,
-            'reference': ' '.join('foo' for _ in range(bursts)),
+            'reference': ['foo' for _ in range(bursts)],
         }
     }
 
@@ -154,7 +154,7 @@ def test_set_batch_overrides_autorift_s2():
     assert lambda_handler(
         {
             'job_type': 'AUTORIFT',
-            'job_parameters': {'granules': 'S2B_'},
+            'job_parameters': {'granules': ['S2B_']},
         },
         None,
     ) == {
@@ -171,7 +171,7 @@ def test_set_batch_overrides_autorift_landsat():
     assert lambda_handler(
         {
             'job_type': 'AUTORIFT',
-            'job_parameters': {'granules': 'LC08_'},
+            'job_parameters': {'granules': ['LC08_']},
         },
         None,
     ) == {
@@ -188,7 +188,7 @@ def test_set_batch_overrides_rtc_gamma_10m():
     assert lambda_handler(
         {
             'job_type': 'RTC_GAMMA',
-            'job_parameters': {'resolution': '10'},
+            'job_parameters': {'resolution': 10},
         },
         None,
     ) == {
@@ -202,7 +202,7 @@ def test_set_batch_overrides_rtc_gamma_10m():
     assert lambda_handler(
         {
             'job_type': 'RTC_GAMMA',
-            'job_parameters': {'resolution': '20'},
+            'job_parameters': {'resolution': 20},
         },
         None,
     ) == {
@@ -219,7 +219,7 @@ def test_set_batch_overrides_water_map_10m():
     assert lambda_handler(
         {
             'job_type': 'WATER_MAP',
-            'job_parameters': {'resolution': '10'},
+            'job_parameters': {'resolution': 10},
         },
         None,
     ) == {
@@ -233,7 +233,7 @@ def test_set_batch_overrides_water_map_10m():
     assert lambda_handler(
         {
             'job_type': 'WATER_MAP',
-            'job_parameters': {'resolution': '20'},
+            'job_parameters': {'resolution': 20},
         },
         None,
     ) == {
@@ -247,7 +247,7 @@ def test_set_batch_overrides_water_map_10m():
     assert lambda_handler(
         {
             'job_type': 'WATER_MAP_EQ',
-            'job_parameters': {'resolution': '10'},
+            'job_parameters': {'resolution': 10},
         },
         None,
     ) == {
@@ -261,7 +261,7 @@ def test_set_batch_overrides_water_map_10m():
     assert lambda_handler(
         {
             'job_type': 'WATER_MAP_EQ',
-            'job_parameters': {'resolution': '20'},
+            'job_parameters': {'resolution': 20},
         },
         None,
     ) == {

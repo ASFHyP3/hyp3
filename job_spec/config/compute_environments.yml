@@ -1,0 +1,9 @@
+compute_environments:
+  # Format is the same as in the job_spec(s), except the name becomes the key.
+  SrgGslc:
+    instance_types: g6.2xlarge
+    # Image ID for: /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
+    ami_id: ami-0729c079aae647cb3
+  InsarIsceAria:
+    allocation_type: EC2
+    allocation_strategy: BEST_FIT_PROGRESSIVE
