@@ -141,7 +141,6 @@ INSAR_ISCE:
         - Ref::weather_model
       timeout: 10800
       compute_environment:
-        # TODO: Do we want this to use this env or Default?
         import: 'InsarIsceAria'
       vcpu: 1
       memory: 7500
