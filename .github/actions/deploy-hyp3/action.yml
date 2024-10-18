@@ -30,7 +30,7 @@ inputs:
     description: "Comma separated list of Subnet IDs"
     required: true
   SECRET_ARN:
-    description: "ARN of Secret in AWS Secrets Manager containing all the credentials needed for job tasks"
+    description: "ARN of Secret in AWS Secrets Manager containing all the credentials needed for job steps"
     required: true
   CLOUDFORMATION_ROLE_ARN:
     description: "The CloudFormation role to use for this deployment"
