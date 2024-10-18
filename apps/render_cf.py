@@ -192,45 +192,59 @@ def render_templates(job_types, compute_envs, security_environment, api_name):
         template_file.with_suffix('').write_text(output)
 
 
+def parse_compute_environments_file(
+    compute_env_names: set,
+    compute_env_imports: set,
+    compute_env_file: Path
+) -> list[dict]:
+    compute_envs = []
+    compute_envs_from_file = yaml.safe_load(compute_env_file.read_text())['compute_environments']
+
+    for name in compute_envs_from_file:
+        if name in compute_env_imports:
+            if name in compute_env_names:
+                raise ValueError(
+                    f'Compute envs must have unique names but the following is defined more than once: {name}.'
+                )
+            compute_envs_from_file[name].update({'name': name})
+            compute_envs.append(compute_envs_from_file[name])
+            compute_env_names.add(name)
+
+    for name in compute_env_imports:
+        if name not in compute_envs_from_file and name != 'Default':
+            raise ValueError(
+                f'The following compute env is imported but not defined in the compute envs file: {name}.'
+            )
+
+    return compute_envs
+
+
 def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) -> list[dict]:
     compute_envs = []
-    compute_env_names = set()
+    compute_env_names = set({'Default'})
     compute_env_imports = set()
+
     for _, job_spec in job_types.items():
         for step in job_spec['steps']:
             compute_env = step['compute_environment']
             if 'name' in compute_env:
                 name = compute_env['name']
-                assert name != 'Default'
                 if name in compute_env_names:
                     raise ValueError(
                         f'Compute envs must have unique names but the following is defined more than once: {name}.'
                     )
                 compute_envs.append(compute_env)
                 compute_env_names.add(name)
-            elif 'import' in compute_env and compute_env['import'] != 'Default':
+            elif 'import' in compute_env:
                 compute_env_imports.add(compute_env['import'])
-            else:
-                assert compute_env['import'] == 'Default'
 
     if compute_env_file:
-        compute_envs_from_file = yaml.safe_load(compute_env_file.read_text())['compute_environments']
-        for name in compute_envs_from_file:
-            assert name != 'Default'
-            if name in compute_env_names:
-                raise ValueError(
-                    f'Compute envs must have unique names but the following is defined more than once: {name}.'
-                )
-            compute_env = compute_envs_from_file[name]
-            compute_env['name'] = name
-            compute_envs.append(compute_env)
-            compute_env_names.add(name)
-
-    for name in compute_env_imports:
-        if name not in compute_envs_from_file:
-            raise ValueError(
-                f'The following compute env is imported but not defined in the compute envs file: {name}.'
-            )
+        compute_envs_from_file = parse_compute_environments_file(
+            compute_env_names,
+            compute_env_imports,
+            compute_env_file
+        )
+        compute_envs.extend(compute_envs_from_file)
 
     return compute_envs
 
