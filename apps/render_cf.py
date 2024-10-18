@@ -270,6 +270,28 @@ def render_costs(job_types: dict, cost_profile: str) -> None:
         json.dump(costs, f, indent=2)
 
 
+def validate_job_spec(job_type: str, job_spec: dict) -> None:
+    # Non-comprehensive job spec validator. More checks could be added if we want to be more thorough.
+
+    expected_fields = sorted(['required_parameters', 'parameters', 'cost_profiles', 'validators', 'steps'])
+    actual_fields = sorted(job_spec.keys())
+    if actual_fields != expected_fields:
+        raise ValueError(f'{job_type} has fields {actual_fields} but should have {expected_fields}')
+
+    reserved_params = {'bucket_prefix'}
+    reserved_params_in_spec = reserved_params.intersection(set(job_spec['parameters'].keys()))
+    if reserved_params_in_spec:
+        raise ValueError(f'{job_type} contains reserved parameter names: {sorted(reserved_params_in_spec)}')
+
+    expected_param_fields = ['api_schema']
+    for param_name, param_dict in job_spec['parameters'].items():
+        actual_param_fields = sorted(param_dict.keys())
+        if actual_param_fields != expected_param_fields:
+            raise ValueError(
+                f"parameter '{param_name}' for {job_type} has fields {actual_param_fields} but should have {expected_param_fields}"
+            )
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
@@ -282,6 +304,9 @@ def main():
     job_types = {}
     for file in args.job_spec_files:
         job_types.update(yaml.safe_load(file.read_text()))
+
+    for job_type, job_spec in job_types.items():
+        validate_job_spec(job_type, job_spec)
 
     for job_type, job_spec in job_types.items():
         for job_step in job_spec['steps']:
