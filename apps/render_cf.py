@@ -21,19 +21,19 @@ def get_states_for_jobs(job_types: dict) -> dict:
 
 def get_states_for_job(job_spec: dict) -> dict:
     states = {}
-    job_steps = job_spec['steps']
-    for i in range(len(job_steps)):
-        job_step = job_steps[i]
-        next_state_name = job_steps[i + 1]['name'] if i < len(job_steps) - 1 else 'GET_FILES'
-        states[job_step['name']] = get_state_for_job_step(job_step, i, next_state_name, job_spec)
+    steps = job_spec['steps']
+    for i in range(len(steps)):
+        step = steps[i]
+        next_state_name = steps[i + 1]['name'] if i < len(steps) - 1 else 'GET_FILES'
+        states[step['name']] = get_state_for_job_step(step, i, next_state_name, job_spec)
     return states
 
 
-def get_state_for_job_step(job_step: dict, index: int, next_state_name: str, job_spec: dict) -> dict:
-    if 'map' in job_step:
-        state = get_map_state(job_spec, job_step)
+def get_state_for_job_step(step: dict, index: int, next_state_name: str, job_spec: dict) -> dict:
+    if 'map' in step:
+        state = get_map_state(job_spec, step)
     else:
-        state = get_batch_submit_job_state(job_spec, job_step, filter_batch_params=True)
+        state = get_batch_submit_job_state(job_spec, step, filter_batch_params=True)
     state.update(
         {
             'Catch': [
@@ -52,14 +52,14 @@ def get_state_for_job_step(job_step: dict, index: int, next_state_name: str, job
     return state
 
 
-def get_map_state(job_spec: dict, job_step: dict) -> dict:
-    item, items = parse_job_step_map(job_step['map'])
+def get_map_state(job_spec: dict, step: dict) -> dict:
+    item, items = parse_job_step_map(step['map'])
 
-    batch_job_parameters = get_batch_job_parameters(job_spec, job_step, map_item=item)
+    batch_job_parameters = get_batch_job_parameters(job_spec, step, map_item=item)
 
-    submit_job_state = get_batch_submit_job_state(job_spec, job_step)
+    submit_job_state = get_batch_submit_job_state(job_spec, step)
     submit_job_state['End'] = True
-    submit_job_state_name = job_step['name'] + '_SUBMIT_JOB'
+    submit_job_state_name = step['name'] + '_SUBMIT_JOB'
     return {
         'Type': 'Map',
         'ItemsPath': f'$.job_parameters.{items}',
@@ -78,25 +78,25 @@ def get_map_state(job_spec: dict, job_step: dict) -> dict:
     }
 
 
-def get_batch_submit_job_state(job_spec: dict, job_step: dict, filter_batch_params = False) -> dict:
+def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params = False) -> dict:
     if filter_batch_params:
-        batch_job_parameters = get_batch_job_parameters(job_spec, job_step)
+        batch_job_parameters = get_batch_job_parameters(job_spec, step)
         parameters_key = 'Parameters'
     else:
         batch_job_parameters = '$.batch_job_parameters'
         parameters_key = 'Parameters.$'
 
-    if 'import' in job_step['compute_environment']:
-        compute_environment = job_step['compute_environment']['import']
+    if 'import' in step['compute_environment']:
+        compute_environment = step['compute_environment']['import']
     else:
-        compute_environment = job_step['compute_environment']['name']
+        compute_environment = step['compute_environment']['name']
 
     job_queue = 'JobQueueArn' if compute_environment == 'Default' else compute_environment + 'JobQueueArn'
     return {
         'Type': 'Task',
         'Resource': 'arn:aws:states:::batch:submitJob.sync',
         'Parameters': {
-            'JobDefinition': '${' + snake_to_pascal_case(job_step['name']) + '}',
+            'JobDefinition': '${' + snake_to_pascal_case(step['name']) + '}',
             'JobName.$': '$.job_id',
             'JobQueue': '${' + job_queue + '}',
             'ShareIdentifier': 'default',
@@ -129,16 +129,16 @@ def get_batch_submit_job_state(job_spec: dict, job_step: dict, filter_batch_para
     }
 
 
-def parse_job_step_map(job_step_map: str) -> tuple[str, str]:
-    tokens = job_step_map.split(' ')
+def parse_job_step_map(step_map: str) -> tuple[str, str]:
+    tokens = step_map.split(' ')
     assert len(tokens) == 4
     assert tokens[0], tokens[2] == ('for', 'in')
     return tokens[1], tokens[3]
 
 
-def get_batch_job_parameters(job_spec: dict, job_step: dict, map_item: str = None) -> dict:
+def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str = None) -> dict:
     job_params = ['bucket_prefix', *job_spec['parameters'].keys()]
-    step_params = get_batch_param_names_for_job_step(job_step)
+    step_params = get_batch_param_names_for_job_step(step)
     batch_params = {
         f'{param}.$': f'$.batch_job_parameters.{param}'
         for param in job_params
@@ -150,11 +150,11 @@ def get_batch_job_parameters(job_spec: dict, job_step: dict, map_item: str = Non
     return batch_params
 
 
-def get_batch_param_names_for_job_step(job_step: dict) -> set[str]:
+def get_batch_param_names_for_job_step(step: dict) -> set[str]:
     ref_prefix = 'Ref::'
     return {
         arg.removeprefix(ref_prefix)
-        for arg in job_step['command']
+        for arg in step['command']
         if arg.startswith(ref_prefix)
     }
 
@@ -197,8 +197,8 @@ def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) 
     compute_env_names = set()
     compute_env_imports = set()
     for _, job_spec in job_types.items():
-        for job_step in job_spec['steps']:
-            compute_env = job_step['compute_environment']
+        for step in job_spec['steps']:
+            compute_env = step['compute_environment']
             if 'name' in compute_env:
                 name = compute_env['name']
                 assert name != 'Default'
@@ -239,8 +239,8 @@ def render_batch_params_by_job_type(job_types: dict) -> None:
     batch_params_by_job_type = {}
     for job_type, job_spec in job_types.items():
         params = set()
-        for job_step in job_spec['steps']:
-            params.update(get_batch_param_names_for_job_step(job_step))
+        for step in job_spec['steps']:
+            params.update(get_batch_param_names_for_job_step(step))
         batch_params_by_job_type[job_type] = list(params)
     with (Path('apps') / 'start-execution-worker' / 'src' / 'batch_params_by_job_type.json').open('w') as f:
         json.dump(batch_params_by_job_type, f, indent=2)
@@ -309,8 +309,8 @@ def main():
         validate_job_spec(job_type, job_spec)
 
     for job_type, job_spec in job_types.items():
-        for job_step in job_spec['steps']:
-            job_step['name'] = job_type + '_' + job_step['name'] if job_step['name'] else job_type
+        for step in job_spec['steps']:
+            step['name'] = job_type + '_' + step['name'] if step['name'] else job_type
 
     compute_envs = get_compute_environments(job_types, args.compute_environment_file)
 
