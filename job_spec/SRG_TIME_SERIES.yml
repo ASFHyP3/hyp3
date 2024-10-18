@@ -84,4 +84,4 @@ SRG_TIME_SERIES:
       compute_environment:
         import: Default
       vcpu: 1
-      memory: 30500 # TODO how much is needed?
+      memory: 30500
