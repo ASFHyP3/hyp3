@@ -1,7 +1,7 @@
 import pytest
+import render_cf
 import yaml
 
-import render_cf
 
 def test_get_compute_environments(tmp_path):
     job_types = {
