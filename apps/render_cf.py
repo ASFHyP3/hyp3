@@ -219,7 +219,7 @@ def parse_compute_environments_file(
     return compute_envs
 
 
-def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) -> list[dict]:
+def get_compute_environments(job_types: dict, compute_env_file: Optional[Path] = None) -> list[dict]:
     compute_envs = []
     compute_env_names = set({'Default'})
     compute_env_imports = set()
@@ -245,6 +245,11 @@ def get_compute_environments(job_types: dict, compute_env_file: Optional[Path]) 
             compute_env_file
         )
         compute_envs.extend(compute_envs_from_file)
+    elif compute_env_imports is not None:
+        raise ValueError(
+            f'The following compute envs are imported but no compute env file was provided: {compute_env_imports}.'
+        )
+
 
     return compute_envs
 
