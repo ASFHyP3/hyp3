@@ -132,7 +132,7 @@ def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params=F
 def parse_job_step_map(step_map: str) -> tuple[str, str]:
     tokens = step_map.split(' ')
     assert len(tokens) == 4
-    assert tokens[0], tokens[2] == ('for', 'in')
+    assert (tokens[0], tokens[2]) == ('for', 'in')
     return tokens[1], tokens[3]
 
 
