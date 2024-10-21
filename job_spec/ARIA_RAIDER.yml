@@ -38,8 +38,7 @@ ARIA_RAIDER:
         - --input-bucket-prefix
         - Ref::job_id
       timeout: 10800
-      compute_environment:
-        import: 'Default'
+      compute_environment: Default
       vcpu: 1
       memory: 7500
       secrets:

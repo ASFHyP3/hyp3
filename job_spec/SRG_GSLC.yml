@@ -55,8 +55,7 @@ SRG_GSLC:
         - Ref::bucket_prefix
         - Ref::granules
       timeout: 10800
-      compute_environment:
-        import: 'SrgGslc'
+      compute_environment: SrgGslc
       vcpu: 1
       gpu: 1
       memory: 30500

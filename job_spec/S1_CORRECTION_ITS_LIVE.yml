@@ -44,8 +44,7 @@ S1_CORRECTION_TEST:
         - '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
         - Ref::granules
       timeout: 10800
-      compute_environment:
-        import: 'Default'
+      compute_environment: Default
       vcpu: 1
       memory: 15750
       secrets:

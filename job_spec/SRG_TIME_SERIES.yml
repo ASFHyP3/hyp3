@@ -58,8 +58,7 @@ SRG_TIME_SERIES:
         - --use-gslc-prefix
         - Ref::granule
       timeout: 10800
-      compute_environment:
-        import: SrgGslc
+      compute_environment: SrgGslc
       vcpu: 1
       gpu: 1
       memory: 30500
@@ -79,7 +78,6 @@ SRG_TIME_SERIES:
         - Ref::bucket_prefix
         - --use-gslc-prefix
       timeout: 21600 # 6 hr
-      compute_environment:
-        import: Default
+      compute_environment: Default
       vcpu: 1
       memory: 30500

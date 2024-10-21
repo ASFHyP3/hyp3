@@ -1,7 +1,6 @@
 import argparse
 import json
 from pathlib import Path
-from typing import Optional
 
 import jinja2
 import yaml
@@ -86,11 +85,7 @@ def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params=F
         batch_job_parameters = '$.batch_job_parameters'
         parameters_key = 'Parameters.$'
 
-    if 'import' in step['compute_environment']:
-        compute_environment = step['compute_environment']['import']
-    else:
-        compute_environment = step['compute_environment']['name']
-
+    compute_environment = step['compute_environment']
     job_queue = 'JobQueueArn' if compute_environment == 'Default' else compute_environment + 'JobQueueArn'
     return {
         'Type': 'Task',
@@ -163,7 +158,7 @@ def get_batch_param_names_for_job_step(step: dict) -> set[str]:
     }
 
 
-def render_templates(job_types, compute_envs, security_environment, api_name):
+def render_templates(job_types: dict, compute_envs: dict, security_environment: str, api_name: str):
     job_states = get_states_for_jobs(job_types)
 
     env = jinja2.Environment(
@@ -182,7 +177,6 @@ def render_templates(job_types, compute_envs, security_environment, api_name):
         output = template.render(
             job_types=job_types,
             compute_envs=compute_envs,
-            compute_env_names=[env['name'] for env in compute_envs],
             security_environment=security_environment,
             api_name=api_name,
             json=json,
@@ -196,65 +190,18 @@ def render_templates(job_types, compute_envs, security_environment, api_name):
         template_file.with_suffix('').write_text(output)
 
 
-def parse_compute_environments_file(
-    compute_env_names: set,
-    compute_env_imports: set,
-    compute_env_file: Path
-) -> list[dict]:
-    compute_envs = []
-    compute_envs_from_file = yaml.safe_load(compute_env_file.read_text())['compute_environments']
+def get_compute_environments_for_deployment(job_types: dict, compute_env_file: Path) -> dict:
+    compute_envs = yaml.safe_load(compute_env_file.read_text())['compute_environments']
 
-    for name in compute_envs_from_file:
-        if name in compute_env_imports:
-            if name in compute_env_names:
-                raise ValueError(
-                    f'Compute envs must have unique names but the following is defined more than once: {name}.'
-                )
-            compute_envs_from_file[name].update({'name': name})
-            compute_envs.append(compute_envs_from_file[name])
-            compute_env_names.add(name)
+    if 'Default' in compute_envs:
+        raise ValueError(f"'Default' is a reserved compute environment name")
 
-    for name in compute_env_imports:
-        if name not in compute_envs_from_file and name != 'Default':
-            raise ValueError(
-                f'The following compute env is imported but not defined in the compute envs file: {name}.'
-            )
-
-    return compute_envs
-
-
-def get_compute_environments(job_types: dict, compute_env_file: Optional[Path] = None) -> list[dict]:
-    compute_envs = []
-    compute_env_names = {'Default'}
-    compute_env_imports = set()
-
-    for _, job_spec in job_types.items():
-        for step in job_spec['steps']:
-            compute_env = step['compute_environment']
-            if 'name' in compute_env:
-                name = compute_env['name']
-                if name in compute_env_names:
-                    raise ValueError(
-                        f'Compute envs must have unique names but the following is defined more than once: {name}.'
-                    )
-                compute_envs.append(compute_env)
-                compute_env_names.add(name)
-            elif 'import' in compute_env:
-                compute_env_imports.add(compute_env['import'])
-
-    if compute_env_file:
-        compute_envs_from_file = parse_compute_environments_file(
-            compute_env_names,
-            compute_env_imports,
-            compute_env_file
-        )
-        compute_envs.extend(compute_envs_from_file)
-    elif compute_env_imports is not None:
-        raise ValueError(
-            f'The following compute envs are imported but no compute env file was provided: {compute_env_imports}.'
-        )
-
-    return compute_envs
+    return {
+        step['compute_environment']: compute_envs[step['compute_environment']]
+        for job_spec in job_types.values()
+        for step in job_spec['steps']
+        if step['compute_environment'] != 'Default'
+    }
 
 
 def render_batch_params_by_job_type(job_types: dict) -> None:
@@ -316,7 +263,7 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
-    parser.add_argument('-e', '--compute-environment-file', type=Path)
+    parser.add_argument('-e', '--compute-environment-file', required=True, type=Path)
     parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL', 'JPL-public'])
     parser.add_argument('-n', '--api-name', required=True)
     parser.add_argument('-c', '--cost-profile', default='DEFAULT', choices=['DEFAULT', 'EDC'])
@@ -333,7 +280,7 @@ def main():
         for step in job_spec['steps']:
             step['name'] = job_type + '_' + step['name'] if step['name'] else job_type
 
-    compute_envs = get_compute_environments(job_types, args.compute_environment_file)
+    compute_envs = get_compute_environments_for_deployment(job_types, args.compute_environment_file)
 
     render_batch_params_by_job_type(job_types)
     render_default_params_by_job_type(job_types)

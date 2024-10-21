@@ -29,7 +29,7 @@ Outputs:
   JobQueueArn:
     Value: !Ref BatchJobQueue
 
-  {% for name in compute_env_names %}
+  {% for name in compute_envs %}
   {{ name }}ComputeEnvironmentArn:
     Value: !Ref {{ name }}ComputeEnvironment
 
@@ -105,8 +105,7 @@ Resources:
   SchedulingPolicy:
     Type: AWS::Batch::SchedulingPolicy
 
-  {% for env in compute_envs %}
-  {% set name = env['name'] %}
+  {% for name, env in compute_envs.items() %}
   {% set instance_types = env['instance_types'].split(',') if 'instance_types' in env else '!Ref InstanceTypes' %}
   {% set ami_id = env['ami_id'] if 'ami_id' in env else '!Ref AmiId' %}
   {% set type = env['allocation_type'] if 'allocation_type' in env else 'SPOT' %}
