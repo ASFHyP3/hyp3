@@ -53,7 +53,7 @@ def get_state_for_job_step(step: dict, index: int, next_state_name: str, job_spe
 
 
 def get_map_state(job_spec: dict, step: dict) -> dict:
-    item, items = parse_job_step_map(step['map'])
+    item, items = parse_map_statement(step['map'])
 
     batch_job_parameters = get_batch_job_parameters(job_spec, step, map_item=item)
 
@@ -129,10 +129,14 @@ def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params=F
     }
 
 
-def parse_job_step_map(step_map: str) -> tuple[str, str]:
-    tokens = step_map.split(' ')
-    assert len(tokens) == 4
-    assert (tokens[0], tokens[2]) == ('for', 'in')
+def parse_map_statement(map_statement: str) -> tuple[str, str]:
+    tokens = map_statement.split(' ')
+    if len(tokens) != 4:
+        raise ValueError(f'expected 4 tokens in map statement but got {len(tokens)}: {map_statement}')
+    if tokens[0] != 'for':
+        raise ValueError(f"expected 'for', got '{tokens[0]}': {map_statement}")
+    if tokens[2] != 'in':
+        raise ValueError(f"expected 'in', got '{tokens[2]}': {map_statement}")
     return tokens[1], tokens[3]
 
 
