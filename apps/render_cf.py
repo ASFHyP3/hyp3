@@ -221,7 +221,7 @@ def parse_compute_environments_file(
 
 def get_compute_environments(job_types: dict, compute_env_file: Optional[Path] = None) -> list[dict]:
     compute_envs = []
-    compute_env_names = set({'Default'})
+    compute_env_names = {'Default'}
     compute_env_imports = set()
 
     for _, job_spec in job_types.items():
