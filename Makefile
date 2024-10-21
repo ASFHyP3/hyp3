@@ -1,5 +1,5 @@
 API = ${PWD}/apps/api/src
-RENDER_CF = ${PWD}/apps
+APPS = ${PWD}/apps
 CHECK_PROCESSING_TIME = ${PWD}/apps/check-processing-time/src
 GET_FILES = ${PWD}/apps/get-files/src
 HANDLE_BATCH_EVENT = ${PWD}/apps/handle-batch-event/src
