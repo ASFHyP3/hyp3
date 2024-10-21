@@ -41,22 +41,22 @@ def test_get_compute_environments(tmp_path):
         }
     }
     expected_compute_envs = [
-            {
-                'name': 'compute_environment_1',
-                'intance_types': ['type1', 'type2']
-            },
-            {
-                'name': 'compute_environment_3',
-                'allocation_type': 'alloc_type_1',
-                'allocation_strategy': 'alloc_strat_1'
-            },
-            {
-                'name': 'compute_environment_2',
-                'instance_types': ['type_3'],
-                'ami_id': 'ami_id_1',
-                'allocation_type': 'alloc_type_2',
-                'allocation_strategy': 'alloc_strat_2'
-            }
+        {
+            'name': 'compute_environment_1',
+            'intance_types': ['type1', 'type2']
+        },
+        {
+            'name': 'compute_environment_3',
+            'allocation_type': 'alloc_type_1',
+            'allocation_strategy': 'alloc_strat_1'
+        },
+        {
+            'name': 'compute_environment_2',
+            'instance_types': ['type_3'],
+            'ami_id': 'ami_id_1',
+            'allocation_type': 'alloc_type_2',
+            'allocation_strategy': 'alloc_strat_2'
+        }
     ]
     compute_env_filepath = tmp_path / 'compute_environments.yml'
     yaml.dump(compute_env_file, open(compute_env_filepath, 'w'))
@@ -81,7 +81,7 @@ def test_get_compute_environments(tmp_path):
     with pytest.raises(ValueError, match=r'.*not defined in the compute envs file: undefined_compute_environment*'):
         compute_envs = render_cf.get_compute_environments(job_types_import_undefined, compute_env_filepath)
     with pytest.raises(ValueError, match=r'.*no compute env file was provided: {\'undefined_compute_environment\'}*'):
-            compute_envs = render_cf.get_compute_environments(job_types_import_undefined)
+        compute_envs = render_cf.get_compute_environments(job_types_import_undefined)
 
     compute_env_file_redefined_default = {'compute_environments': {'Default': {}}}
     yaml.dump(compute_env_file_redefined_default, open(compute_env_filepath, 'w'))

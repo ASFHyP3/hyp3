@@ -250,7 +250,6 @@ def get_compute_environments(job_types: dict, compute_env_file: Optional[Path] =
             f'The following compute envs are imported but no compute env file was provided: {compute_env_imports}.'
         )
 
-
     return compute_envs
 
 
