@@ -17,3 +17,11 @@ def test_parse_map_statement():
 
     with pytest.raises(ValueError, match="expected 'in', got 'ib': for item ib items"):
         render_cf.parse_map_statement('for item ib items')
+
+
+def test_get_batch_job_parameters():
+    assert False
+
+
+def test_get_batch_param_names_for_job_step():
+    assert False
