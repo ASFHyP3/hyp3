@@ -15,14 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Changes to custom compute environments:
   - Custom compute environments are now applied to individual job steps rather than to entire jobs. The `compute_environment` field is now provided at the step level rather than at the top level of the job spec.
-  - Custom compute environments can optionally be defined within `job_spec/config/compute_environments.yml`. Job steps can import these environments using the following syntax:
-      ```yaml
-      compute_environment:
-        import: MyComputeEnvironment
-      ```
-    If the `import` value is `Default`, then the job step uses the deployment's default compute environment.
-
-    The `compute_environment` field can still be used to define a custom compute environment directly within the job spec, as before.
+  - If the value of the `compute_environment` field is `Default`, then the step uses the deployment's default compute environment. Otherwise, the value must be the name of a custom compute environment defined in `job_spec/config/compute_environments.yml`.
 - Other changes to the job spec syntax:
   - The `tasks` field has been renamed to `steps`.
   - Job parameters no longer contain a top-level `default` field. The `default` field within each parameter's `api_schema` mapping is still supported.

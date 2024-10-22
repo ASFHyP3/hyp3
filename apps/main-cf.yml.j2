@@ -154,7 +154,7 @@ Resources:
     Properties:
       Parameters:
         ComputeEnvironmentArn: !GetAtt Cluster.Outputs.ComputeEnvironmentArn
-        {% for name in compute_env_names %}
+        {% for name in compute_envs %}
         {{ name }}ComputeEnvironmentArn: !GetAtt Cluster.Outputs.{{ name }}ComputeEnvironmentArn
         {% endfor %}
         DefaultMaxvCpus: !Ref DefaultMaxvCpus
@@ -172,7 +172,7 @@ Resources:
     Properties:
       Parameters:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
-        {% for name in compute_env_names %}
+        {% for name in compute_envs %}
         {{ name }}JobQueueArn: !GetAtt Cluster.Outputs.{{ name }}JobQueueArn
         {% endfor %}
         JobsTable: !Ref JobsTable
@@ -187,7 +187,7 @@ Resources:
     Properties:
       Parameters:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
-        {% for name in compute_env_names %}
+        {% for name in compute_envs %}
         {{ name }}JobQueueArn: !GetAtt Cluster.Outputs.{{ name }}JobQueueArn
         {% endfor %}
         TaskRoleArn: !GetAtt Cluster.Outputs.TaskRoleArn

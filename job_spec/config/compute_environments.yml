@@ -1,9 +1,14 @@
 compute_environments:
-  # Format is the same as in the job_spec(s), except the name becomes the key.
+  # Supported fields:
+  #   instance_types
+  #   ami_id
+  #   allocation_type
+  #   allocation_strategy
   SrgGslc:
     instance_types: g6.2xlarge
-    # Image ID for: /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
-    ami_id: ami-0729c079aae647cb3
+    ami_id: ami-0729c079aae647cb3  # /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
+  AriaAutorift:
+    instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
   InsarIsceAria:
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE

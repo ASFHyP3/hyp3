@@ -5,7 +5,7 @@ Parameters:
   ComputeEnvironmentArn:
     Type: String
 
-  {% for name in compute_env_names %}
+  {% for name in compute_envs %}
   {{ name }}ComputeEnvironmentArn:
     Type: String
   {% endfor %}
@@ -86,7 +86,7 @@ Resources:
             Action: batch:UpdateComputeEnvironment
             Resource: 
               - !Ref ComputeEnvironmentArn
-              {% for name in compute_env_names %}
+              {% for name in compute_envs %}
               - !Ref {{ name }}ComputeEnvironmentArn
               {% endfor %}
 
@@ -127,7 +127,7 @@ Resources:
       Targets:
         - Arn: !GetAtt Lambda.Arn
           Id: lambda
-        {% for name in compute_env_names %}
+        {% for name in compute_envs %}
         - Arn: !GetAtt {{ name }}Lambda.Arn
           Id:  {{ name }}lambda
         {% endfor %}
@@ -140,7 +140,7 @@ Resources:
       Principal: events.amazonaws.com
       SourceArn: !GetAtt Schedule.Arn
 
-  {% for name in compute_env_names %}
+  {% for name in compute_envs %}
   {{ name }}LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
