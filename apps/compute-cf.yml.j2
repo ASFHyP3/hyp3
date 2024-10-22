@@ -35,8 +35,8 @@ Outputs:
 
   {{ name }}JobQueueArn:
     Value: !Ref {{ name }}JobQueue
-  {% endfor %}
 
+  {% endfor %}
   TaskRoleArn:
     Value: !GetAtt TaskRole.Arn
 
