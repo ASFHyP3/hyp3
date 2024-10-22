@@ -194,7 +194,7 @@ def get_compute_environments_for_deployment(job_types: dict, compute_env_file: P
     compute_envs = yaml.safe_load(compute_env_file.read_text())['compute_environments']
 
     if 'Default' in compute_envs:
-        raise ValueError(f"'Default' is a reserved compute environment name")
+        raise ValueError("'Default' is a reserved compute environment name")
 
     return {
         step['compute_environment']: compute_envs[step['compute_environment']]
