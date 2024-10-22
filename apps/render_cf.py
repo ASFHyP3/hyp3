@@ -168,7 +168,6 @@ def render_templates(job_types: dict, compute_envs: dict, security_environment: 
         trim_blocks=True,
         lstrip_blocks=True,
         keep_trailing_newline=True,
-        extensions=['jinja2.ext.do'],
     )
 
     for template_file in Path('.').glob('**/*.j2'):
