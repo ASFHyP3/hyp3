@@ -21,7 +21,25 @@ def test_parse_map_statement():
 
 
 def test_get_batch_job_parameters():
-    assert False
+    job_spec = {'parameters': {'param1': {}, 'param2': {}, 'param3': {}, 'param4': {}}}
+
+    step = {'command': ['foo', 'Ref::param2', 'Ref::param3', 'bar', 'Ref::bucket_prefix']}
+    assert render_cf.get_batch_job_parameters(job_spec, step) == {
+        'param2.$': '$.batch_job_parameters.param2',
+        'param3.$': '$.batch_job_parameters.param3',
+        'bucket_prefix.$': '$.batch_job_parameters.bucket_prefix',
+    }
+
+    step = {'command': ['foo', 'Ref::param2', 'Ref::param3', 'bar', 'Ref::param5']}
+    assert render_cf.get_batch_job_parameters(job_spec, step, map_item='param5') == {
+        'param2.$': '$.batch_job_parameters.param2',
+        'param3.$': '$.batch_job_parameters.param3',
+        'param5.$': '$$.Map.Item.Value',
+    }
+
+    step = {'command': ['foo', 'Ref::param2', 'Ref::param3', 'bar', 'Ref::param5']}
+    with pytest.raises(ValueError, match="job parameter 'param5' has not been defined"):
+        render_cf.get_batch_job_parameters(job_spec, step)
 
 
 def test_get_batch_param_names_for_job_step():
