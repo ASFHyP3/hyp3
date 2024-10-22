@@ -59,8 +59,7 @@ INSAR_ISCE_BURST:
         - Ref::looks
         - Ref::granules
       timeout: 5400
-      compute_environment:
-        import: 'Default'
+      compute_environment: Default
       vcpu: 1
       memory: 7600
       secrets:

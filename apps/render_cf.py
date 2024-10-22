@@ -1,7 +1,6 @@
 import argparse
 import json
 from pathlib import Path
-from typing import Optional
 
 import jinja2
 import yaml
@@ -53,7 +52,7 @@ def get_state_for_job_step(step: dict, index: int, next_state_name: str, job_spe
 
 
 def get_map_state(job_spec: dict, step: dict) -> dict:
-    item, items = parse_job_step_map(step['map'])
+    item, items = parse_map_statement(step['map'])
 
     batch_job_parameters = get_batch_job_parameters(job_spec, step, map_item=item)
 
@@ -86,11 +85,7 @@ def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params=F
         batch_job_parameters = '$.batch_job_parameters'
         parameters_key = 'Parameters.$'
 
-    if 'import' in step['compute_environment']:
-        compute_environment = step['compute_environment']['import']
-    else:
-        compute_environment = step['compute_environment']['name']
-
+    compute_environment = step['compute_environment']
     job_queue = 'JobQueueArn' if compute_environment == 'Default' else compute_environment + 'JobQueueArn'
     return {
         'Type': 'Task',
@@ -129,24 +124,28 @@ def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params=F
     }
 
 
-def parse_job_step_map(step_map: str) -> tuple[str, str]:
-    tokens = step_map.split(' ')
-    assert len(tokens) == 4
-    assert tokens[0], tokens[2] == ('for', 'in')
+def parse_map_statement(map_statement: str) -> tuple[str, str]:
+    tokens = map_statement.split(' ')
+    if len(tokens) != 4:
+        raise ValueError(f'expected 4 tokens in map statement but got {len(tokens)}: {map_statement}')
+    if tokens[0] != 'for':
+        raise ValueError(f"expected 'for', got '{tokens[0]}': {map_statement}")
+    if tokens[2] != 'in':
+        raise ValueError(f"expected 'in', got '{tokens[2]}': {map_statement}")
     return tokens[1], tokens[3]
 
 
 def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str = None) -> dict:
-    job_params = ['bucket_prefix', *job_spec['parameters'].keys()]
+    job_params = {'bucket_prefix', *job_spec['parameters'].keys()}
     step_params = get_batch_param_names_for_job_step(step)
-    batch_params = {
-        f'{param}.$': f'$.batch_job_parameters.{param}'
-        for param in job_params
-        if param in step_params
-    }
-    if map_item is not None:
-        assert map_item in step_params
-        batch_params[f'{map_item}.$'] = '$$.Map.Item.Value'
+    batch_params = {}
+    for param in step_params:
+        if param == map_item:
+            batch_params[f'{map_item}.$'] = '$$.Map.Item.Value'
+        else:
+            if param not in job_params:
+                raise ValueError(f"job parameter '{param}' has not been defined")
+            batch_params[f'{param}.$'] = f'$.batch_job_parameters.{param}'
     return batch_params
 
 
@@ -159,7 +158,7 @@ def get_batch_param_names_for_job_step(step: dict) -> set[str]:
     }
 
 
-def render_templates(job_types, compute_envs, security_environment, api_name):
+def render_templates(job_types: dict, compute_envs: dict, security_environment: str, api_name: str):
     job_states = get_states_for_jobs(job_types)
 
     env = jinja2.Environment(
@@ -178,7 +177,6 @@ def render_templates(job_types, compute_envs, security_environment, api_name):
         output = template.render(
             job_types=job_types,
             compute_envs=compute_envs,
-            compute_env_names=[env['name'] for env in compute_envs],
             security_environment=security_environment,
             api_name=api_name,
             json=json,
@@ -192,65 +190,18 @@ def render_templates(job_types, compute_envs, security_environment, api_name):
         template_file.with_suffix('').write_text(output)
 
 
-def parse_compute_environments_file(
-    compute_env_names: set,
-    compute_env_imports: set,
-    compute_env_file: Path
-) -> list[dict]:
-    compute_envs = []
-    compute_envs_from_file = yaml.safe_load(compute_env_file.read_text())['compute_environments']
+def get_compute_environments_for_deployment(job_types: dict, compute_env_file: Path) -> dict:
+    compute_envs = yaml.safe_load(compute_env_file.read_text())['compute_environments']
 
-    for name in compute_envs_from_file:
-        if name in compute_env_imports:
-            if name in compute_env_names:
-                raise ValueError(
-                    f'Compute envs must have unique names but the following is defined more than once: {name}.'
-                )
-            compute_envs_from_file[name].update({'name': name})
-            compute_envs.append(compute_envs_from_file[name])
-            compute_env_names.add(name)
+    if 'Default' in compute_envs:
+        raise ValueError("'Default' is a reserved compute environment name")
 
-    for name in compute_env_imports:
-        if name not in compute_envs_from_file and name != 'Default':
-            raise ValueError(
-                f'The following compute env is imported but not defined in the compute envs file: {name}.'
-            )
-
-    return compute_envs
-
-
-def get_compute_environments(job_types: dict, compute_env_file: Optional[Path] = None) -> list[dict]:
-    compute_envs = []
-    compute_env_names = {'Default'}
-    compute_env_imports = set()
-
-    for _, job_spec in job_types.items():
-        for step in job_spec['steps']:
-            compute_env = step['compute_environment']
-            if 'name' in compute_env:
-                name = compute_env['name']
-                if name in compute_env_names:
-                    raise ValueError(
-                        f'Compute envs must have unique names but the following is defined more than once: {name}.'
-                    )
-                compute_envs.append(compute_env)
-                compute_env_names.add(name)
-            elif 'import' in compute_env:
-                compute_env_imports.add(compute_env['import'])
-
-    if compute_env_file:
-        compute_envs_from_file = parse_compute_environments_file(
-            compute_env_names,
-            compute_env_imports,
-            compute_env_file
-        )
-        compute_envs.extend(compute_envs_from_file)
-    elif compute_env_imports is not None:
-        raise ValueError(
-            f'The following compute envs are imported but no compute env file was provided: {compute_env_imports}.'
-        )
-
-    return compute_envs
+    return {
+        step['compute_environment']: compute_envs[step['compute_environment']]
+        for job_spec in job_types.values()
+        for step in job_spec['steps']
+        if step['compute_environment'] != 'Default'
+    }
 
 
 def render_batch_params_by_job_type(job_types: dict) -> None:
@@ -312,7 +263,7 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
-    parser.add_argument('-e', '--compute-environment-file', type=Path)
+    parser.add_argument('-e', '--compute-environment-file', required=True, type=Path)
     parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL', 'JPL-public'])
     parser.add_argument('-n', '--api-name', required=True)
     parser.add_argument('-c', '--cost-profile', default='DEFAULT', choices=['DEFAULT', 'EDC'])
@@ -329,7 +280,7 @@ def main():
         for step in job_spec['steps']:
             step['name'] = job_type + '_' + step['name'] if step['name'] else job_type
 
-    compute_envs = get_compute_environments(job_types, args.compute_environment_file)
+    compute_envs = get_compute_environments_for_deployment(job_types, args.compute_environment_file)
 
     render_batch_params_by_job_type(job_types)
     render_default_params_by_job_type(job_types)

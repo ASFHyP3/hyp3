@@ -52,8 +52,7 @@ AUTORIFT:
         - ITS_LIVE_OD
         - Ref::granules
       timeout: 10800
-      compute_environment:
-        import: 'Default'
+      compute_environment: Default
       vcpu: 1
       memory: 31500
       secrets:

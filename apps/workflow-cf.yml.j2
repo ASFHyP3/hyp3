@@ -5,7 +5,7 @@ Parameters:
   JobQueueArn:
     Type: String
 
-  {% for name in compute_env_names %}
+  {% for name in compute_envs %}
   {{ name }}JobQueueArn:
     Type: String
   {% endfor %}
@@ -89,7 +89,7 @@ Resources:
       DefinitionS3Location: step-function.json
       DefinitionSubstitutions:
         JobQueueArn: !Ref JobQueueArn
-        {% for name in compute_env_names %}
+        {% for name in compute_envs %}
         {{ name }}JobQueueArn: !Ref {{ name }}JobQueueArn
         {% endfor %}
         {% for job_type, job_spec in job_types.items() %}
@@ -134,7 +134,7 @@ Resources:
             Action: batch:SubmitJob
             Resource:
               - !Ref JobQueueArn
-              {% for name in compute_env_names %}
+              {% for name in compute_envs %}
               - !Ref {{ name }}JobQueueArn
               {% endfor %}
               {% for job_type, job_spec in job_types.items() %}

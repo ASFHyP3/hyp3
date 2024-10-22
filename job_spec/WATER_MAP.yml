@@ -147,8 +147,7 @@ WATER_MAP:
         - 'copernicus'
         - Ref::granules
       timeout: 36000
-      compute_environment:
-        import: 'Default'
+      compute_environment: Default
       vcpu: 1
       memory: 31500
       secrets:
@@ -174,8 +173,7 @@ WATER_MAP:
         - --membership-threshold
         - Ref::membership_threshold
       timeout: 36000
-      compute_environment:
-        import: 'Default'
+      compute_environment: Default
       vcpu: 1
       memory: 126000
     - name: FLOOD_MAP
@@ -202,7 +200,6 @@ WATER_MAP:
         - --minimization-metric
         - Ref::minimization_metric
       timeout: 86400
-      compute_environment:
-        import: 'Default'
+      compute_environment: Default
       vcpu: 1
       memory: 126000

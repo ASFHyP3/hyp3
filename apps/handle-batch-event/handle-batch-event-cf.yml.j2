@@ -5,7 +5,7 @@ Parameters:
   JobQueueArn:
     Type: String
 
-  {% for name in compute_env_names %}
+  {% for name in compute_envs %}
   {{ name }}JobQueueArn:
     Type: String
   {% endfor %}
@@ -100,7 +100,7 @@ Resources:
         detail:
           jobQueue:
             - !Ref JobQueueArn
-            {% for name in compute_env_names %}
+            {% for name in compute_envs %}
             - !Ref {{ name }}JobQueueArn
             {% endfor %}
           status:

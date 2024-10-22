@@ -1,33 +1,14 @@
-# Compute Environments that are shared between multiple jobs and/or steps should be defined here, 
-# rather than in the job spec. The format is the same, except the name becomes the key:
-
-# ExampleComputeEnvName:
-#   instance_types: ...
-#   ami_id: ...
-#   allocation_type: ...
-#   allocation_strategy: ...
-
-# Once the environment is defined here, it can be imported in the job spec step
-# by using the `import` key:
-
-# JOB_NAME:
-#   ...
-#   steps:
-#     step_name:
-#       ...
-#       compute_environment:
-#         import: 'ExampleComputeEnvName'
-
-# Note that the name must be unique, i.e. a compute environment that is defined in a job spec using
-# the `name` key cannot also be defined here, unless it is not imported in the same deployment (envs here
-# are only rendered if they are imported). Also note that the name should be in pascal case to avoid
-# cfn-lint errors.
-
 compute_environments:
-  # Default is defined per-deployment in the deployment actions. 
+  # Supported fields:
+  #   instance_types
+  #   ami_id
+  #   allocation_type
+  #   allocation_strategy
   SrgGslc:
     instance_types: g6.2xlarge
     ami_id: ami-0729c079aae647cb3  # /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
+  AriaAutorift:
+    instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
   InsarIsceAria:
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
