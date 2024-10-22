@@ -25,7 +25,8 @@ def test_get_batch_job_parameters():
 
 
 def test_get_batch_param_names_for_job_step():
-    assert False
+    step = {'command': ['param1', 'Ref::param2', 'Ref::param3', 'Ref::param2', 'param4', 'Ref::param5']}
+    assert render_cf.get_batch_param_names_for_job_step(step) == {'param2', 'param3', 'param5'}
 
 
 def test_get_compute_environments(tmp_path):
