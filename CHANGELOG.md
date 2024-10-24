@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [8.0.0]
+
+### Added
+- A job step can now be applied to every item in a list using a new `map: for <item> in <items>` syntax. For example, given a job spec with a `granules` parameter, a step that includes a `map: for granule in granules` field is applied to each item in the `granules` list and can refer to `Ref::granule` within its `command` field.
+- If a job contains a `map` step, the processing time value for that step (in the `processing_times` list in the job's API response) is a sub-list of processing times for the step's iterations, in the same order as the items in the input list.
+- A new `SRG_TIME_SERIES` job type has been added to the `hyp3-lavas` and `hyp3-lavas-test` deployments. This workflow uses the new `map` syntax described above to produce a GSLC for each level-0 Sentinel-1 granule passed via the `granules` parameter and then produces a time series product from the GSLCs. See the [HyP3 SRG](https://github.com/ASFHyP3/hyp3-srg) plugin.
+- The `SRG_GSLC` job type now includes parameter validation.
+
+### Changed
+- Changes to custom compute environments:
+  - Custom compute environments are now applied to individual job steps rather than to entire jobs. The `compute_environment` field is now provided at the step level rather than at the top level of the job spec.
+  - If the value of the `compute_environment` field is `Default`, then the step uses the deployment's default compute environment. Otherwise, the value must be the name of a custom compute environment defined in `job_spec/config/compute_environments.yml`.
+- Other changes to the job spec syntax:
+  - The `tasks` field has been renamed to `steps`.
+  - Job parameters no longer contain a top-level `default` field. The `default` field within each parameter's `api_schema` mapping is still supported.
+  - Job specs no longer explicitly define a `bucket_prefix` parameter. Instead, `bucket_prefix` is automatically defined and can still be referenced as `Ref::bucket_prefix` within each step's `command` field.
+
 ## [7.12.0]
 
 ### Changed

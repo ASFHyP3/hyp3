@@ -3,7 +3,6 @@ S1_CORRECTION_TEST:
     - granules
   parameters:
     granules:
-      default:  '""'
       api_schema:
         type: array
         minItems: 1
@@ -23,15 +22,11 @@ S1_CORRECTION_TEST:
         default: 0
         type: integer
         minimum: 0
-    bucket_prefix:
-      default:  '""'
   cost_profiles:
     DEFAULT:
       cost: 1.0
   validators: []
-  compute_environment:
-    name: 'Default'
-  tasks:
+  steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
       command:
@@ -49,6 +44,7 @@ S1_CORRECTION_TEST:
         - '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
         - Ref::granules
       timeout: 10800
+      compute_environment: Default
       vcpu: 1
       memory: 15750
       secrets:

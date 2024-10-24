@@ -3,7 +3,6 @@ WATER_MAP_EQ:
     - granules
   parameters:
     granules:
-      default: '""'
       api_schema:
         type: array
         minItems: 1
@@ -22,8 +21,6 @@ WATER_MAP_EQ:
               minLength: 67
               maxLength: 67
               example: S1A_IW_SLC__1SDV_20211110T234815_20211110T234842_040516_04CE0A_E717
-    bucket_prefix:
-      default:  '""'
     resolution:
       api_schema:
         default:  30.0
@@ -58,9 +55,7 @@ WATER_MAP_EQ:
       cost: 1.0
   validators:
     - check_dem_coverage
-  compute_environment:
-    name: 'Default'
-  tasks:
+  steps:
     - name: RTC
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
       command:
@@ -94,6 +89,7 @@ WATER_MAP_EQ:
         - 'copernicus'
         - Ref::granules
       timeout: 36000
+      compute_environment: Default
       vcpu: 1
       memory: 31500
       secrets:
@@ -113,5 +109,6 @@ WATER_MAP_EQ:
         - --hand-fraction
         - Ref::hand_fraction
       timeout: 36000
+      compute_environment: Default
       vcpu: 1
       memory: 126000

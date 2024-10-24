@@ -1,4 +1,5 @@
 API = ${PWD}/apps/api/src
+APPS = ${PWD}/apps
 CHECK_PROCESSING_TIME = ${PWD}/apps/check-processing-time/src
 GET_FILES = ${PWD}/apps/get-files/src
 HANDLE_BATCH_EVENT = ${PWD}/apps/handle-batch-event/src
@@ -10,7 +11,7 @@ DISABLE_PRIVATE_DNS = ${PWD}/apps/disable-private-dns/src
 UPDATE_DB = ${PWD}/apps/update-db/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
 DYNAMO = ${PWD}/lib/dynamo
-export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SET_BATCH_OVERRIDES}:${SCALE_CLUSTER}:${START_EXECUTION_MANAGER}:${START_EXECUTION_WORKER}:${DISABLE_PRIVATE_DNS}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}
+export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SET_BATCH_OVERRIDES}:${SCALE_CLUSTER}:${START_EXECUTION_MANAGER}:${START_EXECUTION_WORKER}:${DISABLE_PRIVATE_DNS}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}:${APPS}
 
 
 build: render
@@ -36,11 +37,12 @@ install:
 	python -m pip install -r requirements-all.txt
 
 files ?= job_spec/*.yml
+compute_env_file ?= job_spec/config/compute_environments.yml
 security_environment ?= ASF
 api_name ?= local
 cost_profile ?= DEFAULT
 render:
-	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -s $(security_environment) -n $(api_name) -c $(cost_profile)
+	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -e $(compute_env_file) -s $(security_environment) -n $(api_name) -c $(cost_profile)
 
 static: flake8 openapi-validate cfn-lint
 
