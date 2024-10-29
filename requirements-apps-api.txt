@@ -5,7 +5,7 @@ openapi-core==0.19.4
 prance==23.6.21.0
 PyJWT==2.9.0
 requests==2.32.3
-serverless_wsgi==3.0.4
+serverless_wsgi==3.0.5
 shapely==2.0.6
 strict-rfc3339==0.7
 ./lib/dynamo/
