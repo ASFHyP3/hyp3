@@ -112,4 +112,5 @@ runs:
             CERTIFICATE_ARN \
             ORIGIN_ACCESS_IDENTITY_ID \
             DISTRIBUTION_URL
+          STACK_NAME=${{ inputs.STACK_NAME }}
           cdk deploy
