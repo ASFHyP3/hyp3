@@ -91,28 +91,28 @@ runs:
         run: |
           aws cloudformation package \
             --template-file apps/main-cf.yml \
-            --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
+            --s3-bucket '${{ inputs.TEMPLATE_BUCKET }}' \
             --output-template-file packaged.yml
 
           export \
-            STACK_NAME=${{ inputs.STACK_NAME }} \
-            VPC_ID=${{ inputs.VPC_ID }} \
-            SUBNET_IDS=${{ inputs.SUBNET_IDS }} \
-            SECRET_ARN=${{ inputs.SECRET_ARN }} \
-            IMAGE_TAG=${{ inputs.IMAGE_TAG }} \
-            PRODUCT_LIFETIME=${{ inputs.PRODUCT_LIFETIME }} \
-            AUTH_PUBLIC_KEY=${{ inputs.AUTH_PUBLIC_KEY }} \
-            DEFAULT_CREDITS_PER_USER=${{ inputs.DEFAULT_CREDITS_PER_USER }} \
-            DEFAULT_APPLICATION_STATUS=${{ inputs.DEFAULT_APPLICATION_STATUS }} \
-            DEFAULT_MAX_VCPUS=${{ inputs.DEFAULT_MAX_VCPUS }} \
-            EXPANDED_MAX_VCPUS=${{ inputs.EXPANDED_MAX_VCPUS }} \
-            MONTHLY_BUDGET=${{ inputs.MONTHLY_BUDGET }} \
-            REQUIRED_SURPLUS=${{ inputs.REQUIRED_SURPLUS }} \
-            AMI_ID=${{ inputs.AMI_ID }} \
-            INSTANCE_TYPES=${{ inputs.INSTANCE_TYPES }} \
-            DOMAIN_NAME=${{ inputs.DOMAIN_NAME }} \
-            CERTIFICATE_ARN=${{ inputs.CERTIFICATE_ARN }} \
-            ORIGIN_ACCESS_IDENTITY_ID=${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }} \
-            DISTRIBUTION_URL=${{ inputs.DISTRIBUTION_URL}}
+            STACK_NAME='${{ inputs.STACK_NAME }}' \
+            VPC_ID='${{ inputs.VPC_ID }}' \
+            SUBNET_IDS='${{ inputs.SUBNET_IDS }}' \
+            SECRET_ARN='${{ inputs.SECRET_ARN }}' \
+            IMAGE_TAG='${{ inputs.IMAGE_TAG }}' \
+            PRODUCT_LIFETIME='${{ inputs.PRODUCT_LIFETIME }}' \
+            AUTH_PUBLIC_KEY='${{ inputs.AUTH_PUBLIC_KEY }}' \
+            DEFAULT_CREDITS_PER_USER='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
+            DEFAULT_APPLICATION_STATUS='${{ inputs.DEFAULT_APPLICATION_STATUS }}' \
+            DEFAULT_MAX_VCPUS='${{ inputs.DEFAULT_MAX_VCPUS }}' \
+            EXPANDED_MAX_VCPUS='${{ inputs.EXPANDED_MAX_VCPUS }}' \
+            MONTHLY_BUDGET='${{ inputs.MONTHLY_BUDGET }}' \
+            REQUIRED_SURPLUS='${{ inputs.REQUIRED_SURPLUS }}' \
+            AMI_ID='${{ inputs.AMI_ID }}' \
+            INSTANCE_TYPES='${{ inputs.INSTANCE_TYPES }}' \
+            DOMAIN_NAME='${{ inputs.DOMAIN_NAME }}' \
+            CERTIFICATE_ARN='${{ inputs.CERTIFICATE_ARN }}' \
+            ORIGIN_ACCESS_IDENTITY_ID='${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }}' \
+            DISTRIBUTION_URL='${{ inputs.DISTRIBUTION_URL}}'
 
           cdk deploy
