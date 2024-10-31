@@ -27,11 +27,11 @@ class HyP3Stack(cdk.Stack):
             'InstanceTypes': os.environ['INSTANCE_TYPES'],
         }
         if os.environ['SECURITY_ENVIRONMENT'] != 'EDC':
-            params['DOMAIN_NAME'] = os.environ['DOMAIN_NAME']
-            params['CERTIFICATE_ARN'] = os.environ['CERTIFICATE_ARN']
+            params['DomainName'] = os.environ['DOMAIN_NAME']
+            params['CertificateArn'] = os.environ['CERTIFICATE_ARN']
         else:
-            params['ORIGIN_ACCESS_IDENTITY_ID'] = os.environ['ORIGIN_ACCESS_IDENTITY_ID']
-            params['DISTRIBUTION_URL'] = os.environ['DISTRIBUTION_URL']
+            params['OriginAccessIdentityId'] = os.environ['ORIGIN_ACCESS_IDENTITY_ID']
+            params['DistributionUrl'] = os.environ['DISTRIBUTION_URL']
 
         template = cfn_inc.CfnInclude(
             scope=self,
