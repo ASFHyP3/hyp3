@@ -32,9 +32,6 @@ inputs:
   SECRET_ARN:
     description: "ARN of Secret in AWS Secrets Manager containing all the credentials needed for job steps"
     required: true
-  CLOUDFORMATION_ROLE_ARN:
-    description: "The CloudFormation role to use for this deployment"
-    required: true
   DEFAULT_CREDITS_PER_USER:
     description: "The default number of credits given to a new user"
     required: true
@@ -84,52 +81,16 @@ runs:
       - name: install dependencies and render templates
         shell: bash
         run: |
+          sudo snap install node --classic
+          sudo npm install -g aws-cdk
           pip install --upgrade pip
           make install
           make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' api_name='${{ inputs.API_NAME }}' cost_profile='${{ inputs.COST_PROFILE }}' build
       - name: Package and deploy
         shell: bash
         run: |
-          [ -z ${{ inputs.CLOUDFORMATION_ROLE_ARN }} ] && export ROLE_STATEMENT="" \
-            || export ROLE_STATEMENT="--role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }}"
-
-          [ -z ${{ inputs.DOMAIN_NAME }} ] && export DOMAIN_NAME="" \
-            || export DOMAIN_NAME="DomainName=${{ inputs.DOMAIN_NAME }}"
-
-          [ -z ${{ inputs.CERTIFICATE_ARN }} ] && export CERTIFICATE_ARN="" \
-            || export CERTIFICATE_ARN="CertificateArn=${{ inputs.CERTIFICATE_ARN }}"
-
-          [ -z ${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }} ] && export ORIGIN_ACCESS_IDENTITY_ID="" \
-            || export ORIGIN_ACCESS_IDENTITY_ID="OriginAccessIdentityId=${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }}"
-
-          [ -z ${{ inputs.DISTRIBUTION_URL }} ] && export DISTRIBUTION_URL="" \
-            || export DISTRIBUTION_URL="DistributionUrl=${{ inputs.DISTRIBUTION_URL }}"
-
           aws cloudformation package \
             --template-file apps/main-cf.yml \
             --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
             --output-template-file packaged.yml
-          aws cloudformation deploy \
-            --stack-name ${{ inputs.STACK_NAME }} \
-            --template-file packaged.yml \
-            $ROLE_STATEMENT \
-            --capabilities CAPABILITY_IAM \
-            --parameter-overrides \
-                VpcId='${{ inputs.VPC_ID }}' \
-                SubnetIds='${{ inputs.SUBNET_IDS }}' \
-                SecretArn='${{ inputs.SECRET_ARN }}' \
-                ImageTag='${{ inputs.IMAGE_TAG }}' \
-                ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
-                AuthPublicKey='${{ inputs.AUTH_PUBLIC_KEY }}' \
-                $DOMAIN_NAME \
-                $CERTIFICATE_ARN \
-                $ORIGIN_ACCESS_IDENTITY_ID \
-                $DISTRIBUTION_URL \
-                DefaultCreditsPerUser='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
-                DefaultApplicationStatus='${{ inputs.DEFAULT_APPLICATION_STATUS }}' \
-                DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
-                ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
-                MonthlyBudget='${{ inputs.MONTHLY_BUDGET }}' \
-                RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
-                AmiId='${{ inputs.AMI_ID }}' \
-                InstanceTypes='${{ inputs.INSTANCE_TYPES }}'
+          cdk deploy
