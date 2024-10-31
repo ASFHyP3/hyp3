@@ -96,6 +96,7 @@ runs:
 
           export \
             STACK_NAME='${{ inputs.STACK_NAME }}' \
+            SECURITY_ENVIRONMENT='${{ inputs.SECURITY_ENVIRONMENT }}' \
             VPC_ID='${{ inputs.VPC_ID }}' \
             SUBNET_IDS='${{ inputs.SUBNET_IDS }}' \
             SECRET_ARN='${{ inputs.SECRET_ARN }}' \
