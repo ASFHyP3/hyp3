@@ -93,4 +93,23 @@ runs:
             --template-file apps/main-cf.yml \
             --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
             --output-template-file packaged.yml
+          export STACK_NAME \
+            VPC_ID \
+            SUBNET_IDS \
+            SECRET_ARN \
+            IMAGE_TAG \
+            PRODUCT_LIFETIME \
+            AUTH_PUBLIC_KEY \
+            DEFAULT_CREDITS_PER_USER \
+            DEFAULT_APPLICATION_STATUS \
+            DEFAULT_MAX_VCPUS \
+            EXPANDED_MAX_VCPUS \
+            MONTHLY_BUDGET \
+            REQUIRED_SURPLUS \
+            AMI_ID \
+            INSTANCE_TYPES \
+            DOMAIN_NAME \
+            CERTIFICATE_ARN \
+            ORIGIN_ACCESS_IDENTITY_ID \
+            DISTRIBUTION_URL
           cdk deploy
