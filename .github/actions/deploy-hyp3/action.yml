@@ -107,6 +107,7 @@ runs:
             --output-template-file packaged.yml
 
           cdk diff
+          export STACK_NAME='${{ inputs.STACK_NAME }}'
           cdk deploy \
             --require-approval=never \
             --parameters \
