@@ -12,7 +12,7 @@ class HyP3Stack(cdk.Stack):
 
         params = {
             'VpcId': os.environ['VPC_ID'],
-            'SubnetIds': os.environ['SUBNET_IDS'],
+            'SubnetIds': os.environ['SUBNET_IDS'].split(','),
             'SecretArn': os.environ['SECRET_ARN'],
             'ImageTag': os.environ['IMAGE_TAG'],
             'ProductLifetimeInDays': os.environ['PRODUCT_LIFETIME'],
