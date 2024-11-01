@@ -117,4 +117,8 @@ runs:
             DISTRIBUTION_URL='${{ inputs.DISTRIBUTION_URL}}'
 
           cdk diff
-          cdk deploy --require-approval=never
+          cdk deploy \
+            --require-approval=never \
+            --parameters \
+            AmiId='${{ inputs.AMI_ID }}' \
+            DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}'

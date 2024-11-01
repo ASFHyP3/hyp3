@@ -2,7 +2,6 @@ import os
 
 import aws_cdk as cdk
 from aws_cdk import cloudformation_include as cfn_inc
-from aws_cdk import aws_ssm as ssm
 from constructs import Construct
 
 
@@ -20,11 +19,9 @@ class HyP3Stack(cdk.Stack):
             'AuthPublicKey': os.environ['AUTH_PUBLIC_KEY'],
             'DefaultCreditsPerUser': os.environ['DEFAULT_CREDITS_PER_USER'],
             'DefaultApplicationStatus': os.environ['DEFAULT_APPLICATION_STATUS'],
-            'DefaultMaxvCpus': os.environ['DEFAULT_MAX_VCPUS'],
             'ExpandedMaxvCpus': os.environ['EXPANDED_MAX_VCPUS'],
             'MonthlyBudget': os.environ['MONTHLY_BUDGET'],
             'RequiredSurplus': os.environ['REQUIRED_SURPLUS'],
-            'AmiId': ssm.StringParameter.from_string_parameter_name(self, 'AmiId', os.environ['AMI_ID']).string_value,
             'InstanceTypes': os.environ['INSTANCE_TYPES'].split(','),
         }
         if os.environ['SECURITY_ENVIRONMENT'] != 'EDC':
