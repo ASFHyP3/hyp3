@@ -2,6 +2,7 @@ import os
 
 import aws_cdk as cdk
 from aws_cdk import cloudformation_include as cfn_inc
+from aws_cdk import aws_ssm as ssm
 from constructs import Construct
 
 
@@ -23,7 +24,7 @@ class HyP3Stack(cdk.Stack):
             'ExpandedMaxvCpus': os.environ['EXPANDED_MAX_VCPUS'],
             'MonthlyBudget': os.environ['MONTHLY_BUDGET'],
             'RequiredSurplus': os.environ['REQUIRED_SURPLUS'],
-            'AmiId': os.environ['AMI_ID'],
+            'AmiId': ssm.StringParameter.from_string_parameter_name(self, 'AmiId', os.environ['AMI_ID']),
             'InstanceTypes': os.environ['INSTANCE_TYPES'].split(','),
         }
         if os.environ['SECURITY_ENVIRONMENT'] != 'EDC':
