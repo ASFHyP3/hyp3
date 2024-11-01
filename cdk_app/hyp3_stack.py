@@ -1,5 +1,3 @@
-import os
-
 import aws_cdk as cdk
 from aws_cdk import cloudformation_include as cfn_inc
 from constructs import Construct
