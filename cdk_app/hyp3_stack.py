@@ -24,7 +24,7 @@ class HyP3Stack(cdk.Stack):
             'MonthlyBudget': os.environ['MONTHLY_BUDGET'],
             'RequiredSurplus': os.environ['REQUIRED_SURPLUS'],
             'AmiId': os.environ['AMI_ID'],
-            'InstanceTypes': os.environ['INSTANCE_TYPES'],
+            'InstanceTypes': os.environ['INSTANCE_TYPES'].split(','),
         }
         if os.environ['SECURITY_ENVIRONMENT'] != 'EDC':
             params['DomainName'] = os.environ['DOMAIN_NAME']
