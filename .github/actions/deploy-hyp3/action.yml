@@ -103,29 +103,29 @@ runs:
 
           aws cloudformation package \
             --template-file apps/main-cf.yml \
-            --s3-bucket '${{ inputs.TEMPLATE_BUCKET }}' \
+            --s3-bucket ${{ inputs.TEMPLATE_BUCKET }} \
             --output-template-file packaged.yml
 
-          export STACK_NAME='${{ inputs.STACK_NAME }}'
+          export STACK_NAME=${{ inputs.STACK_NAME }}
           cdk diff
           cdk deploy \
             --require-approval=never \
             --parameters \
-                VpcId='${{ inputs.VPC_ID }}' \
-                SubnetIds='${{ inputs.SUBNET_IDS }}' \
-                SecretArn='${{ inputs.SECRET_ARN }}' \
-                ImageTag='${{ inputs.IMAGE_TAG }}' \
-                ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
-                AuthPublicKey='${{ inputs.AUTH_PUBLIC_KEY }}' \
-                $DOMAIN_NAME \
-                $CERTIFICATE_ARN \
-                $ORIGIN_ACCESS_IDENTITY_ID \
-                $DISTRIBUTION_URL \
-                DefaultCreditsPerUser='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
-                DefaultApplicationStatus='${{ inputs.DEFAULT_APPLICATION_STATUS }}' \
-                DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
-                ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
-                MonthlyBudget='${{ inputs.MONTHLY_BUDGET }}' \
-                RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
-                AmiId='${{ inputs.AMI_ID }}' \
-                InstanceTypes='${{ inputs.INSTANCE_TYPES }}'
+                :VpcId='${{ inputs.VPC_ID }}' \
+                :SubnetIds='${{ inputs.SUBNET_IDS }}' \
+                :SecretArn='${{ inputs.SECRET_ARN }}' \
+                :ImageTag='${{ inputs.IMAGE_TAG }}' \
+                :ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
+                :AuthPublicKey='${{ inputs.AUTH_PUBLIC_KEY }}' \
+                :$DOMAIN_NAME \
+                :$CERTIFICATE_ARN \
+                :$ORIGIN_ACCESS_IDENTITY_ID \
+                :$DISTRIBUTION_URL \
+                :DefaultCreditsPerUser='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
+                :DefaultApplicationStatus='${{ inputs.DEFAULT_APPLICATION_STATUS }}' \
+                :DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
+                :ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
+                :MonthlyBudget='${{ inputs.MONTHLY_BUDGET }}' \
+                :RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
+                :AmiId='${{ inputs.AMI_ID }}' \
+                :InstanceTypes='${{ inputs.INSTANCE_TYPES }}'
