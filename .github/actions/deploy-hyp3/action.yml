@@ -90,16 +90,16 @@ runs:
         shell: bash
         run: |
           [ -z ${{ inputs.DOMAIN_NAME }} ] && export DOMAIN_NAME="" \
-            || export DOMAIN_NAME="DomainName=${{ inputs.DOMAIN_NAME }}"
+            || export DOMAIN_NAME="--parameters DomainName=${{ inputs.DOMAIN_NAME }}"
 
           [ -z ${{ inputs.CERTIFICATE_ARN }} ] && export CERTIFICATE_ARN="" \
-            || export CERTIFICATE_ARN="CertificateArn=${{ inputs.CERTIFICATE_ARN }}"
+            || export CERTIFICATE_ARN="--parameters CertificateArn=${{ inputs.CERTIFICATE_ARN }}"
 
           [ -z ${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }} ] && export ORIGIN_ACCESS_IDENTITY_ID="" \
-            || export ORIGIN_ACCESS_IDENTITY_ID="OriginAccessIdentityId=${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }}"
+            || export ORIGIN_ACCESS_IDENTITY_ID="--parameters OriginAccessIdentityId=${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }}"
 
           [ -z ${{ inputs.DISTRIBUTION_URL }} ] && export DISTRIBUTION_URL="" \
-            || export DISTRIBUTION_URL="DistributionUrl=${{ inputs.DISTRIBUTION_URL }}"
+            || export DISTRIBUTION_URL="--parameters DistributionUrl=${{ inputs.DISTRIBUTION_URL }}"
 
           aws cloudformation package \
             --template-file apps/main-cf.yml \
@@ -116,10 +116,10 @@ runs:
             --parameters ImageTag='${{ inputs.IMAGE_TAG }}' \
             --parameters ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
             --parameters AuthPublicKey='${{ inputs.AUTH_PUBLIC_KEY }}' \
-            --parameters $DOMAIN_NAME \
-            --parameters $CERTIFICATE_ARN \
-            --parameters $ORIGIN_ACCESS_IDENTITY_ID \
-            --parameters $DISTRIBUTION_URL \
+            $DOMAIN_NAME \
+            $CERTIFICATE_ARN \
+            $ORIGIN_ACCESS_IDENTITY_ID \
+            $DISTRIBUTION_URL \
             --parameters DefaultCreditsPerUser='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
             --parameters DefaultApplicationStatus='${{ inputs.DEFAULT_APPLICATION_STATUS }}' \
             --parameters DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
