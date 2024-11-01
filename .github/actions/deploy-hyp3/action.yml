@@ -111,21 +111,21 @@ runs:
           cdk deploy \
             --require-approval=never \
             --parameters \
-                :VpcId='${{ inputs.VPC_ID }}' \
-                :SubnetIds='${{ inputs.SUBNET_IDS }}' \
-                :SecretArn='${{ inputs.SECRET_ARN }}' \
-                :ImageTag='${{ inputs.IMAGE_TAG }}' \
-                :ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
-                :AuthPublicKey='${{ inputs.AUTH_PUBLIC_KEY }}' \
-                :$DOMAIN_NAME \
-                :$CERTIFICATE_ARN \
-                :$ORIGIN_ACCESS_IDENTITY_ID \
-                :$DISTRIBUTION_URL \
-                :DefaultCreditsPerUser='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
-                :DefaultApplicationStatus='${{ inputs.DEFAULT_APPLICATION_STATUS }}' \
-                :DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
-                :ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
-                :MonthlyBudget='${{ inputs.MONTHLY_BUDGET }}' \
-                :RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
-                :AmiId='${{ inputs.AMI_ID }}' \
-                :InstanceTypes='${{ inputs.INSTANCE_TYPES }}'
+                ${{ inputs.STACK_NAME }}:VpcId='${{ inputs.VPC_ID }}' \
+                ${{ inputs.STACK_NAME }}:SubnetIds='${{ inputs.SUBNET_IDS }}' \
+                ${{ inputs.STACK_NAME }}:SecretArn='${{ inputs.SECRET_ARN }}' \
+                ${{ inputs.STACK_NAME }}:ImageTag='${{ inputs.IMAGE_TAG }}' \
+                ${{ inputs.STACK_NAME }}:ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
+                ${{ inputs.STACK_NAME }}:AuthPublicKey='${{ inputs.AUTH_PUBLIC_KEY }}' \
+                ${{ inputs.STACK_NAME }}:$DOMAIN_NAME \
+                ${{ inputs.STACK_NAME }}:$CERTIFICATE_ARN \
+                ${{ inputs.STACK_NAME }}:$ORIGIN_ACCESS_IDENTITY_ID \
+                ${{ inputs.STACK_NAME }}:$DISTRIBUTION_URL \
+                ${{ inputs.STACK_NAME }}:DefaultCreditsPerUser='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
+                ${{ inputs.STACK_NAME }}:DefaultApplicationStatus='${{ inputs.DEFAULT_APPLICATION_STATUS }}' \
+                ${{ inputs.STACK_NAME }}:DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
+                ${{ inputs.STACK_NAME }}:ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
+                ${{ inputs.STACK_NAME }}:MonthlyBudget='${{ inputs.MONTHLY_BUDGET }}' \
+                ${{ inputs.STACK_NAME }}:RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
+                ${{ inputs.STACK_NAME }}:AmiId='${{ inputs.AMI_ID }}' \
+                ${{ inputs.STACK_NAME }}:InstanceTypes='${{ inputs.INSTANCE_TYPES }}'
