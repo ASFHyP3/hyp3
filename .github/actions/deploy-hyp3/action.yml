@@ -106,8 +106,8 @@ runs:
             --s3-bucket '${{ inputs.TEMPLATE_BUCKET }}' \
             --output-template-file packaged.yml
 
-          cdk diff
           export STACK_NAME='${{ inputs.STACK_NAME }}'
+          cdk diff
           cdk deploy \
             --require-approval=never \
             --parameters \
