@@ -116,4 +116,5 @@ runs:
             ORIGIN_ACCESS_IDENTITY_ID='${{ inputs.ORIGIN_ACCESS_IDENTITY_ID }}' \
             DISTRIBUTION_URL='${{ inputs.DISTRIBUTION_URL}}'
 
-          cdk deploy
+          cdk diff
+          cdk deploy --require-approval=never
