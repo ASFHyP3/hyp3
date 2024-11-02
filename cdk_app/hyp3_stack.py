@@ -13,10 +13,3 @@ class HyP3Stack(cdk.Stack):
             id='MainStack',
             template_file='packaged.yml',
         )
-
-        # TODO: this isn't needed, but is an example of getting an output from a nested stack
-        cluster_template = main_template.load_nested_stack(
-            'Cluster',
-            template_file='apps/compute-cf.yml'
-        ).included_template
-        print(cluster_template.get_output('JobQueueArn'))
