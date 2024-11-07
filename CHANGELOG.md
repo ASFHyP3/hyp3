@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [8.0.1]
 
 ### Fixed
-- Upgraded from `flask==2.2.5` to `Flask==3.0.3`. Fixes a bug in which Dependabot was not tracking Flask upgrades because we specified the dependency name as lowercase.
-- We now specify our custom JSON encoder by subclassing `flask.json.provider.JSONProvider`. See <https://github.com/pallets/flask/pull/4692>
+- Upgrade from `flask==2.2.5` to `Flask==3.0.3`. Fixes a bug in which Dependabot was not tracking Flask upgrades because we specified the dependency name as lowercase.
+- Specify our custom JSON encoder by subclassing `flask.json.provider.JSONProvider`. See <https://github.com/pallets/flask/pull/4692>
 
 ## [8.0.0]
 
