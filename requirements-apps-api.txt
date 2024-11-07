@@ -1,4 +1,5 @@
-flask==2.2.5
+# TODO: verify that dependabot bumps to Flask 3.0.3 on Monday
+Flask==3.0.2
 Flask-Cors==5.0.0
 jsonschema==4.23.0
 openapi-core==0.19.4

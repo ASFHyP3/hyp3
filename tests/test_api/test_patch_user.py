@@ -18,7 +18,7 @@ def test_patch_new_user(client, tables):
     assert response.json == {
         'user_id': 'foo',
         'application_status': APPLICATION_PENDING,
-        'remaining_credits': Decimal(0),
+        'remaining_credits': 0,
         'job_names': [],
         'use_case': 'I want data.',
     }
@@ -45,7 +45,7 @@ def test_patch_pending_user(client, tables):
     assert response.status_code == HTTPStatus.OK
     assert response.json == {
         'user_id': 'foo',
-        'remaining_credits': Decimal(0),
+        'remaining_credits': 0,
         'application_status': APPLICATION_PENDING,
         'use_case': 'New use case.',
         'job_names': [],
@@ -92,7 +92,7 @@ def test_patch_user_access_code(client, tables):
     assert response.json == {
         'user_id': 'foo',
         'application_status': APPLICATION_APPROVED,
-        'remaining_credits': Decimal(25),
+        'remaining_credits': 25,
         'job_names': [],
         'use_case': 'I want data.',
         'access_code': '123',
