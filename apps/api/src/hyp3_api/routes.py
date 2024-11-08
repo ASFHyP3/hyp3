@@ -6,6 +6,7 @@ from pathlib import Path
 
 import yaml
 from flask import abort, g, jsonify, make_response, redirect, render_template, request
+from flask.json.provider import JSONProvider
 from flask_cors import CORS
 from openapi_core import OpenAPI
 from openapi_core.contrib.flask.decorators import FlaskOpenAPIViewDecorator
@@ -87,11 +88,22 @@ class CustomEncoder(json.JSONEncoder):
 
         if isinstance(o, datetime.date):
             return o.isoformat()
+
         if isinstance(o, Decimal):
             if o == int(o):
                 return int(o)
             return float(o)
+
+        # Raises a TypeError
         json.JSONEncoder.default(self, o)
+
+
+class CustomJSONProvider(JSONProvider):
+    def dumps(self, o):
+        return json.dumps(o, cls=CustomEncoder)
+
+    def loads(self, s):
+        return json.loads(s)
 
 
 class ErrorHandler(FlaskOpenAPIErrorsHandler):
@@ -104,7 +116,7 @@ class ErrorHandler(FlaskOpenAPIErrorsHandler):
         return handlers.problem_format(error['status'], error['title'])
 
 
-app.json_encoder = CustomEncoder
+app.json = CustomJSONProvider(app)
 
 openapi = FlaskOpenAPIViewDecorator(
     api_spec,
