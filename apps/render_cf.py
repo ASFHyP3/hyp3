@@ -103,8 +103,8 @@ def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params=F
             },
         },
         'ResultSelector': {
-            'start.$': '$.Attempts[*].StartedAt',
-            'stop.$': '$.Attempts[*].StoppedAt',
+            'StartedAt.$': '$.StartedAt',
+            'StoppedAt.$': '$.StoppedAt',
         },
         'Retry': [
             {
