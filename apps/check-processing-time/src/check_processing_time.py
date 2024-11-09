@@ -1,5 +1,7 @@
 from typing import Union
 
+# TODO: default to null for failed HyP3 jobs and failed calculations
+
 
 def get_time_from_result(result: Union[list, dict]) -> Union[list, float]:
     if isinstance(result, list):
