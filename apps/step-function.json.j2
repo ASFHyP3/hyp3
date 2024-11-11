@@ -145,7 +145,8 @@
       "Type": "Task",
       "Resource": "${CheckProcessingTimeLambdaArn}",
       "Parameters": {
-        "processing_results.$": "$.results.processing_results"
+        "processing_results.$": "$.results.processing_results",
+        "processing_failed.$": "$.results.processing_failed"
       },
       "Retry": [
         {
