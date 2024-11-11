@@ -88,5 +88,4 @@ def test_lambda_handler_failed_job():
             },
         }
     }
-    with pytest.raises(ValueError, match=r'^refusing to calculate processing times for failed job$'):
-        check_processing_time.lambda_handler(event, None)
+    assert check_processing_time.lambda_handler(event, None) is None
