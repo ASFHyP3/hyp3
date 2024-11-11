@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [8.1.0]
 
 ### Changed
-- TODO: entry for new processing times behavior
+- The `processing_times` field of a job's API response now has a value of `null` if the job failed or if there was a failure to calculate processing times.
 
 ### Fixed
 - Resolves a regression introduced by the previous release (v8.0.0) in which some jobs reported negative processing times if the underlying AWS Batch jobs had a failed attempt that did not include a `StartedAt` field. Fixes <https://github.com/ASFHyP3/hyp3/issues/2485>
