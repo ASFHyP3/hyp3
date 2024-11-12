@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Optional, Union
 
 
 def get_time_from_result(result: Union[list, dict]) -> Union[list, float]:
