@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - All failed jobs now have a `processing_times` value of `null`.
-- The processing time value for each processing step must now be greater than zero. (Previously, a value of zero indicated that the processing step had no AWS Batch attempts.)
 
 ### Fixed
 - Resolve a regression introduced by the previous release (v8.0.0) in which a processing step could report a negative processing time if the underlying AWS Batch job had a failed attempt that did not include a `StartedAt` field. Fixes <https://github.com/ASFHyP3/hyp3/issues/2485>
