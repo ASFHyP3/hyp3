@@ -7,8 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [9.0.0]
 
 ### Changed
-- A job's `processing_times` field is now set to `null` rather than `[]` if there was an error while calculating processing times. As before, an error while calculating processing times causes the job to fail.
-- There is no longer any attempt to calculate `processing_times` for failed jobs. All failed jobs now have a `processing_times` value of `null`.
+- All failed jobs now have a `processing_times` value of `null`.
 - The processing time value for each processing step must now be greater than zero. (Previously, a value of zero indicated that the processing step had no AWS Batch attempts.)
 
 ### Fixed

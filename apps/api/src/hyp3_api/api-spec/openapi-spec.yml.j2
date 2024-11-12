@@ -409,7 +409,7 @@ components:
     processing_times:
       description: >
         List of run times for the job's processing steps in the order that they were executed.
-        A null value indicates that the job failed.
+        This field is null for failed jobs and non-null for successful jobs.
       type: array
       nullable: true
       items:
