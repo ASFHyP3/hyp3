@@ -5,7 +5,6 @@ import check_processing_time
 
 def test_lambda_handler():
     event = {
-        'processing_failed': False,
         'processing_results': {
             'step_0': {
                 'StartedAt': 3000,
@@ -32,7 +31,6 @@ def test_lambda_handler():
 
 def test_lambda_handler_invalid_result():
     event = {
-        'processing_failed': False,
         'processing_results': {
             'step_0': {
                 'StartedAt': 1000,
@@ -44,7 +42,6 @@ def test_lambda_handler_invalid_result():
         check_processing_time.lambda_handler(event, None)
 
     event = {
-        'processing_failed': False,
         'processing_results': {
             'step_0': {
                 'StartedAt': 2000,
@@ -56,7 +53,6 @@ def test_lambda_handler_invalid_result():
         check_processing_time.lambda_handler(event, None)
 
     event = {
-        'processing_failed': False,
         'processing_results': {
             'step_0': {
                 'StartedAt': 3000,
@@ -76,16 +72,3 @@ def test_lambda_handler_invalid_result():
     }
     with pytest.raises(ValueError, match=r'^-0.2 <= 0.0$'):
         check_processing_time.lambda_handler(event, None)
-
-
-def test_lambda_handler_failed_job():
-    event = {
-        'processing_failed': True,
-        'processing_results': {
-            'step_0': {
-                'StartedAt': 3000,
-                'StoppedAt': 8700,
-            },
-        }
-    }
-    assert check_processing_time.lambda_handler(event, None) is None

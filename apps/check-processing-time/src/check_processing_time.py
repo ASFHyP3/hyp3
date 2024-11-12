@@ -14,9 +14,6 @@ def get_time_from_result(result: Union[list, dict]) -> Union[list, float]:
 
 
 def lambda_handler(event, _) -> Optional[list[Union[list, float]]]:
-    if event['processing_failed']:
-        return None
-
     processing_results = event['processing_results']
     result_list = [processing_results[key] for key in sorted(processing_results.keys())]
     return get_time_from_result(result_list)
