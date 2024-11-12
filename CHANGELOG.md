@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Resolve a regression introduced by the previous release (v8.0.0) in which a processing step could report a negative processing time if the underlying AWS Batch job had a failed attempt that did not include a `StartedAt` field. Fixes <https://github.com/ASFHyP3/hyp3/issues/2485>
-- Upgrade from `flask==2.2.5` to `Flask==3.0.3`. Fixes a bug in which Dependabot was not tracking Flask upgrades because we specified the dependency name as lowercase.
+- Upgrade from Flask v2.2.5 to v3.0.3. Fixes <https://github.com/ASFHyP3/hyp3/issues/2491>
 - Specify our custom JSON encoder by subclassing `flask.json.provider.JSONProvider`. See <https://github.com/pallets/flask/pull/4692>
 
 ## [8.0.0]
