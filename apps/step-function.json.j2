@@ -4,7 +4,6 @@
     "SET_DEFAULT_RESULTS": {
       "Type": "Pass",
       "Result": {
-        "processing_times": [],
         "get_files": {
           "logs": [],
           "expiration_time": null
@@ -208,7 +207,7 @@
         "status_code": "FAILED",
         "logs.$": "$.results.get_files.logs",
         "expiration_time.$": "$.results.get_files.expiration_time",
-        "processing_times.$": "$.results.processing_times"
+        "processing_times": null
       },
       "Retry": [
         {

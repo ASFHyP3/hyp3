@@ -6,7 +6,7 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - uses: actions/setup-python@v5
         with:
           python-version: 3.9
@@ -23,7 +23,7 @@ jobs:
       matrix:
         security_environment: [ASF, EDC, JPL, JPL-public]
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - uses: actions/setup-python@v5
         with:
           python-version: 3.9
@@ -37,7 +37,7 @@ jobs:
   openapi-spec-validator:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - uses: actions/setup-python@v5
         with:
           python-version: 3.9
@@ -50,7 +50,7 @@ jobs:
   statelint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
@@ -70,7 +70,7 @@ jobs:
   snyk:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - uses: snyk/actions/setup@0.4.0
       - uses: actions/setup-python@v5
         with:

@@ -409,8 +409,9 @@ components:
     processing_times:
       description: >
         List of run times for the job's processing steps in the order that they were executed.
-        An empty list represents a failure to calculate processing times.
+        This field is null for failed jobs and non-null for successful jobs.
       type: array
+      nullable: true
       items:
         oneOf:
           - type: array
@@ -422,10 +423,10 @@ components:
 
     processing_time_in_seconds:
       description: >
-        Run time in seconds for a processing step's final attempt (regardless of whether it succeeded).
-        A value of zero indicates that there were no attempts.
+        Run time in seconds for a processing step's final attempt.
       type: number
       minimum: 0
+      exclusiveMinimum: true
       example: 50
 
   securitySchemes:
