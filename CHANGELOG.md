@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [8.0.1]
+## [9.0.0]
+
+### Changed
+- All failed jobs now have a `processing_times` value of `null`.
 
 ### Fixed
+- Resolve a regression introduced by the previous release (v8.0.0) in which a processing step could report a negative processing time if the underlying AWS Batch job had a failed attempt that did not include a `StartedAt` field. Fixes <https://github.com/ASFHyP3/hyp3/issues/2485>
 - Upgrade from Flask v2.2.5 to v3.0.3. Fixes <https://github.com/ASFHyP3/hyp3/issues/2491>
 - Specify our custom JSON encoder by subclassing `flask.json.provider.JSONProvider`. See <https://github.com/pallets/flask/pull/4692>
 
