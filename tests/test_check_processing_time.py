@@ -1,5 +1,3 @@
-import pytest
-
 import check_processing_time
 
 
