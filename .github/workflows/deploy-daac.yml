@@ -35,7 +35,7 @@ jobs:
             expanded_max_vcpus: 3000
             required_surplus: 2000
             security_environment: EDC
-            ami_id: image_id_ecs_amz2
+            ami_id: /ngap/amis/image_id_ecs_al2023_x86
             distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
 
           - environment: hyp3-edc-uat
@@ -58,7 +58,7 @@ jobs:
             expanded_max_vcpus: 3000
             required_surplus: 2000
             security_environment: EDC
-            ami_id: image_id_ecs_amz2
+            ami_id: /ngap/amis/image_id_ecs_al2023_x86
             distribution_url: 'https://d1riv60tezqha9.cloudfront.net'
 
     environment:
