@@ -164,6 +164,28 @@ def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type
     return jobs, response.get('LastEvaluatedKey')
 
 
+def query_jobs_by_status_code(status_code, user, name, start, end):
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
+
+    key_expression = Key('status_code').eq(status_code)
+    key_expression &= Key('user_id').eq(user)
+    key_expression &= get_request_time_expression(start, end)
+
+    filter_expression = Attr('job_id').exists()
+    filter_expression &= Attr('name').eq(name)
+
+    params = {
+        'IndexName': 'status_code',
+        'KeyConditionExpression': key_expression,
+        'FilterExpression': filter_expression,
+        'ScanIndexForward': False,
+    }
+
+    response = table.query(**params)
+    jobs = response['Items']
+    return jobs
+
+
 def get_job(job_id):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     response = table.get_item(Key={'job_id': job_id})
