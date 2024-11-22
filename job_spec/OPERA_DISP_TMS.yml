@@ -1,0 +1,74 @@
+OPERA_DISP_TMS:
+  required_parameters:
+    - tile_type
+    - bounds
+    - orbit_direction
+    - start_date
+    - end_date
+  parameters:
+      tile_type:
+        description: Type of tile map to create
+        type: string
+        minLength: 8
+        maxLength: 15
+        enum:
+          - displacement
+          - secant_velocity
+          - velocity
+        example: displacement
+      bounds:
+        description: Integer bounds in format (minlon minlat maxlon maxlat)
+        type: array
+        minItems: 4
+        maxItems: 4
+        example:
+          - -121
+          - 38
+          - -120
+          - 39
+      orbit_direction:
+        description: Orbit direction of data
+        type: string
+        minLength: 9
+        maxLength: 10
+        enum:
+          - ascending
+          - descending
+        example: descending
+      start_date:
+        description: Start of secondary date range to generate a tile map for (%Y%m%d)
+        type: string
+        minLength: 8
+        maxLength: 8
+        example: 20200101
+      end_date:
+        description: End of secondary date range to generate a tile map for (%Y%m%d)
+        type: string
+        minLength: 8
+        maxLength: 8
+        example: 20200814
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators:
+    - check_bounds_formatting
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/opera-disp/tms
+      command:
+        - Ref::tile_type
+        - Ref::bounds
+        - Ref::orbit_direction
+        - Ref::start_date
+        - Ref::end_date
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+      timeout: 10800
+      compute_environment: Default
+      vcpu: 1
+      memory: 31500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
