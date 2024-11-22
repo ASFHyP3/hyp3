@@ -7,46 +7,51 @@ OPERA_DISP_TMS:
     - end_date
   parameters:
       tile_type:
-        description: Type of tile map to create
-        type: string
-        minLength: 8
-        maxLength: 15
-        enum:
-          - displacement
-          - secant_velocity
-          - velocity
-        example: displacement
+        api_schema:
+          description: Type of tile map to create
+          type: string
+          minLength: 8
+          maxLength: 15
+          enum:
+            - displacement
+            - secant_velocity
+            - velocity
+          example: displacement
       bounds:
-        description: Integer bounds in format (minlon minlat maxlon maxlat)
-        type: array
-        minItems: 4
-        maxItems: 4
-        example:
-          - -121
-          - 38
-          - -120
-          - 39
+        api_schema:
+          description: Integer bounds in format (minlon minlat maxlon maxlat)
+          type: array
+          minItems: 4
+          maxItems: 4
+          example:
+            - -121
+            - 38
+            - -120
+            - 39
       orbit_direction:
-        description: Orbit direction of data
-        type: string
-        minLength: 9
-        maxLength: 10
-        enum:
-          - ascending
-          - descending
-        example: descending
+        api_schema:
+          description: Orbit direction of data
+          type: string
+          minLength: 9
+          maxLength: 10
+          enum:
+            - ascending
+            - descending
+          example: descending
       start_date:
-        description: Start of secondary date range to generate a tile map for (%Y%m%d)
-        type: string
-        minLength: 8
-        maxLength: 8
-        example: 20200101
+        api_schema:
+          description: Start of secondary date range to generate a tile map for (%Y%m%d)
+          type: string
+          minLength: 8
+          maxLength: 8
+          example: 20200101
       end_date:
-        description: End of secondary date range to generate a tile map for (%Y%m%d)
-        type: string
-        minLength: 8
-        maxLength: 8
-        example: 20200814
+        api_schema:
+          description: End of secondary date range to generate a tile map for (%Y%m%d)
+          type: string
+          minLength: 8
+          maxLength: 8
+          example: 20200814
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -54,7 +59,7 @@ OPERA_DISP_TMS:
     - check_bounds_formatting
   steps:
     - name: ''
-      image: ghcr.io/asfhyp3/opera-disp/tms
+      image: ghcr.io/asfhyp3/opera-disp-tms
       command:
         - Ref::tile_type
         - Ref::bounds
