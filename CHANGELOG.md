@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - The `SrgGslc` custom compute environment now includes multiple GPU instance types from the G4dn, G5, and G6 instance families.
 
+
 ## [9.0.1]
 
 ### Changed
