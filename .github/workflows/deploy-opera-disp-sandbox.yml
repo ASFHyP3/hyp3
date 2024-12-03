@@ -27,6 +27,7 @@ jobs:
             # TODO revert
             #deploy_ref: refs/heads/develop
             deploy_ref: refs/heads/opera-disp-sandbox
+            # TODO remove burst job
             job_files: >-
               job_spec/OPERA_DISP_TMS.yml
               job_spec/INSAR_ISCE_BURST.yml
