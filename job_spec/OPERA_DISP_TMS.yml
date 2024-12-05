@@ -13,7 +13,6 @@ OPERA_DISP_TMS:
         enum:
           - displacement
           - secant_velocity
-          - velocity
         example: displacement
     bounds:
       api_schema:
@@ -61,8 +60,6 @@ OPERA_DISP_TMS:
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/opera-disp-tms
-      # TODO remove image_tag
-      image_tag: 0.3.1.dev98_gc99b976
       command:
         - Ref::tile_type
         - Ref::bounds
