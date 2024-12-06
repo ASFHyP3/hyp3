@@ -60,6 +60,8 @@ OPERA_DISP_TMS:
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/opera-disp-tms
+      # TODO remove image tag
+      image_tag: 0.3.1.dev99_g5192e48
       command:
         - Ref::tile_type
         - Ref::bounds

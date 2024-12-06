@@ -3,7 +3,9 @@ name: Deploy OPERA-DISP Sandbox Stack to AWS
 on:
   push:
     branches:
-      - develop
+      # TODO revert
+      #- develop
+      - opera-disp-sandbox
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -22,7 +24,9 @@ jobs:
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
-            deploy_ref: refs/heads/develop
+            # TODO revert
+            #deploy_ref: refs/heads/develop
+            deploy_ref: refs/heads/opera-disp-sandbox
             job_files: >-
               job_spec/OPERA_DISP_TMS.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
