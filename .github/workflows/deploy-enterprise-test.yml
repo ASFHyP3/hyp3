@@ -106,7 +106,7 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@4
         with:
-          role-to-assume: ${{ secrets.OIDC_ROLE_TO_ASSUME }}
+          role-to-assume: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - uses: actions/setup-python@v5

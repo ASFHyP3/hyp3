@@ -68,11 +68,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@4
         with:
-          aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
+          role-to-assume: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - uses: actions/setup-python@v5
