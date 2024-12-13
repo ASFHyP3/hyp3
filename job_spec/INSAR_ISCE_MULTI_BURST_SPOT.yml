@@ -1,0 +1,83 @@
+INSAR_ISCE_MULTI_BURST:
+  required_parameters:
+    - reference
+    - secondary
+  parameters:
+    reference:
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 30  # TODO limit based on Spot failure rate?
+        # TODO: provide an example with multiple bursts
+        example:
+          - S1_136231_IW2_20200604T022312_VV_7C85-BURST
+        items:
+          description: Name of the reference Sentinel-1 SLC IW burst granule to process
+          type: string
+          pattern: '^S1_\d{6}_IW\d_\d{8}T\d{6}_[VH]{2}_([\dA-F]){4}-BURST$'
+          minLength: 43
+          maxLength: 43
+          example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
+    secondary:
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 30  # TODO limit based on Spot failure rate?
+        example:
+          - S1_136231_IW2_20200616T022313_VV_5D11-BURST
+        items:
+          description: Name of the secondary Sentinel-1 SLC IW burst granule to process
+          type: string
+          pattern: '^S1_\d{6}_IW\d_\d{8}T\d{6}_[VH]{2}_([\dA-F]){4}-BURST$'
+          minLength: 43
+          maxLength: 43
+          example: S1_136231_IW2_20200616T022313_VV_5D11-BURST
+    apply_water_mask:
+      api_schema:
+        description: Sets pixels over coastal and large inland waterbodies as invalid for phase unwrapping.
+        default: false
+        type: boolean
+    looks:
+      api_schema:
+        description: Number of looks to take in range and azimuth
+        type: string
+        default: 20x4
+        enum:
+          - 20x4
+          - 10x2
+          - 5x1
+  cost_profiles:
+    EDC:
+      cost: 1.0
+    DEFAULT:
+      cost: 1.0
+  validators:
+    - check_dem_coverage
+    - check_valid_polarizations
+    - check_same_burst_ids
+    - check_not_antimeridian
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-isce2
+      command:
+        - ++process
+        - insar_tops_burst
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --apply-water-mask
+        - Ref::apply_water_mask
+        - --looks
+        - Ref::looks
+        - --reference
+        - Ref::reference
+        - --secondary
+        - Ref::secondary
+      timeout: 126000 # 35 hours
+      compute_environment: Default
+      vcpu: 1
+      memory: 4 # Memory is always overridden by the step function
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
