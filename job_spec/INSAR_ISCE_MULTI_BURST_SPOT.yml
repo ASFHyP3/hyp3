@@ -1,4 +1,4 @@
-INSAR_ISCE_MULTI_BURST:
+INSAR_ISCE_MULTI_BURST_SPOT:
   required_parameters:
     - reference
     - secondary
