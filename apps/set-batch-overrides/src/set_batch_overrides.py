@@ -55,7 +55,7 @@ def get_insar_isce_burst_memory(job_parameters: dict) -> str:
         if bursts < 31:
             return INSAR_ISCE_BURST_MEMORY_32G
     if looks == '20x4':
-        if bursts < 23:
+        if bursts < 16:
             return INSAR_ISCE_BURST_MEMORY_8G
         if bursts < 31:
             return INSAR_ISCE_BURST_MEMORY_16G
@@ -65,7 +65,9 @@ def get_insar_isce_burst_memory(job_parameters: dict) -> str:
 def lambda_handler(event: dict, _) -> dict:
     job_type, job_parameters = event['job_type'], event['job_parameters']
 
-    if job_type == 'INSAR_ISCE_MULTI_BURST':
+    # TODO revert
+    #if job_type == 'INSAR_ISCE_MULTI_BURST':
+    if job_type in ('INSAR_ISCE_MULTI_BURST', 'INSAR_ISCE_MULTI_BURST_SPOT'):
         memory = get_insar_isce_burst_memory(job_parameters)
         omp_num_threads = INSAR_ISCE_BURST_OMP_NUM_THREADS[memory]
         return get_container_overrides(memory, omp_num_threads)
