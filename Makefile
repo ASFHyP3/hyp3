@@ -47,7 +47,7 @@ render:
 static: ruff openapi-validate cfn-lint
 
 ruff:
-	ruff check
+	ruff check . && ruff format --diff .
 
 openapi-validate: render
 	openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
