@@ -44,10 +44,10 @@ cost_profile ?= DEFAULT
 render:
 	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -e $(compute_env_file) -s $(security_environment) -n $(api_name) -c $(cost_profile)
 
-static: flake8 openapi-validate cfn-lint
+static: ruff openapi-validate cfn-lint
 
-flake8:
-	flake8 --ignore=E731 --max-line-length=120 --import-order-style=pycharm --statistics --application-import-names hyp3_api,get_files,handle_batch_event,set_batch_overrides,check_processing_time,start_execution_manager,start_execution_worker,disable_private_dns,update_db,upload_log,dynamo,lambda_logging,scale_cluster apps tests lib
+ruff:
+	ruff check
 
 openapi-validate: render
 	openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
