@@ -15,12 +15,10 @@ def test_invoke_worker():
             'job_parameters': {
                 'decimal_float_field': Decimal('10.1'),
                 'integer_float_field': Decimal('10'),
-                'decimal_list_field': [Decimal('10.1'), Decimal('10')]
-            }
+                'decimal_list_field': [Decimal('10.1'), Decimal('10')],
+            },
         },
-        {
-            'job_id': 'job1'
-        }
+        {'job_id': 'job1'},
     ]
     expected_payload = json.dumps(
         {
@@ -32,12 +30,10 @@ def test_invoke_worker():
                     'job_parameters': {
                         'decimal_float_field': 10.1,
                         'integer_float_field': 10,
-                        'decimal_list_field': [10.1, 10]
-                    }
+                        'decimal_list_field': [10.1, 10],
+                    },
                 },
-                {
-                    'job_id': 'job1'
-                }
+                {'job_id': 'job1'},
             ]
         }
     )
@@ -54,9 +50,11 @@ def test_invoke_worker():
 
 
 def test_lambda_handler_500_jobs():
-    with patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution, \
-            patch('start_execution_manager.invoke_worker') as mock_invoke_worker, \
-            patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True):
+    with (
+        patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
+        patch('start_execution_manager.invoke_worker') as mock_invoke_worker,
+        patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True),
+    ):
         mock_jobs = list(range(500))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
 
@@ -73,9 +71,11 @@ def test_lambda_handler_500_jobs():
 
 
 def test_lambda_handler_400_jobs():
-    with patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution, \
-            patch('start_execution_manager.invoke_worker') as mock_invoke_worker, \
-            patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True):
+    with (
+        patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
+        patch('start_execution_manager.invoke_worker') as mock_invoke_worker,
+        patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True),
+    ):
         mock_jobs = list(range(400))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
 
@@ -92,9 +92,11 @@ def test_lambda_handler_400_jobs():
 
 
 def test_lambda_handler_50_jobs():
-    with patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution, \
-            patch('start_execution_manager.invoke_worker') as mock_invoke_worker, \
-            patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True):
+    with (
+        patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
+        patch('start_execution_manager.invoke_worker') as mock_invoke_worker,
+        patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True),
+    ):
         mock_jobs = list(range(50))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
 
@@ -110,9 +112,11 @@ def test_lambda_handler_50_jobs():
 
 
 def test_lambda_handler_no_jobs():
-    with patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution, \
-            patch('start_execution_manager.invoke_worker') as mock_invoke_worker, \
-            patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True):
+    with (
+        patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
+        patch('start_execution_manager.invoke_worker') as mock_invoke_worker,
+        patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True),
+    ):
         mock_get_jobs_waiting_for_execution.return_value = []
 
         start_execution_manager.lambda_handler(None, None)

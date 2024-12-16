@@ -20,18 +20,21 @@ def mock_insar_isce_burst_job(looks: str, bursts: int) -> dict:
         'job_parameters': {
             'looks': looks,
             'reference': ['foo' for _ in range(bursts)],
-        }
+        },
     }
 
 
 def test_set_batch_overrides_default():
-    assert lambda_handler(
-        {
-            'job_type': 'foo',
-            'job_parameters': {},
-        },
-        None,
-    ) == {}
+    assert (
+        lambda_handler(
+            {
+                'job_type': 'foo',
+                'job_parameters': {},
+            },
+            None,
+        )
+        == {}
+    )
 
 
 def test_set_batch_overrides_insar_isce_burst_5x1():

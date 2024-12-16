@@ -155,9 +155,11 @@ def test_submit_jobs():
         sort_keys=True,
     )
 
-    with patch('start_execution_worker.STEP_FUNCTION.start_execution') as mock_start_execution, \
-            patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-state-machine-arn'}, clear=True), \
-            patch('start_execution_worker.BATCH_PARAMS_BY_JOB_TYPE', batch_params_by_job_type):
+    with (
+        patch('start_execution_worker.STEP_FUNCTION.start_execution') as mock_start_execution,
+        patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-state-machine-arn'}, clear=True),
+        patch('start_execution_worker.BATCH_PARAMS_BY_JOB_TYPE', batch_params_by_job_type),
+    ):
         start_execution_worker.submit_jobs(jobs)
 
         assert mock_start_execution.mock_calls == [

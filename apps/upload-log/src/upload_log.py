@@ -23,8 +23,9 @@ def get_log_content(log_group, log_stream):
     next_token = None
     while response['nextForwardToken'] != next_token:
         next_token = response['nextForwardToken']
-        response = CLOUDWATCH.get_log_events(logGroupName=log_group, logStreamName=log_stream, startFromHead=True,
-                                             nextToken=next_token)
+        response = CLOUDWATCH.get_log_events(
+            logGroupName=log_group, logStreamName=log_stream, startFromHead=True, nextToken=next_token
+        )
         messages.extend([event['message'] for event in response['events']])
 
     return '\n'.join(messages)

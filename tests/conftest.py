@@ -14,6 +14,7 @@ def table_properties():
         jobs_table = get_table_properties_from_template('JobsTable')
         users_table = get_table_properties_from_template('UsersTable')
         access_codes_table = get_table_properties_from_template('AccessCodesTable')
+
     return TableProperties()
 
 
@@ -45,6 +46,7 @@ def tables(table_properties):
                 TableName=environ['ACCESS_CODES_TABLE_NAME'],
                 **table_properties.access_codes_table,
             )
+
         tables = Tables()
         yield tables
 

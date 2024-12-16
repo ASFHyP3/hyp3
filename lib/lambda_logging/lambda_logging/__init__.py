@@ -11,7 +11,6 @@ class UnhandledException(Exception):
 
 
 def log_exceptions(lambda_handler):
-
     @wraps(lambda_handler)
     def wrapper(event, context):
         try:

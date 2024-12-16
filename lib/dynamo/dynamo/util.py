@@ -10,8 +10,8 @@ DYNAMODB_RESOURCE = boto3.resource('dynamodb')
 
 def get_request_time_expression(start, end):
     key = Key('request_time')
-    formatted_start = (format_time(parse(start)) if start else None)
-    formatted_end = (format_time(parse(end)) if end else None)
+    formatted_start = format_time(parse(start)) if start else None
+    formatted_end = format_time(parse(end)) if end else None
 
     if formatted_start and formatted_end:
         return key.between(formatted_start, formatted_end)
