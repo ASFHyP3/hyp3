@@ -11,7 +11,7 @@ moto[dynamodb]==5.0.22
 pytest==8.3.4
 PyYAML==6.0.2
 responses==0.25.3
-ruff==0.8.3
+ruff
 setuptools==75.6.0
 openapi-spec-validator==0.7.1
 cfn-lint==1.21.0
