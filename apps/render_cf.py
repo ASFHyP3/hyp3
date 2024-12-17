@@ -20,7 +20,7 @@ def get_states_for_jobs(job_types: dict) -> dict:
 
 def get_states_for_job(job_spec: dict) -> dict:
     states = {}
-    steps = job_spec['steps']
+    steps = job_spec["steps"]
     for i in range(len(steps)):
         step = steps[i]
         next_state_name = steps[i + 1]['name'] if i < len(steps) - 1 else 'GET_FILES'
