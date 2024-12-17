@@ -1,20 +1,12 @@
+[project]
+requires-python = "==3.9"
+
 [tool.ruff]
 line-length = 120
 src = [
     "apps",
-    "apps/api/src",
-    "apps/check-processing-time/src",
-    "apps/get-files/src",
-    "apps/handle-batch-event/src",
-    "apps/set-batch-overrides/src",
-    "apps/scale-cluster/src",
-    "apps/start-execution-manager/src",
-    "apps/start-execution-worker/src",
-    "apps/disable-private-dns/src",
-    "apps/update-db/src",
-    "apps/upload-log/src",
-    "lib/dynamo",
-    "lib/lambda_logging",
+    "**/src",
+    "lib/*",
     "tests",
 ]
 
