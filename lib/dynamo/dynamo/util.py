@@ -5,6 +5,7 @@ import boto3
 from boto3.dynamodb.conditions import Key
 from dateutil.parser import parse
 
+
 DYNAMODB_RESOURCE = boto3.resource('dynamodb')
 
 

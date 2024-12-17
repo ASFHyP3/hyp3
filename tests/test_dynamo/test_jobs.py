@@ -2,9 +2,9 @@ import unittest.mock
 from decimal import Decimal
 
 import pytest
-from conftest import list_have_same_elements
 
 import dynamo
+from conftest import list_have_same_elements
 from dynamo.exceptions import (
     InsufficientCreditsError,
     InvalidApplicationStatusError,

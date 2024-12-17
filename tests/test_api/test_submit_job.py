@@ -1,10 +1,9 @@
 from decimal import Decimal
 from http import HTTPStatus
 
-from test_api.conftest import login, make_job, setup_requests_mock, submit_batch
-
 from dynamo.user import APPLICATION_PENDING
 from dynamo.util import current_utc_time
+from test_api.conftest import login, make_job, setup_requests_mock, submit_batch
 
 
 def test_submit_one_job(client, approved_user):

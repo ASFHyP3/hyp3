@@ -2,9 +2,10 @@ import json
 import os
 
 import boto3
+from lambda_logging import log_exceptions, logger
 
 import dynamo
-from lambda_logging import log_exceptions, logger
+
 
 LAMBDA_CLIENT = boto3.client('lambda')
 

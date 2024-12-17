@@ -1,8 +1,8 @@
 from http import HTTPStatus
 
+from hyp3_api import auth
 from test_api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login
 
-from hyp3_api import auth
 
 ENDPOINTS = {
     JOBS_URI: {'GET', 'HEAD', 'OPTIONS', 'POST'},

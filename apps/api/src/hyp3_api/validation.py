@@ -11,6 +11,7 @@ from shapely.geometry import MultiPolygon, Polygon, shape
 from hyp3_api import CMR_URL
 from hyp3_api.util import get_granules
 
+
 DEM_COVERAGE = None
 
 

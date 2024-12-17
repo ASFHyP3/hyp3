@@ -16,6 +16,7 @@ import dynamo
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
 
+
 api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
 api_spec_dict = get_spec_yaml(api_spec_file)
 api_spec = OpenAPI.from_dict(api_spec_dict)

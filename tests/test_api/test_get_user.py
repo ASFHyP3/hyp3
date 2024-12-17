@@ -1,9 +1,8 @@
 from http import HTTPStatus
 
-from test_api.conftest import USER_URI, login, make_db_record
-
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_REJECTED
 from dynamo.util import current_utc_time
+from test_api.conftest import USER_URI, login, make_db_record
 
 
 def test_get_new_user(client, tables, monkeypatch):

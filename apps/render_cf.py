@@ -151,7 +151,7 @@ def render_templates(job_types: dict, compute_envs: dict, security_environment: 
         keep_trailing_newline=True,
     )
 
-    for template_file in Path('.').glob('**/*.j2'):
+    for template_file in Path().glob('**/*.j2'):
         template = env.get_template(str(template_file))
 
         output = template.render(

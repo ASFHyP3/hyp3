@@ -5,6 +5,7 @@ from typing import Optional
 import boto3
 from botocore.config import Config
 
+
 config = Config(retries={'max_attempts': 2, 'mode': 'standard'})
 CLOUDWATCH = boto3.client('logs', config=config)
 S3 = boto3.client('s3')

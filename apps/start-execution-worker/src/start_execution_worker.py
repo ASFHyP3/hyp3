@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Any
 
 import boto3
-
 from lambda_logging import log_exceptions, logger
+
 
 STEP_FUNCTION = boto3.client('stepfunctions')
 

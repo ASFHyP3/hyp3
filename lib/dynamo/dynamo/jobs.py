@@ -2,7 +2,7 @@ import json
 from decimal import Decimal
 from os import environ
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
@@ -18,6 +18,7 @@ from dynamo.exceptions import (
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, current_utc_time, get_request_time_expression
 
+
 costs_file = Path(__file__).parent / 'costs.json'
 COSTS = convert_floats_to_decimals(json.loads(costs_file.read_text()))
 
@@ -29,7 +30,7 @@ else:
     DEFAULT_PARAMS_BY_JOB_TYPE = {}
 
 
-def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
+def put_jobs(user_id: str, jobs: list[dict], dry_run=False) -> list[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = current_utc_time()
 
