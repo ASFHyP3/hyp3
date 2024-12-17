@@ -11,6 +11,7 @@ from shapely.geometry import MultiPolygon, Polygon, shape
 from hyp3_api import CMR_URL
 from hyp3_api.util import get_granules
 
+
 DEM_COVERAGE = None
 
 
@@ -57,8 +58,9 @@ def get_cmr_metadata(granules):
     granules = [
         {
             'name': entry.get('producer_granule_id', entry.get('title')),
-            'polygon': Polygon(format_points(entry['polygons'][0][0]))
-        } for entry in response.json()['feed']['entry']
+            'polygon': Polygon(format_points(entry['polygons'][0][0])),
+        }
+        for entry in response.json()['feed']['entry']
     ]
     return granules
 
@@ -93,9 +95,7 @@ def check_same_burst_ids(job, _):
         )
     for i in range(len(ref_ids)):
         if ref_ids[i] != sec_ids[i]:
-            raise GranuleValidationError(
-                f'Burst IDs do not match for {refs[i]} and {secs[i]}.'
-            )
+            raise GranuleValidationError(f'Burst IDs do not match for {refs[i]} and {secs[i]}.')
     if len(set(ref_ids)) != len(ref_ids):
         duplicate_pair_id = next(ref_id for ref_id in ref_ids if ref_ids.count(ref_id) > 1)
         raise GranuleValidationError(
@@ -174,9 +174,7 @@ def check_granules_intersecting_bounds(job, granule_metadata):
         if not bbox.intersection(bounds):
             bad_granules.append(granule['name'])
     if bad_granules:
-        raise GranuleValidationError(
-            f'The following granules do not intersect the provided bounds: {bad_granules}.'
-        )
+        raise GranuleValidationError(f'The following granules do not intersect the provided bounds: {bad_granules}.')
 
 
 def check_same_relative_orbits(job, granule_metadata):

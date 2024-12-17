@@ -16,6 +16,7 @@ from dynamo.exceptions import (
 )
 from dynamo.util import DYNAMODB_RESOURCE
 
+
 APPLICATION_NOT_STARTED = 'NOT_STARTED'
 APPLICATION_PENDING = 'PENDING'
 APPLICATION_APPROVED = 'APPROVED'
@@ -55,7 +56,7 @@ def update_user(user_id: str, edl_access_token: str, body: dict) -> dict:
                     ':not_started': APPLICATION_NOT_STARTED,
                     ':pending': APPLICATION_PENDING,
                     ':updated_application_status': updated_application_status,
-                    **access_code_value
+                    **access_code_value,
                 },
                 ReturnValues='ALL_NEW',
             )['Attributes']
@@ -125,9 +126,9 @@ def _create_user(user_id: str, users_table) -> dict:
 
 def _reset_credits_if_needed(user: dict, current_month: str, users_table) -> dict:
     if (
-            user['application_status'] == APPLICATION_APPROVED
-            and user.get('_month_of_last_credit_reset', '0') < current_month  # noqa: W503
-            and user['remaining_credits'] is not None  # noqa: W503
+        user['application_status'] == APPLICATION_APPROVED
+        and user.get('_month_of_last_credit_reset', '0') < current_month  # noqa: W503
+        and user['remaining_credits'] is not None  # noqa: W503
     ):
         try:
             user = users_table.update_item(

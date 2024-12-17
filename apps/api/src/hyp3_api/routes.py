@@ -16,6 +16,7 @@ import dynamo
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
 
+
 api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
 api_spec_dict = get_spec_yaml(api_spec_file)
 api_spec = OpenAPI.from_dict(api_spec_dict)
@@ -26,14 +27,9 @@ AUTHENTICATED_ROUTES = ['/jobs', '/user']
 
 @app.before_request
 def check_system_available():
-    if environ['SYSTEM_AVAILABLE'] != "true":
+    if environ['SYSTEM_AVAILABLE'] != 'true':
         message = 'HyP3 is currently unavailable. Please try again later.'
-        error = {
-            'detail': message,
-            'status': 503,
-            'title': 'Service Unavailable',
-            'type': 'about:blank'
-        }
+        error = {'detail': message, 'status': 503, 'title': 'Service Unavailable', 'type': 'about:blank'}
         return make_response(jsonify(error), 503)
 
 
@@ -71,8 +67,11 @@ def render_ui():
 
 @app.errorhandler(404)
 def error404(_):
-    return handlers.problem_format(404, 'The requested URL was not found on the server.'
-                                        ' If you entered the URL manually please check your spelling and try again.')
+    return handlers.problem_format(
+        404,
+        'The requested URL was not found on the server.'
+        ' If you entered the URL manually please check your spelling and try again.',
+    )
 
 
 class CustomEncoder(json.JSONEncoder):

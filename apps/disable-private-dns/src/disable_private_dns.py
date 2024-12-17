@@ -28,7 +28,7 @@ def set_private_dns_disabled(endpoint_id):
     response = CLIENT.modify_vpc_endpoint(VpcEndpointId=endpoint_id, PrivateDnsEnabled=False)
     # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/modify_vpc_endpoint.html
     assert response['Return'] is True, response
-    print(f"Private DNS disabled for VPC Endpoint: {endpoint_id}.")
+    print(f'Private DNS disabled for VPC Endpoint: {endpoint_id}.')
 
 
 def disable_private_dns(vpc_id, endpoint_name):

@@ -1,5 +1,6 @@
 from flask import Flask
 
+
 app = Flask(__name__, template_folder='ui/swagger/', static_folder='ui/swagger/', static_url_path='/ui/')
 CMR_URL = 'https://cmr.earthdata.nasa.gov/search/granules.json'
 
