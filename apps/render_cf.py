@@ -37,9 +37,7 @@ def get_state_for_job_step(step: dict, index: int, next_state_name: str, job_spe
         {
             'Catch': [
                 {
-                    'ErrorEquals': [
-                        'States.ALL'
-                    ],
+                    'ErrorEquals': ['States.ALL'],
                     'ResultPath': f'$.results.processing_results.step_{index}',
                     'Next': 'PROCESSING_FAILED',
                 },
@@ -72,8 +70,8 @@ def get_map_state(job_spec: dict, step: dict) -> dict:
             'StartAt': submit_job_state_name,
             'States': {
                 submit_job_state_name: submit_job_state,
-            }
-        }
+            },
+        },
     }
 
 
@@ -98,29 +96,16 @@ def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params=F
             'SchedulingPriorityOverride.$': '$.priority',
             parameters_key: batch_job_parameters,
             'ContainerOverrides.$': '$.container_overrides',
-            'RetryStrategy': {
-                'Attempts': 3
-            },
+            'RetryStrategy': {'Attempts': 3},
         },
         'ResultSelector': {
             'StartedAt.$': '$.StartedAt',
             'StoppedAt.$': '$.StoppedAt',
         },
         'Retry': [
-            {
-                'ErrorEquals': [
-                    'Batch.ServerException',
-                    'Batch.AWSBatchException'
-                ],
-                'MaxAttempts': 2
-            },
-            {
-                'ErrorEquals': [
-                    'States.ALL'
-                ],
-                'MaxAttempts': 0
-            }
-        ]
+            {'ErrorEquals': ['Batch.ServerException', 'Batch.AWSBatchException'], 'MaxAttempts': 2},
+            {'ErrorEquals': ['States.ALL'], 'MaxAttempts': 0},
+        ],
     }
 
 
@@ -151,11 +136,7 @@ def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str = None) -
 
 def get_batch_param_names_for_job_step(step: dict) -> set[str]:
     ref_prefix = 'Ref::'
-    return {
-        arg.removeprefix(ref_prefix)
-        for arg in step['command']
-        if arg.startswith(ref_prefix)
-    }
+    return {arg.removeprefix(ref_prefix) for arg in step['command'] if arg.startswith(ref_prefix)}
 
 
 def render_templates(job_types: dict, compute_envs: dict, security_environment: str, api_name: str):
@@ -170,7 +151,7 @@ def render_templates(job_types: dict, compute_envs: dict, security_environment: 
         keep_trailing_newline=True,
     )
 
-    for template_file in Path('.').glob('**/*.j2'):
+    for template_file in Path().glob('**/*.j2'):
         template = env.get_template(str(template_file))
 
         output = template.render(
@@ -217,7 +198,8 @@ def render_batch_params_by_job_type(job_types: dict) -> None:
 def render_default_params_by_job_type(job_types: dict) -> None:
     default_params_by_job_type = {
         job_type: {
-            key: value['api_schema']['default'] for key, value in job_spec['parameters'].items()
+            key: value['api_schema']['default']
+            for key, value in job_spec['parameters'].items()
             if key not in job_spec['required_parameters']
         }
         for job_type, job_spec in job_types.items()
@@ -255,7 +237,7 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
         if actual_param_fields != expected_param_fields:
             raise ValueError(
                 f"parameter '{param_name}' for {job_type} has fields {actual_param_fields} "
-                f"but should have {expected_param_fields}"
+                f'but should have {expected_param_fields}'
             )
 
 

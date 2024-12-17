@@ -8,6 +8,7 @@ from typing import Union
 
 import boto3
 
+
 S3_CLIENT = boto3.client('s3')
 
 
@@ -40,12 +41,16 @@ def visible_product(product_path: Union[str, Path]) -> bool:
 
 
 def get_products(files):
-    return [{
-        'url': item['download_url'],
-        'size': item['size'],
-        'filename': item['filename'],
-        's3': item['s3'],
-    } for item in files if item['file_type'] == 'product' and visible_product(item['filename'])]
+    return [
+        {
+            'url': item['download_url'],
+            'size': item['size'],
+            'filename': item['filename'],
+            's3': item['s3'],
+        }
+        for item in files
+        if item['file_type'] == 'product' and visible_product(item['filename'])
+    ]
 
 
 def get_file_urls_by_type(file_list, file_type):
@@ -61,16 +66,18 @@ def organize_files(files_dict, bucket):
     for item in files_dict:
         download_url = get_download_url(bucket, item['Key'])
         file_type = get_object_file_type(bucket, item['Key'])
-        all_files.append({
-            'download_url': download_url,
-            'file_type': file_type,
-            'size': item['Size'],
-            'filename': basename(item['Key']),
-            's3': {
-                'bucket': bucket,
-                'key': item['Key'],
-            },
-        })
+        all_files.append(
+            {
+                'download_url': download_url,
+                'file_type': file_type,
+                'size': item['Size'],
+                'filename': basename(item['Key']),
+                's3': {
+                    'bucket': bucket,
+                    'key': item['Key'],
+                },
+            }
+        )
         if expiration is None and file_type in ['product', 'log']:
             expiration = get_expiration_time(bucket, item['Key'])
 
@@ -79,7 +86,7 @@ def organize_files(files_dict, bucket):
         'browse_images': get_file_urls_by_type(all_files, 'browse'),
         'thumbnail_images': get_file_urls_by_type(all_files, 'thumbnail'),
         'logs': get_file_urls_by_type(all_files, 'log'),
-        'expiration_time': expiration
+        'expiration_time': expiration,
     }
 
 

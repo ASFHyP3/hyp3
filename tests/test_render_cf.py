@@ -1,6 +1,7 @@
 import pytest
-import render_cf
 import yaml
+
+import render_cf
 
 
 def test_parse_map_statement():

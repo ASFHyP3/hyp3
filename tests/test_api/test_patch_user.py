@@ -2,9 +2,8 @@ import unittest.mock
 from decimal import Decimal
 from http import HTTPStatus
 
-from test_api.conftest import DEFAULT_ACCESS_TOKEN, USER_URI, login
-
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_PENDING, APPLICATION_REJECTED
+from test_api.conftest import DEFAULT_ACCESS_TOKEN, USER_URI, login
 
 
 def test_patch_new_user(client, tables):
@@ -74,16 +73,14 @@ def test_patch_user_access_code(client, tables):
     )
     login(client, 'foo')
 
-    with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time, \
-            unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
-
+    with (
+        unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time,
+        unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile,
+    ):
         mock_current_utc_time.return_value = '2024-05-21T20:01:03+00:00'
         mock_get_edl_profile.return_value = {}
 
-        response = client.patch(
-            USER_URI,
-            json={'use_case': 'I want data.', 'access_code': '123'}
-        )
+        response = client.patch(USER_URI, json={'use_case': 'I want data.', 'access_code': '123'})
 
         mock_current_utc_time.assert_called_once_with()
         mock_get_edl_profile.assert_called_once_with('foo', DEFAULT_ACCESS_TOKEN)
@@ -100,17 +97,12 @@ def test_patch_user_access_code(client, tables):
 
 
 def test_patch_user_access_code_start_date(client, tables):
-    tables.access_codes_table.put_item(
-        Item={'access_code': '123', 'start_date': '2024-05-21T20:01:03+00:00'}
-    )
+    tables.access_codes_table.put_item(Item={'access_code': '123', 'start_date': '2024-05-21T20:01:03+00:00'})
     login(client, 'foo')
 
     with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time:
         mock_current_utc_time.return_value = '2024-05-21T20:01:02+00:00'
-        response = client.patch(
-            USER_URI,
-            json={'use_case': 'I want data.', 'access_code': '123'}
-        )
+        response = client.patch(USER_URI, json={'use_case': 'I want data.', 'access_code': '123'})
         mock_current_utc_time.assert_called_once_with()
 
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -125,10 +117,7 @@ def test_patch_user_access_code_end_date(client, tables):
 
     with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time:
         mock_current_utc_time.return_value = '2024-05-21T20:01:04+00:00'
-        response = client.patch(
-            USER_URI,
-            json={'use_case': 'I want data.', 'access_code': '123'}
-        )
+        response = client.patch(USER_URI, json={'use_case': 'I want data.', 'access_code': '123'})
         mock_current_utc_time.assert_called_once_with()
 
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -136,15 +125,10 @@ def test_patch_user_access_code_end_date(client, tables):
 
 
 def test_patch_user_access_code_invalid(client, tables):
-    tables.access_codes_table.put_item(
-        Item={'access_code': '123'}
-    )
+    tables.access_codes_table.put_item(Item={'access_code': '123'})
     login(client, 'foo')
 
-    response = client.patch(
-        USER_URI,
-        json={'use_case': 'I want data.', 'access_code': '456'}
-    )
+    response = client.patch(USER_URI, json={'use_case': 'I want data.', 'access_code': '456'})
 
     assert response.status_code == HTTPStatus.FORBIDDEN
     assert 'not a valid access code' in response.json['detail']

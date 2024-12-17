@@ -22,14 +22,13 @@ class InvalidApplicationStatusError(Exception):
 
 class UnexpectedApplicationStatusError(Exception):
     """Raised for an unexpected user application status."""
+
     help_url = 'https://hyp3-docs.asf.alaska.edu/using/requesting_access'
 
 
 class NotStartedApplicationError(UnexpectedApplicationStatusError):
     def __init__(self, user_id: str):
-        super().__init__(
-            f'{user_id} must request access before submitting jobs. Visit {self.help_url}'
-        )
+        super().__init__(f'{user_id} must request access before submitting jobs. Visit {self.help_url}')
 
 
 class PendingApplicationError(UnexpectedApplicationStatusError):

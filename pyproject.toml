@@ -1,0 +1,41 @@
+[tool.ruff]
+line-length = 120
+src = [
+    "apps",
+    "apps/api/src",
+    "apps/check-processing-time/src",
+    "apps/get-files/src",
+    "apps/handle-batch-event/src",
+    "apps/set-batch-overrides/src",
+    "apps/scale-cluster/src",
+    "apps/start-execution-manager/src",
+    "apps/start-execution-worker/src",
+    "apps/disable-private-dns/src",
+    "apps/update-db/src",
+    "apps/upload-log/src",
+    "lib/dynamo",
+    "lib/lambda_logging",
+    "tests",
+]
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "single"
+
+[tool.ruff.lint]
+extend-select = [
+    "I",   # isort: https://docs.astral.sh/ruff/rules/#isort-i
+    "UP",  # pyupgrade: https://docs.astral.sh/ruff/rules/#pyupgrade-up
+
+    # TODO: uncomment the following extensions and address their warnings:
+    #"D",   # pydocstyle: https://docs.astral.sh/ruff/rules/#pydocstyle-d
+    #"ANN", # annotations: https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
+    #"PTH", # use-pathlib-pth: https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+case-sensitive = true
+lines-after-imports = 2

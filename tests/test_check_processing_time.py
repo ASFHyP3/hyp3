@@ -21,7 +21,7 @@ def test_lambda_handler():
                     'StartedAt': 4000,
                     'StoppedAt': 4200,
                 },
-            ]
+            ],
         }
     }
     assert check_processing_time.lambda_handler(event, None) == [5.7, 6.4, [5.9, 0.2]]

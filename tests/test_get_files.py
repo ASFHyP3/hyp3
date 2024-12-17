@@ -35,13 +35,10 @@ def test_get_download_url(monkeypatch):
 
 
 def stub_expiration(s3_stubber: Stubber, bucket, key):
-    params = {
-        'Bucket': bucket,
-        'Key': key
-    }
+    params = {'Bucket': bucket, 'Key': key}
     s3_response = {
         'Expiration': 'expiry-date="Wed, 01 Jan 2020 00:00:00 UTC", '
-                      'rule-id="MDQxMzRmZTgtNDFlMi00Y2UwLWIyZjEtMTEzYTllNDNjYjJk"'
+        'rule-id="MDQxMzRmZTgtNDFlMi00Y2UwLWIyZjEtMTEzYTllNDNjYjJk"'
     }
     s3_stubber.add_response(method='get_object', expected_params=params, service_response=s3_response)
 
@@ -53,18 +50,8 @@ def test_get_expiration(s3_stubber: Stubber):
 
 
 def stub_get_object_tagging(s3_stubber: Stubber, bucket, key, file_type):
-    params = {
-        'Bucket': bucket,
-        'Key': key
-    }
-    s3_response = {
-        'TagSet': [
-            {
-                'Key': 'file_type',
-                'Value': file_type
-            }
-        ]
-    }
+    params = {'Bucket': bucket, 'Key': key}
+    s3_response = {'TagSet': [{'Key': 'file_type', 'Value': file_type}]}
     s3_stubber.add_response(method='get_object_tagging', expected_params=params, service_response=s3_response)
 
 
@@ -130,9 +117,7 @@ def test_get_files_zipped_product(s3_stubber: Stubber):
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'amp_browse')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse_rgb.png', 'rgb_browse')
 
-    event = {
-        'job_id': 'myJobId'
-    }
+    event = {'job_id': 'myJobId'}
     response = get_files.lambda_handler(event, None)
     assert response == {
         'expiration_time': '2020-01-01T00:00:00+00:00',
@@ -149,7 +134,7 @@ def test_get_files_zipped_product(s3_stubber: Stubber):
         ],
         'browse_images': [
             'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse.png',
-            'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse_rgb.png'
+            'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse_rgb.png',
         ],
         'thumbnail_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myThumbnail.png'],
         'logs': [],
@@ -177,9 +162,7 @@ def test_get_files_netcdf_product(s3_stubber: Stubber):
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myThumbnail.png', 'amp_thumbnail')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'amp_browse')
 
-    event = {
-        'job_id': 'myJobId'
-    }
+    event = {'job_id': 'myJobId'}
     response = get_files.lambda_handler(event, None)
     assert response == {
         'expiration_time': '2020-01-01T00:00:00+00:00',
@@ -213,9 +196,7 @@ def test_get_files_failed_job(s3_stubber: Stubber):
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myJobId.log', 'log')
     stub_expiration(s3_stubber, 'myBucket', 'myJobId/myJobId.log')
 
-    event = {
-        'job_id': 'myJobId'
-    }
+    event = {'job_id': 'myJobId'}
     response = get_files.lambda_handler(event, None)
     assert response == {
         'expiration_time': '2020-01-01T00:00:00+00:00',

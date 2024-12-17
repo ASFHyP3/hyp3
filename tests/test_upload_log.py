@@ -51,14 +51,20 @@ def test_get_log_content(cloudwatch_stubber):
         ],
         'nextForwardToken': 'myNextToken',
     }
-    cloudwatch_stubber.add_response(method='get_log_events', expected_params=expected_params,
-                                    service_response=service_response)
+    cloudwatch_stubber.add_response(
+        method='get_log_events', expected_params=expected_params, service_response=service_response
+    )
 
-    expected_params = {'logGroupName': 'myLogGroup', 'logStreamName': 'myLogStream', 'startFromHead': True,
-                       'nextToken': 'myNextToken'}
+    expected_params = {
+        'logGroupName': 'myLogGroup',
+        'logStreamName': 'myLogStream',
+        'startFromHead': True,
+        'nextToken': 'myNextToken',
+    }
     service_response = {'events': [], 'nextForwardToken': 'myNextToken'}
-    cloudwatch_stubber.add_response(method='get_log_events', expected_params=expected_params,
-                                    service_response=service_response)
+    cloudwatch_stubber.add_response(
+        method='get_log_events', expected_params=expected_params, service_response=service_response
+    )
 
     assert upload_log.get_log_content('myLogGroup', 'myLogStream') == 'foo\nbar'
 
@@ -70,19 +76,15 @@ def test_get_log_content_from_failed_attempts():
         'Attempts': [
             {'Container': {'Reason': 'error message 1'}},
             {'Container': {'Reason': 'error message 2'}},
-            {'Container': {'Reason': 'error message 3'}}
-        ]
+            {'Container': {'Reason': 'error message 3'}},
+        ],
     }
     expected = 'error message 1\nerror message 2\nerror message 3'
     assert upload_log.get_log_content_from_failed_attempts(cause) == expected
 
 
 def test_get_log_content_from_failed_attempts_no_attempts():
-    cause = {
-        'Status': 'FAILED',
-        'StatusReason': 'foo reason',
-        'Attempts': []
-    }
+    cause = {'Status': 'FAILED', 'StatusReason': 'foo reason', 'Attempts': []}
     expected = 'foo reason'
     assert upload_log.get_log_content_from_failed_attempts(cause) == expected
 
@@ -97,11 +99,7 @@ def test_upload_log_to_s3(s3_stubber):
     tag_params = {
         'Bucket': 'myBucket',
         'Key': 'myJobId/myJobId.log',
-        'Tagging': {
-            'TagSet': [
-                {'Key': 'file_type', 'Value': 'log'}
-            ]
-        }
+        'Tagging': {'TagSet': [{'Key': 'file_type', 'Value': 'log'}]},
     }
     s3_stubber.add_response(method='put_object', expected_params=expected_params, service_response={})
     s3_stubber.add_response(method='put_object_tagging', expected_params=tag_params, service_response={})
@@ -117,7 +115,7 @@ def test_lambda_handler(mock_get_log_content: MagicMock, mock_write_log_to_s3: M
     event = {
         'prefix': 'test-prefix',
         'log_group': 'test-log-group',
-        'processing_results': {'step_0': {'Container': {'LogStreamName': 'test-log-stream'}}}
+        'processing_results': {'step_0': {'Container': {'LogStreamName': 'test-log-stream'}}},
     }
 
     upload_log.lambda_handler(event, None)
@@ -133,15 +131,11 @@ def test_lambda_handler_no_log_stream(mock_write_log_to_s3: MagicMock):
         'prefix': 'test-prefix',
         'log_group': 'test-log-group',
         'processing_results': {
-            'step_0':
-                {
-                    'Error': '',
-                    'Cause': '{"Container": {},'
-                             '"Status": "FAILED",'
-                             '"StatusReason": "foo reason",'
-                             '"Attempts": []}'
-                }
-        }
+            'step_0': {
+                'Error': '',
+                'Cause': '{"Container": {},' '"Status": "FAILED",' '"StatusReason": "foo reason",' '"Attempts": []}',
+            }
+        },
     }
 
     upload_log.lambda_handler(event, None)
@@ -150,7 +144,6 @@ def test_lambda_handler_no_log_stream(mock_write_log_to_s3: MagicMock):
 
 
 def test_lambda_handler_log_stream_does_not_exist():
-
     def mock_get_log_events(**kwargs):
         assert kwargs['logGroupName'] == 'test-log-group'
         assert kwargs['logStreamName'] == 'test-log-stream'
@@ -165,20 +158,21 @@ def test_lambda_handler_log_stream_does_not_exist():
             'step_0': {
                 'Error': '',
                 'Cause': '{"Container": {"LogStreamName": "test-log-stream"},'
-                         '"Status": "FAILED",'
-                         '"StatusReason": "Task failed to start",'
-                         '"Attempts": ['
-                         '{"Container": {"Reason": "error message 1"}},'
-                         '{"Container": {"Reason": "error message 2"}},'
-                         '{"Container": {"Reason": "error message 3"}}]}'
+                '"Status": "FAILED",'
+                '"StatusReason": "Task failed to start",'
+                '"Attempts": ['
+                '{"Container": {"Reason": "error message 1"}},'
+                '{"Container": {"Reason": "error message 2"}},'
+                '{"Container": {"Reason": "error message 3"}}]}',
             }
-        }
+        },
     }
 
-    with patch('upload_log.CLOUDWATCH.get_log_events', mock_get_log_events), \
-            patch('upload_log.write_log_to_s3') as mock_write_log_to_s3, \
-            patch.dict(os.environ, {'BUCKET': 'test-bucket'}, clear=True):
-
+    with (
+        patch('upload_log.CLOUDWATCH.get_log_events', mock_get_log_events),
+        patch('upload_log.write_log_to_s3') as mock_write_log_to_s3,
+        patch.dict(os.environ, {'BUCKET': 'test-bucket'}, clear=True),
+    ):
         upload_log.lambda_handler(event, None)
 
         mock_write_log_to_s3.assert_called_once_with(
@@ -187,7 +181,6 @@ def test_lambda_handler_log_stream_does_not_exist():
 
 
 def test_lambda_handler_resource_not_found():
-
     def mock_get_log_events(**kwargs):
         assert kwargs['logGroupName'] == 'test-log-group'
         assert kwargs['logStreamName'] == 'test-log-stream'
@@ -202,16 +195,16 @@ def test_lambda_handler_resource_not_found():
             'step_0': {
                 'Error': '',
                 'Cause': '{"Container": {"LogStreamName": "test-log-stream"},'
-                         '"Status": "FAILED",'
-                         '"StatusReason": "Task failed to start",'
-                         '"Attempts": ['
-                         '{"Container": {"Reason": "error message 1"}},'
-                         '{"Container": {"Reason": "error message 2"}},'
-                         '{"Container": {"Reason": "error message 3"}}]}'
+                '"Status": "FAILED",'
+                '"StatusReason": "Task failed to start",'
+                '"Attempts": ['
+                '{"Container": {"Reason": "error message 1"}},'
+                '{"Container": {"Reason": "error message 2"}},'
+                '{"Container": {"Reason": "error message 3"}}]}',
             }
-        }
+        },
     }
 
     with patch('upload_log.CLOUDWATCH.get_log_events', mock_get_log_events):
-        with pytest.raises(upload_log.CLOUDWATCH.exceptions.ResourceNotFoundException, match=r".*foo message.*"):
+        with pytest.raises(upload_log.CLOUDWATCH.exceptions.ResourceNotFoundException, match=r'.*foo message.*'):
             upload_log.lambda_handler(event, None)
