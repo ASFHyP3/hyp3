@@ -14,4 +14,4 @@ responses==0.25.3
 ruff
 setuptools==75.6.0
 openapi-spec-validator==0.7.1
-cfn-lint==1.21.0
+cfn-lint==1.22.2
