@@ -12,6 +12,3 @@ compute_environments:
   InsarIsceAria:
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
-  InsarIsceMultiBurst:
-    allocation_type: EC2
-    allocation_strategy: BEST_FIT_PROGRESSIVE

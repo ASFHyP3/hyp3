@@ -7,7 +7,7 @@ INSAR_ISCE_MULTI_BURST:
       api_schema:
         type: array
         minItems: 1
-        maxItems: 30  # TODO limit based on Spot failure rate?
+        maxItems: 15
         # TODO: provide an example with multiple bursts
         example:
           - S1_136231_IW2_20200604T022312_VV_7C85-BURST
@@ -22,7 +22,7 @@ INSAR_ISCE_MULTI_BURST:
       api_schema:
         type: array
         minItems: 1
-        maxItems: 30  # TODO limit based on Spot failure rate?
+        maxItems: 15
         example:
           - S1_136231_IW2_20200616T022313_VV_5D11-BURST
         items:
@@ -75,7 +75,7 @@ INSAR_ISCE_MULTI_BURST:
         - --secondary
         - Ref::secondary
       timeout: 126000 # 35 hours
-      compute_environment: InsarIsceMultiBurst
+      compute_environment: Default
       vcpu: 1
       memory: 4 # Memory is always overridden by the step function
       secrets:
