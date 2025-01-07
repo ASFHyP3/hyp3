@@ -53,6 +53,8 @@ OPERA_DISP_TMS:
         maxLength: 8
         example: 20200814
   cost_profiles:
+    EDC:
+      cost: 1.0
     DEFAULT:
       cost: 1.0
   validators:
