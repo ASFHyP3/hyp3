@@ -1,5 +1,8 @@
 name: Static code analysis
 
+permissions:
+  contents: read
+
 on: push
 
 jobs:
