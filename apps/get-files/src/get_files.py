@@ -4,7 +4,6 @@ from datetime import datetime
 from os import environ
 from os.path import basename
 from pathlib import Path
-from typing import Union
 
 import boto3
 
@@ -36,7 +35,7 @@ def get_object_file_type(bucket, key):
     return None
 
 
-def visible_product(product_path: Union[str, Path]) -> bool:
+def visible_product(product_path: str | Path) -> bool:
     return Path(product_path).suffix in ('.zip', '.nc', '.geojson')
 
 

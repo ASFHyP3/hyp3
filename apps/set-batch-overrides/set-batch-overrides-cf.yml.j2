@@ -66,7 +66,7 @@ Resources:
       Handler: set_batch_overrides.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
-      Runtime: python3.9
+      Runtime: python3.13
       Timeout: 30
       {% if security_environment == 'EDC' %}
       VpcConfig:

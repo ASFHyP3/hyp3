@@ -150,7 +150,7 @@ def test_submit_unapproved_user(client, tables):
 
 def test_submit_without_jobs(client):
     login(client)
-    batch = []
+    batch: list = []
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.BAD_REQUEST
 

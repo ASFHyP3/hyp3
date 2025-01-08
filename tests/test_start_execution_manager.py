@@ -7,7 +7,7 @@ import start_execution_manager
 
 
 def test_invoke_worker():
-    jobs = [
+    jobs: list[dict] = [
         {
             'job_id': 'job0',
             'decimal_float_field': Decimal('10.1'),
@@ -38,9 +38,9 @@ def test_invoke_worker():
         }
     )
     with patch('start_execution_manager.LAMBDA_CLIENT.invoke') as mock_invoke:
-        mock_invoke.return_value = 'test-response'
+        mock_invoke.return_value = {'foo': 'bar'}
 
-        assert start_execution_manager.invoke_worker('test-worker-arn', jobs) == 'test-response'
+        assert start_execution_manager.invoke_worker('test-worker-arn', jobs) == {'foo': 'bar'}
 
         mock_invoke.assert_called_once_with(
             FunctionName='test-worker-arn',

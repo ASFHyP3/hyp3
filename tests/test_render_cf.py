@@ -22,7 +22,7 @@ def test_parse_map_statement():
 
 
 def test_get_batch_job_parameters():
-    job_spec = {'parameters': {'param1': {}, 'param2': {}, 'param3': {}, 'param4': {}}}
+    job_spec: dict = {'parameters': {'param1': {}, 'param2': {}, 'param3': {}, 'param4': {}}}
 
     step = {'command': ['foo', 'Ref::param2', 'Ref::param3', 'bar', 'Ref::bucket_prefix']}
     assert render_cf.get_batch_job_parameters(job_spec, step) == {
@@ -68,7 +68,7 @@ def test_get_compute_environments(tmp_path):
             ],
         },
     }
-    compute_env_file_contents = {
+    compute_env_file_contents: dict = {
         'compute_environments': {
             'ComputeEnvironment1': {'key1': 'value1'},
             'ComputeEnvironment2': {'key2': 'value2'},

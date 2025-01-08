@@ -19,7 +19,7 @@ INSAR_ISCE_BURST_OMP_NUM_THREADS = {
 }
 
 
-def get_container_overrides(memory: str, omp_num_threads: str = None) -> dict:
+def get_container_overrides(memory: str, omp_num_threads: str | None = None) -> dict:
     container_overrides = {
         'ResourceRequirements': [
             {
