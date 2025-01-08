@@ -1,6 +1,5 @@
 import json
 from os import environ
-from typing import Optional
 
 import boto3
 from botocore.config import Config
@@ -11,7 +10,7 @@ CLOUDWATCH = boto3.client('logs', config=config)
 S3 = boto3.client('s3')
 
 
-def get_log_stream(result: dict) -> Optional[str]:
+def get_log_stream(result: dict) -> str | None:
     if 'Error' in result:
         result = json.loads(result['Cause'])
     return result['Container'].get('LogStreamName')

@@ -2,7 +2,6 @@ import json
 from decimal import Decimal
 from os import environ
 from pathlib import Path
-from typing import Optional
 from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
@@ -86,8 +85,8 @@ def _prepare_job_for_database(
     job: dict,
     user_id: str,
     request_time: str,
-    remaining_credits: Optional[Decimal],
-    priority_override: Optional[int],
+    remaining_credits: Decimal | None,
+    priority_override: int | None,
     running_cost: Decimal,
 ) -> dict:
     if priority_override:

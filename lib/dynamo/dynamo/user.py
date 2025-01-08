@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from os import environ
 
@@ -106,7 +106,7 @@ def get_or_create_user(user_id: str) -> dict:
 
 
 def _get_current_month() -> str:
-    return datetime.now(tz=timezone.utc).strftime('%Y-%m')
+    return datetime.now(tz=UTC).strftime('%Y-%m')
 
 
 def _create_user(user_id: str, users_table) -> dict:

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 
 import boto3
@@ -25,12 +25,12 @@ def get_request_time_expression(start, end):
 def format_time(time: datetime) -> str:
     if time.tzinfo is None:
         raise ValueError(f'missing tzinfo for datetime {time}')
-    utc_time = time.astimezone(timezone.utc)
+    utc_time = time.astimezone(UTC)
     return utc_time.isoformat(timespec='seconds')
 
 
 def current_utc_time() -> str:
-    return format_time(datetime.now(timezone.utc))
+    return format_time(datetime.now(UTC))
 
 
 def convert_floats_to_decimals(element):

@@ -1,4 +1,4 @@
-from typing import Optional
+
 
 AUTORIFT_S2_MEMORY = '7875'
 AUTORIFT_LANDSAT_MEMORY = '15750'
@@ -21,7 +21,7 @@ INSAR_ISCE_BURST_OMP_NUM_THREADS = {
 }
 
 
-def get_container_overrides(memory: str, omp_num_threads: Optional[str] = None) -> dict:
+def get_container_overrides(memory: str, omp_num_threads: str | None = None) -> dict:
     container_overrides = {
         'ResourceRequirements': [
             {
