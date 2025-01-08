@@ -53,7 +53,7 @@ def tables(table_properties):
 
 @pytest.fixture
 def approved_user(tables) -> str:
-    user = {
+    user: dict = {
         'user_id': 'approved_user',
         'remaining_credits': Decimal(0),
         'application_status': APPLICATION_APPROVED,

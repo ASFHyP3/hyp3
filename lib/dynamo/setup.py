@@ -10,7 +10,7 @@ setup(
         'python-dateutil',
         'requests',
     ],
-    python_requires='~=3.9',
+    python_requires='~=3.13',
     packages=find_packages(),
     package_data={'dynamo': ['*.json']},
 )

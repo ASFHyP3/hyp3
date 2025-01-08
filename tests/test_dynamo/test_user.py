@@ -667,24 +667,24 @@ def test_reset_credits_failed_zero_credits(tables):
 def test_decrement_credits(tables):
     tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': Decimal(25)})
 
-    dynamo.user.decrement_credits('foo', 1)
+    dynamo.user.decrement_credits('foo', Decimal(1))
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(24)}]
 
-    dynamo.user.decrement_credits('foo', 4)
+    dynamo.user.decrement_credits('foo', Decimal(4))
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(20)}]
 
-    dynamo.user.decrement_credits('foo', 20)
+    dynamo.user.decrement_credits('foo', Decimal(20))
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
 
 
 def test_decrement_credits_invalid_cost(tables):
     with pytest.raises(ValueError, match=r'^Cost 0 <= 0$'):
-        dynamo.user.decrement_credits('foo', 0)
+        dynamo.user.decrement_credits('foo', Decimal(0))
 
     assert tables.users_table.scan()['Items'] == []
 
     with pytest.raises(ValueError, match=r'^Cost -1 <= 0$'):
-        dynamo.user.decrement_credits('foo', -1)
+        dynamo.user.decrement_credits('foo', Decimal(-1))
 
     assert tables.users_table.scan()['Items'] == []
 
@@ -693,16 +693,16 @@ def test_decrement_credits_cost_too_high(tables):
     tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': Decimal(1)})
 
     with pytest.raises(DatabaseConditionException):
-        dynamo.user.decrement_credits('foo', 2)
+        dynamo.user.decrement_credits('foo', Decimal(2))
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(1)}]
 
-    dynamo.user.decrement_credits('foo', 1)
+    dynamo.user.decrement_credits('foo', Decimal(1))
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
 
     with pytest.raises(DatabaseConditionException):
-        dynamo.user.decrement_credits('foo', 1)
+        dynamo.user.decrement_credits('foo', Decimal(1))
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
 
@@ -715,13 +715,13 @@ def test_decrement_credits_infinite_credits(tables):
         match=r'^An error occurred \(ValidationException\) when calling the UpdateItem operation:'
         r' An operand in the update expression has an incorrect data type$',
     ):
-        dynamo.user.decrement_credits('foo', 1)
+        dynamo.user.decrement_credits('foo', Decimal(1))
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': None}]
 
 
 def test_decrement_credits_user_does_not_exist(tables):
     with pytest.raises(DatabaseConditionException):
-        dynamo.user.decrement_credits('foo', 1)
+        dynamo.user.decrement_credits('foo', Decimal(1))
 
     assert tables.users_table.scan()['Items'] == []

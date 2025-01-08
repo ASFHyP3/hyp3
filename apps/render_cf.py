@@ -77,7 +77,7 @@ def get_map_state(job_spec: dict, step: dict) -> dict:
 
 def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params=False) -> dict:
     if filter_batch_params:
-        batch_job_parameters = get_batch_job_parameters(job_spec, step)
+        batch_job_parameters: dict | str = get_batch_job_parameters(job_spec, step)
         parameters_key = 'Parameters'
     else:
         batch_job_parameters = '$.batch_job_parameters'
@@ -120,7 +120,7 @@ def parse_map_statement(map_statement: str) -> tuple[str, str]:
     return tokens[1], tokens[3]
 
 
-def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str = None) -> dict:
+def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str | None = None) -> dict:
     job_params = {'bucket_prefix', *job_spec['parameters'].keys()}
     step_params = get_batch_param_names_for_job_step(step)
     batch_params = {}

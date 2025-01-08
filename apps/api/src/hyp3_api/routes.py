@@ -3,6 +3,7 @@ import json
 from decimal import Decimal
 from os import environ
 from pathlib import Path
+from typing import Any
 
 import yaml
 from flask import abort, g, jsonify, make_response, redirect, render_template, request
@@ -98,10 +99,10 @@ class CustomEncoder(json.JSONEncoder):
 
 
 class CustomJSONProvider(JSONProvider):
-    def dumps(self, o):
-        return json.dumps(o, cls=CustomEncoder)
+    def dumps(self, obj: Any, **kwargs) -> str:
+        return json.dumps(obj, cls=CustomEncoder)
 
-    def loads(self, s):
+    def loads(self, s: str | bytes, **kwargs) -> Any:
         return json.loads(s)
 
 
@@ -111,7 +112,7 @@ class ErrorHandler(FlaskOpenAPIErrorsHandler):
 
     def __call__(self, errors):
         response = super().__call__(errors)
-        error = response.json['errors'][0]
+        error = response.json['errors'][0]  # type: ignore[index]
         return handlers.problem_format(error['status'], error['title'])
 
 
@@ -119,7 +120,7 @@ app.json = CustomJSONProvider(app)
 
 openapi = FlaskOpenAPIViewDecorator(
     api_spec,
-    response_cls=None,
+    response_cls=None,  # type: ignore[arg-type]
     errors_handler_cls=ErrorHandler,
 )
 
@@ -138,7 +139,7 @@ def jobs_post():
 @app.route('/jobs', methods=['GET'])
 @openapi
 def jobs_get():
-    parameters = request.openapi.parameters.query
+    parameters = request.openapi.parameters.query  # type: ignore[attr-defined]
     start = parameters.get('start')
     end = parameters.get('end')
     return jsonify(
