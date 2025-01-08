@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - OPERA_DISP_TMS job type is now available in EDC UAT deployment
 
+### Changed
+- Upgraded AWS Lambda functions and Github Actions workflows to Python 3.13
+
 ### Removed
 - hyp3-opera-disp-sandbox deployment
 
