@@ -3,10 +3,10 @@ from decimal import Decimal
 
 import boto3
 from boto3.dynamodb.conditions import Key
-from dateutil.parser import parse
+from dateutil.parser import parse  # type: ignore[attr-defined]
 
 
-DYNAMODB_RESOURCE = boto3.resource('dynamodb')
+DYNAMODB_RESOURCE = boto3.resource('dynamodb')  # type: ignore[attr-defined]
 
 
 def get_request_time_expression(start, end):

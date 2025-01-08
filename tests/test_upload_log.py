@@ -22,7 +22,7 @@ def s3_stubber():
 
 
 def test_get_log_stream():
-    result = {
+    result: dict = {
         'Container': {
             'LogStreamName': 'mySucceededLogStream',
         },

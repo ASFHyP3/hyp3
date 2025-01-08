@@ -7,7 +7,7 @@ import dynamo
 from lambda_logging import log_exceptions, logger
 
 
-LAMBDA_CLIENT = boto3.client('lambda')
+LAMBDA_CLIENT = boto3.client('lambda')  # type: ignore[attr-defined]
 
 
 def invoke_worker(worker_function_arn: str, jobs: list[dict]) -> dict:

@@ -191,7 +191,7 @@ def test_query_jobs_by_type(tables):
 
 
 def test_get_credit_cost():
-    costs = [
+    costs: list[dict] = [
         {
             'job_type': 'RTC_GAMMA',
             'cost_parameter': 'resolution',
@@ -231,7 +231,7 @@ def test_get_credit_cost():
 
 
 def test_get_credit_cost_validate_keys():
-    costs = [
+    costs: list[dict] = [
         {'job_type': 'JOB_TYPE_A', 'cost_parameter': 'foo', 'cost_table': [{'parameter_value': 'bar', 'cost': 3.0}]},
         {'job_type': 'JOB_TYPE_B', 'cost': 5.0},
         {'job_type': 'JOB_TYPE_C', 'cost_parameter': ''},
@@ -353,7 +353,7 @@ def test_put_jobs_default_params(tables, approved_user):
         {'job_type': 'JOB_TYPE_B', 'cost': Decimal('1.0')},
         {'job_type': 'JOB_TYPE_C', 'cost': Decimal('1.0')},
     ]
-    payload = [
+    payload: list[dict] = [
         {},
         {'job_type': 'JOB_TYPE_A'},
         {'job_type': 'JOB_TYPE_A', 'job_parameters': {}},

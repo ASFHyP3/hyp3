@@ -3,7 +3,7 @@ import os
 import boto3
 
 
-CLIENT = boto3.client('ec2')
+CLIENT = boto3.client('ec2')  # type: ignore[attr-defined]
 
 
 def get_endpoint(vpc_id, endpoint_name):

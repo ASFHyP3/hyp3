@@ -6,7 +6,7 @@ from pathlib import Path
 
 import requests
 import yaml
-from shapely.geometry import MultiPolygon, Polygon, shape
+from shapely.geometry import MultiPolygon, Polygon, shape  # type: ignore[attr-defined]
 
 from hyp3_api import CMR_URL
 from hyp3_api.util import get_granules
@@ -24,7 +24,7 @@ class BoundsValidationError(Exception):
 
 
 with open(Path(__file__).parent / 'job_validation_map.yml') as f:
-    JOB_VALIDATION_MAP = yaml.safe_load(f.read())
+    JOB_VALIDATION_MAP = yaml.safe_load(f.read())  # type: ignore[attr-defined]
 
 
 def has_sufficient_coverage(granule: Polygon):
@@ -53,7 +53,7 @@ def get_cmr_metadata(granules):
         ],
         'page_size': 2000,
     }
-    response = requests.post(CMR_URL, data=cmr_parameters)
+    response = requests.post(CMR_URL, data=cmr_parameters)  # type: ignore[attr-defined]
     response.raise_for_status()
     granules = [
         {

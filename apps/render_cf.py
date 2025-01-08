@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import json
 from pathlib import Path
@@ -77,7 +79,7 @@ def get_map_state(job_spec: dict, step: dict) -> dict:
 
 def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params=False) -> dict:
     if filter_batch_params:
-        batch_job_parameters = get_batch_job_parameters(job_spec, step)
+        batch_job_parameters: dict | str = get_batch_job_parameters(job_spec, step)
         parameters_key = 'Parameters'
     else:
         batch_job_parameters = '$.batch_job_parameters'
@@ -120,7 +122,7 @@ def parse_map_statement(map_statement: str) -> tuple[str, str]:
     return tokens[1], tokens[3]
 
 
-def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str = None) -> dict:
+def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str | None = None) -> dict:
     job_params = {'bucket_prefix', *job_spec['parameters'].keys()}
     step_params = get_batch_param_names_for_job_step(step)
     batch_params = {}
@@ -171,7 +173,7 @@ def render_templates(job_types: dict, compute_envs: dict, security_environment: 
 
 
 def get_compute_environments_for_deployment(job_types: dict, compute_env_file: Path) -> dict:
-    compute_envs = yaml.safe_load(compute_env_file.read_text())['compute_environments']
+    compute_envs = yaml.safe_load(compute_env_file.read_text())['compute_environments']  # type: ignore[attr-defined]
 
     if 'Default' in compute_envs:
         raise ValueError("'Default' is a reserved compute environment name")
@@ -252,7 +254,7 @@ def main():
 
     job_types = {}
     for file in args.job_spec_files:
-        job_types.update(yaml.safe_load(file.read_text()))
+        job_types.update(yaml.safe_load(file.read_text()))  # type: ignore[attr-defined]
 
     for job_type, job_spec in job_types.items():
         validate_job_spec(job_type, job_spec)
