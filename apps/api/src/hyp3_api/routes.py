@@ -141,7 +141,7 @@ def jobs_post():
 @app.route('/jobs', methods=['GET'])
 @openapi
 def jobs_get():
-    parameters = request.openapi.parameters.query
+    parameters = request.openapi.parameters.query  # type: ignore[attr-defined]
     start = parameters.get('start')
     end = parameters.get('end')
     return jsonify(
