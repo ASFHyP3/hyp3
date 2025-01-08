@@ -7,13 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [9.1.2]
 
 ### Added
-- OPERA_DISP_TMS job type is now available in EDC UAT deployment
+- Add `mypy` to [`static-analysis`](.github/workflows/static-analysis.yml) workflow
+- `OPERA_DISP_TMS` job type is now available in EDC UAT deployment
 
 ### Changed
-- Upgraded AWS Lambda functions and Github Actions workflows to Python 3.13
+- Upgrade to Python 3.13
 
 ### Removed
-- hyp3-opera-disp-sandbox deployment
+- Remove `hyp3-opera-disp-sandbox` deployment
 
 ## [9.1.1]
 
