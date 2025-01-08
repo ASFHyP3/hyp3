@@ -7,8 +7,8 @@ from botocore.config import Config
 
 
 config = Config(retries={'max_attempts': 2, 'mode': 'standard'})
-CLOUDWATCH = boto3.client('logs', config=config)  # type: ignore[attr-defined]
-S3 = boto3.client('s3')  # type: ignore[attr-defined]
+CLOUDWATCH = boto3.client('logs', config=config)
+S3 = boto3.client('s3')
 
 
 def get_log_stream(result: dict) -> Optional[str]:

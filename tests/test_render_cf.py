@@ -80,7 +80,7 @@ def test_get_compute_environments(tmp_path):
         'ComputeEnvironment2': {'key2': 'value2'},
     }
     compute_env_file = tmp_path / 'compute_environments.yml'
-    yaml.dump(compute_env_file_contents, open(compute_env_file, 'w'))  # type: ignore[attr-defined]
+    yaml.dump(compute_env_file_contents, open(compute_env_file, 'w'))
     assert render_cf.get_compute_environments_for_deployment(job_types, compute_env_file) == expected_compute_envs
 
     compute_env_file_contents = {
@@ -91,7 +91,7 @@ def test_get_compute_environments(tmp_path):
             'Default': {'key', 'value'},
         }
     }
-    yaml.dump(compute_env_file_contents, open(compute_env_file, 'w'))  # type: ignore[attr-defined]
+    yaml.dump(compute_env_file_contents, open(compute_env_file, 'w'))
     with pytest.raises(ValueError, match="'Default' is a reserved compute environment name"):
         render_cf.get_compute_environments_for_deployment(job_types, compute_env_file)
 
@@ -100,6 +100,6 @@ def test_get_compute_environments(tmp_path):
             'ComputeEnvironment1': {'key1': 'value1'},
         }
     }
-    yaml.dump(compute_env_file_contents, open(compute_env_file, 'w'))  # type: ignore[attr-defined]
+    yaml.dump(compute_env_file_contents, open(compute_env_file, 'w'))
     with pytest.raises(KeyError, match='ComputeEnvironment2'):
         render_cf.get_compute_environments_for_deployment(job_types, compute_env_file)

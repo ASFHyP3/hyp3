@@ -10,7 +10,7 @@ from typing import Any
 import yaml
 from flask import abort, g, jsonify, make_response, redirect, render_template, request
 from flask.json.provider import JSONProvider
-from flask_cors import CORS  # type: ignore[attr-defined]
+from flask_cors import CORS
 from openapi_core import OpenAPI
 from openapi_core.contrib.flask.decorators import FlaskOpenAPIViewDecorator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
@@ -60,7 +60,7 @@ def get_open_api_json():
 
 @app.route('/openapi.yaml')
 def get_open_api_yaml():
-    return yaml.dump(api_spec_dict)  # type: ignore[attr-defined]
+    return yaml.dump(api_spec_dict)
 
 
 @app.route('/ui/')
@@ -141,7 +141,7 @@ def jobs_post():
 @app.route('/jobs', methods=['GET'])
 @openapi
 def jobs_get():
-    parameters = request.openapi.parameters.query  # type: ignore[attr-defined]
+    parameters = request.openapi.parameters.query
     start = parameters.get('start')
     end = parameters.get('end')
     return jsonify(

@@ -1,6 +1,6 @@
 import responses
 from pytest import raises
-from shapely.geometry import Polygon  # type: ignore[attr-defined]
+from shapely.geometry import Polygon
 
 from hyp3_api import CMR_URL, validation
 from test_api.conftest import setup_requests_mock_with_given_polygons

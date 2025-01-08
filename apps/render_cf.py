@@ -173,7 +173,7 @@ def render_templates(job_types: dict, compute_envs: dict, security_environment: 
 
 
 def get_compute_environments_for_deployment(job_types: dict, compute_env_file: Path) -> dict:
-    compute_envs = yaml.safe_load(compute_env_file.read_text())['compute_environments']  # type: ignore[attr-defined]
+    compute_envs = yaml.safe_load(compute_env_file.read_text())['compute_environments']
 
     if 'Default' in compute_envs:
         raise ValueError("'Default' is a reserved compute environment name")
@@ -254,7 +254,7 @@ def main():
 
     job_types = {}
     for file in args.job_spec_files:
-        job_types.update(yaml.safe_load(file.read_text()))  # type: ignore[attr-defined]
+        job_types.update(yaml.safe_load(file.read_text()))
 
     for job_type, job_spec in job_types.items():
         validate_job_spec(job_type, job_spec)

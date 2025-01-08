@@ -21,7 +21,7 @@ def post_jobs(body, user):
 
     try:
         validate_jobs(body['jobs'])
-    except requests.HTTPError as e:  # type: ignore[attr-defined]
+    except requests.HTTPError as e:
         print(f'WARN: CMR search failed: {e}')
     except (BoundsValidationError, GranuleValidationError) as e:
         abort(problem_format(400, str(e)))

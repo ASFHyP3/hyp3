@@ -90,7 +90,7 @@ def _validate_access_code(access_code: str) -> None:
 
 def _get_edl_profile(user_id: str, edl_access_token: str) -> dict:
     url = f'https://urs.earthdata.nasa.gov/api/users/{user_id}'
-    response = requests.get(url, headers={'Authorization': f'Bearer {edl_access_token}'})  # type: ignore[attr-defined]
+    response = requests.get(url, headers={'Authorization': f'Bearer {edl_access_token}'})
     response.raise_for_status()
     return response.json()
 

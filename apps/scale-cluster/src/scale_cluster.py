@@ -6,8 +6,8 @@ import boto3
 import dateutil.relativedelta
 
 
-BATCH = boto3.client('batch')  # type: ignore[attr-defined]
-COST_EXPLORER = boto3.client('ce')  # type: ignore[attr-defined]
+BATCH = boto3.client('batch')
+COST_EXPLORER = boto3.client('ce')
 
 
 def get_time_period(today: date):

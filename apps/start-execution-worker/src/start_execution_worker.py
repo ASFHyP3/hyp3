@@ -8,7 +8,7 @@ import boto3
 from lambda_logging import log_exceptions, logger
 
 
-STEP_FUNCTION = boto3.client('stepfunctions')  # type: ignore[attr-defined]
+STEP_FUNCTION = boto3.client('stepfunctions')
 
 batch_params_file = Path(__file__).parent / 'batch_params_by_job_type.json'
 if batch_params_file.exists():
