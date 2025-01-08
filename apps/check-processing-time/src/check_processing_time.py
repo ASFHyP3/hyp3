@@ -1,5 +1,3 @@
-
-
 def get_time_from_result(result: list | dict) -> list | float:
     if isinstance(result, list):
         return [get_time_from_result(item) for item in result]
