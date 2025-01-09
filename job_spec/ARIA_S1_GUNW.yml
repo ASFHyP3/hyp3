@@ -1,0 +1,85 @@
+ARIA_S1_GUNW:
+  required_parameters:
+    - granules
+    - secondary_granules
+    - frame_id
+  parameters:
+    granules:
+      api_schema:
+        type: array
+        minItems: 2
+        maxItems: 3
+        items:
+          description: The name of the Sentinel-1 SLC granules to use as reference scenes for InSAR processing
+          type: string
+          pattern: "^S1[AB]_IW_SLC__1S[SD]V"
+          minLength: 67
+          maxLength: 67
+          example: S1B_IW_SLC__1SDV_20210723T014947_20210723T015014_027915_0354B4_B3A9
+    secondary_granules:
+      api_schema:
+        type: array
+        minItems: 2
+        maxItems: 3
+        items:
+          description: The name of the Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
+          type: string
+          pattern: "^S1[AB]_IW_SLC__1S[SD]V"
+          minLength: 67
+          maxLength: 67
+          example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
+    frame_id:
+      api_schema:
+        description: Subset GUNW products to this frame.
+        type: integer
+        minimum: 0
+        maximum: 27397
+  cost_profiles:
+    EDC:
+      cost: 1.0  # FIXME
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
+      command:
+        - ++omp-num-threads
+        - '4'  # 8 vCPUs per 16 GB RAM for the C instance family; 4 for M; 2 for R
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --reference-scenes
+        - Ref::granules
+        - --secondary-scenes
+        - Ref::secondary_granules
+        - --frame-id
+        - Ref::frame_id
+      timeout: 21600
+      compute_environment: Default
+      vcpu: 1
+      memory: 15500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
+        - ESA_USERNAME
+        - ESA_PASSWORD
+    - name: TROPOSPHERE
+      image: ghcr.io/dbekaert/raider
+      command:
+        - ++process
+        - calcDelaysGUNW
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --weather-model
+        - 'None'  # FIXME switch to AUTO when available
+      timeout: 10800
+      compute_environment: Default
+      vcpu: 1
+      memory: 7500
+      secrets:
+        - ESA_USERNAME
+        - ESA_PASSWORD
