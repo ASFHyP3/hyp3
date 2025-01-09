@@ -45,7 +45,7 @@ ARIA_S1_GUNW:
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
       command:
         - ++omp-num-threads
-        - '4'  # 8 vCPUs per 16 GB RAM for the C instance family; 4 for M; 2 for R
+        - '2'  # 8 vCPUs per 16 GB RAM for the C instance family; 4 for M; 2 for R
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
