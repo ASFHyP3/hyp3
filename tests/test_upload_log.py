@@ -133,7 +133,7 @@ def test_lambda_handler_no_log_stream(mock_write_log_to_s3: MagicMock):
         'processing_results': {
             'step_0': {
                 'Error': '',
-                'Cause': '{"Container": {},' '"Status": "FAILED",' '"StatusReason": "foo reason",' '"Attempts": []}',
+                'Cause': '{"Container": {},"Status": "FAILED","StatusReason": "foo reason","Attempts": []}',
             }
         },
     }
