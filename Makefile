@@ -15,14 +15,72 @@ AWS_PROFILE ?= default
 AWS_REGION ?= us-west-2
 DOCKER_TAG ?= test
 IMAGE_NAME ?= hyp3_deploy
+DEFAULT_APP_STATUS ?= NOT_STARTED
+DEFAULT_CREDITS_PER_USER ?= 1000
+
+AWS_ACCOUNT_CMD = export AWS_DEFAULT_ACCOUNT=`aws sts get-caller-identity --query 'Account' --output=text --profile ${AWS_PROFILE}`
+AWS_REGION_CMD = export AWS_DEFAULT_REGION="${AWS_REGION}"
+CHECK_AWS_CREDENTIALS = if [ -z "$$AWS_DEFAULT_ACCOUNT" ]; then echo "⚠️  Can't infer AWS credentials! ⚠️"; fi
+
+DOCKER_RUN = docker run --rm -it \
+	--entrypoint /bin/bash \
+	-v ~/.aws/:/root/.aws/:ro \
+	-e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
+	-e AWS_DEFAULT_PROFILE -e AWS_PROFILE=${AWS_PROFILE} \
+	-e AWS_DEFAULT_REGION -e AWS_REGION=${AWS_REGION} \
+	-e AWS_DEFAULT_ACCOUNT \
+	-e DEPLOY_PREFIX=${DOCKER_TAG} \
+	${IMAGE_NAME}:latest
+
 PACKAGE_CMD = aws cloudformation package \
 		--template-file ./apps/main-cf.yml \
 		--s3-bucket $(ARTIFACT_BUCKET_NAME) \
 		--output-template-file packaged.yml \
 		--profile $(AWS_PROFILE)
 
-export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SET_BATCH_OVERRIDES}:${SCALE_CLUSTER}:${START_EXECUTION_MANAGER}:${START_EXECUTION_WORKER}:${DISABLE_PRIVATE_DNS}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}:${APPS}
+DEPLOY_CMD = aws cloudformation deploy \
+		--stack-name ${STACK_NAME} \
+		--template-file ./packaged.yml \
+		--capabilities CAPABILITY_IAM \
+		--parameter-overrides \
+			"VpcId=${VPC_ID}" \
+			"SubnetIds=${SUBNET_IDS}" \
+			"DomainName=${CUSTOM_API_DOMAIN}" \
+			"CertificateArn=${SSH_CERT_ARN}" \
+			"DefaultApplicationStatus=${DEFAULT_APP_STATUS}" \
+			"SecretArn=${EDL_SECRET_ARN}" \
+			"AuthPublicKey=${AUTH_PUBLIC_KEY}" \
+		"DefaultCreditsPerUser=${DEFAULT_CREDITS_PER_USER}" \
+		--profile $(AWS_PROFILE)
 
+PACKAGE_DEPLOY_CMD = aws cloudformation package \
+		--template-file ./apps/main-cf.yml \
+		--s3-bucket $(ARTIFACT_BUCKET_NAME) \
+		--output-template-file packaged.yml \
+		--profile $(AWS_PROFILE) && \
+		aws cloudformation deploy \
+		--stack-name ${STACK_NAME} \
+		--template-file ./packaged.yml \
+		--capabilities CAPABILITY_IAM \
+		--parameter-overrides \
+			"VpcId=${VPC_ID}" \
+			"SubnetIds=${SUBNET_IDS}" \
+			"DomainName=${CUSTOM_API_DOMAIN}" \
+			"CertificateArn=${SSH_CERT_ARN}" \
+			"DefaultApplicationStatus=${DEFAULT_APP_STATUS}" \
+			"SecretArn=${EDL_SECRET_ARN}" \
+			"AuthPublicKey=${AUTH_PUBLIC_KEY}" \
+		"DefaultCreditsPerUser=${DEFAULT_CREDITS_PER_USER}" \
+		--profile $(AWS_PROFILE)
+
+define REQUIRE_ARG
+	@if [ -z "$($(1))" ]; then \
+	  echo "Error: $(1) is not set. Please set it like this: 'make $(2) $(1)=<value>'"; \
+	  exit 1; \
+	fi
+endef
+
+export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SET_BATCH_OVERRIDES}:${SCALE_CLUSTER}:${START_EXECUTION_MANAGER}:${START_EXECUTION_WORKER}:${DISABLE_PRIVATE_DNS}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}:${APPS}
 
 build: render
 	python -m pip install --upgrade -r requirements-apps-api.txt -t ${API}; \
@@ -76,38 +134,61 @@ image:
 	pwd && docker build --pull -t ${IMAGE_NAME}:latest -f Dockerfile .
 
 shell:
-	export AWS_DEFAULT_ACCOUNT=`aws sts get-caller-identity --query 'Account' --output=text --profile ${AWS_PROFILE}` && \
-	export AWS_DEFAULT_REGION="${AWS_REGION}" && \
-		if [ -z "$$AWS_DEFAULT_ACCOUNT" ]; then echo "⚠️  Can't infer AWS credentials! ⚠️"; fi && \
-	docker run --rm -it \
-		--entrypoint /bin/bash \
-		-v ~/.aws/:/root/.aws/:ro \
-		-v ${PWD}:/hyp3/ \
-		-e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
-		-e AWS_DEFAULT_PROFILE -e AWS_PROFILE=${AWS_PROFILE} \
-		-e AWS_DEFAULT_REGION -e AWS_REGION=${AWS_REGION} \
-		-e AWS_DEFAULT_ACCOUNT \
-		-e DEPLOY_PREFIX=${DOCKER_TAG} \
-		${IMAGE_NAME}:latest
+	@$(AWS_ACCOUNT_CMD) && \
+	$(AWS_REGION_CMD) && \
+	$(CHECK_AWS_CREDENTIALS) && \
+	$(DOCKER_RUN)
+
+run-docker-cmd:
+	@$(AWS_ACCOUNT_CMD) && \
+	$(AWS_REGION_CMD) && \
+	$(CHECK_AWS_CREDENTIALS) && \
+	$(DOCKER_RUN) -c "$(CMD)"
 
 package:
-	@if [ -z "$(ARTIFACT_BUCKET_NAME)" ]; then \
-	  echo "Error: ARTIFACT_BUCKET_NAME is not set. Please set it like this: 'make package ARTIFACT_BUCKET_NAME=<your_bucket_name>'"; \
-	  exit 1; \
-	fi
+	$(call REQUIRE_ARG,ARTIFACT_BUCKET_NAME,package)
 	@echo "Packaging: ARTIFACT_BUCKET_NAME=$(ARTIFACT_BUCKET_NAME)"
+	$(MAKE) run-docker-cmd CMD="$(PACKAGE_CMD)"
 
-	export AWS_DEFAULT_ACCOUNT=`aws sts get-caller-identity --query 'Account' --output=text --profile ${AWS_PROFILE}` && \
-	export AWS_DEFAULT_REGION="${AWS_REGION}" && \
-		if [ -z "$$AWS_DEFAULT_ACCOUNT" ]; then echo "⚠️  Can't infer AWS credentials! ⚠️"; fi && \
-	docker run --rm -it \
-	    --entrypoint /bin/bash \
-		-v ~/.aws/:/root/.aws/:ro \
-		-v ${PWD}:/hyp3/ \
-		-e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
-		-e AWS_DEFAULT_PROFILE -e AWS_PROFILE=${AWS_PROFILE} \
-		-e AWS_DEFAULT_REGION -e AWS_REGION=${AWS_REGION} \
-		-e AWS_DEFAULT_ACCOUNT \
-		-e DEPLOY_PREFIX=${DOCKER_TAG} \
-		${IMAGE_NAME}:latest \
-		-c "${PACKAGE_CMD}"
+deploy:
+	$(call REQUIRE_ARG,STACK_NAME,deploy)
+	$(call REQUIRE_ARG,VPC_ID,deploy)
+	$(call REQUIRE_ARG,SUBNET_IDS,deploy)
+	$(call REQUIRE_ARG,CUSTOM_API_DOMAIN,deploy)
+	$(call REQUIRE_ARG,SSH_CERT_ARN,deploy)
+	$(call REQUIRE_ARG,EDL_SECRET_ARN,deploy)
+	$(call REQUIRE_ARG,AUTH_PUBLIC_KEY,deploy)
+	@echo "Deploying:\n\
+	STACK_NAME=$(STACK_NAME)"\n\
+	VPC_ID=$(VPC_ID)"\n\
+	SUBNET_IDS=$(SUBNET_IDS)"\n\
+	CUSTOM_API_DOMAIN=$(CUSTOM_API_DOMAIN)"\n\
+	SSH_CERT_ARN=$(SSH_CERT_ARN)"\n\
+	EDL_SECRET_ARN=$(EDL_SECRET_ARN)"\n\
+	AUTH_PUBLIC_KEY=$(AUTH_PUBLIC_KEY)"\n\
+
+	@echo "$(DEPLOY_CMD)"
+
+	$(MAKE) run-docker-cmd CMD="$(DEPLOY_CMD)"
+
+
+package_deploy:
+	$(call REQUIRE_ARG,ARTIFACT_BUCKET_NAME,deploy)
+	$(call REQUIRE_ARG,STACK_NAME,deploy)
+	$(call REQUIRE_ARG,VPC_ID,deploy)
+	$(call REQUIRE_ARG,SUBNET_IDS,deploy)
+	$(call REQUIRE_ARG,CUSTOM_API_DOMAIN,deploy)
+	$(call REQUIRE_ARG,SSH_CERT_ARN,deploy)
+	$(call REQUIRE_ARG,EDL_SECRET_ARN,deploy)
+	$(call REQUIRE_ARG,AUTH_PUBLIC_KEY,deploy)
+	@echo "Packaging and Deploying:\n\
+	STACK_NAME=$(ARTIFACT_BUCKET_NAME)"\n\
+	STACK_NAME=$(STACK_NAME)"\n\
+	VPC_ID=$(VPC_ID)"\n\
+	SUBNET_IDS=$(SUBNET_IDS)"\n\
+	CUSTOM_API_DOMAIN=$(CUSTOM_API_DOMAIN)"\n\
+	SSH_CERT_ARN=$(SSH_CERT_ARN)"\n\
+	EDL_SECRET_ARN=$(EDL_SECRET_ARN)"\n\
+	AUTH_PUBLIC_KEY=$(AUTH_PUBLIC_KEY)"\n"
+
+	$(MAKE) run-docker-cmd CMD="$(PACKAGE_DEPLOY_CMD)"
