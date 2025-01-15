@@ -15,6 +15,12 @@ AWS_PROFILE ?= default
 AWS_REGION ?= us-west-2
 DOCKER_TAG ?= test
 IMAGE_NAME ?= hyp3_deploy
+PACKAGE_CMD = aws cloudformation package \
+		--template-file ./apps/main-cf.yml \
+		--s3-bucket $(ARTIFACT_BUCKET_NAME) \
+		--output-template-file packaged.yml \
+		--profile $(AWS_PROFILE)
+
 export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SET_BATCH_OVERRIDES}:${SCALE_CLUSTER}:${START_EXECUTION_MANAGER}:${START_EXECUTION_WORKER}:${DISABLE_PRIVATE_DNS}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}:${APPS}
 
 
@@ -73,15 +79,35 @@ shell:
 	export AWS_DEFAULT_ACCOUNT=`aws sts get-caller-identity --query 'Account' --output=text --profile ${AWS_PROFILE}` && \
 	export AWS_DEFAULT_REGION="${AWS_REGION}" && \
 		if [ -z "$$AWS_DEFAULT_ACCOUNT" ]; then echo "⚠️  Can't infer AWS credentials! ⚠️"; fi && \
-	mkdir -p /tmp/cdkawscli/cache && \
 	docker run --rm -it \
+		--entrypoint /bin/bash \
 		-v ~/.aws/:/root/.aws/:ro \
-		-v /tmp/cdkawscli/cache:/root/.aws/cli/cache/ \
 		-v ${PWD}:/hyp3/ \
 		-e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
 		-e AWS_DEFAULT_PROFILE -e AWS_PROFILE=${AWS_PROFILE} \
 		-e AWS_DEFAULT_REGION -e AWS_REGION=${AWS_REGION} \
 		-e AWS_DEFAULT_ACCOUNT \
-		-e DEPLOY_PREFIX-${DOCKER_TAG} \
+		-e DEPLOY_PREFIX=${DOCKER_TAG} \
 		${IMAGE_NAME}:latest
 
+package:
+	@if [ -z "$(ARTIFACT_BUCKET_NAME)" ]; then \
+	  echo "Error: ARTIFACT_BUCKET_NAME is not set. Please set it like this: 'make package ARTIFACT_BUCKET_NAME=<your_bucket_name>'"; \
+	  exit 1; \
+	fi
+	@echo "Packaging: ARTIFACT_BUCKET_NAME=$(ARTIFACT_BUCKET_NAME)"
+
+	export AWS_DEFAULT_ACCOUNT=`aws sts get-caller-identity --query 'Account' --output=text --profile ${AWS_PROFILE}` && \
+	export AWS_DEFAULT_REGION="${AWS_REGION}" && \
+		if [ -z "$$AWS_DEFAULT_ACCOUNT" ]; then echo "⚠️  Can't infer AWS credentials! ⚠️"; fi && \
+	docker run --rm -it \
+	    --entrypoint /bin/bash \
+		-v ~/.aws/:/root/.aws/:ro \
+		-v ${PWD}:/hyp3/ \
+		-e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
+		-e AWS_DEFAULT_PROFILE -e AWS_PROFILE=${AWS_PROFILE} \
+		-e AWS_DEFAULT_REGION -e AWS_REGION=${AWS_REGION} \
+		-e AWS_DEFAULT_ACCOUNT \
+		-e DEPLOY_PREFIX=${DOCKER_TAG} \
+		${IMAGE_NAME}:latest \
+		-c "${PACKAGE_CMD}"
