@@ -11,8 +11,7 @@ WORKDIR /hyp3
 
 COPY . /hyp3/
 
-RUN python3 -m pip install --no-cache-dir --upgrade wheel
-
-RUN make install && make build
+RUN python3 -m pip install --no-cache-dir --upgrade wheel && \
+    python3 -m pip install --no-cache-dir awscli
 
 CMD ["/bin/bash"]

@@ -25,6 +25,7 @@ CHECK_AWS_CREDENTIALS = if [ -z "$$AWS_DEFAULT_ACCOUNT" ]; then echo "⚠️  Ca
 DOCKER_RUN = docker run --rm -it \
 	--entrypoint /bin/bash \
 	-v ~/.aws/:/root/.aws/:ro \
+	-v ${PWD}:/hyp3/ \
 	-e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
 	-e AWS_DEFAULT_PROFILE -e AWS_PROFILE=${AWS_PROFILE} \
 	-e AWS_DEFAULT_REGION -e AWS_REGION=${AWS_REGION} \
@@ -38,6 +39,8 @@ PACKAGE_CMD = aws cloudformation package \
 		--output-template-file packaged.yml \
 		--profile $(AWS_PROFILE)
 
+ESCAPED_AUTH_PUBLIC_KEY := $(shell echo $(AUTH_PUBLIC_KEY) | sed 's/ /\\ /g; s/"/\\"/g; s/'\''/\\'\''/g')
+
 DEPLOY_CMD = aws cloudformation deploy \
 		--stack-name ${STACK_NAME} \
 		--template-file ./packaged.yml \
@@ -49,29 +52,10 @@ DEPLOY_CMD = aws cloudformation deploy \
 			"CertificateArn=${SSH_CERT_ARN}" \
 			"DefaultApplicationStatus=${DEFAULT_APP_STATUS}" \
 			"SecretArn=${EDL_SECRET_ARN}" \
-			"AuthPublicKey=${AUTH_PUBLIC_KEY}" \
+			"AuthPublicKey=${value ESCAPED_AUTH_PUBLIC_KEY}" \
 		"DefaultCreditsPerUser=${DEFAULT_CREDITS_PER_USER}" \
 		--profile $(AWS_PROFILE)
 
-PACKAGE_DEPLOY_CMD = aws cloudformation package \
-		--template-file ./apps/main-cf.yml \
-		--s3-bucket $(ARTIFACT_BUCKET_NAME) \
-		--output-template-file packaged.yml \
-		--profile $(AWS_PROFILE) && \
-		aws cloudformation deploy \
-		--stack-name ${STACK_NAME} \
-		--template-file ./packaged.yml \
-		--capabilities CAPABILITY_IAM \
-		--parameter-overrides \
-			"VpcId=${VPC_ID}" \
-			"SubnetIds=${SUBNET_IDS}" \
-			"DomainName=${CUSTOM_API_DOMAIN}" \
-			"CertificateArn=${SSH_CERT_ARN}" \
-			"DefaultApplicationStatus=${DEFAULT_APP_STATUS}" \
-			"SecretArn=${EDL_SECRET_ARN}" \
-			"AuthPublicKey=${AUTH_PUBLIC_KEY}" \
-		"DefaultCreditsPerUser=${DEFAULT_CREDITS_PER_USER}" \
-		--profile $(AWS_PROFILE)
 
 define REQUIRE_ARG
 	@if [ -z "$($(1))" ]; then \
@@ -148,6 +132,7 @@ run-docker-cmd:
 package:
 	$(call REQUIRE_ARG,ARTIFACT_BUCKET_NAME,package)
 	@echo "Packaging: ARTIFACT_BUCKET_NAME=$(ARTIFACT_BUCKET_NAME)"
+	$(MAKE) run-docker-cmd CMD="make install && make build" && \
 	$(MAKE) run-docker-cmd CMD="$(PACKAGE_CMD)"
 
 deploy:
@@ -159,36 +144,16 @@ deploy:
 	$(call REQUIRE_ARG,EDL_SECRET_ARN,deploy)
 	$(call REQUIRE_ARG,AUTH_PUBLIC_KEY,deploy)
 	@echo "Deploying:\n\
-	STACK_NAME=$(STACK_NAME)"\n\
-	VPC_ID=$(VPC_ID)"\n\
-	SUBNET_IDS=$(SUBNET_IDS)"\n\
-	CUSTOM_API_DOMAIN=$(CUSTOM_API_DOMAIN)"\n\
-	SSH_CERT_ARN=$(SSH_CERT_ARN)"\n\
-	EDL_SECRET_ARN=$(EDL_SECRET_ARN)"\n\
-	AUTH_PUBLIC_KEY=$(AUTH_PUBLIC_KEY)"\n\
+	STACK_NAME=$(STACK_NAME)\n\
+	VPC_ID=$(VPC_ID)\n\
+	SUBNET_IDS=$(SUBNET_IDS)\n\
+	CUSTOM_API_DOMAIN=$(CUSTOM_API_DOMAIN)\n\
+	SSH_CERT_ARN=$(SSH_CERT_ARN)\n\
+	EDL_SECRET_ARN=$(EDL_SECRET_ARN)\n\
+	AUTH_PUBLIC_KEY=$(value AUTH_PUBLIC_KEY)\n"	
 
-	@echo "$(DEPLOY_CMD)"
+	@echo $(DEPLOY_CMD)
+
+	@echo ${ESCAPED_AUTH_PUBLIC_KEY}
 
 	$(MAKE) run-docker-cmd CMD="$(DEPLOY_CMD)"
-
-
-package_deploy:
-	$(call REQUIRE_ARG,ARTIFACT_BUCKET_NAME,deploy)
-	$(call REQUIRE_ARG,STACK_NAME,deploy)
-	$(call REQUIRE_ARG,VPC_ID,deploy)
-	$(call REQUIRE_ARG,SUBNET_IDS,deploy)
-	$(call REQUIRE_ARG,CUSTOM_API_DOMAIN,deploy)
-	$(call REQUIRE_ARG,SSH_CERT_ARN,deploy)
-	$(call REQUIRE_ARG,EDL_SECRET_ARN,deploy)
-	$(call REQUIRE_ARG,AUTH_PUBLIC_KEY,deploy)
-	@echo "Packaging and Deploying:\n\
-	STACK_NAME=$(ARTIFACT_BUCKET_NAME)"\n\
-	STACK_NAME=$(STACK_NAME)"\n\
-	VPC_ID=$(VPC_ID)"\n\
-	SUBNET_IDS=$(SUBNET_IDS)"\n\
-	CUSTOM_API_DOMAIN=$(CUSTOM_API_DOMAIN)"\n\
-	SSH_CERT_ARN=$(SSH_CERT_ARN)"\n\
-	EDL_SECRET_ARN=$(EDL_SECRET_ARN)"\n\
-	AUTH_PUBLIC_KEY=$(AUTH_PUBLIC_KEY)"\n"
-
-	$(MAKE) run-docker-cmd CMD="$(PACKAGE_DEPLOY_CMD)"
