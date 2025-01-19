@@ -127,11 +127,20 @@ cfn-lint: ## Lint CloudFormation templates
 
 .PHONY: clean
 clean: ## Remove local build files
-	git ls-files -o -- apps | xargs rm; \
-	git ls-files -o -- lib/dynamo | xargs rm; \
-	git ls-files -o -- .pytest_cache | xargs rm; \
-	find ./ -empty -type d -delete; \
-	rm -f packaged.yml
+	@{ \
+		git ls-files -o -- apps | xargs rm; \
+		git ls-files -o -- lib/dynamo | xargs rm; \
+		git ls-files -o -- .pytest_cache | xargs rm; \
+		find ./ -empty -type d -delete; \
+		rm -f packaged.yml; \
+		if command -v docker >/dev/null 2>&1; then \
+			if docker info >/dev/null 2>&1; then \
+				docker rmi -f ${DEPLOY_ENV_IMAGE_NAME}:latest 2>/dev/null || true; \
+			else \
+				echo "Docker is installed but the Docker engine is not running. Skipping deployment image cleanup."; \
+			fi \
+		fi \
+	}
 
 .PHONY: image
 image: ## Create a containerized HyP3 deployment environment
