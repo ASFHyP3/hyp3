@@ -141,3 +141,7 @@ dmypy.json
 
 # vim
 *.swp
+
+# HyP3 deployment parameter config
+hyp3.env
+!hyp3.env.example

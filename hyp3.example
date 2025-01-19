@@ -1,0 +1,27 @@
+# Duplicate this file and rename it hyp3.env
+# Supply values for at least the environment variables marked "required"
+# This is for setting up a local HyP3 deployment environment
+# Do not store sensitive information (hyp3.env) in a GitHub repo without encryption
+
+AMI_ID=
+ARTIFACT_BUCKET_NAME=required
+AUTH_ALGORIITHM=
+AUTH_PUBLIC_KEY=required
+AWS_DEFAULT_PROFILE=required
+AWS_DEFAULT_REGION=
+CERT_ARN=required
+DEFAULT_APP_STATUS=required
+DEFAULT_CREDITS_PER_USER=
+DEFAULT_MAX_VCPUS=
+DOMAIN_NAME=required
+EXPANDED_MAX_VCPUS=
+IMAGE_TAG=
+INSTANCE_TYPES=
+MONTHLY_BUDGET=
+PRODUCT_LIFETIME_IN_DAYS=
+REQUIRED_SURPLUS=
+SECRET_ARN=required
+STACK_NAME=required
+SUBNET_IDS=required
+SYSTEM_AVAILABLE=
+VPC_ID=required

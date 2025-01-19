@@ -13,7 +13,7 @@ DISABLE_PRIVATE_DNS = ${PWD}/apps/disable-private-dns/src
 UPDATE_DB = ${PWD}/apps/update-db/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
 DYNAMO = ${PWD}/lib/dynamo
-ENV_FILE = ${PWD}/env_vars.hyp3.dev
+ENV_FILE = ${PWD}/hyp3.env
 
 AWS_DEFAULT_PROFILE ?= $(shell grep -E '^AWS_DEFAULT_PROFILE=' $(ENV_FILE) | cut -d '=' -f 2 | sed 's/^$$/default/')
 AWS_DEFAULT_REGION ?= $(shell grep -E '^AWS_DEFAULT_REGION=' $(ENV_FILE) | cut -d '=' -f 2 | sed 's/^$$/us-west-2/')
