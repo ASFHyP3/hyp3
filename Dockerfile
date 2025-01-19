@@ -13,5 +13,3 @@ COPY . /hyp3/
 
 RUN python3 -m pip install --no-cache-dir --upgrade wheel && \
     python3 -m pip install --no-cache-dir awscli
-
-CMD ["/bin/bash"]

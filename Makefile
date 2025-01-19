@@ -13,20 +13,19 @@ DISABLE_PRIVATE_DNS = ${PWD}/apps/disable-private-dns/src
 UPDATE_DB = ${PWD}/apps/update-db/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
 DYNAMO = ${PWD}/lib/dynamo
-AWS_DEFAULT_PROFILE ?= default
-AWS_REGION ?= us-west-2
-DOCKER_TAG ?= test
-IMAGE_NAME ?= hyp3_deploy
-DEFAULT_APP_STATUS ?= NOT_STARTED
-DEFAULT_CREDITS_PER_USER ?= 1000
+ENV_FILE = ${PWD}/env_vars.hyp3.dev
 
-AWS_ACCOUNT_CMD = export AWS_DEFAULT_ACCOUNT=`aws sts get-caller-identity --query 'Account' --output=text --profile ${AWS_DEFAULT_PROFILE}`
-AWS_REGION_CMD = export AWS_DEFAULT_REGION="${AWS_REGION}"
+AWS_DEFAULT_PROFILE ?= $(shell grep -E '^AWS_DEFAULT_PROFILE=' $(ENV_FILE) | cut -d '=' -f 2 | sed 's/^$$/default/')
+AWS_DEFAULT_REGION ?= $(shell grep -E '^AWS_DEFAULT_REGION=' $(ENV_FILE) | cut -d '=' -f 2 | sed 's/^$$/us-west-2/')
+DEPLOY_ENV_IMAGE_NAME ?= hyp3_deploy
 
-CHECK_AWS_CREDENTIALS = if [ -z "$$AWS_DEFAULT_ACCOUNT" ]; then echo "⚠️  Can't infer AWS credentials! ⚠️"; fi
+SET_AWS_ACCOUNT_ENV_VARS = export AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}; \
+	export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}; \
+	export AWS_DEFAULT_ACCOUNT=`aws sts get-caller-identity --query 'Account' --output=text --profile ${AWS_DEFAULT_PROFILE};`
 
 DOCKER_RUN = docker run --rm -it \
 	--entrypoint /bin/bash \
+	--env-file $(ENV_FILE) \
 	-v ~/.aws/:/root/.aws/:ro \
 	-v /tmp/aws-cli-cache:/root/.aws/cli/cache \
 	-v ${PWD}:/hyp3/ \
@@ -34,35 +33,26 @@ DOCKER_RUN = docker run --rm -it \
 	-e AWS_DEFAULT_PROFILE \
 	-e AWS_DEFAULT_REGION \
 	-e AWS_DEFAULT_ACCOUNT \
-	-e DEPLOY_PREFIX=${DOCKER_TAG} \
-	${IMAGE_NAME}:latest
+	${DEPLOY_ENV_IMAGE_NAME}:latest
 
 PACKAGE_CMD = aws cloudformation package \
 		--template-file ./apps/main-cf.yml \
-		--s3-bucket $(ARTIFACT_BUCKET_NAME) \
+		--s3-bucket \$$ARTIFACT_BUCKET_NAME \
 		--output-template-file packaged.yml \
 
 DEPLOY_CMD = aws cloudformation deploy \
-		--stack-name ${STACK_NAME} \
+		--stack-name \$$STACK_NAME \
 		--template-file ./packaged.yml \
 		--capabilities CAPABILITY_IAM \
 		--parameter-overrides \
-			"VpcId=${VPC_ID}" \
-			"SubnetIds=${SUBNET_IDS}" \
-			"DomainName=${CUSTOM_API_DOMAIN}" \
-			"CertificateArn=${SSH_CERT_ARN}" \
-			"DefaultApplicationStatus=${DEFAULT_APP_STATUS}" \
-			"SecretArn=${EDL_SECRET_ARN}" \
-			\"AuthPublicKey=${AUTH_PUBLIC_KEY}\" \
-		"DefaultCreditsPerUser=${DEFAULT_CREDITS_PER_USER}" \
-
-
-define REQUIRE_ARG
-	@if [ -z "$($(1))" ]; then \
-	  echo "Error: $(1) is not set. Please set it like this: 'make $(2) $(1)=<value>'"; \
-	  exit 1; \
-	fi
-endef
+			"VpcId=\$$VPC_ID" \
+			"SubnetIds=\$$SUBNET_IDS" \
+			"DomainName=\$$DOMAIN_NAME" \
+			"CertificateArn=\$$CERT_ARN" \
+			"DefaultApplicationStatus=\$$DEFAULT_APP_STATUS" \
+			"SecretArn=\$$EDL_SECRET_ARN" \
+			"AuthPublicKey=\$$AUTH_PUBLIC_KEY" \
+			"DefaultCreditsPerUser=\$$DEFAULT_CREDITS_PER_USER" \
 
 export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SET_BATCH_OVERRIDES}:${SCALE_CLUSTER}:${START_EXECUTION_MANAGER}:${START_EXECUTION_WORKER}:${DISABLE_PRIVATE_DNS}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}:${APPS}
 
@@ -115,36 +105,61 @@ clean:
 	rm -f packaged.yml
 
 image:
-	pwd && docker build --pull -t ${IMAGE_NAME}:latest -f Dockerfile .
+	docker build --pull -t ${DEPLOY_ENV_IMAGE_NAME}:latest -f Dockerfile .
 
 shell:
-	@$(AWS_ACCOUNT_CMD) && \
-	$(AWS_REGION_CMD) && \
-	$(CHECK_AWS_CREDENTIALS) && \
-	$(DOCKER_RUN)
-
-run-docker-cmd:
-	@$(AWS_ACCOUNT_CMD) && \
-	$(AWS_REGION_CMD) && \
-	$(CHECK_AWS_CREDENTIALS) && \
-	$(DOCKER_RUN) -c "$(CMD)"
+	@{ \
+		$(SET_AWS_ACCOUNT_ENV_VARS) && \
+        printenv | grep AWS && \
+		$(DOCKER_RUN); \
+	}
 
 package:
-	$(call REQUIRE_ARG,ARTIFACT_BUCKET_NAME,package)
-	@echo "Packaging: ARTIFACT_BUCKET_NAME=$(ARTIFACT_BUCKET_NAME)"
-	$(MAKE) run-docker-cmd CMD="make install && make build" && \
-	$(MAKE) run-docker-cmd CMD="$(PACKAGE_CMD)"
+	@{ \
+		$(SET_AWS_ACCOUNT_ENV_VARS) && \
+        printenv | grep AWS && \
+		$(DOCKER_RUN) -c "make install && make build" && \
+		$(DOCKER_RUN) -c 'aws cloudformation package \
+			--template-file ./apps/main-cf.yml \
+			--s3-bucket "$$ARTIFACT_BUCKET_NAME" \
+			--output-template-file packaged.yml'; \
+	}
 
 deploy:
-	$(call REQUIRE_ARG,STACK_NAME,deploy)
-	$(call REQUIRE_ARG,VPC_ID,deploy)
-	$(call REQUIRE_ARG,SUBNET_IDS,deploy)
-	$(call REQUIRE_ARG,CUSTOM_API_DOMAIN,deploy)
-	$(call REQUIRE_ARG,SSH_CERT_ARN,deploy)
-	$(call REQUIRE_ARG,EDL_SECRET_ARN,deploy)
-	$(call REQUIRE_ARG,AUTH_PUBLIC_KEY,deploy)
+	@{ \
+		$(SET_AWS_ACCOUNT_ENV_VARS) && \
+		printenv | grep AWS && \
+		$(DOCKER_RUN) -c 'set -e && \
+			PARAM_OVERRIDES="" && \
+			declare -A PARAMS=( \
+				[AMI_ID]="AmiId" \
+				[AUTH_ALGORITHM]="AuthAlgorithm" \
+				[AUTH_PUBLIC_KEY]="AuthPublicKey" \
+				[CERT_ARN]="CertificateArn" \
+				[DEFAULT_APP_STATUS]="DefaultApplicationStatus" \
+				[DEFAULT_CREDITS_PER_USER]="DefaultCreditsPerUser" \
+				[DEFAULT_MAX_VCPUS]="DefaultMaxvCpus" \
+				[DOMAIN_NAME]="DomainName" \
+				[EXPANDED_MAX_VCPUS]="ExpandedMaxvCpus" \
+				[IMAGE_TAG]="ImageTag" \
+				[INSTANCE_TYPES]="InstanceTypes" \
+				[MONTHLY_BUDGET]="MonthlyBudget" \
+				[PRODUCT_LIFETIME_IN_DAYS]="ProductLifetimeInDays" \
+				[REQUIRED_SURPLUS]="RequiredSurplus" \
+				[SECRET_ARN]="SecretArn" \
+				[SUBNET_IDS]="SubnetIds" \
+				[SYSTEM_AVAILABLE]="SystemAvailable" \
+				[VPC_ID]="VpcId" \
+			); \
+			for var in "$${!PARAMS[@]}"; do \
+				value="$${!var}"; \
+				[ -n "$$value" ] && PARAM_OVERRIDES="$$PARAM_OVERRIDES $${PARAMS[$$var]}=$$value"; \
+			done; \
+			aws cloudformation deploy \
+				--stack-name "$$STACK_NAME" \
+				--template-file ./packaged.yml \
+				--capabilities CAPABILITY_IAM \
+				--parameter-overrides "$$PARAM_OVERRIDES"; \
+		'; \
+	}
 
-
-	@echo "$(DEPLOY_CMD)"
-
-	$(MAKE) run-docker-cmd CMD="$(DEPLOY_CMD)"
