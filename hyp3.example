@@ -1,7 +1,7 @@
 # Duplicate this file and rename it hyp3.env
 # Supply values for at least the environment variables marked "required"
 # This is for setting up a local HyP3 deployment environment
-# Do not store sensitive information (hyp3.env) in a GitHub repo without encryption
+# Do not store hyp3.env in a public repository without encryption
 
 AMI_ID=
 ARTIFACT_BUCKET_NAME=required

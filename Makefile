@@ -56,7 +56,22 @@ DEPLOY_CMD = aws cloudformation deploy \
 
 export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SET_BATCH_OVERRIDES}:${SCALE_CLUSTER}:${START_EXECUTION_MANAGER}:${START_EXECUTION_WORKER}:${DISABLE_PRIVATE_DNS}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}:${APPS}
 
-build: render
+
+.PHONY: help
+help: ## Show this help message
+	@echo "Available targets:"
+	@awk -F ':.*##' '/^[a-zA-Z0-9_-]+:.*##/ { printf "  %-20s %s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort
+	@echo -e "\n\nTo deploy HyP3:\n" \
+	     "  1. Complete prerequisite steps listed in README.md\n" \
+	     "  2. Create a 'hyp3.env' file based on 'hyp3.example'\n" \
+		 "  3. Run the following make targets in order:\n" \
+	     "    a. make image\n" \
+	     "    b. make package\n" \
+	     "    c. make deploy"
+
+.PHONY: build
+build: ## Build HyP3
+	render
 	python -m pip install --upgrade -r requirements-apps-api.txt -t ${API}; \
 	python -m pip install --upgrade -r requirements-apps-api-binary.txt --platform manylinux2014_x86_64 --only-binary=:all: -t ${API}; \
 	python -m pip install --upgrade -r requirements-apps-handle-batch-event.txt -t ${HANDLE_BATCH_EVENT}; \
@@ -67,15 +82,20 @@ build: render
 	python -m pip install --upgrade -r requirements-apps-update-db.txt -t ${UPDATE_DB}
 
 test_file ?= tests/
-tests: render
+.PHONY: tests
+tests: ## Run HyP3 tests
+	render
 	export $$(xargs < tests/cfg.env); \
 	pytest $(test_file)
 
-run: render
+.PHONY: run
+run: ## Run the HyP3 API locally on port 8080
+	render
 	export $$(xargs < tests/cfg.env); \
 	python apps/api/src/hyp3_api/__main__.py
 
-install:
+.PHONY: install
+install: ## Installs required Python software with pip
 	python -m pip install -r requirements-all.txt
 
 files ?= job_spec/*.yml
@@ -83,38 +103,50 @@ compute_env_file ?= job_spec/config/compute_environments.yml
 security_environment ?= ASF
 api_name ?= local
 cost_profile ?= DEFAULT
-render:
+.PHONY: render
+render: ## Render CloudFormation templates using HyP3 job specs and environment configs
 	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -e $(compute_env_file) -s $(security_environment) -n $(api_name) -c $(cost_profile)
 
-static: ruff openapi-validate cfn-lint
+.PHONY: static
+static: ## Perform static analysis with openapi-validate and ruff
+	ruff openapi-validate cfn-lint
 
-ruff:
+.PHONY: ruff
+ruff: ## Lint and format Python code with ruff
 	ruff check . && ruff format --diff .
 
-openapi-validate: render
+.PHONY: openapi-validate
+openapi-validate: ## Validate openapi spec
+	render
 	openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
 
-cfn-lint: render
+.PHONY: cfn-lint
+cfn-lint: ## Lint CloudFormation templates
+	render
 	cfn-lint --info --ignore-checks W3002 E3008 --template `find . -name *-cf.yml`
 
-clean:
+.PHONY: clean
+clean: ## Remove local build files
 	git ls-files -o -- apps | xargs rm; \
 	git ls-files -o -- lib/dynamo | xargs rm; \
 	git ls-files -o -- .pytest_cache | xargs rm; \
 	find ./ -empty -type d -delete; \
 	rm -f packaged.yml
 
-image:
+.PHONY: image
+image: ## Create a containerized HyP3 deployment environment
 	docker build --pull -t ${DEPLOY_ENV_IMAGE_NAME}:latest -f Dockerfile .
 
-shell:
+.PHONY: shell
+shell: ## Run a shell on Hyp3 deployment container (created with 'make image')
 	@{ \
 		$(SET_AWS_ACCOUNT_ENV_VARS) && \
         printenv | grep AWS && \
 		$(DOCKER_RUN); \
 	}
 
-package:
+.PHONY: package
+package: ## Run 'make install && make build', and package CloudFormation artifacts
 	@{ \
 		$(SET_AWS_ACCOUNT_ENV_VARS) && \
         printenv | grep AWS && \
@@ -125,7 +157,8 @@ package:
 			--output-template-file packaged.yml'; \
 	}
 
-deploy:
+.PHONY: deploy
+deploy: ## Deploy HyP3 with AWS CloudFormation
 	@{ \
 		$(SET_AWS_ACCOUNT_ENV_VARS) && \
 		printenv | grep AWS && \
