@@ -9,12 +9,15 @@
 A processing environment for HyP3 Plugins in AWS.
 
 ## Table of contents
-- [Developer Setup](#developer-setup)
-- [Deployment](#deployment)
-  - [Prerequisites](#prerequisites)
-  - [Stack Parameters](#stack-parameters)
-  - [Deploy with CloudFormation](#deploy-with-cloudformation)
-- [Running the API Locally](#running-the-api-locally)
+- [HyP3](#hyp3)
+  - [Table of contents](#table-of-contents)
+  - [Developer Setup](#developer-setup)
+  - [Deployment](#deployment)
+    - [Prerequisites](#prerequisites)
+    - [Stack Parameters](#stack-parameters)
+    - [Option 1 (Recommended): Deploy From a Containerized Deployment Environment](#option-1-recommended-deploy-from-a-containerized-deployment-environment)
+    - [Option 2: Deploy with CloudFormation](#option-2-deploy-with-cloudformation)
+  - [Running the API Locally](#running-the-api-locally)
 
 ## Developer Setup
 
@@ -59,7 +62,31 @@ These resources are required for a successful deployment, but managed separately
 ### Stack Parameters
 Review the parameters in [cloudformation.yml](apps/main-cf.yml) for deploy time configuration options.
 
-### Deploy with CloudFormation
+### Option 1 (Recommended): Deploy From a Containerized Deployment Environment
+This requires a running Docker Engine. 
+
+From the repository root,
+
+- Define the CloudFormation and build parameters for the HyP3 deployment
+  - Create a copy of `hyp3.example`, and rename it `hyp3.env`
+  - Update its environment variable values (at least those labeled "required")
+
+- Create a deployment image that matches the AWS Lambda Python3.13 runtime environment
+```sh
+make image
+```
+
+- Install dependencies and package CloudFormation template
+```sh
+make package
+```
+
+- Deploy HyP3 With CloudFormation
+```sh
+make deploy
+```
+
+### Option 2: Deploy with CloudFormation
 
 To deploy HyP3 with reasonable defaults, follow the steps below. For more advanced
 deployment configuration, see the [deployment GitHub Action](.github/actions/deploy-hyp3/action.yml).
