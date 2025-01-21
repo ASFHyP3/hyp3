@@ -65,50 +65,53 @@ Review the parameters in [cloudformation.yml](apps/main-cf.yml) for deploy time 
 
 From the repository root,
 
-- Define the CloudFormation and build parameters for the HyP3 deployment
-  - Create a copy of `hyp3.example`, and rename it `hyp3.env`
-  - Update its environment variable values (at least those in the "required" section)
+1. Define the CloudFormation and build parameters for the HyP3 deployment
+     1. Create a copy of `hyp3.example`, and rename it `hyp3.env`
+     1. Update its environment variable values (at least those in the "required" section)
 
-- (Optional) Create a deployment image that matches the AWS Lambda Python3.13 runtime environment
-  - Requires a running Docker Engine.
-```sh
-make image
-```
+1. (Optional) Create a deployment image that matches the AWS Lambda Python3.13 runtime environment
+   
+   *Note: Requires a running Docker Engine*
+   ```sh
+   make image
+   ```
 
-- (Optional) If you created a HyP3 deployment image with `make image`, run a shell on it
-```sh 
-make shell
-```
+1. (Optional) If you created a HyP3 deployment image with `make image`, run a shell on it
+   ```sh 
+   make shell
+   ```
 
-- Install dependencies for build and run
-```sh
-make install
-```
+1. Install dependencies for build and run
+   ```sh
+   make install
+   ```
 
-- Install Python dependencies for AWS Lambda functions (requires pip for python 3.13)
-```sh
-make build
-```
+1. Install Python dependencies for AWS Lambda functions (requires pip for python 3.13)
+   ```sh
+   make build
+   ```
 
-- Package the CloudFormation template
-```sh
-make package
-```
+1. Package the CloudFormation template
+   ```sh
+   make package
+   ```
 
-- Deploy HyP3 With CloudFormation
-```sh
-make deploy
-```
+1. Deploy HyP3 With CloudFormation
+   ```sh
+   make deploy
+   ```
 
-- Check API at `https://<Domain Name>/ui`
+1. Check API at `https://<Domain Name>/ui`
 
-- (Optional) clean render and build artifacts
-  - Run this outside of your HyP3 deployment container, as it requires git and removes the image
-```sh
-make clean
-```
-*Note: this will remove any [untracked files](https://git-scm.com/docs/git-ls-files#Documentation/git-ls-files.txt--o)
-in the `apps/` or `lib/dynamo/` directory.*
+1. (Optional) clean render and build artifacts
+   
+   *Notes:* 
+      - *Run this outside of your HyP3 deployment container, as it requires git and removes the image*
+      - *This will remove any [untracked files](https://git-scm.com/docs/git-ls-files#Documentation/git-ls-files.txt--o) in the `apps/` or `lib/dynamo/` directory.*  
+
+      ```sh
+      make clean
+      ```
 
 ## Running the API Locally
 
