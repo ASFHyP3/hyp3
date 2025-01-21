@@ -96,7 +96,6 @@ make package
 ```
 
 - Deploy HyP3 With CloudFormation
-  - Run this outside of your HyP3 deployment container, as it requires git and removes the image
 ```sh
 make deploy
 ```
@@ -104,6 +103,7 @@ make deploy
 - Check API at `https://<Domain Name>/ui`
 
 - (Optional) clean render and build artifacts
+  - Run this outside of your HyP3 deployment container, as it requires git and removes the image
 ```sh
 make clean
 ```
