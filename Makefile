@@ -15,8 +15,14 @@ UPLOAD_LOG = ${PWD}/apps/upload-log/src
 DYNAMO = ${PWD}/lib/dynamo
 ENV_FILE = ${PWD}/hyp3.env
 
-AWS_DEFAULT_PROFILE ?= $(shell grep -E '^AWS_DEFAULT_PROFILE=' $(ENV_FILE) | cut -d '=' -f 2 | sed 's/^$$/default/')
-AWS_DEFAULT_REGION ?= $(shell grep -E '^AWS_DEFAULT_REGION=' $(ENV_FILE) | cut -d '=' -f 2 | sed 's/^$$/us-west-2/')
+DEFAULT_PROFILE := default
+EXTRACTED_PROFILE := $(shell grep -E '^AWS_DEFAULT_PROFILE=' $(ENV_FILE) | cut -d '=' -f 2 | sed 's/^$$/${DEFAULT_PROFILE}/')
+AWS_DEFAULT_PROFILE ?= $(shell [ -z "$(EXTRACTED_PROFILE)" ] && echo "$(DEFAULT_PROFILE)" || echo "$(EXTRACTED_PROFILE)")
+
+DEFAULT_REGION := us-west-2
+EXTRACTED_REGION := $(shell grep -E '^AWS_DEFAULT_REGION=' $(ENV_FILE) | cut -d '=' -f 2 | sed 's/^$$/$(DEFAULT_REGION)/')
+AWS_DEFAULT_REGION ?= $(shell [ -z "$(EXTRACTED_REGION)" ] && echo "$(DEFAULT_REGION)" || echo "$(EXTRACTED_REGION)")
+
 DEPLOY_ENV_IMAGE_NAME ?= hyp3_deploy
 
 SET_AWS_ACCOUNT_ENV_VARS = export AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}; \
@@ -70,8 +76,7 @@ help: ## Show this help message
 	     "    c. make deploy"
 
 .PHONY: build
-build: ## Build HyP3
-	render
+build: render ## Build HyP3
 	python -m pip install --upgrade -r requirements-apps-api.txt -t ${API}; \
 	python -m pip install --upgrade -r requirements-apps-api-binary.txt --platform manylinux2014_x86_64 --only-binary=:all: -t ${API}; \
 	python -m pip install --upgrade -r requirements-apps-handle-batch-event.txt -t ${HANDLE_BATCH_EVENT}; \
@@ -83,14 +88,12 @@ build: ## Build HyP3
 
 test_file ?= tests/
 .PHONY: tests
-tests: ## Run HyP3 tests
-	render
+tests: render ## Run HyP3 tests
 	export $$(xargs < tests/cfg.env); \
 	pytest $(test_file)
 
 .PHONY: run
-run: ## Run the HyP3 API locally on port 8080
-	render
+run: render ## Run the HyP3 API locally on port 8080
 	export $$(xargs < tests/cfg.env); \
 	python apps/api/src/hyp3_api/__main__.py
 
@@ -116,30 +119,33 @@ ruff: ## Lint and format Python code with ruff
 	ruff check . && ruff format --diff .
 
 .PHONY: openapi-validate
-openapi-validate: ## Validate openapi spec
-	render
+openapi-validate: render ## Validate openapi spec
 	openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
 
-.PHONY: cfn-lint
+.PHONY: render cfn-lint
 cfn-lint: ## Lint CloudFormation templates
-	render
 	cfn-lint --info --ignore-checks W3002 E3008 --template `find . -name *-cf.yml`
 
 .PHONY: clean
 clean: ## Remove local build files
 	@{ \
-		git ls-files -o -- apps | xargs rm; \
-		git ls-files -o -- lib/dynamo | xargs rm; \
-		git ls-files -o -- .pytest_cache | xargs rm; \
-		find ./ -empty -type d -delete; \
-		rm -f packaged.yml; \
-		if command -v docker >/dev/null 2>&1; then \
-			if docker info >/dev/null 2>&1; then \
-				docker rmi -f ${DEPLOY_ENV_IMAGE_NAME}:latest 2>/dev/null || true; \
-			else \
-				echo "Docker is installed but the Docker engine is not running. Skipping deployment image cleanup."; \
-			fi \
-		fi \
+		if [ -f /.dockerenv ]; then \
+			echo \'make clean\' will remove your HyP3 deployment container; \
+		    echo Run \'make clean\' outside of you HyP3 deployment container; \
+		else \
+			git ls-files -o -- apps | xargs rm; \
+			git ls-files -o -- lib/dynamo | xargs rm; \
+			git ls-files -o -- .pytest_cache | xargs rm; \
+			find ./ -empty -type d -delete; \
+			rm -f packaged.yml; \
+			if command -v docker >/dev/null 2>&1; then \
+				if docker info >/dev/null 2>&1; then \
+					docker rmi -f ${DEPLOY_ENV_IMAGE_NAME}:latest 2>/dev/null || true; \
+				else \
+					echo "Docker is installed but the Docker engine is not running. Skipping deployment image cleanup."; \
+				fi; \
+			fi; \
+		fi; \
 	}
 
 .PHONY: image
@@ -156,52 +162,45 @@ shell: ## Run a shell on Hyp3 deployment container (created with 'make image')
 
 .PHONY: package
 package: ## Run 'make install && make build', and package CloudFormation artifacts
-	@{ \
-		$(SET_AWS_ACCOUNT_ENV_VARS) && \
-        printenv | grep AWS && \
-		$(DOCKER_RUN) -c "make install && make build" && \
-		$(DOCKER_RUN) -c 'aws cloudformation package \
-			--template-file ./apps/main-cf.yml \
-			--s3-bucket "$$ARTIFACT_BUCKET_NAME" \
-			--output-template-file packaged.yml'; \
-	}
+	aws cloudformation package \
+		--template-file ./apps/main-cf.yml \
+		--s3-bucket "$$ARTIFACT_BUCKET_NAME" \
+		--output-template-file packaged.yml; \
+
 
 .PHONY: deploy
 deploy: ## Deploy HyP3 with AWS CloudFormation
 	@{ \
-		$(SET_AWS_ACCOUNT_ENV_VARS) && \
-		printenv | grep AWS && \
-		$(DOCKER_RUN) -c 'set -e && \
-			PARAM_OVERRIDES="" && \
-			declare -A PARAMS=( \
-				[AMI_ID]="AmiId" \
-				[AUTH_ALGORITHM]="AuthAlgorithm" \
-				[AUTH_PUBLIC_KEY]="AuthPublicKey" \
-				[CERT_ARN]="CertificateArn" \
-				[DEFAULT_APP_STATUS]="DefaultApplicationStatus" \
-				[DEFAULT_CREDITS_PER_USER]="DefaultCreditsPerUser" \
-				[DEFAULT_MAX_VCPUS]="DefaultMaxvCpus" \
-				[DOMAIN_NAME]="DomainName" \
-				[EXPANDED_MAX_VCPUS]="ExpandedMaxvCpus" \
-				[IMAGE_TAG]="ImageTag" \
-				[INSTANCE_TYPES]="InstanceTypes" \
-				[MONTHLY_BUDGET]="MonthlyBudget" \
-				[PRODUCT_LIFETIME_IN_DAYS]="ProductLifetimeInDays" \
-				[REQUIRED_SURPLUS]="RequiredSurplus" \
-				[SECRET_ARN]="SecretArn" \
-				[SUBNET_IDS]="SubnetIds" \
-				[SYSTEM_AVAILABLE]="SystemAvailable" \
-				[VPC_ID]="VpcId" \
-			); \
-			for var in "$${!PARAMS[@]}"; do \
-				value="$${!var}"; \
-				[ -n "$$value" ] && PARAM_OVERRIDES="$$PARAM_OVERRIDES $${PARAMS[$$var]}=$$value"; \
-			done; \
-			aws cloudformation deploy \
-				--stack-name "$$STACK_NAME" \
-				--template-file ./packaged.yml \
-				--capabilities CAPABILITY_IAM \
-				--parameter-overrides "$$PARAM_OVERRIDES"; \
-		'; \
+		set -e && \
+		PARAM_OVERRIDES="" && \
+		declare -A PARAMS=( \
+			[AMI_ID]="AmiId" \
+			[AUTH_ALGORITHM]="AuthAlgorithm" \
+			[AUTH_PUBLIC_KEY]="AuthPublicKey" \
+			[CERT_ARN]="CertificateArn" \
+			[DEFAULT_APP_STATUS]="DefaultApplicationStatus" \
+			[DEFAULT_CREDITS_PER_USER]="DefaultCreditsPerUser" \
+			[DEFAULT_MAX_VCPUS]="DefaultMaxvCpus" \
+			[DOMAIN_NAME]="DomainName" \
+			[EXPANDED_MAX_VCPUS]="ExpandedMaxvCpus" \
+			[IMAGE_TAG]="ImageTag" \
+			[INSTANCE_TYPES]="InstanceTypes" \
+			[MONTHLY_BUDGET]="MonthlyBudget" \
+			[PRODUCT_LIFETIME_IN_DAYS]="ProductLifetimeInDays" \
+			[REQUIRED_SURPLUS]="RequiredSurplus" \
+			[SECRET_ARN]="SecretArn" \
+			[SUBNET_IDS]="SubnetIds" \
+			[SYSTEM_AVAILABLE]="SystemAvailable" \
+			[VPC_ID]="VpcId" \
+		); \
+		for var in "$${!PARAMS[@]}"; do \
+			value="$${!var}"; \
+			[ -n "$$value" ] && PARAM_OVERRIDES="$$PARAM_OVERRIDES $${PARAMS[$$var]}=$$value"; \
+		done; \
+		aws cloudformation deploy \
+			--stack-name "$$STACK_NAME" \
+			--template-file ./packaged.yml \
+			--capabilities CAPABILITY_IAM \
+			--parameter-overrides "$$PARAM_OVERRIDES"; \
 	}
 

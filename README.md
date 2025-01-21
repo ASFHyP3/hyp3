@@ -15,8 +15,7 @@ A processing environment for HyP3 Plugins in AWS.
   - [Deployment](#deployment)
     - [Prerequisites](#prerequisites)
     - [Stack Parameters](#stack-parameters)
-    - [Option 1 (Recommended): Deploy From a Containerized Deployment Environment](#option-1-recommended-deploy-from-a-containerized-deployment-environment)
-    - [Option 2: Deploy with CloudFormation](#option-2-deploy-with-cloudformation)
+    - [Deploy with CloudFormation](#deploy-with-cloudformation)
   - [Running the API Locally](#running-the-api-locally)
 
 ## Developer Setup
@@ -62,36 +61,24 @@ These resources are required for a successful deployment, but managed separately
 ### Stack Parameters
 Review the parameters in [cloudformation.yml](apps/main-cf.yml) for deploy time configuration options.
 
-### Option 1 (Recommended): Deploy From a Containerized Deployment Environment
-This requires a running Docker Engine. 
+### Deploy with CloudFormation
 
 From the repository root,
 
 - Define the CloudFormation and build parameters for the HyP3 deployment
   - Create a copy of `hyp3.example`, and rename it `hyp3.env`
-  - Update its environment variable values (at least those labeled "required")
+  - Update its environment variable values (at least those in the "required" section)
 
-- Create a deployment image that matches the AWS Lambda Python3.13 runtime environment
+- (Optional) Create a deployment image that matches the AWS Lambda Python3.13 runtime environment
+  - Requires a running Docker Engine.
 ```sh
 make image
 ```
 
-- Install dependencies and package CloudFormation template
-```sh
-make package
+- (Optional) If you created a HyP3 deployment image with `make image`, run a shell on it
+```sh 
+make shell
 ```
-
-- Deploy HyP3 With CloudFormation
-```sh
-make deploy
-```
-
-### Option 2: Deploy with CloudFormation
-
-To deploy HyP3 with reasonable defaults, follow the steps below. For more advanced
-deployment configuration, see the [deployment GitHub Action](.github/actions/deploy-hyp3/action.yml).
-
-From the repository root, 
 
 - Install dependencies for build and run
 ```sh
@@ -105,30 +92,15 @@ make build
 
 - Package the CloudFormation template
 ```sh
-aws cloudformation package \
-            --template-file apps/main-cf.yml \
-            --s3-bucket <CloudFormation artifact bucket> \
-            --output-template-file packaged.yml
+make package
 ```
 
-- Deploy to AWS with CloudFormation
+- Deploy HyP3 With CloudFormation
+  - Run this outside of your HyP3 deployment container, as it requires git and removes the image
 ```sh
-aws cloudformation deploy \
-            --stack-name <name of your HyP3 Stack> \
-            --template-file packaged.yml \
-            --role-arn <arn for your deployment user/role> \
-            --capabilities CAPABILITY_IAM \
-            --parameter-overrides \
-                "VpcId=<default vpc>" \
-                "SubnetIds=<comma separated list of subnet ids>" \
-                "DomainName=<Domain Name>" \
-                "CertificateArn=<arn for ssl certificate>" \
-                "DefaultApplicationStatus=<default new user status at sign-up: APPROVED or NOT_STARTED>" \
-                "SecretArn=<ARN to secrets in AWS Secrets Manager containing credentials needed for HyP3 jobs>" \
-                "AuthPublicKey=<Public key for jwt auth provider>" \
-                "DefaultCreditsPerUser=<Default number of crerdits to give new user>"
-
+make deploy
 ```
+
 - Check API at `https://<Domain Name>/ui`
 
 - (Optional) clean render and build artifacts

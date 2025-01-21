@@ -1,27 +1,31 @@
 # Duplicate this file and rename it hyp3.env
-# Supply values for at least the environment variables marked "required"
+# Supply values for at least the environment variables in the "required" section
+# Uncomment and update values for variables in the "optional" section 
 # This is for setting up a local HyP3 deployment environment
 # Do not store hyp3.env in a public repository without encryption
 
-AMI_ID=
-ARTIFACT_BUCKET_NAME=required
-AUTH_ALGORIITHM=
-AUTH_PUBLIC_KEY=required
-AWS_DEFAULT_PROFILE=required
-AWS_DEFAULT_REGION=
-CERT_ARN=required
-DEFAULT_APP_STATUS=required
-DEFAULT_CREDITS_PER_USER=
-DEFAULT_MAX_VCPUS=
-DOMAIN_NAME=required
-EXPANDED_MAX_VCPUS=
-IMAGE_TAG=
-INSTANCE_TYPES=
-MONTHLY_BUDGET=
-PRODUCT_LIFETIME_IN_DAYS=
-REQUIRED_SURPLUS=
-SECRET_ARN=required
-STACK_NAME=required
-SUBNET_IDS=required
-SYSTEM_AVAILABLE=
-VPC_ID=required
+## Required
+ARTIFACT_BUCKET_NAME=<name of AWS S3 bucket holding CloudFormation artifacts>
+AUTH_PUBLIC_KEY=<Public key for jwt auth provider>
+CERT_ARN=<ARN of Certificate in AWS Certificate Manager setup previously for this domain name>
+DEFAULT_APP_STATUS=<Account status for new users: APPROVED or NOT_STARTED>
+DOMAIN_NAME=<API custom domain name: my_hyp3.asf.alaska.edu>
+SECRET_ARN=<ARN of Secret in AWS Secrets Manager containing all the credentials needed for job steps>
+STACK_NAME=<Name of HyP3 CloudFormation stack>
+SUBNET_IDS=<Comma separated list of subnet IDs>
+VPC_ID=<VPC ID>
+
+## Optional
+# AMI_ID=<AMI ID: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id>
+# AUTH_ALGORIITHM=<Algorithm for jwt auth provider: RS256>
+# AWS_DEFAULT_PROFILE=<default>
+# AWS_DEFAULT_REGION=<us-west-2>
+# DEFAULT_CREDITS_PER_USER=<Number of credits per user>
+# DEFAULT_MAX_VCPUS=<Default maximum size for the AWS Batch compute environment: 60>
+# EXPANDED_MAX_VCPUS=<Expanded maximum size for the AWS Batch compute environment to use when month-to-date budget sufficiently exceeds month-to-date spending: 60>
+# IMAGE_TAG=<tag for HyP3 plugin docker images: latest>
+# INSTANCE_TYPES=<EC2 instance types to include in AWS Batch Compute Environment: r6id.xlarge>
+# MONTHLY_BUDGET=<Total budget allocated per month, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus: 0>
+# PRODUCT_LIFETIME_IN_DAYS=<Number of days to keep output files before deleting them: 14>
+# REQUIRED_SURPLUS=<Amount by which month-to-date budget must exceed month-to-date spending to increase fleet size, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus: 0>
+# SYSTEM_AVAILABLE=<Set to false to shutdown system, API will run and provide errors to users, but will not accept jobs.>
