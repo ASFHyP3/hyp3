@@ -121,10 +121,13 @@ aws cloudformation deploy \
             --parameter-overrides \
                 "VpcId=<default vpc>" \
                 "SubnetIds=<comma separated list of subnet ids>" \
-                "EDLUsername=<EDL Username to download products>" \
-                "EDLPassword=<EDL Password to download products>" \
                 "DomainName=<Domain Name>" \
-                "CertificateArn=<arn for ssl certificate>"
+                "CertificateArn=<arn for ssl certificate>" \
+                "DefaultApplicationStatus=<default new user status at sign-up: APPROVED or NOT_STARTED>" \
+                "SecretArn=<ARN to secrets in AWS Secrets Manager containing credentials needed for HyP3 jobs>" \
+                "AuthPublicKey=<Public key for jwt auth provider>" \
+                "DefaultCreditsPerUser=<Default number of crerdits to give new user>"
+
 ```
 - Check API at `https://<Domain Name>/ui`
 
