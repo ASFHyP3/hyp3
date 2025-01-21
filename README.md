@@ -107,7 +107,7 @@ From the repository root,
    
    *Notes:* 
       - *Run this outside of your HyP3 deployment container, as it requires git and removes the image*
-      - *This will remove any [untracked files](https://git-scm.com/docs/git-ls-files#Documentation/git-ls-files.txt--o) in the `apps/` or `lib/dynamo/` directory.*  
+      - *This will remove any [untracked files](https://git-scm.com/docs/git-ls-files#Documentation/git-ls-files.txt--o) in the `apps/` or `lib/dynamo/` directory*  
 
       ```sh
       make clean
