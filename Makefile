@@ -30,7 +30,6 @@ SET_AWS_ACCOUNT_ENV_VARS = export AWS_DEFAULT_PROFILE=${AWS_DEFAULT_PROFILE}; \
 	export AWS_DEFAULT_ACCOUNT=`aws sts get-caller-identity --query 'Account' --output=text --profile ${AWS_DEFAULT_PROFILE};`
 
 DOCKER_RUN = docker run --rm -it \
-	--entrypoint /bin/bash \
 	--env-file $(ENV_FILE) \
 	-v ~/.aws/:/root/.aws/:ro \
 	-v /tmp/aws-cli-cache:/root/.aws/cli/cache \
