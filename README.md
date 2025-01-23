@@ -66,7 +66,7 @@ Review the parameters in [cloudformation.yml](apps/main-cf.yml) for deploy time 
 From the repository root,
 
 1. Define the CloudFormation and build parameters for the HyP3 deployment
-     1. Create a copy of `hyp3.example`, and rename it `hyp3.env`
+     1. Create a copy of `hyp3.env.example`, and rename it `hyp3.env`
      1. Update its environment variable values (at least those in the "required" section)
 
 1. (Optional) Create a deployment image that matches the AWS Lambda Python3.13 runtime environment

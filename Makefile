@@ -68,7 +68,7 @@ help: ## Show this help message
 	@awk -F ':.*##' '/^[a-zA-Z0-9_-]+:.*##/ { printf "  %-20s %s\n", $$1, $$2 }' $(MAKEFILE_LIST) | sort
 	@echo -e "\n\nTo deploy HyP3:\n" \
 	     "  1. Complete prerequisite steps listed in README.md\n" \
-	     "  2. Create a 'hyp3.env' file based on 'hyp3.example'\n" \
+	     "  2. Create a 'hyp3.env' file based on 'hyp3.env.example'\n" \
 		 "  3. Run the following make targets in order:\n" \
 	     "    a. make image\n" \
 	     "    b. make package\n" \
