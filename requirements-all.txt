@@ -13,6 +13,6 @@ PyYAML==6.0.2
 responses==0.25.6
 ruff
 mypy
-setuptools==75.7.0
+setuptools==75.8.0
 openapi-spec-validator==0.7.1
 cfn-lint==1.22.5
