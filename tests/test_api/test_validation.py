@@ -536,3 +536,13 @@ def test_check_same_relative_orbits():
     error_pattern = r'.*69 is not 87.*'
     with raises(validation.GranuleValidationError, match=error_pattern):
         validation.check_same_relative_orbits({}, invalid_granule_metadata)
+
+
+def test_check_bounding_box_size():
+    job = {'job_parameters': {'bounds': [0, 0, 10, 10]}}
+
+    validation.check_bounding_box_size(job, max_bounds_area=100)
+
+    error_pattern = r'.*Bounds must be smaller.*'
+    with raises(validation.BoundsValidationError, match=error_pattern):
+        validation.check_bounding_box_size(job, max_bounds_area=99.9)

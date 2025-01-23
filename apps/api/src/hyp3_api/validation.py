@@ -204,6 +204,17 @@ def convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
     return jobs
 
 
+def check_bounding_box_size(job: dict, max_bounds_area: float = 4.5):
+    bounds = job['job_parameters']['bounds']
+
+    bounds_area = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0])
+
+    if bounds_area > max_bounds_area:
+        raise BoundsValidationError(
+            f'Bounds must be smaller than {max_bounds_area} degrees squared. Box provided was {bounds_area:.2f}'
+        )
+
+
 def validate_jobs(jobs: list[dict]) -> None:
     jobs = convert_single_burst_jobs(jobs)
 
