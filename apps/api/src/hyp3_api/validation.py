@@ -211,7 +211,7 @@ def check_bounding_box_size(job: dict, max_bounds_area: float = 4.5):
 
     if bounds_area > max_bounds_area:
         raise BoundsValidationError(
-            f'Bounds must be smaller than {max_bounds_area} degrees squared. Box provided was {bounds_area}'
+            f'Bounds must be smaller than {max_bounds_area} degrees squared. Box provided was {bounds_area:.2f}'
         )
 
 
