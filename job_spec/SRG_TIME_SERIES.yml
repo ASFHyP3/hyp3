@@ -26,13 +26,13 @@ SRG_TIME_SERIES:
         minItems: 4
         maxItems: 4
         example:
-          - -124.41473278572731
-          - 37.098700238673814
-          - -120.9825007499895
-          - 39.52359974376425
+          - -122.53
+          - 37.78
+          - -122.44
+          - 37.85
         items:
           type: number
-          example: -124.41473278572731
+          example: -122.53
   validators: [
     check_bounds_formatting,
     check_granules_intersecting_bounds,

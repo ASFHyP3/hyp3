@@ -25,13 +25,13 @@ SRG_GSLC:
         minItems: 4
         maxItems: 4
         example:
-          - -116.583
-          - 35.714
-          - -113.209
-          - 38.138
+          - -114.87
+          - 36.00
+          - -114.66
+          - 36.16
         items:
           type: number
-          example: -116.583
+          example: -114.87
   validators: [
     check_bounds_formatting,
     check_granules_intersecting_bounds,
