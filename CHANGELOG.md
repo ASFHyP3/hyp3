@@ -7,15 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [9.3.0]
 
 ### Added
-- Added validator to check that bounds provided are smaller than maximum size for SRG jobs
+- Added `velocity` option for the `tile_type` parameter of `OPERA_DISP_TMS` jobs
+- Restored previously deleted `hyp3-opera-disp-sandbox` deployment
+- Added validator to check that bounds provided do not exceed maximum size for SRG jobs
 
 ### Removed
 - Removed default bounds option for SRG jobs
-
-## [9.2.1]
-
-### Added
-- `velocity` option for the `tile_type` parameter of `OPERA_DISP_TMS` jobs
 
 ## [9.2.0]
 
