@@ -478,6 +478,7 @@ def test_all_validators_have_correct_signature():
     for validator in validators:
         function_params = list(inspect.signature(validator).parameters)
 
+        assert len(function_params) >= 2
         assert function_params[0] in ('job', '_')
         assert function_params[1] in ('granule_metadata', '_')
 
