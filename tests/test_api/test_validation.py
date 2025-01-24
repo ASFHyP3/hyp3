@@ -1,3 +1,5 @@
+import inspect
+
 import responses
 from pytest import raises
 from shapely.geometry import Polygon
@@ -295,7 +297,7 @@ def test_check_valid_polarizations():
             validation.check_valid_polarizations(invalid_job, {})
 
 
-def test_check_granules_exist():
+def test_make_sure_granules_exist():
     granule_metadata = [
         {
             'name': 'scene1',
@@ -305,12 +307,12 @@ def test_check_granules_exist():
         },
     ]
 
-    validation.check_granules_exist([], granule_metadata)
-    validation.check_granules_exist(['scene1'], granule_metadata)
-    validation.check_granules_exist(['scene1', 'scene2'], granule_metadata)
+    validation.make_sure_granules_exist([], granule_metadata)
+    validation.make_sure_granules_exist(['scene1'], granule_metadata)
+    validation.make_sure_granules_exist(['scene1', 'scene2'], granule_metadata)
 
     with raises(validation.GranuleValidationError) as e:
-        validation.check_granules_exist(
+        validation.make_sure_granules_exist(
             ['scene1', 'scene2', 'scene3', 'scene4', 'S2_foo', 'LC08_bar', 'LC09_bar'], granule_metadata
         )
     assert 'S2_foo' not in str(e)
@@ -468,6 +470,16 @@ def test_validate_jobs():
     ]
     with raises(validation.GranuleValidationError):
         validation.validate_jobs(jobs)
+
+
+def test_all_check_validators_have_correct_signature():
+    validators = [getattr(validation, attr) for attr in dir(validation) if 'check' in attr]
+
+    for validator in validators:
+        function_sig = inspect.signature(validator).parameters
+
+        assert 'job' in function_sig
+        assert 'granule_metadata' in function_sig
 
 
 def test_check_bounds_formatting():
