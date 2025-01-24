@@ -30,49 +30,49 @@ def test_not_antimeridian():
 def test_has_sufficient_coverage():
     # Wyoming
     poly = rectangle(45, 41, -104, -111)
-    assert validation.has_sufficient_coverage(poly)
+    assert validation._has_sufficient_coverage(poly)
 
     # completely covered Aleutian Islands over antimeridian; should pass with fixed antimeridian
     poly = rectangle(51.7, 51.3, 179.7, -179.3)
-    assert validation.has_sufficient_coverage(poly)
+    assert validation._has_sufficient_coverage(poly)
 
     # not enough coverage of Aleutian Islands over antimeridian
     # NOTE: Passes today but should FAIL legacy with antimeridian feature fix
     poly = rectangle(51.7, 41.3, 179.7, -179.3)
-    assert validation.has_sufficient_coverage(poly)
+    assert validation._has_sufficient_coverage(poly)
 
     # completely encloses tile over Ascension Island in the Atlantic
     poly = rectangle(-6, -9, -15, -14)
-    assert validation.has_sufficient_coverage(poly)
+    assert validation._has_sufficient_coverage(poly)
 
     # # minimum sufficient coverage off the coast of Eureka, CA
     poly = rectangle(40.1, 40, -126, -125.000138)
-    assert validation.has_sufficient_coverage(poly)
+    assert validation._has_sufficient_coverage(poly)
 
     # almost minimum sufficient coverage off the coast of Eureka, CA
     poly = rectangle(40.1, 40, -126, -125.000140)
-    assert not validation.has_sufficient_coverage(poly)
+    assert not validation._has_sufficient_coverage(poly)
 
     # polygon in missing tile over Gulf of California
     poly = rectangle(26.9, 26.1, -110.1, -110.9)
-    assert not validation.has_sufficient_coverage(poly)
+    assert not validation._has_sufficient_coverage(poly)
 
     # southern Greenland
     poly = rectangle(62, 61, -44, -45)
-    assert validation.has_sufficient_coverage(poly)
+    assert validation._has_sufficient_coverage(poly)
 
     # Antarctica
     poly = rectangle(-62, -90, 180, -180)
-    assert validation.has_sufficient_coverage(poly)
+    assert validation._has_sufficient_coverage(poly)
 
     # ocean over antimeridian; this case incorrectly passes, see https://github.com/ASFHyP3/hyp3/issues/1989
     poly = rectangle(-40, -41, 179.7, -179.3)
-    assert validation.has_sufficient_coverage(poly)
+    assert validation._has_sufficient_coverage(poly)
 
 
 def test_format_points():
     point_string = '-31.43 25.04 -29.76 25.54 -29.56 24.66 -31.23 24.15 -31.43 25.04'
-    assert validation.format_points(point_string) == [
+    assert validation._format_points(point_string) == [
         [25.04, -31.43],
         [25.54, -29.76],
         [24.66, -29.56],
@@ -307,12 +307,12 @@ def test_make_sure_granules_exist():
         },
     ]
 
-    validation.make_sure_granules_exist([], granule_metadata)
-    validation.make_sure_granules_exist(['scene1'], granule_metadata)
-    validation.make_sure_granules_exist(['scene1', 'scene2'], granule_metadata)
+    validation._make_sure_granules_exist([], granule_metadata)
+    validation._make_sure_granules_exist(['scene1'], granule_metadata)
+    validation._make_sure_granules_exist(['scene1', 'scene2'], granule_metadata)
 
     with raises(validation.GranuleValidationError) as e:
-        validation.make_sure_granules_exist(
+        validation._make_sure_granules_exist(
             ['scene1', 'scene2', 'scene3', 'scene4', 'S2_foo', 'LC08_bar', 'LC09_bar'], granule_metadata
         )
     assert 'S2_foo' not in str(e)
@@ -325,17 +325,17 @@ def test_make_sure_granules_exist():
 
 
 def test_is_third_party_granule():
-    assert validation.is_third_party_granule('S2A_MSIL1C_20200627T150921_N0209_R025_T22WEB_20200627T170912')
-    assert validation.is_third_party_granule('S2B_22WEB_20200612_0_L1C')
-    assert validation.is_third_party_granule('LC08_L1TP_009011_20200820_20200905_02_T1')
-    assert validation.is_third_party_granule('LO08_L1GT_043001_20201106_20201110_02_T2')
-    assert validation.is_third_party_granule('LT08_L1GT_041001_20200125_20200925_02_T2')
-    assert validation.is_third_party_granule('LC09_L1GT_215109_20220125_20220125_02_T2')
-    assert validation.is_third_party_granule('LO09_L1GT_215109_20220210_20220210_02_T2')
-    assert validation.is_third_party_granule('LT09_L1GT_215109_20220210_20220210_02_T2')
-    assert not validation.is_third_party_granule('S1_249434_IW1_20230523T170733_VV_8850-BURST')
-    assert not validation.is_third_party_granule('S1A_IW_SLC__1SSH_20150608T205059_20150608T205126_006287_0083E8_C4F0')
-    assert not validation.is_third_party_granule('foo')
+    assert validation._is_third_party_granule('S2A_MSIL1C_20200627T150921_N0209_R025_T22WEB_20200627T170912')
+    assert validation._is_third_party_granule('S2B_22WEB_20200612_0_L1C')
+    assert validation._is_third_party_granule('LC08_L1TP_009011_20200820_20200905_02_T1')
+    assert validation._is_third_party_granule('LO08_L1GT_043001_20201106_20201110_02_T2')
+    assert validation._is_third_party_granule('LT08_L1GT_041001_20200125_20200925_02_T2')
+    assert validation._is_third_party_granule('LC09_L1GT_215109_20220125_20220125_02_T2')
+    assert validation._is_third_party_granule('LO09_L1GT_215109_20220210_20220210_02_T2')
+    assert validation._is_third_party_granule('LT09_L1GT_215109_20220210_20220210_02_T2')
+    assert not validation._is_third_party_granule('S1_249434_IW1_20230523T170733_VV_8850-BURST')
+    assert not validation._is_third_party_granule('S1A_IW_SLC__1SSH_20150608T205059_20150608T205126_006287_0083E8_C4F0')
+    assert not validation._is_third_party_granule('foo')
 
 
 @responses.activate
@@ -356,7 +356,7 @@ def test_get_cmr_metadata():
     }
     responses.post(CMR_URL, json=response_payload)
 
-    assert validation.get_cmr_metadata(['foo', 'bar', 'hello']) == [
+    assert validation._get_cmr_metadata(['foo', 'bar', 'hello']) == [
         {
             'name': 'foo',
             'polygon': Polygon([[25.0, -31.4], [25.5, -29.7], [24.6, -29.5], [24.1, -31.2]]),
