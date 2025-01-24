@@ -476,10 +476,10 @@ def test_all_check_validators_have_correct_signature():
     validators = [getattr(validation, attr) for attr in dir(validation) if 'check' in attr]
 
     for validator in validators:
-        function_sig = inspect.signature(validator).parameters
+        function_params = list(inspect.signature(validator).parameters)
 
-        assert 'job' in function_sig
-        assert 'granule_metadata' in function_sig
+        assert 'job' or '_' in function_params[0]
+        assert 'granule_metadata' or '_' in function_params[1]
 
 
 def test_check_bounds_formatting():

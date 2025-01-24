@@ -77,13 +77,13 @@ def make_sure_granules_exist(granules, granule_metadata):
         raise GranuleValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 
 
-def check_dem_coverage(job, granule_metadata):
+def check_dem_coverage(_, granule_metadata):
     bad_granules = [g['name'] for g in granule_metadata if not has_sufficient_coverage(g['polygon'])]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
-def check_same_burst_ids(job, granule_metadata):
+def check_same_burst_ids(job, _):
     refs = job['job_parameters']['reference']
     secs = job['job_parameters']['secondary']
     ref_ids = ['_'.join(ref.split('_')[1:3]) for ref in refs]
@@ -103,7 +103,7 @@ def check_same_burst_ids(job, granule_metadata):
         )
 
 
-def check_valid_polarizations(job, granule_metadata):
+def check_valid_polarizations(job, _):
     polarizations = set(granule.split('_')[4] for granule in get_granules([job]))
     if len(polarizations) > 1:
         raise GranuleValidationError(
@@ -115,7 +115,7 @@ def check_valid_polarizations(job, granule_metadata):
         )
 
 
-def check_not_antimeridian(job, granule_metadata):
+def check_not_antimeridian(_, granule_metadata):
     for granule in granule_metadata:
         bbox = granule['polygon'].bounds
         if abs(bbox[0] - bbox[2]) > 180.0 and bbox[0] * bbox[2] < 0.0:
@@ -140,7 +140,7 @@ def get_multipolygon_from_geojson(input_file):
     return MultiPolygon(polygons)
 
 
-def check_bounds_formatting(job, granule_metadata):
+def check_bounds_formatting(job, _):
     bounds = job['job_parameters']['bounds']
     if bounds == [0.0, 0.0, 0.0, 0.0]:
         return
@@ -177,7 +177,7 @@ def check_granules_intersecting_bounds(job, granule_metadata):
         raise GranuleValidationError(f'The following granules do not intersect the provided bounds: {bad_granules}.')
 
 
-def check_same_relative_orbits(job, granule_metadata):
+def check_same_relative_orbits(_, granule_metadata):
     previous_relative_orbit = None
     for granule in granule_metadata:
         name_split = granule['name'].split('_')
@@ -204,7 +204,7 @@ def convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
     return jobs
 
 
-def check_bounding_box_size(job: dict, granule_metadata, max_bounds_area: float = 4.5):
+def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5):
     bounds = job['job_parameters']['bounds']
 
     bounds_area = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0])
