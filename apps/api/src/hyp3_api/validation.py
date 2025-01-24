@@ -6,10 +6,9 @@ from pathlib import Path
 
 import requests
 import yaml
-from shapely.geometry import MultiPolygon, Polygon, shape
-
 from hyp3_api import CMR_URL
 from hyp3_api.util import get_granules
+from shapely.geometry import MultiPolygon, Polygon, shape
 
 
 DEM_COVERAGE = None
@@ -204,7 +203,7 @@ def convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
     return jobs
 
 
-def check_bounding_box_size(job: dict, max_bounds_area: float = 4.5):
+def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5):
     bounds = job['job_parameters']['bounds']
 
     bounds_area = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0])
