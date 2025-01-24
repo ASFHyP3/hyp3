@@ -204,7 +204,7 @@ def convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
     return jobs
 
 
-def check_bounding_box_size(job: dict, max_bounds_area: float = 4.5):
+def check_bounding_box_size(job: dict, granule_metadata, max_bounds_area: float = 4.5):
     bounds = job['job_parameters']['bounds']
 
     bounds_area = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0])

@@ -541,8 +541,8 @@ def test_check_same_relative_orbits():
 def test_check_bounding_box_size():
     job = {'job_parameters': {'bounds': [0, 0, 10, 10]}}
 
-    validation.check_bounding_box_size(job, max_bounds_area=100)
+    validation.check_bounding_box_size(job, None, max_bounds_area=100)
 
     error_pattern = r'.*Bounds must be smaller.*'
     with raises(validation.BoundsValidationError, match=error_pattern):
-        validation.check_bounding_box_size(job, max_bounds_area=99.9)
+        validation.check_bounding_box_size(job, None, max_bounds_area=99.9)
