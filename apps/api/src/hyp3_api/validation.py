@@ -23,8 +23,8 @@ class BoundsValidationError(Exception):
     pass
 
 
-with open(Path(__file__).parent / 'job_validation_map.yml') as f:
-    JOB_VALIDATION_MAP = yaml.safe_load(f.read())
+with open(Path(__file__).parent / 'job_validation_map.yml') as job_validation_map_file:
+    JOB_VALIDATION_MAP = yaml.safe_load(job_validation_map_file.read())
 
 
 def has_sufficient_coverage(granule: Polygon):
