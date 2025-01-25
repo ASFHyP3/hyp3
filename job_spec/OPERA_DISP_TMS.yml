@@ -28,9 +28,8 @@ OPERA_DISP_TMS:
         items:
           description: Frame ID
           type: integer
-          # TODO
-          #minimum:
-          #maximum:
+          minimum: 1
+          maximum: 46986
           example: 11113
     start_date:
       api_schema:
