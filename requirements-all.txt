@@ -15,4 +15,4 @@ ruff
 mypy
 setuptools==75.8.0
 openapi-spec-validator==0.7.1
-cfn-lint==1.22.5
+cfn-lint==1.22.7
