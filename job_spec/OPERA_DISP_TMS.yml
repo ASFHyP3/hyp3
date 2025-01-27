@@ -13,6 +13,7 @@ OPERA_DISP_TMS:
         enum:
           - displacement
           - secant_velocity
+          - velocity
         example: displacement
     bounds:
       api_schema:
