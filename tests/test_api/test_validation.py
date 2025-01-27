@@ -517,7 +517,6 @@ def test_check_bounds_formatting():
         validation.check_bounds_formatting(default_job, {})
 
 
-
 def test_check_granules_intersecting_bounds():
     job_with_specified_bounds = {'job_parameters': {'bounds': [-10, 0, 10, 10]}}
     job_with_default_bounds = {'job_parameters': {'bounds': [0, 0, 0, 0]}}
@@ -546,7 +545,6 @@ def test_check_granules_intersecting_bounds():
 
     with raises(validation.GranuleValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_specified_bounds, invalid_granule_metadata)
-
 
 
 def test_check_same_relative_orbits():
