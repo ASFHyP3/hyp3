@@ -488,7 +488,6 @@ def test_check_bounds_formatting():
         {'job_parameters': {'bounds': [-10, 0, 10, 10]}},
         {'job_parameters': {'bounds': [-180, -90, -170, -80]}},
         {'job_parameters': {'bounds': [170, 75, 180, 90]}},
-        {'job_parameters': {'bounds': [0, 0, 0, 0]}},
     ]
     invalid_jobs_bad_order = [
         {'job_parameters': {'bounds': [10, 0, -10, 10]}},
@@ -502,6 +501,9 @@ def test_check_bounds_formatting():
         {'job_parameters': {'bounds': [-10, -100, 10, 80]}},
         {'job_parameters': {'bounds': [-100, 0, 200, 10]}},
     ]
+
+    job_with_bad_bounds = {'job_parameters': {'bounds': [0, 0, 0, 0]}}
+
     for valid_job in valid_jobs:
         validation.check_bounds_formatting(valid_job, {})
     for invalid_job in invalid_jobs_bad_order:
@@ -511,10 +513,13 @@ def test_check_bounds_formatting():
         with raises(validation.BoundsValidationError, match=r'.*Invalid lon/lat value(s)*'):
             validation.check_bounds_formatting(invalid_job, {})
 
+    with raises(validation.BoundsValidationError, match=r'.*Bounds cannot be.*'):
+        validation.check_bounds_formatting(job_with_bad_bounds, {})
+
 
 def test_check_granules_intersecting_bounds():
     job_with_specified_bounds = {'job_parameters': {'bounds': [-10, 0, 10, 10]}}
-    job_with_default_bounds = {'job_parameters': {'bounds': [0, 0, 0, 0]}}
+    job_with_bad_bounds = {'job_parameters': {'bounds': [0, 0, 0, 0]}}
     valid_granule_metadata = [
         {'name': 'intersects1', 'polygon': Polygon.from_bounds(-10.0, 0.0, 10.0, 10.0)},
         {'name': 'intersects2', 'polygon': Polygon.from_bounds(-9.0, -1.0, 20.0, 11.0)},
@@ -528,12 +533,18 @@ def test_check_granules_intersecting_bounds():
         {'name': 'does_not_intersect3', 'polygon': Polygon.from_bounds(100.0, -50.0, 120.0, -0.1)},
     ]
     validation.check_granules_intersecting_bounds(job_with_specified_bounds, valid_granule_metadata)
-    validation.check_granules_intersecting_bounds(job_with_default_bounds, valid_granule_metadata)
+
+    error_pattern = r'.*Bounds cannot be.*'
+    with raises(validation.BoundsValidationError, match=error_pattern):
+        validation.check_granules_intersecting_bounds(job_with_bad_bounds, valid_granule_metadata)
+
+    with raises(validation.BoundsValidationError, match=error_pattern):
+        validation.check_granules_intersecting_bounds(job_with_bad_bounds, invalid_granule_metadata)
+
     error_pattern = r".*bounds: \['does_not_intersect1', 'does_not_intersect2', 'does_not_intersect3'\]*"
+
     with raises(validation.GranuleValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_specified_bounds, invalid_granule_metadata)
-    with raises(validation.GranuleValidationError, match=error_pattern):
-        validation.check_granules_intersecting_bounds(job_with_default_bounds, invalid_granule_metadata)
 
 
 def test_check_same_relative_orbits():
