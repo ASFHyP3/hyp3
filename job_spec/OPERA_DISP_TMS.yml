@@ -19,8 +19,6 @@ OPERA_DISP_TMS:
         description: List of frame IDs to include in mosaic
         type: array
         minItems: 1
-        # TODO
-        #maxItems:
         example:
           - 11113
           - 11114
@@ -49,7 +47,6 @@ OPERA_DISP_TMS:
         example: 20260101
   cost_profiles:
     EDC:
-      # TODO should we be concerned about exposing this job type via EDC UAT with a cost of 1?
       cost: 1.0
     DEFAULT:
       cost: 1.0
@@ -57,8 +54,6 @@ OPERA_DISP_TMS:
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/opera-disp-tms
-      # TODO: remove image_tag
-      image_tag: 0.6.1.dev23_gcff6175
       command:
         - Ref::measurement_type
         - Ref::frames
@@ -68,8 +63,7 @@ OPERA_DISP_TMS:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::bucket_prefix
-      # TODO determine timeout
-      timeout: 86400 # 24 hr
+      timeout: 21600 # 6 hr
       compute_environment: Default
       vcpu: 1
       memory: 31500
