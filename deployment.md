@@ -16,10 +16,11 @@ you will need to create an Earthdata Login user for your deployment if you do no
 
 ## Deploy the HyP3 CICD stack
 
-Follow one of the two markdown files provided at [`docs/deployments/`](./docs/deployments/)
+Follow one of the two markdown files provided at [`cicd-stack/`](./cicd-stack/)
 for either an ASF deployment or a JPL deployment.
 
-Make sure to set `AWS_PROFILE=<profile>` when deploying the `hyp3-ci` stack.
+TODO:
+- set `AWS_PROFILE=<profile>` when deploying the `hyp3-ci` stack
 
 ## Create AWS access keys for the `github-actions` user.
 
@@ -92,4 +93,4 @@ Ask the Platform team in the `~development-support` channel in Mattermost to rev
 Changes should take effect within 15-60 minutes after merging.
 Confirm that a Swagger UI is available at your chosen API URL.
 
-Update the [AWS Accounts and HyP3 Deployments spreadsheet](https://docs.google.com/spreadsheets/d/1gHxgVbgQbqFNMQQe042Ku5L2pM6LLTOBDOFgO1FgZeU/).
+Update the [AWS Accounts and HyP3 Deployments](https://docs.google.com/spreadsheets/d/1gHxgVbgQbqFNMQQe042Ku5L2pM6LLTOBDOFgO1FgZeU/) spreadsheet.

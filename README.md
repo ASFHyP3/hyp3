@@ -37,7 +37,7 @@ A processing environment for HyP3 Plugins in AWS.
 
 The deployment steps below describe how to deploy to a general AWS account you own/administer.
 HyP3 does support deploying to more secure environments which may require additional steps and are
-described in [`docs/deployments`](docs/deployments).
+described in [`cicd-stack/`](./cicd-stack/).
 
 ### Prerequisites
 These resources are required for a successful deployment, but managed separately:

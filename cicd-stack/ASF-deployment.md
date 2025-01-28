@@ -36,7 +36,7 @@ In order to integrate an ASF deployment we'll need:
 ```shell
 aws cloudformation deploy \
     --stack-name hyp3-ci \
-    --template-file docs/deployments/ASF-deployment-ci-cf.yml \
+    --template-file cicd-stack/ASF-deployment-ci-cf.yml \
     --capabilities CAPABILITY_NAMED_IAM \
     --parameter-overrides TemplateBucketName=<template-bucket>
 ```
