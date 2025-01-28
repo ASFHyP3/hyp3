@@ -1,9 +1,14 @@
 # Deploying HyP3 to ASF
 
-This guide walks through deploying HyP3 into an ASF managed AWS commercial cloud account.
-It should work for any new ASF account.
+These are steps that are specific to deploying HyP3 into an ASF-managed AWS account.
 
-## 1. Set up a CloudFormation templates bucket
+## Pre-deployment
+
+*Complete these steps before deploying HyP3.*
+
+### Set up a CloudFormation templates bucket
+
+*Note: This section only needs to be completed once per AWS account.*
 
 A new account will not have a bucket for storing AWS CloudFormation templates,
 which is needed to deploy a CloudFormation stack. AWS will automatically make a
@@ -20,79 +25,34 @@ suitable bucket if you try and create a new CloudFormation Stack in the AWS Cons
   * Click "Cancel" to exit the CloudFormation stack creation now that we have a
     templates bucket
 
+### Deploy CICD stack
 
-## 2.  Prepare for deployment
+*Note: This stack should only be deployed once per AWS account. This stack also
+assumes you are only deploying into a single AWS Region. If you are deploying into
+multiple regions in the same AWS account, you'll need to adjust the IAM permissions
+that are limited to a single region.*
 
 In order to integrate an ASF deployment we'll need:
+
 1. Set the account-wide API Gateway logging permissions
 2. A deployment role with the necessary permissions to deploy HyP3
 3. A "service user" so that we can generate long-term AWS access keys and
    integrate the deployment into our CI/CD pipelines
-4. An AWS Secrets Manager Secret containing key-value pairs for all secrets listed in the [`job_spec`s](./job_spec)
-   which will be deployed
 
-(1) through (3) can be done by deploying the `hyp3-ci` stack. From the repository root, run:
+These can be done by deploying the `hyp3-ci` stack.
+From the repository root, run the following command, replacing `<profile>` and `<template-bucket>`
+with the appropriate values for your AWS account:
 
 ```shell
-aws cloudformation deploy \
+aws --profile <profile> cloudformation deploy \
     --stack-name hyp3-ci \
     --template-file cicd-stack/ASF-deployment-ci-cf.yml \
     --capabilities CAPABILITY_NAMED_IAM \
     --parameter-overrides TemplateBucketName=<template-bucket>
 ```
 
-***Note:** This stack should only be deployed once per AWS account. This stack also
-assumes you are only deploying into a single AWS Region If you are deploying into
-multiple regions in the same AWS account, you'll need to adjust the IAM permissions
-that are limited to a single region.*
-
-(4) is typically provisioned manually. In the AWS Console navigate to Secrets Manager and:
-* Click the orange "Store a new secret" button
-* On the create secret screen:
-  * For "Secret Type" elect "Other type of secret"
-  * Enter all required secret key-value pairs. Notably, the keys should be the secret names as listed (case-sensitive)
-    in the [`job_spec`s](./job_spec) which will be deployed
-  * Click the orange "Next" button
-  * Name the secret "HYP3_STACK" where `HYP3_STACK` is the name of the HyP3 CloudFormation stack that will
-    be deployed in the next section
-  * Click the orange "Next" button
-  * Click the orange "Next" button (we won't configure rotation)
-  * Click the orange "Store" button to save the Secret
-
-## 3. Deploy HyP3 to AWS
-
 Once the `github-actions` IAM user has been created, you can create a set of AWS
 Access Keys for that user, which can be used to deploy HyP3 via CI/CD tooling. 
-You may want to deploy HyP3 manually with the `github-actions` IAM user access keys
-to verify that the `github-actions` user has sufficient deployment permissions.
 
-To deploy HyP3 manually, using either the `github-actions` access keys or your own,
-run these commands from the repository root, replacing any `<*>` with appropriate
-values, and adding any other needed parameter overrides for the deployment:
-
-```shell
-export AWS_ACCESS_KEY_ID=<service-user-access-key-id>
-export AWS_SECRET_ACCESS_KEY=<service-user-secret-access-key>
-export AWS_REGION=<deployment-region>
-
-make files=<supported-job-spec-files> security_environment=ASF build
-
-aws cloudformation package \
-    --template-file apps/main-cf.yml \
-    --s3-bucket <template-bucket> \
-    --output-template-file packaged.yml
-
-aws cloudformation deploy \
-    --stack-name <stack-name> \
-    --template-file packaged.yml \
-    --role-arn <cloudformation-deployment-role-arn> \
-    --capabilities CAPABILITY_IAM \
-    --parameter-overrides \
-        VpcId=<vpc-ids> \
-        SubnetIds=<subnet-ids> \
-        DomainName=<domain-name> \
-        CertificateArn=<certificate-arn> \
-        SecretArn=<secret-arn> \
-        DefaultCreditsPerUser=0 \
-        DefaultApplicationStatus=APPROVED
-```
+Go to AWS console -> IAM -> Users -> github-actions -> security credentials tab -> "create access key".
+Store the access key ID and secret access key using your team's password manager.

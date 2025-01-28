@@ -2,6 +2,11 @@
 
 TODO: move to README
 
+## ASF- and JPL-specific steps
+
+Follow one of the two markdown files provided at [`cicd-stack/`](./cicd-stack/)
+for either an ASF deployment or a JPL deployment.
+
 ## Create EDL user
 
 Assuming the job spec(s) for your chosen job type(s) require the `EARTHDATA_USERNAME` and `EARTHDATA_PASSWORD` secrets,
@@ -14,19 +19,19 @@ you will need to create an Earthdata Login user for your deployment if you do no
 5. Log into Vertex as the new user, and confirm you can download files, e.g. https://datapool.asf.alaska.edu/METADATA_SLC/SA/S1A_IW_SLC__1SDV_20230130T184017_20230130T184044_047017_05A3C3_381F.iso.xml
 6. Add the new username and password to your team's password manager.
 
-## Deploy the HyP3 CICD stack
+## Create AWS Secrets Manager Secret
 
-Follow one of the two markdown files provided at [`cicd-stack/`](./cicd-stack/)
-for either an ASF deployment or a JPL deployment.
-
-TODO:
-- set `AWS_PROFILE=<profile>` when deploying the `hyp3-ci` stack
-
-## Create AWS access keys for the `github-actions` user.
-
-AWS console -> IAM -> Users -> github-actions -> security credentials tab -> "create access key"
-
-Store the access key ID and secret access key using your team's password manager.
+Go to AWS console -> Secrets Manager, then:
+- Click the orange "Store a new secret" button
+- On the create secret screen:
+  - For "Secret Type" select "Other type of secret"
+  - Enter all required secret key-value pairs. Notably, the keys should be the secret names as listed (case-sensitive)
+    in the [job specs](./job_spec/) that will be deployed
+  - Click the orange "Next" button
+  - Give the secret the same name that you plan to give to the HyP3 CloudFormation stack when you deploy it (below)
+  - Click the orange "Next" button
+  - Click the orange "Next" button (we won't configure rotation)
+  - Click the orange "Store" button to save the Secret
 
 ## Upload SSL cert
 
