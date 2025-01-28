@@ -46,7 +46,7 @@ with the appropriate values for your AWS account:
 ```shell
 aws --profile <profile> cloudformation deploy \
     --stack-name hyp3-ci \
-    --template-file cicd-stack/ASF-deployment-ci-cf.yml \
+    --template-file docs/deployments/ASF-deployment-ci-cf.yml \
     --capabilities CAPABILITY_NAMED_IAM \
     --parameter-overrides TemplateBucketName=<template-bucket>
 ```

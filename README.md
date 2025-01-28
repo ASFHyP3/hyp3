@@ -29,7 +29,7 @@ A processing environment for HyP3 Plugins in AWS.
 
 ### ASF- and JPL-specific steps
 
-Follow one of the two markdown files provided at [`cicd-stack/`](./cicd-stack/)
+Follow one of the two markdown files provided at [`docs/deployments/`](./docs/deployments/)
 for either an ASF deployment or a JPL deployment.
 
 TODO: document EDC-specific steps?

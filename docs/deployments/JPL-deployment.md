@@ -37,7 +37,7 @@ JPL account by deploying the `hyp3-ci` stack. From the repository root, run:
 ```shell
 aws cloudformation deploy \
     --stack-name hyp3-ci \
-    --template-file cicd-stack/JPL-deployment-policy-cf.yml
+    --template-file docs/deployments/JPL-deployment-policy-cf.yml
 ```
 
 Then open a [Cloud Team Service Desk](https://itsd-jira.jpl.nasa.gov/servicedesk/customer/portal/13)
