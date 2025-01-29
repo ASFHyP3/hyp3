@@ -1,7 +1,7 @@
 OPERA_DISP_TMS:
   required_parameters:
     - measurement_type
-    - frames
+    - frame_ids
     - start_date
     - end_date
   parameters:
@@ -14,7 +14,7 @@ OPERA_DISP_TMS:
           - secant_velocity
           - velocity
         example: displacement
-    frames:
+    frame_ids:
       api_schema:
         description: List of frame IDs to include in mosaic
         type: array
@@ -53,12 +53,19 @@ OPERA_DISP_TMS:
   validators: []
   steps:
     - name: CREATE_MEASUREMENT_GEOTIFF
-      map: for frame in frames # TODO rename to frame_id / frame_ids?
+      map: for frame_id in frame_ids
       image: ghcr.io/asfhyp3/opera-disp-tms
       command:
         - ++process
         - create_measurement_geotiff
-        # TODO args
+        - Ref::frame_id
+        - Ref::measurement_type
+        - Ref::start_date
+        - Ref::end_date
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
       timeout: 1800 # 30 min
       compute_environment: Default
       vcpu: 1
@@ -71,27 +78,12 @@ OPERA_DISP_TMS:
       command:
         - ++process
         - create_tile_map
-        # TODO args
+        - Ref::measurement_type
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
       timeout: 21600 # 6 hr
       compute_environment: Default
       vcpu: 1
       memory: 31500
-# TODO delete:
-#    - name: ''
-#      image: ghcr.io/asfhyp3/opera-disp-tms
-#      command:
-#        - Ref::measurement_type
-#        - Ref::frames
-#        - Ref::start_date
-#        - Ref::end_date
-#        - --bucket
-#        - '!Ref Bucket'
-#        - --bucket-prefix
-#        - Ref::bucket_prefix
-#      timeout: 21600 # 6 hr
-#      compute_environment: Default
-#      vcpu: 1
-#      memory: 31500
-#      secrets:
-#        - EARTHDATA_USERNAME
-#        - EARTHDATA_PASSWORD
