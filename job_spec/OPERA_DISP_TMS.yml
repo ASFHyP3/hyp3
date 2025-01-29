@@ -53,7 +53,7 @@ OPERA_DISP_TMS:
   validators: []
   steps:
     - name: CREATE_MEASUREMENT_GEOTIFF
-      map: for frame in frames
+      map: for frame in frames # TODO rename to frame_id / frame_ids?
       image: ghcr.io/asfhyp3/opera-disp-tms
       command:
         - ++process
