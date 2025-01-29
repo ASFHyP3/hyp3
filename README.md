@@ -36,19 +36,20 @@ also referred to as "security environments" throughout our code and docs
 - JPL
 - EDC (Earthdata Cloud)
 
-These deployment docs were written for ASF and JPL security environments.
-If a section does not specify which security environment(s) it applies to,
-you can assume it applies to both ASF and JPL.
+EDC deployment steps are not fully documented here.
+ASF and JPL deployment steps should be complete, so let us know if something is missing!
 
-TODO: Should we document EDC deployment steps here? Non-comprehensive list of differences between EDC and non-EDC:
-- For Earthdata Cloud deployments, you need:
-  - SSL certificate in AWS Certificate Manager for custom CloudFront domain name
-  - ID of the CloudFront Origin Access Identity used to access data in S3 
-- For non-Earthdata Cloud deployments, you need:
-  - DNS record for custom API domain name
-  - SSL certificate in AWS Certificate Manager for custom API domain name
+For JPL, these deployment docs assume that:
+- the JPL account was setup in the "default" manner by the JPL cloud team
+- the developer deploying the account is able to log in with the `power_user` role
+
+For a new EDC deployment, you need the following items (not necessarily a comprehensive list):
+- SSL certificate in AWS Certificate Manager for custom CloudFront domain name
+- ID of the CloudFront Origin Access Identity used to access data in S3
 
 ### Set up a CloudFormation templates bucket
+
+TODO: Does this section apply to EDC?
 
 *Security environment(s): ASF*
 
@@ -69,7 +70,7 @@ suitable bucket if you try and create a new CloudFormation Stack in the AWS Cons
   * Click "Cancel" to exit the CloudFormation stack creation now that we have a
     templates bucket
 
-### Deploy CICD stack for ASF-managed account
+### Deploy CICD stack for ASF accounts
 
 *Security environment(s): ASF*
 
@@ -103,7 +104,55 @@ Access Keys for that user, which can be used to deploy HyP3 via CI/CD tooling.
 Go to AWS console -> IAM -> Users -> github-actions -> security credentials tab -> "create access key".
 Store the access key ID and secret access key using your team's password manager.
 
-### Create EDL user
+### Roles-as-code for JPL accounts
+
+*Security environment(s): JPL*
+
+JPL restricts developers from creating IAM roles or policies inside their AWS commercial cloud accounts.
+However, HyP3 can be deployed into a JPL managed AWS commercial account as long as JPL's `roles-as-code`
+tooling is provided in the account and in same region as the deployment. Currently, the only
+regions supported are `us-west-1`, `us-west-2`, `us-east-1`, and `us-east-2`.
+
+To request `roles-as-code` tooling be deployed in a JPL account, open a
+[Cloud Team Service Desk](https://itsd-jira.jpl.nasa.gov/servicedesk/customer/portal/13) request here:
+https://itsd-jira.jpl.nasa.gov/servicedesk/customer/portal/13/create/461?q=roles&q_time=1644889220558
+
+For more information about `roles-as-code`, see:
+* https://wiki.jpl.nasa.gov/display/cloudcomputing/IAM+Roles+and+Policies
+* https://github.jpl.nasa.gov/cloud/roles-as-code/blob/master/Documentation.md
+
+*Note: you must be on the JPL VPN to view the JPL `.jpl.nasa.gov` links in this document.*
+
+### Set up a service user for JPL accounts
+
+*Security environment(s): JPL*
+
+In order to integrate a JPL deployment into our CI/CD pipelines, a JPL-created "service user"
+is needed to get long-term (90-day) AWS access keys. When requesting a service user, you'll
+need to request an appropriate deployment policy containing all the necessary permissions for
+deployment is attached to the user. An appropriate deployment policy can be created in a
+JPL account by deploying the `hyp3-ci` stack. From the repository root, run:
+
+```shell
+aws cloudformation deploy \
+    --stack-name hyp3-ci \
+    --template-file docs/deployments/JPL-deployment-policy-cf.yml
+```
+
+Then open a [Cloud Team Service Desk](https://itsd-jira.jpl.nasa.gov/servicedesk/customer/portal/13)
+request for a service user account here:
+https://itsd-jira.jpl.nasa.gov/servicedesk/customer/portal/13/create/416?q=service%20user&q_time=1643746791578
+with the deployed policy name in the "Managed Permissions to be Attached" field.
+The policy name should look like `hyp3-ci-DeployPolicy-*`, and can be found either
+in the [IAM console](https://console.aws.amazon.com/iamv2/home?#/policies) or listed under
+the `hyp3-ci` CloudFormation Stack Resources.
+
+Once the JPL service user has been created, you should receive a set of AWS Access Keys
+which can be used to deploy HyP3 via CI/CD tooling.
+
+### Create Earthdata Login user
+
+*Security environment(s): ASF, JPL, EDC*
 
 Assuming the job spec(s) for your chosen job type(s) require the `EARTHDATA_USERNAME` and `EARTHDATA_PASSWORD` secrets,
 you will need to create an Earthdata Login user for your deployment if you do not already have one:
@@ -117,7 +166,7 @@ you will need to create an Earthdata Login user for your deployment if you do no
 
 ### Create AWS Secrets Manager Secret
 
-*Security environment(s): ASF, JPL*
+*Security environment(s): ASF, JPL, EDC*
 
 Go to AWS console -> Secrets Manager, then:
 - Click the orange "Store a new secret" button
@@ -133,9 +182,9 @@ Go to AWS console -> Secrets Manager, then:
 
 ### Upload SSL cert
 
-*Security environment(s): ASF*
+TODO: Does this section apply to JPL?
 
-TODO: Confirm whether this section applies to JPL
+*Security environment(s): ASF*
 
 Upload the `*.asf.alaska.edu` SSL certificate to AWS ACM.
 
@@ -147,6 +196,8 @@ Open https://gitlab.asf.alaska.edu/operations/puppet/-/tree/production/site/modu
 - The contents of the `incommon.cer` file goes in Certificate chain
 
 ### Create the GitHub environment
+
+*Security environment(s): ASF, JPL, EDC*
 
 1. Go to https://github.com/ASFHyP3/hyp3/settings/environments -> New Environment
 2. Check "required reviewers" and add the appropriate team(s) or user(s)
@@ -162,6 +213,8 @@ Open https://gitlab.asf.alaska.edu/operations/puppet/-/tree/production/site/modu
     - `CERTIFICATE_ARN` - ARN of the AWS Certificate Manager certificate that you imported manually (aws console -> certificate manager -> list certificates, e.g. `arn:aws:acm:us-west-2:xxxxxxxxxxxx:certificate/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`)
 
 ### Create the HyP3 deployment
+
+*Security environment(s): ASF, JPL, EDC*
 
 You will need to create a GitHub Actions workflow for the deployment.
 
@@ -179,9 +232,24 @@ TODO:
 - Should we create some kind of template workflow file?
 - Enterprise deployments are currently in `deploy-enterprise.yml`, but we might be splitting them up by team?
 
+### Allow a public HyP3 content bucket for JPL accounts
+
+*Security environment(s): JPL*
+
+By default, JPL commercial AWS accounts have an S3 account level Block All Public
+Access set which must be disabled by the JPL Cloud team in order to attach a public
+bucket policy to the HyP3 content bucket.
+
+The steps to disable the account level Block All Public Access setting is outlined
+in the S3 section here:
+https://wiki.jpl.nasa.gov/display/cloudcomputing/AWS+Service+Policies+at+JPL
+
+Once this setting has been disabled, you can attach a public bucket policy to the
+HyP3 content bucket by redeploying HyP3 using the `JPL-public` security environment.
+
 ### Grant AWS account permission to pull the hyp3-gamma container
 
-*Security environment(s): ASF*
+*Security environment(s): ASF, EDC*
 
 If your HyP3 deployment uses the `RTC_GAMMA` or `INSAR_GAMMA` job types
 and is the first such deployment in this AWS account,
