@@ -164,7 +164,7 @@ you will need to create an Earthdata Login user for your deployment if you do no
 5. Log into Vertex as the new user, and confirm you can download files, e.g. https://datapool.asf.alaska.edu/METADATA_SLC/SA/S1A_IW_SLC__1SDV_20230130T184017_20230130T184044_047017_05A3C3_381F.iso.xml
 6. Add the new username and password to your team's password manager.
 
-### Create AWS Secrets Manager Secret
+### Create secret with AWS Secrets Manager
 
 *Security environment(s): ASF, JPL, EDC*
 
