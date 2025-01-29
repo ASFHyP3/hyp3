@@ -27,20 +27,81 @@ A processing environment for HyP3 Plugins in AWS.
 
 ## Deployment
 
-### ASF- and JPL-specific steps
+### Security environments
 
-Follow one of the two markdown files provided at [`docs/deployments/`](./docs/deployments/)
-for either an ASF deployment or a JPL deployment.
+We currently have HyP3 deployments in various AWS accounts managed by three different organizations,
+also referred to as "security environments" throughout our code and docs
+(because the AWS accounts have different security requirements depending on the organization):
+- ASF
+- JPL
+- EDC (Earthdata Cloud)
 
-TODO: document EDC-specific steps?
-- For Earthdata Cloud deployments:
+These deployment docs were written for ASF and JPL security environments.
+If a section does not specify which security environment(s) it applies to,
+you can assume it applies to both ASF and JPL.
+
+TODO: Should we document EDC deployment steps here? Non-comprehensive list of differences between EDC and non-EDC:
+- For Earthdata Cloud deployments, you need:
   - SSL certificate in AWS Certificate Manager for custom CloudFront domain name
   - ID of the CloudFront Origin Access Identity used to access data in S3 
-- For non-Earthdata Cloud deployments:
+- For non-Earthdata Cloud deployments, you need:
   - DNS record for custom API domain name
   - SSL certificate in AWS Certificate Manager for custom API domain name
 
-TODO: some of the steps documented below may be specific to ASF-managed AWS accounts
+### Set up a CloudFormation templates bucket
+
+*Security environment(s): ASF*
+
+*Note: This section only needs to be completed once per AWS account.*
+
+A new account will not have a bucket for storing AWS CloudFormation templates,
+which is needed to deploy a CloudFormation stack. AWS will automatically make a
+suitable bucket if you try and create a new CloudFormation Stack in the AWS Console:
+* navigating to the CloudFormation service in the region you are going to deploy to
+* Click the orange "Create stack" button
+* On the create stack screen
+  * For "Prepare template" make select "Template is ready"
+  * For "Template source" select "Upload a template file"
+  * Choose any JSON or YAML formatted file from your computer to upload
+  * Once the file is uploaded, you should see an S3 URL on the bottom indicating the
+    bucket the template file was uploaded. This is your newly created CloudFormation
+    templates bucket and should be named something like `cf-templates-<HASH>-<region>`
+  * Click "Cancel" to exit the CloudFormation stack creation now that we have a
+    templates bucket
+
+### Deploy CICD stack for ASF-managed account
+
+*Security environment(s): ASF*
+
+*Note: This stack should only be deployed once per AWS account. This stack also
+assumes you are only deploying into a single AWS Region. If you are deploying into
+multiple regions in the same AWS account, you'll need to adjust the IAM permissions
+that are limited to a single region.*
+
+In order to integrate an ASF deployment we'll need:
+
+1. Set the account-wide API Gateway logging permissions
+2. A deployment role with the necessary permissions to deploy HyP3
+3. A "service user" so that we can generate long-term AWS access keys and
+   integrate the deployment into our CI/CD pipelines
+
+These can be done by deploying the `hyp3-ci` stack.
+From the repository root, run the following command, replacing `<profile>` and `<template-bucket>`
+with the appropriate values for your AWS account:
+
+```shell
+aws --profile <profile> cloudformation deploy \
+    --stack-name hyp3-ci \
+    --template-file docs/deployments/ASF-deployment-ci-cf.yml \
+    --capabilities CAPABILITY_NAMED_IAM \
+    --parameter-overrides TemplateBucketName=<template-bucket>
+```
+
+Once the `github-actions` IAM user has been created, you can create a set of AWS
+Access Keys for that user, which can be used to deploy HyP3 via CI/CD tooling.
+
+Go to AWS console -> IAM -> Users -> github-actions -> security credentials tab -> "create access key".
+Store the access key ID and secret access key using your team's password manager.
 
 ### Create EDL user
 
@@ -56,6 +117,8 @@ you will need to create an Earthdata Login user for your deployment if you do no
 
 ### Create AWS Secrets Manager Secret
 
+*Security environment(s): ASF, JPL*
+
 Go to AWS console -> Secrets Manager, then:
 - Click the orange "Store a new secret" button
 - On the create secret screen:
@@ -69,6 +132,10 @@ Go to AWS console -> Secrets Manager, then:
   - Click the orange "Store" button to save the Secret
 
 ### Upload SSL cert
+
+*Security environment(s): ASF*
+
+TODO: Confirm whether this section applies to JPL
 
 Upload the `*.asf.alaska.edu` SSL certificate to AWS ACM.
 
@@ -86,13 +153,13 @@ Open https://gitlab.asf.alaska.edu/operations/puppet/-/tree/production/site/modu
 3. Change "Deployment branches" to "protected branches"
 4. Add the following environment secrets:
     - `AWS_REGION` - e.g. `us-west-2`
-    - `CLOUDFORMATION_ROLE_ARN` - part of the CI/CD stack that you deployed (above), e.g. `arn:aws:iam::xxxxxxxxxxxx:role/hyp3-ci-CloudformationDeploymentRole-XXXXXXXXXXXXX`
-    - `SECRET_ARN` - ARN for the AWS Secrets Manager Secret that you created manually (above)
-    - `V2_AWS_ACCESS_KEY_ID` - Access key ID that you created for the `github-actions` user (above)
-    - `V2_AWS_SECRET_ACCESS_KEY` - Secret access key that you created for the `github-actions` user (above)
+    - `CLOUDFORMATION_ROLE_ARN` - part of the ASF (not JPL) CI/CD stack that you deployed, e.g. `arn:aws:iam::xxxxxxxxxxxx:role/hyp3-ci-CloudformationDeploymentRole-XXXXXXXXXXXXX`
+    - `SECRET_ARN` - ARN for the AWS Secrets Manager Secret that you created manually
+    - `V2_AWS_ACCESS_KEY_ID` - Access key ID that you created for the `github-actions` user
+    - `V2_AWS_SECRET_ACCESS_KEY` - Secret access key that you created for the `github-actions` user
     - `VPC_ID` - ID of the default VPC for this AWS account and region (aws console -> vpc -> your VPCs, e.g. `vpc-xxxxxxxxxxxxxxxxx`)
     - `SUBNET_IDS` - Comma delimited list (no spaces) of the default subnets for this VPC (aws console -> vpc -> subnets, e.g. `subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx`)
-    - `CERTIFICATE_ARN` - ARN of the AWS Certificate Manager certificate that you imported manually, above (aws console -> certificate manager -> list certificates, e.g. `arn:aws:acm:us-west-2:xxxxxxxxxxxx:certificate/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`)
+    - `CERTIFICATE_ARN` - ARN of the AWS Certificate Manager certificate that you imported manually (aws console -> certificate manager -> list certificates, e.g. `arn:aws:acm:us-west-2:xxxxxxxxxxxx:certificate/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`)
 
 ### Create the HyP3 deployment
 
@@ -114,16 +181,20 @@ TODO:
 
 ### Grant AWS account permission to pull the hyp3-gamma container
 
+*Security environment(s): ASF*
+
 If your HyP3 deployment uses the `RTC_GAMMA` or `INSAR_GAMMA` job types
 and is the first such deployment in this AWS account,
 you will need to grant the AWS account permission to pull the `hyp3-gamma` container.
 
 In the **HyP3 AWS account** (not the AWS account for the new deployment),
-go to AWS console -> elastic container registry -> hyp3-gamma -> permissions -> "edit policy json":
+go to AWS console -> Elastic Container Registry -> hyp3-gamma -> Permissions -> "Edit policy JSON":
 1. Add the new AWS account root user to the `Principal` (e.g. `arn:aws:iam::xxxxxxxxxxxx:root`)
 2. Update list of account names in the `SID`
 
 ### Create DNS record for new HyP3 API
+
+*Security environment(s): ASF, JPL*
 
 Open a PR adding a line to https://gitlab.asf.alaska.edu/operations/puppet/-/blob/production/modules/legacy_dns/files/asf.alaska.edu.db
 for the new custom domain name (AWS console -> api gateway -> custom domain names -> "API Gateway domain name").
