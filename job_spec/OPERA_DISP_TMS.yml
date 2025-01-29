@@ -52,21 +52,45 @@ OPERA_DISP_TMS:
       cost: 1.0
   validators: []
   steps:
-    - name: ''
+    - name: CREATE_MEASUREMENT_GEOTIFF
       image: ghcr.io/asfhyp3/opera-disp-tms
       command:
-        - Ref::measurement_type
-        - Ref::frames
-        - Ref::start_date
-        - Ref::end_date
-        - --bucket
-        - '!Ref Bucket'
-        - --bucket-prefix
-        - Ref::bucket_prefix
-      timeout: 21600 # 6 hr
+        - ++process
+        - create_measurement_geotiff
+        # TODO args
+      timeout: 21600 # 6 hr # TODO
       compute_environment: Default
       vcpu: 1
-      memory: 31500
+      memory: 31500 # TODO
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
+    - name: CREATE_TILE_MAP
+      image: ghcr.io/asfhyp3/opera-disp-tms
+      command:
+        - ++process
+        - create_tile_map
+        # TODO args
+      timeout: 21600 # 6 hr # TODO
+      compute_environment: Default
+      vcpu: 1
+      memory: 31500 # TODO
+# TODO delete:
+#    - name: ''
+#      image: ghcr.io/asfhyp3/opera-disp-tms
+#      command:
+#        - Ref::measurement_type
+#        - Ref::frames
+#        - Ref::start_date
+#        - Ref::end_date
+#        - --bucket
+#        - '!Ref Bucket'
+#        - --bucket-prefix
+#        - Ref::bucket_prefix
+#      timeout: 21600 # 6 hr
+#      compute_environment: Default
+#      vcpu: 1
+#      memory: 31500
+#      secrets:
+#        - EARTHDATA_USERNAME
+#        - EARTHDATA_PASSWORD
