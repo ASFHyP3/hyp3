@@ -35,7 +35,7 @@ def test_get_batch_job_parameters():
     assert render_cf.get_batch_job_parameters(job_spec, step, map_item='param5') == {
         'param2.$': '$.batch_job_parameters.param2',
         'param3.$': '$.batch_job_parameters.param3',
-        'param5.$': '$$.Map.Item.Value',
+        'param5.$': "States.Format('{}', $$.Map.Item.Value)",
     }
 
     step = {'command': ['foo', 'Ref::param2', 'Ref::param3', 'bar', 'Ref::param5']}
