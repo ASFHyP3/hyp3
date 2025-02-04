@@ -2,9 +2,9 @@ import unittest.mock
 from decimal import Decimal
 
 import pytest
-from conftest import list_have_same_elements
 
 import dynamo
+from conftest import list_have_same_elements
 from dynamo.exceptions import (
     InsufficientCreditsError,
     InvalidApplicationStatusError,
@@ -191,7 +191,7 @@ def test_query_jobs_by_type(tables):
 
 
 def test_get_credit_cost():
-    costs = [
+    costs: list[dict] = [
         {
             'job_type': 'RTC_GAMMA',
             'cost_parameter': 'resolution',
@@ -213,37 +213,25 @@ def test_get_credit_cost():
         {
             'job_type': 'INSAR_ISCE_BURST',
             'cost': 1.0,
-        }
+        },
     ]
-    assert dynamo.jobs._get_credit_cost(
-        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 10.0}},
-        costs
-    ) == 60.0
-    assert dynamo.jobs._get_credit_cost(
-        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 20.0}},
-        costs
-    ) == 15.0
-    assert dynamo.jobs._get_credit_cost(
-        {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 30.0}},
-        costs
-    ) == 5.0
+    assert (
+        dynamo.jobs._get_credit_cost({'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 10.0}}, costs) == 60.0
+    )
+    assert (
+        dynamo.jobs._get_credit_cost({'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 20.0}}, costs) == 15.0
+    )
+    assert dynamo.jobs._get_credit_cost({'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 30.0}}, costs) == 5.0
     with pytest.raises(ValueError):
-        dynamo.jobs._get_credit_cost(
-            {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 13.0}},
-            costs
-        )
-    assert dynamo.jobs._get_credit_cost(
-        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'foo': 'bar'}},
-        costs
-    ) == 1.0
-    assert dynamo.jobs._get_credit_cost(
-        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {}},
-        costs
-    ) == 1.0
+        dynamo.jobs._get_credit_cost({'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 13.0}}, costs)
+    assert (
+        dynamo.jobs._get_credit_cost({'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'foo': 'bar'}}, costs) == 1.0
+    )
+    assert dynamo.jobs._get_credit_cost({'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {}}, costs) == 1.0
 
 
 def test_get_credit_cost_validate_keys():
-    costs = [
+    costs: list[dict] = [
         {'job_type': 'JOB_TYPE_A', 'cost_parameter': 'foo', 'cost_table': [{'parameter_value': 'bar', 'cost': 3.0}]},
         {'job_type': 'JOB_TYPE_B', 'cost': 5.0},
         {'job_type': 'JOB_TYPE_C', 'cost_parameter': ''},
@@ -279,7 +267,14 @@ def test_put_jobs(tables, monkeypatch, approved_user):
     assert len(jobs) == 3
     for job in jobs:
         assert set(job.keys()) == {
-            'name', 'job_id', 'user_id', 'status_code', 'execution_started', 'request_time', 'priority', 'credit_cost'
+            'name',
+            'job_id',
+            'user_id',
+            'status_code',
+            'execution_started',
+            'request_time',
+            'priority',
+            'credit_cost',
         }
         assert job['request_time'] <= current_utc_time()
         assert job['user_id'] == approved_user
@@ -289,12 +284,14 @@ def test_put_jobs(tables, monkeypatch, approved_user):
 
     assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
 
-    assert tables.users_table.scan()['Items'] == [{
-        'user_id': approved_user,
-        'remaining_credits': Decimal(7),
-        '_month_of_last_credit_reset': '2024-02',
-        'application_status': APPLICATION_APPROVED,
-    }]
+    assert tables.users_table.scan()['Items'] == [
+        {
+            'user_id': approved_user,
+            'remaining_credits': Decimal(7),
+            '_month_of_last_credit_reset': '2024-02',
+            'application_status': APPLICATION_APPROVED,
+        }
+    ]
 
 
 def test_put_jobs_application_status(tables):
@@ -356,7 +353,7 @@ def test_put_jobs_default_params(tables, approved_user):
         {'job_type': 'JOB_TYPE_B', 'cost': Decimal('1.0')},
         {'job_type': 'JOB_TYPE_C', 'cost': Decimal('1.0')},
     ]
-    payload = [
+    payload: list[dict] = [
         {},
         {'job_type': 'JOB_TYPE_A'},
         {'job_type': 'JOB_TYPE_A', 'job_parameters': {}},
@@ -370,8 +367,10 @@ def test_put_jobs_default_params(tables, approved_user):
         {'job_type': 'JOB_TYPE_C', 'job_parameters': {'c1': 'foo'}},
         {'job_parameters': {'n1': 'foo'}},
     ]
-    with unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params), \
-            unittest.mock.patch('dynamo.jobs.COSTS', costs):
+    with (
+        unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params),
+        unittest.mock.patch('dynamo.jobs.COSTS', costs),
+    ):
         jobs = dynamo.jobs.put_jobs(approved_user, payload)
 
     assert 'job_parameters' not in jobs[0]
@@ -439,16 +438,16 @@ def test_put_jobs_costs(tables, monkeypatch, approved_user):
         {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 30}},
         {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 20}},
         {'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 10}},
-
         {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'looks': '20x4'}},
         {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'looks': '10x2'}},
         {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'looks': '5x1'}},
-
         {'job_type': 'RTC_GAMMA', 'job_parameters': {}},
         {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {}},
     ]
-    with unittest.mock.patch('dynamo.jobs.COSTS', costs), \
-            unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params):
+    with (
+        unittest.mock.patch('dynamo.jobs.COSTS', costs),
+        unittest.mock.patch('dynamo.jobs.DEFAULT_PARAMS_BY_JOB_TYPE', default_params),
+    ):
         jobs = dynamo.jobs.put_jobs(approved_user, payload)
 
     assert len(jobs) == 8
@@ -504,7 +503,10 @@ def test_put_jobs_infinite_credits(tables, monkeypatch):
 def test_put_jobs_priority_override(tables):
     payload = [{'name': 'name1'}, {'name': 'name2'}]
     user = {
-        'user_id': 'user1', 'priority_override': 100, 'remaining_credits': 3, 'application_status': APPLICATION_APPROVED
+        'user_id': 'user1',
+        'priority_override': 100,
+        'remaining_credits': 3,
+        'application_status': APPLICATION_APPROVED,
     }
     tables.users_table.put_item(Item=user)
 
@@ -518,7 +520,7 @@ def test_put_jobs_priority_override(tables):
         'user_id': 'user1',
         'priority_override': 550,
         'remaining_credits': None,
-        'application_status': APPLICATION_APPROVED
+        'application_status': APPLICATION_APPROVED,
     }
     tables.users_table.put_item(Item=user)
 
@@ -670,53 +672,16 @@ def test_update_job(tables):
 
 def test_get_jobs_waiting_for_execution(tables):
     items = [
-        {
-            'job_id': 'job0',
-            'status_code': 'PENDING',
-            'execution_started': False
-        },
-        {
-            'job_id': 'job1',
-            'status_code': 'PENDING'
-        },
-        {
-            'job_id': 'job2',
-            'status_code': 'RUNNING',
-            'execution_started': True
-        },
-        {
-            'job_id': 'job3',
-            'status_code': 'PENDING',
-            'execution_started': True
-        },
-        {
-            'job_id': 'job4',
-            'status_code': 'PENDING',
-            'execution_started': False
-        },
-        {
-            'job_id': 'job5',
-            'status_code': 'PENDING',
-            'execution_started': True
-        },
-        {
-            'job_id': 'job6',
-            'status_code': 'PENDING',
-            'execution_started': False
-        },
-        {
-            'job_id': 'job7',
-            'status_code': 'PENDING',
-            'execution_started': True
-        },
-        {
-            'job_id': 'job8',
-            'status_code': 'RUNNING'
-        },
-        {
-            'job_id': 'job9',
-            'status_code': 'PENDING'
-        },
+        {'job_id': 'job0', 'status_code': 'PENDING', 'execution_started': False},
+        {'job_id': 'job1', 'status_code': 'PENDING'},
+        {'job_id': 'job2', 'status_code': 'RUNNING', 'execution_started': True},
+        {'job_id': 'job3', 'status_code': 'PENDING', 'execution_started': True},
+        {'job_id': 'job4', 'status_code': 'PENDING', 'execution_started': False},
+        {'job_id': 'job5', 'status_code': 'PENDING', 'execution_started': True},
+        {'job_id': 'job6', 'status_code': 'PENDING', 'execution_started': False},
+        {'job_id': 'job7', 'status_code': 'PENDING', 'execution_started': True},
+        {'job_id': 'job8', 'status_code': 'RUNNING'},
+        {'job_id': 'job9', 'status_code': 'PENDING'},
     ]
     for item in items:
         tables.jobs_table.put_item(Item=item)

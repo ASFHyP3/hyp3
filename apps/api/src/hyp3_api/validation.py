@@ -11,6 +11,7 @@ from shapely.geometry import MultiPolygon, Polygon, shape
 from hyp3_api import CMR_URL
 from hyp3_api.util import get_granules
 
+
 DEM_COVERAGE = None
 
 
@@ -22,19 +23,19 @@ class BoundsValidationError(Exception):
     pass
 
 
-with open(Path(__file__).parent / 'job_validation_map.yml') as f:
-    JOB_VALIDATION_MAP = yaml.safe_load(f.read())
+with open(Path(__file__).parent / 'job_validation_map.yml') as job_validation_map_file:
+    JOB_VALIDATION_MAP = yaml.safe_load(job_validation_map_file.read())
 
 
-def has_sufficient_coverage(granule: Polygon):
+def _has_sufficient_coverage(granule: Polygon):
     global DEM_COVERAGE
     if DEM_COVERAGE is None:
-        DEM_COVERAGE = get_multipolygon_from_geojson('dem_coverage_map_cop30.geojson')
+        DEM_COVERAGE = _get_multipolygon_from_geojson('dem_coverage_map_cop30.geojson')
 
     return granule.intersects(DEM_COVERAGE)
 
 
-def get_cmr_metadata(granules):
+def _get_cmr_metadata(granules):
     cmr_parameters = {
         'granule_ur': [f'{granule}*' for granule in granules],
         'options[granule_ur][pattern]': 'true',
@@ -57,26 +58,27 @@ def get_cmr_metadata(granules):
     granules = [
         {
             'name': entry.get('producer_granule_id', entry.get('title')),
-            'polygon': Polygon(format_points(entry['polygons'][0][0]))
-        } for entry in response.json()['feed']['entry']
+            'polygon': Polygon(_format_points(entry['polygons'][0][0])),
+        }
+        for entry in response.json()['feed']['entry']
     ]
     return granules
 
 
-def is_third_party_granule(granule):
+def _is_third_party_granule(granule):
     return granule.startswith('S2') or granule.startswith('L')
 
 
-def check_granules_exist(granules, granule_metadata):
+def _make_sure_granules_exist(granules, granule_metadata):
     found_granules = [granule['name'] for granule in granule_metadata]
     not_found_granules = set(granules) - set(found_granules)
-    not_found_granules = {granule for granule in not_found_granules if not is_third_party_granule(granule)}
+    not_found_granules = {granule for granule in not_found_granules if not _is_third_party_granule(granule)}
     if not_found_granules:
         raise GranuleValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 
 
 def check_dem_coverage(_, granule_metadata):
-    bad_granules = [g['name'] for g in granule_metadata if not has_sufficient_coverage(g['polygon'])]
+    bad_granules = [g['name'] for g in granule_metadata if not _has_sufficient_coverage(g['polygon'])]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
@@ -93,9 +95,7 @@ def check_same_burst_ids(job, _):
         )
     for i in range(len(ref_ids)):
         if ref_ids[i] != sec_ids[i]:
-            raise GranuleValidationError(
-                f'Burst IDs do not match for {refs[i]} and {secs[i]}.'
-            )
+            raise GranuleValidationError(f'Burst IDs do not match for {refs[i]} and {secs[i]}.')
     if len(set(ref_ids)) != len(ref_ids):
         duplicate_pair_id = next(ref_id for ref_id in ref_ids if ref_ids.count(ref_id) > 1)
         raise GranuleValidationError(
@@ -126,13 +126,13 @@ def check_not_antimeridian(_, granule_metadata):
             raise GranuleValidationError(msg)
 
 
-def format_points(point_string):
+def _format_points(point_string):
     converted_to_float = [float(x) for x in point_string.split(' ')]
     points = [list(t) for t in zip(converted_to_float[1::2], converted_to_float[::2])]
     return points
 
 
-def get_multipolygon_from_geojson(input_file):
+def _get_multipolygon_from_geojson(input_file):
     dem_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), input_file)
     with open(dem_file) as f:
         shp = json.load(f)['features'][0]['geometry']
@@ -143,7 +143,7 @@ def get_multipolygon_from_geojson(input_file):
 def check_bounds_formatting(job, _):
     bounds = job['job_parameters']['bounds']
     if bounds == [0.0, 0.0, 0.0, 0.0]:
-        return
+        raise BoundsValidationError('Invalid bounds. Bounds cannot be [0, 0, 0, 0].')
 
     if bounds[0] >= bounds[2] or bounds[1] >= bounds[3]:
         raise BoundsValidationError(
@@ -165,21 +165,19 @@ def check_bounds_formatting(job, _):
 def check_granules_intersecting_bounds(job, granule_metadata):
     bounds = job['job_parameters']['bounds']
     if bounds == [0.0, 0.0, 0.0, 0.0]:
-        bounds = granule_metadata[0]['polygon']
-    else:
-        bounds = Polygon.from_bounds(*bounds)
+        raise BoundsValidationError('Invalid bounds. Bounds cannot be [0, 0, 0, 0].')
+
+    bounds = Polygon.from_bounds(*bounds)
     bad_granules = []
     for granule in granule_metadata:
         bbox = granule['polygon']
         if not bbox.intersection(bounds):
             bad_granules.append(granule['name'])
     if bad_granules:
-        raise GranuleValidationError(
-            f'The following granules do not intersect the provided bounds: {bad_granules}.'
-        )
+        raise GranuleValidationError(f'The following granules do not intersect the provided bounds: {bad_granules}.')
 
 
-def check_same_relative_orbits(job, granule_metadata):
+def check_same_relative_orbits(_, granule_metadata):
     previous_relative_orbit = None
     for granule in granule_metadata:
         name_split = granule['name'].split('_')
@@ -196,7 +194,7 @@ def check_same_relative_orbits(job, granule_metadata):
             )
 
 
-def convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
+def _convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
     jobs = deepcopy(jobs)
     for job in jobs:
         if job['job_type'] == 'INSAR_ISCE_BURST':
@@ -206,13 +204,24 @@ def convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
     return jobs
 
 
+def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5):
+    bounds = job['job_parameters']['bounds']
+
+    bounds_area = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0])
+
+    if bounds_area > max_bounds_area:
+        raise BoundsValidationError(
+            f'Bounds must be smaller than {max_bounds_area} degrees squared. Box provided was {bounds_area:.2f}'
+        )
+
+
 def validate_jobs(jobs: list[dict]) -> None:
-    jobs = convert_single_burst_jobs(jobs)
+    jobs = _convert_single_burst_jobs(jobs)
 
     granules = get_granules(jobs)
-    granule_metadata = get_cmr_metadata(granules)
+    granule_metadata = _get_cmr_metadata(granules)
 
-    check_granules_exist(granules, granule_metadata)
+    _make_sure_granules_exist(granules, granule_metadata)
     for job in jobs:
         for validator_name in JOB_VALIDATION_MAP[job['job_type']]:
             job_granule_metadata = [granule for granule in granule_metadata if granule['name'] in get_granules([job])]

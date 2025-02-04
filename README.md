@@ -71,7 +71,7 @@ From the repository root,
 make install
 ```
 
-- Install Python dependencies for AWS Lambda functions (requires pip for python 3.9)
+- Install Python dependencies for AWS Lambda functions (requires pip for python 3.13)
 ```sh
 make build
 ```

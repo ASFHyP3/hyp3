@@ -1,6 +1,7 @@
 SRG_GSLC:
   required_parameters:
     - granules
+    - bounds
   parameters:
     granules:
       api_schema:
@@ -20,22 +21,22 @@ SRG_GSLC:
     bounds:
       api_schema:
         type: array
-        description: Bounds for extent of processing, formatted like [min lon, min lat, max lon, max lat] in EPSG:4326. Setting to [0, 0, 0, 0] will use the extent of the first granule.
-        default: [0.0, 0.0, 0.0, 0.0]
+        description: Bounds for extent of processing, formatted like [min lon, min lat, max lon, max lat] in EPSG:4326.
         minItems: 4
         maxItems: 4
         example:
-          - -116.583
-          - 35.714
-          - -113.209
-          - 38.138
+          - -114.87
+          - 36.00
+          - -114.66
+          - 36.16
         items:
           type: number
-          example: -116.583
+          example: -114.87
   validators: [
     check_bounds_formatting,
     check_granules_intersecting_bounds,
-    check_same_relative_orbits
+    check_same_relative_orbits,
+    check_bounding_box_size
   ]
   cost_profiles:
     DEFAULT:

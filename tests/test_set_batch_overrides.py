@@ -3,11 +3,11 @@ import pytest
 from set_batch_overrides import (
     AUTORIFT_LANDSAT_MEMORY,
     AUTORIFT_S2_MEMORY,
-    INSAR_ISCE_BURST_MEMORY_128G,
+    INSAR_ISCE_BURST_MEMORY_8G,
     INSAR_ISCE_BURST_MEMORY_16G,
     INSAR_ISCE_BURST_MEMORY_32G,
     INSAR_ISCE_BURST_MEMORY_64G,
-    INSAR_ISCE_BURST_MEMORY_8G,
+    INSAR_ISCE_BURST_MEMORY_128G,
     RTC_GAMMA_10M_MEMORY,
     WATER_MAP_10M_MEMORY,
     lambda_handler,
@@ -20,18 +20,21 @@ def mock_insar_isce_burst_job(looks: str, bursts: int) -> dict:
         'job_parameters': {
             'looks': looks,
             'reference': ['foo' for _ in range(bursts)],
-        }
+        },
     }
 
 
 def test_set_batch_overrides_default():
-    assert lambda_handler(
-        {
-            'job_type': 'foo',
-            'job_parameters': {},
-        },
-        None,
-    ) == {}
+    assert (
+        lambda_handler(
+            {
+                'job_type': 'foo',
+                'job_parameters': {},
+            },
+            None,
+        )
+        == {}
+    )
 
 
 def test_set_batch_overrides_insar_isce_burst_5x1():

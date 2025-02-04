@@ -105,11 +105,13 @@ def test_update_user_rejected(tables):
             'test-edl-access-token',
             {'use_case': 'I want data.'},
         )
-    assert tables.users_table.scan()['Items'] == [{
-        'user_id': 'foo',
-        'remaining_credits': Decimal(0),
-        'application_status': APPLICATION_REJECTED,
-    }]
+    assert tables.users_table.scan()['Items'] == [
+        {
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            'application_status': APPLICATION_REJECTED,
+        }
+    ]
 
 
 def test_update_user_approved(tables, monkeypatch):
@@ -131,12 +133,14 @@ def test_update_user_approved(tables, monkeypatch):
             )
         mock_get_current_month.assert_called_once_with()
 
-    assert tables.users_table.scan()['Items'] == [{
-        'user_id': 'foo',
-        'remaining_credits': Decimal(25),
-        '_month_of_last_credit_reset': '2024-02',
-        'application_status': APPLICATION_APPROVED,
-    }]
+    assert tables.users_table.scan()['Items'] == [
+        {
+            'user_id': 'foo',
+            'remaining_credits': Decimal(25),
+            '_month_of_last_credit_reset': '2024-02',
+            'application_status': APPLICATION_APPROVED,
+        }
+    ]
 
 
 def test_update_user_invalid_status(tables):
@@ -153,11 +157,13 @@ def test_update_user_invalid_status(tables):
             'test-edl-access-token',
             {'use_case': 'I want data.'},
         )
-    assert tables.users_table.scan()['Items'] == [{
-        'user_id': 'foo',
-        'remaining_credits': Decimal(0),
-        'application_status': 'bar',
-    }]
+    assert tables.users_table.scan()['Items'] == [
+        {
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            'application_status': 'bar',
+        }
+    ]
 
 
 def test_update_user_failed_application_status(tables):
@@ -167,8 +173,10 @@ def test_update_user_failed_application_status(tables):
             'application_status': 'bar',
         }
     )
-    with unittest.mock.patch('dynamo.user.get_or_create_user') as mock_get_or_create_user, \
-            unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
+    with (
+        unittest.mock.patch('dynamo.user.get_or_create_user') as mock_get_or_create_user,
+        unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile,
+    ):
         mock_get_or_create_user.return_value = {
             'user_id': 'foo',
             'application_status': APPLICATION_NOT_STARTED,
@@ -183,10 +191,12 @@ def test_update_user_failed_application_status(tables):
         mock_get_or_create_user.assert_called_once_with('foo')
         mock_get_edl_profile.assert_called_once_with('foo', 'test-edl-access-token')
 
-    assert tables.users_table.scan()['Items'] == [{
-        'user_id': 'foo',
-        'application_status': 'bar',
-    }]
+    assert tables.users_table.scan()['Items'] == [
+        {
+            'user_id': 'foo',
+            'application_status': 'bar',
+        }
+    ]
 
 
 def test_update_user_access_code(tables):
@@ -194,18 +204,17 @@ def test_update_user_access_code(tables):
         Item={'access_code': '123', 'start_date': '2024-05-21T20:01:03+00:00', 'end_date': '2024-05-21T20:01:04+00:00'}
     )
 
-    with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time, \
-            unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month, \
-            unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile:
-
+    with (
+        unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time,
+        unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month,
+        unittest.mock.patch('dynamo.user._get_edl_profile') as mock_get_edl_profile,
+    ):
         mock_current_utc_time.return_value = '2024-05-21T20:01:03+00:00'
         mock_get_current_month.return_value = '2024-05'
         mock_get_edl_profile.return_value = {'key': 'value'}
 
         user = dynamo.user.update_user(
-            'foo',
-            'test-edl-access-token',
-            {'use_case': 'I want data.', 'access_code': '123'}
+            'foo', 'test-edl-access-token', {'use_case': 'I want data.', 'access_code': '123'}
         )
 
         mock_current_utc_time.assert_called_once_with()
@@ -230,11 +239,7 @@ def test_update_user_access_code_start_date(tables):
     with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time:
         mock_current_utc_time.return_value = '2024-05-21T20:01:02+00:00'
         with pytest.raises(AccessCodeError, match=r'.*will become active.*'):
-            dynamo.user.update_user(
-                'foo',
-                'test-edl-access-token',
-                {'use_case': 'I want data.', 'access_code': '123'}
-            )
+            dynamo.user.update_user('foo', 'test-edl-access-token', {'use_case': 'I want data.', 'access_code': '123'})
         mock_current_utc_time.assert_called_once_with()
 
     assert tables.users_table.scan()['Items'] == [
@@ -250,11 +255,7 @@ def test_update_user_access_code_end_date(tables):
     with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time:
         mock_current_utc_time.return_value = '2024-05-21T20:01:05+00:00'
         with pytest.raises(AccessCodeError, match=r'.*expired.*'):
-            dynamo.user.update_user(
-                'foo',
-                'test-edl-access-token',
-                {'use_case': 'I want data.', 'access_code': '123'}
-            )
+            dynamo.user.update_user('foo', 'test-edl-access-token', {'use_case': 'I want data.', 'access_code': '123'})
         mock_current_utc_time.assert_called_once_with()
 
     assert tables.users_table.scan()['Items'] == [
@@ -264,11 +265,7 @@ def test_update_user_access_code_end_date(tables):
     with unittest.mock.patch('dynamo.util.current_utc_time') as mock_current_utc_time:
         mock_current_utc_time.return_value = '2024-05-21T20:01:04+00:00'
         with pytest.raises(AccessCodeError, match=r'.*expired.*'):
-            dynamo.user.update_user(
-                'foo',
-                'test-edl-access-token',
-                {'use_case': 'I want data.', 'access_code': '123'}
-            )
+            dynamo.user.update_user('foo', 'test-edl-access-token', {'use_case': 'I want data.', 'access_code': '123'})
         mock_current_utc_time.assert_called_once_with()
 
     assert tables.users_table.scan()['Items'] == [
@@ -280,11 +277,7 @@ def test_update_user_access_code_invalid(tables):
     tables.access_codes_table.put_item(Item={'access_code': '123'})
 
     with pytest.raises(AccessCodeError, match=r'.*not a valid access code.*'):
-        dynamo.user.update_user(
-            'foo',
-            'test-edl-access-token',
-            {'use_case': 'I want data.', 'access_code': '456'}
-        )
+        dynamo.user.update_user('foo', 'test-edl-access-token', {'use_case': 'I want data.', 'access_code': '456'})
 
     assert tables.users_table.scan()['Items'] == [
         {'user_id': 'foo', 'remaining_credits': Decimal(0), 'application_status': APPLICATION_NOT_STARTED}
@@ -537,11 +530,13 @@ def test_reset_credits_failed_not_approved(tables):
             users_table=tables.users_table,
         )
 
-    assert tables.users_table.scan()['Items'] == [{
-        'user_id': 'foo',
-        'remaining_credits': Decimal(10),
-        'application_status': 'bar',
-    }]
+    assert tables.users_table.scan()['Items'] == [
+        {
+            'user_id': 'foo',
+            'remaining_credits': Decimal(10),
+            'application_status': 'bar',
+        }
+    ]
 
 
 def test_reset_credits_failed_same_month(tables):
@@ -566,12 +561,14 @@ def test_reset_credits_failed_same_month(tables):
             users_table=tables.users_table,
         )
 
-    assert tables.users_table.scan()['Items'] == [{
-        'user_id': 'foo',
-        'remaining_credits': Decimal(10),
-        '_month_of_last_credit_reset': '2024-02',
-        'application_status': APPLICATION_APPROVED,
-    }]
+    assert tables.users_table.scan()['Items'] == [
+        {
+            'user_id': 'foo',
+            'remaining_credits': Decimal(10),
+            '_month_of_last_credit_reset': '2024-02',
+            'application_status': APPLICATION_APPROVED,
+        }
+    ]
 
 
 def test_reset_credits_failed_infinite_credits(tables):
@@ -594,11 +591,13 @@ def test_reset_credits_failed_infinite_credits(tables):
             users_table=tables.users_table,
         )
 
-    assert tables.users_table.scan()['Items'] == [{
-        'user_id': 'foo',
-        'remaining_credits': None,
-        'application_status': APPLICATION_APPROVED,
-    }]
+    assert tables.users_table.scan()['Items'] == [
+        {
+            'user_id': 'foo',
+            'remaining_credits': None,
+            'application_status': APPLICATION_APPROVED,
+        }
+    ]
 
 
 def test_reset_credits_failed_approved(tables):
@@ -623,12 +622,14 @@ def test_reset_credits_failed_approved(tables):
             users_table=tables.users_table,
         )
 
-    assert tables.users_table.scan()['Items'] == [{
-        'user_id': 'foo',
-        'remaining_credits': Decimal(10),
-        '_month_of_last_credit_reset': '2024-02',
-        'application_status': APPLICATION_APPROVED,
-    }]
+    assert tables.users_table.scan()['Items'] == [
+        {
+            'user_id': 'foo',
+            'remaining_credits': Decimal(10),
+            '_month_of_last_credit_reset': '2024-02',
+            'application_status': APPLICATION_APPROVED,
+        }
+    ]
 
 
 def test_reset_credits_failed_zero_credits(tables):
@@ -653,35 +654,37 @@ def test_reset_credits_failed_zero_credits(tables):
             users_table=tables.users_table,
         )
 
-    assert tables.users_table.scan()['Items'] == [{
-        'user_id': 'foo',
-        'remaining_credits': Decimal(0),
-        '_month_of_last_credit_reset': '2024-02',
-        'application_status': 'bar',
-    }]
+    assert tables.users_table.scan()['Items'] == [
+        {
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            '_month_of_last_credit_reset': '2024-02',
+            'application_status': 'bar',
+        }
+    ]
 
 
 def test_decrement_credits(tables):
     tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': Decimal(25)})
 
-    dynamo.user.decrement_credits('foo', 1)
+    dynamo.user.decrement_credits('foo', Decimal(1))
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(24)}]
 
-    dynamo.user.decrement_credits('foo', 4)
+    dynamo.user.decrement_credits('foo', Decimal(4))
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(20)}]
 
-    dynamo.user.decrement_credits('foo', 20)
+    dynamo.user.decrement_credits('foo', Decimal(20))
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
 
 
 def test_decrement_credits_invalid_cost(tables):
     with pytest.raises(ValueError, match=r'^Cost 0 <= 0$'):
-        dynamo.user.decrement_credits('foo', 0)
+        dynamo.user.decrement_credits('foo', Decimal(0))
 
     assert tables.users_table.scan()['Items'] == []
 
     with pytest.raises(ValueError, match=r'^Cost -1 <= 0$'):
-        dynamo.user.decrement_credits('foo', -1)
+        dynamo.user.decrement_credits('foo', Decimal(-1))
 
     assert tables.users_table.scan()['Items'] == []
 
@@ -690,16 +693,16 @@ def test_decrement_credits_cost_too_high(tables):
     tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': Decimal(1)})
 
     with pytest.raises(DatabaseConditionException):
-        dynamo.user.decrement_credits('foo', 2)
+        dynamo.user.decrement_credits('foo', Decimal(2))
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(1)}]
 
-    dynamo.user.decrement_credits('foo', 1)
+    dynamo.user.decrement_credits('foo', Decimal(1))
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
 
     with pytest.raises(DatabaseConditionException):
-        dynamo.user.decrement_credits('foo', 1)
+        dynamo.user.decrement_credits('foo', Decimal(1))
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
 
@@ -708,17 +711,17 @@ def test_decrement_credits_infinite_credits(tables):
     tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': None})
 
     with pytest.raises(
-            botocore.exceptions.ClientError,
-            match=r'^An error occurred \(ValidationException\) when calling the UpdateItem operation:'
-                  r' An operand in the update expression has an incorrect data type$'
+        botocore.exceptions.ClientError,
+        match=r'^An error occurred \(ValidationException\) when calling the UpdateItem operation:'
+        r' An operand in the update expression has an incorrect data type$',
     ):
-        dynamo.user.decrement_credits('foo', 1)
+        dynamo.user.decrement_credits('foo', Decimal(1))
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': None}]
 
 
 def test_decrement_credits_user_does_not_exist(tables):
     with pytest.raises(DatabaseConditionException):
-        dynamo.user.decrement_credits('foo', 1)
+        dynamo.user.decrement_credits('foo', Decimal(1))
 
     assert tables.users_table.scan()['Items'] == []

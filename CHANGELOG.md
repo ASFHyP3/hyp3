@@ -4,6 +4,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.4.0]
+
+### Changed
+- The `OPERA_DISP_TMS` job type is now a fan-out/fan-in workflow.
+
+### Fixed
+- Previously there was a bug in which fan-out job steps, defined using the `map: for item in items` syntax, would fail if `items` was an array of non-string values, because AWS Batch SubmitJob expects string parameters. This bug has been fixed by converting each value to a string before passing it to SubmitJob.
+
+## [9.3.0]
+
+### Added
+- Added `velocity` option for the `tile_type` parameter of `OPERA_DISP_TMS` jobs
+- Restored previously deleted `hyp3-opera-disp-sandbox` deployment
+- Added validator to check that bounds provided do not exceed maximum size for SRG jobs
+
+### Removed
+- Removed default bounds option for SRG jobs
+
+## [9.2.0]
+
+### Added
+- Add `mypy` to [`static-analysis`](.github/workflows/static-analysis.yml) workflow
+- `OPERA_DISP_TMS` job type is now available in EDC UAT deployment
+
+### Changed
+- Upgrade to Python 3.13
+
+### Removed
+- Remove `hyp3-opera-disp-sandbox` deployment
+
+## [9.1.1]
+
+### Changed
+- The [`static-analysis`](.github/workflows/static-analysis.yml) Github Actions workflow now uses `ruff` rather than `flake8` for linting.
+
 ## [9.1.0]
 
 ### Added
@@ -328,7 +363,7 @@ HyP3's monthly quota system has been replaced by a credits system. Previously, H
 ### Changed
 - Update `INSAR_ISCE` and `INSAR_ISCE_TEST` job spec for GUNW version 3+ standard and custom products
   - `frame_id` is now a required parameter and has no default
-  - `compute_solid_earth_tide` and `estimate_ionosphere_delay` now default to `true` 
+  - `compute_solid_earth_tide` and `estimate_ionosphere_delay` now default to `true`
   - `INSAR_ISCE_TEST` exposes custom `goldstein_filter_power`, `output_resolution`, `dense_offsets`, and `unfiltered_coherence` parameters
 
 ## [4.4.1]
@@ -410,7 +445,7 @@ HyP3's monthly quota system has been replaced by a credits system. Previously, H
 ## [3.10.8]
 ### Changed
 - HyP3 deployments at JPL now use On Demand instances instead of Spot instances to prevent `INSAR_ISCE` jobs from being interrupted.
-  This *should* be a temporary change. 
+  This *should* be a temporary change.
 
 ## [3.10.7]
 ### Changed
@@ -554,7 +589,7 @@ HyP3's monthly quota system has been replaced by a credits system. Previously, H
 ## [3.2.0]
 ### Added
 - [`job_spec`s](job_spec/) can now specify a required set of secrets and an AWS Secrets Manage Secret ARN to pull the
-  secret values from. Notably, secrets are now externally managed and not part of the HyP3 stack.  
+  secret values from. Notably, secrets are now externally managed and not part of the HyP3 stack.
 
 ## [3.1.2]
 ### Added
@@ -579,13 +614,13 @@ HyP3's monthly quota system has been replaced by a credits system. Previously, H
 - The `flood_depth_estimator` parameter for `WATER_MAP` jobs is now restricted to a set of possible values.
 - Changed the default value for the `flood_depth_estimator` parameter for `WATER_MAP` jobs from `iterative` to `None`.
   A value of `None` indicates that a flood map will not be included.
-- Reduced `ITS_LIVE` product lifetime cycle from 180 days to 45 days. 
+- Reduced `ITS_LIVE` product lifetime cycle from 180 days to 45 days.
 ### Removed
 - Removed the `include_flood_depth` parameter for `WATER_MAP` jobs.
 
 ## [2.25.0]
 ### Added
-- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs now accept a `weather_model` parameter to specify which weather model to use 
+- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs now accept a `weather_model` parameter to specify which weather model to use
    when estimating trophospheric delay data.
 - Increases the memory available to `AUTORIFT` jobs for Landsat pairs
 
@@ -625,7 +660,7 @@ HyP3's monthly quota system has been replaced by a credits system. Previously, H
 
 ## [2.21.8]
 ### Changed
-- AUTORIFT jobs for Sentinel-2 scenes can now only be submitted using ESA naming convention. 
+- AUTORIFT jobs for Sentinel-2 scenes can now only be submitted using ESA naming convention.
 
 ## [2.21.7]
 ### Changed
@@ -684,7 +719,7 @@ HyP3's monthly quota system has been replaced by a credits system. Previously, H
 
 ## [2.19.4]
 ### Changed
-- `scale-cluster` now adjusts the compute environment size based on total month-to-date spending, rather than only EC2 
+- `scale-cluster` now adjusts the compute environment size based on total month-to-date spending, rather than only EC2
   spending.
 
 ## [2.19.3]
@@ -848,7 +883,7 @@ HyP3's monthly quota system has been replaced by a credits system. Previously, H
   - `ASF` (default) -- AWS accounts managed by the Alaska Satellite Facility
   - `EDC` -- AWS accounts managed by the NASA Earthdata CLoud
   - `JPL` -- AWS accounts managed by the NASA Jet Propulsion Laboratory
-- A `security_environment` Make variable used by the `render` target (and any target that depends on `render`). 
+- A `security_environment` Make variable used by the `render` target (and any target that depends on `render`).
   Use like `make security_environment=ASF build`
 
 ### Changed
@@ -919,10 +954,10 @@ HyP3's monthly quota system has been replaced by a credits system. Previously, H
 
 ## [2.6.2](https://github.com/ASFHyP3/hyp3/compare/v2.6.1...v2.6.2)
 ### Added
-- New `AmiId` stack parameter to specify a specific AMI for the AWS Batch compute environment 
+- New `AmiId` stack parameter to specify a specific AMI for the AWS Batch compute environment
 
 ### Changed
-- `job_spec/*.yml` files are now explicitly selected allowing per-deployment job customization 
+- `job_spec/*.yml` files are now explicitly selected allowing per-deployment job customization
 
 ### Removed
 - `AutoriftImage`, `AutoriftNamingScheme`, and `AutoriftParameterFile` CloudFormation stack parameters
@@ -977,7 +1012,7 @@ to the database but still validate it.
   - `name` gets only subscriptions with the given name
   - `job_type` gets only subscriptions with the given job type
   - `enabled` gets only subscriptions where `enabled` matches
-- subscriptions now include `creation_date` which indicates date and time of subscription creation, responses from 
+- subscriptions now include `creation_date` which indicates date and time of subscription creation, responses from
 `GET /subscriptions` are sorted by `creation_date` decending
 
 
@@ -1016,7 +1051,7 @@ to the database but still validate it.
 - `lib/dynamo` library to allow sharing common code among different apps.
 
 ## Changed
-- `POST /jobs` responses no longer include the `job_id`, `request_time`, `status_code`, or `user_id` fields when `validate_only=true` 
+- `POST /jobs` responses no longer include the `job_id`, `request_time`, `status_code`, or `user_id` fields when `validate_only=true`
 - moved dynamodb functionality from `hyp3_api/dynamo` to `lib/dynamo`
 - moved job creation buisness logic from `hyp3_api/handlers` to `lib/dynamo`
 

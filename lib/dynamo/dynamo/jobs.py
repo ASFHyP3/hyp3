@@ -2,7 +2,6 @@ import json
 from decimal import Decimal
 from os import environ
 from pathlib import Path
-from typing import List, Optional
 from uuid import uuid4
 
 from boto3.dynamodb.conditions import Attr, Key
@@ -18,6 +17,7 @@ from dynamo.exceptions import (
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, current_utc_time, get_request_time_expression
 
+
 costs_file = Path(__file__).parent / 'costs.json'
 COSTS = convert_floats_to_decimals(json.loads(costs_file.read_text()))
 
@@ -29,7 +29,7 @@ else:
     DEFAULT_PARAMS_BY_JOB_TYPE = {}
 
 
-def put_jobs(user_id: str, jobs: List[dict], dry_run=False) -> List[dict]:
+def put_jobs(user_id: str, jobs: list[dict], dry_run=False) -> list[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = current_utc_time()
 
@@ -82,12 +82,12 @@ def _raise_for_application_status(application_status: str, user_id: str) -> None
 
 
 def _prepare_job_for_database(
-        job: dict,
-        user_id: str,
-        request_time: str,
-        remaining_credits: Optional[Decimal],
-        priority_override: Optional[int],
-        running_cost: Decimal,
+    job: dict,
+    user_id: str,
+    request_time: str,
+    remaining_credits: Decimal | None,
+    priority_override: int | None,
+    running_cost: Decimal,
 ) -> dict:
     if priority_override:
         priority = priority_override
@@ -107,7 +107,7 @@ def _prepare_job_for_database(
     if 'job_type' in prepared_job:
         prepared_job['job_parameters'] = {
             **DEFAULT_PARAMS_BY_JOB_TYPE[prepared_job['job_type']],
-            **prepared_job.get('job_parameters', {})
+            **prepared_job.get('job_parameters', {}),
         }
         prepared_job['credit_cost'] = _get_credit_cost(prepared_job, COSTS)
     else:
@@ -119,7 +119,6 @@ def _get_credit_cost(job: dict, costs: list[dict]) -> Decimal:
     job_type = job['job_type']
     for cost_definition in costs:
         if cost_definition['job_type'] == job_type:
-
             if cost_definition.keys() not in ({'job_type', 'cost_parameter', 'cost_table'}, {'job_type', 'cost'}):
                 raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
 

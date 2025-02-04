@@ -3,6 +3,7 @@ import json
 from decimal import Decimal
 from os import environ
 from pathlib import Path
+from typing import Any
 
 import yaml
 from flask import abort, g, jsonify, make_response, redirect, render_template, request
@@ -16,6 +17,7 @@ import dynamo
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
 
+
 api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
 api_spec_dict = get_spec_yaml(api_spec_file)
 api_spec = OpenAPI.from_dict(api_spec_dict)
@@ -26,14 +28,9 @@ AUTHENTICATED_ROUTES = ['/jobs', '/user']
 
 @app.before_request
 def check_system_available():
-    if environ['SYSTEM_AVAILABLE'] != "true":
+    if environ['SYSTEM_AVAILABLE'] != 'true':
         message = 'HyP3 is currently unavailable. Please try again later.'
-        error = {
-            'detail': message,
-            'status': 503,
-            'title': 'Service Unavailable',
-            'type': 'about:blank'
-        }
+        error = {'detail': message, 'status': 503, 'title': 'Service Unavailable', 'type': 'about:blank'}
         return make_response(jsonify(error), 503)
 
 
@@ -71,8 +68,11 @@ def render_ui():
 
 @app.errorhandler(404)
 def error404(_):
-    return handlers.problem_format(404, 'The requested URL was not found on the server.'
-                                        ' If you entered the URL manually please check your spelling and try again.')
+    return handlers.problem_format(
+        404,
+        'The requested URL was not found on the server.'
+        ' If you entered the URL manually please check your spelling and try again.',
+    )
 
 
 class CustomEncoder(json.JSONEncoder):
@@ -99,10 +99,10 @@ class CustomEncoder(json.JSONEncoder):
 
 
 class CustomJSONProvider(JSONProvider):
-    def dumps(self, o):
-        return json.dumps(o, cls=CustomEncoder)
+    def dumps(self, obj: Any, **kwargs) -> str:
+        return json.dumps(obj, cls=CustomEncoder)
 
-    def loads(self, s):
+    def loads(self, s: str | bytes, **kwargs) -> Any:
         return json.loads(s)
 
 
@@ -112,7 +112,7 @@ class ErrorHandler(FlaskOpenAPIErrorsHandler):
 
     def __call__(self, errors):
         response = super().__call__(errors)
-        error = response.json['errors'][0]
+        error = response.json['errors'][0]  # type: ignore[index]
         return handlers.problem_format(error['status'], error['title'])
 
 
@@ -120,7 +120,7 @@ app.json = CustomJSONProvider(app)
 
 openapi = FlaskOpenAPIViewDecorator(
     api_spec,
-    response_cls=None,
+    response_cls=None,  # type: ignore[arg-type]
     errors_handler_cls=ErrorHandler,
 )
 
@@ -139,7 +139,7 @@ def jobs_post():
 @app.route('/jobs', methods=['GET'])
 @openapi
 def jobs_get():
-    parameters = request.openapi.parameters.query
+    parameters = request.openapi.parameters.query  # type: ignore[attr-defined]
     start = parameters.get('start')
     end = parameters.get('end')
     return jsonify(

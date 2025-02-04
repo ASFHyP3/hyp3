@@ -10,12 +10,7 @@ from hyp3_api.validation import BoundsValidationError, GranuleValidationError, v
 
 
 def problem_format(status, message):
-    response = jsonify({
-        'status': status,
-        'detail': message,
-        'title': responses[status],
-        'type': 'about:blank'
-    })
+    response = jsonify({'status': status, 'detail': message, 'title': responses[status], 'type': 'about:blank'})
     response.headers['Content-Type'] = 'application/problem+json'
     response.status_code = status
     return response
@@ -49,8 +44,9 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=N
     payload = {'jobs': jobs}
     if last_evaluated_key is not None:
         next_token = util.serialize(last_evaluated_key)
-        payload['next'] = util.build_next_url(request.url, next_token, request.headers.get('X-Forwarded-Host'),
-                                              request.root_path)
+        payload['next'] = util.build_next_url(
+            request.url, next_token, request.headers.get('X-Forwarded-Host'), request.root_path
+        )
     return payload
 
 

@@ -1,10 +1,9 @@
 from decimal import Decimal
 from http import HTTPStatus
 
-from test_api.conftest import login, make_job, setup_requests_mock, submit_batch
-
 from dynamo.user import APPLICATION_PENDING
 from dynamo.util import current_utc_time
+from test_api.conftest import login, make_job, setup_requests_mock, submit_batch
 
 
 def test_submit_one_job(client, approved_user):
@@ -77,16 +76,16 @@ def test_submit_multiple_job_types(client, approved_user):
     insar_gamma_job = make_job(
         [
             'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
-            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E'
+            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E',
         ],
-        job_type='INSAR_GAMMA'
+        job_type='INSAR_GAMMA',
     )
     autorift_job = make_job(
         [
             'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
-            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E'
+            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E',
         ],
-        job_type='AUTORIFT'
+        job_type='AUTORIFT',
     )
     batch = [rtc_gamma_job, insar_gamma_job, autorift_job]
     setup_requests_mock(batch)
@@ -151,16 +150,14 @@ def test_submit_unapproved_user(client, tables):
 
 def test_submit_without_jobs(client):
     login(client)
-    batch = []
+    batch: list = []
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_submit_job_without_name(client, approved_user):
     login(client, username=approved_user)
-    batch = [
-        make_job(name=None)
-    ]
+    batch = [make_job(name=None)]
     setup_requests_mock(batch)
 
     response = submit_batch(client, batch)
@@ -169,9 +166,7 @@ def test_submit_job_without_name(client, approved_user):
 
 def test_submit_job_with_empty_name(client):
     login(client)
-    batch = [
-        make_job(name='')
-    ]
+    batch = [make_job(name='')]
     setup_requests_mock(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.BAD_REQUEST
@@ -179,9 +174,7 @@ def test_submit_job_with_empty_name(client):
 
 def test_submit_job_with_long_name(client):
     login(client)
-    batch = [
-        make_job(name='X' * 101)
-    ]
+    batch = [make_job(name='X' * 101)]
     setup_requests_mock(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.BAD_REQUEST
@@ -204,7 +197,7 @@ def test_submit_job_without_granules(client):
 def test_submit_job_granule_does_not_exist(client, tables):
     batch = [
         make_job(['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38']),
-        make_job(['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B'])
+        make_job(['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B']),
     ]
     setup_requests_mock(batch)
     batch.append(make_job(['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A']))
@@ -213,8 +206,10 @@ def test_submit_job_granule_does_not_exist(client, tables):
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json['title'] == 'Bad Request'
-    assert response.json['detail'] == 'Some requested scenes could not be found: ' \
-                                      'S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A'
+    assert (
+        response.json['detail'] == 'Some requested scenes could not be found: '
+        'S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A'
+    )
 
 
 def test_submit_good_rtc_granule_names(client, approved_user):
@@ -348,7 +343,7 @@ def test_submit_mixed_job_parameters(client, approved_user):
     }
     granule_pair = [
         'S1A_IW_SLC__1SDV_20200527T195012_20200527T195028_032755_03CB56_3D96',
-        'S1A_IW_SLC__1SDV_20200515T195012_20200515T195027_032580_03C609_4EBA'
+        'S1A_IW_SLC__1SDV_20200515T195012_20200515T195027_032580_03C609_4EBA',
     ]
 
     job = make_job(job_type='RTC_GAMMA', parameters=rtc_parameters)

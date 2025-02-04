@@ -1,20 +1,17 @@
 name: Static code analysis
 
+permissions:
+  contents: read
+
 on: push
 
 jobs:
-  flake8:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4.2.2
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.9
-      - run: |
-          python -m pip install --upgrade pip
-          make install
+  call-ruff-workflow:
+    # Docs: https://github.com/ASFHyP3/actions
+    uses: ASFHyP3/actions/.github/workflows/reusable-ruff.yml@v0.15.0
 
-      - run: make flake8
+  call-mypy-workflow:
+    uses: ASFHyP3/actions/.github/workflows/reusable-mypy.yml@v0.15.0
 
   cfn-lint:
     runs-on: ubuntu-latest
@@ -26,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4.2.2
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: 3.13
       - run: |
           python -m pip install --upgrade pip
           make install
@@ -40,7 +37,7 @@ jobs:
       - uses: actions/checkout@v4.2.2
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: 3.13
       - run: |
           python -m pip install --upgrade pip
           make install
@@ -57,7 +54,7 @@ jobs:
       - run: gem install statelint
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: 3.13
       - run: |
           python -m pip install --upgrade pip
           make install
@@ -74,7 +71,7 @@ jobs:
       - uses: snyk/actions/setup@0.4.0
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: 3.13
       - run: |
           python -m pip install --upgrade pip
           make install
@@ -87,4 +84,4 @@ jobs:
           snyk iac test --severity-threshold=high
 
   call-secrets-analysis-workflow:
-    uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@v0.12.0
+    uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@v0.15.0

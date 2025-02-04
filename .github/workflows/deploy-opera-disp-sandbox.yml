@@ -22,7 +22,6 @@ jobs:
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
-            deploy_ref: refs/heads/develop
             job_files: >-
               job_spec/OPERA_DISP_TMS.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
@@ -49,7 +48,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: 3.13
 
       - uses: ./.github/actions/deploy-hyp3
         with:

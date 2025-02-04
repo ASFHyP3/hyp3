@@ -1,6 +1,7 @@
 import logging
 from functools import wraps
 
+
 logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -11,7 +12,6 @@ class UnhandledException(Exception):
 
 
 def log_exceptions(lambda_handler):
-
     @wraps(lambda_handler)
     def wrapper(event, context):
         try:
