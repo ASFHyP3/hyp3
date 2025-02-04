@@ -3,7 +3,6 @@ name: Deploy OPERA-DISP Sandbox Stack to AWS
 on:
   push:
     branches:
-      # TODO revert
       - develop
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
