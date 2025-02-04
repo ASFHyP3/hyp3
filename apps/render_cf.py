@@ -126,7 +126,7 @@ def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str | None = 
     batch_params = {}
     for param in step_params:
         if param == map_item:
-            batch_params[f'{map_item}.$'] = '$$.Map.Item.Value'
+            batch_params[f'{map_item}.$'] = "States.Format('{}', $$.Map.Item.Value)"
         else:
             if param not in job_params:
                 raise ValueError(f"job parameter '{param}' has not been defined")
