@@ -4,8 +4,7 @@ on:
   push:
     branches:
       # TODO revert
-      #- develop
-      - opera-disp-fan-out
+      - develop
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
