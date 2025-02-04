@@ -56,7 +56,7 @@ OPERA_DISP_TMS:
       map: for frame_id in frame_ids
       image: ghcr.io/asfhyp3/opera-disp-tms
       # TODO remove image_tag
-      image_tag: 0.6.1.dev69_g2f1b2e5
+      image_tag: 0.6.1.dev71_g3f7a260
       command:
         - ++process
         - create_measurement_geotiff
@@ -78,7 +78,7 @@ OPERA_DISP_TMS:
     - name: CREATE_TILE_MAP
       image: ghcr.io/asfhyp3/opera-disp-tms
       # TODO remove image_tag
-      image_tag: 0.6.1.dev69_g2f1b2e5
+      image_tag: 0.6.1.dev71_g3f7a260
       command:
         - ++process
         - create_tile_map
