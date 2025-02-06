@@ -15,7 +15,7 @@ ARIA_S1_GUNW:
           pattern: "^S1[AB]_IW_SLC__1S[SD]V"
           minLength: 67
           maxLength: 67
-          example: S1B_IW_SLC__1SDV_20210723T014947_20210723T015014_027915_0354B4_B3A9
+          example: S1A_IW_SLC__1SDV_20180206T141345_20180206T141414_020487_023099_1F41
     secondary_granules:
       api_schema:
         type: array
@@ -27,13 +27,14 @@ ARIA_S1_GUNW:
           pattern: "^S1[AB]_IW_SLC__1S[SD]V"
           minLength: 67
           maxLength: 67
-          example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
+          example: S1A_IW_SLC__1SDV_20180101T141346_20180101T141415_019962_021FEE_FB0A
     frame_id:
       api_schema:
         description: Subset GUNW products to this frame.
         type: integer
         minimum: 0
         maximum: 27397
+        example: 17882
   cost_profiles:
     EDC:
       cost: 15.0
