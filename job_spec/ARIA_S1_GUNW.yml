@@ -36,7 +36,7 @@ ARIA_S1_GUNW:
         maximum: 27397
   cost_profiles:
     EDC:
-      cost: 1.0  # FIXME
+      cost: 15.0
     DEFAULT:
       cost: 1.0
   validators: []
