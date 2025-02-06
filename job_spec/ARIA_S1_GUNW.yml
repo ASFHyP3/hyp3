@@ -76,7 +76,7 @@ ARIA_S1_GUNW:
         - --bucket-prefix
         - Ref::bucket_prefix
         - --weather-model
-        - 'None'  # FIXME switch to AUTO when available
+        - HRRR
       timeout: 10800
       compute_environment: Default
       vcpu: 1
