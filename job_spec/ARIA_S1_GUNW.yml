@@ -1,10 +1,10 @@
 ARIA_S1_GUNW:
   required_parameters:
-    - granules
-    - secondary_granules
+    - reference
+    - secondary
     - frame_id
   parameters:
-    granules:
+    reference:
       api_schema:
         type: array
         minItems: 2
@@ -16,7 +16,7 @@ ARIA_S1_GUNW:
           minLength: 67
           maxLength: 67
           example: S1A_IW_SLC__1SDV_20180206T141345_20180206T141414_020487_023099_1F41
-    secondary_granules:
+    secondary:
       api_schema:
         type: array
         minItems: 2
@@ -52,9 +52,9 @@ ARIA_S1_GUNW:
         - --bucket-prefix
         - Ref::bucket_prefix
         - --reference-scenes
-        - Ref::granules
+        - Ref::reference
         - --secondary-scenes
-        - Ref::secondary_granules
+        - Ref::secondary
         - --frame-id
         - Ref::frame_id
       timeout: 21600  # 6 hr
