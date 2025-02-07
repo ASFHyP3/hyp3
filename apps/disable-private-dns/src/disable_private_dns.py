@@ -34,10 +34,10 @@ def set_private_dns_disabled(endpoint_id):
 def disable_private_dns(vpc_id, endpoint_name):
     endpoint = get_endpoint(vpc_id, endpoint_name)
     if endpoint['PrivateDnsEnabled']:
-        print(f"Private DNS enabled for VPC Endpoint: {endpoint['VpcEndpointId']}, changing...")
+        print(f'Private DNS enabled for VPC Endpoint: {endpoint["VpcEndpointId"]}, changing...')
         set_private_dns_disabled(endpoint['VpcEndpointId'])
     else:
-        print(f"Private DNS already disabled for VPC Endpoint: {endpoint['VpcEndpointId']}, doing nothing.")
+        print(f'Private DNS already disabled for VPC Endpoint: {endpoint["VpcEndpointId"]}, doing nothing.')
 
 
 def lambda_handler(event, context):

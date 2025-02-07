@@ -1,6 +1,7 @@
 SRG_TIME_SERIES:
   required_parameters:
     - granules
+    - bounds
   parameters:
     granules:
       api_schema:
@@ -21,22 +22,22 @@ SRG_TIME_SERIES:
     bounds:
       api_schema:
         type: array
-        description: Bounds for extent of processing, formatted like [min lon, min lat, max lon, max lat] in EPSG:4326. Setting to [0, 0, 0, 0] will use the extent of the first granule.
-        default: [0.0, 0.0, 0.0, 0.0]
+        description: Bounds for extent of processing, formatted like [min lon, min lat, max lon, max lat] in EPSG:4326.
         minItems: 4
         maxItems: 4
         example:
-          - -124.41473278572731
-          - 37.098700238673814
-          - -120.9825007499895
-          - 39.52359974376425
+          - -122.53
+          - 37.78
+          - -122.44
+          - 37.85
         items:
           type: number
-          example: -124.41473278572731
+          example: -122.53
   validators: [
     check_bounds_formatting,
     check_granules_intersecting_bounds,
-    check_same_relative_orbits
+    check_same_relative_orbits,
+    check_bounding_box_size
   ]
   cost_profiles:
     DEFAULT:
