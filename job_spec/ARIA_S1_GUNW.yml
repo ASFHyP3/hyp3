@@ -14,7 +14,7 @@ ARIA_S1_GUNW:
           - S1A_IW_SLC__1SDV_20250127T010111_20250127T010138_057623_07199D_4E88
           - S1A_IW_SLC__1SDV_20250127T010045_20250127T010113_057623_07199D_4D3B
         items:
-          description: The name of the Sentinel-1 SLC granules to use as reference scenes for InSAR processing
+          description: The names of the Sentinel-1 SLC granules to use as reference scenes for InSAR processing
           type: string
           pattern: "^S1[AB]_IW_SLC__1S[SD]V"
           minLength: 67
@@ -30,7 +30,7 @@ ARIA_S1_GUNW:
           - S1A_IW_SLC__1SDV_20250103T010113_20250103T010140_057273_070BB6_1133
           - S1A_IW_SLC__1SDV_20250103T010047_20250103T010115_057273_070BB6_99C5
         items:
-          description: The name of the Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
+          description: The names of the Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
           type: string
           pattern: "^S1[AB]_IW_SLC__1S[SD]V"
           minLength: 67
