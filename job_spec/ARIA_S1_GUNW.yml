@@ -40,7 +40,8 @@ ARIA_S1_GUNW:
       cost: 15.0
     DEFAULT:
       cost: 1.0
-  validators: []
+  validators:
+    - check_dem_coverage
   steps:
     - name: ''
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
