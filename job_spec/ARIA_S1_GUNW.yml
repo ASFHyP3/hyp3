@@ -57,7 +57,7 @@ ARIA_S1_GUNW:
         - Ref::secondary_granules
         - --frame-id
         - Ref::frame_id
-      timeout: 21600
+      timeout: 21600  # 6 hr
       compute_environment: Default
       vcpu: 1
       memory: 15500
@@ -77,7 +77,7 @@ ARIA_S1_GUNW:
         - Ref::bucket_prefix
         - --weather-model
         - HRRR
-      timeout: 10800
+      timeout: 10800  # 3 hr
       compute_environment: Default
       vcpu: 1
       memory: 7500
