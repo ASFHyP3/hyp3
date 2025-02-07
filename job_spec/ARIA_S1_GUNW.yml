@@ -9,32 +9,40 @@ ARIA_S1_GUNW:
         type: array
         minItems: 2
         maxItems: 3
+        example:
+          - S1A_IW_SLC__1SDV_20250127T010136_20250127T010203_057623_07199D_4B63
+          - S1A_IW_SLC__1SDV_20250127T010111_20250127T010138_057623_07199D_4E88
+          - S1A_IW_SLC__1SDV_20250127T010045_20250127T010113_057623_07199D_4D3B
         items:
           description: The name of the Sentinel-1 SLC granules to use as reference scenes for InSAR processing
           type: string
           pattern: "^S1[AB]_IW_SLC__1S[SD]V"
           minLength: 67
           maxLength: 67
-          example: S1A_IW_SLC__1SDV_20180206T141345_20180206T141414_020487_023099_1F41
+          example: S1A_IW_SLC__1SDV_20250127T010136_20250127T010203_057623_07199D_4B63
     secondary:
       api_schema:
         type: array
         minItems: 2
         maxItems: 3
+        example:
+          - S1A_IW_SLC__1SDV_20250103T010137_20250103T010204_057273_070BB6_CD45
+          - S1A_IW_SLC__1SDV_20250103T010113_20250103T010140_057273_070BB6_1133
+          - S1A_IW_SLC__1SDV_20250103T010047_20250103T010115_057273_070BB6_99C5
         items:
           description: The name of the Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
           type: string
           pattern: "^S1[AB]_IW_SLC__1S[SD]V"
           minLength: 67
           maxLength: 67
-          example: S1A_IW_SLC__1SDV_20180101T141346_20180101T141415_019962_021FEE_FB0A
+          example: S1A_IW_SLC__1SDV_20250103T010137_20250103T010204_057273_070BB6_CD45
     frame_id:
       api_schema:
         description: Subset GUNW products to this frame.
         type: integer
         minimum: 0
         maximum: 27397
-        example: 17882
+        example: 23474
   cost_profiles:
     EDC:
       cost: 15.0
