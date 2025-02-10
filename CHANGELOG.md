@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [9.5.0]
 
 ### Added
-- ARIA_S1_GUNW job type to hyp3-edc-uat deployment
+- ARIA_S1_GUNW job type to EDC deployments.
 
 ## [9.4.0]
 
