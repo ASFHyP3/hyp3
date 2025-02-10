@@ -7,7 +7,7 @@ ARIA_S1_GUNW:
     reference:
       api_schema:
         type: array
-        minItems: 2
+        minItems: 1
         maxItems: 3
         example:
           - S1A_IW_SLC__1SDV_20250127T010136_20250127T010203_057623_07199D_4B63
@@ -23,7 +23,7 @@ ARIA_S1_GUNW:
     secondary:
       api_schema:
         type: array
-        minItems: 2
+        minItems: 1
         maxItems: 3
         example:
           - S1A_IW_SLC__1SDV_20250103T010137_20250103T010204_057273_070BB6_CD45
