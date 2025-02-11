@@ -91,5 +91,7 @@ ARIA_S1_GUNW:
       vcpu: 1
       memory: 7500
       secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
         - ESA_USERNAME
         - ESA_PASSWORD
