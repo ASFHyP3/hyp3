@@ -1,0 +1,65 @@
+SRG_GSLC:
+  required_parameters:
+    - granules
+    - bounds
+  parameters:
+    granules:
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 6
+        example:
+          - S1A_IW_RAW__0SDV_20231229T134339_20231229T134411_051870_064437_4F42
+          - S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38
+        items:
+          description: Name of the Level-0 Sentinel-1 scenes to process
+          type: string
+          pattern: "^S1[AB]_IW_RAW"
+          minLength: 67
+          maxLength: 67
+          example: S1A_IW_RAW__0SDV_20231229T134404_20231229T134436_051870_064437_5F38
+    bounds:
+      api_schema:
+        type: array
+        description: Bounds for extent of processing, formatted like [min lon, min lat, max lon, max lat] in EPSG:4326.
+        minItems: 4
+        maxItems: 4
+        example:
+          - -114.87
+          - 36.00
+          - -114.66
+          - 36.16
+        items:
+          type: number
+          example: -114.87
+  validators: [
+    check_bounds_formatting,
+    check_granules_intersecting_bounds,
+    check_same_relative_orbits,
+    check_bounding_box_size
+  ]
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-srg
+      command:
+        - ++process
+        - back_projection
+        - --bounds
+        - Ref::bounds
+        - --gpu
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - Ref::granules
+      timeout: 10800
+      compute_environment: SrgGslc
+      vcpu: 1
+      gpu: 1
+      memory: 30500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD

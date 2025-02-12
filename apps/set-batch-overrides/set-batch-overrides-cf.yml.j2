@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+{% if security_environment == 'EDC' %}
+Parameters:
+
+  SecurityGroupId:
+    Type: String
+
+  SubnetIds:
+    Type: CommaDelimitedList
+{% endif %}
+
+Outputs:
+
+  LambdaArn:
+    Value: !GetAtt Lambda.Arn
+
+Resources:
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${Lambda}"
+      RetentionInDays: 90
+
+  Role:
+    Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}
+    Properties:
+      {% if security_environment in ('JPL', 'JPL-public') %}
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: lambda.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+        - !Ref Policy
+        {% if security_environment == 'EDC' %}
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        {% endif %}
+
+  Policy:
+    Type: {{ 'Custom::JplPolicy' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::ManagedPolicy' }}
+    Properties:
+      {% if security_environment in ('JPL', 'JPL-public') %}
+      ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
+      Path: /account-managed/hyp3/
+      {% endif %}
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+
+  Lambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code: src/
+      Handler: set_batch_overrides.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt Role.Arn
+      Runtime: python3.13
+      Timeout: 30
+      {% if security_environment == 'EDC' %}
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetIds: !Ref SubnetIds
+      {% endif %}

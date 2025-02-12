@@ -9,7 +9,7 @@ Parameters:
     Type: List<AWS::EC2::Subnet::Id>
 
   SecretArn:
-    Description: ARN of Secret in AWS Secrets Manager containing all the credentials needed for job tasks.
+    Description: ARN of Secret in AWS Secrets Manager containing all the credentials needed for job steps.
     Type: String
 
   ImageTag:
@@ -31,10 +31,17 @@ Parameters:
     Type: String
     Default: RS256
 
-  MonthlyJobQuotaPerUser:
-    Description: Number of jobs each user is allowed per month.
+  DefaultCreditsPerUser:
+    Description: The default number of credits given to a new user.
     Type: Number
     MinValue: 0
+
+  DefaultApplicationStatus:
+    Description: The default status for new user applications.
+    Type: String
+    AllowedValues:
+      - NOT_STARTED
+      - APPROVED
 
   SystemAvailable:
     Description: Set to false to shutdown system, API will run and provide errors to users, but will not accept jobs.
@@ -113,9 +120,11 @@ Resources:
       Parameters:
         JobsTable: !Ref JobsTable
         UsersTable: !Ref UsersTable
+        AccessCodesTable: !Ref AccessCodesTable
         AuthPublicKey: !Ref AuthPublicKey
         AuthAlgorithm: !Ref AuthAlgorithm
-        MonthlyJobQuotaPerUser: !Ref MonthlyJobQuotaPerUser
+        DefaultCreditsPerUser: !Ref DefaultCreditsPerUser
+        DefaultApplicationStatus: !Ref DefaultApplicationStatus
         SystemAvailable: !Ref SystemAvailable
         {% if security_environment == 'EDC' %}
         VpcId: !Ref VpcId
@@ -145,6 +154,9 @@ Resources:
     Properties:
       Parameters:
         ComputeEnvironmentArn: !GetAtt Cluster.Outputs.ComputeEnvironmentArn
+        {% for name in compute_envs %}
+        {{ name }}ComputeEnvironmentArn: !GetAtt Cluster.Outputs.{{ name }}ComputeEnvironmentArn
+        {% endfor %}
         DefaultMaxvCpus: !Ref DefaultMaxvCpus
         ExpandedMaxvCpus: !Ref ExpandedMaxvCpus
         MonthlyBudget: !Ref MonthlyBudget
@@ -160,6 +172,9 @@ Resources:
     Properties:
       Parameters:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        {% for name in compute_envs %}
+        {{ name }}JobQueueArn: !GetAtt Cluster.Outputs.{{ name }}JobQueueArn
+        {% endfor %}
         JobsTable: !Ref JobsTable
         {% if security_environment == 'EDC' %}
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
@@ -172,6 +187,9 @@ Resources:
     Properties:
       Parameters:
         JobQueueArn: !GetAtt Cluster.Outputs.JobQueueArn
+        {% for name in compute_envs %}
+        {{ name }}JobQueueArn: !GetAtt Cluster.Outputs.{{ name }}JobQueueArn
+        {% endfor %}
         TaskRoleArn: !GetAtt Cluster.Outputs.TaskRoleArn
         JobsTable: !Ref JobsTable
         Bucket: !Ref ContentBucket
@@ -189,7 +207,6 @@ Resources:
     Properties:
       Parameters:
         StepFunctionArn: !GetAtt StepFunction.Outputs.StepFunctionArn
-        ApiId: !GetAtt Api.Outputs.ApiId
       TemplateURL: monitoring-cf.yml
 
   LogBucket:
@@ -208,6 +225,11 @@ Resources:
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
+      {% if security_environment == 'EDC' %}
+      Tags:
+        - Key: DAR
+          Value: "YES"
+      {% endif %}
 
   LogBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -265,6 +287,11 @@ Resources:
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
+      {% if security_environment == 'EDC' %}
+      Tags:
+        - Key: DAR
+          Value: "NO"
+      {% endif %}
 
   {% if security_environment != 'JPL' %}
   BucketPolicy:
@@ -337,6 +364,17 @@ Resources:
           AttributeType: S
       KeySchema:
         - AttributeName: user_id
+          KeyType: HASH
+
+  AccessCodesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: access_code
+          AttributeType: S
+      KeySchema:
+        - AttributeName: access_code
           KeyType: HASH
 
   {% if security_environment == 'EDC' %}

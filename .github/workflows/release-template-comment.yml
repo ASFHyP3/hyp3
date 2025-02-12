@@ -6,39 +6,16 @@ on:
       - main
 
 jobs:
-  add-release-template-comment:
-    runs-on: ubuntu-latest
-    name: Add a comment with the release template
-    steps:
-      - uses: actions/checkout@v4.1.1
-
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: |
-            ### Developer checklist
-
-            - [ ] Indicated the level of changes to this package by affixing one of these labels:
-              * major -- Major changes to the API that may break current workflows
-              * minor -- Minor changes to the API that do not break current workflows
-              * patch -- Patches and bugfixes for the current version that do not break current workflows
-              * bumpless -- Changes to documentation, CI/CD pipelines, etc. that don't affect the software's version
-            - [ ] (If applicable) Updated the dependencies and indicated any downstream changes that are required
-            - [ ] Added/updated documentation for these changes
-            - [ ] Added/updated tests for these changes
-            - [ ] If the step function code has changed, have you drained the job queue before merging?
-
-              * For example, if the interface for a Lambda function has changed to expect different input,
-                then currently running jobs (which use the old step function definition) will call the new
-                function with the old input. So we must drain the job queue before deployment, so that the new
-                function is only called by the new step function definition.
-
-            ### Reviewer checklist
-
-            - [ ] Have all dependencies been updated?
-            - [ ] Is the level of changes labeled appropriately?
-            - [ ] Are all the changes described appropriately in `CHANGELOG.md`?
-            - [ ] Has the documentation been adequately updated?
-            - [ ] Are the tests adequate?
-
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  call-release-checklist-workflow:
+    uses: ASFHyP3/actions/.github/workflows/reusable-release-checklist-comment.yml@v0.17.1
+    permissions:
+      pull-requests: write
+    with:
+      additional_developer_items: |
+        - [ ] If the step function code has changed, have you drained the job queue before merging?
+          * For example, if the interface for a Lambda function has changed to expect different input,
+            then currently running jobs (which use the old step function definition) will call the new
+            function with the old input. So we must drain the job queue before deployment, so that the new
+            function is only called by the new step function definition.
+    secrets:
+      USER_TOKEN: ${{ secrets.GITHUB_TOKEN }}

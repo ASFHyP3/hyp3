@@ -1,34 +1,19 @@
 from http.client import responses
-from uuid import UUID
 
 import requests
 from flask import abort, jsonify, request
-from jsonschema import draft4_format_checker
 
 import dynamo
+from dynamo.exceptions import AccessCodeError, InsufficientCreditsError, UnexpectedApplicationStatusError
 from hyp3_api import util
-from hyp3_api.validation import GranuleValidationError, validate_jobs
+from hyp3_api.validation import BoundsValidationError, GranuleValidationError, validate_jobs
 
 
 def problem_format(status, message):
-    response = jsonify({
-        'status': status,
-        'detail': message,
-        'title': responses[status],
-        'type': 'about:blank'
-    })
+    response = jsonify({'status': status, 'detail': message, 'title': responses[status], 'type': 'about:blank'})
     response.headers['Content-Type'] = 'application/problem+json'
     response.status_code = status
     return response
-
-
-@draft4_format_checker.checks('uuid')
-def is_uuid(val):
-    try:
-        UUID(val, version=4)
-    except ValueError:
-        return False
-    return True
 
 
 def post_jobs(body, user):
@@ -38,15 +23,16 @@ def post_jobs(body, user):
         validate_jobs(body['jobs'])
     except requests.HTTPError as e:
         print(f'WARN: CMR search failed: {e}')
-    except GranuleValidationError as e:
+    except (BoundsValidationError, GranuleValidationError) as e:
         abort(problem_format(400, str(e)))
 
-    if not body.get('validate_only'):
-        try:
-            body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'])
-        except dynamo.jobs.QuotaError as e:
-            abort(problem_format(400, str(e)))
-        return body
+    try:
+        body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], dry_run=body.get('validate_only'))
+    except UnexpectedApplicationStatusError as e:
+        abort(problem_format(403, str(e)))
+    except InsufficientCreditsError as e:
+        abort(problem_format(400, str(e)))
+    return body
 
 
 def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None):
@@ -58,8 +44,9 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=N
     payload = {'jobs': jobs}
     if last_evaluated_key is not None:
         next_token = util.serialize(last_evaluated_key)
-        payload['next'] = util.build_next_url(request.url, next_token, request.headers.get('X-Forwarded-Host'),
-                                              request.root_path)
+        payload['next'] = util.build_next_url(
+            request.url, next_token, request.headers.get('X-Forwarded-Host'), request.root_path
+        )
     return payload
 
 
@@ -70,23 +57,34 @@ def get_job_by_id(job_id):
     return job
 
 
-def get_names_for_user(user):
+def patch_user(body: dict, user: str, edl_access_token: str) -> dict:
+    print(body)
+    try:
+        user_record = dynamo.user.update_user(user, edl_access_token, body)
+    except AccessCodeError as e:
+        abort(problem_format(403, str(e)))
+    except UnexpectedApplicationStatusError as e:
+        abort(problem_format(403, str(e)))
+    return _user_response(user_record)
+
+
+def get_user(user):
+    user_record = dynamo.user.get_or_create_user(user)
+    return _user_response(user_record)
+
+
+def _user_response(user_record: dict) -> dict:
+    # TODO: count this as jobs are submitted, not every time `/user` is queried
+    job_names = _get_names_for_user(user_record['user_id'])
+    payload = {key: user_record[key] for key in user_record if not key.startswith('_')}
+    payload['job_names'] = job_names
+    return payload
+
+
+def _get_names_for_user(user):
     jobs, next_key = dynamo.jobs.query_jobs(user)
     while next_key is not None:
         new_jobs, next_key = dynamo.jobs.query_jobs(user, start_key=next_key)
         jobs.extend(new_jobs)
     names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))
-
-
-def get_user(user):
-    max_jobs, _, remaining_jobs = dynamo.jobs.get_quota_status(user)
-
-    return {
-        'user_id': user,
-        'quota': {
-            'max_jobs_per_month': max_jobs,
-            'remaining': remaining_jobs,
-        },
-        'job_names': get_names_for_user(user)
-    }

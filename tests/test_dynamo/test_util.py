@@ -22,7 +22,7 @@ def test_get_request_time_expression():
 
 
 def test_format_time():
-    date = datetime.datetime(2021, 2, 3, 4, 5, 6, 7, tzinfo=datetime.timezone.utc)
+    date = datetime.datetime(2021, 2, 3, 4, 5, 6, 7, tzinfo=datetime.UTC)
     assert dynamo.util.format_time(date) == '2021-02-03T04:05:06+00:00'
 
     offset = datetime.timedelta(hours=1)
@@ -45,7 +45,7 @@ def test_convert_floats_to_decimals():
         },
         '123.45',
         123,
-        123.45
+        123.45,
     ]
 
     response = dynamo.util.convert_floats_to_decimals(payload)
@@ -59,7 +59,7 @@ def test_convert_floats_to_decimals():
         },
         '123.45',
         123,
-        decimal.Decimal('123.45')
+        decimal.Decimal('123.45'),
     ]
 
 
@@ -74,7 +74,7 @@ def test_convert_decimals_to_numbers():
         },
         '123.45',
         decimal.Decimal('123'),
-        123.45
+        123.45,
     ]
 
     response = dynamo.util.convert_decimals_to_numbers(payload)
@@ -88,5 +88,5 @@ def test_convert_decimals_to_numbers():
         },
         '123.45',
         123,
-        123.45
+        123.45,
     ]

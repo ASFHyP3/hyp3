@@ -1,13 +1,13 @@
-from datetime import datetime, timedelta, timezone
+from decimal import Decimal
 from http import HTTPStatus
 
-from test_api.conftest import DEFAULT_USERNAME, login, make_db_record, make_job, setup_requests_mock, submit_batch
+from dynamo.user import APPLICATION_PENDING
+from dynamo.util import current_utc_time
+from test_api.conftest import login, make_job, setup_requests_mock, submit_batch
 
-from dynamo.util import format_time
 
-
-def test_submit_one_job(client, tables):
-    login(client)
+def test_submit_one_job(client, approved_user):
+    login(client, username=approved_user)
     batch = [make_job()]
     setup_requests_mock(batch)
     response = submit_batch(client, batch)
@@ -15,12 +15,12 @@ def test_submit_one_job(client, tables):
     jobs = response.json['jobs']
     assert len(jobs) == 1
     assert jobs[0]['status_code'] == 'PENDING'
-    assert jobs[0]['request_time'] <= format_time(datetime.now(timezone.utc))
-    assert jobs[0]['user_id'] == DEFAULT_USERNAME
+    assert jobs[0]['request_time'] <= current_utc_time()
+    assert jobs[0]['user_id'] == approved_user
 
 
-def test_submit_insar_gamma(client, tables):
-    login(client)
+def test_submit_insar_gamma(client, approved_user):
+    login(client, username=approved_user)
     granules = [
         'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
         'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E',
@@ -55,8 +55,8 @@ def test_submit_insar_gamma(client, tables):
     assert response.status_code == HTTPStatus.OK
 
 
-def test_submit_autorift(client, tables):
-    login(client)
+def test_submit_autorift(client, approved_user):
+    login(client, username=approved_user)
     job = make_job(
         [
             'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
@@ -70,22 +70,22 @@ def test_submit_autorift(client, tables):
     assert response.status_code == HTTPStatus.OK
 
 
-def test_submit_multiple_job_types(client, tables):
-    login(client)
+def test_submit_multiple_job_types(client, approved_user):
+    login(client, username=approved_user)
     rtc_gamma_job = make_job()
     insar_gamma_job = make_job(
         [
             'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
-            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E'
+            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E',
         ],
-        job_type='INSAR_GAMMA'
+        job_type='INSAR_GAMMA',
     )
     autorift_job = make_job(
         [
             'S1A_IW_SLC__1SDV_20200720T172109_20200720T172128_033541_03E2FB_341F',
-            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E'
+            'S1A_IW_SLC__1SDV_20200813T172110_20200813T172129_033891_03EE3F_2C3E',
         ],
-        job_type='AUTORIFT'
+        job_type='AUTORIFT',
     )
     batch = [rtc_gamma_job, insar_gamma_job, autorift_job]
     setup_requests_mock(batch)
@@ -93,9 +93,9 @@ def test_submit_multiple_job_types(client, tables):
     assert response.status_code == HTTPStatus.OK
 
 
-def test_submit_many_jobs(client, tables):
+def test_submit_many_jobs(client, approved_user):
     max_jobs = 25
-    login(client)
+    login(client, username=approved_user)
 
     batch = [make_job() for ii in range(max_jobs)]
     setup_requests_mock(batch)
@@ -112,38 +112,52 @@ def test_submit_many_jobs(client, tables):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_submit_exceeds_quota(client, tables, monkeypatch):
-    login(client)
-    time_for_previous_month = format_time(datetime.now(timezone.utc) - timedelta(days=32))
-    job_from_previous_month = make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266',
-                                             request_time=time_for_previous_month)
-    tables.jobs_table.put_item(Item=job_from_previous_month)
+def test_submit_exceeds_remaining_credits(client, approved_user, monkeypatch):
+    login(client, username=approved_user)
+    monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
 
-    monkeypatch.setenv('MONTHLY_JOB_QUOTA_PER_USER', '25')
-    batch = [make_job() for ii in range(25)]
+    batch1 = [make_job() for _ in range(20)]
+    setup_requests_mock(batch1)
+
+    response1 = submit_batch(client, batch1)
+    assert response1.status_code == HTTPStatus.OK
+
+    batch2 = [make_job() for _ in range(10)]
+    setup_requests_mock(batch2)
+
+    response2 = submit_batch(client, batch2)
+    assert response2.status_code == HTTPStatus.BAD_REQUEST
+    assert response2.json['detail'] == 'These jobs would cost 10.0 credits, but you have only 5.0 remaining.'
+
+
+def test_submit_unapproved_user(client, tables):
+    tables.users_table.put_item(
+        Item={
+            'user_id': 'foo',
+            'remaining_credits': Decimal(0),
+            'application_status': APPLICATION_PENDING,
+        }
+    )
+    login(client, username='foo')
+
+    batch = [make_job()]
     setup_requests_mock(batch)
 
     response = submit_batch(client, batch)
-    assert response.status_code == HTTPStatus.OK
-
-    response = submit_batch(client)
-    assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert '25 jobs' in response.json['detail']
-    assert '0 jobs' in response.json['detail']
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert 'request for access is pending review' in response.json['detail']
 
 
 def test_submit_without_jobs(client):
     login(client)
-    batch = []
+    batch: list = []
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_submit_job_without_name(client, tables):
-    login(client)
-    batch = [
-        make_job(name=None)
-    ]
+def test_submit_job_without_name(client, approved_user):
+    login(client, username=approved_user)
+    batch = [make_job(name=None)]
     setup_requests_mock(batch)
 
     response = submit_batch(client, batch)
@@ -152,9 +166,7 @@ def test_submit_job_without_name(client, tables):
 
 def test_submit_job_with_empty_name(client):
     login(client)
-    batch = [
-        make_job(name='')
-    ]
+    batch = [make_job(name='')]
     setup_requests_mock(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.BAD_REQUEST
@@ -162,9 +174,7 @@ def test_submit_job_with_empty_name(client):
 
 def test_submit_job_with_long_name(client):
     login(client)
-    batch = [
-        make_job(name='X' * 101)
-    ]
+    batch = [make_job(name='X' * 101)]
     setup_requests_mock(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.BAD_REQUEST
@@ -187,7 +197,7 @@ def test_submit_job_without_granules(client):
 def test_submit_job_granule_does_not_exist(client, tables):
     batch = [
         make_job(['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38']),
-        make_job(['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B'])
+        make_job(['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B']),
     ]
     setup_requests_mock(batch)
     batch.append(make_job(['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A']))
@@ -196,12 +206,14 @@ def test_submit_job_granule_does_not_exist(client, tables):
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json['title'] == 'Bad Request'
-    assert response.json['detail'] == 'Some requested scenes could not be found: ' \
-                                      'S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A'
+    assert (
+        response.json['detail'] == 'Some requested scenes could not be found: '
+        'S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A'
+    )
 
 
-def test_submit_good_rtc_granule_names(client, tables):
-    login(client)
+def test_submit_good_rtc_granule_names(client, approved_user):
+    login(client, username=approved_user)
     good_granule_names = [
         'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
         'S1A_IW_SLC__1SSH_20150608T205059_20150608T205126_006287_0083E8_C4F0',
@@ -254,8 +266,8 @@ def test_submit_bad_rtc_granule_names(client):
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_submit_good_autorift_granule_names(client, tables):
-    login(client)
+def test_submit_good_autorift_granule_names(client, approved_user):
+    login(client, username=approved_user)
     good_granule_names = [
         'S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38',
         'S1A_IW_SLC__1SSH_20150608T205059_20150608T205126_006287_0083E8_C4F0',
@@ -320,8 +332,8 @@ def test_submit_bad_autorift_granule_names(client):
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_submit_mixed_job_parameters(client, tables):
-    login(client)
+def test_submit_mixed_job_parameters(client, approved_user):
+    login(client, username=approved_user)
 
     rtc_parameters = {
         'resolution': 30.0,
@@ -331,7 +343,7 @@ def test_submit_mixed_job_parameters(client, tables):
     }
     granule_pair = [
         'S1A_IW_SLC__1SDV_20200527T195012_20200527T195028_032755_03CB56_3D96',
-        'S1A_IW_SLC__1SDV_20200515T195012_20200515T195027_032580_03C609_4EBA'
+        'S1A_IW_SLC__1SDV_20200515T195012_20200515T195027_032580_03C609_4EBA',
     ]
 
     job = make_job(job_type='RTC_GAMMA', parameters=rtc_parameters)
@@ -377,8 +389,8 @@ def test_submit_mixed_job_parameters(client, tables):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_float_input(client, tables):
-    login(client)
+def test_float_input(client, approved_user):
+    login(client, username=approved_user)
     batch = [make_job(parameters={'resolution': 30.0})]
     setup_requests_mock(batch)
     response = submit_batch(client, batch)
@@ -392,8 +404,8 @@ def test_float_input(client, tables):
     assert isinstance(response.json['jobs'][0]['job_parameters']['resolution'], int)
 
 
-def test_submit_validate_only(client, tables):
-    login(client)
+def test_submit_validate_only(client, tables, approved_user):
+    login(client, username=approved_user)
     batch = [make_job()]
     setup_requests_mock(batch)
 

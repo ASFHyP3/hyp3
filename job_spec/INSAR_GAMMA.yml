@@ -3,7 +3,6 @@ INSAR_GAMMA:
     - granules
   parameters:
     granules:
-      default:  '""'
       api_schema:
         type: array
         minItems: 2
@@ -18,8 +17,6 @@ INSAR_GAMMA:
           minLength: 67
           maxLength: 67
           example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
-    bucket_prefix:
-      default:  '""'
     include_look_vectors:
       api_schema:
         description: Include the look vector theta and phi files in the product package
@@ -70,9 +67,19 @@ INSAR_GAMMA:
         minimum: 0.0
         maximum: 1.0
         default: 0.6
+  cost_profiles:
+    EDC:
+      cost_parameter: looks
+      cost_table:
+        - parameter_value: 20x4
+          cost: 10.0
+        - parameter_value: 10x2
+          cost: 15.0
+    DEFAULT:
+      cost: 1.0
   validators:
     - check_dem_coverage
-  tasks:
+  steps:
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
       command:
@@ -104,10 +111,9 @@ INSAR_GAMMA:
         - Ref::phase_filter_parameter
         - Ref::granules
       timeout: 10800
+      compute_environment: Default
       vcpu: 1
       memory: 31500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD

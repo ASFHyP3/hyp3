@@ -3,7 +3,6 @@ INSAR_ISCE_BURST:
     - granules
   parameters:
     granules:
-      default:  '""'
       api_schema:
         type: array
         minItems: 2
@@ -18,11 +17,9 @@ INSAR_ISCE_BURST:
           minLength: 43
           maxLength: 43
           example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
-    bucket_prefix:
-      default:  '""'
     apply_water_mask:
       api_schema:
-        description: Set pixels over coastal and large inland water bodies to NoData in wrapped and unwrapped phase GeoTIFFs (after unwrapping).
+        description: Sets pixels over coastal and large inland waterbodies as invalid for phase unwrapping. 
         default: false
         type: boolean
     looks:
@@ -34,11 +31,17 @@ INSAR_ISCE_BURST:
           - 20x4
           - 10x2
           - 5x1
+  cost_profiles:
+    EDC:
+      cost: 1.0
+    DEFAULT:
+      cost: 1.0
   validators:
     - check_dem_coverage
     - check_valid_polarizations
     - check_same_burst_ids
-  tasks:
+    - check_not_antimeridian 
+  steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2
       command:
@@ -56,10 +59,9 @@ INSAR_ISCE_BURST:
         - Ref::looks
         - Ref::granules
       timeout: 5400
+      compute_environment: Default
       vcpu: 1
       memory: 7600
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD

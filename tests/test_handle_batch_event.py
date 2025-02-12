@@ -11,10 +11,7 @@ def test_lambda_handler(mock_get_job: MagicMock, mock_update_job: MagicMock):
     event = {
         'source': 'aws.batch',
         'detail-type': 'Batch Job State Change',
-        'detail': {
-            'status': 'RUNNING',
-            'jobName': 'fooJob'
-        }
+        'detail': {'status': 'RUNNING', 'jobName': 'fooJob'},
     }
     mock_get_job.return_value = {'job_id': 'fooJob', 'status_code': 'PENDING'}
 
@@ -30,10 +27,7 @@ def test_lambda_handler_job_not_pending(mock_get_job: MagicMock, mock_update_job
     event = {
         'source': 'aws.batch',
         'detail-type': 'Batch Job State Change',
-        'detail': {
-            'status': 'RUNNING',
-            'jobName': 'fooJob'
-        }
+        'detail': {'status': 'RUNNING', 'jobName': 'fooJob'},
     }
     mock_get_job.return_value = {'job_id': 'fooJob', 'status_code': 'SUCCEEDED'}
 
@@ -47,24 +41,14 @@ def test_lambda_handler_invalid_source():
     event = {
         'source': 'dummy',
         'detail-type': 'Batch Job State Change',
-        'detail': {
-            'status': 'RUNNING',
-            'jobName': 'fooJob'
-        }
+        'detail': {'status': 'RUNNING', 'jobName': 'fooJob'},
     }
     with pytest.raises(ValueError, match=r'.* source .*'):
         handle_batch_event.lambda_handler(event, None)
 
 
 def test_lambda_handler_invalid_detail_type():
-    event = {
-        'source': 'aws.batch',
-        'detail-type': 'dummy',
-        'detail': {
-            'status': 'RUNNING',
-            'jobName': 'fooJob'
-        }
-    }
+    event = {'source': 'aws.batch', 'detail-type': 'dummy', 'detail': {'status': 'RUNNING', 'jobName': 'fooJob'}}
     with pytest.raises(ValueError, match=r'.* detail-type .*'):
         handle_batch_event.lambda_handler(event, None)
 
@@ -73,22 +57,13 @@ def test_lambda_handler_invalid_status():
     event = {
         'source': 'aws.batch',
         'detail-type': 'Batch Job State Change',
-        'detail': {
-            'status': 'dummy',
-            'jobName': 'fooJob'
-        }
+        'detail': {'status': 'dummy', 'jobName': 'fooJob'},
     }
     with pytest.raises(ValueError, match=r'.* status .*'):
         handle_batch_event.lambda_handler(event, None)
 
 
 def test_lambda_handler_missing_key():
-    event = {
-        'detail-type': 'Batch Job State Change',
-        'detail': {
-            'status': 'RUNNING',
-            'jobName': 'fooJob'
-        }
-    }
+    event = {'detail-type': 'Batch Job State Change', 'detail': {'status': 'RUNNING', 'jobName': 'fooJob'}}
     with pytest.raises(KeyError, match=r"'source'"):
         handle_batch_event.lambda_handler(event, None)

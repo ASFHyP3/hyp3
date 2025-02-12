@@ -1,23 +1,11 @@
-import json
+def get_time_from_result(result: list | dict) -> list | float:
+    if isinstance(result, list):
+        return [get_time_from_result(item) for item in result]
+
+    return (result['StoppedAt'] - result['StartedAt']) / 1000
 
 
-def get_time_from_attempts(attempts: list[dict]) -> float:
-    if len(attempts) == 0:
-        return 0
-    attempts.sort(key=lambda attempt: attempt['StoppedAt'])
-    final_attempt = attempts[-1]
-    return (final_attempt['StoppedAt'] - final_attempt['StartedAt']) / 1000
-
-
-def get_time_from_result(result: dict) -> float:
-    if 'Attempts' in result:
-        attempts = result['Attempts']
-    else:
-        attempts = json.loads(result['Cause'])['Attempts']
-    return get_time_from_attempts(attempts)
-
-
-def lambda_handler(event, context) -> list[float]:
-    results_dict = event['processing_results']
-    results = [results_dict[key] for key in sorted(results_dict.keys())]
-    return list(map(get_time_from_result, results))
+def lambda_handler(event, _) -> list | float:
+    processing_results = event['processing_results']
+    result_list = [processing_results[key] for key in sorted(processing_results.keys())]
+    return get_time_from_result(result_list)

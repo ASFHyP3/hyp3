@@ -30,16 +30,22 @@ inputs:
     description: "Comma separated list of Subnet IDs"
     required: true
   SECRET_ARN:
-    description: "ARN of Secret in AWS Secrets Manager containing all the credentials needed for job tasks"
+    description: "ARN of Secret in AWS Secrets Manager containing all the credentials needed for job steps"
     required: true
   CLOUDFORMATION_ROLE_ARN:
     description: "The CloudFormation role to use for this deployment"
     required: true
-  MONTHLY_JOB_QUOTA_PER_USER:
-    description: "The default number of jobs any user with an Earthdata Login can run per month"
+  DEFAULT_CREDITS_PER_USER:
+    description: "The default number of credits given to a new user"
+    required: true
+  DEFAULT_APPLICATION_STATUS:
+    description: "The default status for new user applications."
+    required: true
+  COST_PROFILE:
+    description: "Job spec cost profile"
     required: true
   JOB_FILES:
-    description: "Space seperated list of job spec YAMLs to include"
+    description: "Space separated list of job spec YAMLs to include"
     required: true
   DEFAULT_MAX_VCPUS:
     description: "Default maximum size for the AWS Batch compute environment"
@@ -80,7 +86,7 @@ runs:
         run: |
           pip install --upgrade pip
           make install
-          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' api_name='${{ inputs.API_NAME }}' build
+          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' api_name='${{ inputs.API_NAME }}' cost_profile='${{ inputs.COST_PROFILE }}' build
       - name: Package and deploy
         shell: bash
         run: |
@@ -119,7 +125,8 @@ runs:
                 $CERTIFICATE_ARN \
                 $ORIGIN_ACCESS_IDENTITY_ID \
                 $DISTRIBUTION_URL \
-                MonthlyJobQuotaPerUser='${{ inputs.MONTHLY_JOB_QUOTA_PER_USER }}' \
+                DefaultCreditsPerUser='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
+                DefaultApplicationStatus='${{ inputs.DEFAULT_APPLICATION_STATUS }}' \
                 DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
                 ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
                 MonthlyBudget='${{ inputs.MONTHLY_BUDGET }}' \

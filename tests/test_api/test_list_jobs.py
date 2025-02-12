@@ -12,27 +12,26 @@ def test_list_jobs(client, tables):
             'filename': 'foo.txt',
             'size': 123,
             'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/foo.txt',
-            's3': {
-                'bucket': 'mybucket',
-                'key': 'prefix/foo.txt'
-            },
+            's3': {'bucket': 'mybucket', 'key': 'prefix/foo.txt'},
         },
         {
             'filename': 'bar.png',
             'size': 0,
             'url': 'https://mybucket.s3.us-west-2.amazonaws.com/prefix/bar.png',
-            's3': {
-                'bucket': 'mybucket',
-                'key': 'prefix/bar.png'
-            },
+            's3': {'bucket': 'mybucket', 'key': 'prefix/bar.png'},
         },
     ]
     browse_images = ['https://mybucket.s3.us-west-2.amazonaws.com/prefix/browse/foo.png']
-    thumbnail_images = []
+    thumbnail_images: list = []
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', user_id='user_with_jobs'),
-        make_db_record(job_id='27836b79-e5b2-4d8f-932f-659724ea02c3', user_id='user_with_jobs', files=files,
-                       browse_images=browse_images, thumbnail_images=thumbnail_images)
+        make_db_record(
+            job_id='27836b79-e5b2-4d8f-932f-659724ea02c3',
+            user_id='user_with_jobs',
+            files=files,
+            browse_images=browse_images,
+            thumbnail_images=thumbnail_images,
+        ),
     ]
     for item in items:
         tables.jobs_table.put_item(Item=item)
@@ -52,7 +51,7 @@ def test_list_jobs(client, tables):
 def test_list_jobs_by_user_id(client, tables):
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', user_id='user_with_jobs'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', user_id='user_with_jobs')
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', user_id='user_with_jobs'),
     ]
     for item in items:
         tables.jobs_table.put_item(Item=item)
@@ -75,7 +74,7 @@ def test_list_jobs_by_name(client, tables):
 
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', name='item1'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', name=long_name)
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', name=long_name),
     ]
     for item in items:
         tables.jobs_table.put_item(Item=item)
@@ -122,7 +121,7 @@ def test_list_jobs_by_type(client, tables):
 def test_list_jobs_by_status(client, tables):
     items = [
         make_db_record('0ddaeb98-7636-494d-9496-03ea4a7df266', status_code='RUNNING'),
-        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', status_code='SUCCEEDED')
+        make_db_record('27836b79-e5b2-4d8f-932f-659724ea02c3', status_code='SUCCEEDED'),
     ]
     for item in items:
         tables.jobs_table.put_item(Item=item)
@@ -189,7 +188,7 @@ def test_bad_date_formats(client):
         '2020-13-01T00:00:00Z',
         '01-JAN-2020',
         '01/01/2020',
-        '2020-01-01'
+        '2020-01-01',
         '2020-01-01T00:00Z',
         '2020-01-01T00:00:00',
         '2020-01-01T00:00:00+01',
@@ -205,7 +204,7 @@ def test_bad_date_formats(client):
 
 def test_list_paging(client):
     login(client)
-    mock_response = ([], {'foo': 1, 'bar': 2})
+    mock_response: tuple = ([], {'foo': 1, 'bar': 2})
     with mock.patch('dynamo.jobs.query_jobs', return_value=mock_response):
         response = client.get(JOBS_URI)
         assert unquote(response.json['next']) == 'http://localhost/jobs?start_token=eyJmb28iOiAxLCAiYmFyIjogMn0='

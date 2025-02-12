@@ -4,13 +4,373 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.5.0]
+
+### Added
+- ARIA_S1_GUNW job type to EDC deployments.
+
+## [9.4.0]
+
+### Changed
+- The `OPERA_DISP_TMS` job type is now a fan-out/fan-in workflow.
+
+### Fixed
+- Previously there was a bug in which fan-out job steps, defined using the `map: for item in items` syntax, would fail if `items` was an array of non-string values, because AWS Batch SubmitJob expects string parameters. This bug has been fixed by converting each value to a string before passing it to SubmitJob.
+
+## [9.3.0]
+
+### Added
+- Added `velocity` option for the `tile_type` parameter of `OPERA_DISP_TMS` jobs
+- Restored previously deleted `hyp3-opera-disp-sandbox` deployment
+- Added validator to check that bounds provided do not exceed maximum size for SRG jobs
+
+### Removed
+- Removed default bounds option for SRG jobs
+
+## [9.2.0]
+
+### Added
+- Add `mypy` to [`static-analysis`](.github/workflows/static-analysis.yml) workflow
+- `OPERA_DISP_TMS` job type is now available in EDC UAT deployment
+
+### Changed
+- Upgrade to Python 3.13
+
+### Removed
+- Remove `hyp3-opera-disp-sandbox` deployment
+
+## [9.1.1]
+
+### Changed
+- The [`static-analysis`](.github/workflows/static-analysis.yml) Github Actions workflow now uses `ruff` rather than `flake8` for linting.
+
+## [9.1.0]
+
+### Added
+- Add a new <https://hyp3-opera-disp-sandbox.asf.alaska.edu> deployment with an `OPERA_DISP_TMS` job type for generating tilesets for the OPERA displacement tool.
+
+## [9.0.1]
+
+### Changed
+- Upgrade to Amazon Linux 2023 AMI for Earthdata Cloud deployments
+
+## [9.0.0]
+
+### Changed
+- All failed jobs now have a `processing_times` value of `null`.
+
+### Fixed
+- Resolve a regression introduced by the previous release (v8.0.0) in which a processing step could report a negative processing time if the underlying AWS Batch job had a failed attempt that did not include a `StartedAt` field. Fixes <https://github.com/ASFHyP3/hyp3/issues/2485>
+- Upgrade from Flask v2.2.5 to v3.0.3. Fixes <https://github.com/ASFHyP3/hyp3/issues/2491>
+- Specify our custom JSON encoder by subclassing `flask.json.provider.JSONProvider`. See <https://github.com/pallets/flask/pull/4692>
+
+## [8.0.0]
+
+### Added
+- A job step can now be applied to every item in a list using a new `map: for <item> in <items>` syntax. For example, given a job spec with a `granules` parameter, a step that includes a `map: for granule in granules` field is applied to each item in the `granules` list and can refer to `Ref::granule` within its `command` field.
+- If a job contains a `map` step, the processing time value for that step (in the `processing_times` list in the job's API response) is a sub-list of processing times for the step's iterations, in the same order as the items in the input list.
+- A new `SRG_TIME_SERIES` job type has been added to the `hyp3-lavas` and `hyp3-lavas-test` deployments. This workflow uses the new `map` syntax described above to produce a GSLC for each level-0 Sentinel-1 granule passed via the `granules` parameter and then produces a time series product from the GSLCs. See the [HyP3 SRG](https://github.com/ASFHyP3/hyp3-srg) plugin.
+- The `SRG_GSLC` job type now includes parameter validation.
+
+### Changed
+- Changes to custom compute environments:
+  - Custom compute environments are now applied to individual job steps rather than to entire jobs. The `compute_environment` field is now provided at the step level rather than at the top level of the job spec.
+  - If the value of the `compute_environment` field is `Default`, then the step uses the deployment's default compute environment. Otherwise, the value must be the name of a custom compute environment defined in `job_spec/config/compute_environments.yml`.
+- Other changes to the job spec syntax:
+  - The `tasks` field has been renamed to `steps`.
+  - Job parameters no longer contain a top-level `default` field. The `default` field within each parameter's `api_schema` mapping is still supported.
+  - Job specs no longer explicitly define a `bucket_prefix` parameter. Instead, `bucket_prefix` is automatically defined and can still be referenced as `Ref::bucket_prefix` within each step's `command` field.
+
+## [7.12.0]
+
+### Changed
+- The `hyp3-its-live` deployment now uses a greater variety of `r6id[n]` instances.
+
+## [7.11.0]
+
+### Added
+- The `INSAR_ISCE_BURST` job type is now available in the `hyp3-avo`, `hyp3-bgc-engineering`, `hyp3-cargill`, abd `hyp3-carter` deployments.
+- The `AUTORIFT` job type is now available in the `hyp3-bgc-engineering`, `hyp3-cargill`, abd `hyp3-carter` deployments.
+
+## [7.10.0]
+
+### Added
+- Added a new `INSAR_ISCE_MULTI_BURST` job type for running multi-burst InSAR. Currently, this job type is restricted to a special `hyp3-multi-burst-sandbox` deployment for HyP3 operators. However, this is an important step toward eventually making multi-burst InSAR available for general users.
+
+### Changed
+- Job validator functions now accept two parameters: the job dictionary and the granule metadata.
+- Granule metadata validation now supports `reference` and `secondary` job parameters in addition to the existing `granules` parameter.
+- Burst InSAR validators now support multi-burst jobs.
+- Replaced the step function's `INSPECT_MEMORY_REQUIREMENTS` step with a new `SET_BATCH_OVERRIDES` step, which calls a Lambda function to dynamically calculate [Batch container overrides](https://docs.aws.amazon.com/batch/latest/APIReference/API_ContainerOverrides.html) based on job type and parameters.
+
+## [7.9.3]
+### Fixed
+- Added missing cloudformation:DeleteStack permission to cloudformation deployment role in ASF-deployment-ci-cf.yml .
+
+## [7.9.2]
+
+### Removed
+- Deleted the `hyp3-pdc` deployment in preparation for archiving the [hyp3-flood-monitoring](https://github.com/ASFHyP3/hyp3-flood-monitoring) project.
+
+### Fixed
+- Copied cloudformation permissions from user to cloudformation deployment role in ASF-deployment-ci-cf.yml to address
+  breaking AWS IAM change when deploying nested stacks via a cloudformation role.
+
+## [7.9.1]
+
+### Changed
+- The `SRG_GSLC` job now takes in a `--bounds` argument that determines the extent of the DEM used in back projection.
+
+## [7.9.0]
+
+### Changed
+- The `ARIA_AUTORIFT.yml` job spec now specifies the optimum number of OpenMP threads and uses a dedicated compute environment with `r6id[n]` spot instances.
+- The `AUTORIFT_ITS_LIVE.yml` job spec now specifies the optimum number of OpenMP threads.
+- The `INSAR_ISCE.yml` job spec now reserved 16 GB memory for running the DockerizedTopsApp task.
+- The `hyp3-a19-jpl-test`, `hyp3-a19-jpl`, `hyp3-tibet-jpl`, and `hyp3-nisar-jpl` ARIA deployments now uses on-demand `m6id[n]` instances.
+- The `hyp3-its-live-test` deployment now uses a greater variety of `r6id[n]` instances.
+
+## [7.8.1]
+
+### Fixed
+- Upgraded to flask-cors v5.0.0 from v4.0.1. Resolves [CVE-2024-6221](https://github.com/ASFHyP3/hyp3/security/dependabot/17).
+
+## [7.8.0]
+
+### Added
+- Allow overriding certain AWS Batch compute environment parameters (including instance types and AMI) within a job spec.
+- Allow job spec tasks to require GPU resources.
+
+### Changed
+- The `SRG_GSLC` job type now runs within a GPU environment.
+- Revert ARIA hyp3 deployments back to C-instance family - including the job-spec CLI parameter `omp-num-threads` to ensure multiple jobs fit on single instance.
+- Deployments with INSAR_ISCE.yml job specs will now use a dedicated compute environment with on-demand instances instead of spot instances for INSAR_ISCE jobs.
+
+## [7.7.2]
+
+### Change
+- Renamed the `SRG_GSLC_CPU` job to `SRG_GSLC`
+- Changed the `SRG_GSLC` job to use the `hyp3-srg` image, rather than `hyp3-back-projection` since the repository was renamed.
+
+
+## [7.7.1]
+
+### Removed
+- The `ESA_USERNAME` and `ESA_PASSWORD` secrets have been removed from the job specs that no longer require them (those that use the `hyp3-gamma`, `hyp3-isce2`, `hyp3-autorift`, or `hyp3-back-projection` images).
+
+
+## [7.7.0]
+
+### Added
+- `ARIA_AUTORIFT.yml` job spec for Solid Earth offset tracking in the ARIA JPL deployments
+
+### Changed
+- Increased throughput for `hyp3-a19-jpl` (0 -> 4,000 vCPUs) to support continued processing of ARIA GUNW products.
+- The `hyp3-a19-jpl` and `hyp3-nisar-jpl` deployments now use the `m6id[n]` instance families to reduce the high number of spot interruptions seen with wth `c6id` instance family.
+- Increased available vCPUs for DAAC deployments.
+
+### Removed
+- The `INSAR_ISCE_TEST.yml` job spec, which only differed from `INSAR_ISCE.yml` in support of different instance families, has been removed now that all ARIA JPL deployments are using the same instance families again.
+
+
+## [7.6.0]
+
+### Changed
+- Reduced throughput for `hyp3-its-live` to prevent Sentinel-2 processing from being rate limited (10,000 -> 2,000 vCPUs).
+
+## [7.5.0]
+
+### Added
+* The `SRG_GSLC_CPU` job spec
+* The `SRG_GSLC_CPU` job type to the `hyp3-lavas` and `hyp3-lavas-test` HyP3 deployments
+
+### Changed
+- The `hyp3-tibet-jpl` deployment now uses the `m6id[n]` instance families and includes the `ARIA_RAIDER` job spec
+
+## [7.4.0]
+
+### Added
+* The `hyp3-lavas` and `hyp3-lavas-test` enterprise HyP3 deployments.
+
+## [7.3.0]
+
+This release adds support for access codes. If a user specifies an active access code when they apply for HyP3 access, they will be granted automatic approval without the need for a HyP3 operator to review their application.
+
+If you operate a HyP3 deployment, you can create a new access code by adding an item to the `AccessCodesTable` DynamoDB table for your deployment, with any string for the `access_code` attribute and an ISO-formatted UTC timestamp for the `start_date` and `end_date` attributes, e.g. `2024-06-01T00:00:00+00:00` and `2024-06-02T00:00:00+00:00` for an access code that becomes active on June 1, 2024 and expires on June 2, 2024.
+
+### Added
+- The `PATCH /user` endpoint now includes an optional `access_code` parameter and returns a `403` response if given an invalid or inactive access code.
+
+### Changed
+- Turn off hyp3 ACCESS spend by zeroing the max VCPUs in the associated deployment.
+- Reduce product lifetime in hyp3 ACCESS deployment to 14 days.
+
+## [7.2.1]
+
+### Fixed
+- Added missing `requests` dependency to lib/dyanmo/setup.py. Fixes [#2269](https://github.com/ASFHyP3/hyp3/issues/2269).
+
+## [7.2.0]
+
+This release includes changes to support an upcoming user whitelisting feature. A new user will be required to apply for HyP3 access and will not be able to submit jobs until an operator has manually reviewed and approved the application. As of this release, all new and existing users are automatically approved without being required to submit an application, but this will change in the near future.
+
+⚠️ Important notes for HyP3 deployment operators:
+- Changing a user's application status (e.g. to approve or reject a new user) requires manually updating the value of the `application_status` field in the Users table.
+- The response for both `/user` endpoints now automatically includes all Users table fields except those prefixed by an underscore (`_`).
+- The following manual updates must be made to the Users table upon deployment of this release:
+  - Add field `application_status` with the appropriate value for each user.
+  - Rename field `month_of_last_credits_reset` to `_month_of_last_credit_reset`.
+  - Rename field `notes` to `_notes`.
+
+### Added
+- A new `PATCH /user` endpoint with a single `use_case` parameter allows the user to submit an application or update a pending application. The structure for a successful response is the same as for `GET /user`.
+- A new `default_application_status` deployment parameter specifies the default status for new user applications. The parameter has been set to `APPROVED` for all deployments.
+
+### Changed
+- The `POST /jobs` endpoint now returns a `403` response if the user has not been approved.
+- The response schema for the `GET /user` endpoint now includes:
+  - A required `application_status` field representing the status of the user's application: `NOT_STARTED`, `PENDING`, `APPROVED`, or `REJECTED`.
+  - An optional `use_case` field containing the use case submitted with the user's application.
+  - An optional `credits_per_month` field representing the user's monthly credit allotment, if different from the deployment default.
+
+### Removed
+- The `reset_credits_monthly` deployment parameter has been removed. Credits now reset monthly in all deployments. This only changes the behavior of the `hyp3-enterprise-test` deployment.
+
+## [7.1.1]
+### Changed
+- Reduced `start_execution_manager` batch size from 600 jobs to 500 jobs. Fixes [#2241](https://github.com/ASFHyP3/hyp3/issues/2241).
+
+## [7.1.0]
+### Added
+- A `hyp3-its-live-test` deployment to [`deploy-enterprise-test.yml`](.github/workflows/deploy-enterprise-test.yml) for ITS_LIVE testing in preparation for some significant ITS_LIVE project development
+- A `hyp3-a19-jpl-test` deployment to [`deploy-enterprise-test.yml`](.github/workflows/deploy-enterprise-test.yml) for ARIA testing of the `m6id[n]` instance families
+- An `ARIA_RAIDER` job spec that allows RAIDER processing of previous INSAR_ISCE job that either did not include a weather model or failed on the RAiDER step.
+- `ARIA_RAIDER` jobs are now available in the `hyp3-a19-jpl` and `hyp3-a19-jpl-test` deployments.
+
+### Changed
+- The `INSAR_ISCE_TEST.yml` job spec now only differs from the `INSAR_ISCE.yml` with respect to the `++omp-num-threads` parameter, because the value is specific to a particular instance family
+- Job specs are no longer required to include the `granules` parameter.
+
+### Removed
+- The `AUTORIFT_ITS_LIVE_TEST.yml` job spec which supported running test versions of the AUTORIFT jobs in the production hyp3-its-live deployment
+
+## [7.0.0]
+
+This release marks the final transition to the new credits system. These changes apply to the production HyP3 API at <https://hyp3-api.asf.alaska.edu>. Read the [announcement](https://hyp3-docs.asf.alaska.edu/using/credits/) for full details.
+
+### Changed
+
+- Each type of job now costs a different number of credits, as shown in the table [here](https://hyp3-docs.asf.alaska.edu/using/credits/).
+- Users are now given an allotment of 10,000 credits per month.
+
+## [6.5.1]
+
+### Fixed
+- Added a Lambda function that sets `Private DNS names enabled` to false for VPC endpoint in EDC.
+
+## [6.5.0]
+
+### Added
+- A `publish_bucket` parameter to `AUTORIFT_ITS_LIVE` and `AUTORIFT_ITS_LIVE_TEST` that specifies if product should be uploaded to either the ITS_LIVE open data bucket or test bucket.
+- Access key secrets to `AUTORIFT_ITS_LIVE` and `AUTORIFT_ITS_LIVE_TEST` that allow for S3 upload of products.
+
+### Changed
+- Update throughput for ACCESS deployments by factor of 4 (from 1000 to 4000 vcpus).
+
+## [6.4.0]
+
+### Changed
+- Reduced vcpu limits for EDC deployments from 1,500/3,000 to 1,200/2,400.
+
+### Removed
+- The `disable-private-dns` lambda function added in v4.3.2 has been removed; the underlying issue has been resolved in
+  the Earthdata Cloud platform. Fixes [#1956](https://github.com/ASFHyP3/hyp3/issues/1956).
+
+## [6.3.0]
+
+### Changed
+- `/costs` API endpoint now returns a list of job cost dictionaries, instead of a dictionary of dictionaries.
+- Cost table parameters are now contained within the `parameter_value` dictionary key.
+- Cost table costs are now contained within the `cost` dictionary key.
+
+## [6.2.0]
+
+HyP3 is in the process of transitioning from a monthly job quota to a credits system. [HyP3 v6.0.0](https://github.com/ASFHyP3/hyp3/releases/tag/v6.0.0) implemented the new credits system without changing the number of jobs that users can run per month. This release implements the capability to assign a different credit cost to each type of job, again without actually changing the number of jobs that users can run per month.
+
+Beginning on April 1st, the production API at <https://hyp3-api.asf.alaska.edu> will assign a different cost to each type of job and users will be given an allotment of 10,000 credits per month. Visit the [credits announcement page](https://hyp3-docs.asf.alaska.edu/using/credits/) for full details.
+
+### Added
+- `/costs` API endpoint that returns a table that can be used to look up the credit costs for different types of jobs.
+
+### Changed
+- The <https://hyp3-test-api.asf.alaska.edu> API now implements the credit costs displayed on the [credits announcement page](https://hyp3-docs.asf.alaska.edu/using/credits/).
+- `hyp3-a19-jpl` and `hyp3-tibet-jpl` deployments max vCPUs have been reduced to 1,000 from 10,000 because of persistent spot interruptions.
+
+## [6.1.1]
+
+### Changed
+- Upgraded to `cryptography==42.0.4`. Fixes CVE-2024-26130.
+
+## [6.1.0]
+
+### Added
+- Previously, the `job_parameters` field of the `job` object returned by the `/jobs` API endpoint only included parameters whose values were specified by the user. Now, the field also includes optional, unspecified parameters, along with their default values. This does not change how jobs are processed, but gives the user a complete report of what parameters were used to process their jobs.
+
+### Changed
+- Increased maximum vCPUs from 0 to 10,000 in the hyp3-tibet-jpl deployment.
+- Decreased product lifetime from 60 days to 30 days in the hyp3-tibet-jpl deployment.
+
+## [6.0.0]
+
+HyP3's monthly quota system has been replaced by a credits system. Previously, HyP3 provided each user with a certain number of jobs per month. Now, each job costs a particular number of credits, and users spend credits when they submit jobs. This release assigns every job a cost of 1 credit, but future releases will assign a different credit cost to each job type. Additionally, the main production deployment (`https://hyp3-api.asf.alaska.edu`) resets each user's balance to 1,000 credits each month, effectively granting each user 1,000 jobs per month. Therefore, users should not notice any difference when ordering jobs via ASF's On Demand service at <https://search.asf.alaska.edu>.
+
+### Added
+- The `job` object returned by the `/jobs` API endpoint now includes a `credit_cost` attribute, which represents the job's cost in credits.
+- A `DAR` tag is now included in Earthdata Cloud deployments for each S3 bucket to communicate which contain objects
+  that required to be encrypted at rest.
+
+### Changed
+- The `quota` attribute of the `user` object returned by the `/user` API endpoint has been replaced by a `remaining_credits` attribute, which represents the user's remaining credits.
+
+### Removed
+- The non-functional CloudWatch alarm for API 5xx errors has been removed from the `monitoring` module. See [#2044](https://github.com/ASFHyP3/hyp3/issues/2044).
+
+## [5.0.4]
+### Added
+- `INSAR_ISCE_BURST` jobs are now available in the azdwr-hyp3 deployment.
+
+### Changed
+- Addressed breaking changes with upgrade to `moto[dynamodb]==5.0.0`
+
+## [5.0.3]
+### Fixed
+- Fix how the `INSAR_ISCE_BURST` antimeridian error message is formatted.
+
+## [5.0.2]
+### Added
+- A validation check for `INSAR_ISCE_BURST` that will fail if a granule crosses the antimeridian.
+
+## [5.0.1]
+### Fixed
+- Upgrade the `openapi-core`, `openapi-spec-validator`, and `jsonschema` packages to their latest versions. This is now possible thanks to the pre-release of [openapi-core v0.19.0a1](https://github.com/python-openapi/openapi-core/releases/tag/0.19.0a1), which fixes <https://github.com/python-openapi/openapi-core/issues/662>. Resolves <https://github.com/ASFHyP3/hyp3/issues/1193>.
+
+## [5.0.0]
+### Removed
+- `legacy` option for the `dem_name` parameter of `RTC_GAMMA` jobs. All RTC processing will now use the Copernicus DEM.
+### Fixed
+- The description of the INSAR_ISCE_BURST job's `apply_water_mask` to state that water masking now happens BEFORE unwrapping.
+
+## [4.5.1]
+### Fixed
+- `output_resolution` in the `INSAR_ISCE_TEST` job spec is now correctly specified as an int instead of number, which can be a float or an int.
+
 ## [4.5.0]
 ### Changed
-- Update `INSAR_ISCE_TEST` job spec for GUNW version 3+ standard and custom products
-  - `frame_id` is now a required parameter
-  - Updates parameter defaults
-  - Exposes `frame_id`, `goldstein_filter_power`, and `unfiltered_coherence` parameters
-dor  
+- Update `INSAR_ISCE` and `INSAR_ISCE_TEST` job spec for GUNW version 3+ standard and custom products
+  - `frame_id` is now a required parameter and has no default
+  - `compute_solid_earth_tide` and `estimate_ionosphere_delay` now default to `true`
+  - `INSAR_ISCE_TEST` exposes custom `goldstein_filter_power`, `output_resolution`, `dense_offsets`, and `unfiltered_coherence` parameters
+
 ## [4.4.1]
 ### Changed
 - Updated `WATER_MAP` job spec to point at the [HydroSAR images](https://github.com/fjmeyer/HydroSAR/pkgs/container/hydrosar)
@@ -90,7 +450,7 @@ dor
 ## [3.10.8]
 ### Changed
 - HyP3 deployments at JPL now use On Demand instances instead of Spot instances to prevent `INSAR_ISCE` jobs from being interrupted.
-  This *should* be a temporary change. 
+  This *should* be a temporary change.
 
 ## [3.10.7]
 ### Changed
@@ -234,7 +594,7 @@ dor
 ## [3.2.0]
 ### Added
 - [`job_spec`s](job_spec/) can now specify a required set of secrets and an AWS Secrets Manage Secret ARN to pull the
-  secret values from. Notably, secrets are now externally managed and not part of the HyP3 stack.  
+  secret values from. Notably, secrets are now externally managed and not part of the HyP3 stack.
 
 ## [3.1.2]
 ### Added
@@ -259,13 +619,13 @@ dor
 - The `flood_depth_estimator` parameter for `WATER_MAP` jobs is now restricted to a set of possible values.
 - Changed the default value for the `flood_depth_estimator` parameter for `WATER_MAP` jobs from `iterative` to `None`.
   A value of `None` indicates that a flood map will not be included.
-- Reduced `ITS_LIVE` product lifetime cycle from 180 days to 45 days. 
+- Reduced `ITS_LIVE` product lifetime cycle from 180 days to 45 days.
 ### Removed
 - Removed the `include_flood_depth` parameter for `WATER_MAP` jobs.
 
 ## [2.25.0]
 ### Added
-- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs now accept a `weather_model` parameter to specify which weather model to use 
+- `INSAR_ISCE` and `INSAR_ISCE_TEST` jobs now accept a `weather_model` parameter to specify which weather model to use
    when estimating trophospheric delay data.
 - Increases the memory available to `AUTORIFT` jobs for Landsat pairs
 
@@ -305,7 +665,7 @@ dor
 
 ## [2.21.8]
 ### Changed
-- AUTORIFT jobs for Sentinel-2 scenes can now only be submitted using ESA naming convention. 
+- AUTORIFT jobs for Sentinel-2 scenes can now only be submitted using ESA naming convention.
 
 ## [2.21.7]
 ### Changed
@@ -364,7 +724,7 @@ dor
 
 ## [2.19.4]
 ### Changed
-- `scale-cluster` now adjusts the compute environment size based on total month-to-date spending, rather than only EC2 
+- `scale-cluster` now adjusts the compute environment size based on total month-to-date spending, rather than only EC2
   spending.
 
 ## [2.19.3]
@@ -528,7 +888,7 @@ dor
   - `ASF` (default) -- AWS accounts managed by the Alaska Satellite Facility
   - `EDC` -- AWS accounts managed by the NASA Earthdata CLoud
   - `JPL` -- AWS accounts managed by the NASA Jet Propulsion Laboratory
-- A `security_environment` Make variable used by the `render` target (and any target that depends on `render`). 
+- A `security_environment` Make variable used by the `render` target (and any target that depends on `render`).
   Use like `make security_environment=ASF build`
 
 ### Changed
@@ -599,10 +959,10 @@ dor
 
 ## [2.6.2](https://github.com/ASFHyP3/hyp3/compare/v2.6.1...v2.6.2)
 ### Added
-- New `AmiId` stack parameter to specify a specific AMI for the AWS Batch compute environment 
+- New `AmiId` stack parameter to specify a specific AMI for the AWS Batch compute environment
 
 ### Changed
-- `job_spec/*.yml` files are now explicitly selected allowing per-deployment job customization 
+- `job_spec/*.yml` files are now explicitly selected allowing per-deployment job customization
 
 ### Removed
 - `AutoriftImage`, `AutoriftNamingScheme`, and `AutoriftParameterFile` CloudFormation stack parameters
@@ -657,7 +1017,7 @@ to the database but still validate it.
   - `name` gets only subscriptions with the given name
   - `job_type` gets only subscriptions with the given job type
   - `enabled` gets only subscriptions where `enabled` matches
-- subscriptions now include `creation_date` which indicates date and time of subscription creation, responses from 
+- subscriptions now include `creation_date` which indicates date and time of subscription creation, responses from
 `GET /subscriptions` are sorted by `creation_date` decending
 
 
@@ -696,7 +1056,7 @@ to the database but still validate it.
 - `lib/dynamo` library to allow sharing common code among different apps.
 
 ## Changed
-- `POST /jobs` responses no longer include the `job_id`, `request_time`, `status_code`, or `user_id` fields when `validate_only=true` 
+- `POST /jobs` responses no longer include the `job_id`, `request_time`, `status_code`, or `user_id` fields when `validate_only=true`
 - moved dynamodb functionality from `hyp3_api/dynamo` to `lib/dynamo`
 - moved job creation buisness logic from `hyp3_api/handlers` to `lib/dynamo`
 

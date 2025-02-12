@@ -5,6 +5,11 @@ Parameters:
   ComputeEnvironmentArn:
     Type: String
 
+  {% for name in compute_envs %}
+  {{ name }}ComputeEnvironmentArn:
+    Type: String
+  {% endfor %}
+
   DefaultMaxvCpus:
     Type: Number
     MinValue: 0
@@ -79,7 +84,11 @@ Resources:
             Resource: "*"
           - Effect: Allow
             Action: batch:UpdateComputeEnvironment
-            Resource: !Ref ComputeEnvironmentArn
+            Resource: 
+              - !Ref ComputeEnvironmentArn
+              {% for name in compute_envs %}
+              - !Ref {{ name }}ComputeEnvironmentArn
+              {% endfor %}
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -95,7 +104,7 @@ Resources:
       Handler: scale_cluster.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
-      Runtime: python3.9
+      Runtime: python3.13
       Timeout: 30
       {% if security_environment == 'EDC' %}
       VpcConfig:
@@ -118,6 +127,10 @@ Resources:
       Targets:
         - Arn: !GetAtt Lambda.Arn
           Id: lambda
+        {% for name in compute_envs %}
+        - Arn: !GetAtt {{ name }}Lambda.Arn
+          Id:  {{ name }}lambda
+        {% endfor %}
 
   EventPermission:
     Type: AWS::Lambda::Permission
@@ -126,3 +139,49 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt Schedule.Arn
+
+  {% for name in compute_envs %}
+  {{ name }}LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "{{ '/aws/lambda/${' + name + 'Lambda}' }}"
+      RetentionInDays: 90
+  
+  {{ name }}Lambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Environment:
+        Variables:
+          COMPUTE_ENVIRONMENT_ARN: !Ref {{ name }}ComputeEnvironmentArn
+          MONTHLY_BUDGET: !Ref MonthlyBudget
+          DEFAULT_MAX_VCPUS: !Ref DefaultMaxvCpus
+          EXPANDED_MAX_VCPUS: !Ref ExpandedMaxvCpus
+          REQUIRED_SURPLUS: !Ref RequiredSurplus
+      Code: src/
+      Handler: scale_cluster.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt Role.Arn
+      Runtime: python3.13
+      Timeout: 30
+      {% if security_environment == 'EDC' %}
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetIds: !Ref SubnetIds
+      {% endif %}
+
+  {{ name }}EventInvokeConfig:
+    Type: AWS::Lambda::EventInvokeConfig
+    Properties:
+      FunctionName: !Ref {{ name }}Lambda
+      Qualifier: $LATEST
+      MaximumRetryAttempts: 0
+
+  {{ name }}EventPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt  {{ name }}Lambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt Schedule.Arn
+  {% endfor %}

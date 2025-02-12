@@ -3,7 +3,6 @@ AUTORIFT:
     - granules
   parameters:
     granules:
-      default:  '""'
       api_schema:
         type: array
         minItems: 2
@@ -31,15 +30,18 @@ AUTORIFT:
               minLength: 40
               maxLength: 40
               example: LC08_L1GT_118112_20210107_20210107_02_T2
-    bucket_prefix:
-      default:  '""'
+  cost_profiles:
+    EDC:
+      cost: 25.0
+    DEFAULT:
+      cost: 1.0
   validators: []
-  tasks:
+  steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
       command:
         - ++omp-num-threads
-        - '4'
+        - '4'  # 4 vCPUs per 32 GB RAM for the R instance family
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -50,10 +52,9 @@ AUTORIFT:
         - ITS_LIVE_OD
         - Ref::granules
       timeout: 10800
+      compute_environment: Default
       vcpu: 1
       memory: 31500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD

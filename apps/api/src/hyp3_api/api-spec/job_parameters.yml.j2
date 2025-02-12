@@ -23,16 +23,16 @@ components:
 
     {% for job_type, job_spec in job_types.items() %}
     {{ job_type }}Parameters:
-      description: Parameters for running {{ job_type }} jobs, including specific granules
+      description: Parameters for running {{ job_type }} jobs
       type: object
       additionalProperties: false
-      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec and parameter in job_spec.get('required_parameters', []) %}
+      {% for parameter, parameter_spec in job_spec['parameters'].items() if parameter in job_spec.get('required_parameters', []) %}
       {% if loop.first %}
       required:
       {% endif %}
         - {{ parameter }}
       {% endfor %}
-      {% for parameter, parameter_spec in job_spec['parameters'].items() if 'api_schema' in parameter_spec %}
+      {% for parameter, parameter_spec in job_spec['parameters'].items() %}
       {% if loop.first %}
       properties:
       {% endif %}
@@ -53,7 +53,7 @@ components:
           enum:
             - {{ job_type }}
         name:
-          $ref: "./openapi-spec.yml#components/schemas/name"
+          $ref: "./openapi-spec.yml#/components/schemas/name"
         job_parameters:
           $ref: "#/components/schemas/{{ job_type }}Parameters"
 

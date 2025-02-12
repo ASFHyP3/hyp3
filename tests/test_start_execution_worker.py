@@ -13,27 +13,17 @@ def test_convert_to_string():
     assert start_execution_worker.convert_to_string('abc') == 'abc'
 
 
-def test_convert_parameters_to_string():
-    parameters = {
-        'param1': 1,
-        'param2': True,
-        'param3': [1, 2],
-        'param4': ['abc', 'bcd'],
-        'param5': 'abc',
-    }
-    assert start_execution_worker.convert_parameters_to_strings(parameters) == {
-        'param1': '1',
-        'param2': 'True',
-        'param3': '1 2',
-        'param4': 'abc bcd',
-        'param5': 'abc',
-    }
-
-
 def test_submit_jobs():
+    batch_params_by_job_type = {
+        'JOB_0': ['granules', 'string_field', 'boolean_field', 'float_field', 'integer_field'],
+        'JOB_1': ['string_field', 'boolean_field'],
+        'JOB_2': [],
+    }
+
     jobs = [
         {
             'job_id': 'job0',
+            'job_type': 'JOB_0',
             'string_field': 'value1',
             'boolean_field': True,
             'float_field': 10.1,
@@ -51,18 +41,61 @@ def test_submit_jobs():
         },
         {
             'job_id': 'job1',
-            'job_parameters': {'granules': ['granule1']},
-        }
-    ]
-
-    expected_input_job0 = json.dumps(
-        {
-            'job_id': 'job0',
+            'job_type': 'JOB_1',
             'string_field': 'value1',
             'boolean_field': True,
             'float_field': 10.1,
             'integer_field': 10,
             'job_parameters': {
+                'granules': [
+                    'granule1',
+                    'granule2',
+                ],
+                'string_field': 'value1',
+                'boolean_field': True,
+                'float_field': 10.1,
+                'integer_field': 10,
+            },
+        },
+        {
+            'job_id': 'job2',
+            'job_type': 'JOB_2',
+            'string_field': 'value1',
+            'boolean_field': True,
+            'float_field': 10.1,
+            'integer_field': 10,
+            'job_parameters': {
+                'granules': [
+                    'granule1',
+                    'granule2',
+                ],
+                'string_field': 'value1',
+                'boolean_field': True,
+                'float_field': 10.1,
+                'integer_field': 10,
+            },
+        },
+    ]
+
+    expected_input_job0 = json.dumps(
+        {
+            'job_id': 'job0',
+            'job_type': 'JOB_0',
+            'string_field': 'value1',
+            'boolean_field': True,
+            'float_field': 10.1,
+            'integer_field': 10,
+            'job_parameters': {
+                'granules': [
+                    'granule1',
+                    'granule2',
+                ],
+                'string_field': 'value1',
+                'boolean_field': True,
+                'float_field': 10.1,
+                'integer_field': 10,
+            },
+            'batch_job_parameters': {
                 'granules': 'granule1 granule2',
                 'string_field': 'value1',
                 'boolean_field': 'True',
@@ -76,13 +109,57 @@ def test_submit_jobs():
     expected_input_job1 = json.dumps(
         {
             'job_id': 'job1',
-            'job_parameters': {'granules': 'granule1'},
+            'job_type': 'JOB_1',
+            'string_field': 'value1',
+            'boolean_field': True,
+            'float_field': 10.1,
+            'integer_field': 10,
+            'job_parameters': {
+                'granules': [
+                    'granule1',
+                    'granule2',
+                ],
+                'string_field': 'value1',
+                'boolean_field': True,
+                'float_field': 10.1,
+                'integer_field': 10,
+            },
+            'batch_job_parameters': {
+                'string_field': 'value1',
+                'boolean_field': 'True',
+            },
         },
         sort_keys=True,
     )
 
-    with patch('start_execution_worker.STEP_FUNCTION.start_execution') as mock_start_execution, \
-            patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-state-machine-arn'}, clear=True):
+    expected_input_job2 = json.dumps(
+        {
+            'job_id': 'job2',
+            'job_type': 'JOB_2',
+            'string_field': 'value1',
+            'boolean_field': True,
+            'float_field': 10.1,
+            'integer_field': 10,
+            'job_parameters': {
+                'granules': [
+                    'granule1',
+                    'granule2',
+                ],
+                'string_field': 'value1',
+                'boolean_field': True,
+                'float_field': 10.1,
+                'integer_field': 10,
+            },
+            'batch_job_parameters': {},
+        },
+        sort_keys=True,
+    )
+
+    with (
+        patch('start_execution_worker.STEP_FUNCTION.start_execution') as mock_start_execution,
+        patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-state-machine-arn'}, clear=True),
+        patch('start_execution_worker.BATCH_PARAMS_BY_JOB_TYPE', batch_params_by_job_type),
+    ):
         start_execution_worker.submit_jobs(jobs)
 
         assert mock_start_execution.mock_calls == [
@@ -95,7 +172,12 @@ def test_submit_jobs():
                 stateMachineArn='test-state-machine-arn',
                 input=expected_input_job1,
                 name='job1',
-            )
+            ),
+            call(
+                stateMachineArn='test-state-machine-arn',
+                input=expected_input_job2,
+                name='job2',
+            ),
         ]
 
 

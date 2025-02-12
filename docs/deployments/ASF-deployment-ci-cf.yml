@@ -42,6 +42,19 @@ Resources:
                   - kms:*
                 Resource: "*"
 
+              - Effect: Allow
+                Action:
+                  - cloudformation:SetStackPolicy
+                  - cloudformation:CreateStack
+                  - cloudformation:UpdateStack
+                  - cloudformation:DeleteStack
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:GetTemplateSummary
+                Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+
   GithubActionsUser:
     Type: AWS::IAM::User
     Properties:

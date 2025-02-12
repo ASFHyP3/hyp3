@@ -6,6 +6,23 @@ import pytest
 from hyp3_api import util
 
 
+def test_get_granules():
+    assert util.get_granules(
+        [
+            {'job_parameters': {'granules': []}},
+            {'job_parameters': {'granules': ['A']}},
+            {'job_parameters': {'granules': ['B']}},
+            {'job_parameters': {'granules': ['C', 'D']}},
+            {'job_parameters': {'secondary': ['J']}},
+            {'job_parameters': {'granules': ['C', 'D', 'E']}},
+            {'job_parameters': {'granules': ['F', 'F']}},
+            {'job_parameters': {'reference': ['G', 'H', 'H', 'I']}},
+            {'job_parameters': {'secondary': []}},
+            {'job_parameters': {}},
+        ]
+    ) == {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'}
+
+
 def test_serialize_token():
     token = {'foo': 1, 'bar': 2}
     assert util.serialize(token) == 'eyJmb28iOiAxLCAiYmFyIjogMn0='

@@ -1,7 +1,9 @@
 API = ${PWD}/apps/api/src
+APPS = ${PWD}/apps
 CHECK_PROCESSING_TIME = ${PWD}/apps/check-processing-time/src
 GET_FILES = ${PWD}/apps/get-files/src
 HANDLE_BATCH_EVENT = ${PWD}/apps/handle-batch-event/src
+SET_BATCH_OVERRIDES = ${PWD}/apps/set-batch-overrides/src
 SCALE_CLUSTER = ${PWD}/apps/scale-cluster/src
 START_EXECUTION_MANAGER = ${PWD}/apps/start-execution-manager/src
 START_EXECUTION_WORKER = ${PWD}/apps/start-execution-worker/src
@@ -9,7 +11,7 @@ DISABLE_PRIVATE_DNS = ${PWD}/apps/disable-private-dns/src
 UPDATE_DB = ${PWD}/apps/update-db/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
 DYNAMO = ${PWD}/lib/dynamo
-export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SCALE_CLUSTER}:${START_EXECUTION_MANAGER}:${START_EXECUTION_WORKER}:${DISABLE_PRIVATE_DNS}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}
+export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SET_BATCH_OVERRIDES}:${SCALE_CLUSTER}:${START_EXECUTION_MANAGER}:${START_EXECUTION_WORKER}:${DISABLE_PRIVATE_DNS}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}:${APPS}
 
 
 build: render
@@ -35,15 +37,17 @@ install:
 	python -m pip install -r requirements-all.txt
 
 files ?= job_spec/*.yml
+compute_env_file ?= job_spec/config/compute_environments.yml
 security_environment ?= ASF
 api_name ?= local
+cost_profile ?= DEFAULT
 render:
-	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -s $(security_environment) -n $(api_name)
+	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -e $(compute_env_file) -s $(security_environment) -n $(api_name) -c $(cost_profile)
 
-static: flake8 openapi-validate cfn-lint
+static: ruff openapi-validate cfn-lint
 
-flake8:
-	flake8 --ignore=E731 --max-line-length=120 --import-order-style=pycharm --statistics --application-import-names hyp3_api,get_files,handle_batch_event,check_processing_time,start_execution_manager,start_execution_worker,disable_private_dns,update_db,upload_log,dynamo,lambda_logging,scale_cluster apps tests lib
+ruff:
+	ruff check . && ruff format --diff .
 
 openapi-validate: render
 	openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml

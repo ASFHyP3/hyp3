@@ -18,15 +18,16 @@ jobs:
             domain: hyp3-its-live.asf.alaska.edu
             template_bucket: cf-templates-3o5lnspmwmzg-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 45
-            quota: 0
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
             job_files: >-
               job_spec/AUTORIFT_ITS_LIVE.yml
-              job_spec/AUTORIFT_ITS_LIVE_TEST.yml
               job_spec/S1_CORRECTION_ITS_LIVE.yml
-            instance_types: r6id.xlarge,r6idn.xlarge,r5dn.xlarge,r5d.xlarge
-            default_max_vcpus: 10000
-            expanded_max_vcpus: 10000
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            default_max_vcpus: 2000  # Max: 10,406
+            expanded_max_vcpus: 2000  # Max: 10,406
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -36,12 +37,17 @@ jobs:
             domain: hyp3-a19-jpl.asf.alaska.edu
             template_bucket: cf-templates-v4pvone059de-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 180
-            quota: 0
-            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
-            default_max_vcpus: 10000
-            expanded_max_vcpus: 10000
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/ARIA_AUTORIFT.yml
+              job_spec/ARIA_RAIDER.yml
+              job_spec/INSAR_ISCE.yml
+            instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
+            default_max_vcpus: 4000  # Max: 13000
+            expanded_max_vcpus: 4000  # Max: 13000
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -51,12 +57,17 @@ jobs:
             domain: hyp3-tibet-jpl.asf.alaska.edu
             template_bucket: cf-templates-1or0efwqffkgd-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 60
-            quota: 0
-            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
-            default_max_vcpus: 0
-            expanded_max_vcpus: 0
+            product_lifetime_in_days: 30
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/ARIA_AUTORIFT.yml
+              job_spec/ARIA_RAIDER.yml
+              job_spec/INSAR_ISCE.yml
+            instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
+            default_max_vcpus: 1000  # Max: 10316
+            expanded_max_vcpus: 1000  # Max: 10316
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -67,11 +78,16 @@ jobs:
             template_bucket: cf-templates-gdeyr9hh8rzs-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
-            quota: 0
-            job_files: job_spec/INSAR_ISCE.yml job_spec/INSAR_ISCE_TEST.yml
-            instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/ARIA_AUTORIFT.yml
+              job_spec/ARIA_RAIDER.yml
+              job_spec/INSAR_ISCE.yml
+            instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
+            default_max_vcpus: 1600  # Max 1652
+            expanded_max_vcpus: 1600  # Max 1652
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -82,8 +98,12 @@ jobs:
             template_bucket: cf-templates-1x4a21iq1cba7-us-west-2
             image_tag: latest
             product_lifetime_in_days: 365000
-            quota: 0
-            job_files: job_spec/INSAR_GAMMA.yml
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/INSAR_GAMMA.yml
+              job_spec/INSAR_ISCE_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -97,8 +117,13 @@ jobs:
             template_bucket: cf-templates-1217di08q7vwl-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
-            quota: 0
-            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/RTC_GAMMA.yml
+              job_spec/WATER_MAP.yml
+              job_spec/WATER_MAP_EQ.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -112,8 +137,13 @@ jobs:
             template_bucket: cf-templates-15gmiot9prm67-us-west-2
             image_tag: latest
             product_lifetime_in_days: 90
-            quota: 0
-            job_files: job_spec/RTC_GAMMA.yml job_spec/WATER_MAP.yml job_spec/WATER_MAP_EQ.yml
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/RTC_GAMMA.yml
+              job_spec/WATER_MAP.yml
+              job_spec/WATER_MAP_EQ.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
@@ -127,8 +157,12 @@ jobs:
             template_bucket: cf-templates-xlga17noink6-us-west-2
             image_tag: latest
             product_lifetime_in_days: 30
-            quota: 0
-            job_files: job_spec/INSAR_GAMMA.yml
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/INSAR_GAMMA.yml
+              job_spec/INSAR_ISCE_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -142,8 +176,14 @@ jobs:
             template_bucket: cf-templates-j4kd746vpsuv-us-east-1
             image_tag: latest
             product_lifetime_in_days: 14
-            quota: 0
-            job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files:  >-
+              job_spec/AUTORIFT.yml
+              job_spec/INSAR_GAMMA.yml
+              job_spec/RTC_GAMMA.yml
+              job_spec/INSAR_ISCE_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -157,8 +197,14 @@ jobs:
             template_bucket: cf-templates-ez0805f6vy20-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
-            quota: 0
-            job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/AUTORIFT.yml
+              job_spec/INSAR_GAMMA.yml
+              job_spec/RTC_GAMMA.yml
+              job_spec/INSAR_ISCE_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -172,8 +218,14 @@ jobs:
             template_bucket: cf-templates-1qx2mwia5g4kh-us-west-2
             image_tag: latest
             product_lifetime_in_days: 30
-            quota: 0
-            job_files: job_spec/INSAR_GAMMA.yml job_spec/RTC_GAMMA.yml
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/AUTORIFT.yml
+              job_spec/INSAR_GAMMA.yml
+              job_spec/RTC_GAMMA.yml
+              job_spec/INSAR_ISCE_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -182,15 +234,18 @@ jobs:
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
 
-          - environment: hyp3-pdc
-            domain: hyp3-pdc.asf.alaska.edu
-            template_bucket: cf-templates-tlsr0tnnqt5t-us-west-2
+          - environment: hyp3-lavas
+            domain: hyp3-lavas.asf.alaska.edu
+            template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
             image_tag: latest
-            # TODO product lifetime could be much shorter since they all get transferred to a separate
-            # S3 bucket, but maybe we want to allow for a backlog of products-to-be-transferred?
             product_lifetime_in_days: 14
-            quota: 0
-            job_files: job_spec/WATER_MAP.yml
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/INSAR_ISCE_BURST.yml
+              job_spec/SRG_GSLC.yml
+              job_spec/SRG_TIME_SERIES.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -204,7 +259,7 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.2.2
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -213,9 +268,9 @@ jobs:
           aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: 3.13
 
       - uses: ./.github/actions/deploy-hyp3
         with:
@@ -230,7 +285,9 @@ jobs:
           SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
           SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
-          MONTHLY_JOB_QUOTA_PER_USER: ${{ matrix.quota }}
+          DEFAULT_CREDITS_PER_USER: ${{ matrix.default_credits_per_user }}
+          DEFAULT_APPLICATION_STATUS: ${{ matrix.default_application_status }}
+          COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
           DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}

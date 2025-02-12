@@ -5,6 +5,11 @@ Parameters:
   JobQueueArn:
     Type: String
 
+  {% for name in compute_envs %}
+  {{ name }}JobQueueArn:
+    Type: String
+  {% endfor %}
+
   JobsTable:
     Type: String
 
@@ -36,43 +41,44 @@ Outputs:
   StepFunctionArn:
     Value: !Ref StepFunction
 
+
 Resources:
   {% for job_type, job_spec in job_types.items() %}
-  {% for task in job_spec['tasks'] %}
-  {{ snake_to_pascal_case(task['name']) }}:
+  {% for step in job_spec['steps'] %}
+  {{ snake_to_pascal_case(step['name']) }}:
     Type: AWS::Batch::JobDefinition
     Properties:
       Type: container
-      Parameters:
-        {% for k, v in job_spec['parameters'].items() %}
-        {{ k }}: {{ v.get('default') or v['api_schema'].get('default') }}
-        {% endfor %}
       ContainerProperties:
-        Image: {% if 'image_tag' in task -%}
-            "{{ task['image'] }}:{{ task['image_tag'] }}"
+        Image: {% if 'image_tag' in step -%}
+            "{{ step['image'] }}:{{ step['image_tag'] }}"
           {% else -%}
-            !Sub "{{ task['image'] }}:${ImageTag}"
+            !Sub "{{ step['image'] }}:${ImageTag}"
           {% endif %}
         JobRoleArn: !Ref TaskRoleArn
         ExecutionRoleArn: !GetAtt ExecutionRole.Arn
         ResourceRequirements:
           - Type: VCPU
-            Value: "{{ task['vcpu'] }}"
+            Value: "{{ step['vcpu'] }}"
           - Type: MEMORY
-            Value: "{{ task['memory'] }}"
+            Value: "{{ step['memory'] }}"
+          {% if 'gpu' in step %}
+          - Type: GPU
+            Value: "{{ step['gpu'] }}"
+          {% endif %}
         Command:
-          {% for command in task['command'] %}
+          {% for command in step['command'] %}
           - {{ command }}
           {% endfor %}
-        {% if task.get('secrets') %}
+        {% if step.get('secrets') %}
         Secrets:
-          {% for secret in task['secrets'] %}
+          {% for secret in step['secrets'] %}
           - Name: {{ secret }}
             ValueFrom: !Sub "${SecretArn}:{{ secret }}::"
           {% endfor %}
         {% endif %}
       Timeout:
-        AttemptDurationSeconds: {{ task['timeout'] }}
+        AttemptDurationSeconds: {{ step['timeout'] }}
   {% endfor %}
   {% endfor %}
 
@@ -83,12 +89,16 @@ Resources:
       DefinitionS3Location: step-function.json
       DefinitionSubstitutions:
         JobQueueArn: !Ref JobQueueArn
+        {% for name in compute_envs %}
+        {{ name }}JobQueueArn: !Ref {{ name }}JobQueueArn
+        {% endfor %}
         {% for job_type, job_spec in job_types.items() %}
-        {% for task in job_spec['tasks'] %}
-        {{ snake_to_pascal_case(task['name']) }}: !Ref {{ snake_to_pascal_case(task['name']) }}
+        {% for step in job_spec['steps'] %}
+        {{ snake_to_pascal_case(step['name']) }}: !Ref {{ snake_to_pascal_case(step['name']) }}
         {% endfor %}
         {% endfor %}
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
+        SetBatchOverridesLambdaArn: !GetAtt SetBatchOverrides.Outputs.LambdaArn
         GetFilesLambdaArn: !GetAtt GetFiles.Outputs.LambdaArn
         CheckProcessingTimeLambdaArn: !GetAtt CheckProcessingTime.Outputs.LambdaArn
         UploadLogLambdaArn: !GetAtt UploadLog.Outputs.LambdaArn
@@ -124,9 +134,12 @@ Resources:
             Action: batch:SubmitJob
             Resource:
               - !Ref JobQueueArn
+              {% for name in compute_envs %}
+              - !Ref {{ name }}JobQueueArn
+              {% endfor %}
               {% for job_type, job_spec in job_types.items() %}
-              {% for task in job_spec['tasks'] %}
-              - !Ref {{ snake_to_pascal_case(task['name']) }}
+              {% for step in job_spec['steps'] %}
+              - !Ref {{ snake_to_pascal_case(step['name']) }}
               {% endfor %}
               {% endfor %}
           - Effect: Allow
@@ -145,6 +158,7 @@ Resources:
             Action: lambda:InvokeFunction
             Resource:
              - !GetAtt UpdateDB.Outputs.LambdaArn
+             - !GetAtt SetBatchOverrides.Outputs.LambdaArn
              - !GetAtt GetFiles.Outputs.LambdaArn
              - !GetAtt CheckProcessingTime.Outputs.LambdaArn
              - !GetAtt UploadLog.Outputs.LambdaArn
@@ -159,6 +173,16 @@ Resources:
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
       TemplateURL: update-db/update-db-cf.yml
+
+  SetBatchOverrides:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      {% if security_environment == 'EDC' %}
+      Parameters:
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+      {% endif %}
+      TemplateURL: set-batch-overrides/set-batch-overrides-cf.yml
 
   GetFiles:
     Type: AWS::CloudFormation::Stack

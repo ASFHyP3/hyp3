@@ -1,17 +1,18 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 
 import boto3
 from boto3.dynamodb.conditions import Key
 from dateutil.parser import parse
 
+
 DYNAMODB_RESOURCE = boto3.resource('dynamodb')
 
 
 def get_request_time_expression(start, end):
     key = Key('request_time')
-    formatted_start = (format_time(parse(start)) if start else None)
-    formatted_end = (format_time(parse(end)) if end else None)
+    formatted_start = format_time(parse(start)) if start else None
+    formatted_end = format_time(parse(end)) if end else None
 
     if formatted_start and formatted_end:
         return key.between(formatted_start, formatted_end)
@@ -21,11 +22,15 @@ def get_request_time_expression(start, end):
         return key.lte(formatted_end)
 
 
-def format_time(time: datetime):
+def format_time(time: datetime) -> str:
     if time.tzinfo is None:
         raise ValueError(f'missing tzinfo for datetime {time}')
-    utc_time = time.astimezone(timezone.utc)
+    utc_time = time.astimezone(UTC)
     return utc_time.isoformat(timespec='seconds')
+
+
+def current_utc_time() -> str:
+    return format_time(datetime.now(UTC))
 
 
 def convert_floats_to_decimals(element):

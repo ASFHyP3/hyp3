@@ -1,0 +1,52 @@
+[project]
+requires-python = "==3.13"
+
+[tool.ruff]
+line-length = 120
+src = [
+    "apps",
+    "**/src",
+    "lib/*",
+    "tests",
+]
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "single"
+
+[tool.ruff.lint]
+extend-select = [
+    "I",   # isort: https://docs.astral.sh/ruff/rules/#isort-i
+    "UP",  # pyupgrade: https://docs.astral.sh/ruff/rules/#pyupgrade-up
+
+    # TODO: uncomment the following extensions and address their warnings:
+    #"D",   # pydocstyle: https://docs.astral.sh/ruff/rules/#pydocstyle-d
+    #"ANN", # annotations: https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
+    #"PTH", # use-pathlib-pth: https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+case-sensitive = true
+lines-after-imports = 2
+
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/*" = ["D100", "D103", "ANN"]
+
+[tool.mypy]
+python_version = "3.13"
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
+strict_equality = true
+check_untyped_defs = true
+install_types = true
+non_interactive = true
+pretty = true
+disable_error_code = ["import-untyped"]
+exclude = [
+    "/build/",
+    "/setup\\.py$",
+]

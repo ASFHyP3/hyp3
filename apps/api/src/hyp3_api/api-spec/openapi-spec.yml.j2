@@ -7,7 +7,25 @@ info:
 security:
   - EarthDataLogin: []
 
+{% if security_environment == 'EDC' %}
+# See https://github.com/ASFHyP3/hyp3/pull/2009 for context.
+servers:
+  - url: /
+  - url: /api
+{% endif %}
+
 paths:
+
+  /costs:
+    get:
+      description: Get table of job costs.
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/costs_response"
 
   /jobs:
 
@@ -53,7 +71,7 @@ paths:
         - name: job_type
           in: query
           schema:
-            $ref: "./job_parameters.yml#components/schemas/job_type"
+            $ref: "./job_parameters.yml#/components/schemas/job_type"
         - name: start_token
           in: query
           schema:
@@ -86,6 +104,22 @@ paths:
                 $ref: "#/components/schemas/job"
 
   /user:
+    patch:
+      description: Submit or update an application for processing approval.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/patch_user_body"
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+
     get:
       description: Get information about the logged in user.
       responses:
@@ -98,6 +132,35 @@ paths:
 
 components:
   schemas:
+
+    costs_response:
+      description: List of job costs.
+      type: array
+      items:
+        type: object
+        required:
+          - job_type
+        properties:
+          job_type:
+            $ref: "./job_parameters.yml#/components/schemas/job_type"
+          cost:
+            $ref: "#/components/schemas/credits"
+          cost_parameter:
+            type: string
+          cost_table:
+            type: array
+            items:
+              type: object
+              required:
+                - parameter_value
+                - cost
+              properties:
+                parameter_value:
+                  oneOf:
+                    - type: string
+                    - type: number
+                cost:
+                  $ref: "#/components/schemas/credits"
 
     post_jobs_body:
       description: List for new jobs to submit for processing.
@@ -125,37 +188,55 @@ components:
         next:
           $ref: "#/components/schemas/next_url"
 
-    user:
-      description: Information about a user (quota, user id)
+    patch_user_body:
+      description: Application for processing approval.
       type: object
       required:
-        - user_id
-        - quota
+        - use_case
       additionalProperties: false
       properties:
+        use_case:
+          $ref: "#/components/schemas/use_case"
+        access_code:
+          $ref: "#/components/schemas/access_code"
+
+    user:
+      description: Information about a user
+      type: object
+      required:
+        - application_status
+        - job_names
+        - remaining_credits
+        - user_id
+      additionalProperties: false
+      properties:
+        application_status:
+          $ref: "#/components/schemas/application_status"
+        credits_per_month:
+          $ref: "#/components/schemas/credits"
+        job_names:
+          $ref: "#/components/schemas/job_names_list"
+        remaining_credits:
+          $ref: "#/components/schemas/credits"
+        use_case:
+          $ref: "#/components/schemas/use_case"
         user_id:
           $ref: "#/components/schemas/user_id"
-        quota:
-          $ref: "#/components/schemas/quota"
-        job_names:
-          $ref: "#components/schemas/job_names_list"
 
-    quota:
-      description: Containes the limit of jobs per month and the amount remaining for a user.
-      type: object
-      required:
-        - max_jobs_per_month
-        - remaining
-      additionalProperties: false
-      properties:
-        max_jobs_per_month:
-          type: integer
-          minimum: 0
-          nullable: true
-        remaining:
-          type: integer
-          minimum: 0
-          nullable: true
+    application_status:
+      description: Status of an application for processing approval.
+      type: string
+      enum:
+        - NOT_STARTED
+        - PENDING
+        - APPROVED
+        - REJECTED
+      example: PENDING
+
+    credits:
+      description: Processing credits for running jobs.
+      type: number
+      minimum: 0
 
     job_names_list:
       type: array
@@ -168,74 +249,12 @@ components:
       minItems: 1
       maxItems: 200
       items:
-        $ref: "./job_parameters.yml#components/schemas/new_job"
+        $ref: "./job_parameters.yml#/components/schemas/new_job"
 
     list_of_jobs:
       type: array
       items:
         $ref: "#/components/schemas/job"
-
-    search_parameters:
-      description: parameters used to find data from the ASF Search API
-      additionalProperties: false
-      type: object
-      required:
-        - start
-        - end
-      properties:
-        start:
-          $ref: "#/components/schemas/datetime"
-        end:
-          $ref: "#/components/schemas/datetime"
-        platform:
-          type: string
-          enum:
-            - S1
-            - SA
-            - SB
-        processingLevel:
-          type: string
-          enum:
-            - GRD_HD
-            - SLC
-        beamMode:
-          type: array
-          minItems: 1
-          items:
-            type: string
-            enum:
-              - IW
-        intersectsWith:
-          $ref: "#/components/schemas/intersectsWith"
-        frame:
-          type: array
-          minItems: 1
-          items:
-            type: integer
-            minimum: 1
-            maximum: 1360
-        relativeOrbit:
-          type: array
-          minItems: 1
-          items:
-            type: integer
-            minimum: 1
-            maximum: 175
-        polarization:
-          type: array
-          minItems: 1
-          items:
-            type: string
-            enum:
-              - VV
-              - VV+VH
-              - HH
-              - HH+HV
-        flightDirection:
-          type: string
-          enum:
-            - ASCENDING
-            - DESCENDING
 
     job:
       description: Contains information about a submitted job.
@@ -254,9 +273,9 @@ components:
         user_id:
           $ref: "#/components/schemas/user_id"
         job_type:
-          $ref: "./job_parameters.yml#components/schemas/job_type"
+          $ref: "./job_parameters.yml#/components/schemas/job_type"
         job_parameters:
-          $ref: "./job_parameters.yml#components/schemas/job_parameters"
+          $ref: "./job_parameters.yml#/components/schemas/job_parameters"
         request_time:
           $ref: "#/components/schemas/datetime"
         status_code:
@@ -280,6 +299,8 @@ components:
           $ref: "#/components/schemas/processing_times"
         priority:
           $ref: "#/components/schemas/priority"
+        credit_cost:
+          $ref: "#/components/schemas/credits"
 
     validate_only:
       type: boolean
@@ -291,6 +312,16 @@ components:
       format: uuid
       example: 27836b79-e5b2-4d8f-932f-659724ea02c3
 
+    use_case:
+      description: Reason for wanting to use HyP3.
+      type: string
+      example: I want to process data.
+
+    access_code:
+      description: Grants automatic user approval while the code remains active.
+      type: string
+      example: 123
+
     user_id:
       description: Username from Earthdata Login.
       type: string
@@ -301,12 +332,6 @@ components:
       type: string
       format: date-time
       example: "2020-06-04T18:00:03+00:00"
-
-    intersectsWith:
-      description: Area-of-interest as a WKT string.
-      type: string
-      format: wkt
-      example: POINT(0 0)
 
     status_code:
       description: Status of a submitted job.
@@ -383,20 +408,26 @@ components:
 
     processing_times:
       description: >
-        A list of run times for the job's processing steps in the order that they were executed. For example,
-        a job comprised of a single processing step would yield a list containing one processing time, while a job
-        comprised of three processing steps would yield a list containing three processing times. An empty list
-        represents a failure to calculate processing times.
+        List of run times for the job's processing steps in the order that they were executed.
+        This field is null for failed jobs and non-null for successful jobs.
       type: array
+      nullable: true
       items:
-        $ref: '#/components/schemas/processing_time_in_seconds'
+        oneOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/processing_time_in_seconds'
+            example: [200, 100, 150]
+          - $ref: '#/components/schemas/processing_time_in_seconds'
+
 
     processing_time_in_seconds:
       description: >
-        Run time in seconds for a particular processing step's final attempt (regardless of whether it succeeded).
-        A value of zero indicates that there were no attempts.
+        Run time in seconds for a processing step's final attempt.
       type: number
       minimum: 0
+      exclusiveMinimum: true
+      example: 50
 
   securitySchemes:
     EarthDataLogin:

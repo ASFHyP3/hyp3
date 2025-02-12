@@ -1,16 +1,16 @@
 import json
 from os import environ
-from typing import Optional
 
 import boto3
 from botocore.config import Config
+
 
 config = Config(retries={'max_attempts': 2, 'mode': 'standard'})
 CLOUDWATCH = boto3.client('logs', config=config)
 S3 = boto3.client('s3')
 
 
-def get_log_stream(result: dict) -> Optional[str]:
+def get_log_stream(result: dict) -> str | None:
     if 'Error' in result:
         result = json.loads(result['Cause'])
     return result['Container'].get('LogStreamName')
@@ -23,8 +23,9 @@ def get_log_content(log_group, log_stream):
     next_token = None
     while response['nextForwardToken'] != next_token:
         next_token = response['nextForwardToken']
-        response = CLOUDWATCH.get_log_events(logGroupName=log_group, logStreamName=log_stream, startFromHead=True,
-                                             nextToken=next_token)
+        response = CLOUDWATCH.get_log_events(
+            logGroupName=log_group, logStreamName=log_stream, startFromHead=True, nextToken=next_token
+        )
         messages.extend([event['message'] for event in response['events']])
 
     return '\n'.join(messages)
@@ -58,7 +59,6 @@ def write_log_to_s3(bucket, prefix, content):
 
 
 def lambda_handler(event, context):
-    # TODO handle all results, not just the last one
     results_dict = event['processing_results']
     result = results_dict[max(results_dict.keys())]
 

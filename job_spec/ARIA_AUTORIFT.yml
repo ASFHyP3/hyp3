@@ -1,9 +1,8 @@
-AUTORIFT_TEST:
+AUTORIFT:
   required_parameters:
     - granules
   parameters:
     granules:
-      default:  '""'
       api_schema:
         type: array
         minItems: 2
@@ -31,19 +30,21 @@ AUTORIFT_TEST:
               minLength: 40
               maxLength: 40
               example: LC08_L1GT_118112_20210107_20210107_02_T2
-    bucket_prefix:
-      default:  '""'
     parameter_file:
       api_schema:
         description: Shapefile for determining the correct search parameters by geographic location. Path to shapefile must be understood by GDAL.
         type: string
-        default: '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+        default: '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_solidearth_0120m.shp'
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
   validators: []
-  tasks:
+  steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
-      image_tag: test
       command:
+        - ++omp-num-threads
+        - '4'  # 4 vCPUs per 32 GB RAM for the R instance family
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -51,13 +52,12 @@ AUTORIFT_TEST:
         - --parameter-file
         - Ref::parameter_file
         - --naming-scheme
-        - ITS_LIVE_PROD
+        - ITS_LIVE_OD
         - Ref::granules
       timeout: 10800
+      compute_environment: AriaAutorift
       vcpu: 1
       memory: 31500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD

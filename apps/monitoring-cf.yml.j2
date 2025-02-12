@@ -4,9 +4,6 @@ Parameters:
   StepFunctionArn:
     Type: String
 
-  ApiId:
-    Type: String
-
 Resources:
 
   AlarmTopic:
@@ -29,22 +26,4 @@ Resources:
       Namespace: AWS/States
       Statistic: Sum
       Unit: Count
-      TreatMissingData: notBreaching
-
-  ApiAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      AlarmActions:
-        - !Ref AlarmTopic
-      AlarmDescription: Hyp3 api HTTP 500 errors
-      ComparisonOperator: GreaterThanThreshold
-      Period: 60
-      EvaluationPeriods: 1
-      Threshold: 0
-      Dimensions:
-        - Name: ApiId
-          Value: !Ref ApiId
-      MetricName: 5xx
-      Namespace: AWS/ApiGateway
-      Statistic: Sum
       TreatMissingData: notBreaching

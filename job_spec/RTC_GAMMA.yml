@@ -3,7 +3,6 @@ RTC_GAMMA:
     - granules
   parameters:
     granules:
-      default: '""'
       api_schema:
         type: array
         minItems: 1
@@ -24,8 +23,6 @@ RTC_GAMMA:
               minLength: 67
               maxLength: 67
               example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
-    bucket_prefix:
-      default:  '""'
     resolution:
       api_schema:
         default:  30.0
@@ -38,11 +35,10 @@ RTC_GAMMA:
     dem_name:
       api_schema:
         default: copernicus
-        description: Name of the DEM to use for processing. `copernicus` will use the Copernicus GLO-30 Public DEM, while `legacy` will use the DEM with the best coverage from ASF's legacy SRTM/NED datasets.
+        description: Name of the DEM to use for processing. `copernicus` will use the Copernicus GLO-30 Public DEM.
         type: string
         enum:
           - copernicus
-          - legacy
     radiometry:
       api_schema:
         default:  gamma0
@@ -90,9 +86,21 @@ RTC_GAMMA:
         description: Include a false-color RGB decomposition in the product package for dual-pol granules (ignored for single-pol granules)
         default: false
         type: boolean
+  cost_profiles:
+    EDC:
+      cost_parameter: resolution
+      cost_table:
+        - parameter_value: 30.0
+          cost: 5.0
+        - parameter_value: 20.0
+          cost: 15.0
+        - parameter_value: 10.0
+          cost: 60.0
+    DEFAULT:
+      cost: 1.0
   validators:
     - check_dem_coverage
-  tasks:
+  steps:
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
       command:
@@ -126,10 +134,9 @@ RTC_GAMMA:
         - Ref::include_rgb
         - Ref::granules
       timeout: 36000
+      compute_environment: Default
       vcpu: 1
       memory: 31500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD

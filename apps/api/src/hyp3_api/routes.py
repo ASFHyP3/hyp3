@@ -3,21 +3,24 @@ import json
 from decimal import Decimal
 from os import environ
 from pathlib import Path
+from typing import Any
 
 import yaml
 from flask import abort, g, jsonify, make_response, redirect, render_template, request
+from flask.json.provider import JSONProvider
 from flask_cors import CORS
+from openapi_core import OpenAPI
+from openapi_core.contrib.flask.decorators import FlaskOpenAPIViewDecorator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
-from openapi_core.contrib.flask.views import FlaskOpenAPIView
-from openapi_core.spec.shortcuts import create_spec
-from openapi_core.validation.response.datatypes import ResponseValidationResult
 
+import dynamo
 from hyp3_api import app, auth, handlers
 from hyp3_api.openapi import get_spec_yaml
 
+
 api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
 api_spec_dict = get_spec_yaml(api_spec_file)
-api_spec = create_spec(api_spec_dict)
+api_spec = OpenAPI.from_dict(api_spec_dict)
 CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
 
 AUTHENTICATED_ROUTES = ['/jobs', '/user']
@@ -25,23 +28,19 @@ AUTHENTICATED_ROUTES = ['/jobs', '/user']
 
 @app.before_request
 def check_system_available():
-    if environ['SYSTEM_AVAILABLE'] != "true":
+    if environ['SYSTEM_AVAILABLE'] != 'true':
         message = 'HyP3 is currently unavailable. Please try again later.'
-        error = {
-            'detail': message,
-            'status': 503,
-            'title': 'Service Unavailable',
-            'type': 'about:blank'
-        }
+        error = {'detail': message, 'status': 503, 'title': 'Service Unavailable', 'type': 'about:blank'}
         return make_response(jsonify(error), 503)
 
 
 @app.before_request
 def authenticate_user():
     cookie = request.cookies.get('asf-urs')
-    auth_info = auth.decode_token(cookie)
-    if auth_info is not None:
-        g.user = auth_info['sub']
+    payload = auth.decode_token(cookie)
+    if payload is not None:
+        g.user = payload['urs-user-id']
+        g.edl_access_token = payload['urs-access-token']
     else:
         if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
             abort(handlers.problem_format(401, 'No authorization token provided'))
@@ -68,9 +67,12 @@ def render_ui():
 
 
 @app.errorhandler(404)
-def error404(e):
-    return handlers.problem_format(404, 'The requested URL was not found on the server.'
-                                        ' If you entered the URL manually please check your spelling and try again.')
+def error404(_):
+    return handlers.problem_format(
+        404,
+        'The requested URL was not found on the server.'
+        ' If you entered the URL manually please check your spelling and try again.',
+    )
 
 
 class CustomEncoder(json.JSONEncoder):
@@ -86,48 +88,62 @@ class CustomEncoder(json.JSONEncoder):
 
         if isinstance(o, datetime.date):
             return o.isoformat()
+
         if isinstance(o, Decimal):
             if o == int(o):
                 return int(o)
             return float(o)
+
+        # Raises a TypeError
         json.JSONEncoder.default(self, o)
 
 
-class NonValidator:
-    def __init__(self, spec):
-        pass
+class CustomJSONProvider(JSONProvider):
+    def dumps(self, obj: Any, **kwargs) -> str:
+        return json.dumps(obj, cls=CustomEncoder)
 
-    def validate(self, res):
-        return ResponseValidationResult()
+    def loads(self, s: str | bytes, **kwargs) -> Any:
+        return json.loads(s)
 
 
 class ErrorHandler(FlaskOpenAPIErrorsHandler):
     def __init__(self):
         super().__init__()
 
-    @classmethod
-    def handle(cls, errors):
-        response = super().handle(errors)
-        error = response.json['errors'][0]
+    def __call__(self, errors):
+        response = super().__call__(errors)
+        error = response.json['errors'][0]  # type: ignore[index]
         return handlers.problem_format(error['status'], error['title'])
 
 
-class Jobs(FlaskOpenAPIView):
-    def __init__(self, spec):
-        super().__init__(spec)
-        self.response_validator = NonValidator
-        self.openapi_errors_handler = ErrorHandler
+app.json = CustomJSONProvider(app)
 
-    def post(self):
-        return jsonify(handlers.post_jobs(request.get_json(), g.user))
+openapi = FlaskOpenAPIViewDecorator(
+    api_spec,
+    response_cls=None,  # type: ignore[arg-type]
+    errors_handler_cls=ErrorHandler,
+)
 
-    def get(self, job_id):
-        if job_id is not None:
-            return jsonify(handlers.get_job_by_id(job_id))
-        parameters = request.openapi.parameters.query
-        start = parameters.get('start')
-        end = parameters.get('end')
-        return jsonify(handlers.get_jobs(
+
+@app.route('/costs', methods=['GET'])
+def costs_get():
+    return jsonify(dynamo.jobs.COSTS)
+
+
+@app.route('/jobs', methods=['POST'])
+@openapi
+def jobs_post():
+    return jsonify(handlers.post_jobs(request.get_json(), g.user))
+
+
+@app.route('/jobs', methods=['GET'])
+@openapi
+def jobs_get():
+    parameters = request.openapi.parameters.query  # type: ignore[attr-defined]
+    start = parameters.get('start')
+    end = parameters.get('end')
+    return jsonify(
+        handlers.get_jobs(
             parameters.get('user_id') or g.user,
             start.isoformat(timespec='seconds') if start else None,
             end.isoformat(timespec='seconds') if end else None,
@@ -135,25 +151,23 @@ class Jobs(FlaskOpenAPIView):
             parameters.get('name'),
             parameters.get('job_type'),
             parameters.get('start_token'),
-        ))
+        )
+    )
 
 
-class User(FlaskOpenAPIView):
-    def __init__(self, spec):
-        super().__init__(spec)
-        self.response_validator = NonValidator
-        self.openapi_errors_handler = ErrorHandler
-
-    def get(self):
-        return jsonify(handlers.get_user(g.user))
+@app.route('/jobs/<job_id>', methods=['GET'])
+@openapi
+def jobs_get_by_job_id(job_id):
+    return jsonify(handlers.get_job_by_id(job_id))
 
 
-app.json_encoder = CustomEncoder
+@app.route('/user', methods=['PATCH'])
+@openapi
+def user_patch():
+    return jsonify(handlers.patch_user(request.get_json(), g.user, g.edl_access_token))
 
-jobs_view = Jobs.as_view('jobs', api_spec)
-app.add_url_rule('/jobs', view_func=jobs_view, methods=['GET'], defaults={'job_id': None})
-app.add_url_rule('/jobs', view_func=jobs_view, methods=['POST'])
-app.add_url_rule('/jobs/<job_id>', view_func=jobs_view, methods=['GET'])
 
-user_view = User.as_view('user', api_spec)
-app.add_url_rule('/user', view_func=user_view)
+@app.route('/user', methods=['GET'])
+@openapi
+def user_get():
+    return jsonify(handlers.get_user(g.user))

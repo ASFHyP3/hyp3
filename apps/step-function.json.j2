@@ -4,7 +4,6 @@
     "SET_DEFAULT_RESULTS": {
       "Type": "Pass",
       "Result": {
-        "processing_times": [],
         "get_files": {
           "logs": [],
           "expiration_time": null
@@ -35,154 +34,33 @@
     "ADD_PREFIX_TO_JOB_PARAMETERS": {
       "Type": "Pass",
       "InputPath": "$.job_id",
-      "ResultPath": "$.job_parameters.bucket_prefix",
-      "Next": "INSPECT_MEMORY_REQUIREMENTS"
+      "ResultPath": "$.batch_job_parameters.bucket_prefix",
+      "Next": "SET_BATCH_OVERRIDES"
     },
-    "INSPECT_MEMORY_REQUIREMENTS": {
-      "Type": "Choice",
-      "Choices": [
+    "SET_BATCH_OVERRIDES": {
+      "Type": "Task",
+      "Resource": "${SetBatchOverridesLambdaArn}",
+      "Parameters": {
+        "job_type.$": "$.job_type",
+        "job_parameters.$": "$.job_parameters"
+      },
+      "Retry": [
         {
-          "And": [
-            {
-              "Variable": "$.job_type",
-              "StringEquals": "AUTORIFT"
-            },
-            {
-              "Variable": "$.job_parameters.granules",
-              "StringMatches": "S2*"
-            }
+          "ErrorEquals": [
+            "States.ALL"
           ],
-          "Next": "USE_SENTINEL2_MEMORY"
-        },
-        {
-          "And": [
-            {
-              "Variable": "$.job_type",
-              "StringEquals": "AUTORIFT"
-            },
-            {
-              "Variable": "$.job_parameters.granules",
-              "StringMatches": "L*"
-            }
-          ],
-          "Next": "USE_LANDSAT_MEMORY"
-        },
-        {
-          "And": [
-            {
-              "Variable": "$.job_type",
-              "StringEquals": "RTC_GAMMA"
-            },
-            {
-              "Variable": "$.job_parameters.resolution",
-              "IsPresent": true
-            },
-            {
-              "Or": [
-                {
-                  "Variable": "$.job_parameters.resolution",
-                  "StringEquals": "10"
-                },
-                {
-                  "Variable": "$.job_parameters.resolution",
-                  "StringEquals": "20"
-                }
-              ]
-            }
-          ],
-          "Next": "USE_10M_RTC_MEMORY"
-        },
-        {
-          "And": [
-            {
-              "Or": [
-                {
-                  "Variable": "$.job_type",
-                  "StringEquals": "WATER_MAP"
-                },
-                {
-                  "Variable": "$.job_type",
-                  "StringEquals": "WATER_MAP_EQ"
-                }
-              ]
-            },
-            {
-              "Variable": "$.job_parameters.resolution",
-              "IsPresent": true
-            },
-            {
-              "Or": [
-                {
-                  "Variable": "$.job_parameters.resolution",
-                  "StringEquals": "10"
-                },
-                {
-                  "Variable": "$.job_parameters.resolution",
-                  "StringEquals": "20"
-                }
-              ]
-            }
-          ],
-          "Next": "USE_10M_WATER_MAP_MEMORY"
+          "MaxAttempts": 2
         }
       ],
-      "Default": "USE_DEFAULT_MEMORY"
-    },
-    "USE_SENTINEL2_MEMORY": {
-      "Type": "Pass",
-      "Result": {
-        "ResourceRequirements": [
-          {
-            "Type": "MEMORY",
-            "Value": "7875"
-          }
-        ]
-      },
-      "ResultPath": "$.container_overrides",
-      "Next": "INSPECT_JOB_TYPE"
-    },
-    "USE_LANDSAT_MEMORY": {
-      "Type": "Pass",
-      "Result": {
-        "ResourceRequirements": [
-          {
-            "Type": "MEMORY",
-            "Value": "15750"
-          }
-        ]
-      },
-      "ResultPath": "$.container_overrides",
-      "Next": "INSPECT_JOB_TYPE"
-    },
-    "USE_10M_RTC_MEMORY": {
-      "Type": "Pass",
-      "Result": {
-        "ResourceRequirements": [
-          {
-            "Type": "MEMORY",
-            "Value": "63200"
-          }
-        ]
-      },
-      "ResultPath": "$.container_overrides",
-      "Next": "INSPECT_JOB_TYPE"
-    },
-    "USE_10M_WATER_MAP_MEMORY": {
-      "Type": "Pass",
-      "Result": {
-        "ResourceRequirements": [
-          {
-            "Type": "MEMORY",
-            "Value": "126000"
-          }
-        ]
-      },
-      "ResultPath": "$.container_overrides",
-      "Next": "INSPECT_JOB_TYPE"
-    },
-    "USE_DEFAULT_MEMORY": {
-      "Type": "Pass",
-      "Result": {},
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "JOB_FAILED",
+          "ResultPath": "$.container_overrides"
+        }
+      ],
       "ResultPath": "$.container_overrides",
       "Next": "INSPECT_JOB_TYPE"
     },
@@ -193,57 +71,14 @@
         {
           "Variable": "$.job_type",
           "StringEquals": "{{ job_type }}",
-          "Next": "{{ job_spec['tasks'][0]['name'] }}"
+          "Next": "{{ job_spec['steps'][0]['name'] }}"
         }{% if not loop.last %},{% endif %}
         {% endfor %}
       ],
       "Default": "JOB_FAILED"
     },
-    {% for job_type, job_spec in job_types.items() %}
-    {% for task in job_spec['tasks'] %}
-    "{{ task['name'] }}": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::batch:submitJob.sync",
-      "Parameters": {
-        "JobDefinition": "{{ '${'+ snake_to_pascal_case(task['name']) + '}' }}",
-        "JobName.$": "$.job_id",
-        "JobQueue": "${JobQueueArn}",
-        "ShareIdentifier": "default",
-        "SchedulingPriorityOverride.$": "$.priority",
-        "Parameters.$": "$.job_parameters",
-        "ContainerOverrides.$": "$.container_overrides",
-        "RetryStrategy": {
-          "Attempts": 3
-        }
-      },
-      "ResultPath": "$.results.processing_results.step_{{ loop.index0 }}",
-      "Next": "{% if not loop.last %}{{ loop.nextitem['name'] }}{% else %}GET_FILES{% endif %}",
-      "Retry": [
-        {
-          "ErrorEquals": [
-            "Batch.ServerException",
-            "Batch.AWSBatchException"
-          ],
-          "MaxAttempts": 2
-        },
-        {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "MaxAttempts": 0
-        }
-      ],
-      "Catch": [
-        {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "Next": "PROCESSING_FAILED",
-          "ResultPath": "$.results.processing_results.step_{{ loop.index0 }}"
-        }
-      ]
-    },
-    {% endfor %}
+    {% for name, body in job_states.items() %}
+    "{{ name }}": {{ json.dumps(body) }},
     {% endfor %}
     "PROCESSING_FAILED": {
       "Type": "Pass",
@@ -372,7 +207,7 @@
         "status_code": "FAILED",
         "logs.$": "$.results.get_files.logs",
         "expiration_time.$": "$.results.get_files.expiration_time",
-        "processing_times.$": "$.results.processing_times"
+        "processing_times": null
       },
       "Retry": [
         {
