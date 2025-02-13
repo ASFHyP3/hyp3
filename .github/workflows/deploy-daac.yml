@@ -30,6 +30,7 @@ jobs:
               job_spec/INSAR_GAMMA.yml
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/ARIA_S1_GUNW.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1500
             expanded_max_vcpus: 3000
@@ -54,6 +55,7 @@ jobs:
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/OPERA_DISP_TMS.yml
+              job_spec/ARIA_S1_GUNW.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1500
             expanded_max_vcpus: 3000
@@ -112,6 +114,6 @@ jobs:
   call-bump-version-workflow:
     if: github.ref == 'refs/heads/main'
     needs: deploy
-    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.15.0
+    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.17.1
     secrets:
       USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
