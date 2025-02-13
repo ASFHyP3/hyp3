@@ -61,8 +61,6 @@ OPERA_DIST_S1:
         maximum: 3
         example: 3
   cost_profiles:
-    EDC:
-      cost: 30.0
     DEFAULT:
       cost: 1.0
   validators: []
