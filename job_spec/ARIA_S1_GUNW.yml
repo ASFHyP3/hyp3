@@ -45,7 +45,7 @@ ARIA_S1_GUNW:
         example: 23474
   cost_profiles:
     EDC:
-      cost: 30.0
+      cost: 60.0
     DEFAULT:
       cost: 1.0
   validators:
