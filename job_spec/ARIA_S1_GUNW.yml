@@ -69,7 +69,7 @@ ARIA_S1_GUNW:
       timeout: 21600  # 6 hr
       compute_environment: AriaS1Gunw
       vcpu: 1
-      memory: 31500
+      memory: 15500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD

@@ -13,6 +13,6 @@ compute_environments:
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
   AriaS1Gunw:
-    instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
+    instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
