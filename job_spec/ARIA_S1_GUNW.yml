@@ -45,7 +45,7 @@ ARIA_S1_GUNW:
         example: 23474
   cost_profiles:
     EDC:
-      cost: 30.0
+      cost: 60.0
     DEFAULT:
       cost: 1.0
   validators:
@@ -67,9 +67,9 @@ ARIA_S1_GUNW:
         - --frame-id
         - Ref::frame_id
       timeout: 21600  # 6 hr
-      compute_environment: Default
+      compute_environment: AriaS1Gunw
       vcpu: 1
-      memory: 31500
+      memory: 15500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
