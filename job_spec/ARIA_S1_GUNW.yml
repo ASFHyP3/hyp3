@@ -67,7 +67,7 @@ ARIA_S1_GUNW:
         - --frame-id
         - Ref::frame_id
       timeout: 21600  # 6 hr
-      compute_environment: Default
+      compute_environment: AriaS1Gunw
       vcpu: 1
       memory: 31500
       secrets:
