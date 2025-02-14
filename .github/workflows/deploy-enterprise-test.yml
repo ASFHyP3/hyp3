@@ -100,7 +100,7 @@ jobs:
           - environment: hyp3-osl-test
             domain: hyp3-osl-test.asf.alaska.edu
             template_bucket: services-hyp3-artifacts
-            image_tag: latest
+            image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             default_application_status: APPROVED
