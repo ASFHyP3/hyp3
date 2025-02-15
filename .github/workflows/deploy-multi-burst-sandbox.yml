@@ -22,7 +22,6 @@ jobs:
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
-            deploy_ref: refs/heads/multi-burst-sandbox
             job_files: >-
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
