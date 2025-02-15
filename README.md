@@ -43,8 +43,9 @@ also referred to as "security environments" throughout our code and docs
 - JPL
 - JPL-public 
 
-  Note: JPL deployments _must_ start with the JPL security environment, but can be migrated to this one after
-  they are deployed and approved to have a public bucket.
+> [!IMPORTANT]
+> JPL deployments _must_ start with the JPL security environment, but can be migrated to the `JPL-public` one
+> after they are deployed and approved to have a public bucket.
 
 EDC deployment steps are not fully documented here.
 ASF and JPL deployment steps should be complete, so let us know if something is missing!
@@ -111,7 +112,7 @@ In order to integrate an ASF deployment we'll need:
 
 These can be done by deploying the [ASF CI stack](cicd-stacks/ASF-deployment-ci-cf.yml).
 
->[!WARNING]
+> [!WARNING]
 > This stack should only be deployed once per AWS account. This stack also
 assumes you are only deploying into a single AWS Region. If you are deploying into
 multiple regions in the same AWS account, you'll need to adjust the IAM permissions
@@ -153,7 +154,8 @@ For more information about `roles-as-code`, see:
 * https://wiki.jpl.nasa.gov/display/cloudcomputing/IAM+Roles+and+Policies
 * https://github.jpl.nasa.gov/cloud/roles-as-code/blob/master/Documentation.md
 
-*Note: you must be on the JPL VPN to view the JPL `.jpl.nasa.gov` links in this document.*
+> [!NOTE]
+> You must be on the JPL VPN to view the JPL `.jpl.nasa.gov` links in this document.
 
 ##### Set up a service user for JPL accounts
 
@@ -170,7 +172,7 @@ aws cloudformation deploy \
     --template-file cicd-stacks/JPL-deployment-policy-cf.yml
 ```
 
->[!WARNING]
+> [!WARNING]
 > This stack should only be deployed once per AWS account. This stack also
 assumes you are only deploying into a single AWS Region. If you are deploying into
 multiple regions in the same AWS account, you'll need to adjust the IAM permissions
@@ -187,7 +189,7 @@ the `hyp3-ci` CloudFormation Stack Resources.
 Once the JPL service user has been created, you should receive a set of AWS Access Keys
 which can be used to deploy HyP3 via CI/CD tooling.
 
->[!IMPORTANT]
+> [!IMPORTANT]
 > These keys will be stored in the associated JPL-managed AWS account an AWS SecretsManager secret
 > with the same name as the service user. They automatically rotated by JPL every 90 days and so
 > will need to be periodically refreshed in the GitHub deploy environment secrets (described below).
