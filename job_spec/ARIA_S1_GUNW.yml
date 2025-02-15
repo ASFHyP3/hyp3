@@ -95,3 +95,18 @@ ARIA_S1_GUNW:
         - EARTHDATA_PASSWORD
         - ESA_USERNAME
         - ESA_PASSWORD
+    - name: PUBLISH
+      image: ghcr.io/ASFHyP3/ingest-adapter
+      command:
+        - --source
+        - https://hyp3-test-api.asf.alaska.edu
+        - --job-id
+        - Ref::bucket_prefix
+        - --target
+        - UAT
+      timeout: 600
+      vcpu: 1
+      memory: 512
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
