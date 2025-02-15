@@ -105,6 +105,7 @@ ARIA_S1_GUNW:
         - --target
         - UAT
       timeout: 600
+      compute_environment: Default
       vcpu: 1
       memory: 512
       secrets:
