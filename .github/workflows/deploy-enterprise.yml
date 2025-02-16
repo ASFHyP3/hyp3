@@ -65,7 +65,6 @@ jobs:
               job_spec/ARIA_AUTORIFT.yml
               job_spec/ARIA_RAIDER.yml
               job_spec/INSAR_ISCE.yml
-              job_spec/OPERA_DIST_S1.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
             default_max_vcpus: 1000  # Max: 10316
             expanded_max_vcpus: 1000  # Max: 10316
@@ -86,7 +85,6 @@ jobs:
               job_spec/ARIA_AUTORIFT.yml
               job_spec/ARIA_RAIDER.yml
               job_spec/INSAR_ISCE.yml
-              job_spec/OPERA_DIST_S1.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
             default_max_vcpus: 1600  # Max 1652
             expanded_max_vcpus: 1600  # Max 1652
