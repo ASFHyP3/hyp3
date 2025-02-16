@@ -57,7 +57,6 @@ jobs:
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
             distribution_url: ''
-          
 
           - environment: hyp3-nisar-jpl-test
             domain: hyp3-nisar-jpl-test.asf.alaska.edu

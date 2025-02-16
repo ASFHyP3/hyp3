@@ -69,16 +69,16 @@ OPERA_DIST_S1:
       image: ghcr.io/opera-adt/dist-s1
       command:
         - dist-s1 run
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
         - --mgrs-tile-id
         - Ref::mgrs_tile_id
         - --track-number
         - Ref::track_number
         - --post-date
         - Ref::post_date
-        - --bucket
-        - '!Ref Bucket'
-        - --bucket-prefix
-        - Ref::bucket_prefix
         - --memory-strategy
         - Ref::memory_strategy
         - --moderate-confidence-threshold
