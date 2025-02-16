@@ -296,6 +296,10 @@ a new one for the deployment. If you need to create a new one, we recommend copy
 as appropriate for your deployment. Also make sure to update the top-level `name` of the workflow and the name
 of the branch to deploy from. (This is typically `main` for prod deployments, `develop` for test deployments, or a feature branch name for sandbox deployments.)
 
+> ![TIP]
+> If you're deploying from a feature branch, make sure to [protect](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
+> it from accidental deletion.
+
 The deployment workflow will run as soon as you merge your changes into the branch specified in the workflow file.
 
 ### Finishing touches
