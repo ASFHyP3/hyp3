@@ -1,0 +1,96 @@
+OPERA_DIST_S1:
+  required_parameters:
+    - mgrs_tile_id
+    - track_number
+    - post_date
+  parameters:
+    mgrs_tile_id:
+      api_schema:
+        description: MGRS tile ID
+        minLength: 5
+        maxLength: 5
+        type: string
+        example: "11SLT"
+    post_date:
+      api_schema:
+        description: Post acquisition date
+        type: string
+        maxLength: 10
+        minLength: 10
+        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        example: "2025-01-21"
+    track_number:
+      api_schema:
+        description: "Sentinel-1 Track Number; Supply one from the group of bursts collected from a pass; Near the dateline you may have two sequential track numbers but only need one"
+        type: integer
+        default: 1
+        minimum: 1
+        maximum: 175
+        example: 71
+    memory_strategy:
+      api_schema:
+        description: Memory strategy to use for GPU inference
+        type: string
+        enum: ["high", "low"]
+        default: "low"
+        example: "high"
+    moderate_confidence_threshold:
+      api_schema:
+        description: Moderate confidence threshold
+        type: number
+        format: float
+        default: 3.5
+        minimum: 1.0
+        maximum: 15.0
+        example: 3.5
+    high_confidence_threshold:
+      api_schema:
+        description: High confidence threshold
+        type: number
+        format: float
+        default: 5.5
+        minimum: 1.0
+        maximum: 15.0
+        example: 5.5
+    n_lookbacks:
+      api_schema:
+        description: Number of lookbacks to use for change confirmation within SAS. Use value 1, to avoid SAS confirmation
+        type: integer
+        default: 3
+        minimum: 1
+        maximum: 3
+        example: 3
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/opera-adt/dist-s1
+      command:
+        - dist-s1 run
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --mgrs-tile-id
+        - Ref::mgrs_tile_id
+        - --track-number
+        - Ref::track_number
+        - --post-date
+        - Ref::post_date
+        - --memory-strategy
+        - Ref::memory_strategy
+        - --moderate-confidence-threshold
+        - Ref::moderate_confidence_threshold
+        - --high-confidence-threshold
+        - Ref::high_confidence_threshold
+        - --n-lookbacks
+        - Ref::n_lookbacks
+      timeout: 10800  # 3 hr
+      compute_environment: Default
+      vcpu: 1
+      memory: 7500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
