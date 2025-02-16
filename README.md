@@ -45,7 +45,7 @@ also referred to as "security environments" throughout our code and docs
 
 > [!IMPORTANT]
 > JPL deployments _must_ start with the JPL security environment, but can be migrated to the `JPL-public` one
-> after they are deployed and approved to have a public bucket.
+> after they are fully deployed and approved to have a public bucket.
 
 EDC deployment steps are not fully documented here.
 ASF and JPL deployment steps should be complete, so let us know if something is missing!
@@ -276,7 +276,7 @@ AWS console -> Certificate Manager (ACM) -> import certificate
 2. Check "required reviewers" and add the appropriate team(s) or user(s)
 3. Change "Deployment branches and tags" to "Selected branches and tags" and
    - add a deployment branch or tag rule
-   - use "Ref Type: Branch" and write the name of the branch this deployment will be deployed out of.
+   - use "Ref Type: Branch" and write the name of the branch it will be deploying out of.
      (This is typically `main` for prod deployments, `develop` for test deployments, or a feature branch name for sandbox deployments.)
 4. Add the following environment secrets:
     - `AWS_REGION` - e.g. `us-west-2`
