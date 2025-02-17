@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - `ARIA_S1_GUNW` job type to hyp3-edc-uat deployment.
+- `OPERA_DIST_S1` job type to all Tibet and NISAR JPL deployments.
+- Stood up test deployments for Tibet and NISAR JPL projects.
+
 - All jobs now have `sns:Publish` permissions for SNS topics in the same AWS region and account for the purpose of sending messages to a co-located deployment of <https://github.com/ASFHyP3/ingest-adapter>.
 
 ### Changed
