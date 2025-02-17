@@ -98,16 +98,12 @@ ARIA_S1_GUNW:
     - name: PUBLISH
       image: ghcr.io/ASFHyP3/ingest-adapter
       command:
-        - --source
-        - https://hyp3-test-api.asf.alaska.edu
         - --job-id
         - Ref::bucket_prefix
-        - --target
-        - UAT
       timeout: 600
       compute_environment: Default
       vcpu: 1
       memory: 512
       secrets:
-        - EARTHDATA_USERNAME
-        - EARTHDATA_PASSWORD
+        - INGEST_ADAPTER_SNS_TOPIC_ARN
+        - HYP3_API_URL
