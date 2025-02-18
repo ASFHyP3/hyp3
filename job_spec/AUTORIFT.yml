@@ -30,6 +30,12 @@ AUTORIFT:
               minLength: 40
               maxLength: 40
               example: LC08_L1GT_118112_20210107_20210107_02_T2
+            - description: Name of the Sentinel-1 SLC IW burst granule to process
+              type: string
+              pattern: "^S1_\\d{6}_IW.*-BURST"
+              minLength: 43
+              maxLength: 43
+              example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
   cost_profiles:
     EDC:
       cost: 25.0
