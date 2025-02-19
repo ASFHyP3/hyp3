@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ARIA_S1_GUNW job type to EDC deployments.
 
 ### Changed
-- The `AUTORIFT` job type now accepts Sentinel-1 burst products.
+- The `AUTORIFT_ITS_LIVE` job type now accepts Sentinel-1 burst products.
 
 ## [9.4.0]
 
