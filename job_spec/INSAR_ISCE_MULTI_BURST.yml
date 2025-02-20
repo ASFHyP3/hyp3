@@ -7,7 +7,7 @@ INSAR_ISCE_MULTI_BURST:
       api_schema:
         type: array
         minItems: 1
-        maxItems: 30
+        maxItems: 15
         # TODO: provide an example with multiple bursts
         example:
           - S1_136231_IW2_20200604T022312_VV_7C85-BURST
@@ -22,7 +22,7 @@ INSAR_ISCE_MULTI_BURST:
       api_schema:
         type: array
         minItems: 1
-        maxItems: 30
+        maxItems: 15
         example:
           - S1_136231_IW2_20200616T022313_VV_5D11-BURST
         items:
