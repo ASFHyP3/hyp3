@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - The `AUTORIFT_ITS_LIVE` job type now accepts Sentinel-1 burst products.
+- The `OriginAccessIdentityId` has been renamed to `BucketReadPricipals` and now accepts multiple values.
 
 ## [9.4.0]
 
