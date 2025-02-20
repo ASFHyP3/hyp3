@@ -94,9 +94,9 @@ Parameters:
     Type: String
 
   {% else %}
-  OriginAccessIdentityId:
-    Description: ID of the CloudFront Origin Access Identity used to access data in S3 for Earthdata Cloud deployments
-    Type: String
+  BucketReadPrincipals:
+    Description: List of AWS principals to grant read access to the content bucket
+    Type: CommaDelimitedList
 
   DistributionUrl:
     Type: String
@@ -304,7 +304,7 @@ Resources:
           - Effect: Allow
             {% if security_environment == 'EDC' %}
             Principal:
-              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"
+              AWS: !Ref BucketReadPrincipals
             {% else %}
             Principal: "*"
             {% endif %}
@@ -315,7 +315,7 @@ Resources:
           - Effect: Allow
             {% if security_environment == 'EDC' %}
             Principal:
-              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"
+              AWS: !Ref BucketReadPrincipals
             {% else %}
             Principal: "*"
             {% endif %}
