@@ -1,9 +1,9 @@
 ARIA_RAIDER:
   required_parameters:
-    - job_id
+    - gunw_job_id
     - weather_model
   parameters:
-    job_id:
+    gunw_job_id:
       api_schema:
         description: HyP3 job ID for an INSAR_ISCE job that has successfully completed the DockerizedTopsApp step
         type: string
@@ -36,7 +36,7 @@ ARIA_RAIDER:
         - --weather-model
         - Ref::weather_model
         - --input-bucket-prefix
-        - Ref::job_id
+        - Ref::gunw_job_id
       timeout: 10800
       compute_environment: Default
       vcpu: 1
