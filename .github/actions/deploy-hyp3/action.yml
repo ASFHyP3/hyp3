@@ -90,19 +90,19 @@ runs:
       - name: Package and deploy
         shell: bash
         run: |
-          [ -z ${{ inputs.CLOUDFORMATION_ROLE_ARN }} ] && export ROLE_STATEMENT="" \
+          [ -z "${{ inputs.CLOUDFORMATION_ROLE_ARN }}" ] && export ROLE_STATEMENT="" \
             || export ROLE_STATEMENT="--role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }}"
 
-          [ -z ${{ inputs.DOMAIN_NAME }} ] && export DOMAIN_NAME="" \
+          [ -z "${{ inputs.DOMAIN_NAME }}" ] && export DOMAIN_NAME="" \
             || export DOMAIN_NAME="DomainName='${{ inputs.DOMAIN_NAME }}'"
 
-          [ -z ${{ inputs.CERTIFICATE_ARN }} ] && export CERTIFICATE_ARN="" \
+          [ -z "${{ inputs.CERTIFICATE_ARN }}" ] && export CERTIFICATE_ARN="" \
             || export CERTIFICATE_ARN="CertificateArn='${{ inputs.CERTIFICATE_ARN }}'"
 
-          [ -z ${{ inputs.BUCKET_READ_PRINCIPALS }} ] && export BUCKET_READ_PRINCIPALS="" \
+          [ -z "${{ inputs.BUCKET_READ_PRINCIPALS }}" ] && export BUCKET_READ_PRINCIPALS="" \
             || export BUCKET_READ_PRINCIPALS="BucketReadPrincipals='${{ inputs.BUCKET_READ_PRINCIPALS }}'"
 
-          [ -z ${{ inputs.DISTRIBUTION_URL }} ] && export DISTRIBUTION_URL="" \
+          [ -z "${{ inputs.DISTRIBUTION_URL }}" ] && export DISTRIBUTION_URL="" \
             || export DISTRIBUTION_URL="DistributionUrl='${{ inputs.DISTRIBUTION_URL }}'"
 
           aws cloudformation package \
