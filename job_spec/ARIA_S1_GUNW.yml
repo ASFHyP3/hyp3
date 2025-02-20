@@ -87,7 +87,7 @@ ARIA_S1_GUNW:
         - --weather-model
         - HRRR
       timeout: 10800  # 3 hr
-      compute_environment: Default
+      compute_environment: AriaS1Gunw
       vcpu: 1
       memory: 7500
       secrets:
