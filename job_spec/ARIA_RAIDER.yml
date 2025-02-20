@@ -32,7 +32,7 @@ ARIA_RAIDER:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --weather-model
         - Ref::weather_model
         - --input-bucket-prefix

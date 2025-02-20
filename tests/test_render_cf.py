@@ -20,15 +20,20 @@ def test_parse_map_statement():
     with pytest.raises(ValueError, match="expected 'in', got 'ib': for item ib items"):
         render_cf.parse_map_statement('for item ib items')
 
+    with pytest.raises(
+        ValueError, match="map statement contains reserved parameter name 'job_id': for job_id in items"
+    ):
+        render_cf.parse_map_statement('for job_id in items')
+
 
 def test_get_batch_job_parameters():
     job_spec: dict = {'parameters': {'param1': {}, 'param2': {}, 'param3': {}, 'param4': {}}}
 
-    step = {'command': ['foo', 'Ref::param2', 'Ref::param3', 'bar', 'Ref::bucket_prefix']}
+    step = {'command': ['foo', 'Ref::param2', 'Ref::param3', 'bar', 'Ref::job_id']}
     assert render_cf.get_batch_job_parameters(job_spec, step) == {
         'param2.$': '$.batch_job_parameters.param2',
         'param3.$': '$.batch_job_parameters.param3',
-        'bucket_prefix.$': '$.batch_job_parameters.bucket_prefix',
+        'job_id.$': '$.job_id',
     }
 
     step = {'command': ['foo', 'Ref::param2', 'Ref::param3', 'bar', 'Ref::param5']}
