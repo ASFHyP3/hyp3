@@ -123,7 +123,7 @@ def test_set_batch_overrides_insar_isce_burst_10x2():
 
 
 def test_set_batch_overrides_insar_isce_burst_20x4():
-    for n in range(1, 23):
+    for n in range(1, 16):
         assert lambda_handler(mock_insar_isce_burst_job('20x4', bursts=n), None) == {
             'ResourceRequirements': [
                 {
@@ -133,7 +133,7 @@ def test_set_batch_overrides_insar_isce_burst_20x4():
             ],
             'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '1'}],
         }
-    for n in range(23, 31):
+    for n in range(16, 31):
         assert lambda_handler(mock_insar_isce_burst_job('20x4', bursts=n), None) == {
             'ResourceRequirements': [
                 {
