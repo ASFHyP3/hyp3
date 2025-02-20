@@ -98,12 +98,11 @@ ARIA_S1_GUNW:
     - name: PUBLISH
       image: ghcr.io/ASFHyP3/ingest-adapter
       command:
-        - --job-id
-        - Ref::bucket_prefix
+        - Ref::job_id
       timeout: 600
       compute_environment: Default
       vcpu: 1
       memory: 512
       secrets:
-        - INGEST_ADAPTER_SNS_TOPIC_ARN
-        - HYP3_API_URL
+        - TOPIC_ARN
+        - HYP3_URL
