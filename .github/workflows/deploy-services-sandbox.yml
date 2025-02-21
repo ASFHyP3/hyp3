@@ -14,8 +14,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-services-test
-            domain: hyp3-services-test.asf.alaska.edu
+          - environment: hyp3-services-sandbox
+            domain: hyp3-services-sandbox.asf.alaska.edu
             template_bucket: services-hyp3-artifacts
             image_tag: test
             product_lifetime_in_days: 14
