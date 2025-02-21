@@ -3,7 +3,7 @@ name: Deploy Services Sandbox Stack to AWS
 on:
   push:
     branches:
-      - services-hyp3-sandbox
+      - hyp3-services-sandbox
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
