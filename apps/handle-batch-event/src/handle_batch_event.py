@@ -1,12 +1,12 @@
 import dynamo
 
 
-def validate_field(actual, expected, field_name: str) -> None:
+def validate_field(actual: object, expected: object, field_name: str) -> None:
     if actual != expected:
         raise ValueError(f"Expected {field_name} '{expected}' but got '{actual}'.")
 
 
-def lambda_handler(event, context):
+def lambda_handler(event: dict, _) -> None:
     validate_field(event['source'], 'aws.batch', 'source')
     validate_field(event['detail-type'], 'Batch Job State Change', 'detail-type')
     validate_field(event['detail']['status'], 'RUNNING', 'status')
