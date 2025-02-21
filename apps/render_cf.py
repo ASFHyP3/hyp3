@@ -6,7 +6,7 @@ import jinja2
 import yaml
 
 
-def snake_to_pascal_case(input_string: str):
+def snake_to_pascal_case(input_string: str) -> str:
     split_string = input_string.lower().split('_')
     return ''.join([i.title() for i in split_string])
 
@@ -75,7 +75,7 @@ def get_map_state(job_spec: dict, step: dict) -> dict:
     }
 
 
-def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params=False) -> dict:
+def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params: bool = False) -> dict:
     if filter_batch_params:
         batch_job_parameters: dict | str = get_batch_job_parameters(job_spec, step)
         parameters_key = 'Parameters'
@@ -117,18 +117,22 @@ def parse_map_statement(map_statement: str) -> tuple[str, str]:
         raise ValueError(f"expected 'for', got '{tokens[0]}': {map_statement}")
     if tokens[2] != 'in':
         raise ValueError(f"expected 'in', got '{tokens[2]}': {map_statement}")
-    return tokens[1], tokens[3]
+    item, items = tokens[1], tokens[3]
+    if item == 'job_id':
+        raise ValueError(f"map statement contains reserved parameter name 'job_id': {map_statement}")
+    return item, items
 
 
 def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str | None = None) -> dict:
-    job_params = {'bucket_prefix', *job_spec['parameters'].keys()}
     step_params = get_batch_param_names_for_job_step(step)
     batch_params = {}
     for param in step_params:
-        if param == map_item:
+        if param == 'job_id':
+            batch_params['job_id.$'] = '$.job_id'
+        elif param == map_item:
             batch_params[f'{map_item}.$'] = "States.Format('{}', $$.Map.Item.Value)"
         else:
-            if param not in job_params:
+            if param not in job_spec['parameters']:
                 raise ValueError(f"job parameter '{param}' has not been defined")
             batch_params[f'{param}.$'] = f'$.batch_job_parameters.{param}'
     return batch_params
@@ -139,7 +143,7 @@ def get_batch_param_names_for_job_step(step: dict) -> set[str]:
     return {arg.removeprefix(ref_prefix) for arg in step['command'] if arg.startswith(ref_prefix)}
 
 
-def render_templates(job_types: dict, compute_envs: dict, security_environment: str, api_name: str):
+def render_templates(job_types: dict, compute_envs: dict, security_environment: str, api_name: str) -> None:
     job_states = get_states_for_jobs(job_types)
 
     env = jinja2.Environment(
@@ -204,7 +208,7 @@ def render_default_params_by_job_type(job_types: dict) -> None:
         }
         for job_type, job_spec in job_types.items()
     }
-    with open(Path('lib') / 'dynamo' / 'dynamo' / 'default_params_by_job_type.json', 'w') as f:
+    with (Path('lib') / 'dynamo' / 'dynamo' / 'default_params_by_job_type.json').open('w') as f:
         json.dump(default_params_by_job_type, f, indent=2)
 
 
@@ -216,7 +220,7 @@ def render_costs(job_types: dict, cost_profile: str) -> None:
         }
         for job_type, job_spec in job_types.items()
     ]
-    with open(Path('lib') / 'dynamo' / 'dynamo' / 'costs.json', 'w') as f:
+    with (Path('lib') / 'dynamo' / 'dynamo' / 'costs.json').open('w') as f:
         json.dump(costs, f, indent=2)
 
 
@@ -226,10 +230,8 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
     if actual_fields != expected_fields:
         raise ValueError(f'{job_type} has fields {actual_fields} but should have {expected_fields}')
 
-    reserved_params = {'bucket_prefix'}
-    reserved_params_in_spec = reserved_params.intersection(set(job_spec['parameters'].keys()))
-    if reserved_params_in_spec:
-        raise ValueError(f'{job_type} contains reserved parameter names: {sorted(reserved_params_in_spec)}')
+    if 'job_id' in job_spec['parameters']:
+        raise ValueError(f"{job_type} contains reserved parameter name 'job_id'")
 
     expected_param_fields = ['api_schema']
     for param_name, param_dict in job_spec['parameters'].items():

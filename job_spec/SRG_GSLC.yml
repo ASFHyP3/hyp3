@@ -53,7 +53,7 @@ SRG_GSLC:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - Ref::granules
       timeout: 10800
       compute_environment: SrgGslc
