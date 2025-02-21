@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The `AUTORIFT_ITS_LIVE` job type now accepts Sentinel-1 burst products.
 - `ruff` now checks for incorrect docstrings (missing docstrings are still allowed), incomplete type annotations (missing annotations are still allowed), and opportunities to use `pathlib`.
 - Cloudformation parameter overrides are now provided via a .json file input to the `deploy-hyp3` GitHub action.
+- The `OriginAccessIdentityId` used in EDC deployments has been renamed to `BucketReadPricipals` and now accepts multiple values.
 
 ## [9.4.0]
 
