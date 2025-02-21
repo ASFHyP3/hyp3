@@ -5,7 +5,7 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 
 class TokenDeserializeError(Exception):
-    """Raised when paging results and `start_token` fails to deserialize"""
+    """Raised when paging results and `start_token` fails to deserialize."""
 
 
 def get_granules(jobs: list[dict]) -> set[str]:

@@ -18,11 +18,10 @@ quote-style = "single"
 extend-select = [
     "I",   # isort: https://docs.astral.sh/ruff/rules/#isort-i
     "UP",  # pyupgrade: https://docs.astral.sh/ruff/rules/#pyupgrade-up
-
+    "D",   # pydocstyle: https://docs.astral.sh/ruff/rules/#pydocstyle-d
     # TODO: uncomment the following extensions and address their warnings:
-    #"D",   # pydocstyle: https://docs.astral.sh/ruff/rules/#pydocstyle-d
     #"ANN", # annotations: https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
-    #"PTH", # use-pathlib-pth: https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
+    "PTH", # use-pathlib-pth: https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
 ]
 
 [tool.ruff.lint.pydocstyle]
@@ -33,7 +32,8 @@ case-sensitive = true
 lines-after-imports = 2
 
 [tool.ruff.lint.extend-per-file-ignores]
-"tests/*" = ["D100", "D103", "ANN"]
+"*" = ["D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107"]
+"tests/*" = ["ANN"]
 
 [tool.mypy]
 python_version = "3.13"

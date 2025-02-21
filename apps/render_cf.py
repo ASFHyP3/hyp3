@@ -209,7 +209,7 @@ def render_default_params_by_job_type(job_types: dict) -> None:
         }
         for job_type, job_spec in job_types.items()
     }
-    with open(Path('lib') / 'dynamo' / 'dynamo' / 'default_params_by_job_type.json', 'w') as f:
+    with (Path('lib') / 'dynamo' / 'dynamo' / 'default_params_by_job_type.json').open('w') as f:
         json.dump(default_params_by_job_type, f, indent=2)
 
 
@@ -221,7 +221,7 @@ def render_costs(job_types: dict, cost_profile: str) -> None:
         }
         for job_type, job_spec in job_types.items()
     ]
-    with open(Path('lib') / 'dynamo' / 'dynamo' / 'costs.json', 'w') as f:
+    with (Path('lib') / 'dynamo' / 'dynamo' / 'costs.json').open('w') as f:
         json.dump(costs, f, indent=2)
 
 

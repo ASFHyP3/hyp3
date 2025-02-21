@@ -1,5 +1,4 @@
 import json
-import os
 import sys
 from copy import deepcopy
 from pathlib import Path
@@ -23,7 +22,7 @@ class BoundsValidationError(Exception):
     pass
 
 
-with open(Path(__file__).parent / 'job_validation_map.yml') as job_validation_map_file:
+with (Path(__file__).parent / 'job_validation_map.yml').open() as job_validation_map_file:
     JOB_VALIDATION_MAP = yaml.safe_load(job_validation_map_file.read())
 
 
@@ -133,8 +132,8 @@ def _format_points(point_string):
 
 
 def _get_multipolygon_from_geojson(input_file):
-    dem_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), input_file)
-    with open(dem_file) as f:
+    dem_file = Path(__file__).parent / input_file
+    with Path(dem_file).open() as f:
         shp = json.load(f)['features'][0]['geometry']
     polygons = [x.buffer(0) for x in shape(shp).buffer(0).geoms]  # type: ignore[attr-defined]
     return MultiPolygon(polygons)
