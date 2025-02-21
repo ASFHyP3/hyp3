@@ -45,6 +45,10 @@ jobs:
           aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+
       - run: |
           jq -n '{"Parameters": $ARGS.named}' \
             --arg VpcId '${{ secrets.VPC_ID }}' \
