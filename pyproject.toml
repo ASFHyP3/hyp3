@@ -36,7 +36,7 @@ mypy-init-return = true
 suppress-dummy-args = true
 
 [tool.ruff.lint.extend-per-file-ignores]
-"*" = ["D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107", "ANN401"]
+"*" = ["D1", "ANN401"]
 "tests/*" = ["ANN"]
 
 [tool.mypy]
