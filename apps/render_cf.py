@@ -124,7 +124,6 @@ def parse_map_statement(map_statement: str) -> tuple[str, str]:
 
 
 def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str | None = None) -> dict:
-    job_params = job_spec['parameters'].keys()
     step_params = get_batch_param_names_for_job_step(step)
     batch_params = {}
     for param in step_params:
@@ -133,7 +132,7 @@ def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str | None = 
         elif param == map_item:
             batch_params[f'{map_item}.$'] = "States.Format('{}', $$.Map.Item.Value)"
         else:
-            if param not in job_params:
+            if param not in job_spec['parameters']:
                 raise ValueError(f"job parameter '{param}' has not been defined")
             batch_params[f'{param}.$'] = f'$.batch_job_parameters.{param}'
     return batch_params
@@ -231,7 +230,7 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
     if actual_fields != expected_fields:
         raise ValueError(f'{job_type} has fields {actual_fields} but should have {expected_fields}')
 
-    if 'job_id' in job_spec['parameters'].keys():
+    if 'job_id' in job_spec['parameters']:
         raise ValueError(f"{job_type} contains reserved parameter name 'job_id'")
 
     expected_param_fields = ['api_schema']
