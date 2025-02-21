@@ -20,7 +20,7 @@ def invoke_worker(worker_function_arn: str, jobs: list[dict]) -> dict:
 
 
 @log_exceptions
-def lambda_handler(event, context) -> None:
+def lambda_handler(event: dict, _) -> None:
     worker_function_arn = os.environ['START_EXECUTION_WORKER_ARN']
     logger.info(f'Worker function ARN: {worker_function_arn}')
 
