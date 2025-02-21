@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from flask import abort, g, jsonify, make_response, redirect, render_template, request
+from flask import Response, abort, g, jsonify, make_response, redirect, render_template, request
 from flask.json.provider import JSONProvider
 from flask_cors import CORS
 from openapi_core import OpenAPI
@@ -126,19 +126,19 @@ openapi = FlaskOpenAPIViewDecorator(
 
 
 @app.route('/costs', methods=['GET'])
-def costs_get():
+def costs_get() -> Response:
     return jsonify(dynamo.jobs.COSTS)
 
 
 @app.route('/jobs', methods=['POST'])
 @openapi
-def jobs_post():
+def jobs_post() -> Response:
     return jsonify(handlers.post_jobs(request.get_json(), g.user))
 
 
 @app.route('/jobs', methods=['GET'])
 @openapi
-def jobs_get():
+def jobs_get() -> Response:
     parameters = request.openapi.parameters.query  # type: ignore[attr-defined]
     start = parameters.get('start')
     end = parameters.get('end')
@@ -157,17 +157,17 @@ def jobs_get():
 
 @app.route('/jobs/<job_id>', methods=['GET'])
 @openapi
-def jobs_get_by_job_id(job_id):
+def jobs_get_by_job_id(job_id: str) -> Response:
     return jsonify(handlers.get_job_by_id(job_id))
 
 
 @app.route('/user', methods=['PATCH'])
 @openapi
-def user_patch():
+def user_patch() -> Response:
     return jsonify(handlers.patch_user(request.get_json(), g.user, g.edl_access_token))
 
 
 @app.route('/user', methods=['GET'])
 @openapi
-def user_get():
+def user_get() -> Response:
     return jsonify(handlers.get_user(g.user))

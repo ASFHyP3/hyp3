@@ -1,7 +1,7 @@
 from http.client import responses
 
 import requests
-from flask import abort, jsonify, request
+from flask import Response, abort, jsonify, request
 
 import dynamo
 from dynamo.exceptions import AccessCodeError, InsufficientCreditsError, UnexpectedApplicationStatusError
@@ -9,14 +9,14 @@ from hyp3_api import util
 from hyp3_api.validation import BoundsValidationError, GranuleValidationError, validate_jobs
 
 
-def problem_format(status, message):
+def problem_format(status: int, message: str) -> Response:
     response = jsonify({'status': status, 'detail': message, 'title': responses[status], 'type': 'about:blank'})
     response.headers['Content-Type'] = 'application/problem+json'
     response.status_code = status
     return response
 
 
-def post_jobs(body, user):
+def post_jobs(body: dict, user: str) -> dict:
     print(body)
 
     try:
@@ -35,7 +35,15 @@ def post_jobs(body, user):
     return body
 
 
-def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_token=None):
+def get_jobs(
+    user: str,
+    start: str | None = None,
+    end: str | None = None,
+    status_code: str | None = None,
+    name: str | None = None,
+    job_type: str | None = None,
+    start_token: str | None = None,
+) -> dict:
     try:
         start_key = util.deserialize(start_token) if start_token else None
     except util.TokenDeserializeError:
@@ -50,7 +58,7 @@ def get_jobs(user, start=None, end=None, status_code=None, name=None, job_type=N
     return payload
 
 
-def get_job_by_id(job_id):
+def get_job_by_id(job_id: str) -> dict:
     job = dynamo.jobs.get_job(job_id)
     if job is None:
         abort(problem_format(404, f'job_id does not exist: {job_id}'))
@@ -68,7 +76,7 @@ def patch_user(body: dict, user: str, edl_access_token: str) -> dict:
     return _user_response(user_record)
 
 
-def get_user(user):
+def get_user(user: str) -> dict:
     user_record = dynamo.user.get_or_create_user(user)
     return _user_response(user_record)
 
@@ -81,7 +89,7 @@ def _user_response(user_record: dict) -> dict:
     return payload
 
 
-def _get_names_for_user(user):
+def _get_names_for_user(user: str) -> list[str]:
     jobs, next_key = dynamo.jobs.query_jobs(user)
     while next_key is not None:
         new_jobs, next_key = dynamo.jobs.query_jobs(user, start_key=next_key)
