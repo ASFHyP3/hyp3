@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [9.5.0]
 
 ### Added
-- ARIA_S1_GUNW job type to hyp3-edc-uat deployment.
+- `ARIA_S1_GUNW` job type to hyp3-edc-uat deployment.
 
 ### Changed
+- The reserved `bucket_prefix` job spec parameter has been renamed to `job_id` and can be referenced as `Ref::job_id` within each step's `command` field.
+- The `job_id` parameter of the `ARIA_RAIDER` job type has been renamed to `gunw_job_id`.
 - The `AUTORIFT_ITS_LIVE` job type now accepts Sentinel-1 burst products.
 
 ## [9.4.0]

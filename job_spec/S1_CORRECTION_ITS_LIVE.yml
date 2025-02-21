@@ -37,7 +37,7 @@ S1_CORRECTION_TEST:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --buffer
         - Ref::buffer
         - --parameter-file
