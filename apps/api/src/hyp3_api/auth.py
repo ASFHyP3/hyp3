@@ -1,10 +1,11 @@
 import time
 from os import environ
+from typing import Any
 
 import jwt
 
 
-def decode_token(token) -> dict | None:
+def decode_token(token: Any) -> dict | None:
     try:
         return jwt.decode(token, environ['AUTH_PUBLIC_KEY'], algorithms=environ['AUTH_ALGORITHM'])
     except (jwt.ExpiredSignatureError, jwt.DecodeError):

@@ -47,7 +47,7 @@ def submit_jobs(jobs: list[dict]) -> None:
 
 
 @log_exceptions
-def lambda_handler(event, context) -> None:
+def lambda_handler(event: dict, _) -> None:
     jobs = event['jobs']
     logger.info(f'Submitting {len(jobs)} jobs')
     submit_jobs(jobs)
