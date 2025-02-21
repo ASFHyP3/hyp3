@@ -99,10 +99,10 @@ class CustomEncoder(json.JSONEncoder):
 
 
 class CustomJSONProvider(JSONProvider):
-    def dumps(self, obj: Any, **kwargs) -> str:
+    def dumps(self, obj: Any, **kwargs: Any) -> str:
         return json.dumps(obj, cls=CustomEncoder)
 
-    def loads(self, s: str | bytes, **kwargs) -> Any:
+    def loads(self, s: str | bytes, **kwargs: Any) -> Any:
         return json.loads(s)
 
 

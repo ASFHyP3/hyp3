@@ -6,7 +6,7 @@ import jinja2
 import yaml
 
 
-def snake_to_pascal_case(input_string: str):
+def snake_to_pascal_case(input_string: str) -> str:
     split_string = input_string.lower().split('_')
     return ''.join([i.title() for i in split_string])
 
@@ -75,7 +75,7 @@ def get_map_state(job_spec: dict, step: dict) -> dict:
     }
 
 
-def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params=False) -> dict:
+def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params: bool = False) -> dict:
     if filter_batch_params:
         batch_job_parameters: dict | str = get_batch_job_parameters(job_spec, step)
         parameters_key = 'Parameters'
@@ -144,7 +144,7 @@ def get_batch_param_names_for_job_step(step: dict) -> set[str]:
     return {arg.removeprefix(ref_prefix) for arg in step['command'] if arg.startswith(ref_prefix)}
 
 
-def render_templates(job_types: dict, compute_envs: dict, security_environment: str, api_name: str):
+def render_templates(job_types: dict, compute_envs: dict, security_environment: str, api_name: str) -> None:
     job_states = get_states_for_jobs(job_types)
 
     env = jinja2.Environment(
