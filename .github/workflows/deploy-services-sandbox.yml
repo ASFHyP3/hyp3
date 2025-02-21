@@ -1,4 +1,4 @@
-name: Deploy Service's Test Sandbox Stack to AWS
+name: Deploy Services Sandbox Stack to AWS
 
 on:
   push:
