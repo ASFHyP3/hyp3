@@ -124,7 +124,7 @@ def parse_map_statement(map_statement: str) -> tuple[str, str]:
 
 
 def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str | None = None) -> dict:
-    job_params = set(job_spec['parameters'].keys())
+    job_params = job_spec['parameters'].keys()
     step_params = get_batch_param_names_for_job_step(step)
     batch_params = {}
     for param in step_params:
