@@ -71,7 +71,7 @@ jobs:
           EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
           MONTHLY_BUDGET: ${{ secrets.MONTHLY_BUDGET }}
           REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
-          BUCKET_READ_PRINCIPALS: ${{ secrets.BUCKET_READ_PRINCIPALS }}
+          ORIGIN_ACCESS_IDENTITY_ID: ${{ secrets.ORIGIN_ACCESS_IDENTITY_ID }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           AMI_ID: ${{ matrix.ami_id }}
           INSTANCE_TYPES: ${{ matrix.instance_types }}
