@@ -16,7 +16,6 @@ jobs:
       matrix:
         include:
           - environment: hyp3-edc-prod
-            domain: ''
             api_name: hyp3
             template_bucket: cf-templates-118mtzosmrltk-us-west-2
             image_tag: latest
@@ -39,7 +38,6 @@ jobs:
             distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
 
           - environment: hyp3-edc-uat
-            domain: ''
             api_name: hyp3-test
             template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
             image_tag: test
@@ -65,7 +63,6 @@ jobs:
 
     environment:
       name: ${{ matrix.environment }}
-      url: https://${{ matrix.domain }}
 
     steps:
       - uses: actions/checkout@v4.2.2
@@ -81,34 +78,37 @@ jobs:
         with:
           python-version: 3.13
 
+      - run: |
+          jq -n '{"Parameters": $ARGS.named}' \
+            --arg VpcId '${{ secrets.VPC_ID }}' \
+            --arg SubnetIds '${{ secrets.SUBNET_IDS }}' \
+            --arg SecretArn '${{ secrets.SECRET_ARN }}' \
+            --arg ImageTag '${{ matrix.IMAGE_TAG }}' \
+            --arg ProductLifetimeInDays '${{ matrix.product_lifetime_in_days }} ' \
+            --arg AuthPublicKey '${{ secrets.AUTH_PUBLIC_KEY }}' \
+            --arg DefaultCreditsPerUser '${{ matrix.default_credits_per_user }}' \
+            --arg DefaultApplicationStatus '${{ matrix.default_application_status }}' \
+            --arg AmiId '${{ matrix.ami_id }}' \
+            --arg DefaultMaxvCpus '${{ matrix.default_max_vcpus }}' \
+            --arg ExpandedMaxvCpus '${{ matrix.expanded_max_vcpus }}' \
+            --arg MonthlyBudget '${{ secrets.MONTHLY_BUDGET }}' \
+            --arg RequiredSurplus '${{ matrix.required_surplus }}' \
+            --arg InstanceTypes '${{ matrix.instance_types }}' \
+            --arg BucketReadPrincipals '${{ secrets.BUCKET_READ_PRINCIPALS }}' \
+            --arg DistributionUrl '${{ matrix.distribution_url }}' \
+            > parameters.json
+
       - uses: ./.github/actions/deploy-hyp3
         if: github.ref == matrix.deploy_ref
         with:
           TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
           STACK_NAME: ${{ matrix.environment }}
-          DOMAIN_NAME: ${{ matrix.domain }}
           API_NAME: ${{ matrix.api_name }}
-          CERTIFICATE_ARN:  ${{ secrets.CERTIFICATE_ARN }}
-          IMAGE_TAG: ${{ matrix.image_tag }}
-          PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
-          VPC_ID: ${{ secrets.VPC_ID }}
-          SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
-          SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
-          DEFAULT_CREDITS_PER_USER: ${{ matrix.default_credits_per_user }}
-          DEFAULT_APPLICATION_STATUS: ${{ matrix.default_application_status }}
           COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
-          DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}
-          EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
-          MONTHLY_BUDGET: ${{ secrets.MONTHLY_BUDGET }}
-          REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
-          BUCKET_READ_PRINCIPALS: ${{ secrets.BUCKET_READ_PRINCIPALS }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
-          AMI_ID: ${{ matrix.ami_id }}
-          INSTANCE_TYPES: ${{ matrix.instance_types }}
-          DISTRIBUTION_URL: ${{ matrix.distribution_url }}
-          AUTH_PUBLIC_KEY: ${{ secrets.AUTH_PUBLIC_KEY }}
+          PARAMETER_FILE: parameters.json
 
   call-bump-version-workflow:
     if: github.ref == 'refs/heads/main'

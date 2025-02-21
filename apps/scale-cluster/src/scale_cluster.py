@@ -10,13 +10,13 @@ BATCH = boto3.client('batch')
 COST_EXPLORER = boto3.client('ce')
 
 
-def get_time_period(today: date):
+def get_time_period(today: date) -> dict:
     start = today.replace(day=1)
     end = start + dateutil.relativedelta.relativedelta(months=1)
     return {'Start': str(start), 'End': str(end)}
 
 
-def get_month_to_date_spending(today: date):
+def get_month_to_date_spending(today: date) -> float:
     time_period = get_time_period(today)
     granularity = 'MONTHLY'
     metrics = ['UnblendedCost']
@@ -29,7 +29,7 @@ def get_current_desired_vcpus(compute_environment_arn):
     return response['computeEnvironments'][0]['computeResources']['desiredvCpus']
 
 
-def set_max_vcpus(compute_environment_arn: str, target_max_vcpus: int, current_desired_vcpus: int):
+def set_max_vcpus(compute_environment_arn: str, target_max_vcpus: int, current_desired_vcpus: int) -> None:
     if current_desired_vcpus <= target_max_vcpus:
         compute_resources = {'maxvCpus': target_max_vcpus}
         print(f'Updating {compute_environment_arn} compute resources to {compute_resources}')

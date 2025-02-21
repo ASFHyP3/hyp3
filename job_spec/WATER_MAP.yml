@@ -124,7 +124,7 @@ WATER_MAP:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --resolution
         - Ref::resolution
         - --speckle-filter
@@ -161,7 +161,7 @@ WATER_MAP:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --max-vv-threshold
         - Ref::max_vv_threshold
         - --max-vh-threshold
@@ -184,7 +184,7 @@ WATER_MAP:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --estimator
         - Ref::flood_depth_estimator
         - --water-level-sigma

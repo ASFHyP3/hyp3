@@ -65,7 +65,7 @@ OPERA_DISP_TMS:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
       timeout: 1800 # 30 min
       compute_environment: Default
       vcpu: 1
@@ -82,7 +82,7 @@ OPERA_DISP_TMS:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
       timeout: 21600 # 6 hr
       compute_environment: Default
       vcpu: 1

@@ -59,7 +59,7 @@ ARIA_S1_GUNW:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --reference-scenes
         - Ref::reference
         - --secondary-scenes
@@ -83,7 +83,7 @@ ARIA_S1_GUNW:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --weather-model
         - HRRR
       timeout: 10800  # 3 hr

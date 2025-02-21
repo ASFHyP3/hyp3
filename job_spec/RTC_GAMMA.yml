@@ -111,7 +111,7 @@ RTC_GAMMA:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --resolution
         - Ref::resolution
         - --dem-name

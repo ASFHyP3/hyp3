@@ -2,7 +2,6 @@ import os
 import urllib.parse
 from datetime import datetime
 from os import environ
-from os.path import basename
 from pathlib import Path
 
 import boto3
@@ -70,7 +69,7 @@ def organize_files(files_dict, bucket):
                 'download_url': download_url,
                 'file_type': file_type,
                 'size': item['Size'],
-                'filename': basename(item['Key']),
+                'filename': Path(item['Key']).name,
                 's3': {
                     'bucket': bucket,
                     'key': item['Key'],

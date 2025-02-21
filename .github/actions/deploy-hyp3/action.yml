@@ -8,38 +8,11 @@ inputs:
   STACK_NAME:
     description: "Name of the deployed stack"
     required: true
-  DOMAIN_NAME:
-    description: "HyP3 API domain name"
-    required: true
   API_NAME:
     description: "HyP3 API name"
     required: true
-  CERTIFICATE_ARN:
-    description: "ARN for AWS Certificate Manager SSL certificate"
-    required: true
-  IMAGE_TAG:
-    description: "HyP3 plugin docker image tag to pull"
-    required: true
-  PRODUCT_LIFETIME:
-    description: "Number of days to keep output files before deleting them"
-    required: true
-  VPC_ID:
-    description: "Default VPC ID"
-    required: true
-  SUBNET_IDS:
-    description: "Comma separated list of Subnet IDs"
-    required: true
-  SECRET_ARN:
-    description: "ARN of Secret in AWS Secrets Manager containing all the credentials needed for job steps"
-    required: true
   CLOUDFORMATION_ROLE_ARN:
     description: "The CloudFormation role to use for this deployment"
-    required: true
-  DEFAULT_CREDITS_PER_USER:
-    description: "The default number of credits given to a new user"
-    required: true
-  DEFAULT_APPLICATION_STATUS:
-    description: "The default status for new user applications."
     required: true
   COST_PROFILE:
     description: "Job spec cost profile"
@@ -47,35 +20,11 @@ inputs:
   JOB_FILES:
     description: "Space separated list of job spec YAMLs to include"
     required: true
-  DEFAULT_MAX_VCPUS:
-    description: "Default maximum size for the AWS Batch compute environment"
-    required: true
-  EXPANDED_MAX_VCPUS:
-    description: "Expanded maximum size for the AWS Batch compute environment to use when month-to-date budget sufficiently exceeds month-to-date spending"
-    required: true
-  MONTHLY_BUDGET:
-    description: "Total budget allocated per month, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus."
-    required: true
-  REQUIRED_SURPLUS:
-    description: "Amount by which month-to-date budget must exceed month-to-date spending to increase fleet size, in dollars. Ignored when DefaultMaxvCpus = ExpandedMaxvCpus."
-    required: true
-  BUCKET_READ_PRINCIPALS:
-    description: "List of AWS IAM principals granted read access to data in S3 for Earthdata Cloud deployments"
-    required: true
   SECURITY_ENVIRONMENT:
     description: "Modify resources/configurations for ASF (default), EDC, or JPL security environments"
     required: true
-  AMI_ID:
-    description: "Name of the Systems Manager parameter from which to retrieve the current Ami Id"
-    required: true
-  INSTANCE_TYPES:
-    description: "Comma separated list of supported EC2 instance types"
-    required: true
-  DISTRIBUTION_URL:
-    description: "CloudFront Distribution URL for Earthdata Cloud environments"
-    required: true
-  AUTH_PUBLIC_KEY:
-    description: "Public key for jwt auth provider"
+  PARAMETER_FILE:
+    description: "JSON file containing parameter overrides for cloudformation stack"
     required: true
 
 runs:
@@ -90,20 +39,8 @@ runs:
       - name: Package and deploy
         shell: bash
         run: |
-          [ -z "${{ inputs.CLOUDFORMATION_ROLE_ARN }}" ] && export ROLE_STATEMENT="" \
+          [ -z ${{ inputs.CLOUDFORMATION_ROLE_ARN }} ] && export ROLE_STATEMENT="" \
             || export ROLE_STATEMENT="--role-arn ${{ inputs.CLOUDFORMATION_ROLE_ARN }}"
-
-          [ -z "${{ inputs.DOMAIN_NAME }}" ] && export DOMAIN_NAME="" \
-            || export DOMAIN_NAME="DomainName='${{ inputs.DOMAIN_NAME }}'"
-
-          [ -z "${{ inputs.CERTIFICATE_ARN }}" ] && export CERTIFICATE_ARN="" \
-            || export CERTIFICATE_ARN="CertificateArn='${{ inputs.CERTIFICATE_ARN }}'"
-
-          [ -z "${{ inputs.BUCKET_READ_PRINCIPALS }}" ] && export BUCKET_READ_PRINCIPALS="" \
-            || export BUCKET_READ_PRINCIPALS="BucketReadPrincipals='${{ inputs.BUCKET_READ_PRINCIPALS }}'"
-
-          [ -z "${{ inputs.DISTRIBUTION_URL }}" ] && export DISTRIBUTION_URL="" \
-            || export DISTRIBUTION_URL="DistributionUrl='${{ inputs.DISTRIBUTION_URL }}'"
 
           aws cloudformation package \
             --template-file apps/main-cf.yml \
@@ -114,22 +51,4 @@ runs:
             --template-file packaged.yml \
             $ROLE_STATEMENT \
             --capabilities CAPABILITY_IAM \
-            --parameter-overrides \
-                VpcId='${{ inputs.VPC_ID }}' \
-                SubnetIds='${{ inputs.SUBNET_IDS }}' \
-                SecretArn='${{ inputs.SECRET_ARN }}' \
-                ImageTag='${{ inputs.IMAGE_TAG }}' \
-                ProductLifetimeInDays='${{ inputs.PRODUCT_LIFETIME }}' \
-                AuthPublicKey='${{ inputs.AUTH_PUBLIC_KEY }}' \
-                $DOMAIN_NAME \
-                $CERTIFICATE_ARN \
-                $BUCKET_READ_PRINCIPALS \
-                $DISTRIBUTION_URL \
-                DefaultCreditsPerUser='${{ inputs.DEFAULT_CREDITS_PER_USER }}' \
-                DefaultApplicationStatus='${{ inputs.DEFAULT_APPLICATION_STATUS }}' \
-                DefaultMaxvCpus='${{ inputs.DEFAULT_MAX_VCPUS }}' \
-                ExpandedMaxvCpus='${{ inputs.EXPANDED_MAX_VCPUS }}' \
-                MonthlyBudget='${{ inputs.MONTHLY_BUDGET }}' \
-                RequiredSurplus='${{ inputs.REQUIRED_SURPLUS }}' \
-                AmiId='${{ inputs.AMI_ID }}' \
-                InstanceTypes='${{ inputs.INSTANCE_TYPES }}'
+            --parameter-overrides file://${{ inputs.PARAMETER_FILE }}

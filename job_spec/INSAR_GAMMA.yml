@@ -90,7 +90,7 @@ INSAR_GAMMA:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --include-look-vectors
         - Ref::include_look_vectors
         - --include-los-displacement

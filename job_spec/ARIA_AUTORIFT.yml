@@ -48,7 +48,7 @@ AUTORIFT:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --parameter-file
         - Ref::parameter_file
         - --naming-scheme
