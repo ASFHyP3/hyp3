@@ -22,7 +22,6 @@ jobs:
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
-            deploy_ref: refs/heads/develop
             job_files: >-
               job_spec/AUTORIFT.yml
               job_spec/INSAR_ISCE_BURST.yml
