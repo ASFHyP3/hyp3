@@ -1,6 +1,7 @@
 name: Deploy Services Sandbox Stack to AWS
 
 on:
+  workflow_dispatch: {}
   push:
     branches:
       - hyp3-services-sandbox
