@@ -170,11 +170,12 @@ def test_validate_job_spec():
         job_spec_with_job_id_param = {**job_spec, 'parameters': {'job_id': {'api_schema': {}}}}
         render_cf.validate_job_spec(job_type, job_spec_with_job_id_param)
 
-    with pytest.raises(ValueError, match="^parameter 'foo' for FOO has fields .* but should have .*"):
+    param_fields_error_message = r"^parameter 'foo' for FOO has fields .* but should have .*"
+    with pytest.raises(ValueError, match=param_fields_error_message):
         job_spec_missing_param_field = {**job_spec, 'parameters': {'foo': {}}}
         render_cf.validate_job_spec(job_type, job_spec_missing_param_field)
 
-    with pytest.raises(ValueError, match=r"^parameter 'foo' for FOO has fields .* but should have .*"):
+    with pytest.raises(ValueError, match=param_fields_error_message):
         job_spec_bad_param_field = {**job_spec, 'parameters': {'foo': {'api_schema': {}, 'bad_field': ''}}}
         render_cf.validate_job_spec(job_type, job_spec_bad_param_field)
 
