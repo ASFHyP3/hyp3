@@ -110,3 +110,84 @@ def test_get_compute_environments(tmp_path):
     yaml.dump(compute_env_file_contents, Path(compute_env_file).open('w'))
     with pytest.raises(KeyError, match='ComputeEnvironment2'):
         render_cf.get_compute_environments_for_deployment(job_types, compute_env_file)
+
+
+def test_validate_job_spec():
+    job_type = 'FOO'
+    job_spec = {
+        'required_parameters': ['granules'],
+        'parameters': {'foo': {'api_schema': {}}},
+        'cost_profiles': {},
+        'validators': [],
+        'steps': [
+            {
+                'image': 'repo/hyp3-gamma',
+            },
+            {
+                'image': 'repo/water-map-equal-percent-solution',
+            },
+        ],
+    }
+
+    render_cf.validate_job_spec(job_type, job_spec)
+
+    fields_error_message = r'^FOO has fields .* but should have .*'
+    with pytest.raises(ValueError, match=fields_error_message):
+        job_spec_missing_field = {**job_spec}
+        del job_spec_missing_field['required_parameters']
+
+        render_cf.validate_job_spec(job_type, job_spec_missing_field)
+
+    with pytest.raises(ValueError, match=fields_error_message):
+        job_spec_missing_field = {**job_spec}
+        del job_spec_missing_field['parameters']
+
+        render_cf.validate_job_spec(job_type, job_spec_missing_field)
+
+    with pytest.raises(ValueError, match=fields_error_message):
+        job_spec_missing_field = {**job_spec}
+        del job_spec_missing_field['cost_profiles']
+
+        render_cf.validate_job_spec(job_type, job_spec_missing_field)
+
+    with pytest.raises(ValueError, match=fields_error_message):
+        job_spec_missing_field = {**job_spec}
+        del job_spec_missing_field['validators']
+
+        render_cf.validate_job_spec(job_type, job_spec_missing_field)
+
+    with pytest.raises(ValueError, match=fields_error_message):
+        job_spec_missing_field = {**job_spec}
+        del job_spec_missing_field['steps']
+
+        render_cf.validate_job_spec(job_type, job_spec_missing_field)
+
+    with pytest.raises(ValueError, match=fields_error_message):
+        job_spec_bad_field = {**job_spec, 'bad_field': ''}
+        render_cf.validate_job_spec(job_type, job_spec_bad_field)
+
+    with pytest.raises(ValueError, match=r"^FOO contains reserved parameter name 'job_id'$"):
+        job_spec_with_job_id_param = {**job_spec, 'parameters': {'job_id': {'api_schema': {}}}}
+        render_cf.validate_job_spec(job_type, job_spec_with_job_id_param)
+
+    param_fields_error_message = r"^parameter 'foo' for FOO has fields .* but should have .*"
+    with pytest.raises(ValueError, match=param_fields_error_message):
+        job_spec_missing_param_field = {**job_spec, 'parameters': {'foo': {}}}
+        render_cf.validate_job_spec(job_type, job_spec_missing_param_field)
+
+    with pytest.raises(ValueError, match=param_fields_error_message):
+        job_spec_bad_param_field = {**job_spec, 'parameters': {'foo': {'api_schema': {}, 'bad_field': ''}}}
+        render_cf.validate_job_spec(job_type, job_spec_bad_param_field)
+
+    job_spec_uppercase_image = {
+        **job_spec,
+        'steps': [
+            {
+                'image': 'repo/HyP3-gamma',
+            },
+        ],
+    }
+    with pytest.raises(
+        ValueError, match=r'^FOO has image repo/HyP3-gamma but docker requires the image to be all lowercase.*'
+    ):
+        render_cf.validate_job_spec(job_type, job_spec_uppercase_image)
