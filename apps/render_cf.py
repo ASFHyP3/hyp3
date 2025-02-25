@@ -237,7 +237,7 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
 
     for step in job_spec['steps']:
         if not step['image'].islower():
-            raise ValueError(f"{job_type} image {step['image']} must be all lowercase")
+            raise ValueError(f'{job_type} image {step["image"]} must be all lowercase')
 
     for param_name, param_dict in job_spec['parameters'].items():
         actual_param_fields = sorted(param_dict.keys())
