@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.5.1]
+
+### Added
+- `OPERA_DIST_S1` job type to all Tibet and NISAR JPL deployments.
+- Stood up test deployments for Tibet and NISAR JPL projects.
+
+### Changed
+- Increased throughput for `hyp3-cargill` (640 -> 1600 vCPUs) to support their processing needs.
+
+### Removed
+- Removed the `hyp3-enterprise-test` deployment.
+
 ## [9.5.0]
 
 ### Added
