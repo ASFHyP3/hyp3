@@ -100,7 +100,7 @@ ARIA_S1_GUNW:
       command:
         - Ref::job_id
       timeout: 600
-      compute_environment: Default
+      compute_environment: AriaS1Gunw
       vcpu: 1
       memory: 512
       secrets:
