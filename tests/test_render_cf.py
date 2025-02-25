@@ -121,7 +121,7 @@ def test_validate_job_spec():
         'validators': [],
         'steps': [
             {
-                'image': 'reop/hyp3-gamma',
+                'image': 'repo/hyp3-gamma',
             },
             {
                 'image': 'repo/water-map-equal-percent-solution',
@@ -131,38 +131,54 @@ def test_validate_job_spec():
 
     render_cf.validate_job_spec(job_type, job_spec)
 
-    required_param_error = r'.*has fields.*but should have.*'
-    with pytest.raises(ValueError, match=required_param_error):
-        missing = {**job_spec}
-        del missing['required_parameters']
+    fields_error_message = r'^FOO has fields .* but should have .*'
+    with pytest.raises(ValueError, match=fields_error_message):
+        job_spec_missing_field = {**job_spec}
+        del job_spec_missing_field['required_parameters']
 
-        render_cf.validate_job_spec(job_type, missing)
+        render_cf.validate_job_spec(job_type, job_spec_missing_field)
 
-    with pytest.raises(ValueError, match=required_param_error):
-        missing = {**job_spec}
-        del missing['parameters']
+    with pytest.raises(ValueError, match=fields_error_message):
+        job_spec_missing_field = {**job_spec}
+        del job_spec_missing_field['parameters']
 
-        render_cf.validate_job_spec(job_type, missing)
+        render_cf.validate_job_spec(job_type, job_spec_missing_field)
 
-    with pytest.raises(ValueError, match=required_param_error):
-        missing = {**job_spec}
-        del missing['cost_profiles']
+    with pytest.raises(ValueError, match=fields_error_message):
+        job_spec_missing_field = {**job_spec}
+        del job_spec_missing_field['cost_profiles']
 
-        render_cf.validate_job_spec(job_type, missing)
+        render_cf.validate_job_spec(job_type, job_spec_missing_field)
 
-    with pytest.raises(ValueError, match=required_param_error):
-        missing = {**job_spec}
-        del missing['validators']
+    with pytest.raises(ValueError, match=fields_error_message):
+        job_spec_missing_field = {**job_spec}
+        del job_spec_missing_field['validators']
 
-        render_cf.validate_job_spec(job_type, missing)
+        render_cf.validate_job_spec(job_type, job_spec_missing_field)
 
-    with pytest.raises(ValueError, match=required_param_error):
-        missing = {**job_spec}
-        del missing['steps']
+    with pytest.raises(ValueError, match=fields_error_message):
+        job_spec_missing_field = {**job_spec}
+        del job_spec_missing_field['steps']
 
-        render_cf.validate_job_spec(job_type, missing)
+        render_cf.validate_job_spec(job_type, job_spec_missing_field)
 
-    uppercase_image_job_spec = {
+    with pytest.raises(ValueError, match=fields_error_message):
+        job_spec_bad_field = {**job_spec, 'bad_field': ''}
+        render_cf.validate_job_spec(job_type, job_spec_bad_field)
+
+    with pytest.raises(ValueError, match=r"^FOO contains reserved parameter name 'job_id'$"):
+        job_spec_with_job_id_param = {**job_spec, 'parameters': {'job_id': {'api_schema': {}}}}
+        render_cf.validate_job_spec(job_type, job_spec_with_job_id_param)
+
+    with pytest.raises(ValueError, match="^parameter 'foo' for FOO has fields .* but should have .*"):
+        job_spec_missing_param_field = {**job_spec, 'parameters': {'foo': {}}}
+        render_cf.validate_job_spec(job_type, job_spec_missing_param_field)
+
+    with pytest.raises(ValueError, match=r"^parameter 'foo' for FOO has fields .* but should have .*"):
+        job_spec_bad_param_field = {**job_spec, 'parameters': {'foo': {'api_schema': {}, 'bad_field': ''}}}
+        render_cf.validate_job_spec(job_type, job_spec_bad_param_field)
+
+    job_spec_uppercase_image = {
         **job_spec,
         'steps': [
             {
@@ -170,11 +186,7 @@ def test_validate_job_spec():
             },
         ],
     }
-
-    with pytest.raises(ValueError, match=r'.*and docker requires the image to be all lowercase.*'):
-        render_cf.validate_job_spec(job_type, uppercase_image_job_spec)
-
-    job_spec_with_job_id_param = {**job_spec, 'parameters': {'job_id': ''}}
-
-    with pytest.raises(ValueError, match=r'.*reserved parameter name.*'):
-        render_cf.validate_job_spec(job_type, job_spec_with_job_id_param)
+    with pytest.raises(
+        ValueError, match=r'^FOO has image repo/HyP3-gamma but docker requires the image to be all lowercase.*'
+    ):
+        render_cf.validate_job_spec(job_type, job_spec_uppercase_image)

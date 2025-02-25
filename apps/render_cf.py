@@ -234,11 +234,6 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
         raise ValueError(f"{job_type} contains reserved parameter name 'job_id'")
 
     expected_param_fields = ['api_schema']
-
-    for step in job_spec['steps']:
-        if not step['image'].islower():
-            raise ValueError(f'{job_type} has image {step["image"]} and docker requires the image to be all lowercase')
-
     for param_name, param_dict in job_spec['parameters'].items():
         actual_param_fields = sorted(param_dict.keys())
         if actual_param_fields != expected_param_fields:
@@ -246,6 +241,10 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
                 f"parameter '{param_name}' for {job_type} has fields {actual_param_fields} "
                 f'but should have {expected_param_fields}'
             )
+
+    for step in job_spec['steps']:
+        if not step['image'].islower():
+            raise ValueError(f'{job_type} has image {step["image"]} but docker requires the image to be all lowercase')
 
 
 def main():
