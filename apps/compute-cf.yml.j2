@@ -178,7 +178,7 @@ Resources:
             Action: s3:PutObjectTagging
             Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
           - Effect: Allow
-            Actions: sns:Publish
+            Action: sns:Publish
             Resource: "arn:aws:sns:*"
 
   BatchServiceRole:
