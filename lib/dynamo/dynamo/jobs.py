@@ -29,7 +29,7 @@ else:
     DEFAULT_PARAMS_BY_JOB_TYPE = {}
 
 
-def put_jobs(user_id: str, jobs: list[dict], dry_run=False) -> list[dict]:
+def put_jobs(user_id: str, jobs: list[dict], dry_run: bool = False) -> list[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = current_utc_time()
 

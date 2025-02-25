@@ -1,6 +1,6 @@
 import json
-import os
 import sys
+from collections.abc import Iterable
 from copy import deepcopy
 from pathlib import Path
 
@@ -23,11 +23,11 @@ class BoundsValidationError(Exception):
     pass
 
 
-with open(Path(__file__).parent / 'job_validation_map.yml') as job_validation_map_file:
+with (Path(__file__).parent / 'job_validation_map.yml').open() as job_validation_map_file:
     JOB_VALIDATION_MAP = yaml.safe_load(job_validation_map_file.read())
 
 
-def _has_sufficient_coverage(granule: Polygon):
+def _has_sufficient_coverage(granule: Polygon) -> bool:
     global DEM_COVERAGE
     if DEM_COVERAGE is None:
         DEM_COVERAGE = _get_multipolygon_from_geojson('dem_coverage_map_cop30.geojson')
@@ -35,7 +35,7 @@ def _has_sufficient_coverage(granule: Polygon):
     return granule.intersects(DEM_COVERAGE)
 
 
-def _get_cmr_metadata(granules):
+def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
     cmr_parameters = {
         'granule_ur': [f'{granule}*' for granule in granules],
         'options[granule_ur][pattern]': 'true',
@@ -55,21 +55,20 @@ def _get_cmr_metadata(granules):
     }
     response = requests.post(CMR_URL, data=cmr_parameters)
     response.raise_for_status()
-    granules = [
+    return [
         {
             'name': entry.get('producer_granule_id', entry.get('title')),
             'polygon': Polygon(_format_points(entry['polygons'][0][0])),
         }
         for entry in response.json()['feed']['entry']
     ]
-    return granules
 
 
-def _is_third_party_granule(granule):
+def _is_third_party_granule(granule: str) -> bool:
     return granule.startswith('S2') or granule.startswith('L')
 
 
-def _make_sure_granules_exist(granules, granule_metadata):
+def _make_sure_granules_exist(granules: Iterable[str], granule_metadata: list[dict]) -> None:
     found_granules = [granule['name'] for granule in granule_metadata]
     not_found_granules = set(granules) - set(found_granules)
     not_found_granules = {granule for granule in not_found_granules if not _is_third_party_granule(granule)}
@@ -77,13 +76,13 @@ def _make_sure_granules_exist(granules, granule_metadata):
         raise GranuleValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 
 
-def check_dem_coverage(_, granule_metadata):
+def check_dem_coverage(_, granule_metadata: list[dict]) -> None:
     bad_granules = [g['name'] for g in granule_metadata if not _has_sufficient_coverage(g['polygon'])]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
-def check_same_burst_ids(job, _):
+def check_same_burst_ids(job: dict, _) -> None:
     refs = job['job_parameters']['reference']
     secs = job['job_parameters']['secondary']
     ref_ids = ['_'.join(ref.split('_')[1:3]) for ref in refs]
@@ -103,7 +102,7 @@ def check_same_burst_ids(job, _):
         )
 
 
-def check_valid_polarizations(job, _):
+def check_valid_polarizations(job: dict, _) -> None:
     polarizations = set(granule.split('_')[4] for granule in get_granules([job]))
     if len(polarizations) > 1:
         raise GranuleValidationError(
@@ -115,7 +114,7 @@ def check_valid_polarizations(job, _):
         )
 
 
-def check_not_antimeridian(_, granule_metadata):
+def check_not_antimeridian(_, granule_metadata: list[dict]) -> None:
     for granule in granule_metadata:
         bbox = granule['polygon'].bounds
         if abs(bbox[0] - bbox[2]) > 180.0 and bbox[0] * bbox[2] < 0.0:
@@ -126,21 +125,21 @@ def check_not_antimeridian(_, granule_metadata):
             raise GranuleValidationError(msg)
 
 
-def _format_points(point_string):
+def _format_points(point_string: str) -> list:
     converted_to_float = [float(x) for x in point_string.split(' ')]
     points = [list(t) for t in zip(converted_to_float[1::2], converted_to_float[::2])]
     return points
 
 
-def _get_multipolygon_from_geojson(input_file):
-    dem_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), input_file)
-    with open(dem_file) as f:
+def _get_multipolygon_from_geojson(input_file: str) -> MultiPolygon:
+    dem_file = Path(__file__).parent / input_file
+    with Path(dem_file).open() as f:
         shp = json.load(f)['features'][0]['geometry']
-    polygons = [x.buffer(0) for x in shape(shp).buffer(0).geoms]
+    polygons = [x.buffer(0) for x in shape(shp).buffer(0).geoms]  # type: ignore[attr-defined]
     return MultiPolygon(polygons)
 
 
-def check_bounds_formatting(job, _):
+def check_bounds_formatting(job: dict, _) -> None:
     bounds = job['job_parameters']['bounds']
     if bounds == [0.0, 0.0, 0.0, 0.0]:
         raise BoundsValidationError('Invalid bounds. Bounds cannot be [0, 0, 0, 0].')
@@ -162,7 +161,7 @@ def check_bounds_formatting(job, _):
         )
 
 
-def check_granules_intersecting_bounds(job, granule_metadata):
+def check_granules_intersecting_bounds(job: dict, granule_metadata: list[dict]) -> None:
     bounds = job['job_parameters']['bounds']
     if bounds == [0.0, 0.0, 0.0, 0.0]:
         raise BoundsValidationError('Invalid bounds. Bounds cannot be [0, 0, 0, 0].')
@@ -177,7 +176,7 @@ def check_granules_intersecting_bounds(job, granule_metadata):
         raise GranuleValidationError(f'The following granules do not intersect the provided bounds: {bad_granules}.')
 
 
-def check_same_relative_orbits(_, granule_metadata):
+def check_same_relative_orbits(_, granule_metadata: list[dict]) -> None:
     previous_relative_orbit = None
     for granule in granule_metadata:
         name_split = granule['name'].split('_')
@@ -204,7 +203,7 @@ def _convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
     return jobs
 
 
-def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5):
+def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
     bounds = job['job_parameters']['bounds']
 
     bounds_area = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0])

@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.5.0]
+
+### Added
+- `ARIA_S1_GUNW` job type to hyp3-edc-uat deployment.
+- All jobs now have `sns:Publish` permissions for SNS topics in the same AWS region and account for the purpose of sending messages to a co-located deployment of <https://github.com/ASFHyP3/ingest-adapter>.
+
+### Changed
+- The reserved `bucket_prefix` job spec parameter has been renamed to `job_id` and can be referenced as `Ref::job_id` within each step's `command` field.
+- The `job_id` parameter of the `ARIA_RAIDER` job type has been renamed to `gunw_job_id`.
+- The `AUTORIFT_ITS_LIVE` job type now accepts Sentinel-1 burst products.
+- `ruff` now checks for incorrect docstrings (missing docstrings are still allowed), incomplete type annotations (missing annotations are still allowed), and opportunities to use `pathlib`.
+- Cloudformation parameter overrides are now provided via a .json file input to the `deploy-hyp3` GitHub action.
+- The `OriginAccessIdentityId` used in EDC deployments has been renamed to `BucketReadPricipals` and now accepts multiple values.
+
 ## [9.4.0]
 
 ### Changed
