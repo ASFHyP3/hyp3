@@ -72,7 +72,7 @@ OPERA_DIST_S1:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --mgrs-tile-id
         - Ref::mgrs_tile_id
         - --track-number
