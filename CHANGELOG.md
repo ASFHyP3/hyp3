@@ -4,12 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.5.1]
+
+### Added
+- `OPERA_DIST_S1` job type to all Tibet and NISAR JPL deployments.
+- Stood up test deployments for Tibet and NISAR JPL projects.
+
+### Changed
+- Increased throughput for `hyp3-cargill` (640 -> 1600 vCPUs) to support their processing needs.
+
+### Removed
+- Removed the `hyp3-enterprise-test` deployment.
+
 ## [9.5.0]
 
 ### Added
 - `ARIA_S1_GUNW` job type to hyp3-edc-uat deployment.
-- `OPERA_DIST_S1` job type to all Tibet and NISAR JPL deployments.
-- Stood up test deployments for Tibet and NISAR JPL projects.
 
 - All jobs now have `sns:Publish` permissions for SNS topics in the same AWS region and account for the purpose of sending messages to a co-located deployment of <https://github.com/ASFHyP3/ingest-adapter>.
 
@@ -20,10 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ruff` now checks for incorrect docstrings (missing docstrings are still allowed), incomplete type annotations (missing annotations are still allowed), and opportunities to use `pathlib`.
 - Cloudformation parameter overrides are now provided via a .json file input to the `deploy-hyp3` GitHub action.
 - The `OriginAccessIdentityId` used in EDC deployments has been renamed to `BucketReadPricipals` and now accepts multiple values.
-- Increased throughput for `hyp3-cargill` (640 -> 1600 vCPUs) to support their processing needs.
-
-### Removed
-- Removed the `hyp3-enterprise-test` deployment.
 
 ## [9.4.0]
 
