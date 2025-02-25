@@ -131,31 +131,32 @@ def test_validate_job_spec():
 
     render_cf.validate_job_spec(job_type, job_spec)
 
-    with pytest.raises(ValueError, match=r'.*has fields.*but should have.*'):
+    required_param_error = r'.*has fields.*but should have.*'
+    with pytest.raises(ValueError, match=required_param_error):
         missing = {**job_spec}
         del missing['required_parameters']
 
         render_cf.validate_job_spec(job_type, missing)
 
-    with pytest.raises(ValueError, match=r'.*has fields.*but should have.*'):
+    with pytest.raises(ValueError, match=required_param_error):
         missing = {**job_spec}
         del missing['parameters']
 
         render_cf.validate_job_spec(job_type, missing)
 
-    with pytest.raises(ValueError, match=r'.*has fields.*but should have.*'):
+    with pytest.raises(ValueError, match=required_param_error):
         missing = {**job_spec}
         del missing['cost_profiles']
 
         render_cf.validate_job_spec(job_type, missing)
 
-    with pytest.raises(ValueError, match=r'.*has fields.*but should have.*'):
+    with pytest.raises(ValueError, match=required_param_error):
         missing = {**job_spec}
         del missing['validators']
 
         render_cf.validate_job_spec(job_type, missing)
 
-    with pytest.raises(ValueError, match=r'.*has fields.*but should have.*'):
+    with pytest.raises(ValueError, match=required_param_error):
         missing = {**job_spec}
         del missing['steps']
 
@@ -170,7 +171,7 @@ def test_validate_job_spec():
         ],
     }
 
-    with pytest.raises(ValueError, match=r'.*must be all lowercase.*'):
+    with pytest.raises(ValueError, match=r'.*and docker requires the image to be all lowercase.*'):
         render_cf.validate_job_spec(job_type, uppercase_image_job_spec)
 
     job_spec_with_job_id_param = {**job_spec, 'parameters': {'job_id': ''}}
