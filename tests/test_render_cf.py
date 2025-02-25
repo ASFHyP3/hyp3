@@ -116,19 +116,15 @@ def test_validate_job_spec():
     job_type = 'FOO'
     job_spec = {
         'required_parameters': ['granules'],
-        'parameters': {
-            'foo': {
-                'api_schema': {}
-                }
-            },
+        'parameters': {'foo': {'api_schema': {}}},
         'cost_profiles': {},
         'validators': [],
         'steps': [
             {
-                'image': '845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma',
+                'image': 'reop/hyp3-gamma',
             },
             {
-                'image': '845172464411.dkr.ecr.us-west-2.amazonaws.com/water-map-equal-percent-solution',
+                'image': 'repo/water-map-equal-percent-solution',
             },
         ],
     }
