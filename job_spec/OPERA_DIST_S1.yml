@@ -33,7 +33,6 @@ OPERA_DIST_S1:
         type: string
         enum: ["high", "low"]
         default: "low"
-        example: "high"
     moderate_confidence_threshold:
       api_schema:
         description: Moderate confidence threshold

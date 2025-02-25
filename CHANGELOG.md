@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ruff` now checks for incorrect docstrings (missing docstrings are still allowed), incomplete type annotations (missing annotations are still allowed), and opportunities to use `pathlib`.
 - Cloudformation parameter overrides are now provided via a .json file input to the `deploy-hyp3` GitHub action.
 - The `OriginAccessIdentityId` used in EDC deployments has been renamed to `BucketReadPricipals` and now accepts multiple values.
-- - Increased throughput for `hyp3-cargill` (640 -> 1600 vCPUs) to support their processing needs.
+- Increased throughput for `hyp3-cargill` (640 -> 1600 vCPUs) to support their processing needs.
 
 ### Removed
 - Removed the `hyp3-enterprise-test` deployment.
