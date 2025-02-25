@@ -52,7 +52,6 @@ jobs:
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
 
           - environment: hyp3-tibet-jpl-test
             domain: hyp3-tibet-jpl-test.asf.alaska.edu
@@ -73,7 +72,6 @@ jobs:
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
 
           - environment: hyp3-its-live-test
             domain: hyp3-its-live-test.asf.alaska.edu
