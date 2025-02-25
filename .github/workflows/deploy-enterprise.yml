@@ -276,7 +276,7 @@ jobs:
             --arg MonthlyBudget '${{ secrets.MONTHLY_BUDGET }}' \
             --arg RequiredSurplus '${{ matrix.required_surplus }}' \
             --arg InstanceTypes '${{ matrix.instance_types }}' \
-            --arg Domain '${{ matrix.domain }}' \
+            --arg DomainName '${{ matrix.domain }}' \
             --arg CertificateArn '${{ secrets.CERTIFICATE_ARN }}' \
             > parameters.json
 
