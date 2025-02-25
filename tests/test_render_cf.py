@@ -110,3 +110,74 @@ def test_get_compute_environments(tmp_path):
     yaml.dump(compute_env_file_contents, Path(compute_env_file).open('w'))
     with pytest.raises(KeyError, match='ComputeEnvironment2'):
         render_cf.get_compute_environments_for_deployment(job_types, compute_env_file)
+
+
+def test_validate_job_spec():
+    job_type = 'FOO'
+    job_spec = {
+        'required_parameters': ['granules'],
+        'parameters': {
+            'foo': {
+                'api_schema': {}
+                }
+            },
+        'cost_profiles': {},
+        'validators': [],
+        'steps': [
+            {
+                'image': '845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma',
+            },
+            {
+                'image': '845172464411.dkr.ecr.us-west-2.amazonaws.com/water-map-equal-percent-solution',
+            },
+        ],
+    }
+
+    render_cf.validate_job_spec(job_type, job_spec)
+
+    with pytest.raises(ValueError):
+        missing = {**job_spec}
+        del missing['required_parameters']
+
+        render_cf.validate_job_spec(job_type, missing)
+
+    with pytest.raises(ValueError):
+        missing = {**job_spec}
+        del missing['parameters']
+
+        render_cf.validate_job_spec(job_type, missing)
+
+    with pytest.raises(ValueError):
+        missing = {**job_spec}
+        del missing['cost_profiles']
+
+        render_cf.validate_job_spec(job_type, missing)
+
+    with pytest.raises(ValueError):
+        missing = {**job_spec}
+        del missing['validators']
+
+        render_cf.validate_job_spec(job_type, missing)
+
+    with pytest.raises(ValueError):
+        missing = {**job_spec}
+        del missing['steps']
+
+        render_cf.validate_job_spec(job_type, missing)
+
+    uppercase_image_job_spec = {
+        **job_spec,
+        'steps': [
+            {
+                'image': 'repo/HyP3-gamma',
+            },
+        ],
+    }
+
+    with pytest.raises(ValueError):
+        render_cf.validate_job_spec(job_type, uppercase_image_job_spec)
+
+    job_spec_with_job_id_param = {**job_spec, 'parameters': {'job_id': ''}}
+
+    with pytest.raises(ValueError):
+        render_cf.validate_job_spec(job_type, job_spec_with_job_id_param)
