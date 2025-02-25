@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - `ARIA_S1_GUNW` job type to hyp3-edc-uat deployment.
-- All jobs now have `sns:Publish` permissions for all SNS topics.
+- All jobs now have `sns:Publish` permissions for SNS topics in the same AWS region and account for the purpose of sending messages to a co-located deployment of <https://github.com/ASFHyP3/ingest-adapter>.
 
 ### Changed
 - The reserved `bucket_prefix` job spec parameter has been renamed to `job_id` and can be referenced as `Ref::job_id` within each step's `command` field.
