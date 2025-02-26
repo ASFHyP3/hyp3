@@ -63,6 +63,7 @@ jobs:
               job_spec/ARIA_AUTORIFT.yml
               job_spec/ARIA_RAIDER.yml
               job_spec/INSAR_ISCE.yml
+              job_spec/OPERA_DIST_S1.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
             default_max_vcpus: 1000  # Max: 10316
             expanded_max_vcpus: 1000  # Max: 10316
@@ -82,6 +83,7 @@ jobs:
               job_spec/ARIA_AUTORIFT.yml
               job_spec/ARIA_RAIDER.yml
               job_spec/INSAR_ISCE.yml
+              job_spec/OPERA_DIST_S1.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
             default_max_vcpus: 1600  # Max 1652
             expanded_max_vcpus: 1600  # Max 1652
@@ -177,8 +179,8 @@ jobs:
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -276,7 +278,7 @@ jobs:
             --arg MonthlyBudget '${{ secrets.MONTHLY_BUDGET }}' \
             --arg RequiredSurplus '${{ matrix.required_surplus }}' \
             --arg InstanceTypes '${{ matrix.instance_types }}' \
-            --arg Domain '${{ matrix.domain }}' \
+            --arg DomainName '${{ matrix.domain }}' \
             --arg CertificateArn '${{ secrets.CERTIFICATE_ARN }}' \
             > parameters.json
 

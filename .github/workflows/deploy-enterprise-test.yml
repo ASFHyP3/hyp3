@@ -14,28 +14,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-enterprise-test
-            domain: hyp3-enterprise-test.asf.alaska.edu
-            template_bucket: cf-templates-1iw894v4yzqya-us-west-2
-            image_tag: test
-            product_lifetime_in_days: 14
-            default_credits_per_user: 0
-            default_application_status: APPROVED
-            cost_profile: DEFAULT
-            job_files: >-
-              job_spec/AUTORIFT_ITS_LIVE.yml
-              job_spec/INSAR_GAMMA.yml
-              job_spec/RTC_GAMMA.yml
-              job_spec/INSAR_ISCE_BURST.yml
-              job_spec/WATER_MAP.yml
-              job_spec/WATER_MAP_EQ.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
-            required_surplus: 0
-            security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-
           - environment: hyp3-a19-jpl-test
             domain: hyp3-a19-jpl-test.asf.alaska.edu
             template_bucket: cf-templates-v4pvone059de-us-west-2
@@ -48,6 +26,26 @@ jobs:
               job_spec/ARIA_AUTORIFT.yml
               job_spec/ARIA_RAIDER.yml
               job_spec/INSAR_ISCE.yml
+            instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: JPL-public
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
+          - environment: hyp3-tibet-jpl-test
+            domain: hyp3-tibet-jpl-test.asf.alaska.edu
+            template_bucket: cf-templates-1or0efwqffkgd-us-west-2
+            image_tag: test
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/ARIA_AUTORIFT.yml
+              job_spec/ARIA_RAIDER.yml
+              job_spec/INSAR_ISCE.yml
+              job_spec/OPERA_DIST_S1.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -126,7 +124,7 @@ jobs:
             --arg MonthlyBudget '${{ secrets.MONTHLY_BUDGET }}' \
             --arg RequiredSurplus '${{ matrix.required_surplus }}' \
             --arg InstanceTypes '${{ matrix.instance_types }}' \
-            --arg Domain '${{ matrix.domain }}' \
+            --arg DomainName '${{ matrix.domain }}' \
             --arg CertificateArn '${{ secrets.CERTIFICATE_ARN }}' \
             > parameters.json
 
