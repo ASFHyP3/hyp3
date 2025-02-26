@@ -32,7 +32,6 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
 
     environment:
       name: ${{ matrix.environment }}
