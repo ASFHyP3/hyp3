@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [9.5.1]
 
 ### Added
-- `OPERA_DIST_S1` job type to all ARIA Tibet and NISAR JPL deployments.
-- Stood up a new `hyp3-tibet-jpl-test` deployment for the ARIA Tibet project at JPL.
+- `OPERA_DIST_S1` job type to all Tibet and NISAR JPL deployments.
+- Stood up test deployments for Tibet and NISAR JPL projects.
 
 ### Changed
 - Increased throughput for `hyp3-cargill` (640 -> 1600 vCPUs) to support their processing needs.

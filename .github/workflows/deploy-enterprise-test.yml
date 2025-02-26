@@ -33,6 +33,26 @@ jobs:
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
+          - environment: hyp3-nisar-jpl-test
+            domain: hyp3-nisar-jpl-test.asf.alaska.edu
+            template_bucket: cf-templates-gdeyr9hh8rzs-us-west-2
+            image_tag: test
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/ARIA_AUTORIFT.yml
+              job_spec/ARIA_RAIDER.yml
+              job_spec/INSAR_ISCE.yml
+              job_spec/OPERA_DIST_S1.yml
+            instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: JPL-public
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
           - environment: hyp3-tibet-jpl-test
             domain: hyp3-tibet-jpl-test.asf.alaska.edu
             template_bucket: cf-templates-1or0efwqffkgd-us-west-2
