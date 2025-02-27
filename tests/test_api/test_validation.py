@@ -427,10 +427,9 @@ def test_validate_jobs():
         },
         {'job_type': 'ARIA_RAIDER', 'job_parameters': {}},
         {
-            'job_type': 'INSAR_ISCE_MULTI_BURST',
+            'job_type': 'INSAR_ISCE_BURST',
             'job_parameters': {'reference': [valid_burst_pair[0]], 'secondary': [valid_burst_pair[1]]},
         },
-        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'granules': [valid_burst_pair[0], valid_burst_pair[1]]}},
     ]
     validation.validate_jobs(jobs)
 
@@ -458,15 +457,9 @@ def test_validate_jobs():
 
     jobs = [
         {
-            'job_type': 'INSAR_ISCE_MULTI_BURST',
+            'job_type': 'INSAR_ISCE_BURST',
             'job_parameters': {'reference': [invalid_burst_pair[0]], 'secondary': [invalid_burst_pair[1]]},
         }
-    ]
-    with raises(validation.GranuleValidationError):
-        validation.validate_jobs(jobs)
-
-    jobs = [
-        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'granules': [invalid_burst_pair[0], invalid_burst_pair[1]]}}
     ]
     with raises(validation.GranuleValidationError):
         validation.validate_jobs(jobs)
