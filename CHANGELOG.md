@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.5.2]
+
+## Fixed
+- OPERA-DIST-S1 job spec had wrong CLI interface (e.g. --n-lookbacks should be --n_lookbacks).
+
+## Changed
+- OPERA-DIST-S1 runtime increases from 3 to 6 hours for experimentation.
+
+
 ## [9.5.1]
 
 ### Added
