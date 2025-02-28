@@ -81,36 +81,25 @@ def check_dem_coverage(_, granule_metadata: list[dict]) -> None:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
-def check_same_burst_ids(job: dict, _) -> None:
-    # TODO: allow for granules param or create a single-burst version of this validator
-    refs = job['job_parameters']['reference']
-    secs = job['job_parameters']['secondary']
-    ref_ids = ['_'.join(ref.split('_')[1:3]) for ref in refs]
-    sec_ids = ['_'.join(sec.split('_')[1:3]) for sec in secs]
-    if len(ref_ids) != len(sec_ids):
-        raise GranuleValidationError(
-            f'Number of reference and secondary scenes must match, got: '
-            f'{len(ref_ids)} references and {len(sec_ids)} secondaries'
-        )
-    for i in range(len(ref_ids)):
-        if ref_ids[i] != sec_ids[i]:
-            raise GranuleValidationError(f'Burst IDs do not match for {refs[i]} and {secs[i]}.')
-    if len(set(ref_ids)) != len(ref_ids):
-        duplicate_pair_id = next(ref_id for ref_id in ref_ids if ref_ids.count(ref_id) > 1)
-        raise GranuleValidationError(
-            f'The requested scenes have more than 1 pair with the following burst ID: {duplicate_pair_id}.'
-        )
+def check_single_burst_pair(job: dict, _) -> None:
+    granule1, granule2 = job['job_parameters']['granules']
 
+    granule1_id = '_'.join(granule1.split('_')[1:3])
+    granule2_id = '_'.join(granule2.split('_')[1:3])
 
-def check_valid_polarizations(job: dict, _) -> None:
-    polarizations = set(granule.split('_')[4] for granule in get_granules([job]))
-    if len(polarizations) > 1:
+    if granule1_id != granule2_id:
+        raise GranuleValidationError(f'Burst IDs do not match for {granule1_id} and {granule2_id}.')
+
+    granule1_pol = granule1.split('_')[4]
+    granule2_pol = granule2.split('_')[4]
+
+    if granule1_pol != granule2_pol:
         raise GranuleValidationError(
-            f'The requested scenes need to have the same polarization, got: {", ".join(polarizations)}'
+            f'The requested scenes need to have the same polarization, got: {", ".join([granule1_pol, granule2_pol])}'
         )
-    if not polarizations.issubset({'VV', 'HH'}):
+    if granule1_pol not in ['VV', 'HH']:
         raise GranuleValidationError(
-            f'Only VV and HH polarizations are currently supported, got: {polarizations.pop()}'
+            f'Only VV and HH polarizations are currently supported, got: {granule1_pol}'
         )
 
 
