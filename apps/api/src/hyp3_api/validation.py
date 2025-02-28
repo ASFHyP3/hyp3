@@ -88,7 +88,7 @@ def check_single_burst_pair(job: dict, _) -> None:
     granule2_id = '_'.join(granule2.split('_')[1:3])
 
     if granule1_id != granule2_id:
-        raise GranuleValidationError(f'Burst IDs do not match for {granule1_id} and {granule2_id}.')
+        raise GranuleValidationError(f'Burst IDs do not match for {granule1} and {granule2}.')
 
     granule1_pol = granule1.split('_')[4]
     granule2_pol = granule2.split('_')[4]
@@ -98,9 +98,7 @@ def check_single_burst_pair(job: dict, _) -> None:
             f'The requested scenes need to have the same polarization, got: {", ".join([granule1_pol, granule2_pol])}'
         )
     if granule1_pol not in ['VV', 'HH']:
-        raise GranuleValidationError(
-            f'Only VV and HH polarizations are currently supported, got: {granule1_pol}'
-        )
+        raise GranuleValidationError(f'Only VV and HH polarizations are currently supported, got: {granule1_pol}')
 
 
 def check_not_antimeridian(_, granule_metadata: list[dict]) -> None:
