@@ -62,11 +62,11 @@ INSAR_ISCE_BURST:
     DEFAULT:
       cost: 1.0
   validators:
+    - check_granules_reference_secondary
     - check_dem_coverage
     - check_valid_polarizations
     - check_same_burst_ids
     - check_not_antimeridian
-    - check_granules_reference_secondary
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2

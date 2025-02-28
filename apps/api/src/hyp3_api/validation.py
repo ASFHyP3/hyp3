@@ -210,6 +210,7 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
 # TODO:
 #  - tests
 #  - run this check before fetching and verifying granule metadata?
+#  - currently returns internal server error if given none of the params, I assume because it crashes on the CMR step
 def check_granules_reference_secondary(job: dict, _) -> None:
     parameters = job['job_parameters']
 
