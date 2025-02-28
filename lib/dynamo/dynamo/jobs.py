@@ -126,6 +126,7 @@ def _get_credit_cost(job: dict, costs: list[dict]) -> Decimal:
 
     raise ValueError(f'Cost not found for job type {job_type}')
 
+
 def _get_cost_from_definition(job, cost_definition):
     job_type = job['job_type']
 
@@ -148,6 +149,7 @@ def _get_cost_from_definition(job, cost_definition):
         raise ValueError(f'Cost not found for job type {job_type} with {cost_parameter} == {parameter_value}')
 
     return cost_definition['cost']
+
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
