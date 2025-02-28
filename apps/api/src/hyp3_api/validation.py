@@ -217,8 +217,14 @@ def check_granules_reference_secondary(job: dict, _) -> None:
     reference = parameters.get('reference')
     secondary = parameters.get('secondary')
 
-    if not (bool(granules) ^ bool(reference and secondary)):
+    if not (granules or reference or secondary):
         raise ParameterValidationError("Expected either 'granules' or 'reference' and 'secondary'")
+
+    if granules and (reference or secondary):
+        raise ParameterValidationError("'granules' must not be given if 'reference' or 'secondary' is given")
+
+    if (reference or secondary) and not (reference and secondary):
+        raise ParameterValidationError("If either 'reference' or 'secondary' is given, both must be")
 
     if granules and len(granules) != 2:
         raise ParameterValidationError("'granules' must contain exactly two items")
