@@ -83,6 +83,7 @@ def check_dem_coverage(_, granule_metadata: list[dict]) -> None:
 
 
 def check_same_burst_ids(job: dict, _) -> None:
+    # TODO: allow for granules param or create a single-burst version of this validator
     refs = job['job_parameters']['reference']
     secs = job['job_parameters']['secondary']
     ref_ids = ['_'.join(ref.split('_')[1:3]) for ref in refs]
@@ -193,16 +194,6 @@ def check_same_relative_orbits(_, granule_metadata: list[dict]) -> None:
             )
 
 
-def _convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
-    jobs = deepcopy(jobs)
-    for job in jobs:
-        if job['job_type'] == 'INSAR_ISCE_BURST':
-            job_parameters = job['job_parameters']
-            ref, sec = job_parameters.pop('granules')
-            job_parameters['reference'], job_parameters['secondary'] = [ref], [sec]
-    return jobs
-
-
 def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
     bounds = job['job_parameters']['bounds']
 
@@ -215,11 +206,8 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
 
 
 def validate_jobs(jobs: list[dict]) -> None:
-    jobs = _convert_single_burst_jobs(jobs)
-
     granules = get_granules(jobs)
     granule_metadata = _get_cmr_metadata(granules)
-
     _make_sure_granules_exist(granules, granule_metadata)
     for job in jobs:
         for validator_name in JOB_VALIDATION_MAP[job['job_type']]:
