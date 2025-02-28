@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Changed
 - OPERA-DIST-S1 runtime increases from 3 to 6 hours for experimentation.
+- Updated the DIST-S1 entrypoint of the image and changed the container respectively.
 
 
 ## [9.5.1]
