@@ -1,7 +1,6 @@
 import json
 import sys
 from collections.abc import Iterable
-from copy import deepcopy
 from pathlib import Path
 
 import requests
