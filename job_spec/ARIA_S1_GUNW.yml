@@ -70,8 +70,6 @@ ARIA_S1_GUNW:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD
     - name: TROPOSPHERE
       image: ghcr.io/dbekaert/raider
       command:
@@ -90,6 +88,8 @@ ARIA_S1_GUNW:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
+        - ESA_USERNAME
+        - ESA_PASSWORD
     - name: PUBLISH
       image: ghcr.io/asfhyp3/ingest-adapter
       command:
