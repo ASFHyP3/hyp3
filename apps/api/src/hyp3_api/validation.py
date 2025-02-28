@@ -209,8 +209,11 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
 
 # TODO:
 #  - tests
-#  - run this check before fetching and verifying granule metadata?
-#  - currently returns internal server error if given none of the params, I assume because it crashes on the CMR step
+#  - run this check *before* fetching and verifying granule metadata?
+#    - or create followup issue, since this might be nice for some other validators too
+#  - getting internal server error when submitting 'granules',
+#    because we assume 'reference' and 'secondary' in the other validator functions
+#  - currently relying on the order of the validators in the job spec to make sure this runs first, is that weird?
 def check_granules_reference_secondary(job: dict, _) -> None:
     parameters = job['job_parameters']
 
