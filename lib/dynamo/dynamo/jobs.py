@@ -130,6 +130,9 @@ def _get_credit_cost(job: dict, costs: list[dict]) -> Decimal:
 def _get_cost_from_definition(job, cost_definition):
     job_type = job['job_type']
 
+    if 'cost' in cost_definition:
+        return cost_definition['cost']
+
     if 'cost_parameter' in cost_definition:
         cost_parameter = cost_definition['cost_parameter']
 
@@ -140,15 +143,15 @@ def _get_cost_from_definition(job, cost_definition):
             parameter_value = job['job_parameters'][cost_parameter]
 
         for item in cost_definition['cost_table']:
-            if item['parameter_value'] == parameter_value:
-                if 'cost_table' in item:
-                    return _get_cost_from_definition(job, item['cost_table'])
-                else:
-                    return item['cost']
+            if item['parameter_value'] != parameter_value:
+                continue
+
+            if 'cost_table' in item:
+                return _get_cost_from_definition(job, item['cost_table'])
+            else:
+                return item['cost']
 
         raise ValueError(f'Cost not found for job type {job_type} with {cost_parameter} == {parameter_value}')
-
-    return cost_definition['cost']
 
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):

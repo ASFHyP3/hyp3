@@ -267,18 +267,92 @@ def test_get_credit_cost():
         dynamo.jobs._get_credit_cost({'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'foo': 'bar'}}, costs) == 1.0
     )
     assert dynamo.jobs._get_credit_cost({'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {}}, costs) == 1.0
-
-    multi_burst_job = {'job_type': 'INSAR_ISCE_MULTI_BURST', 'job_parameters': {'reference': ['g1'], 'looks': '5x1'}}
-    assert dynamo.jobs._get_credit_cost(multi_burst_job, costs) == 1.0
-
-    multi_burst_job = {'job_type': 'INSAR_ISCE_MULTI_BURST', 'job_parameters': {'reference': ['g1'], 'looks': '10x2'}}
-    assert dynamo.jobs._get_credit_cost(multi_burst_job, costs) == 1.0
-
     multi_burst_job = {
         'job_type': 'INSAR_ISCE_MULTI_BURST',
         'job_parameters': {'reference': ['g1', 'g2', 'g3'], 'looks': '5x1'},
     }
     assert dynamo.jobs._get_credit_cost(multi_burst_job, costs) == 10.0
+
+
+def test_length_cost_lookup():
+    costs = [
+        {
+            'job_type': 'myJob',
+            'cost_parameter': 'length::option',
+            'cost_table': [
+                {'parameter_value': 1, 'cost': 10.0},
+                {'parameter_value': 2, 'cost': 20.0},
+                {'parameter_value': 3, 'cost': 30.0},
+            ],
+        }
+    ]
+    job = {'job_type': 'myJob', 'job_parameters': {'option': ['v1', 'v2', 'v3']}}
+    assert dynamo.jobs._get_credit_cost(job, costs) == 30.0
+
+    job = {'job_type': 'myJob', 'job_parameters': {'option': ['v1', 'v2']}}
+    assert dynamo.jobs._get_credit_cost(job, costs) == 20.0
+
+
+def test_nested_credit_cost_lookup():
+    costs = [
+        {
+            'job_type': 'myJob',
+            'cost_parameter': 'option1',
+            'cost_table': [
+                {
+                    'parameter_value': 'a',
+                    'cost_table': {
+                        'cost_parameter': 'option2',
+                        'cost_table': [
+                            {'parameter_value': 'x', 'cost': 1.0},
+                            {'parameter_value': 'y', 'cost': 2.0},
+                            {'parameter_value': 'z', 'cost': 3.0},
+                        ],
+                    },
+                },
+                {
+                    'parameter_value': 'b',
+                    'cost_table': {
+                        'cost_parameter': 'option2',
+                        'cost_table': [
+                            {'parameter_value': 'x', 'cost': 4.0},
+                            {'parameter_value': 'y', 'cost': 5.0},
+                            {'parameter_value': 'z', 'cost': 6.0},
+                        ],
+                    },
+                },
+                {
+                    'parameter_value': 'c',
+                    'cost_table': {
+                        'cost_parameter': 'option2',
+                        'cost_table': [
+                            {
+                                'parameter_value': 'x',
+                                'cost_table': {
+                                    'cost_parameter': 'option3',
+                                    'cost_table': [
+                                        {'parameter_value': 1, 'cost': 10.0},
+                                        {'parameter_value': 2, 'cost': 11.0},
+                                    ],
+                                },
+                            },
+                            {'parameter_value': 'y', 'cost': 8.0},
+                            {'parameter_value': 'z', 'cost': 9.0},
+                        ],
+                    },
+                },
+            ],
+        },
+    ]
+
+    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'a', 'option2': 'x'}}
+    assert dynamo.jobs._get_credit_cost(job, costs) == 1.0
+
+    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'b', 'option2': 'y'}}
+    assert dynamo.jobs._get_credit_cost(job, costs) == 5.0
+
+    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'c', 'option2': 'x', 'option3': 2}}
+    assert dynamo.jobs._get_credit_cost(job, costs) == 11.0
 
 
 def test_get_credit_cost_validate_keys():
