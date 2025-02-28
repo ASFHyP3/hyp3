@@ -22,6 +22,10 @@ class BoundsValidationError(Exception):
     pass
 
 
+class ParameterValidationError(Exception):
+    pass
+
+
 with (Path(__file__).parent / 'job_validation_map.yml').open() as job_validation_map_file:
     JOB_VALIDATION_MAP = yaml.safe_load(job_validation_map_file.read())
 
@@ -200,6 +204,29 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
     if bounds_area > max_bounds_area:
         raise BoundsValidationError(
             f'Bounds must be smaller than {max_bounds_area} degrees squared. Box provided was {bounds_area:.2f}'
+        )
+
+
+# TODO:
+#  - tests
+#  - run this check before fetching and verifying granule metadata?
+def check_granules_reference_secondary(job: dict, _) -> None:
+    parameters = job['job_parameters']
+
+    granules = parameters.get('granules')
+    reference = parameters.get('reference')
+    secondary = parameters.get('secondary')
+
+    if not (bool(granules) ^ bool(reference and secondary)):
+        raise ParameterValidationError("Expected either 'granules' or 'reference' and 'secondary'")
+
+    if granules and len(granules) != 2:
+        raise ParameterValidationError("'granules' must contain exactly two items")
+
+    if reference and len(reference) != len(secondary):
+        raise ParameterValidationError(
+            f'Number of reference and secondary scenes must match, got: '
+            f'{len(reference)} references and {len(secondary)} secondaries'
         )
 
 
