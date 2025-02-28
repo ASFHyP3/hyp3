@@ -70,23 +70,23 @@ OPERA_DIST_S1:
         - dist-s1 run
         - --bucket
         - '!Ref Bucket'
-        - --bucket-prefix
+        - --bucket_prefix
         - Ref::job_id
-        - --mgrs-tile-id
+        - --mgrs_tile_id
         - Ref::mgrs_tile_id
-        - --track-number
+        - --track_number
         - Ref::track_number
-        - --post-date
+        - --post_date
         - Ref::post_date
-        - --memory-strategy
+        - --memory_strategy
         - Ref::memory_strategy
-        - --moderate-confidence-threshold
+        - --moderate_confidence_threshold
         - Ref::moderate_confidence_threshold
-        - --high-confidence-threshold
+        - --high_confidence_threshold
         - Ref::high_confidence_threshold
-        - --n-lookbacks
+        - --n_lookbacks
         - Ref::n_lookbacks
-      timeout: 10800  # 3 hr
+      timeout: 21600  # 6 hr
       compute_environment: Default
       vcpu: 1
       memory: 7500
