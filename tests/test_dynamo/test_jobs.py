@@ -214,6 +214,45 @@ def test_get_credit_cost():
             'job_type': 'INSAR_ISCE_BURST',
             'cost': 1.0,
         },
+        {
+            'job_type': 'INSAR_ISCE_MULTI_BURST',
+            'cost_parameter': 'length::reference',
+            'cost_table': [
+                {
+                    'parameter_value': 1,
+                    'cost_table': {
+                        'cost_parameter': 'looks',
+                        'cost_table': [
+                            {'parameter_value': '20x4', 'cost': 1.0},
+                            {'parameter_value': '10x2', 'cost': 1.0},
+                            {'parameter_value': '5x1', 'cost': 1.0},
+                        ],
+                    },
+                },
+                {
+                    'parameter_value': 2,
+                    'cost_table': {
+                        'cost_parameter': 'looks',
+                        'cost_table': [
+                            {'parameter_value': '20x4', 'cost': 1.0},
+                            {'parameter_value': '10x2', 'cost': 1.0},
+                            {'parameter_value': '5x1', 'cost': 5.0},
+                        ],
+                    },
+                },
+                {
+                    'parameter_value': 3,
+                    'cost_table': {
+                        'cost_parameter': 'looks',
+                        'cost_table': [
+                            {'parameter_value': '20x4', 'cost': 1.0},
+                            {'parameter_value': '10x2', 'cost': 1.0},
+                            {'parameter_value': '5x1', 'cost': 10.0},
+                        ],
+                    },
+                },
+            ],
+        },
     ]
     assert (
         dynamo.jobs._get_credit_cost({'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 10.0}}, costs) == 60.0
@@ -228,6 +267,18 @@ def test_get_credit_cost():
         dynamo.jobs._get_credit_cost({'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'foo': 'bar'}}, costs) == 1.0
     )
     assert dynamo.jobs._get_credit_cost({'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {}}, costs) == 1.0
+
+    multi_burst_job = {'job_type': 'INSAR_ISCE_MULTI_BURST', 'job_parameters': {'reference': ['g1'], 'looks': '5x1'}}
+    assert dynamo.jobs._get_credit_cost(multi_burst_job, costs) == 1.0
+
+    multi_burst_job = {'job_type': 'INSAR_ISCE_MULTI_BURST', 'job_parameters': {'reference': ['g1'], 'looks': '10x2'}}
+    assert dynamo.jobs._get_credit_cost(multi_burst_job, costs) == 1.0
+
+    multi_burst_job = {
+        'job_type': 'INSAR_ISCE_MULTI_BURST',
+        'job_parameters': {'reference': ['g1', 'g2', 'g3'], 'looks': '5x1'},
+    }
+    assert dynamo.jobs._get_credit_cost(multi_burst_job, costs) == 10.0
 
 
 def test_get_credit_cost_validate_keys():

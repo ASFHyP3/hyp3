@@ -48,7 +48,158 @@ INSAR_ISCE_MULTI_BURST:
           - 5x1
   cost_profiles:
     EDC:
-      cost: 1.0
+      cost_parameter: length::reference
+      cost_table:
+        - parameter_value: 1
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 1.0
+              - parameter_value: 10x2
+                cost: 1.0
+              - parameter_value: 5x1
+                cost: 1.0
+        - parameter_value: 2
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 1.0
+              - parameter_value: 10x2
+                cost: 1.0
+              - parameter_value: 5x1
+                cost: 5.0
+        - parameter_value: 3
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 1.0
+              - parameter_value: 10x2
+                cost: 1.0
+              - parameter_value: 5x1
+                cost: 10.0
+        - parameter_value: 4
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 1.0
+              - parameter_value: 10x2
+                cost: 5.0
+              - parameter_value: 5x1
+                cost: 15.0
+        - parameter_value: 5
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 5.0
+              - parameter_value: 10x2
+                cost: 5.0
+              - parameter_value: 5x1
+                cost: 20.0
+        - parameter_value: 6
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 5.0
+              - parameter_value: 10x2
+                cost: 5.0
+              - parameter_value: 5x1
+                cost: 25.0
+        - parameter_value: 7
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 5.0
+              - parameter_value: 10x2
+                cost: 5.0
+              - parameter_value: 5x1
+                cost: 30.0
+        - parameter_value: 8
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 5.0
+              - parameter_value: 10x2
+                cost: 5.0
+              - parameter_value: 5x1
+                cost: 35.0
+        - parameter_value: 9
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 5.0
+              - parameter_value: 10x2
+                cost: 5.0
+              - parameter_value: 5x1
+                cost: 40.0
+        - parameter_value: 10
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 5.0
+              - parameter_value: 10x2
+                cost: 10.0
+              - parameter_value: 5x1
+                cost: 45.0
+        - parameter_value: 11
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 5.0
+              - parameter_value: 10x2
+                cost: 10.0
+              - parameter_value: 5x1
+                cost: 90.0
+        - parameter_value: 12
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 5.0
+              - parameter_value: 10x2
+                cost: 10.0
+              - parameter_value: 5x1
+                cost: 95.0
+        - parameter_value: 13
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 5.0
+              - parameter_value: 10x2
+                cost: 10.0
+              - parameter_value: 5x1
+                cost: 100.0
+        - parameter_value: 14
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 5.0
+              - parameter_value: 10x2
+                cost: 10.0
+              - parameter_value: 5x1
+                cost: 105.0
+        - parameter_value: 15
+          cost_table:
+            cost_parameter: looks
+            cost_table:
+              - parameter_value: 20x4
+                cost: 5.0
+              - parameter_value: 10x2
+                cost: 10.0
+              - parameter_value: 5x1
+                cost: 110.0
     DEFAULT:
       cost: 1.0
   validators:
