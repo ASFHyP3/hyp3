@@ -216,38 +216,16 @@ def test_get_credit_cost():
         },
         {
             'job_type': 'INSAR_ISCE_MULTI_BURST',
-            'cost_parameter': 'length::reference',
+            'cost_parameter': 'looks',
             'cost_table': [
                 {
-                    'parameter_value': 1,
+                    'parameter_value': '5x1',
                     'cost_table': {
-                        'cost_parameter': 'looks',
+                        'cost_parameter': 'reference',
                         'cost_table': [
-                            {'parameter_value': '20x4', 'cost': 1.0},
-                            {'parameter_value': '10x2', 'cost': 1.0},
-                            {'parameter_value': '5x1', 'cost': 1.0},
-                        ],
-                    },
-                },
-                {
-                    'parameter_value': 2,
-                    'cost_table': {
-                        'cost_parameter': 'looks',
-                        'cost_table': [
-                            {'parameter_value': '20x4', 'cost': 1.0},
-                            {'parameter_value': '10x2', 'cost': 1.0},
-                            {'parameter_value': '5x1', 'cost': 5.0},
-                        ],
-                    },
-                },
-                {
-                    'parameter_value': 3,
-                    'cost_table': {
-                        'cost_parameter': 'looks',
-                        'cost_table': [
-                            {'parameter_value': '20x4', 'cost': 1.0},
-                            {'parameter_value': '10x2', 'cost': 1.0},
-                            {'parameter_value': '5x1', 'cost': 10.0},
+                            {'parameter_value': 1, 'cost': 1.0},
+                            {'parameter_value': 2, 'cost': 1.0},
+                            {'parameter_value': 3, 'cost': 10.0},
                         ],
                     },
                 },
@@ -272,25 +250,6 @@ def test_get_credit_cost():
         'job_parameters': {'reference': ['g1', 'g2', 'g3'], 'looks': '5x1'},
     }
     assert dynamo.jobs._get_credit_cost(multi_burst_job, costs) == 10.0
-
-
-def test_length_cost_lookup():
-    costs = [
-        {
-            'job_type': 'myJob',
-            'cost_parameter': 'length::option',
-            'cost_table': [
-                {'parameter_value': 1, 'cost': 10.0},
-                {'parameter_value': 2, 'cost': 20.0},
-                {'parameter_value': 3, 'cost': 30.0},
-            ],
-        }
-    ]
-    job = {'job_type': 'myJob', 'job_parameters': {'option': ['v1', 'v2', 'v3']}}
-    assert dynamo.jobs._get_credit_cost(job, costs) == 30.0
-
-    job = {'job_type': 'myJob', 'job_parameters': {'option': ['v1', 'v2']}}
-    assert dynamo.jobs._get_credit_cost(job, costs) == 20.0
 
 
 def test_nested_credit_cost_lookup():

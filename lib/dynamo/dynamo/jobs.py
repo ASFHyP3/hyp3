@@ -135,12 +135,10 @@ def _get_cost_from_definition(job, cost_definition):
 
     if 'cost_parameter' in cost_definition:
         cost_parameter = cost_definition['cost_parameter']
+        parameter_value = job['job_parameters'][cost_parameter]
 
-        if 'length::' in cost_parameter:
-            cost_parameter = cost_parameter.split('::')[-1]
-            parameter_value = len(job['job_parameters'][cost_parameter])
-        else:
-            parameter_value = job['job_parameters'][cost_parameter]
+        if isinstance(parameter_value, list):
+            parameter_value = len(parameter_value)
 
         for item in cost_definition['cost_table']:
             if item['parameter_value'] != parameter_value:
