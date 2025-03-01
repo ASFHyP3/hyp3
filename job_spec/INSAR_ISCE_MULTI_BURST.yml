@@ -95,7 +95,7 @@ INSAR_ISCE_MULTI_BURST:
               - parameter_value: 3
                 cost: 1.0
               - parameter_value: 4
-                cost: 1.0
+                cost: 5.0
               - parameter_value: 5
                 cost: 5.0
               - parameter_value: 6
