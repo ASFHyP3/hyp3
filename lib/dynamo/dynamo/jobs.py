@@ -127,7 +127,7 @@ def _get_credit_cost(job: dict, costs: list[dict]) -> Decimal:
     raise ValueError(f'Cost not found for job type {job_type}')
 
 
-def _get_cost_from_definition(job, cost_definition):
+def _get_cost_from_definition(job: dict, cost_definition: dict) -> Decimal:
     job_type = job['job_type']
 
     if 'cost' in cost_definition:
