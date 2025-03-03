@@ -250,6 +250,16 @@ def test_get_credit_cost():
         'job_parameters': {'reference': ['g1', 'g2', 'g3'], 'looks': '5x1'},
     }
     assert dynamo.jobs._get_credit_cost(multi_burst_job, costs) == 10.0
+    multi_burst_job = {
+        'job_type': 'INSAR_ISCE_MULTI_BURST',
+        'job_parameters': {'reference': ['g1', 'g2'], 'looks': '5x1'},
+    }
+    assert dynamo.jobs._get_credit_cost(multi_burst_job, costs) == 1.0
+    multi_burst_job = {
+        'job_type': 'INSAR_ISCE_MULTI_BURST',
+        'job_parameters': {'reference': ['g1'], 'looks': '5x1'},
+    }
+    assert dynamo.jobs._get_credit_cost(multi_burst_job, costs) == 1.0
 
 
 def test_nested_credit_cost_lookup():
@@ -285,8 +295,9 @@ def test_nested_credit_cost_lookup():
                     'cost_table': {
                         'cost_parameter': 'option2',
                         'cost_table': [
+                            {'parameter_value': 'x', 'cost': 8.0},
                             {
-                                'parameter_value': 'x',
+                                'parameter_value': 'y',
                                 'cost_table': {
                                     'cost_parameter': 'option3',
                                     'cost_table': [
@@ -295,7 +306,6 @@ def test_nested_credit_cost_lookup():
                                     ],
                                 },
                             },
-                            {'parameter_value': 'y', 'cost': 8.0},
                             {'parameter_value': 'z', 'cost': 9.0},
                         ],
                     },

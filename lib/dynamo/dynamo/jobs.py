@@ -133,7 +133,7 @@ def _get_cost_from_definition(job: dict, cost_definition: dict) -> Decimal:
     if 'cost' in cost_definition:
         return cost_definition['cost']
 
-    if 'cost_parameter' in cost_definition:
+    elif 'cost_parameter' in cost_definition:
         cost_parameter = cost_definition['cost_parameter']
         parameter_value = job['job_parameters'][cost_parameter]
 
@@ -149,7 +149,7 @@ def _get_cost_from_definition(job: dict, cost_definition: dict) -> Decimal:
             else:
                 return item['cost']
 
-        raise ValueError(f'Cost not found for job type {job_type} with {cost_parameter} == {parameter_value}')
+    raise ValueError(f'Cost not found for job type {job_type} with {cost_parameter} == {parameter_value}')
 
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):
