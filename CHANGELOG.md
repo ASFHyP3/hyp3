@@ -6,12 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [9.5.2]
 
-## Fixed
-- OPERA-DIST-S1 job spec had wrong CLI interface (e.g. --n-lookbacks should be --n_lookbacks).
+## Added
+- The `ARIA_S1_GUNW` job type is now available in the hyp3-edc-prod deployment.
 
 ## Changed
 - OPERA-DIST-S1 runtime increases from 3 to 6 hours for experimentation.
+- Updated the DIST-S1 entrypoint of the image and changed the job spec accordingly.
 
+## Fixed
+- OPERA-DIST-S1 job spec had wrong CLI interface (e.g. --n-lookbacks should be --n_lookbacks).
 
 ## [9.5.1]
 

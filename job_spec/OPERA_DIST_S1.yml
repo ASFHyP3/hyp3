@@ -67,7 +67,6 @@ OPERA_DIST_S1:
     - name: ''
       image: ghcr.io/opera-adt/dist-s1
       command:
-        - dist-s1 run
         - --bucket
         - '!Ref Bucket'
         - --bucket_prefix
