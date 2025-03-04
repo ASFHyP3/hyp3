@@ -88,14 +88,11 @@ RTC_GAMMA:
         type: boolean
   cost_profiles:
     EDC:
-      cost_parameter: resolution
+      cost_parameters: [resolution]
       cost_table:
-        - parameter_value: 30.0
-          cost: 5.0
-        - parameter_value: 20.0
-          cost: 15.0
-        - parameter_value: 10.0
-          cost: 60.0
+        30.0: 5.0
+        20.0: 15.0
+        10.0: 60.0
     DEFAULT:
       cost: 1.0
   validators:

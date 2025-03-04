@@ -48,107 +48,56 @@ INSAR_ISCE_MULTI_BURST:
           - 5x1
   cost_profiles:
     EDC:
-      cost_parameter: looks
+      cost_parameter: [looks, reference]
       cost_table:
-        - parameter_value: 20x4
-          cost_parameter: reference
-          cost_table:
-            - parameter_value: 1
-              cost: 1.0
-            - parameter_value: 2
-              cost: 1.0
-            - parameter_value: 3
-              cost: 1.0
-            - parameter_value: 4
-              cost: 1.0
-            - parameter_value: 5
-              cost: 5.0
-            - parameter_value: 6
-              cost: 5.0
-            - parameter_value: 7
-              cost: 5.0
-            - parameter_value: 8
-              cost: 5.0
-            - parameter_value: 9
-              cost: 5.0
-            - parameter_value: 10
-              cost: 5.0
-            - parameter_value: 11
-              cost: 5.0
-            - parameter_value: 12
-              cost: 5.0
-            - parameter_value: 13
-              cost: 5.0
-            - parameter_value: 14
-              cost: 5.0
-            - parameter_value: 15
-              cost: 5.0
-        - parameter_value: 10x2
-          cost_parameter: reference
-          cost_table:
-            - parameter_value: 1
-              cost: 1.0
-            - parameter_value: 2
-              cost: 1.0
-            - parameter_value: 3
-              cost: 1.0
-            - parameter_value: 4
-              cost: 1.0
-            - parameter_value: 5
-              cost: 5.0
-            - parameter_value: 6
-              cost: 5.0
-            - parameter_value: 7
-              cost: 5.0
-            - parameter_value: 8
-              cost: 5.0
-            - parameter_value: 9
-              cost: 5.0
-            - parameter_value: 10
-              cost: 10.0
-            - parameter_value: 11
-              cost: 10.0
-            - parameter_value: 12
-              cost: 10.0
-            - parameter_value: 13
-              cost: 10.0
-            - parameter_value: 14
-              cost: 10.0
-            - parameter_value: 15
-              cost: 10.0
-        - parameter_value: 5x1
-          cost_parameter: reference
-          cost_table:
-            - parameter_value: 1
-              cost: 1.0
-            - parameter_value: 2
-              cost: 5.0
-            - parameter_value: 3
-              cost: 10.0
-            - parameter_value: 4
-              cost: 15.0
-            - parameter_value: 5
-              cost: 20.0
-            - parameter_value: 6
-              cost: 25.0
-            - parameter_value: 7
-              cost: 30.0
-            - parameter_value: 8
-              cost: 35.0
-            - parameter_value: 9
-              cost: 40.0
-            - parameter_value: 10
-              cost: 45.0
-            - parameter_value: 11
-              cost: 90.0
-            - parameter_value: 12
-              cost: 95.0
-            - parameter_value: 13
-              cost: 100.0
-            - parameter_value: 14
-              cost: 105.0
-            - parameter_value: 15
-              cost: 110.0
+        20x4:
+          1: 1.0
+          2: 1.0
+          3: 1.0
+          4: 1.0
+          5: 5.0
+          6: 5.0
+          7: 5.0
+          8: 5.0
+          9: 5.0
+          10: 5.0
+          11: 5.0
+          12: 5.0
+          13: 5.0
+          14: 5.0
+          15: 5.0
+        10x2:
+          1: 1.0
+          2: 1.0
+          3: 1.0
+          4: 5.0
+          5: 5.0
+          6: 5.0
+          7: 5.0
+          8: 5.0
+          9: 5.0
+          10: 10.0
+          11: 10.0
+          12: 10.0
+          13: 10.0
+          14: 10.0
+          15: 10.0
+        5x1:
+          1: 1.0
+          2: 5.0
+          3: 10.0
+          4: 15.0
+          5: 20.0
+          6: 25.0
+          7: 30.0
+          8: 35.0
+          9: 40.0
+          10: 45.0
+          11: 90.0
+          12: 95.0
+          13: 100.0
+          14: 105.0
+          15: 110.0
     DEFAULT:
       cost: 1.0
   validators:

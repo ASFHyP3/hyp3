@@ -194,21 +194,12 @@ def test_get_credit_cost():
     costs: list[dict] = [
         {
             'job_type': 'RTC_GAMMA',
-            'cost_parameter': 'resolution',
-            'cost_table': [
-                {
-                    'parameter_value': 10.0,
-                    'cost': 60.0,
-                },
-                {
-                    'parameter_value': 20.0,
-                    'cost': 15.0,
-                },
-                {
-                    'parameter_value': 30.0,
-                    'cost': 5.0,
-                },
-            ],
+            'cost_parameters': ['resolution'],
+            'cost_table': {
+                10: 60.0,
+                20: 15.0,
+                30: 5.0,
+            },
         },
         {
             'job_type': 'INSAR_ISCE_BURST',
@@ -216,18 +207,14 @@ def test_get_credit_cost():
         },
         {
             'job_type': 'INSAR_ISCE_MULTI_BURST',
-            'cost_parameter': 'looks',
-            'cost_table': [
-                {
-                    'parameter_value': '5x1',
-                    'cost_parameter': 'reference',
-                    'cost_table': [
-                        {'parameter_value': 1, 'cost': 1.0},
-                        {'parameter_value': 2, 'cost': 1.0},
-                        {'parameter_value': 3, 'cost': 10.0},
-                    ],
-                },
-            ],
+            'cost_parameters': ['looks', 'reference'],
+            'cost_table': {
+                '5x1': {
+                    1: 1.0,
+                    2: 1.0,
+                    3: 10.0,
+                }
+            },
         },
     ]
     assert (
@@ -264,64 +251,45 @@ def test_nested_credit_cost_lookup():
     costs = [
         {
             'job_type': 'myJob',
-            'cost_parameter': 'option1',
-            'cost_table': [
-                {
-                    'parameter_value': 'a',
-                    'cost_parameter': 'option2',
-                    'cost_table': [
-                        {'parameter_value': 'x', 'cost': 1.0},
-                        {'parameter_value': 'y', 'cost': 2.0},
-                        {'parameter_value': 'z', 'cost': 3.0},
-                    ],
+            'cost_parameters': ['option1', 'option2', 'option3'],
+            'cost_table': {
+                'a': {
+                    'x': {1: 11, 2: 21},
+                    'y': {1: 12, 2: 22},
+                    'z': {1: 13, 2: 23},
                 },
-                {
-                    'parameter_value': 'b',
-                    'cost_parameter': 'option2',
-                    'cost_table': [
-                        {'parameter_value': 'x', 'cost': 4.0},
-                        {'parameter_value': 'y', 'cost': 5.0},
-                        {'parameter_value': 'z', 'cost': 6.0},
-                    ],
+                'b': {
+                    'x': {1: 14, 2: 24},
+                    'y': {1: 15, 2: 25},
+                    'z': {1: 16, 2: 26},
                 },
-                {
-                    'parameter_value': 'c',
-                    'cost_parameter': 'option2',
-                    'cost_table': [
-                        {'parameter_value': 'x', 'cost': 8.0},
-                        {
-                            'parameter_value': 'y',
-                            'cost_parameter': 'option3',
-                            'cost_table': [
-                                {'parameter_value': 1, 'cost': 10.0},
-                                {'parameter_value': 2, 'cost': 11.0},
-                            ],
-                        },
-                        {'parameter_value': 'z', 'cost': 9.0},
-                    ],
+                'c': {
+                    'x': {1: 17, 2: 27},
+                    'y': {1: 18, 2: 28},
+                    'z': {1: 19, 2: 29},
                 },
-            ],
-        },
+            }
+        }
     ]
 
-    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'a', 'option2': 'x'}}
-    assert dynamo.jobs._get_credit_cost(job, costs) == 1.0
+    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'c', 'option2': 'x', 'option3': 1}}
+    assert dynamo.jobs._get_credit_cost(job, costs) == 17.0
 
-    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'b', 'option2': 'z'}}
-    assert dynamo.jobs._get_credit_cost(job, costs) == 6.0
+    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'b', 'option2': 'z', 'option3': 1}}
+    assert dynamo.jobs._get_credit_cost(job, costs) == 16.0
 
-    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'c', 'option2': 'y', 'option3': 2}}
-    assert dynamo.jobs._get_credit_cost(job, costs) == 11.0
+    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'a', 'option2': 'y', 'option3': 2}}
+    assert dynamo.jobs._get_credit_cost(job, costs) == 22.0
 
 
 def test_get_credit_cost_validate_keys():
     costs: list[dict] = [
-        {'job_type': 'JOB_TYPE_A', 'cost_parameter': 'foo', 'cost_table': [{'parameter_value': 'bar', 'cost': 3.0}]},
+        {'job_type': 'JOB_TYPE_A', 'cost_parameters': ['foo'], 'cost_table': {'bar': 3.0}},
         {'job_type': 'JOB_TYPE_B', 'cost': 5.0},
-        {'job_type': 'JOB_TYPE_C', 'cost_parameter': ''},
+        {'job_type': 'JOB_TYPE_C', 'cost_parameters': ['']},
         {'job_type': 'JOB_TYPE_D', 'cost_table': {}},
-        {'job_type': 'JOB_TYPE_E', 'cost_parameter': '', 'cost_table': [], 'cost': 1.0},
-        {'job_type': 'JOB_TYPE_F', 'cost_parameter': '', 'cost_table': [], 'foo': None},
+        {'job_type': 'JOB_TYPE_E', 'cost_parameters': [''], 'cost_table': {}, 'cost': 1.0},
+        {'job_type': 'JOB_TYPE_F', 'cost_parameters': [''], 'cost_table': {}, 'foo': None},
     ]
 
     assert dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_A', 'job_parameters': {'foo': 'bar'}}, costs) == 3.0
@@ -479,39 +447,21 @@ def test_put_jobs_costs(tables, monkeypatch, approved_user):
     costs = [
         {
             'job_type': 'RTC_GAMMA',
-            'cost_parameter': 'resolution',
-            'cost_table': [
-                {
-                    'parameter_value': 30.0,
-                    'cost': Decimal('5.0'),
-                },
-                {
-                    'parameter_value': 20.0,
-                    'cost': Decimal('15.0'),
-                },
-                {
-                    'parameter_value': 10.0,
-                    'cost': Decimal('60.0'),
-                },
-            ],
+            'cost_parameters': ['resolution'],
+            'cost_table': {
+                30: Decimal('5.0'),
+                20: Decimal('15.0'),
+                10: Decimal('60.0'),
+            },
         },
         {
             'job_type': 'INSAR_ISCE_BURST',
-            'cost_parameter': 'looks',
-            'cost_table': [
-                {
-                    'parameter_value': '20x4',
-                    'cost': Decimal('0.4'),
-                },
-                {
-                    'parameter_value': '10x2',
-                    'cost': Decimal('0.7'),
-                },
-                {
-                    'parameter_value': '5x1',
-                    'cost': Decimal('1.8'),
-                },
-            ],
+            'cost_parameters': ['looks'],
+            'cost_table': {
+                '20x4': Decimal('0.4'),
+                '10x2': Decimal('0.7'),
+                '5x1': Decimal('1.8'),
+            },
         },
     ]
     default_params = {
