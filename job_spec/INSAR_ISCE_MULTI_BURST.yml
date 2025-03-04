@@ -51,8 +51,8 @@ INSAR_ISCE_MULTI_BURST:
       cost_parameter: looks
       cost_table:
         - parameter_value: 20x4
-          cost_parameter: reference
           cost_table:
+            cost_parameter: reference
             cost_table:
               - parameter_value: 1
                 cost: 1.0
@@ -85,8 +85,8 @@ INSAR_ISCE_MULTI_BURST:
               - parameter_value: 15
                 cost: 5.0
         - parameter_value: 10x2
-          cost_parameter: reference
           cost_table:
+            cost_parameter: reference
             cost_table:
               - parameter_value: 1
                 cost: 1.0
@@ -119,8 +119,8 @@ INSAR_ISCE_MULTI_BURST:
               - parameter_value: 15
                 cost: 10.0
         - parameter_value: 5x1
-          cost_parameter: reference
           cost_table:
+            cost_parameter: reference
             cost_table:
               - parameter_value: 1
                 cost: 1.0
