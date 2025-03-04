@@ -140,16 +140,11 @@ def _get_cost_from_definition(job: dict, cost_definition: dict) -> Decimal:
         if isinstance(parameter_value, list):
             parameter_value = len(parameter_value)
 
-        for item in cost_definition['cost_table']:
-            if item['parameter_value'] != parameter_value:
+        for parameter_definition in cost_definition['cost_table']:
+            if parameter_definition['parameter_value'] != parameter_value:
                 continue
 
-            if 'cost_table' in item:
-                parameter_cost_definition = item['cost_table']
-            else:
-                parameter_cost_definition = item
-
-            return _get_cost_from_definition(job, parameter_cost_definition)
+            return _get_cost_from_definition(job, parameter_definition)
 
     raise ValueError(f'Cost not found for job type {job_type} with {cost_parameter} == {parameter_value}')
 

@@ -220,14 +220,12 @@ def test_get_credit_cost():
             'cost_table': [
                 {
                     'parameter_value': '5x1',
-                    'cost_table': {
-                        'cost_parameter': 'reference',
-                        'cost_table': [
-                            {'parameter_value': 1, 'cost': 1.0},
-                            {'parameter_value': 2, 'cost': 1.0},
-                            {'parameter_value': 3, 'cost': 10.0},
-                        ],
-                    },
+                    'cost_parameter': 'reference',
+                    'cost_table': [
+                        {'parameter_value': 1, 'cost': 1.0},
+                        {'parameter_value': 2, 'cost': 1.0},
+                        {'parameter_value': 3, 'cost': 10.0},
+                    ],
                 },
             ],
         },
@@ -270,45 +268,37 @@ def test_nested_credit_cost_lookup():
             'cost_table': [
                 {
                     'parameter_value': 'a',
-                    'cost_table': {
-                        'cost_parameter': 'option2',
-                        'cost_table': [
-                            {'parameter_value': 'x', 'cost': 1.0},
-                            {'parameter_value': 'y', 'cost': 2.0},
-                            {'parameter_value': 'z', 'cost': 3.0},
-                        ],
-                    },
+                    'cost_parameter': 'option2',
+                    'cost_table': [
+                        {'parameter_value': 'x', 'cost': 1.0},
+                        {'parameter_value': 'y', 'cost': 2.0},
+                        {'parameter_value': 'z', 'cost': 3.0},
+                    ],
                 },
                 {
                     'parameter_value': 'b',
-                    'cost_table': {
-                        'cost_parameter': 'option2',
-                        'cost_table': [
-                            {'parameter_value': 'x', 'cost': 4.0},
-                            {'parameter_value': 'y', 'cost': 5.0},
-                            {'parameter_value': 'z', 'cost': 6.0},
-                        ],
-                    },
+                    'cost_parameter': 'option2',
+                    'cost_table': [
+                        {'parameter_value': 'x', 'cost': 4.0},
+                        {'parameter_value': 'y', 'cost': 5.0},
+                        {'parameter_value': 'z', 'cost': 6.0},
+                    ],
                 },
                 {
                     'parameter_value': 'c',
-                    'cost_table': {
-                        'cost_parameter': 'option2',
-                        'cost_table': [
-                            {'parameter_value': 'x', 'cost': 8.0},
-                            {
-                                'parameter_value': 'y',
-                                'cost_table': {
-                                    'cost_parameter': 'option3',
-                                    'cost_table': [
-                                        {'parameter_value': 1, 'cost': 10.0},
-                                        {'parameter_value': 2, 'cost': 11.0},
-                                    ],
-                                },
-                            },
-                            {'parameter_value': 'z', 'cost': 9.0},
-                        ],
-                    },
+                    'cost_parameter': 'option2',
+                    'cost_table': [
+                        {'parameter_value': 'x', 'cost': 8.0},
+                        {
+                            'parameter_value': 'y',
+                            'cost_parameter': 'option3',
+                            'cost_table': [
+                                {'parameter_value': 1, 'cost': 10.0},
+                                {'parameter_value': 2, 'cost': 11.0},
+                            ],
+                        },
+                        {'parameter_value': 'z', 'cost': 9.0},
+                    ],
                 },
             ],
         },
