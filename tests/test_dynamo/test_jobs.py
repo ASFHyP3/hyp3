@@ -317,10 +317,10 @@ def test_nested_credit_cost_lookup():
     job = {'job_type': 'myJob', 'job_parameters': {'option1': 'a', 'option2': 'x'}}
     assert dynamo.jobs._get_credit_cost(job, costs) == 1.0
 
-    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'b', 'option2': 'y'}}
-    assert dynamo.jobs._get_credit_cost(job, costs) == 5.0
+    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'b', 'option2': 'z'}}
+    assert dynamo.jobs._get_credit_cost(job, costs) == 6.0
 
-    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'c', 'option2': 'x', 'option3': 2}}
+    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'c', 'option2': 'y', 'option3': 2}}
     assert dynamo.jobs._get_credit_cost(job, costs) == 11.0
 
 
