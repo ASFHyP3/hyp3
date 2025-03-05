@@ -3,124 +3,197 @@ import os
 from decimal import Decimal
 from unittest.mock import call, patch
 
-import start_execution_manager
+import start_execution
 
 
-def test_invoke_worker():
-    jobs: list[dict] = [
+def test_convert_to_string():
+    assert start_execution.convert_to_string(1) == '1'
+    assert start_execution.convert_to_string(True) == 'True'
+    assert start_execution.convert_to_string([1, 2]) == '1 2'
+    assert start_execution.convert_to_string(['abc', 'bcd']) == 'abc bcd'
+    assert start_execution.convert_to_string('abc') == 'abc'
+
+
+def test_submit_jobs():
+    batch_params_by_job_type = {
+        'JOB_0': ['granules', 'string_field', 'boolean_field', 'float_field', 'integer_field'],
+        'JOB_1': ['string_field', 'boolean_field'],
+        'JOB_2': [],
+    }
+
+    jobs = [
         {
             'job_id': 'job0',
-            'decimal_float_field': Decimal('10.1'),
-            'integer_float_field': Decimal('10'),
+            'job_type': 'JOB_0',
+            'string_field': 'value1',
+            'boolean_field': True,
+            'float_field': 10.1,
+            'integer_field': 10,
             'job_parameters': {
-                'decimal_float_field': Decimal('10.1'),
-                'integer_float_field': Decimal('10'),
-                'decimal_list_field': [Decimal('10.1'), Decimal('10')],
+                'granules': [
+                    'granule1',
+                    'granule2',
+                ],
+                'string_field': 'value1',
+                'boolean_field': True,
+                'float_field': 10.1,
+                'integer_field': 10,
             },
         },
-        {'job_id': 'job1'},
-    ]
-    expected_payload = json.dumps(
         {
-            'jobs': [
-                {
-                    'job_id': 'job0',
-                    'decimal_float_field': 10.1,
-                    'integer_float_field': 10,
-                    'job_parameters': {
-                        'decimal_float_field': 10.1,
-                        'integer_float_field': 10,
-                        'decimal_list_field': [10.1, 10],
-                    },
-                },
-                {'job_id': 'job1'},
-            ]
-        }
+            'job_id': 'job1',
+            'job_type': 'JOB_1',
+            'string_field': 'value1',
+            'boolean_field': True,
+            'float_field': 10.1,
+            'integer_field': 10,
+            'job_parameters': {
+                'granules': [
+                    'granule1',
+                    'granule2',
+                ],
+                'string_field': 'value1',
+                'boolean_field': True,
+                'float_field': 10.1,
+                'integer_field': 10,
+            },
+        },
+        {
+            'job_id': 'job2',
+            'job_type': 'JOB_2',
+            'string_field': 'value1',
+            'boolean_field': True,
+            'float_field': 10.1,
+            'integer_field': 10,
+            'job_parameters': {
+                'granules': [
+                    'granule1',
+                    'granule2',
+                ],
+                'string_field': 'value1',
+                'boolean_field': True,
+                'float_field': 10.1,
+                'integer_field': 10,
+            },
+        },
+    ]
+
+    expected_input_job0 = json.dumps(
+        {
+            'job_id': 'job0',
+            'job_type': 'JOB_0',
+            'string_field': 'value1',
+            'boolean_field': True,
+            'float_field': 10.1,
+            'integer_field': 10,
+            'job_parameters': {
+                'granules': [
+                    'granule1',
+                    'granule2',
+                ],
+                'string_field': 'value1',
+                'boolean_field': True,
+                'float_field': 10.1,
+                'integer_field': 10,
+            },
+            'batch_job_parameters': {
+                'granules': 'granule1 granule2',
+                'string_field': 'value1',
+                'boolean_field': 'True',
+                'float_field': '10.1',
+                'integer_field': '10',
+            },
+        },
+        sort_keys=True,
     )
-    with patch('start_execution_manager.LAMBDA_CLIENT.invoke') as mock_invoke:
-        mock_invoke.return_value = {'foo': 'bar'}
 
-        assert start_execution_manager.invoke_worker('test-worker-arn', jobs) == {'foo': 'bar'}
+    expected_input_job1 = json.dumps(
+        {
+            'job_id': 'job1',
+            'job_type': 'JOB_1',
+            'string_field': 'value1',
+            'boolean_field': True,
+            'float_field': 10.1,
+            'integer_field': 10,
+            'job_parameters': {
+                'granules': [
+                    'granule1',
+                    'granule2',
+                ],
+                'string_field': 'value1',
+                'boolean_field': True,
+                'float_field': 10.1,
+                'integer_field': 10,
+            },
+            'batch_job_parameters': {
+                'string_field': 'value1',
+                'boolean_field': 'True',
+            },
+        },
+        sort_keys=True,
+    )
 
-        mock_invoke.assert_called_once_with(
-            FunctionName='test-worker-arn',
-            InvocationType='Event',
-            Payload=expected_payload,
-        )
+    expected_input_job2 = json.dumps(
+        {
+            'job_id': 'job2',
+            'job_type': 'JOB_2',
+            'string_field': 'value1',
+            'boolean_field': True,
+            'float_field': 10.1,
+            'integer_field': 10,
+            'job_parameters': {
+                'granules': [
+                    'granule1',
+                    'granule2',
+                ],
+                'string_field': 'value1',
+                'boolean_field': True,
+                'float_field': 10.1,
+                'integer_field': 10,
+            },
+            'batch_job_parameters': {},
+        },
+        sort_keys=True,
+    )
+
+    with (
+        patch('start_execution_worker.STEP_FUNCTION.start_execution') as mock_start_execution,
+        patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-state-machine-arn'}, clear=True),
+        patch('start_execution_worker.BATCH_PARAMS_BY_JOB_TYPE', batch_params_by_job_type),
+    ):
+        start_execution.submit_jobs(jobs)
+
+        assert mock_start_execution.mock_calls == [
+            call(
+                stateMachineArn='test-state-machine-arn',
+                input=expected_input_job0,
+                name='job0',
+            ),
+            call(
+                stateMachineArn='test-state-machine-arn',
+                input=expected_input_job1,
+                name='job1',
+            ),
+            call(
+                stateMachineArn='test-state-machine-arn',
+                input=expected_input_job2,
+                name='job2',
+            ),
+        ]
 
 
 def test_lambda_handler_500_jobs():
-    with (
-        patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
-        patch('start_execution_manager.invoke_worker') as mock_invoke_worker,
-        patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True),
-    ):
+    with patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution:
         mock_jobs = list(range(500))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
 
-        mock_invoke_worker.return_value = {'StatusCode': None}
+        mock_get_jobs_waiting_for_execution.return_value = {'StatusCode': None}
 
-        start_execution_manager.lambda_handler(None, None)
+        start_execution.lambda_handler()
 
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
 
-        assert mock_invoke_worker.mock_calls == [
+        assert mock_get_jobs_waiting_for_execution.mock_calls == [
             call('test-worker-function-arn', mock_jobs[0:250]),
             call('test-worker-function-arn', mock_jobs[250:500]),
         ]
-
-
-def test_lambda_handler_400_jobs():
-    with (
-        patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
-        patch('start_execution_manager.invoke_worker') as mock_invoke_worker,
-        patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True),
-    ):
-        mock_jobs = list(range(400))
-        mock_get_jobs_waiting_for_execution.return_value = mock_jobs
-
-        mock_invoke_worker.return_value = {'StatusCode': None}
-
-        start_execution_manager.lambda_handler(None, None)
-
-        mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
-
-        assert mock_invoke_worker.mock_calls == [
-            call('test-worker-function-arn', mock_jobs[0:250]),
-            call('test-worker-function-arn', mock_jobs[250:400]),
-        ]
-
-
-def test_lambda_handler_50_jobs():
-    with (
-        patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
-        patch('start_execution_manager.invoke_worker') as mock_invoke_worker,
-        patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True),
-    ):
-        mock_jobs = list(range(50))
-        mock_get_jobs_waiting_for_execution.return_value = mock_jobs
-
-        mock_invoke_worker.return_value = {'StatusCode': None}
-
-        start_execution_manager.lambda_handler(None, None)
-
-        mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
-
-        assert mock_invoke_worker.mock_calls == [
-            call('test-worker-function-arn', mock_jobs),
-        ]
-
-
-def test_lambda_handler_no_jobs():
-    with (
-        patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
-        patch('start_execution_manager.invoke_worker') as mock_invoke_worker,
-        patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True),
-    ):
-        mock_get_jobs_waiting_for_execution.return_value = []
-
-        start_execution_manager.lambda_handler(None, None)
-
-        mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
-
-        mock_invoke_worker.assert_not_called()
