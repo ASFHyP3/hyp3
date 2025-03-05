@@ -117,15 +117,12 @@ def _prepare_job_for_database(
 
 def _get_credit_cost(job: dict, costs: list[dict]) -> Decimal:
     job_type = job['job_type']
+    cost_definition = costs[job_type]
 
-    for cost_definition in costs:
-        if cost_definition['job_type'] == job_type:
-            if cost_definition.keys() not in ({'job_type', 'cost_parameters', 'cost_table'}, {'job_type', 'cost'}):
-                raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
+    if cost_definition.keys() not in ({'cost_parameters', 'cost_table'}, {'cost'}):
+        raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
 
-            return _get_cost_from_definition(job, cost_definition)
-
-    raise ValueError(f'Cost not found for job type {job_type}')
+    return _get_cost_from_definition(job, cost_definition)
 
 
 def _get_cost_from_definition(job: dict, cost_definition: dict) -> Decimal:
