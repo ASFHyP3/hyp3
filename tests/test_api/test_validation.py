@@ -4,7 +4,7 @@ import responses
 from pytest import raises
 from shapely.geometry import Polygon
 
-from hyp3_api import CMR_URL, validation
+from hyp3_api import CMR_URL, multi_burst_validation, validation
 from test_api.conftest import setup_requests_mock_with_given_polygons
 
 
@@ -333,7 +333,7 @@ def test_validate_jobs():
             'job_parameters': {'reference': [invalid_burst_pair[0]], 'secondary': [invalid_burst_pair[1]]},
         }
     ]
-    with raises(validation.GranuleValidationError):
+    with raises(multi_burst_validation.MultiBurstValidationError):
         validation.validate_jobs(jobs)
 
     jobs = [

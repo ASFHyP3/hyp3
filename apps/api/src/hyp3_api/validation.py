@@ -7,7 +7,7 @@ import requests
 import yaml
 from shapely.geometry import MultiPolygon, Polygon, shape
 
-from hyp3_api import CMR_URL
+from hyp3_api import CMR_URL, multi_burst_validation
 from hyp3_api.util import get_granules
 
 
@@ -79,6 +79,11 @@ def check_dem_coverage(_, granule_metadata: list[dict]) -> None:
     bad_granules = [g['name'] for g in granule_metadata if not _has_sufficient_coverage(g['polygon'])]
     if bad_granules:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
+
+
+def check_multi_burst_pairs(job: dict, _) -> None:
+    job_parameters = job['job_parameters']
+    multi_burst_validation.validate_bursts(job_parameters['reference'], job_parameters['secondary'])
 
 
 def check_single_burst_pair(job: dict, _) -> None:
