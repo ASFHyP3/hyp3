@@ -122,36 +122,30 @@ def _get_credit_cost(job: dict, costs: list[dict]) -> Decimal:
     if cost_definition.keys() not in ({'cost_parameters', 'cost_table'}, {'cost'}):
         raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
 
-    return _get_cost_from_definition(job, cost_definition)
-
-
-def _get_cost_from_definition(job: dict, cost_definition: dict) -> Decimal:
-    job_type = job['job_type']
-
     if 'cost' in cost_definition:
         return cost_definition['cost']
+    else:
+        return _get_cost_from_table(job, cost_definition)
 
-    elif 'cost_parameters' in cost_definition:
-        cost_table = cost_definition['cost_table']
 
-        for cost_parameter in cost_definition['cost_parameters']:
-            parameter_value = job['job_parameters'][cost_parameter]
+def _get_cost_from_table(job, cost_definition):
+    cost_table = cost_definition['cost_table']
 
-            if isinstance(parameter_value, list):
-                parameter_value = len(parameter_value)
+    for cost_parameter in cost_definition['cost_parameters']:
+        parameter_value = job['job_parameters'][cost_parameter]
 
-            if isinstance(parameter_value, float):
-                parameter_value = int(parameter_value)
+        if isinstance(parameter_value, list):
+            parameter_value = len(parameter_value)
 
-            try:
-                cost_table = cost_table[parameter_value]
-            except KeyError:
-                raise ValueError(f'Cost not found for job type {job_type} with {cost_parameter} == {parameter_value}')
+        if isinstance(parameter_value, float):
+            parameter_value = int(parameter_value)
 
-        return cost_table
+        try:
+            cost_table = cost_table[parameter_value]
+        except KeyError:
+            raise ValueError(f'Cost not found for job type {job["job_type"]} with {cost_parameter} == {parameter_value}')
 
-    raise ValueError(f'Cost not found for job type {job_type} with {cost_parameter} == {parameter_value}')
-
+    return cost_table
 
 def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
