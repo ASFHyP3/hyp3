@@ -122,7 +122,7 @@ def test_check_single_burst_pair():
     }
     with raises(
         validation.GranuleValidationError,
-        match='Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and S1_136232_IW2_20200616T022313_VV_5D11-BURST.',
+        match=r'^Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and S1_136232_IW2_20200616T022313_VV_5D11-BURST\.$',
     ):
         validation.check_single_burst_pair(invalid_job_different_number, None)
 
@@ -136,7 +136,7 @@ def test_check_single_burst_pair():
     }
     with raises(
         validation.GranuleValidationError,
-        match='Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and S1_136231_IW3_20200616T022313_VV_5D11-BURST.',
+        match=r'^Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and S1_136231_IW3_20200616T022313_VV_5D11-BURST\.$',
     ):
         validation.check_single_burst_pair(invalid_job_different_swath, None)
 
@@ -150,7 +150,7 @@ def test_check_single_burst_pair():
     }
     with raises(
         validation.GranuleValidationError,
-        match='The requested scenes need to have the same polarization, got: VV, HH',
+        match=r'^The requested scenes need to have the same polarization, got: VV, HH$',
     ):
         validation.check_single_burst_pair(invalid_job_different_pol, None)
 
@@ -163,7 +163,7 @@ def test_check_single_burst_pair():
         }
     }
     with raises(
-        validation.GranuleValidationError, match='Only VV and HH polarizations are currently supported, got: VH'
+        validation.GranuleValidationError, match=r'^Only VV and HH polarizations are currently supported, got: VH$'
     ):
         validation.check_single_burst_pair(invalid_job_unsupported_pol, None)
 
