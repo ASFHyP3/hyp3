@@ -157,9 +157,9 @@ def test_submit_jobs():
     )
 
     with (
-        patch('start_execution_worker.STEP_FUNCTION.start_execution') as mock_start_execution,
+        patch('start_execution.STEP_FUNCTION.start_execution') as mock_start_execution,
         patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-state-machine-arn'}, clear=True),
-        patch('start_execution_worker.BATCH_PARAMS_BY_JOB_TYPE', batch_params_by_job_type),
+        patch('start_execution.BATCH_PARAMS_BY_JOB_TYPE', batch_params_by_job_type),
     ):
         start_execution.submit_jobs(jobs)
 
@@ -189,7 +189,7 @@ def test_lambda_handler_500_jobs():
 
         mock_get_jobs_waiting_for_execution.return_value = {'StatusCode': None}
 
-        start_execution.lambda_handler()
+        start_execution.lambda_handler(None, None)
 
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
 
