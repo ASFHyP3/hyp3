@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [9.5.3]
 
 ### Fixed
-- When the API returns an error for a `INSAR_ISCE_BURST` job because the reference and secondary scenes have different polarizations, the error message now always includes the requested polarizations in the same order as the requested scenes (previously, the order of the polarizations was not guaranteed). For example, passing a reference scene with `VV` polarization and a secondary scene with `HH` polarization results in the error message `The requested scenes need to have the same polarization, got: VV, HH`.
-- The API validation behavior for the `INSAR_ISCE_MULTI_BURST` job type is now more closely aligned with that of the underlying [HyP3 ISCE2 v2.1.4](https://github.com/ASFHyP3/hyp3-isce2/releases/tag/v2.1.4) container. Currently, this only affects the `hyp3-multi-burst-sandbox` deployment.
+- When the API returns an error for an `INSAR_ISCE_BURST` job because the reference and secondary scenes have different polarizations, the error message now always includes the requested polarizations in the same order as the requested scenes (previously, the order of the polarizations was not guaranteed). For example, passing a reference scene with `VV` polarization and a secondary scene with `HH` polarization results in the error message `The requested scenes need to have the same polarization, got: VV, HH`.
+- The API validation behavior for the `INSAR_ISCE_MULTI_BURST` job type is now more closely aligned with that of the underlying [HyP3 ISCE2](https://github.com/ASFHyP3/hyp3-isce2/) container. Currently, this only affects the `hyp3-multi-burst-sandbox` deployment.
 - The reference and secondary scene names are now validated *before* DEM coverage for both `INSAR_ISCE_BURST` and `INSAR_ISCE_MULTI_BURST`.
 
 ## [9.5.2]
