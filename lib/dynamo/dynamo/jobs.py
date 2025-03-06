@@ -134,7 +134,15 @@ def _get_credit_cost(job: dict, costs: list[dict]) -> Decimal:
     raise ValueError(f'Cost not found for job type {job_type}')
 
 
-def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):
+def query_jobs(
+    user: str,
+    start: str | None = None,
+    end: str | None = None,
+    status_code: str | None = None,
+    name: str | None = None,
+    job_type: str | None = None,
+    start_key: dict | None = None,
+) -> tuple[list[dict], dict | None]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
@@ -163,13 +171,13 @@ def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type
     return jobs, response.get('LastEvaluatedKey')
 
 
-def get_job(job_id):
+def get_job(job_id: str) -> dict:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     response = table.get_item(Key={'job_id': job_id})
     return response.get('Item')
 
 
-def update_job(job):
+def update_job(job: dict) -> None:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     primary_key = 'job_id'
     key = {'job_id': job[primary_key]}

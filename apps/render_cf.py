@@ -247,7 +247,7 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
             raise ValueError(f'{job_type} has image {step["image"]} but docker requires the image to be all lowercase')
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
     parser.add_argument('-e', '--compute-environment-file', required=True, type=Path)
