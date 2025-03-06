@@ -6,6 +6,7 @@ from flask import Response, abort, jsonify, request
 import dynamo
 from dynamo.exceptions import AccessCodeError, InsufficientCreditsError, UnexpectedApplicationStatusError
 from hyp3_api import util
+from hyp3_api.multi_burst_validation import MultiBurstValidationError
 from hyp3_api.validation import BoundsValidationError, GranuleValidationError, validate_jobs
 
 
@@ -23,7 +24,7 @@ def post_jobs(body: dict, user: str) -> dict:
         validate_jobs(body['jobs'])
     except requests.HTTPError as e:
         print(f'WARN: CMR search failed: {e}')
-    except (BoundsValidationError, GranuleValidationError) as e:
+    except (BoundsValidationError, GranuleValidationError, MultiBurstValidationError) as e:
         abort(problem_format(400, str(e)))
 
     try:
