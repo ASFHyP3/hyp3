@@ -125,8 +125,6 @@ INSAR_ISCE:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD
     - name: TROPOSPHERE
       image: ghcr.io/dbekaert/raider
       command:
