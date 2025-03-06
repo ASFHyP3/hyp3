@@ -1,6 +1,5 @@
 import json
 import os
-from decimal import Decimal
 from unittest.mock import call, patch
 
 import start_execution

@@ -4,9 +4,9 @@ from pathlib import Path
 from typing import Any
 
 import boto3
-
 import dynamo
 from lambda_logging import log_exceptions, logger
+
 
 LAMBDA_CLIENT = boto3.client('lambda')
 
