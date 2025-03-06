@@ -90,9 +90,9 @@ RTC_GAMMA:
     EDC:
       cost_parameters: [resolution]
       cost_table:
-        30.0: 5.0
-        20.0: 15.0
-        10.0: 60.0
+        30: 5.0
+        20: 15.0
+        10: 60.0
     DEFAULT:
       cost: 1.0
   validators:
