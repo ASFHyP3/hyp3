@@ -80,6 +80,8 @@ def error404(_) -> Response:
 
 class CustomEncoder(json.JSONEncoder):
     def default(self, o: object) -> object:
+        # https://docs.python.org/3/library/json.html#json.JSONEncoder.default
+
         if isinstance(o, datetime.datetime):
             if o.tzinfo:
                 # eg: '2015-09-25T23:14:42.588601+00:00'
@@ -97,7 +99,7 @@ class CustomEncoder(json.JSONEncoder):
                 return int(o)
             return float(o)
 
-        # Raises a TypeError
+        # Let the base class default method raise the TypeError
         return super().default(o)
 
 
