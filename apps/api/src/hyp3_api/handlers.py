@@ -6,6 +6,7 @@ from flask import Response, abort, jsonify, request
 import dynamo
 from dynamo.exceptions import AccessCodeError, InsufficientCreditsError, UnexpectedApplicationStatusError
 from hyp3_api import util
+from hyp3_api.multi_burst_validation import MultiBurstValidationError
 from hyp3_api.validation import BoundsValidationError, GranuleValidationError, validate_jobs
 
 
@@ -23,7 +24,7 @@ def post_jobs(body: dict, user: str) -> dict:
         validate_jobs(body['jobs'])
     except requests.HTTPError as e:
         print(f'WARN: CMR search failed: {e}')
-    except (BoundsValidationError, GranuleValidationError) as e:
+    except (BoundsValidationError, GranuleValidationError, MultiBurstValidationError) as e:
         abort(problem_format(400, str(e)))
 
     try:
@@ -49,7 +50,7 @@ def get_jobs(
     except util.TokenDeserializeError:
         abort(problem_format(400, 'Invalid start_token value'))
     jobs, last_evaluated_key = dynamo.jobs.query_jobs(user, start, end, status_code, name, job_type, start_key)
-    payload = {'jobs': jobs}
+    payload: dict = {'jobs': jobs}
     if last_evaluated_key is not None:
         next_token = util.serialize(last_evaluated_key)
         payload['next'] = util.build_next_url(

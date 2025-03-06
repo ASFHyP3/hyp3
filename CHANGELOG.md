@@ -4,16 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.5.3]
+
+### Fixed
+- When the API returns an error for an `INSAR_ISCE_BURST` job because the requested scenes have different polarizations, the error message now always includes the requested polarizations in the same order as the requested scenes (previously, the order of the polarizations was not guaranteed). For example, passing two scenes with `VV` and `HH` polarizations, respectively, results in the error message: `The requested scenes need to have the same polarization, got: VV, HH`
+- The API validation behavior for the `INSAR_ISCE_MULTI_BURST` job type is now more closely aligned with the CLI validation for the underlying [HyP3 ISCE2](https://github.com/ASFHyP3/hyp3-isce2/) container. Currently, this only affects the `hyp3-multi-burst-sandbox` deployment.
+- The requested scene names are now validated before DEM coverage for both `INSAR_ISCE_BURST` and `INSAR_ISCE_MULTI_BURST`.
+- The `lambda_logging.log_exceptions` decorator (for logging unhandled exceptions in AWS Lambda functions) now returns the wrapped function's return value rather than always returning `None`.
+- Ruff now enforces that all functions and methods must have type annotations.
+
 ## [9.5.2]
 
-## Added
+### Added
 - The `ARIA_S1_GUNW` job type is now available in the hyp3-edc-prod deployment.
 
-## Changed
+### Changed
 - OPERA-DIST-S1 runtime increases from 3 to 6 hours for experimentation.
 - Updated the DIST-S1 entrypoint of the image and changed the job spec accordingly.
 
-## Fixed
+### Fixed
 - OPERA-DIST-S1 job spec had wrong CLI interface (e.g. --n-lookbacks should be --n_lookbacks).
 
 ## [9.5.1]
