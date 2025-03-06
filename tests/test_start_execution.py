@@ -187,7 +187,7 @@ def test_lambda_handler_500_jobs():
         patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
         patch('start_execution.submit_jobs') as mock_submit_jobs,
         patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True),
-        patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-step-function-arn'}, clear=True)
+        patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-step-function-arn'}, clear=True),
     ):
         mock_jobs = list(range(500))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
@@ -209,7 +209,7 @@ def test_lambda_handler_400_jobs():
         patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
         patch('start_execution.submit_jobs') as mock_submit_jobs,
         patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True),
-        patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-step-function-arn'}, clear=True)
+        patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-step-function-arn'}, clear=True),
     ):
         mock_jobs = list(range(400))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
@@ -231,7 +231,7 @@ def test_lambda_handler_50_jobs():
         patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
         patch('start_execution.submit_jobs') as mock_submit_jobs,
         patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True),
-        patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-step-function-arn'}, clear=True)
+        patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-step-function-arn'}, clear=True),
     ):
         mock_jobs = list(range(50))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
@@ -242,9 +242,7 @@ def test_lambda_handler_50_jobs():
 
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
 
-        assert mock_submit_jobs.mock_calls == [
-            call(mock_jobs[0:50])
-        ]
+        assert mock_submit_jobs.mock_calls == [call(mock_jobs[0:50])]
 
 
 def test_lambda_handler_no_jobs():
@@ -252,7 +250,7 @@ def test_lambda_handler_no_jobs():
         patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
         patch('start_execution.submit_jobs') as mock_submit_jobs,
         patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True),
-        patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-step-function-arn'}, clear=True)
+        patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-step-function-arn'}, clear=True),
     ):
         mock_get_jobs_waiting_for_execution.return_value = []
 
