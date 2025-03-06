@@ -49,7 +49,7 @@ def submit_jobs(jobs: list[dict]) -> None:
 
 
 @log_exceptions
-def lambda_handler() -> None:
+def lambda_handler(event: dict, _) -> None:
     pending_jobs = dynamo.jobs.get_jobs_waiting_for_execution(limit=500)
     logger.info(f'Got {len(pending_jobs)} pending jobs')
 
