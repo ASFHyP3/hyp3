@@ -51,6 +51,7 @@ def submit_jobs(jobs: list[dict]) -> None:
 @log_exceptions
 def lambda_handler(event: dict, _) -> None:
     pending_jobs = dynamo.jobs.get_jobs_waiting_for_execution(limit=500)
+    pending_jobs = dynamo.util.convert_decimals_to_numbers(pending_jobs)
     logger.info(f'Got {len(pending_jobs)} pending jobs')
 
     submit_jobs(jobs)
