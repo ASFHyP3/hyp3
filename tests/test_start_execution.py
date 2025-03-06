@@ -253,4 +253,4 @@ def test_lambda_handler_no_jobs():
 
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
 
-        mock_submit_jobs.assert_not_called()
+        assert mock_submit_jobs.mock_calls == [call()]
