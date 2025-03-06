@@ -198,7 +198,7 @@ def test_lambda_handler_500_jobs():
 
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
 
-        assert mock_get_jobs_waiting_for_execution.mock_calls == [
+        assert mock_submit_jobs.mock_calls == [
             call('test-worker-function-arn', mock_jobs[0:250]),
             call('test-worker-function-arn', mock_jobs[250:500]),
         ]
