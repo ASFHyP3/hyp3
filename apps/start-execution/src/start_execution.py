@@ -8,8 +8,6 @@ import dynamo
 from lambda_logging import log_exceptions, logger
 
 
-LAMBDA_CLIENT = boto3.client('lambda')
-
 STEP_FUNCTION = boto3.client('stepfunctions')
 
 batch_params_file = Path(__file__).parent / 'batch_params_by_job_type.json'
