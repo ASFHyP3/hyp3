@@ -183,7 +183,10 @@ def test_submit_jobs():
 
 
 def test_lambda_handler_500_jobs():
-    with patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution:
+    with (
+        patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
+        patch('start_execution.submit_jobs') as mock_submit_jobs
+    ):
         mock_jobs = list(range(500))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
 
