@@ -185,7 +185,7 @@ def test_submit_jobs():
 def test_lambda_handler_500_jobs():
     with (
         patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
-        patch.dict(os.environ, {'START_EXECUTION_WORKER_ARN': 'test-worker-function-arn'}, clear=True)
+        patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-step-function-arn'}, clear=True)
     ):
         mock_jobs = list(range(500))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
