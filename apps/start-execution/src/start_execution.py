@@ -51,4 +51,4 @@ def lambda_handler(event: dict, _) -> None:
     pending_jobs = dynamo.util.convert_decimals_to_numbers(pending_jobs)
     logger.info(f'Got {len(pending_jobs)} pending jobs')
 
-    submit_jobs(jobs)
+    submit_jobs(pending_jobs)
