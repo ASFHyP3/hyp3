@@ -190,8 +190,6 @@ def test_lambda_handler_500_jobs():
         mock_jobs = list(range(500))
         mock_get_jobs_waiting_for_execution.return_value = mock_jobs
 
-        mock_get_jobs_waiting_for_execution.return_value = {'StatusCode': None}
-
         start_execution.lambda_handler(None, None)
 
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
