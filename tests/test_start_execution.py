@@ -181,7 +181,7 @@ def test_submit_jobs():
         ]
 
 
-def test_lambda_handler_jobs():
+def test_lambda_handler():
     with (
         patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
         patch('dynamo.util.convert_decimals_to_numbers') as mock_convert_decimals_to_numbers,
