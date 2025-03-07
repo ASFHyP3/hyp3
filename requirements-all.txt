@@ -1,8 +1,7 @@
 -r requirements-apps-api.txt
 -r requirements-apps-handle-batch-event.txt
 -r requirements-apps-scale-cluster.txt
--r requirements-apps-start-execution-manager.txt
--r requirements-apps-start-execution-worker.txt
+-r requirements-apps-start-execution.txt
 -r requirements-apps-disable-private-dns.txt
 -r requirements-apps-update-db.txt
 boto3==1.36.11

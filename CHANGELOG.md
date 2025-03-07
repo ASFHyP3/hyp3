@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.5.4]
+
+### Changed
+- Combined `start_execution_worker` and `start_execution_manager` into one `start_execution` AWS Lambda function.
+
 ## [9.5.3]
 
 ### Fixed
