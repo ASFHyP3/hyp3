@@ -1,6 +1,7 @@
 import calendar
 from datetime import date
 from os import environ
+from typing import Any
 
 import boto3
 import dateutil.relativedelta
@@ -24,7 +25,7 @@ def get_month_to_date_spending(today: date) -> float:
     return float(response['ResultsByTime'][0]['Total']['UnblendedCost']['Amount'])
 
 
-def get_current_desired_vcpus(compute_environment_arn):
+def get_current_desired_vcpus(compute_environment_arn: str) -> int:
     response = BATCH.describe_compute_environments(computeEnvironments=[compute_environment_arn])
     return response['computeEnvironments'][0]['computeResources']['desiredvCpus']
 
@@ -50,8 +51,13 @@ def set_max_vcpus(compute_environment_arn: str, target_max_vcpus: int, current_d
 
 
 def get_target_max_vcpus(
-    today, monthly_budget, month_to_date_spending, default_max_vcpus, expanded_max_vcpus, required_surplus
-):
+    today: date,
+    monthly_budget: int,
+    month_to_date_spending: float,
+    default_max_vcpus: int,
+    expanded_max_vcpus: int,
+    required_surplus: int,
+) -> int:
     days_in_month = calendar.monthrange(today.year, today.month)[1]
     month_to_date_budget = monthly_budget * today.day / days_in_month
     available_surplus = month_to_date_budget - month_to_date_spending
@@ -68,7 +74,7 @@ def get_target_max_vcpus(
     return max_vcpus
 
 
-def lambda_handler(event, context):
+def lambda_handler(event: dict, context: Any) -> None:
     target_max_vcpus = get_target_max_vcpus(
         today=date.today(),
         monthly_budget=int(environ['MONTHLY_BUDGET']),

@@ -32,7 +32,7 @@ def deserialize(token: str) -> Any:
         raise TokenDeserializeError
 
 
-def build_next_url(url, start_token, x_forwarded_host=None, root_path=''):
+def build_next_url(url: str, start_token: str, x_forwarded_host: str | None = None, root_path: str = '') -> str:
     url_parts = list(urlparse(url))
 
     if x_forwarded_host:

@@ -1,5 +1,6 @@
 import json
 from os import environ
+from typing import Any
 
 import boto3
 from botocore.config import Config
@@ -16,7 +17,7 @@ def get_log_stream(result: dict) -> str | None:
     return result['Container'].get('LogStreamName')
 
 
-def get_log_content(log_group, log_stream):
+def get_log_content(log_group: str, log_stream: str) -> str:
     response = CLOUDWATCH.get_log_events(logGroupName=log_group, logStreamName=log_stream, startFromHead=True)
     messages = [event['message'] for event in response['events']]
 
@@ -44,7 +45,7 @@ def get_log_content_from_failed_attempts(cause: dict) -> str:
     return content
 
 
-def write_log_to_s3(bucket, prefix, content):
+def write_log_to_s3(bucket: str, prefix: str, content: str) -> None:
     key = f'{prefix}/{prefix}.log'
     S3.put_object(Bucket=bucket, Key=key, Body=content, ContentType='text/plain')
     tag_set = {
@@ -58,7 +59,7 @@ def write_log_to_s3(bucket, prefix, content):
     S3.put_object_tagging(Bucket=bucket, Key=key, Tagging=tag_set)
 
 
-def lambda_handler(event, context):
+def lambda_handler(event: dict, context: Any) -> None:
     results_dict = event['processing_results']
     result = results_dict[max(results_dict.keys())]
 

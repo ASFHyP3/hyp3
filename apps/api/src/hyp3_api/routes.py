@@ -1,10 +1,12 @@
 import datetime
 import json
+from collections.abc import Iterable
 from decimal import Decimal
 from os import environ
 from pathlib import Path
 from typing import Any
 
+import werkzeug
 import yaml
 from flask import Response, abort, g, jsonify, make_response, redirect, render_template, request
 from flask.json.provider import JSONProvider
@@ -27,15 +29,16 @@ AUTHENTICATED_ROUTES = ['/jobs', '/user']
 
 
 @app.before_request
-def check_system_available():
+def check_system_available() -> Response | None:
     if environ['SYSTEM_AVAILABLE'] != 'true':
         message = 'HyP3 is currently unavailable. Please try again later.'
         error = {'detail': message, 'status': 503, 'title': 'Service Unavailable', 'type': 'about:blank'}
         return make_response(jsonify(error), 503)
+    return None
 
 
 @app.before_request
-def authenticate_user():
+def authenticate_user() -> None:
     cookie = request.cookies.get('asf-urs')
     payload = auth.decode_token(cookie)
     if payload is not None:
@@ -47,27 +50,27 @@ def authenticate_user():
 
 
 @app.route('/')
-def redirect_to_ui():
+def redirect_to_ui() -> werkzeug.wrappers.response.Response:
     return redirect('/ui/')
 
 
 @app.route('/openapi.json')
-def get_open_api_json():
+def get_open_api_json() -> Response:
     return jsonify(api_spec_dict)
 
 
 @app.route('/openapi.yaml')
-def get_open_api_yaml():
+def get_open_api_yaml() -> str:
     return yaml.dump(api_spec_dict)
 
 
 @app.route('/ui/')
-def render_ui():
+def render_ui() -> str:
     return render_template('index.html')
 
 
 @app.errorhandler(404)
-def error404(_):
+def error404(_) -> Response:
     return handlers.problem_format(
         404,
         'The requested URL was not found on the server.'
@@ -76,7 +79,9 @@ def error404(_):
 
 
 class CustomEncoder(json.JSONEncoder):
-    def default(self, o):
+    def default(self, o: object) -> object:
+        # https://docs.python.org/3/library/json.html#json.JSONEncoder.default
+
         if isinstance(o, datetime.datetime):
             if o.tzinfo:
                 # eg: '2015-09-25T23:14:42.588601+00:00'
@@ -94,8 +99,8 @@ class CustomEncoder(json.JSONEncoder):
                 return int(o)
             return float(o)
 
-        # Raises a TypeError
-        json.JSONEncoder.default(self, o)
+        # Let the base class default method raise the TypeError
+        return super().default(o)
 
 
 class CustomJSONProvider(JSONProvider):
@@ -107,10 +112,10 @@ class CustomJSONProvider(JSONProvider):
 
 
 class ErrorHandler(FlaskOpenAPIErrorsHandler):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-    def __call__(self, errors):
+    def __call__(self, errors: Iterable[Exception]) -> Response:
         response = super().__call__(errors)
         error = response.json['errors'][0]  # type: ignore[index]
         return handlers.problem_format(error['status'], error['title'])

@@ -141,10 +141,10 @@ def check_bounds_formatting(job: dict, _) -> None:
             'Invalid order for bounds. Bounds should be ordered [min lon, min lat, max lon, max lat].'
         )
 
-    def bad_lat(lat):
+    def bad_lat(lat: float) -> bool:
         return lat > 90 or lat < -90
 
-    def bad_lon(lon):
+    def bad_lon(lon: float) -> bool:
         return lon > 180 or lon < -180
 
     if any([bad_lon(bounds[0]), bad_lon(bounds[2]), bad_lat(bounds[1]), bad_lat(bounds[3])]):
