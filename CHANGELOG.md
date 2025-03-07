@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [9.5.4]
 
 ### Changed
-- Combined `start_execution_worker` and `start_execution_manager` into one `start_execution` AWS Lambda function.
+- Combined `start_execution_worker` and `start_execution_manager` into one `start_execution` AWS Lambda function. Fixes [#2518](https://github.com/ASFHyP3/hyp3/issues/2518).
 
 ## [9.5.3]
 
