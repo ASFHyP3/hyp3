@@ -143,7 +143,9 @@ def _get_cost_from_table(job: dict, cost_definition: dict) -> int:
         try:
             cost_lookup = cost_lookup[parameter_value]
         except KeyError:
-            raise ValueError(f'Cost not found for job type {job["job_type"]} with {cost_parameter} == {parameter_value}')
+            raise ValueError(
+                f'Cost not found for job type {job["job_type"]} with {cost_parameter} == {parameter_value}'
+            )
 
     return cost_lookup
 

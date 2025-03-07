@@ -262,7 +262,7 @@ def test_nested_credit_cost_lookup():
                     'y': {1: 18, 2: 28},
                     'z': {1: 19, 2: 29},
                 },
-            }
+            },
         }
     }
 
