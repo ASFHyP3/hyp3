@@ -60,7 +60,7 @@ def test_lambda_handler_500_jobs():
 
         mock_invoke_worker.return_value = {'StatusCode': None}
 
-        start_execution_manager.lambda_handler(None, None)
+        start_execution_manager.lambda_handler({}, None)
 
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
 
@@ -81,7 +81,7 @@ def test_lambda_handler_400_jobs():
 
         mock_invoke_worker.return_value = {'StatusCode': None}
 
-        start_execution_manager.lambda_handler(None, None)
+        start_execution_manager.lambda_handler({}, None)
 
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
 
@@ -102,7 +102,7 @@ def test_lambda_handler_50_jobs():
 
         mock_invoke_worker.return_value = {'StatusCode': None}
 
-        start_execution_manager.lambda_handler(None, None)
+        start_execution_manager.lambda_handler({}, None)
 
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
 
@@ -119,7 +119,7 @@ def test_lambda_handler_no_jobs():
     ):
         mock_get_jobs_waiting_for_execution.return_value = []
 
-        start_execution_manager.lambda_handler(None, None)
+        start_execution_manager.lambda_handler({}, None)
 
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
 
