@@ -47,7 +47,7 @@ INSAR_ISCE_MULTI_BURST:
           - 10x2
           - 5x1
   cost_profiles:
-    DEFAULT:
+    EDC:
       cost_parameters: [looks, reference]
       cost_table:
         20x4:
@@ -98,7 +98,7 @@ INSAR_ISCE_MULTI_BURST:
           13: 100.0
           14: 105.0
           15: 110.0
-    EDC:
+    DEFAULT:
       cost: 1.0
   validators:
     - check_multi_burst_pairs
