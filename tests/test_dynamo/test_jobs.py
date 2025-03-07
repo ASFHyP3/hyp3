@@ -191,7 +191,7 @@ def test_query_jobs_by_type(tables):
 
 
 def test_get_credit_cost():
-    costs: list[dict] = {
+    costs: dict = {
         'RTC_GAMMA': {
             'cost_parameters': ['resolution'],
             'cost_table': {
@@ -277,7 +277,7 @@ def test_nested_credit_cost_lookup():
 
 
 def test_get_credit_cost_validate_keys():
-    costs: list[dict] = {
+    costs: dict = {
         'JOB_TYPE_A': {'cost_parameters': ['foo'], 'cost_table': {'bar': 3.0}},
         'JOB_TYPE_B': {'cost': 5.0},
         'JOB_TYPE_C': {'cost_parameters': ['']},

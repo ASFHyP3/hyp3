@@ -127,7 +127,7 @@ def _get_multipolygon_from_geojson(input_file: str) -> MultiPolygon:
     dem_file = Path(__file__).parent / input_file
     with Path(dem_file).open() as f:
         shp = json.load(f)['features'][0]['geometry']
-    polygons = [x.buffer(0) for x in shape(shp).buffer(0).geoms]  # type: ignore[attr-defined]
+    polygons = [x.buffer(0) for x in shape(shp).buffer(0).geoms]
     return MultiPolygon(polygons)
 
 

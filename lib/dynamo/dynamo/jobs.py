@@ -128,7 +128,7 @@ def _get_credit_cost(job: dict, costs: dict) -> Decimal:
         return _get_cost_from_table(job, cost_definition)
 
 
-def _get_cost_from_table(job: dict, cost_definition: dict) -> int:
+def _get_cost_from_table(job: dict, cost_definition: dict) -> Decimal:
     cost_lookup = cost_definition['cost_table']
 
     for cost_parameter in cost_definition['cost_parameters']:
@@ -147,7 +147,7 @@ def _get_cost_from_table(job: dict, cost_definition: dict) -> int:
                 f'Cost not found for job type {job["job_type"]} with {cost_parameter} == {parameter_value}'
             )
 
-    return cost_lookup
+    return Decimal(cost_lookup)
 
 
 def query_jobs(
