@@ -213,13 +213,11 @@ def render_default_params_by_job_type(job_types: dict) -> None:
 
 
 def render_costs(job_types: dict, cost_profile: str) -> None:
-    costs = [
-        {
-            'job_type': job_type,
-            **job_spec['cost_profiles'][cost_profile],
-        }
-        for job_type, job_spec in job_types.items()
-    ]
+    costs = {}
+
+    for job_type, job_spec in job_types.items():
+        costs[job_type] = job_spec['cost_profiles'][cost_profile]
+
     with (Path('lib') / 'dynamo' / 'dynamo' / 'costs.json').open('w') as f:
         json.dump(costs, f, indent=2)
 
@@ -241,6 +239,10 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
                 f"parameter '{param_name}' for {job_type} has fields {actual_param_fields} "
                 f'but should have {expected_param_fields}'
             )
+
+    for profile in job_spec['cost_profiles'].values():
+        if profile.keys() not in ({'cost_parameters', 'cost_table'}, {'cost'}):
+            raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {profile.keys()}')
 
     for step in job_spec['steps']:
         if not step['image'].islower():

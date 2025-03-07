@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [9.5.3]
+## [10.0.0]
+
+### Added
+- `cost_parameters` can now be lists and the value used for the cost lookup will be the length of the list.
+
+### Changed
+- Change the format of the `/cost` endpoint of the hyp3 api. `cost_parameter` has changed to `cost_parameters` and is an ordered list to lookup into the table. `cost_table` is now a nested dictionary where the lookup can be done with the keys in `cost_parameters`.
 
 ### Fixed
 - When the API returns an error for an `INSAR_ISCE_BURST` job because the requested scenes have different polarizations, the error message now always includes the requested polarizations in the same order as the requested scenes (previously, the order of the polarizations was not guaranteed). For example, passing two scenes with `VV` and `HH` polarizations, respectively, results in the error message: `The requested scenes need to have the same polarization, got: VV, HH`
