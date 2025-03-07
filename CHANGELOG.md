@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [9.5.4]
 
 ### Changed
-- Combined `start-execution-worker` and `start-execution-manager` into one `start-execution` python script and cf template. 
+- Combined `start_execution_worker` and `start_execution_manager` into one `start_execution` AWS Lambda function.
 
 ## [9.5.3]
 
