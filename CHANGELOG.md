@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The requested scene names are now validated before DEM coverage for both `INSAR_ISCE_BURST` and `INSAR_ISCE_MULTI_BURST`.
 - The `lambda_logging.log_exceptions` decorator (for logging unhandled exceptions in AWS Lambda functions) now returns the wrapped function's return value rather than always returning `None`.
 - Ruff now enforces that all functions and methods must have type annotations.
+- Updated the DIST-S1 entrypoint of the image and changed the job spec accordingly.
 
 ## [9.5.2]
 
@@ -25,7 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - OPERA-DIST-S1 runtime increases from 3 to 6 hours for experimentation.
-- Updated the DIST-S1 entrypoint of the image and changed the job spec accordingly.
 
 ### Fixed
 - OPERA-DIST-S1 job spec had wrong CLI interface (e.g. --n-lookbacks should be --n_lookbacks).
