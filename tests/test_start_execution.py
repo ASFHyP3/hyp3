@@ -193,7 +193,7 @@ def test_lambda_handler_500_jobs():
 
         mock_submit_jobs.return_value = None
 
-        start_execution.lambda_handler(None, None)
+        start_execution.lambda_handler(dict(None), None)
 
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
 
