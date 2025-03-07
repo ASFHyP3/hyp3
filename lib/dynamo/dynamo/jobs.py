@@ -115,7 +115,7 @@ def _prepare_job_for_database(
     return prepared_job
 
 
-def _get_credit_cost(job: dict, costs: list[dict]) -> Decimal:
+def _get_credit_cost(job: dict, costs: dict) -> Decimal:
     job_type = job['job_type']
     cost_definition = costs[job_type]
 
@@ -128,7 +128,7 @@ def _get_credit_cost(job: dict, costs: list[dict]) -> Decimal:
         return _get_cost_from_table(job, cost_definition)
 
 
-def _get_cost_from_table(job, cost_definition):
+def _get_cost_from_table(job: dict, cost_definition: dict) -> int:
     cost_lookup = cost_definition['cost_table']
 
     for cost_parameter in cost_definition['cost_parameters']:
