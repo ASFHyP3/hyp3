@@ -141,7 +141,7 @@ def _get_cost_from_table(job: dict, cost_definition: dict) -> Decimal:
             parameter_value = int(parameter_value)
 
         try:
-            cost_lookup = cost_lookup[parameter_value]
+            cost_lookup = cost_lookup[str(parameter_value)]
         except KeyError:
             raise ValueError(
                 f'Cost not found for job type {job["job_type"]} with {cost_parameter} == {parameter_value}'
