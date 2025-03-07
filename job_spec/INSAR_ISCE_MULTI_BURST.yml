@@ -52,9 +52,8 @@ INSAR_ISCE_MULTI_BURST:
     DEFAULT:
       cost: 1.0
   validators:
+    - check_multi_burst_pairs
     - check_dem_coverage
-    - check_valid_polarizations
-    - check_same_burst_ids
     - check_not_antimeridian
   steps:
     - name: ''
