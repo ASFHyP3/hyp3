@@ -147,6 +147,7 @@ def _get_cost_from_table(job, cost_definition):
 
     return cost_lookup
 
+
 def query_jobs(
     user: str,
     start: str | None = None,
