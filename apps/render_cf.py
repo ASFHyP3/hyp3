@@ -254,7 +254,7 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
             raise ValueError(f'{job_type} has image {step["image"]} but docker requires the image to be all lowercase')
 
 
-def validate_cost_table(cost_table: any, job_type: dict) -> any:
+def validate_cost_table(cost_table: dict | float, job_type: str) -> None:
     if isinstance(cost_table, dict):
         for key, value in cost_table.items():
             if not isinstance(key, str) and not isinstance(key, int):
