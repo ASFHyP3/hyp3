@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Change the format of the `/cost` endpoint of the hyp3 api. `cost_parameter` has changed to `cost_parameters` and is an ordered list to lookup into the table. `cost_table` is now a nested dictionary where the lookup can be done with the keys in `cost_parameters`.
 
+## [9.5.4]
+
+### Changed
+- Combined `start_execution_worker` and `start_execution_manager` into one `start_execution` AWS Lambda function. Fixes [#2518](https://github.com/ASFHyP3/hyp3/issues/2518).
+
+## [9.5.3]
+
 ### Fixed
 - When the API returns an error for an `INSAR_ISCE_BURST` job because the requested scenes have different polarizations, the error message now always includes the requested polarizations in the same order as the requested scenes (previously, the order of the polarizations was not guaranteed). For example, passing two scenes with `VV` and `HH` polarizations, respectively, results in the error message: `The requested scenes need to have the same polarization, got: VV, HH`
 - The API validation behavior for the `INSAR_ISCE_MULTI_BURST` job type is now more closely aligned with the CLI validation for the underlying [HyP3 ISCE2](https://github.com/ASFHyP3/hyp3-isce2/) container. Currently, this only affects the `hyp3-multi-burst-sandbox` deployment.
