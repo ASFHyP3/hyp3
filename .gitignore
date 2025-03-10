@@ -5,7 +5,7 @@ apps/api/src/hyp3_api/api-spec/job_parameters.yml
 apps/api/src/hyp3_api/job_validation_map.yml
 apps/step-function.json
 apps/**/*-cf.yml
-apps/start-execution-worker/src/batch_params_by_job_type.json
+apps/start-execution/src/batch_params_by_job_type.json
 lib/dynamo/dynamo/*.json
 lib/dynamo/dynamo/*.yml
 
