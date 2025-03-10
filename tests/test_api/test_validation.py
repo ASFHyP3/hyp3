@@ -105,7 +105,9 @@ def test_check_dem_coverage():
 
 def test_check_multi_burst_pairs():
     with mock.patch.object(multi_burst_validation, 'validate_bursts') as mock_validate_bursts:
-        validation.check_multi_burst_pairs({'job_parameters': {'reference': 'mock_reference', 'secondary': 'mock_secondary'}}, None)
+        validation.check_multi_burst_pairs(
+            {'job_parameters': {'reference': 'mock_reference', 'secondary': 'mock_secondary'}}, None
+        )
 
         mock_validate_bursts.assert_called_once_with('mock_reference', 'mock_secondary')
 
@@ -118,20 +120,20 @@ def test_check_multi_burst_max_length():
     validation.check_multi_burst_max_length(job_with_15_pairs, None)
 
     with pytest.raises(
-            multi_burst_validation.MultiBurstValidationError,
-            match=r'^Must provide no more than 15 scene pairs, got 16 reference and 15 secondary$',
+        multi_burst_validation.MultiBurstValidationError,
+        match=r'^Must provide no more than 15 scene pairs, got 16 reference and 15 secondary$',
     ):
         validation.check_multi_burst_max_length(job_with_16_reference, None)
 
     with pytest.raises(
-            multi_burst_validation.MultiBurstValidationError,
-            match=r'^Must provide no more than 15 scene pairs, got 15 reference and 16 secondary$',
+        multi_burst_validation.MultiBurstValidationError,
+        match=r'^Must provide no more than 15 scene pairs, got 15 reference and 16 secondary$',
     ):
         validation.check_multi_burst_max_length(job_with_16_secondary, None)
 
     with pytest.raises(
-            multi_burst_validation.MultiBurstValidationError,
-            match=r'^Must provide no more than 14 scene pairs, got 15 reference and 15 secondary$',
+        multi_burst_validation.MultiBurstValidationError,
+        match=r'^Must provide no more than 14 scene pairs, got 15 reference and 15 secondary$',
     ):
         validation.check_multi_burst_max_length(job_with_15_pairs, None, max_pairs=14)
 
