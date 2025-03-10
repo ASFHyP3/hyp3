@@ -260,7 +260,7 @@ def validate_cost_table(cost_table: dict | float, job_type: str) -> None:
             if not isinstance(key, str) and not isinstance(key, int):
                 raise ValueError(
                     f'Cost definition for job type {job_type} has invalid cost_table: '
-                    f'all cost_table keys must be strings or ints {type(key)}.'
+                    f'all cost_table keys must be strings or ints, but {key} has type {type(key)}.'
                 )
 
             return validate_cost_table(value, job_type)
