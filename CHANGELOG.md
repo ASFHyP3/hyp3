@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.0.0]
+
+### Added
+- `cost_parameters` can now be lists and the value used for the cost lookup will be the length of the list.
+
+### Changed
+- Change the format of the `/cost` endpoint of the hyp3 api. `cost_parameter` has changed to `cost_parameters` and is an ordered list to lookup into the table. `cost_table` is now a nested dictionary where the lookup can be done with the keys in `cost_parameters`.
+
 ## [9.5.4]
 
 ### Changed
