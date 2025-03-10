@@ -195,19 +195,19 @@ def test_get_credit_cost():
         'RTC_GAMMA': {
             'cost_parameters': ['resolution'],
             'cost_table': {
-                '10': 60.0,
-                '20': 15.0,
-                '30': 5.0,
+                '10': Decimal(60.0),
+                '20': Decimal(15.0),
+                '30': Decimal(5.0),
             },
         },
-        'INSAR_ISCE_BURST': {'cost': 1.0},
+        'INSAR_ISCE_BURST': {'cost': Decimal(1.0)},
         'INSAR_ISCE_MULTI_BURST': {
             'cost_parameters': ['looks', 'reference'],
             'cost_table': {
                 '5x1': {
-                    '1': 1.0,
-                    '2': 1.0,
-                    '3': 10.0,
+                    '1': Decimal(1.0),
+                    '2': Decimal(1.0),
+                    '3': Decimal(10.0),
                 }
             },
         },
@@ -248,19 +248,19 @@ def test_nested_credit_cost_lookup():
             'cost_parameters': ['option1', 'option2', 'option3'],
             'cost_table': {
                 'a': {
-                    'x': {'1': 11, '2': 21},
-                    'y': {'1': 12, '2': 22},
-                    'z': {'1': 13, '2': 23},
+                    'x': {'1': Decimal(11), '2': Decimal(21)},
+                    'y': {'1': Decimal(12), '2': Decimal(22)},
+                    'z': {'1': Decimal(13), '2': Decimal(23)},
                 },
                 'b': {
-                    'x': {'1': 14, '2': 24},
-                    'y': {'1': 15, '2': 25},
-                    'z': {'1': 16, '2': 26},
+                    'x': {'1': Decimal(14), '2': Decimal(24)},
+                    'y': {'1': Decimal(15), '2': Decimal(25)},
+                    'z': {'1': Decimal(16), '2': Decimal(26)},
                 },
                 'c': {
-                    'x': {'1': 17, '2': 27},
-                    'y': {'1': 18, '2': 28},
-                    'z': {'1': 19, '2': 29},
+                    'x': {'1': Decimal(17), '2': Decimal(27)},
+                    'y': {'1': Decimal(18), '2': Decimal(28)},
+                    'z': {'1': Decimal(19), '2': Decimal(29)},
                 },
             },
         }
@@ -278,11 +278,11 @@ def test_nested_credit_cost_lookup():
 
 def test_get_credit_cost_validate_keys():
     costs: dict = {
-        'JOB_TYPE_A': {'cost_parameters': ['foo'], 'cost_table': {'bar': 3.0}},
-        'JOB_TYPE_B': {'cost': 5.0},
+        'JOB_TYPE_A': {'cost_parameters': ['foo'], 'cost_table': {'bar': Decimal(3.0)}},
+        'JOB_TYPE_B': {'cost': Decimal(5.0)},
         'JOB_TYPE_C': {'cost_parameters': ['']},
         'JOB_TYPE_D': {'cost_table': {}},
-        'JOB_TYPE_E': {'cost_parameters': [''], 'cost_table': {}, 'cost': 1.0},
+        'JOB_TYPE_E': {'cost_parameters': [''], 'cost_table': {}, 'cost': Decimal(1.0)},
         'JOB_TYPE_F': {'cost_parameters': [''], 'cost_table': {}, 'foo': None},
     }
 
