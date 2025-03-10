@@ -203,6 +203,13 @@ def test_validate_job_spec():
         job_spec_bad_cost_profile = {**job_spec, 'cost_profiles': {'foo': {}}}
         render_cf.validate_job_spec(job_type, job_spec_bad_cost_profile)
 
+    bad_cost_profile_error = r'Cost definition for job type FOO has empty cost_parameters'
+    with pytest.raises(ValueError, match=bad_cost_profile_error):
+        job_spec_bad_cost_profile = {**job_spec, 'cost_profiles': {
+            'foo': {'cost_parameters': [], 'cost_table': {'x': 'y'}}
+        }}
+        render_cf.validate_job_spec(job_type, job_spec_bad_cost_profile)
+
     bad_cost_profile_error = '^Cost definition for job type FOO has empty cost_table'
     with pytest.raises(ValueError, match=bad_cost_profile_error):
         job_spec_bad_cost_profile = {**job_spec, 'cost_profiles': {

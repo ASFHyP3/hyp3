@@ -247,6 +247,11 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
                     f'Cost definition for job type {job_type} has invalid cost_parameters: Must be a list of strings.'
                 )
 
+            if len(profile['cost_parameters']) < 1:
+                raise ValueError(
+                    f'Cost definition for job type {job_type} has empty cost_parameters'
+                )
+
             validate_cost_table(profile['cost_table'], job_type)
 
     for step in job_spec['steps']:
