@@ -134,33 +134,29 @@ components:
   schemas:
 
     costs_response:
-      description: List of job costs.
-      type: array
-      items:
+      type: object
+      description: Dictionary of job costs where JOB_TYPE is any of the job types available in this deployment.
+      properties:
+        JOB_TYPE:
+          type: object
+          properties:
+            oneOf:
+              - $ref: "#/components/schemas/fixed_cost"
+              - $ref: "#/components/schemas/dynamic_cost"
+
+    fixed_cost:
+      type: object
+      cost:
+        $ref: "#/components/schemas/credits"
+
+    dynamic_cost:
+      cost_parameters:
+        type: array
+        items:
+          type: string
+      cost_table:
         type: object
-        required:
-          - job_type
-        properties:
-          job_type:
-            $ref: "./job_parameters.yml#/components/schemas/job_type"
-          cost:
-            $ref: "#/components/schemas/credits"
-          cost_parameter:
-            type: string
-          cost_table:
-            type: array
-            items:
-              type: object
-              required:
-                - parameter_value
-                - cost
-              properties:
-                parameter_value:
-                  oneOf:
-                    - type: string
-                    - type: number
-                cost:
-                  $ref: "#/components/schemas/credits"
+        additionalproperties: true
 
     post_jobs_body:
       description: List for new jobs to submit for processing.
