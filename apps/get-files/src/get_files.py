@@ -7,6 +7,8 @@ from typing import Any
 
 import boto3
 
+import dynamo
+
 
 S3_CLIENT = boto3.client('s3')
 
@@ -93,4 +95,5 @@ def lambda_handler(event: dict, context: Any) -> dict:
     bucket = environ['BUCKET']
 
     response = S3_CLIENT.list_objects_v2(Bucket=bucket, Prefix=event['job_id'])
-    return organize_files(response['Contents'], bucket)
+    files = organize_files(response['Contents'], bucket)
+    dynamo.jobs.update_job({'job_id': event['job_id'], **files})
