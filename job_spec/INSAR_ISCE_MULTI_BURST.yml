@@ -6,8 +6,6 @@ INSAR_ISCE_MULTI_BURST:
     reference:
       api_schema:
         type: array
-        minItems: 1
-        maxItems: 15
         example:
           - S1_136231_IW2_20200604T022312_VV_7C85-BURST
             S1_136232_IW2_20200604T022315_VV_7C85-BURST
@@ -21,8 +19,6 @@ INSAR_ISCE_MULTI_BURST:
     secondary:
       api_schema:
         type: array
-        minItems: 1
-        maxItems: 15
         example:
           - S1_136231_IW2_20200616T022313_VV_5D11-BURST
             S1_136232_IW2_20200616T022316_VV_5D11-BURST
@@ -102,6 +98,7 @@ INSAR_ISCE_MULTI_BURST:
     DEFAULT:
       cost: 1.0
   validators:
+    - check_multi_burst_max_length
     - check_multi_burst_pairs
     - check_dem_coverage
     - check_not_antimeridian
