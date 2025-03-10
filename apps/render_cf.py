@@ -244,9 +244,50 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
         if profile.keys() not in ({'cost_parameters', 'cost_table'}, {'cost'}):
             raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {profile.keys()}')
 
+        if 'cost_table' in profile:
+            if not isinstance(profile['cost_parameters'], list):
+                raise ValueError(
+                    f'Cost definition for job type {job_type} has invalid cost_parameters: '
+                    'Must be a list of strings.'
+                )
+
+            validate_cost_table(profile['cost_table'], job_type)
+
     for step in job_spec['steps']:
         if not step['image'].islower():
             raise ValueError(f'{job_type} has image {step["image"]} but docker requires the image to be all lowercase')
+
+
+def validate_cost_table(cost_table: any, job_type: dict) -> any:
+    if isinstance(cost_table, dict):
+        for key, value in cost_table.items():
+            if not isinstance(key, str) and not isinstance(key, int):
+                raise ValueError(
+                    f'Cost definition for job type {job_type} has invalid cost_table: '
+                    f'all cost_table keys must be strings or ints {type(key)}.'
+                )
+
+            return validate_cost_table(value, job_type)
+
+
+    elif isinstance(cost_table, float):
+        if not cost_table.is_integer():
+            raise ValueError(
+                f'Cost definition for job type {job_type} has invalid cost_table: '
+                'all cost_table costs must be whole numbers.'
+            )
+
+        return
+
+    else:
+        raise ValueError(
+            f'Cost definition for job type {job_type} has invalid cost_table: '
+            f'Cost table must be a nested dictionary of costs. {type(cost_table)}'
+        )
+
+
+
+
 
 
 def main() -> None:
