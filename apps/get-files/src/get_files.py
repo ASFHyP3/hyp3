@@ -91,7 +91,7 @@ def organize_files(s3_objects: list[dict], bucket: str) -> dict:
     }
 
 
-def lambda_handler(event: dict, context: Any) -> dict:
+def lambda_handler(event: dict, context: Any) -> None:
     bucket = environ['BUCKET']
 
     response = S3_CLIENT.list_objects_v2(Bucket=bucket, Prefix=event['job_id'])
