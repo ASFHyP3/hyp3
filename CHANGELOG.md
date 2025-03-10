@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Change the format of the `/cost` endpoint of the hyp3 api. `cost_parameter` has changed to `cost_parameters` and is an ordered list to lookup into the table. `cost_table` is now a nested dictionary where the lookup can be done with the keys in `cost_parameters`.
+- The API now returns sensible error messages if an `INSAR_ISCE_MULTI_BURST` job is given with less than 1 scene or more than 15 scenes for either `reference` or `secondary`, rather than the generic `not valid under any of the given schemas` error message.
 
 ## [9.5.4]
 

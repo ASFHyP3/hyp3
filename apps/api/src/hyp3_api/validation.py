@@ -86,6 +86,15 @@ def check_multi_burst_pairs(job: dict, _) -> None:
     multi_burst_validation.validate_bursts(job_parameters['reference'], job_parameters['secondary'])
 
 
+def check_multi_burst_max_length(job: dict, _, max_pairs: int = 15) -> None:
+    job_parameters = job['job_parameters']
+    reference, secondary = job_parameters['reference'], job_parameters['secondary']
+    if len(reference) > max_pairs or len(secondary) > max_pairs:
+        raise multi_burst_validation.MultiBurstValidationError(
+            f'Must provide no more than {max_pairs} scene pairs, got {len(reference)} reference and {len(secondary)} secondary'
+        )
+
+
 def check_single_burst_pair(job: dict, _) -> None:
     granule1, granule2 = job['job_parameters']['granules']
 
