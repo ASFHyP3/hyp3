@@ -256,11 +256,14 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
 
 def validate_cost_table(cost_table: dict | float, job_type: str) -> None:
     if isinstance(cost_table, dict):
+        if len(cost_table.items()) < 1:
+            raise ValueError(f'Cost definition for job type {job_type} has empty cost_table')
+
         for key, value in cost_table.items():
             if not isinstance(key, str) and not isinstance(key, int):
                 raise ValueError(
                     f'Cost definition for job type {job_type} has invalid cost_table: '
-                    f'all cost_table keys must be strings or ints, but {key} has type {type(key)}.'
+                    f'all cost_table keys must be strings or ints, but {key} has type {type(key)}'
                 )
 
             validate_cost_table(value, job_type)

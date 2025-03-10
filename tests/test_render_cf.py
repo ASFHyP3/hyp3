@@ -121,7 +121,7 @@ def test_validate_job_spec():
             'foo': {'cost': 10},
             'bar': {
                 'cost_parameters': ['param1', 'param2'],
-                'cost_table': {}
+                'cost_table': {'param1-value': {'param2-value': 1.0}}
             }
         },
         'validators': [],
@@ -201,4 +201,25 @@ def test_validate_job_spec():
     bad_cost_profile_error = '^Cost definition for job type FOO has invalid keys: dict_keys.*'
     with pytest.raises(ValueError, match=bad_cost_profile_error):
         job_spec_bad_cost_profile = {**job_spec, 'cost_profiles': {'foo': {}}}
+        render_cf.validate_job_spec(job_type, job_spec_bad_cost_profile)
+
+    bad_cost_profile_error = '^Cost definition for job type FOO has empty cost_table'
+    with pytest.raises(ValueError, match=bad_cost_profile_error):
+        job_spec_bad_cost_profile = {**job_spec, 'cost_profiles': {
+            'foo': {'cost_parameters': ['param1', 20], 'cost_table': {}}
+        }}
+        render_cf.validate_job_spec(job_type, job_spec_bad_cost_profile)
+
+    bad_cost_profile_error = r'.*all cost_table keys must be strings or ints, but \(1, 2\) has type <class \'tuple\'>'
+    with pytest.raises(ValueError, match=bad_cost_profile_error):
+        job_spec_bad_cost_profile = {**job_spec, 'cost_profiles': {
+            'foo': {'cost_parameters': ['param1', 20], 'cost_table': {(1, 2): {'x'}}}}
+        }
+        render_cf.validate_job_spec(job_type, job_spec_bad_cost_profile)
+
+    bad_cost_profile_error = r'Cost table must be a nested dictionary of costs, got type <class \'str\'>'
+    with pytest.raises(ValueError, match=bad_cost_profile_error):
+        job_spec_bad_cost_profile = {**job_spec, 'cost_profiles': {
+            'foo': {'cost_parameters': ['param1', 20], 'cost_table': {'x': 'y'}}
+        }}
         render_cf.validate_job_spec(job_type, job_spec_bad_cost_profile)
