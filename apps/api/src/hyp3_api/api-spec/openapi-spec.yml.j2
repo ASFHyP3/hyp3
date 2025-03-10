@@ -135,28 +135,37 @@ components:
 
     costs_response:
       type: object
-      description: Dictionary of job costs where JOB_TYPE is any of the job types available in this deployment.
+      description: >
+        Dictionary of job cost definitions whose keys are the job types available in this deployment.
+        This example shows JOB_TYPE_1 with a fixed cost and JOB_TYPE_2 with a dynamic cost.
       properties:
-        JOB_TYPE:
+        JOB_TYPE_1:
           type: object
           properties:
-            oneOf:
-              - $ref: "#/components/schemas/fixed_cost"
-              - $ref: "#/components/schemas/dynamic_cost"
-
-    fixed_cost:
-      type: object
-      cost:
-        $ref: "#/components/schemas/credits"
-
-    dynamic_cost:
-      cost_parameters:
-        type: array
-        items:
-          type: string
-      cost_table:
-        type: object
-        additionalproperties: true
+            cost:
+              $ref: "#/components/schemas/credits"
+        JOB_TYPE_2:
+          type: object
+          example:
+            cost_parameters: [foo, bar]
+            cost_table:
+              foo_value1:
+                bar_value1: 1.0
+                bar_value2: 5.0
+              foo_value2:
+                bar_value1: 2.0
+                bar_value2: 10.0
+          properties:
+            cost_parameters:
+              description: Ordered list of job parameter names for cost table lookups.
+              minItems: 1
+              type: array
+              items:
+                type: string
+            cost_table:
+              description: Nested dictionaries that allow looking up job cost based on cost parameter values.
+              type: object
+              additionalProperties: true
 
     post_jobs_body:
       description: List for new jobs to submit for processing.
