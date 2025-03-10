@@ -141,7 +141,9 @@ def _get_cost_from_table(job: dict, cost_definition: dict) -> Decimal:
                 f'Cost not found for job type {job["job_type"]} with {cost_parameter} == {parameter_value}'
             )
 
-    return Decimal(cost_lookup)
+    if not isinstance(cost_lookup, Decimal):
+        raise ValueError(f'Job type {job["job_type"]} has non-Decimal cost value')
+    return cost_lookup
 
 
 def _get_cost_parameter_value(job: dict, cost_parameter: str) -> str:

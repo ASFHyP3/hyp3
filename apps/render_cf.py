@@ -195,7 +195,7 @@ def render_batch_params_by_job_type(job_types: dict) -> None:
         for step in job_spec['steps']:
             params.update(get_batch_param_names_for_job_step(step))
         batch_params_by_job_type[job_type] = list(params)
-    with (Path('apps') / 'start-execution-worker' / 'src' / 'batch_params_by_job_type.json').open('w') as f:
+    with (Path('apps') / 'start-execution' / 'src' / 'batch_params_by_job_type.json').open('w') as f:
         json.dump(batch_params_by_job_type, f, indent=2)
 
 
@@ -213,10 +213,7 @@ def render_default_params_by_job_type(job_types: dict) -> None:
 
 
 def render_costs(job_types: dict, cost_profile: str) -> None:
-    costs = {}
-
-    for job_type, job_spec in job_types.items():
-        costs[job_type] = job_spec['cost_profiles'][cost_profile]
+    costs = {job_type: job_spec['cost_profiles'][cost_profile] for job_type, job_spec in job_types.items()}
 
     with (Path('lib') / 'dynamo' / 'dynamo' / 'costs.json').open('w') as f:
         json.dump(costs, f, indent=2)
