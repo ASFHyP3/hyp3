@@ -150,22 +150,24 @@ def _get_cost_parameter_value(job: dict, cost_parameter: str) -> str:
     parameter_value = job['job_parameters'][cost_parameter]
 
     if isinstance(parameter_value, str):
-        return parameter_value
+        cost_parameter_value = parameter_value
 
     elif isinstance(parameter_value, int):
-        return str(parameter_value)
+        cost_parameter_value = str(parameter_value)
 
     elif isinstance(parameter_value, float):
-        return str(int(parameter_value))
+        cost_parameter_value = str(int(parameter_value))
 
     elif isinstance(parameter_value, list):
-        return str(len(parameter_value))
+        cost_parameter_value = str(len(parameter_value))
 
     else:
         raise ValueError(
             f'Cost parameter {cost_parameter} for job type {job["job_type"]} has '
-            'unsupported type {type(parameter_value)}'
+            f'unsupported type {type(parameter_value)}'
         )
+
+    return cost_parameter_value
 
 
 def query_jobs(
