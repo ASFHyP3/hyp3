@@ -263,21 +263,12 @@ def validate_cost_table(cost_table: dict | float, job_type: str) -> None:
                     f'all cost_table keys must be strings or ints, but {key} has type {type(key)}.'
                 )
 
-            return validate_cost_table(value, job_type)
+            validate_cost_table(value, job_type)
 
-    elif isinstance(cost_table, float):
-        if not cost_table.is_integer():
-            raise ValueError(
-                f'Cost definition for job type {job_type} has invalid cost_table: '
-                'all cost_table costs must be whole numbers.'
-            )
-
-        return
-
-    else:
+    elif not isinstance(cost_table, float):
         raise ValueError(
             f'Cost definition for job type {job_type} has invalid cost_table: '
-            f'Cost table must be a nested dictionary of costs. {type(cost_table)}'
+            f'Cost table must be a nested dictionary of costs, got type {type(cost_table)}'
         )
 
 
