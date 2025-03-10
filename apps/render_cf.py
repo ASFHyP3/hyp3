@@ -244,8 +244,7 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
         if 'cost_table' in profile:
             if not isinstance(profile['cost_parameters'], list):
                 raise ValueError(
-                    f'Cost definition for job type {job_type} has invalid cost_parameters: '
-                    'Must be a list of strings.'
+                    f'Cost definition for job type {job_type} has invalid cost_parameters: Must be a list of strings.'
                 )
 
             validate_cost_table(profile['cost_table'], job_type)
@@ -266,7 +265,6 @@ def validate_cost_table(cost_table: any, job_type: dict) -> any:
 
             return validate_cost_table(value, job_type)
 
-
     elif isinstance(cost_table, float):
         if not cost_table.is_integer():
             raise ValueError(
@@ -281,10 +279,6 @@ def validate_cost_table(cost_table: any, job_type: dict) -> any:
             f'Cost definition for job type {job_type} has invalid cost_table: '
             f'Cost table must be a nested dictionary of costs. {type(cost_table)}'
         )
-
-
-
-
 
 
 def main() -> None:

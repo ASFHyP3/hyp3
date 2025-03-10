@@ -168,7 +168,6 @@ def _get_cost_parameter_value(job: dict, cost_parameter: str) -> str:
         )
 
 
-
 def query_jobs(
     user: str,
     start: str | None = None,
