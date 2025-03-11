@@ -202,9 +202,10 @@ def test_validate_job_spec():
 
     bad_cost_profile_error = r'Cost definition for job type FOO has invalid cost_parameters: Must be a list of strings'
     with pytest.raises(ValueError, match=bad_cost_profile_error):
-        job_spec_bad_cost_profile = {**job_spec, 'cost_profiles': {
-            'foo': {'cost_parameters': 'bar', 'cost_table': {'x': 'y'}}
-        }}
+        job_spec_bad_cost_profile = {
+            **job_spec,
+            'cost_profiles': {'foo': {'cost_parameters': 'bar', 'cost_table': {'x': 'y'}}},
+        }
         render_cf.validate_job_spec(job_type, job_spec_bad_cost_profile)
 
     bad_cost_profile_error = r'Cost definition for job type FOO has empty cost_parameters'
