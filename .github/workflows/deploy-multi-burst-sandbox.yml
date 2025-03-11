@@ -23,7 +23,12 @@ jobs:
             default_application_status: APPROVED
             cost_profile: EDC
             job_files: >-
+              job_spec/AUTORIFT.yml
+              job_spec/INSAR_GAMMA.yml
+              job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/OPERA_DISP_TMS.yml
+              job_spec/ARIA_S1_GUNW.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
               job_spec/RTC_GAMMA.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
