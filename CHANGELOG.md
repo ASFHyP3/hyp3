@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.0.0]
+
+### Added
+- The internal job spec syntax for `cost_profiles` now supports using an array as a cost parameter. The value used for the cost lookup will be the length of the array.
+
+### Changed
+- The response structure of the `/costs` API endpoint has changed to support multiple cost parameters. See the `costs_response` schema in [`openapi-spec.yml.j2`](./apps/api/src/hyp3_api/api-spec/openapi-spec.yml.j2) for a detailed explanation.
+- The internal job spec syntax for `cost_profiles` has changed to support multiple cost parameters. See [`INSAR_ISCE_MULTI_BURST.yml`](./job_spec/INSAR_ISCE_MULTI_BURST.yml) for an example of using multiple cost parameters.
+- The `EDC` cost profile for the `INSAR_ISCE_MULTI_BURST` job type now implements variable credit costs based on the `looks` parameter and the number of scene pairs. Currently this does not affect any user-facing deployments.
+- The API now returns sensible error messages if an `INSAR_ISCE_MULTI_BURST` job is given with less than 1 scene or more than 15 scenes for either `reference` or `secondary`, rather than the generic `not valid under any of the given schemas` error message.
+
 ## [9.5.4]
 
 ### Changed
