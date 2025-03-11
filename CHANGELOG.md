@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.0.0]
 
 ### Added
-- The internal job spec syntax now supports using an array as a cost parameter. The value used for the cost lookup will be the length of the array.
+- The internal job spec syntax for `cost_profiles` now supports using an array as a cost parameter. The value used for the cost lookup will be the length of the array.
 
 ### Changed
 - The response structure of the `/costs` API endpoint has changed to support multiple cost parameters. See the `costs_response` schema in [`openapi-spec.yml.j2`](./apps/api/src/hyp3_api/api-spec/openapi-spec.yml.j2) for a detailed explanation.
