@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.0.1]
 
 ### Changed
-- Moved the LAVAS deployments into [deploy-lavas-test.yml](.github/workflows/deploy-lavas-test.yml) and [deploy-lavas-prod.yml](.github/workflows/deploy-lavas-prod.yml) so that deploying `hyp3-lavas.asf.alaska.edu` is no longer blocked by the [deploy-enterprise.yml](.github/workflows/deploy-enterprise.yml) workflow.
+- Moved the LAVAS deployments into [deploy-lavas-prod.yml](.github/workflows/deploy-lavas-prod.yml) and [deploy-lavas-test.yml](.github/workflows/deploy-lavas-test.yml) so that deploying `hyp3-lavas.asf.alaska.edu` is no longer blocked by the [deploy-enterprise.yml](.github/workflows/deploy-enterprise.yml) workflow.
 
 ## [10.0.0]
 
