@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from botocore.stub import Stubber
@@ -118,27 +119,31 @@ def test_get_files_zipped_product(s3_stubber: Stubber):
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse_rgb.png', 'rgb_browse')
 
     event = {'job_id': 'myJobId'}
-    response = get_files.lambda_handler(event, None)
-    assert response == {
-        'expiration_time': '2020-01-01T00:00:00+00:00',
-        'files': [
+    with patch('dynamo.jobs.update_job') as mock_update_job:
+        get_files.lambda_handler(event, None)
+        mock_update_job.assert_called_once_with(
             {
-                'url': 'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myProduct.zip',
-                's3': {
-                    'bucket': 'myBucket',
-                    'key': 'myJobId/myProduct.zip',
-                },
-                'size': 50,
-                'filename': 'myProduct.zip',
+                'job_id': 'myJobId',
+                'expiration_time': '2020-01-01T00:00:00+00:00',
+                'files': [
+                    {
+                        'url': 'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myProduct.zip',
+                        's3': {
+                            'bucket': 'myBucket',
+                            'key': 'myJobId/myProduct.zip',
+                        },
+                        'size': 50,
+                        'filename': 'myProduct.zip',
+                    }
+                ],
+                'browse_images': [
+                    'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse.png',
+                    'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse_rgb.png',
+                ],
+                'thumbnail_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myThumbnail.png'],
+                'logs': [],
             }
-        ],
-        'browse_images': [
-            'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse.png',
-            'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse_rgb.png',
-        ],
-        'thumbnail_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myThumbnail.png'],
-        'logs': [],
-    }
+        )
 
 
 def test_get_files_netcdf_product(s3_stubber: Stubber):
@@ -163,26 +168,30 @@ def test_get_files_netcdf_product(s3_stubber: Stubber):
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'amp_browse')
 
     event = {'job_id': 'myJobId'}
-    response = get_files.lambda_handler(event, None)
-    assert response == {
-        'expiration_time': '2020-01-01T00:00:00+00:00',
-        'files': [
+    with patch('dynamo.jobs.update_job') as mock_update_job:
+        get_files.lambda_handler(event, None)
+        mock_update_job.assert_called_once_with(
             {
-                'url': 'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myProduct.nc',
-                's3': {
-                    'bucket': 'myBucket',
-                    'key': 'myJobId/myProduct.nc',
-                },
-                'size': 50,
-                'filename': 'myProduct.nc',
+                'job_id': 'myJobId',
+                'expiration_time': '2020-01-01T00:00:00+00:00',
+                'files': [
+                    {
+                        'url': 'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myProduct.nc',
+                        's3': {
+                            'bucket': 'myBucket',
+                            'key': 'myJobId/myProduct.nc',
+                        },
+                        'size': 50,
+                        'filename': 'myProduct.nc',
+                    }
+                ],
+                'browse_images': [
+                    'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse.png',
+                ],
+                'thumbnail_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myThumbnail.png'],
+                'logs': [],
             }
-        ],
-        'browse_images': [
-            'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse.png',
-        ],
-        'thumbnail_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myThumbnail.png'],
-        'logs': [],
-    }
+        )
 
 
 def test_get_files_failed_job(s3_stubber: Stubber):
@@ -197,11 +206,15 @@ def test_get_files_failed_job(s3_stubber: Stubber):
     stub_expiration(s3_stubber, 'myBucket', 'myJobId/myJobId.log')
 
     event = {'job_id': 'myJobId'}
-    response = get_files.lambda_handler(event, None)
-    assert response == {
-        'expiration_time': '2020-01-01T00:00:00+00:00',
-        'files': [],
-        'browse_images': [],
-        'thumbnail_images': [],
-        'logs': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myJobId.log'],
-    }
+    with patch('dynamo.jobs.update_job') as mock_update_job:
+        get_files.lambda_handler(event, None)
+        mock_update_job.assert_called_once_with(
+            {
+                'job_id': 'myJobId',
+                'expiration_time': '2020-01-01T00:00:00+00:00',
+                'files': [],
+                'browse_images': [],
+                'thumbnail_images': [],
+                'logs': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myJobId.log'],
+            }
+        )
