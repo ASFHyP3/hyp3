@@ -244,7 +244,7 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
         if 'cost_table' in profile:
             if not isinstance(profile['cost_parameters'], list):
                 raise ValueError(
-                    f'Cost definition for job type {job_type} has invalid cost_parameters: Must be a list of strings.'
+                    f'Cost definition for job type {job_type} has invalid cost_parameters: Must be a list of strings'
                 )
 
             if len(profile['cost_parameters']) < 1:
