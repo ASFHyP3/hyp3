@@ -244,8 +244,11 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
         if 'cost_table' in profile:
             if not isinstance(profile['cost_parameters'], list):
                 raise ValueError(
-                    f'Cost definition for job type {job_type} has invalid cost_parameters: Must be a list of strings.'
+                    f'Cost definition for job type {job_type} has invalid cost_parameters: Must be a list of strings'
                 )
+
+            if len(profile['cost_parameters']) < 1:
+                raise ValueError(f'Cost definition for job type {job_type} has empty cost_parameters')
 
             validate_cost_table(profile['cost_table'], job_type)
 
@@ -254,30 +257,24 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
             raise ValueError(f'{job_type} has image {step["image"]} but docker requires the image to be all lowercase')
 
 
-def validate_cost_table(cost_table: any, job_type: dict) -> any:
+def validate_cost_table(cost_table: dict | float, job_type: str) -> None:
     if isinstance(cost_table, dict):
+        if len(cost_table.items()) < 1:
+            raise ValueError(f'Cost definition for job type {job_type} has empty cost_table')
+
         for key, value in cost_table.items():
             if not isinstance(key, str) and not isinstance(key, int):
                 raise ValueError(
                     f'Cost definition for job type {job_type} has invalid cost_table: '
-                    f'all cost_table keys must be strings or ints {type(key)}.'
+                    f'all cost_table keys must be strings or ints, but {key} has type {type(key)}'
                 )
 
-            return validate_cost_table(value, job_type)
+            validate_cost_table(value, job_type)
 
-    elif isinstance(cost_table, float):
-        if not cost_table.is_integer():
-            raise ValueError(
-                f'Cost definition for job type {job_type} has invalid cost_table: '
-                'all cost_table costs must be whole numbers.'
-            )
-
-        return
-
-    else:
+    elif not isinstance(cost_table, float):
         raise ValueError(
             f'Cost definition for job type {job_type} has invalid cost_table: '
-            f'Cost table must be a nested dictionary of costs. {type(cost_table)}'
+            f'Cost table must be a nested dictionary of costs, got type {type(cost_table)}'
         )
 
 

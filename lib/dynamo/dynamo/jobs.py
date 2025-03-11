@@ -123,9 +123,14 @@ def _get_credit_cost(job: dict, costs: dict) -> Decimal:
         raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
 
     if 'cost' in cost_definition:
-        return cost_definition['cost']
+        cost = cost_definition['cost']
     else:
-        return _get_cost_from_table(job, cost_definition)
+        cost = _get_cost_from_table(job, cost_definition)
+
+    if not isinstance(cost, Decimal):
+        raise ValueError(f'Job type {job["job_type"]} has non-Decimal cost value')
+
+    return cost
 
 
 def _get_cost_from_table(job: dict, cost_definition: dict) -> Decimal:
@@ -141,8 +146,6 @@ def _get_cost_from_table(job: dict, cost_definition: dict) -> Decimal:
                 f'Cost not found for job type {job["job_type"]} with {cost_parameter} == {parameter_value}'
             )
 
-    if not isinstance(cost_lookup, Decimal):
-        raise ValueError(f'Job type {job["job_type"]} has non-Decimal cost value')
     return cost_lookup
 
 
@@ -150,22 +153,24 @@ def _get_cost_parameter_value(job: dict, cost_parameter: str) -> str:
     parameter_value = job['job_parameters'][cost_parameter]
 
     if isinstance(parameter_value, str):
-        return parameter_value
+        cost_parameter_value = parameter_value
 
     elif isinstance(parameter_value, int):
-        return str(parameter_value)
+        cost_parameter_value = str(parameter_value)
 
     elif isinstance(parameter_value, float):
-        return str(int(parameter_value))
+        cost_parameter_value = str(int(parameter_value))
 
     elif isinstance(parameter_value, list):
-        return str(len(parameter_value))
+        cost_parameter_value = str(len(parameter_value))
 
     else:
         raise ValueError(
             f'Cost parameter {cost_parameter} for job type {job["job_type"]} has '
-            'unsupported type {type(parameter_value)}'
+            f'unsupported type {type(parameter_value)}'
         )
+
+    return cost_parameter_value
 
 
 def query_jobs(

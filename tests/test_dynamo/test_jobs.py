@@ -219,7 +219,7 @@ def test_get_credit_cost():
         dynamo.jobs._get_credit_cost({'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 20.0}}, costs) == 15.0
     )
     assert dynamo.jobs._get_credit_cost({'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 30.0}}, costs) == 5.0
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r'^Cost not found for job type RTC_GAMMA with resolution == 13$'):
         dynamo.jobs._get_credit_cost({'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 13.0}}, costs)
     assert (
         dynamo.jobs._get_credit_cost({'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'foo': 'bar'}}, costs) == 1.0
@@ -284,6 +284,8 @@ def test_get_credit_cost_validate_keys():
         'JOB_TYPE_D': {'cost_table': {}},
         'JOB_TYPE_E': {'cost_parameters': [''], 'cost_table': {}, 'cost': Decimal(1.0)},
         'JOB_TYPE_F': {'cost_parameters': [''], 'cost_table': {}, 'foo': None},
+        'JOB_TYPE_G': {'cost': 5.0},
+        'JOB_TYPE_H': {'cost_parameters': ['foo'], 'cost_table': {(1, 2): Decimal(3.0)}},
     }
 
     assert dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_A', 'job_parameters': {'foo': 'bar'}}, costs) == 3.0
@@ -297,6 +299,12 @@ def test_get_credit_cost_validate_keys():
         dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_E'}, costs)
     with pytest.raises(ValueError, match=r'^Cost definition for job type JOB_TYPE_F has invalid keys.*'):
         dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_F'}, costs)
+    with pytest.raises(ValueError, match=r'^Job type JOB_TYPE_G has non-Decimal cost value.*'):
+        dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_G'}, costs)
+
+    error_match = r"^Cost parameter foo for job type JOB_TYPE_H has unsupported type <class 'tuple'>"
+    with pytest.raises(ValueError, match=error_match):
+        dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_H', 'job_parameters': {'foo': (1, 2)}}, costs)
 
 
 def test_put_jobs(tables, monkeypatch, approved_user):
