@@ -4,11 +4,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [10.0.1]
-
-### Changed
-- Moved the LAVAS deployments into [deploy-lavas-prod.yml](.github/workflows/deploy-lavas-prod.yml) and [deploy-lavas-test.yml](.github/workflows/deploy-lavas-test.yml) so that deploying `hyp3-lavas.asf.alaska.edu` is no longer blocked by the [deploy-enterprise.yml](.github/workflows/deploy-enterprise.yml) workflow.
-
 ## [10.0.0]
 
 ### Added
