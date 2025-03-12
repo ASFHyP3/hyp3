@@ -189,6 +189,7 @@ Resources:
     Properties:
       Parameters:
         Bucket: !Ref Bucket
+        JobsTable: !Ref JobsTable
         {% if security_environment == 'EDC' %}
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]

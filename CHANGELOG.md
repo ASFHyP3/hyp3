@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.0.1]
+
+### Changed
+- `get_files` now directly updates the `files`, `logs`, `browse_images`, `thumbnail_images`, and `expiration_time` fields in the Jobs table, rather than returning those values to be updated later by the `JOB_SUCCEEDED` or `JOB_FAILED` step. Resolves `SRG_TIME_SERIES` jobs with a large number of inputs exceeding the [256 KiB maximum output size for a Step Functions state](https://docs.aws.amazon.com/step-functions/latest/dg/service-quotas.html).
+
 ## [10.0.0]
 
 ### Added
