@@ -132,6 +132,7 @@ INSAR_ISCE_MULTI_BURST:
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2
+      image_tag: 2.1.6.dev16_g54eaa04
       command:
         - ++process
         - insar_tops_burst
