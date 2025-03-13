@@ -9,6 +9,9 @@ INSAR_ISCE_MULTI_BURST:
         example:
           - S1_136231_IW2_20200604T022312_VV_7C85-BURST
           - S1_136231_IW2_20200616T022313_VV_5D11-BURST
+        default:
+          - null
+          - null
         items:
           description: Name of the Sentinel-1 SLC IW burst granule to process
           type: string
@@ -16,6 +19,7 @@ INSAR_ISCE_MULTI_BURST:
           minLength: 43
           maxLength: 43
           example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
+          nullable: true
     reference:
       api_schema:
         type: array
@@ -41,7 +45,7 @@ INSAR_ISCE_MULTI_BURST:
         maxItems: 15
         example:
           - S1_136231_IW2_20200616T022313_VV_5D11-BURST
-          - default:
+        default:
             - null
         items:
           description: Name of the secondary Sentinel-1 SLC IW burst granule to process
@@ -71,7 +75,6 @@ INSAR_ISCE_MULTI_BURST:
     DEFAULT:
       cost: 1.0
   validators:
-    - check_multi_burst_pairs
     - check_dem_coverage
     - check_not_antimeridian
   steps:
