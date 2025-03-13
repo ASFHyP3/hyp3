@@ -208,7 +208,7 @@ def render_default_params_by_job_type(job_types: dict) -> None:
         job_type: {
             key: value['api_schema']['default']
             for key, value in job_spec['parameters'].items()
-            if key not in job_spec['required_parameters']
+            if key not in job_spec.get('required_parameters', [])
         }
         for job_type, job_spec in job_types.items()
     }
@@ -224,10 +224,10 @@ def render_costs(job_types: dict, cost_profile: str) -> None:
 
 
 def validate_job_spec(job_type: str, job_spec: dict) -> None:
-    expected_fields = sorted(['required_parameters', 'parameters', 'cost_profiles', 'validators', 'steps'])
-    actual_fields = sorted(job_spec.keys())
-    if actual_fields != expected_fields:
-        raise ValueError(f'{job_type} has fields {actual_fields} but should have {expected_fields}')
+    expected_fields = {'parameters', 'cost_profiles', 'validators', 'steps'}
+    actual_fields = set(job_spec.keys())
+    if not expected_fields.issubset(actual_fields):
+        raise ValueError(f'{job_type} has fields {actual_fields} but should contain {expected_fields}')
 
     if 'job_id' in job_spec['parameters']:
         raise ValueError(f"{job_type} contains reserved parameter name 'job_id'")
