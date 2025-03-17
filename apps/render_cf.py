@@ -1,9 +1,20 @@
 import argparse
 import json
+import subprocess
 from pathlib import Path
 
 import jinja2
 import yaml
+
+
+def get_api_version() -> str:
+    git_describe = subprocess.run(
+        ['git', 'describe', '--dirty', '--tags', '--long', '--match', r'*[0-9]*'],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return git_describe.stdout.strip()
 
 
 def snake_to_pascal_case(input_string: str) -> str:
@@ -143,7 +154,9 @@ def get_batch_param_names_for_job_step(step: dict) -> set[str]:
     return {arg.removeprefix(ref_prefix) for arg in step['command'] if arg.startswith(ref_prefix)}
 
 
-def render_templates(job_types: dict, compute_envs: dict, security_environment: str, api_name: str) -> None:
+def render_templates(
+    job_types: dict, compute_envs: dict, security_environment: str, api_name: str, api_version: str
+) -> None:
     job_states = get_states_for_jobs(job_types)
 
     env = jinja2.Environment(
@@ -163,6 +176,7 @@ def render_templates(job_types: dict, compute_envs: dict, security_environment: 
             compute_envs=compute_envs,
             security_environment=security_environment,
             api_name=api_name,
+            api_version=api_version,
             json=json,
             snake_to_pascal_case=snake_to_pascal_case,
             job_states=job_states,
@@ -287,6 +301,8 @@ def main() -> None:
     parser.add_argument('-c', '--cost-profile', default='DEFAULT', choices=['DEFAULT', 'EDC'])
     args = parser.parse_args()
 
+    api_version = get_api_version()
+
     job_types = {}
     for file in args.job_spec_files:
         job_types.update(yaml.safe_load(file.read_text()))
@@ -303,7 +319,7 @@ def main() -> None:
     render_batch_params_by_job_type(job_types)
     render_default_params_by_job_type(job_types)
     render_costs(job_types, args.cost_profile)
-    render_templates(job_types, compute_envs, args.security_environment, args.api_name)
+    render_templates(job_types, compute_envs, args.security_environment, args.api_name, api_version)
 
 
 if __name__ == '__main__':
