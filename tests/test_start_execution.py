@@ -2,15 +2,15 @@ import json
 import os
 from unittest.mock import call, patch
 
-import start_execution_worker
+import start_execution
 
 
 def test_convert_to_string():
-    assert start_execution_worker.convert_to_string(1) == '1'
-    assert start_execution_worker.convert_to_string(True) == 'True'
-    assert start_execution_worker.convert_to_string([1, 2]) == '1 2'
-    assert start_execution_worker.convert_to_string(['abc', 'bcd']) == 'abc bcd'
-    assert start_execution_worker.convert_to_string('abc') == 'abc'
+    assert start_execution.convert_to_string(1) == '1'
+    assert start_execution.convert_to_string(True) == 'True'
+    assert start_execution.convert_to_string([1, 2]) == '1 2'
+    assert start_execution.convert_to_string(['abc', 'bcd']) == 'abc bcd'
+    assert start_execution.convert_to_string('abc') == 'abc'
 
 
 def test_submit_jobs():
@@ -156,11 +156,11 @@ def test_submit_jobs():
     )
 
     with (
-        patch('start_execution_worker.STEP_FUNCTION.start_execution') as mock_start_execution,
+        patch('start_execution.STEP_FUNCTION.start_execution') as mock_start_execution,
         patch.dict(os.environ, {'STEP_FUNCTION_ARN': 'test-state-machine-arn'}, clear=True),
-        patch('start_execution_worker.BATCH_PARAMS_BY_JOB_TYPE', batch_params_by_job_type),
+        patch('start_execution.BATCH_PARAMS_BY_JOB_TYPE', batch_params_by_job_type),
     ):
-        start_execution_worker.submit_jobs(jobs)
+        start_execution.submit_jobs(jobs)
 
         assert mock_start_execution.mock_calls == [
             call(
@@ -182,7 +182,16 @@ def test_submit_jobs():
 
 
 def test_lambda_handler():
-    with patch('start_execution_worker.submit_jobs') as mock_submit_jobs:
-        start_execution_worker.lambda_handler({'jobs': [1, 2, 3]}, None)
+    with (
+        patch('dynamo.jobs.get_jobs_waiting_for_execution') as mock_get_jobs_waiting_for_execution,
+        patch('dynamo.util.convert_decimals_to_numbers') as mock_convert_decimals_to_numbers,
+        patch('start_execution.submit_jobs') as mock_submit_jobs,
+    ):
+        mock_get_jobs_waiting_for_execution.return_value = 'mock_jobs'
+        mock_convert_decimals_to_numbers.return_value = 'converted_jobs'
 
-        assert mock_submit_jobs.mock_calls == [call([1, 2, 3])]
+        start_execution.lambda_handler({}, None)
+
+        mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
+        mock_convert_decimals_to_numbers.assert_called_once_with('mock_jobs')
+        mock_submit_jobs.assert_called_once_with('converted_jobs')

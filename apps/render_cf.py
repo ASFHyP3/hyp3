@@ -195,7 +195,7 @@ def render_batch_params_by_job_type(job_types: dict) -> None:
         for step in job_spec['steps']:
             params.update(get_batch_param_names_for_job_step(step))
         batch_params_by_job_type[job_type] = list(params)
-    with (Path('apps') / 'start-execution-worker' / 'src' / 'batch_params_by_job_type.json').open('w') as f:
+    with (Path('apps') / 'start-execution' / 'src' / 'batch_params_by_job_type.json').open('w') as f:
         json.dump(batch_params_by_job_type, f, indent=2)
 
 
@@ -213,13 +213,8 @@ def render_default_params_by_job_type(job_types: dict) -> None:
 
 
 def render_costs(job_types: dict, cost_profile: str) -> None:
-    costs = [
-        {
-            'job_type': job_type,
-            **job_spec['cost_profiles'][cost_profile],
-        }
-        for job_type, job_spec in job_types.items()
-    ]
+    costs = {job_type: job_spec['cost_profiles'][cost_profile] for job_type, job_spec in job_types.items()}
+
     with (Path('lib') / 'dynamo' / 'dynamo' / 'costs.json').open('w') as f:
         json.dump(costs, f, indent=2)
 
@@ -242,9 +237,45 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
                 f'but should have {expected_param_fields}'
             )
 
+    for profile in job_spec['cost_profiles'].values():
+        if profile.keys() not in ({'cost_parameters', 'cost_table'}, {'cost'}):
+            raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {profile.keys()}')
+
+        if 'cost_table' in profile:
+            if not isinstance(profile['cost_parameters'], list):
+                raise ValueError(
+                    f'Cost definition for job type {job_type} has invalid cost_parameters: Must be a list of strings'
+                )
+
+            if len(profile['cost_parameters']) < 1:
+                raise ValueError(f'Cost definition for job type {job_type} has empty cost_parameters')
+
+            validate_cost_table(profile['cost_table'], job_type)
+
     for step in job_spec['steps']:
         if not step['image'].islower():
             raise ValueError(f'{job_type} has image {step["image"]} but docker requires the image to be all lowercase')
+
+
+def validate_cost_table(cost_table: dict | float, job_type: str) -> None:
+    if isinstance(cost_table, dict):
+        if len(cost_table.items()) < 1:
+            raise ValueError(f'Cost definition for job type {job_type} has empty cost_table')
+
+        for key, value in cost_table.items():
+            if not isinstance(key, str) and not isinstance(key, int):
+                raise ValueError(
+                    f'Cost definition for job type {job_type} has invalid cost_table: '
+                    f'all cost_table keys must be strings or ints, but {key} has type {type(key)}'
+                )
+
+            validate_cost_table(value, job_type)
+
+    elif not isinstance(cost_table, float):
+        raise ValueError(
+            f'Cost definition for job type {job_type} has invalid cost_table: '
+            f'Cost table must be a nested dictionary of costs, got type {type(cost_table)}'
+        )
 
 
 def main() -> None:

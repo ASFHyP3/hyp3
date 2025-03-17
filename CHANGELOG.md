@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.0.1]
+
+### Changed
+- `get_files` now directly updates the `files`, `logs`, `browse_images`, `thumbnail_images`, and `expiration_time` fields in the Jobs table, rather than returning those values to be updated later by the `JOB_SUCCEEDED` or `JOB_FAILED` step. Resolves `SRG_TIME_SERIES` jobs with a large number of inputs exceeding the [256 KiB maximum output size for a Step Functions state](https://docs.aws.amazon.com/step-functions/latest/dg/service-quotas.html).
+
+## [10.0.0]
+
+### Added
+- The internal job spec syntax for `cost_profiles` now supports using an array as a cost parameter. The value used for the cost lookup will be the length of the array.
+
+### Changed
+- The response structure of the `/costs` API endpoint has changed to support multiple cost parameters. See the `costs_response` schema in [`openapi-spec.yml.j2`](./apps/api/src/hyp3_api/api-spec/openapi-spec.yml.j2) for a detailed explanation.
+- The internal job spec syntax for `cost_profiles` has changed to support multiple cost parameters. See [`INSAR_ISCE_MULTI_BURST.yml`](./job_spec/INSAR_ISCE_MULTI_BURST.yml) for an example of using multiple cost parameters.
+- The `EDC` cost profile for the `INSAR_ISCE_MULTI_BURST` job type now implements variable credit costs based on the `looks` parameter and the number of scene pairs. Currently this does not affect any user-facing deployments.
+- The API now returns sensible error messages if an `INSAR_ISCE_MULTI_BURST` job is given with less than 1 scene or more than 15 scenes for either `reference` or `secondary`, rather than the generic `not valid under any of the given schemas` error message.
+
+## [9.5.4]
+
+### Changed
+- Combined `start_execution_worker` and `start_execution_manager` into one `start_execution` AWS Lambda function. Fixes [#2518](https://github.com/ASFHyP3/hyp3/issues/2518).
+
 ## [9.5.3]
 
 ### Fixed
