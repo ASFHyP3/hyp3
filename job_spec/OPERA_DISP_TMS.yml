@@ -32,8 +32,8 @@ OPERA_DISP_TMS:
         - create_measurement_geotiff
         - Ref::frame_id
         - velocity
-        - 20140101
-        - 20300101
+        - '20140101'
+        - '20300101'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
