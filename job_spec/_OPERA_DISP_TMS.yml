@@ -1,4 +1,4 @@
-OPERA_DISP_TMS:
+_OPERA_DISP_TMS:
   required_parameters:
     - frame_ids
   parameters:

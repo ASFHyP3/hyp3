@@ -156,8 +156,12 @@ def render_templates(job_types: dict, compute_envs: dict, security_environment: 
     )
 
     for template_file in Path().glob('**/*.j2'):
-        template = env.get_template(str(template_file))
+        if 'api-spec' in str(template_file):
+            job_types = {
+                job_name: job_type for job_name, job_type in job_types.items() if not job_name.startswith('_')
+            }
 
+        template = env.get_template(str(template_file))
         output = template.render(
             job_types=job_types,
             compute_envs=compute_envs,
