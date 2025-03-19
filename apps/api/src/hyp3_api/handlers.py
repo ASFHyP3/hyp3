@@ -1,10 +1,9 @@
 from http.client import responses
 
-import requests
-from flask import Response, abort, jsonify, request
-
 import dynamo
+import requests
 from dynamo.exceptions import AccessCodeError, InsufficientCreditsError, UnexpectedApplicationStatusError
+from flask import Response, abort, jsonify, request
 from hyp3_api import util
 from hyp3_api.multi_burst_validation import MultiBurstValidationError
 from hyp3_api.validation import BoundsValidationError, GranuleValidationError, validate_jobs

@@ -6,22 +6,25 @@ from os import environ
 from pathlib import Path
 from typing import Any
 
+import dynamo
 import werkzeug
 import yaml
 from flask import Response, abort, g, jsonify, make_response, redirect, render_template, request
 from flask.json.provider import JSONProvider
 from flask_cors import CORS
+from hyp3_api import app, auth, handlers
+from hyp3_api.openapi import get_spec_yaml
 from openapi_core import OpenAPI
 from openapi_core.contrib.flask.decorators import FlaskOpenAPIViewDecorator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 
-import dynamo
-from hyp3_api import app, auth, handlers
-from hyp3_api.openapi import get_spec_yaml
 
+ui_api_spec_file = Path(__file__).parent / 'api-spec' / 'ui' / 'openapi-spec.yml'
+ui_api_spec_dict = get_spec_yaml(ui_api_spec_file)
 
 api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
 api_spec_dict = get_spec_yaml(api_spec_file)
+
 api_spec = OpenAPI.from_dict(api_spec_dict)
 CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
 
@@ -56,12 +59,12 @@ def redirect_to_ui() -> werkzeug.wrappers.response.Response:
 
 @app.route('/openapi.json')
 def get_open_api_json() -> Response:
-    return jsonify(api_spec_dict)
+    return jsonify(ui_api_spec_dict)
 
 
 @app.route('/openapi.yaml')
 def get_open_api_yaml() -> str:
-    return yaml.dump(api_spec_dict)
+    return yaml.dump(ui_api_spec_dict)
 
 
 @app.route('/ui/')

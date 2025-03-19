@@ -156,24 +156,43 @@ def render_templates(job_types: dict, compute_envs: dict, security_environment: 
     )
 
     for template_file in Path().glob('**/*.j2'):
-        if 'api-spec' in str(template_file):
-            job_types = {job_name: job_type for job_name, job_type in job_types.items() if not job_name.startswith('_')}
+        render_params = {
+            'job_types': job_types,
+            'compute_envs': compute_envs,
+            'security_environment': security_environment,
+            'api_name': api_name,
+            'json': json,
+            'snake_to_pascal_case': snake_to_pascal_case,
+            'job_states': job_states,
+        }
 
-        template = env.get_template(str(template_file))
-        output = template.render(
-            job_types=job_types,
-            compute_envs=compute_envs,
-            security_environment=security_environment,
-            api_name=api_name,
-            json=json,
-            snake_to_pascal_case=snake_to_pascal_case,
-            job_states=job_states,
-        )
-
-        if str(template_file).endswith('.json.j2'):
-            output = json.dumps(json.loads(output), indent=2)
+        output = render_template(env, template_file, render_params)
 
         template_file.with_suffix('').write_text(output)
+
+        if 'api-spec' in str(template_file):
+            without_hidden_job_types = {job_name: job_type for job_name, job_type in job_types.items() if not job_name.startswith('_')}
+            render_params['job_types'] = without_hidden_job_types
+
+            output = render_template(env, template_file, render_params)
+
+            ui_output_path = Path(template_file.parent) / 'ui' / template_file.name
+            ui_output_path.parent.mkdir(exist_ok=True, parents=True)
+
+            with ui_output_path.with_suffix('').open('w') as f:
+                f.write(output)
+
+
+def render_template(env: jinja2.Environment, template_file: Path, render_params: dict) -> str:
+    template = env.get_template(str(template_file))
+    output = template.render(
+        **render_params
+    )
+
+    if str(template_file).endswith('.json.j2'):
+        output = json.dumps(json.loads(output), indent=2)
+
+    return output
 
 
 def get_compute_environments_for_deployment(job_types: dict, compute_env_file: Path) -> dict:

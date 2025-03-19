@@ -2,6 +2,8 @@
 apps/api/src/hyp3_api/ui/swagger/index.html
 apps/api/src/hyp3_api/api-spec/openapi-spec.yml
 apps/api/src/hyp3_api/api-spec/job_parameters.yml
+apps/api/src/hyp3_api/api-spec/ui/openapi-spec.yml
+apps/api/src/hyp3_api/api-spec/ui/job_parameters.yml
 apps/api/src/hyp3_api/job_validation_map.yml
 apps/step-function.json
 apps/**/*-cf.yml
