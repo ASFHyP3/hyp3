@@ -1,10 +1,9 @@
-name: Deploy DAAC Stacks to AWS
+name: Deploy DAAC prod to AWS
 
 on:
   push:
-    branches:
-      - main
-      - develop
+    tags:
+      - 'v*'
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -23,7 +22,6 @@ jobs:
             default_credits_per_user: 10000
             default_application_status: APPROVED
             cost_profile: EDC
-            deploy_ref: refs/heads/main
             job_files: >-
               job_spec/AUTORIFT.yml
               job_spec/INSAR_GAMMA.yml
@@ -31,7 +29,6 @@ jobs:
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
               job_spec/ARIA_S1_GUNW.yml
-              job_spec/OPERA_DISP_TMS.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1500
             expanded_max_vcpus: 3000
@@ -39,31 +36,6 @@ jobs:
             security_environment: EDC
             ami_id: /ngap/amis/image_id_ecs_al2023_x86
             distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
-
-          - environment: hyp3-edc-uat
-            api_name: hyp3-test
-            template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
-            image_tag: test
-            product_lifetime_in_days: 14
-            default_credits_per_user: 10000
-            default_application_status: APPROVED
-            cost_profile: EDC
-            deploy_ref: refs/heads/develop
-            job_files: >-
-              job_spec/AUTORIFT.yml
-              job_spec/INSAR_GAMMA.yml
-              job_spec/RTC_GAMMA.yml
-              job_spec/INSAR_ISCE_BURST.yml
-              job_spec/INSAR_ISCE_MULTI_BURST.yml
-              job_spec/ARIA_S1_GUNW.yml
-              job_spec/OPERA_DISP_TMS.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 1500
-            expanded_max_vcpus: 3000
-            required_surplus: 2000
-            security_environment: EDC
-            ami_id: /ngap/amis/image_id_ecs_al2023_x86
-            distribution_url: 'https://d1riv60tezqha9.cloudfront.net'
 
     environment:
       name: ${{ matrix.environment }}
@@ -103,7 +75,6 @@ jobs:
             > parameters.json
 
       - uses: ./.github/actions/deploy-hyp3
-        if: github.ref == matrix.deploy_ref
         with:
           TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
           STACK_NAME: ${{ matrix.environment }}
@@ -113,10 +84,3 @@ jobs:
           JOB_FILES: ${{ matrix.job_files }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           PARAMETER_FILE: parameters.json
-
-  call-bump-version-workflow:
-    if: github.ref == 'refs/heads/main'
-    needs: deploy
-    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.17.1
-    secrets:
-      USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}
