@@ -18,9 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > subprocess.CalledProcessError: Command '['git', 'describe', '--dirty', '--tags', '--long', '--match', '*[0-9]*']' returned non-zero exit status 128.
 > ```
 
-
-
-
 ## [10.2.1]
 
 ### Changed
