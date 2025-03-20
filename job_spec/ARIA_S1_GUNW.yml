@@ -10,9 +10,8 @@ ARIA_S1_GUNW:
         minItems: 1
         maxItems: 3
         example:
-          - S1A_IW_SLC__1SDV_20250127T010136_20250127T010203_057623_07199D_4B63
-          - S1A_IW_SLC__1SDV_20250127T010111_20250127T010138_057623_07199D_4E88
-          - S1A_IW_SLC__1SDV_20250127T010045_20250127T010113_057623_07199D_4D3B
+          - S1A_IW_SLC__1SSV_20141127T015250_20141127T015318_003461_0040D8_A29D
+          - S1A_IW_SLC__1SSV_20141127T015314_20141127T015342_003461_0040D8_87BA
         items:
           description: The names of the Sentinel-1 SLC granules to use as reference scenes for InSAR processing
           type: string
@@ -26,9 +25,7 @@ ARIA_S1_GUNW:
         minItems: 1
         maxItems: 3
         example:
-          - S1A_IW_SLC__1SDV_20250103T010137_20250103T010204_057273_070BB6_CD45
-          - S1A_IW_SLC__1SDV_20250103T010113_20250103T010140_057273_070BB6_1133
-          - S1A_IW_SLC__1SDV_20250103T010047_20250103T010115_057273_070BB6_99C5
+          - S1A_IW_SLC__1SSV_20141103T015256_20141103T015323_003111_00391A_3776
         items:
           description: The names of the Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
           type: string
@@ -42,7 +39,7 @@ ARIA_S1_GUNW:
         type: integer
         minimum: 0
         maximum: 27397
-        example: 23474
+        example: 9859
   cost_profiles:
     EDC:
       cost: 60.0
@@ -73,8 +70,6 @@ ARIA_S1_GUNW:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD
     - name: TROPOSPHERE
       image: ghcr.io/dbekaert/raider
       command:
@@ -95,3 +90,14 @@ ARIA_S1_GUNW:
         - EARTHDATA_PASSWORD
         - ESA_USERNAME
         - ESA_PASSWORD
+    - name: PUBLISH
+      image: ghcr.io/asfhyp3/ingest-adapter
+      command:
+        - Ref::job_id
+      timeout: 600
+      compute_environment: AriaS1Gunw
+      vcpu: 1
+      memory: 512
+      secrets:
+        - TOPIC_ARN
+        - HYP3_URL

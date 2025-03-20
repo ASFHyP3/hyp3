@@ -175,11 +175,6 @@
       "Parameters": {
         "job_id.$": "$.job_id",
         "status_code": "SUCCEEDED",
-        "files.$": "$.results.get_files.files",
-        "browse_images.$": "$.results.get_files.browse_images",
-        "thumbnail_images.$": "$.results.get_files.thumbnail_images",
-        "logs.$": "$.results.get_files.logs",
-        "expiration_time.$": "$.results.get_files.expiration_time",
         "processing_times.$": "$.results.processing_times"
       },
       "Retry": [
@@ -199,8 +194,6 @@
       "Parameters": {
         "job_id.$": "$.job_id",
         "status_code": "FAILED",
-        "logs.$": "$.results.get_files.logs",
-        "expiration_time.$": "$.results.get_files.expiration_time",
         "processing_times": null
       },
       "Retry": [

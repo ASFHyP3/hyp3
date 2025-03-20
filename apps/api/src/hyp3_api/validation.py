@@ -1,14 +1,13 @@
 import json
 import sys
 from collections.abc import Iterable
-from copy import deepcopy
 from pathlib import Path
 
 import requests
 import yaml
 from shapely.geometry import MultiPolygon, Polygon, shape
 
-from hyp3_api import CMR_URL
+from hyp3_api import CMR_URL, multi_burst_validation
 from hyp3_api.util import get_granules
 
 
@@ -82,36 +81,38 @@ def check_dem_coverage(_, granule_metadata: list[dict]) -> None:
         raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
-def check_same_burst_ids(job: dict, _) -> None:
-    refs = job['job_parameters']['reference']
-    secs = job['job_parameters']['secondary']
-    ref_ids = ['_'.join(ref.split('_')[1:3]) for ref in refs]
-    sec_ids = ['_'.join(sec.split('_')[1:3]) for sec in secs]
-    if len(ref_ids) != len(sec_ids):
-        raise GranuleValidationError(
-            f'Number of reference and secondary scenes must match, got: '
-            f'{len(ref_ids)} references and {len(sec_ids)} secondaries'
-        )
-    for i in range(len(ref_ids)):
-        if ref_ids[i] != sec_ids[i]:
-            raise GranuleValidationError(f'Burst IDs do not match for {refs[i]} and {secs[i]}.')
-    if len(set(ref_ids)) != len(ref_ids):
-        duplicate_pair_id = next(ref_id for ref_id in ref_ids if ref_ids.count(ref_id) > 1)
-        raise GranuleValidationError(
-            f'The requested scenes have more than 1 pair with the following burst ID: {duplicate_pair_id}.'
+def check_multi_burst_pairs(job: dict, _) -> None:
+    job_parameters = job['job_parameters']
+    multi_burst_validation.validate_bursts(job_parameters['reference'], job_parameters['secondary'])
+
+
+def check_multi_burst_max_length(job: dict, _, max_pairs: int = 15) -> None:
+    job_parameters = job['job_parameters']
+    reference, secondary = job_parameters['reference'], job_parameters['secondary']
+    if len(reference) > max_pairs or len(secondary) > max_pairs:
+        raise multi_burst_validation.MultiBurstValidationError(
+            f'Must provide no more than {max_pairs} scene pairs, got {len(reference)} reference and {len(secondary)} secondary'
         )
 
 
-def check_valid_polarizations(job: dict, _) -> None:
-    polarizations = set(granule.split('_')[4] for granule in get_granules([job]))
-    if len(polarizations) > 1:
+def check_single_burst_pair(job: dict, _) -> None:
+    granule1, granule2 = job['job_parameters']['granules']
+
+    granule1_id = '_'.join(granule1.split('_')[1:3])
+    granule2_id = '_'.join(granule2.split('_')[1:3])
+
+    if granule1_id != granule2_id:
+        raise GranuleValidationError(f'Burst IDs do not match for {granule1} and {granule2}.')
+
+    granule1_pol = granule1.split('_')[4]
+    granule2_pol = granule2.split('_')[4]
+
+    if granule1_pol != granule2_pol:
         raise GranuleValidationError(
-            f'The requested scenes need to have the same polarization, got: {", ".join(polarizations)}'
+            f'The requested scenes need to have the same polarization, got: {", ".join([granule1_pol, granule2_pol])}'
         )
-    if not polarizations.issubset({'VV', 'HH'}):
-        raise GranuleValidationError(
-            f'Only VV and HH polarizations are currently supported, got: {polarizations.pop()}'
-        )
+    if granule1_pol not in ['VV', 'HH']:
+        raise GranuleValidationError(f'Only VV and HH polarizations are currently supported, got: {granule1_pol}')
 
 
 def check_not_antimeridian(_, granule_metadata: list[dict]) -> None:
@@ -149,10 +150,10 @@ def check_bounds_formatting(job: dict, _) -> None:
             'Invalid order for bounds. Bounds should be ordered [min lon, min lat, max lon, max lat].'
         )
 
-    def bad_lat(lat):
+    def bad_lat(lat: float) -> bool:
         return lat > 90 or lat < -90
 
-    def bad_lon(lon):
+    def bad_lon(lon: float) -> bool:
         return lon > 180 or lon < -180
 
     if any([bad_lon(bounds[0]), bad_lon(bounds[2]), bad_lat(bounds[1]), bad_lat(bounds[3])]):
@@ -193,16 +194,6 @@ def check_same_relative_orbits(_, granule_metadata: list[dict]) -> None:
             )
 
 
-def _convert_single_burst_jobs(jobs: list[dict]) -> list[dict]:
-    jobs = deepcopy(jobs)
-    for job in jobs:
-        if job['job_type'] == 'INSAR_ISCE_BURST':
-            job_parameters = job['job_parameters']
-            ref, sec = job_parameters.pop('granules')
-            job_parameters['reference'], job_parameters['secondary'] = [ref], [sec]
-    return jobs
-
-
 def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
     bounds = job['job_parameters']['bounds']
 
@@ -215,11 +206,8 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
 
 
 def validate_jobs(jobs: list[dict]) -> None:
-    jobs = _convert_single_burst_jobs(jobs)
-
     granules = get_granules(jobs)
     granule_metadata = _get_cmr_metadata(granules)
-
     _make_sure_granules_exist(granules, granule_metadata)
     for job in jobs:
         for validator_name in JOB_VALIDATION_MAP[job['job_type']]:

@@ -5,6 +5,9 @@ Parameters:
   StepFunctionArn:
     Type: String
 
+  JobsTable:
+    Type: String
+
   {% if security_environment == 'EDC' %}
   SecurityGroupId:
     Type: String
@@ -12,11 +15,6 @@ Parameters:
   SubnetIds:
     Type: CommaDelimitedList
   {% endif %}
-
-Outputs:
-
-  LambdaArn:
-    Value: !GetAtt Lambda.Arn
 
 Resources:
 
@@ -62,6 +60,9 @@ Resources:
               - logs:PutLogEvents
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
           - Effect: Allow
+            Action: dynamodb:Query
+            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
+          - Effect: Allow
             Action: states:StartExecution
             Resource: !Ref StepFunctionArn
 
@@ -70,13 +71,14 @@ Resources:
     Properties:
       Environment:
         Variables:
+          JOBS_TABLE_NAME: !Ref JobsTable
           STEP_FUNCTION_ARN: !Ref StepFunctionArn
       Code: src/
-      Handler: start_execution_worker.lambda_handler
+      Handler: start_execution.lambda_handler
       MemorySize: 128
       Role: !GetAtt Role.Arn
       Runtime: python3.13
-      Timeout: 45
+      Timeout: 55
       {% if security_environment == 'EDC' %}
       VpcConfig:
         SecurityGroupIds:
@@ -90,4 +92,19 @@ Resources:
       FunctionName: !Ref Lambda
       Qualifier: $LATEST
       MaximumRetryAttempts: 0
-      MaximumEventAgeInSeconds: 60
+
+  Schedule:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: "rate(1 minute)"
+      Targets:
+        - Arn: !GetAtt Lambda.Arn
+          Id: lambda
+
+  EventPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt Lambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt Schedule.Arn

@@ -5,6 +5,9 @@ Parameters:
   Bucket:
     Type: String
 
+  JobsTable:
+    Type: String
+
   {% if security_environment == 'EDC' %}
   SecurityGroupId:
     Type: String
@@ -72,6 +75,9 @@ Resources:
               - s3:GetObject
               - s3:GetObjectTagging
             Resource: !Sub "arn:aws:s3:::${Bucket}/*"
+          - Effect: Allow
+            Action: dynamodb:UpdateItem
+            Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
 
   Lambda:
     Type: AWS::Lambda::Function
@@ -79,6 +85,7 @@ Resources:
       Environment:
         Variables:
           BUCKET: !Ref Bucket
+          JOBS_TABLE_NAME: !Ref JobsTable
           {% if security_environment == 'EDC' %}
           DISTRIBUTION_URL: !Ref DistributionUrl
           {% endif %}

@@ -191,30 +191,27 @@ def test_query_jobs_by_type(tables):
 
 
 def test_get_credit_cost():
-    costs: list[dict] = [
-        {
-            'job_type': 'RTC_GAMMA',
-            'cost_parameter': 'resolution',
-            'cost_table': [
-                {
-                    'parameter_value': 10.0,
-                    'cost': 60.0,
-                },
-                {
-                    'parameter_value': 20.0,
-                    'cost': 15.0,
-                },
-                {
-                    'parameter_value': 30.0,
-                    'cost': 5.0,
-                },
-            ],
+    costs: dict = {
+        'RTC_GAMMA': {
+            'cost_parameters': ['resolution'],
+            'cost_table': {
+                '10': Decimal(60.0),
+                '20': Decimal(15.0),
+                '30': Decimal(5.0),
+            },
         },
-        {
-            'job_type': 'INSAR_ISCE_BURST',
-            'cost': 1.0,
+        'INSAR_ISCE_BURST': {'cost': Decimal(1.0)},
+        'INSAR_ISCE_MULTI_BURST': {
+            'cost_parameters': ['looks', 'reference'],
+            'cost_table': {
+                '5x1': {
+                    '1': Decimal(1.0),
+                    '2': Decimal(1.0),
+                    '3': Decimal(10.0),
+                }
+            },
         },
-    ]
+    }
     assert (
         dynamo.jobs._get_credit_cost({'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 10.0}}, costs) == 60.0
     )
@@ -222,23 +219,74 @@ def test_get_credit_cost():
         dynamo.jobs._get_credit_cost({'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 20.0}}, costs) == 15.0
     )
     assert dynamo.jobs._get_credit_cost({'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 30.0}}, costs) == 5.0
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r'^Cost not found for job type RTC_GAMMA with resolution == 13$'):
         dynamo.jobs._get_credit_cost({'job_type': 'RTC_GAMMA', 'job_parameters': {'resolution': 13.0}}, costs)
     assert (
         dynamo.jobs._get_credit_cost({'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'foo': 'bar'}}, costs) == 1.0
     )
     assert dynamo.jobs._get_credit_cost({'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {}}, costs) == 1.0
+    multi_burst_job = {
+        'job_type': 'INSAR_ISCE_MULTI_BURST',
+        'job_parameters': {'reference': ['g1', 'g2', 'g3'], 'looks': '5x1'},
+    }
+    assert dynamo.jobs._get_credit_cost(multi_burst_job, costs) == 10.0
+    multi_burst_job = {
+        'job_type': 'INSAR_ISCE_MULTI_BURST',
+        'job_parameters': {'reference': ['g1', 'g2'], 'looks': '5x1'},
+    }
+    assert dynamo.jobs._get_credit_cost(multi_burst_job, costs) == 1.0
+    multi_burst_job = {
+        'job_type': 'INSAR_ISCE_MULTI_BURST',
+        'job_parameters': {'reference': ['g1'], 'looks': '5x1'},
+    }
+    assert dynamo.jobs._get_credit_cost(multi_burst_job, costs) == 1.0
+
+
+def test_nested_credit_cost_lookup():
+    costs = {
+        'myJob': {
+            'cost_parameters': ['option1', 'option2', 'option3'],
+            'cost_table': {
+                'a': {
+                    'x': {'1': Decimal(11), '2': Decimal(21)},
+                    'y': {'1': Decimal(12), '2': Decimal(22)},
+                    'z': {'1': Decimal(13), '2': Decimal(23)},
+                },
+                'b': {
+                    'x': {'1': Decimal(14), '2': Decimal(24)},
+                    'y': {'1': Decimal(15), '2': Decimal(25)},
+                    'z': {'1': Decimal(16), '2': Decimal(26)},
+                },
+                'c': {
+                    'x': {'1': Decimal(17), '2': Decimal(27)},
+                    'y': {'1': Decimal(18), '2': Decimal(28)},
+                    'z': {'1': Decimal(19), '2': Decimal(29)},
+                },
+            },
+        }
+    }
+
+    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'c', 'option2': 'x', 'option3': 1}}
+    assert dynamo.jobs._get_credit_cost(job, costs) == 17.0
+
+    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'b', 'option2': 'z', 'option3': 1}}
+    assert dynamo.jobs._get_credit_cost(job, costs) == 16.0
+
+    job = {'job_type': 'myJob', 'job_parameters': {'option1': 'a', 'option2': 'y', 'option3': 2}}
+    assert dynamo.jobs._get_credit_cost(job, costs) == 22.0
 
 
 def test_get_credit_cost_validate_keys():
-    costs: list[dict] = [
-        {'job_type': 'JOB_TYPE_A', 'cost_parameter': 'foo', 'cost_table': [{'parameter_value': 'bar', 'cost': 3.0}]},
-        {'job_type': 'JOB_TYPE_B', 'cost': 5.0},
-        {'job_type': 'JOB_TYPE_C', 'cost_parameter': ''},
-        {'job_type': 'JOB_TYPE_D', 'cost_table': {}},
-        {'job_type': 'JOB_TYPE_E', 'cost_parameter': '', 'cost_table': [], 'cost': 1.0},
-        {'job_type': 'JOB_TYPE_F', 'cost_parameter': '', 'cost_table': [], 'foo': None},
-    ]
+    costs: dict = {
+        'JOB_TYPE_A': {'cost_parameters': ['foo'], 'cost_table': {'bar': Decimal(3.0)}},
+        'JOB_TYPE_B': {'cost': Decimal(5.0)},
+        'JOB_TYPE_C': {'cost_parameters': ['']},
+        'JOB_TYPE_D': {'cost_table': {}},
+        'JOB_TYPE_E': {'cost_parameters': [''], 'cost_table': {}, 'cost': Decimal(1.0)},
+        'JOB_TYPE_F': {'cost_parameters': [''], 'cost_table': {}, 'foo': None},
+        'JOB_TYPE_G': {'cost': 5.0},
+        'JOB_TYPE_H': {'cost_parameters': ['foo'], 'cost_table': {(1, 2): Decimal(3.0)}},
+    }
 
     assert dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_A', 'job_parameters': {'foo': 'bar'}}, costs) == 3.0
     assert dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_B'}, costs) == 5.0
@@ -251,6 +299,12 @@ def test_get_credit_cost_validate_keys():
         dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_E'}, costs)
     with pytest.raises(ValueError, match=r'^Cost definition for job type JOB_TYPE_F has invalid keys.*'):
         dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_F'}, costs)
+    with pytest.raises(ValueError, match=r'^Job type JOB_TYPE_G has non-Decimal cost value.*'):
+        dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_G'}, costs)
+
+    error_match = r"^Cost parameter foo for job type JOB_TYPE_H has unsupported type <class 'tuple'>"
+    with pytest.raises(ValueError, match=error_match):
+        dynamo.jobs._get_credit_cost({'job_type': 'JOB_TYPE_H', 'job_parameters': {'foo': (1, 2)}}, costs)
 
 
 def test_put_jobs(tables, monkeypatch, approved_user):
@@ -348,11 +402,11 @@ def test_put_jobs_default_params(tables, approved_user):
         'JOB_TYPE_B': {'b1': 'b1_default'},
         'JOB_TYPE_C': {},
     }
-    costs = [
-        {'job_type': 'JOB_TYPE_A', 'cost': Decimal('1.0')},
-        {'job_type': 'JOB_TYPE_B', 'cost': Decimal('1.0')},
-        {'job_type': 'JOB_TYPE_C', 'cost': Decimal('1.0')},
-    ]
+    costs = {
+        'JOB_TYPE_A': {'cost': Decimal('1.0')},
+        'JOB_TYPE_B': {'cost': Decimal('1.0')},
+        'JOB_TYPE_C': {'cost': Decimal('1.0')},
+    }
     payload: list[dict] = [
         {},
         {'job_type': 'JOB_TYPE_A'},
@@ -392,44 +446,24 @@ def test_put_jobs_default_params(tables, approved_user):
 def test_put_jobs_costs(tables, monkeypatch, approved_user):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '100')
 
-    costs = [
-        {
-            'job_type': 'RTC_GAMMA',
-            'cost_parameter': 'resolution',
-            'cost_table': [
-                {
-                    'parameter_value': 30.0,
-                    'cost': Decimal('5.0'),
-                },
-                {
-                    'parameter_value': 20.0,
-                    'cost': Decimal('15.0'),
-                },
-                {
-                    'parameter_value': 10.0,
-                    'cost': Decimal('60.0'),
-                },
-            ],
+    costs = {
+        'RTC_GAMMA': {
+            'cost_parameters': ['resolution'],
+            'cost_table': {
+                '30': Decimal('5.0'),
+                '20': Decimal('15.0'),
+                '10': Decimal('60.0'),
+            },
         },
-        {
-            'job_type': 'INSAR_ISCE_BURST',
-            'cost_parameter': 'looks',
-            'cost_table': [
-                {
-                    'parameter_value': '20x4',
-                    'cost': Decimal('0.4'),
-                },
-                {
-                    'parameter_value': '10x2',
-                    'cost': Decimal('0.7'),
-                },
-                {
-                    'parameter_value': '5x1',
-                    'cost': Decimal('1.8'),
-                },
-            ],
+        'INSAR_ISCE_BURST': {
+            'cost_parameters': ['looks'],
+            'cost_table': {
+                '20x4': Decimal('0.4'),
+                '10x2': Decimal('0.7'),
+                '5x1': Decimal('1.8'),
+            },
         },
-    ]
+    }
     default_params = {
         'RTC_GAMMA': {'resolution': 30},
         'INSAR_ISCE_BURST': {'looks': '20x4'},
