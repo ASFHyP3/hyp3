@@ -6,9 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.2.0]
 
-### Added
-- The `OPERA_DISP_TMS` job type is now available in Earthdata Cloud deployments.
-
 ### Removed
 - The `measurement_type`, `start_date`, and `end_date` API parameters for the `OPERA_DISP_TMS` job type have been removed
   in favor of hardcoded constants.
