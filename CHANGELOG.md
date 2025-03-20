@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.2.0]
+
+### Removed
+- The `measurement_type`, `start_date`, and `end_date` API parameters for the `OPERA_DISP_TMS` job type have been removed
+  in favor of hardcoded constants.
+
 ## [10.1.0]
 
 ### Added
