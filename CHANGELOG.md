@@ -12,12 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - `render-cf.py` now determines the version number to report in the API from the git history and tags; see [#2672](https://github.com/ASFHyP3/hyp3/pull/2676) for more details.
   
-  > [!WARNING]
-  > In CI/CD pipelines, you must check out the full history and tags (no shallow clones) or the version number won't be calculated correctly. In GitHub Actions, this usually looks like specifying `fetch-depth: 0` with `actions/checkout@v4.2.2`. A shallow clone will typically cause an exception like this to be thrown:
-  > ```
-  > subprocess.CalledProcessError: Command '['git', 'describe', '--dirty', '--tags', '--long', '--match', '*[0-9]*']' returned non-zero exit status 128.
-  > ```
-  > 
+> [!WARNING]
+> In CI/CD pipelines, you must now check out the full history and tags (no shallow clones), or else the version number won't be calculated correctly. In GitHub Actions, this usually looks like specifying `fetch-depth: 0` with `actions/checkout`. A shallow clone will typically cause an exception like this to be raised:
+> ```
+> subprocess.CalledProcessError: Command '['git', 'describe', '--dirty', '--tags', '--long', '--match', '*[0-9]*']' returned non-zero exit status 128.
+> ```
+
 
 
 
