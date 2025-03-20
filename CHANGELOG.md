@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.3.0 ]
 
 ### Added
-- The HyP3 API, for all deployments, will now report the API version in the OpenAPI specification and the Swagger UI
+- The HyP3 API will now report the API version in the OpenAPI specification and the Swagger UI for all deployments.
 
 ### Changed
 - `render-cf.py` now determines the version number to report in the API from the git history and tags; see [#2672](https://github.com/ASFHyP3/hyp3/pull/2676) for more details.
