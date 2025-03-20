@@ -102,6 +102,7 @@ jobs:
             job_files: >-
               job_spec/INSAR_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -158,6 +159,7 @@ jobs:
             job_files: >-
               job_spec/INSAR_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -178,6 +180,7 @@ jobs:
               job_spec/INSAR_GAMMA.yml
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
@@ -198,6 +201,7 @@ jobs:
               job_spec/INSAR_GAMMA.yml
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -218,6 +222,7 @@ jobs:
               job_spec/INSAR_GAMMA.yml
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
