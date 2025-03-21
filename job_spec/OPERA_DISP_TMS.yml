@@ -8,15 +8,14 @@ OPERA_DISP_TMS:
         type: array
         minItems: 1
         example:
-          - 11113
-          - 11114
           - 11115
+          - 11116
         items:
           description: Frame ID
           type: integer
           minimum: 1
           maximum: 46986
-          example: 11113
+          example: 11115
   cost_profiles:
     EDC:
       cost: 10001.0
