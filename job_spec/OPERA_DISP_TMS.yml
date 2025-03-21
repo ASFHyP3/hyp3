@@ -19,7 +19,7 @@ OPERA_DISP_TMS:
           example: 11113
   cost_profiles:
     EDC:
-      cost: 1000.0
+      cost: 10001.0
     DEFAULT:
       cost: 1.0
   validators: []
