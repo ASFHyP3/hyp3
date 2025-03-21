@@ -1,9 +1,10 @@
-name: Deploy OPERA-DISP Sandbox Stack to AWS
+name: Deploy Services Sandbox Stack to AWS
 
 on:
+  workflow_dispatch: {}
   push:
     branches:
-      - develop
+      - hyp3-services-sandbox
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -14,16 +15,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-opera-disp-sandbox
-            domain: hyp3-opera-disp-sandbox.asf.alaska.edu
-            template_bucket: cf-templates-1hz9ldhhl4ahu-us-west-2
+          - environment: hyp3-services-sandbox
+            domain: hyp3-services-sandbox.asf.alaska.edu
+            template_bucket: services-hyp3-artifacts
             image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
             job_files: >-
-              job_spec/OPERA_DISP_TMS.yml
+              job_spec/AUTORIFT.yml
+              job_spec/INSAR_ISCE_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640

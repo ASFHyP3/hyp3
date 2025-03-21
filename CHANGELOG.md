@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.2.0]
+
+### Added
+- Added a new job type `INSAR_ISCE_MULTI_BURST` to process and mosaic multiple bursts to the hyp3-avo, azdwr-hyp3, hyp3-cargill, hyp3-bgc-engineering, and hyp3-carter deployments.
+- Added the `OPERA_DISP_TMS` job type to the hyp3-edc-prod deployment.
+
+### Removed
+- The `measurement_type`, `start_date`, and `end_date` API parameters for the `OPERA_DISP_TMS` job type have been removed
+  in favor of hardcoded constants.
+
 ## [10.1.0]
 
 ### Added

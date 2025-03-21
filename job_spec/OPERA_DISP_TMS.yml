@@ -1,53 +1,24 @@
 OPERA_DISP_TMS:
   required_parameters:
-    - measurement_type
     - frame_ids
-    - start_date
-    - end_date
   parameters:
-    measurement_type:
-      api_schema:
-        description: Data measurement to visualize
-        type: string
-        enum:
-          - displacement
-          - secant_velocity
-          - velocity
-        example: displacement
     frame_ids:
       api_schema:
         description: List of frame IDs to include in mosaic
         type: array
         minItems: 1
         example:
-          - 11113
-          - 11114
           - 11115
+          - 11116
         items:
           description: Frame ID
           type: integer
           minimum: 1
           maximum: 46986
-          example: 11113
-    start_date:
-      api_schema:
-        description: Start of secondary date range for which to generate a tile map (%Y%m%d)
-        type: string
-        pattern: "^\\d{8}$"
-        minLength: 8
-        maxLength: 8
-        example: 20140101
-    end_date:
-      api_schema:
-        description: End of secondary date range for which to generate a tile map (%Y%m%d)
-        type: string
-        pattern: "^\\d{8}$"
-        minLength: 8
-        maxLength: 8
-        example: 20260101
+          example: 11115
   cost_profiles:
     EDC:
-      cost: 1.0
+      cost: 10001.0
     DEFAULT:
       cost: 1.0
   validators: []
@@ -59,9 +30,9 @@ OPERA_DISP_TMS:
         - ++process
         - create_measurement_geotiff
         - Ref::frame_id
-        - Ref::measurement_type
-        - Ref::start_date
-        - Ref::end_date
+        - velocity
+        - '20140101'
+        - '20300101'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -78,7 +49,7 @@ OPERA_DISP_TMS:
       command:
         - ++process
         - create_tile_map
-        - Ref::measurement_type
+        - velocity
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
