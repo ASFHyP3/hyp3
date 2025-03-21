@@ -1,4 +1,4 @@
-name: Deploy DAAC Stacks to AWS
+name: Deploy DAAC test to AWS
 
 on:
   push:
