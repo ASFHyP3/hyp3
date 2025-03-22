@@ -13,5 +13,6 @@ responses==0.25.6
 ruff==0.11.0
 mypy==1.15.0
 setuptools==76.0.0
+setuptools_scm==8.2.1
 openapi-spec-validator==0.7.1
 cfn-lint==1.29.1

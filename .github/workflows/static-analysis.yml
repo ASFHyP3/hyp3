@@ -5,6 +5,9 @@ permissions:
 
 on: push
 
+env:
+  SETUPTOOLS_SCM_PRETEND_VERSION: vX.Y.Z.devN_gHASH
+
 jobs:
   call-ruff-workflow:
     # Docs: https://github.com/ASFHyP3/actions
@@ -21,8 +24,6 @@ jobs:
         security_environment: [ASF, EDC, JPL, JPL-public]
     steps:
       - uses: actions/checkout@v4.2.2
-        with:
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: 3.13
@@ -37,8 +38,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
-        with:
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: 3.13
@@ -52,8 +51,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
-        with:
-          fetch-depth: 0
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
@@ -74,8 +71,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
-        with:
-          fetch-depth: 0
       - uses: snyk/actions/setup@0.4.0
       - uses: actions/setup-python@v5
         with:

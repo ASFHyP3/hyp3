@@ -1,5 +1,8 @@
 [project]
 requires-python = "==3.13.*"
+dynamic = ["version"]
+
+[tool.setuptools_scm]
 
 [tool.ruff]
 line-length = 120

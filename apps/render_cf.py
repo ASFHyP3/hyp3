@@ -1,20 +1,10 @@
 import argparse
 import json
-import subprocess
 from pathlib import Path
 
 import jinja2
 import yaml
-
-
-def get_api_version() -> str:
-    git_describe = subprocess.run(
-        ['git', 'describe', '--dirty', '--tags', '--long', '--match', r'*[0-9]*'],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    return git_describe.stdout.strip()
+from setuptools_scm import get_version
 
 
 def snake_to_pascal_case(input_string: str) -> str:
@@ -301,7 +291,7 @@ def main() -> None:
     parser.add_argument('-c', '--cost-profile', default='DEFAULT', choices=['DEFAULT', 'EDC'])
     args = parser.parse_args()
 
-    api_version = get_api_version()
+    api_version = get_version(root='..', relative_to=__file__)
 
     job_types = {}
     for file in args.job_spec_files:
