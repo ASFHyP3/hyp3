@@ -1,2 +1,2 @@
-boto3==1.37.14
+boto3==1.37.19
 ./lib/dynamo/
