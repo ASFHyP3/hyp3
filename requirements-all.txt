@@ -4,14 +4,15 @@
 -r requirements-apps-start-execution.txt
 -r requirements-apps-disable-private-dns.txt
 -r requirements-apps-update-db.txt
-boto3==1.37.14
+boto3==1.37.19
 jinja2==3.1.6
 moto[dynamodb]==5.1.1
 pytest==8.3.5
 PyYAML==6.0.2
-responses==0.25.6
+responses==0.25.7
 ruff==0.11.0
 mypy==1.15.0
-setuptools==76.0.0
+setuptools==78.0.2
+setuptools_scm==8.2.1
 openapi-spec-validator==0.7.1
-cfn-lint==1.29.1
+cfn-lint==1.32.0

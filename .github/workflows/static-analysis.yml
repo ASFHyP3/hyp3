@@ -5,6 +5,9 @@ permissions:
 
 on: push
 
+env:
+  SETUPTOOLS_SCM_PRETEND_VERSION_FOR_HYP3: v0.0.0
+
 jobs:
   call-ruff-workflow:
     # Docs: https://github.com/ASFHyP3/actions
@@ -76,6 +79,7 @@ jobs:
           python -m pip install --upgrade pip
           make install
           make render security_environment=EDC
+
       - name: Run Snyk to check for vulnerabilities
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
