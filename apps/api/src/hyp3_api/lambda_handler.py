@@ -1,4 +1,3 @@
-
 import serverless_wsgi
 
 from hyp3_api import app
