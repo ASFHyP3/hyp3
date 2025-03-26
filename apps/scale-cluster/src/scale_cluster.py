@@ -1,7 +1,6 @@
 import calendar
 from datetime import date
 from os import environ
-from typing import Any
 
 import boto3
 import dateutil.relativedelta
@@ -74,7 +73,7 @@ def get_target_max_vcpus(
     return max_vcpus
 
 
-def lambda_handler(event: dict, context: Any) -> None:
+def lambda_handler(event: dict, context: object) -> None:
     target_max_vcpus = get_target_max_vcpus(
         today=date.today(),
         monthly_budget=int(environ['MONTHLY_BUDGET']),
