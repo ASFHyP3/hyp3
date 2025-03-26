@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.3.1]
+
+### Fixed
+- We no longer globally ignore ruff's [`ANN401`](https://docs.astral.sh/ruff/rules/any-type/) rule, which flags function parameters annotated with `Any`.
+- Replaced uses of `Any` with static type annotations where appropriate.
+
 ## [10.3.0]
 
 ### Added
