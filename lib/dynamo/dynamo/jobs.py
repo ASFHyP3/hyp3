@@ -12,9 +12,9 @@ from dynamo.exceptions import (
     InsufficientCreditsError,
     InvalidApplicationStatusError,
     NotStartedApplicationError,
+    PatchJobDifferentUserError,
     PendingApplicationError,
     RejectedApplicationError,
-    PatchJobDifferentUserError,
 )
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, current_utc_time, get_request_time_expression
@@ -234,7 +234,7 @@ def update_job(job: dict) -> None:
     )
 
 
-def patch_job(job_id: str, name: str | None, user_id: str):
+def patch_job(job_id: str, name: str | None, user_id: str) -> dict:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     update_expression = 'SET #name = :name' if name is not None else 'REMOVE #name'
     try:

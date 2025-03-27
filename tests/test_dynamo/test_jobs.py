@@ -9,9 +9,9 @@ from dynamo.exceptions import (
     InsufficientCreditsError,
     InvalidApplicationStatusError,
     NotStartedApplicationError,
+    PatchJobDifferentUserError,
     PendingApplicationError,
     RejectedApplicationError,
-    PatchJobDifferentUserError,
 )
 from dynamo.user import APPLICATION_APPROVED
 from dynamo.util import current_utc_time
