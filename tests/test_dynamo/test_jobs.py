@@ -723,10 +723,10 @@ def test_patch_job(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    with pytest.raises(PatchJobDifferentUserError, match=r"^You cannot modify a different user\'s job$"):
+    with pytest.raises(PatchJobDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
         dynamo.jobs.patch_job('job2', 'newname', 'user1')
 
-    with pytest.raises(PatchJobDifferentUserError, match=r"^You cannot modify a different user\'s job$"):
+    with pytest.raises(PatchJobDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
         dynamo.jobs.patch_job('job2', None, 'user1')
 
     assert tables.jobs_table.scan()['Items'] == [
