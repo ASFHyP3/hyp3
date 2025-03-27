@@ -24,7 +24,7 @@ def serialize(payload: dict) -> str:
     return base_64.decode()
 
 
-def deserialize(token: str) -> Any:
+def deserialize(token: str) -> Any:  # noqa: ANN401
     try:
         string_version = b64decode(token.encode())
         return json.loads(string_version)
