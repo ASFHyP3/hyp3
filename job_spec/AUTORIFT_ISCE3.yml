@@ -109,7 +109,7 @@ AUTORIFT_ISCE3:
         - --secondary
         - Ref::secondary
       timeout: 10800
-      compute_environment: Default
+      compute_environment: AriaAutorift
       vcpu: 1
       memory: 31500
       secrets:
