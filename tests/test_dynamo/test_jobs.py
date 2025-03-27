@@ -11,6 +11,7 @@ from dynamo.exceptions import (
     NotStartedApplicationError,
     PendingApplicationError,
     RejectedApplicationError,
+    PatchJobDifferentUserError,
 )
 from dynamo.user import APPLICATION_APPROVED
 from dynamo.util import current_utc_time
@@ -702,6 +703,86 @@ def test_update_job(tables):
         },
     ]
     assert response['Items'] == expected_response
+
+
+def test_patch_job(tables):
+    table_items = [
+        {
+            'job_id': 'job1',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+        {
+            'job_id': 'job2',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user2',
+        },
+    ]
+    for item in table_items:
+        tables.jobs_table.put_item(Item=item)
+
+    with pytest.raises(PatchJobDifferentUserError, match=r"^You cannot modify a different user\'s job$"):
+        dynamo.jobs.patch_job('job2', 'newname', 'user1')
+
+    with pytest.raises(PatchJobDifferentUserError, match=r"^You cannot modify a different user\'s job$"):
+        dynamo.jobs.patch_job('job2', None, 'user1')
+
+    assert tables.jobs_table.scan()['Items'] == [
+        {
+            'job_id': 'job1',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+        {
+            'job_id': 'job2',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user2',
+        },
+    ]
+
+    assert dynamo.jobs.patch_job('job1', 'newname', 'user1') == {
+        'job_id': 'job1',
+        'name': 'newname',
+        'somefield': 'somevalue',
+        'user_id': 'user1',
+    }
+    assert tables.jobs_table.scan()['Items'] == [
+        {
+            'job_id': 'job1',
+            'name': 'newname',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+        {
+            'job_id': 'job2',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user2',
+        },
+    ]
+
+    assert dynamo.jobs.patch_job('job1', None, 'user1') == {
+        'job_id': 'job1',
+        'somefield': 'somevalue',
+        'user_id': 'user1',
+    }
+    assert tables.jobs_table.scan()['Items'] == [
+        {
+            'job_id': 'job1',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+        {
+            'job_id': 'job2',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user2',
+        },
+    ]
 
 
 def test_get_jobs_waiting_for_execution(tables):

@@ -1,6 +1,7 @@
 """Custom exceptions for the dynamo library."""
 
 
+# TODO: prefix with Internal and update docstr to specify it's for non-user-facing errors?
 class DatabaseConditionException(Exception):
     """Raised when a DynamoDB condition expression check fails."""
 
@@ -11,6 +12,10 @@ class AccessCodeError(Exception):
 
 class InsufficientCreditsError(Exception):
     """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
+
+
+class PatchJobDifferentUserError(Exception):
+    """Raised when a user attempts to modify a different user's job."""
 
 
 class InvalidApplicationStatusError(Exception):
