@@ -1,7 +1,8 @@
 """Custom exceptions for the dynamo library."""
 
 
-# TODO: prefix with Internal and update docstr to specify it's for non-user-facing errors?
+# TODO: rename this exception and/or revise the docstr to emphasize that it's for non-user-facing errors?
+#  or better distinguish between user-facing and non-user-facing errors in this module?
 class DatabaseConditionException(Exception):
     """Raised when a DynamoDB condition expression check fails."""
 

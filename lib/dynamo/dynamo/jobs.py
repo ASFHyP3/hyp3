@@ -218,6 +218,8 @@ def get_job(job_id: str) -> dict:
     return response.get('Item')
 
 
+# TODO: rename this function to reflect that it's for automatic updates to jobs during execution,
+#  to help distinguish it from patch_job? or combine the two functions?
 def update_job(job: dict) -> None:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     primary_key = 'job_id'
