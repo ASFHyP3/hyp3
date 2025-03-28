@@ -251,7 +251,7 @@ def patch_job(job_id: str, name: str | None, user_id: str) -> dict:
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
             raise PatchJobDifferentUserError("You cannot modify a different user's job")
-        raise  # TODO: add test
+        raise
     return job
 
 
