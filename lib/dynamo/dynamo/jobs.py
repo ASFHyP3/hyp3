@@ -238,13 +238,18 @@ def update_job(job: dict) -> None:
 
 def patch_job(job_id: str, name: str | None, user_id: str) -> dict:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
-    update_expression = 'SET #name = :name' if name is not None else 'REMOVE #name'
+    if name is not None:
+        update_expression = 'SET #name = :name'
+        name_value = {':name': name}
+    else:
+        update_expression = 'REMOVE #name'
+        name_value = {}
     try:
         job = table.update_item(
             Key={'job_id': job_id},
             UpdateExpression=update_expression,
             ConditionExpression='user_id = :user_id',
-            ExpressionAttributeValues={':name': name, ':user_id': user_id},
+            ExpressionAttributeValues={':user_id': user_id, **name_value},
             ExpressionAttributeNames={'#name': 'name'},
             ReturnValues='ALL_NEW',
         )['Attributes']
