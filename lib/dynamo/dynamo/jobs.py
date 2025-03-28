@@ -12,7 +12,7 @@ from dynamo.exceptions import (
     InsufficientCreditsError,
     InvalidApplicationStatusError,
     NotStartedApplicationError,
-    PatchJobDifferentUserError,
+    UpdateJobForDifferentUserError,
     PendingApplicationError,
     RejectedApplicationError,
 )
@@ -257,7 +257,7 @@ def update_job_for_user(job_id: str, name: str | None, user_id: str) -> dict:
         )['Attributes']
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-            raise PatchJobDifferentUserError("You cannot modify a different user's job")
+            raise UpdateJobForDifferentUserError("You cannot modify a different user's job")
         raise
 
     return job

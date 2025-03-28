@@ -15,8 +15,8 @@ class InsufficientCreditsError(Exception):
     """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
 
 
-class PatchJobDifferentUserError(Exception):
-    """Raised when a user attempts to modify a different user's job."""
+class UpdateJobForDifferentUserError(Exception):
+    """Raised when a user attempts to update a different user's job."""
 
 
 class InvalidApplicationStatusError(Exception):
