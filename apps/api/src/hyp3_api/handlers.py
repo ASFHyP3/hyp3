@@ -78,7 +78,7 @@ def patch_job_by_id(body: dict, job_id: str, user: str) -> dict:
     #   - body must have only name field (or no fields?)
     #   - name must be non-empty
     try:
-        job = dynamo.jobs.patch_job(job_id, body['name'], user)
+        job = dynamo.jobs.update_job_for_user(job_id, body['name'], user)
     except PatchJobDifferentUserError as e:
         abort(problem_format(403, str(e)))
     return job
