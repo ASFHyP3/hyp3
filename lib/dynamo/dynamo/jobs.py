@@ -237,13 +237,14 @@ def update_job(job: dict) -> None:
 
 
 def patch_job(job_id: str, name: str | None, user_id: str) -> dict:
-    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     if name is not None:
         update_expression = 'SET #name = :name'
         name_value = {':name': name}
     else:
         update_expression = 'REMOVE #name'
         name_value = {}
+
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     try:
         job = table.update_item(
             Key={'job_id': job_id},
@@ -257,6 +258,7 @@ def patch_job(job_id: str, name: str | None, user_id: str) -> dict:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
             raise PatchJobDifferentUserError("You cannot modify a different user's job")
         raise
+
     return job
 
 
