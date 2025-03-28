@@ -4,7 +4,6 @@ from collections.abc import Iterable
 from decimal import Decimal
 from os import environ
 from pathlib import Path
-from typing import Any
 
 import werkzeug
 import yaml
@@ -104,10 +103,10 @@ class CustomEncoder(json.JSONEncoder):
 
 
 class CustomJSONProvider(JSONProvider):
-    def dumps(self, obj: Any, **kwargs: Any) -> str:
+    def dumps(self, obj: object, **kwargs: object) -> str:
         return json.dumps(obj, cls=CustomEncoder)
 
-    def loads(self, s: str | bytes, **kwargs: Any) -> Any:
+    def loads(self, s: str | bytes, **kwargs: object) -> object:
         return json.loads(s)
 
 

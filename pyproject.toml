@@ -38,8 +38,8 @@ lines-after-imports = 2
 suppress-dummy-args = true
 
 [tool.ruff.lint.extend-per-file-ignores]
-"*" = ["D1", "ANN401"]
-"tests/*" = ["ANN"]
+"*" = ["D1"]
+"tests/*" = ["D1", "ANN"]
 
 [tool.mypy]
 python_version = "3.13"
