@@ -723,27 +723,6 @@ def test_patch_job(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    with pytest.raises(PatchJobDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
-        dynamo.jobs.patch_job('job2', 'newname', 'user1')
-
-    with pytest.raises(PatchJobDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
-        dynamo.jobs.patch_job('job2', None, 'user1')
-
-    assert tables.jobs_table.scan()['Items'] == [
-        {
-            'job_id': 'job1',
-            'name': 'oldname',
-            'somefield': 'somevalue',
-            'user_id': 'user1',
-        },
-        {
-            'job_id': 'job2',
-            'name': 'oldname',
-            'somefield': 'somevalue',
-            'user_id': 'user2',
-        },
-    ]
-
     assert dynamo.jobs.patch_job('job1', 'newname', 'user1') == {
         'job_id': 'job1',
         'name': 'newname',
@@ -773,6 +752,46 @@ def test_patch_job(tables):
     assert tables.jobs_table.scan()['Items'] == [
         {
             'job_id': 'job1',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+        {
+            'job_id': 'job2',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user2',
+        },
+    ]
+
+
+def test_patch_job_different_user(tables):
+    table_items = [
+        {
+            'job_id': 'job1',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+        {
+            'job_id': 'job2',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user2',
+        },
+    ]
+    for item in table_items:
+        tables.jobs_table.put_item(Item=item)
+
+    with pytest.raises(PatchJobDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
+        dynamo.jobs.patch_job('job2', 'newname', 'user1')
+
+    with pytest.raises(PatchJobDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
+        dynamo.jobs.patch_job('job2', None, 'user1')
+
+    assert tables.jobs_table.scan()['Items'] == [
+        {
+            'job_id': 'job1',
+            'name': 'oldname',
             'somefield': 'somevalue',
             'user_id': 'user1',
         },
