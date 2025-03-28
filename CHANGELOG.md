@@ -4,6 +4,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.3.1]
+
+### Fixed
+- We no longer globally ignore ruff's [`ANN401`](https://docs.astral.sh/ruff/rules/any-type/) rule, which flags function parameters annotated with `Any`.
+- Replaced uses of `Any` with static type annotations where appropriate.
+
+## [10.3.0]
+
+### Added
+- The HyP3 API will now report the API version in the OpenAPI specification and the Swagger UI for all deployments.
+
+### Changed
+- `render-cf.py` now determines the version number to report in the API from the git history and tags using [`setuptools_scm`](https://pypi.org/project/setuptools-scm/).
+  
+> [!WARNING]
+> In CI/CD pipelines, to dynamically calculate the version number you must now check out the full history and tags (no shallow clones). In GitHub Actions, this usually looks like specifying `fetch-depth: 0` with `actions/checkout`. For pipelines where you *do not* care about an accurate version number, you can still use a shallow clone by setting the `SETUPTOOLS_SCM_PRETEND_VERSION_FOR_HYP3` environment variable, see: <http://setuptools-scm.readthedocs.io/en/latest/overrides/>.
+
+## [10.2.1]
+
+### Changed
+- Adjusted memory requirements for OPERA_DISP_TMS jobs.
+
+## [10.2.0]
+
+### Added
+- Added a new job type `INSAR_ISCE_MULTI_BURST` to process and mosaic multiple bursts to the hyp3-avo, azdwr-hyp3, hyp3-cargill, hyp3-bgc-engineering, and hyp3-carter deployments.
+- Added the `OPERA_DISP_TMS` job type to the hyp3-edc-prod deployment.
+
+### Removed
+- The `measurement_type`, `start_date`, and `end_date` API parameters for the `OPERA_DISP_TMS` job type have been removed
+  in favor of hardcoded constants.
+
+## [10.1.0]
+
+### Added
+- Added a new job type `INSAR_ISCE_MULTI_BURST` to [HyP3](https://hyp3-api.asf.alaska.edu) to process and mosaic multiple bursts.
+
+## [10.0.1]
+
+### Changed
+- `get_files` now directly updates the `files`, `logs`, `browse_images`, `thumbnail_images`, and `expiration_time` fields in the Jobs table, rather than returning those values to be updated later by the `JOB_SUCCEEDED` or `JOB_FAILED` step. Resolves `SRG_TIME_SERIES` jobs with a large number of inputs exceeding the [256 KiB maximum output size for a Step Functions state](https://docs.aws.amazon.com/step-functions/latest/dg/service-quotas.html).
+
 ## [10.0.0]
 
 ### Added

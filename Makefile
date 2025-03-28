@@ -21,7 +21,8 @@ build: render
 	python -m pip install --upgrade -r requirements-apps-scale-cluster.txt -t ${SCALE_CLUSTER}; \
 	python -m pip install --upgrade -r requirements-apps-start-execution.txt -t ${START_EXECUTION}; \
 	python -m pip install --upgrade -r requirements-apps-disable-private-dns.txt -t ${DISABLE_PRIVATE_DNS}; \
-	python -m pip install --upgrade -r requirements-apps-update-db.txt -t ${UPDATE_DB}
+	python -m pip install --upgrade -r requirements-apps-update-db.txt -t ${UPDATE_DB}; \
+	python -m pip install --upgrade -r requirements-apps-get-files.txt -t ${GET_FILES}
 
 test_file ?= tests/
 tests: render
