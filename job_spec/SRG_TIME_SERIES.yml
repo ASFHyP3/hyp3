@@ -78,7 +78,7 @@ SRG_TIME_SERIES:
         - --bucket-prefix
         - Ref::job_id
         - --use-gslc-prefix
-      timeout: 21600 # 6 hr
-      compute_environment: Default
+      timeout: 172800 # 48 hr
+      compute_environment: SrgTimeSeries
       vcpu: 1
-      memory: 30500
+      memory: 63500
