@@ -236,6 +236,7 @@ def update_job(job: dict) -> None:
     )
 
 
+# TODO: add dynamo and api tests for updating name when the job doesn't have one
 def patch_job(job_id: str, name: str | None, user_id: str) -> dict:
     if name is not None:
         update_expression = 'SET #name = :name'
