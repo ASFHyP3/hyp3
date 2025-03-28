@@ -1,6 +1,8 @@
 """Custom exceptions for the dynamo library."""
 
 
+# TODO: rename this exception and/or revise the docstr to emphasize that it's for non-user-facing errors?
+#  or better distinguish between user-facing and non-user-facing errors in this module?
 class DatabaseConditionException(Exception):
     """Raised when a DynamoDB condition expression check fails."""
 
@@ -11,6 +13,10 @@ class AccessCodeError(Exception):
 
 class InsufficientCreditsError(Exception):
     """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
+
+
+class PatchJobDifferentUserError(Exception):
+    """Raised when a user attempts to modify a different user's job."""
 
 
 class InvalidApplicationStatusError(Exception):

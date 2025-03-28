@@ -4,6 +4,7 @@ from os import environ
 from pathlib import Path
 from uuid import uuid4
 
+import botocore.exceptions
 from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
@@ -11,6 +12,7 @@ from dynamo.exceptions import (
     InsufficientCreditsError,
     InvalidApplicationStatusError,
     NotStartedApplicationError,
+    PatchJobDifferentUserError,
     PendingApplicationError,
     RejectedApplicationError,
 )
@@ -216,6 +218,8 @@ def get_job(job_id: str) -> dict:
     return response.get('Item')
 
 
+# TODO: rename this function to reflect that it's for automatic updates to jobs during execution,
+#  to help distinguish it from patch_job? or combine the two functions?
 def update_job(job: dict) -> None:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     primary_key = 'job_id'
@@ -230,6 +234,25 @@ def update_job(job: dict) -> None:
         UpdateExpression=update_expression,
         ExpressionAttributeValues=expression_attribute_values,
     )
+
+
+def patch_job(job_id: str, name: str | None, user_id: str) -> dict:
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
+    update_expression = 'SET #name = :name' if name is not None else 'REMOVE #name'
+    try:
+        job = table.update_item(
+            Key={'job_id': job_id},
+            UpdateExpression=update_expression,
+            ConditionExpression='user_id = :user_id',
+            ExpressionAttributeValues={':name': name, ':user_id': user_id},
+            ExpressionAttributeNames={'#name': 'name'},
+            ReturnValues='ALL_NEW',
+        )['Attributes']
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
+            raise PatchJobDifferentUserError("You cannot modify a different user's job")
+        raise
+    return job
 
 
 def get_jobs_waiting_for_execution(limit: int) -> list[dict]:

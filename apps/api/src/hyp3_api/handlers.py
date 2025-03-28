@@ -4,7 +4,12 @@ import requests
 from flask import Response, abort, jsonify, request
 
 import dynamo
-from dynamo.exceptions import AccessCodeError, InsufficientCreditsError, UnexpectedApplicationStatusError
+from dynamo.exceptions import (
+    AccessCodeError,
+    InsufficientCreditsError,
+    PatchJobDifferentUserError,
+    UnexpectedApplicationStatusError,
+)
 from hyp3_api import util
 from hyp3_api.multi_burst_validation import MultiBurstValidationError
 from hyp3_api.validation import BoundsValidationError, GranuleValidationError, validate_jobs
@@ -63,6 +68,19 @@ def get_job_by_id(job_id: str) -> dict:
     job = dynamo.jobs.get_job(job_id)
     if job is None:
         abort(problem_format(404, f'job_id does not exist: {job_id}'))
+    return job
+
+
+def patch_job_by_id(body: dict, job_id: str, user: str) -> dict:
+    # TODO:
+    # - 404 if job_id doesn't exist
+    # - need to do any validation? or confirm that api validation gives us nice error messages
+    #   - body must have only name field (or no fields?)
+    #   - name must be non-empty
+    try:
+        job = dynamo.jobs.patch_job(job_id, body['name'], user)
+    except PatchJobDifferentUserError as e:
+        abort(problem_format(403, str(e)))
     return job
 
 
