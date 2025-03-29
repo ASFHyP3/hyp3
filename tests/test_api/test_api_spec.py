@@ -6,7 +6,7 @@ from test_api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login
 
 ENDPOINTS = {
     JOBS_URI: {'GET', 'HEAD', 'OPTIONS', 'POST'},
-    JOBS_URI + '/foo': {'GET', 'HEAD', 'OPTIONS'},
+    JOBS_URI + '/foo': {'GET', 'HEAD', 'OPTIONS', 'PATCH'},
     USER_URI: {'GET', 'HEAD', 'OPTIONS', 'PATCH'},
 }
 

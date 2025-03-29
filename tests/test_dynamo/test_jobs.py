@@ -11,6 +11,7 @@ from dynamo.exceptions import (
     NotStartedApplicationError,
     PendingApplicationError,
     RejectedApplicationError,
+    UpdateJobForDifferentUserError,
 )
 from dynamo.user import APPLICATION_APPROVED
 from dynamo.util import current_utc_time
@@ -702,6 +703,105 @@ def test_update_job(tables):
         },
     ]
     assert response['Items'] == expected_response
+
+
+def test_update_job_for_user(tables):
+    table_items = [
+        {
+            'job_id': 'job1',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+        {
+            'job_id': 'job2',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user2',
+        },
+    ]
+    for item in table_items:
+        tables.jobs_table.put_item(Item=item)
+
+    assert dynamo.jobs.update_job_for_user('job1', 'newname', 'user1') == {
+        'job_id': 'job1',
+        'name': 'newname',
+        'somefield': 'somevalue',
+        'user_id': 'user1',
+    }
+    assert tables.jobs_table.scan()['Items'] == [
+        {
+            'job_id': 'job1',
+            'name': 'newname',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+        {
+            'job_id': 'job2',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user2',
+        },
+    ]
+
+    assert dynamo.jobs.update_job_for_user('job1', None, 'user1') == {
+        'job_id': 'job1',
+        'somefield': 'somevalue',
+        'user_id': 'user1',
+    }
+    assert tables.jobs_table.scan()['Items'] == [
+        {
+            'job_id': 'job1',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+        {
+            'job_id': 'job2',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user2',
+        },
+    ]
+
+
+def test_update_job_for_different_user(tables):
+    table_items = [
+        {
+            'job_id': 'job1',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+        {
+            'job_id': 'job2',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user2',
+        },
+    ]
+    for item in table_items:
+        tables.jobs_table.put_item(Item=item)
+
+    with pytest.raises(UpdateJobForDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
+        dynamo.jobs.update_job_for_user('job2', 'newname', 'user1')
+
+    with pytest.raises(UpdateJobForDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
+        dynamo.jobs.update_job_for_user('job2', None, 'user1')
+
+    assert tables.jobs_table.scan()['Items'] == [
+        {
+            'job_id': 'job1',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+        {
+            'job_id': 'job2',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user2',
+        },
+    ]
 
 
 def test_get_jobs_waiting_for_execution(tables):
