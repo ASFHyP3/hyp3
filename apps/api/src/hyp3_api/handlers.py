@@ -7,8 +7,8 @@ import dynamo
 from dynamo.exceptions import (
     AccessCodeError,
     InsufficientCreditsError,
-    UpdateJobForDifferentUserError,
     UnexpectedApplicationStatusError,
+    UpdateJobForDifferentUserError,
 )
 from hyp3_api import util
 from hyp3_api.multi_burst_validation import MultiBurstValidationError

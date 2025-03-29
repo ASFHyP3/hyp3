@@ -12,9 +12,9 @@ from dynamo.exceptions import (
     InsufficientCreditsError,
     InvalidApplicationStatusError,
     NotStartedApplicationError,
-    UpdateJobForDifferentUserError,
     PendingApplicationError,
     RejectedApplicationError,
+    UpdateJobForDifferentUserError,
 )
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, current_utc_time, get_request_time_expression
