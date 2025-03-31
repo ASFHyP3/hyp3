@@ -9,9 +9,9 @@ from dynamo.exceptions import (
     InsufficientCreditsError,
     InvalidApplicationStatusError,
     NotStartedApplicationError,
-    PatchJobDifferentUserError,
     PendingApplicationError,
     RejectedApplicationError,
+    UpdateJobForDifferentUserError,
 )
 from dynamo.user import APPLICATION_APPROVED
 from dynamo.util import current_utc_time
@@ -705,7 +705,7 @@ def test_update_job(tables):
     assert response['Items'] == expected_response
 
 
-def test_patch_job(tables):
+def test_update_job_for_user(tables):
     table_items = [
         {
             'job_id': 'job1',
@@ -723,7 +723,7 @@ def test_patch_job(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    assert dynamo.jobs.patch_job('job1', 'newname', 'user1') == {
+    assert dynamo.jobs.update_job_for_user('job1', 'newname', 'user1') == {
         'job_id': 'job1',
         'name': 'newname',
         'somefield': 'somevalue',
@@ -744,7 +744,7 @@ def test_patch_job(tables):
         },
     ]
 
-    assert dynamo.jobs.patch_job('job1', None, 'user1') == {
+    assert dynamo.jobs.update_job_for_user('job1', None, 'user1') == {
         'job_id': 'job1',
         'somefield': 'somevalue',
         'user_id': 'user1',
@@ -764,7 +764,7 @@ def test_patch_job(tables):
     ]
 
 
-def test_patch_job_different_user(tables):
+def test_update_job_for_different_user(tables):
     table_items = [
         {
             'job_id': 'job1',
@@ -782,11 +782,11 @@ def test_patch_job_different_user(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    with pytest.raises(PatchJobDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
-        dynamo.jobs.patch_job('job2', 'newname', 'user1')
+    with pytest.raises(UpdateJobForDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
+        dynamo.jobs.update_job_for_user('job2', 'newname', 'user1')
 
-    with pytest.raises(PatchJobDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
-        dynamo.jobs.patch_job('job2', None, 'user1')
+    with pytest.raises(UpdateJobForDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
+        dynamo.jobs.update_job_for_user('job2', None, 'user1')
 
     assert tables.jobs_table.scan()['Items'] == [
         {

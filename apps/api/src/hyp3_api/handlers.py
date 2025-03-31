@@ -7,8 +7,8 @@ import dynamo
 from dynamo.exceptions import (
     AccessCodeError,
     InsufficientCreditsError,
-    PatchJobDifferentUserError,
     UnexpectedApplicationStatusError,
+    UpdateJobForDifferentUserError,
 )
 from hyp3_api import util
 from hyp3_api.multi_burst_validation import MultiBurstValidationError
@@ -71,15 +71,15 @@ def get_job_by_id(job_id: str) -> dict:
     return job
 
 
+# TODO:
+#  - 404 if job_id doesn't exist
+#  - need to do any validation? or confirm that api validation gives us nice error messages
+#    - body must have only name field (or no fields?)
+#    - name must be non-empty
 def patch_job_by_id(body: dict, job_id: str, user: str) -> dict:
-    # TODO:
-    # - 404 if job_id doesn't exist
-    # - need to do any validation? or confirm that api validation gives us nice error messages
-    #   - body must have only name field (or no fields?)
-    #   - name must be non-empty
     try:
-        job = dynamo.jobs.patch_job(job_id, body['name'], user)
-    except PatchJobDifferentUserError as e:
+        job = dynamo.jobs.update_job_for_user(job_id, body['name'], user)
+    except UpdateJobForDifferentUserError as e:
         abort(problem_format(403, str(e)))
     return job
 

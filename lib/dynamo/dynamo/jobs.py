@@ -12,9 +12,9 @@ from dynamo.exceptions import (
     InsufficientCreditsError,
     InvalidApplicationStatusError,
     NotStartedApplicationError,
-    PatchJobDifferentUserError,
     PendingApplicationError,
     RejectedApplicationError,
+    UpdateJobForDifferentUserError,
 )
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, current_utc_time, get_request_time_expression
@@ -218,9 +218,8 @@ def get_job(job_id: str) -> dict:
     return response.get('Item')
 
 
-# TODO: rename this function to reflect that it's for automatic updates to jobs during execution,
-#  to help distinguish it from patch_job? or combine the two functions?
 def update_job(job: dict) -> None:
+    """Update the job as it progresses through its execution."""
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     primary_key = 'job_id'
     key = {'job_id': job[primary_key]}
@@ -236,14 +235,19 @@ def update_job(job: dict) -> None:
     )
 
 
-def patch_job(job_id: str, name: str | None, user_id: str) -> dict:
-    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
+# TODO:
+#  - add dynamo and api tests for updating name when the job doesn't have one
+#  - allow updating arbitrary fields? and handle name=None as special case?
+def update_job_for_user(job_id: str, name: str | None, user_id: str) -> dict:
+    """Update the user's job at their request."""
     if name is not None:
         update_expression = 'SET #name = :name'
         name_value = {':name': name}
     else:
         update_expression = 'REMOVE #name'
         name_value = {}
+
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     try:
         job = table.update_item(
             Key={'job_id': job_id},
@@ -255,8 +259,9 @@ def patch_job(job_id: str, name: str | None, user_id: str) -> dict:
         )['Attributes']
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-            raise PatchJobDifferentUserError("You cannot modify a different user's job")
+            raise UpdateJobForDifferentUserError("You cannot modify a different user's job")
         raise
+
     return job
 
 
