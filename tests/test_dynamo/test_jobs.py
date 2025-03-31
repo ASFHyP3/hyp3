@@ -1,6 +1,9 @@
+import os
 import unittest.mock
 from decimal import Decimal
+from unittest.mock import MagicMock, NonCallableMagicMock
 
+import botocore.exceptions
 import pytest
 
 import dynamo
@@ -849,6 +852,21 @@ def test_update_job_for_different_user(tables):
             'user_id': 'user2',
         },
     ]
+
+
+def test_update_job_for_user_exception():
+    with unittest.mock.patch.object(dynamo.util.DYNAMODB_RESOURCE, 'Table') as mock_table_resource:
+        mock_table = mock_table_resource.return_value = NonCallableMagicMock()
+        mock_table.update_item = MagicMock()
+        mock_table.update_item.side_effect = botocore.exceptions.ClientError(
+            error_response={'Error': {'Code': 'foo'}}, operation_name='foo'
+        )
+
+        with pytest.raises(botocore.exceptions.ClientError):
+            dynamo.jobs.update_job_for_user('job_id', 'name', 'user_id')
+
+        mock_table_resource.assert_called_once_with(os.environ['JOBS_TABLE_NAME'])
+        mock_table.update_item.assert_called_once()
 
 
 def test_get_jobs_waiting_for_execution(tables):
