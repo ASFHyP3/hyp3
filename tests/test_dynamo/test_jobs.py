@@ -786,6 +786,31 @@ def test_update_job_for_user(tables):
     ]
 
 
+def test_update_job_for_user_job_not_found(tables):
+    table_items = [
+        {
+            'job_id': 'job1',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+    ]
+    for item in table_items:
+        tables.jobs_table.put_item(Item=item)
+
+    with pytest.raises(UpdateJobNotFoundError, match=r'^Job job2 does not exist$'):
+        dynamo.jobs.update_job_for_user('job2', 'newname', 'user1')
+
+    assert tables.jobs_table.scan()['Items'] == [
+        {
+            'job_id': 'job1',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+    ]
+
+
 def test_update_job_for_different_user(tables):
     table_items = [
         {
@@ -822,31 +847,6 @@ def test_update_job_for_different_user(tables):
             'name': 'oldname',
             'somefield': 'somevalue',
             'user_id': 'user2',
-        },
-    ]
-
-
-def test_update_job_for_user_job_not_found(tables):
-    table_items = [
-        {
-            'job_id': 'job1',
-            'name': 'oldname',
-            'somefield': 'somevalue',
-            'user_id': 'user1',
-        },
-    ]
-    for item in table_items:
-        tables.jobs_table.put_item(Item=item)
-
-    with pytest.raises(UpdateJobNotFoundError, match=r'^Job job2 does not exist$'):
-        dynamo.jobs.update_job_for_user('job2', 'newname', 'user1')
-
-    assert tables.jobs_table.scan()['Items'] == [
-        {
-            'job_id': 'job1',
-            'name': 'oldname',
-            'somefield': 'somevalue',
-            'user_id': 'user1',
         },
     ]
 
