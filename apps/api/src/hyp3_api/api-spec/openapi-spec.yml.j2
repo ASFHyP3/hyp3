@@ -283,8 +283,7 @@ components:
     patch_job_body:
       description: Job fields to update.
       type: object
-      required:
-        - name
+      minProperties: 1
       additionalProperties: false
       properties:
         name:
