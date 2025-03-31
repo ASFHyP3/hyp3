@@ -258,6 +258,7 @@ def update_job_for_user(job_id: str, name: str | None, user_id: str) -> dict:
             ReturnValues='ALL_NEW',
         )['Attributes']
     except botocore.exceptions.ClientError as e:
+        # FIXME: currently this also catches job_id does not exist, giving the wrong error message
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
             raise UpdateJobForDifferentUserError("You cannot modify a different user's job")
         raise
