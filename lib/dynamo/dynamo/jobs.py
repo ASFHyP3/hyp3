@@ -9,7 +9,6 @@ from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
 from dynamo.exceptions import (
-    DatabaseConditionException,
     InsufficientCreditsError,
     InvalidApplicationStatusError,
     NotStartedApplicationError,
