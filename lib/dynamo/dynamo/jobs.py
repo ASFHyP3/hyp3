@@ -250,8 +250,7 @@ def update_job_for_user(job_id: str, name: str | None, user_id: str) -> dict:
         job = table.update_item(
             Key={'job_id': job_id},
             UpdateExpression=update_expression,
-            # TODO: explicitly check that job_id exists
-            ConditionExpression='user_id = :user_id',
+            ConditionExpression='user_id = :user_id',  # Also implicitly checks that job exists
             ExpressionAttributeValues={':user_id': user_id, **name_value},
             ExpressionAttributeNames={'#name': 'name'},
             ReturnValues='ALL_NEW',
