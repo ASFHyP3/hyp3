@@ -15,6 +15,10 @@ class InsufficientCreditsError(Exception):
     """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
 
 
+class UpdateJobNotFoundError(Exception):
+    """Raised when a user attempts to update a job that doesn't exist."""
+
+
 class UpdateJobForDifferentUserError(Exception):
     """Raised when a user attempts to update a different user's job."""
 

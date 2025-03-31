@@ -9,12 +9,14 @@ from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
 from dynamo.exceptions import (
+    DatabaseConditionException,
     InsufficientCreditsError,
     InvalidApplicationStatusError,
     NotStartedApplicationError,
     PendingApplicationError,
     RejectedApplicationError,
     UpdateJobForDifferentUserError,
+    UpdateJobNotFoundError,
 )
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, current_utc_time, get_request_time_expression
@@ -256,11 +258,18 @@ def update_job_for_user(job_id: str, name: str | None, user_id: str) -> dict:
             ExpressionAttributeValues={':user_id': user_id, **name_value},
             ExpressionAttributeNames={'#name': 'name'},
             ReturnValues='ALL_NEW',
+            ReturnValuesOnConditionCheckFailure='ALL_OLD',
         )['Attributes']
     except botocore.exceptions.ClientError as e:
-        # FIXME: currently this also catches job_id does not exist, giving the wrong error message
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
-            raise UpdateJobForDifferentUserError("You cannot modify a different user's job")
+            if 'Item' not in e.response:
+                raise UpdateJobNotFoundError(f'Job {job_id} does not exist')
+            if e.response['Item']['user_id']['S'] != user_id:
+                raise UpdateJobForDifferentUserError("You cannot modify a different user's job")
+            # TODO test:
+            raise DatabaseConditionException(
+                f"Updating job {job_id} for user {user_id} failed the condition check, but the job's user_id is correct"
+            )
         raise
 
     return job
