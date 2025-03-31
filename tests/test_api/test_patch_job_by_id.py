@@ -166,4 +166,29 @@ def test_patch_job_different_user(client, tables):
     ]
 
 
-# TODO: test bad json payload? test empty payload? bad/empty name?
+def test_patch_job_schema(client, tables):
+    login(client, 'user1')
+
+    response = client.patch(f'{JOBS_URI}/33d85ea0-9342-4c21-ae59-5bec3f71612c', json={})
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert '{} should be non-empty' in response.json['detail']
+
+    response = client.patch(f'{JOBS_URI}/33d85ea0-9342-4c21-ae59-5bec3f71612c', json={'foo': 'bar'})
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert "'foo' was unexpected" in response.json['detail']
+
+    response = client.patch(f'{JOBS_URI}/33d85ea0-9342-4c21-ae59-5bec3f71612c', json={'name': ''})
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert "'' should be non-empty" in response.json['detail']
+
+    response = client.patch(f'{JOBS_URI}/33d85ea0-9342-4c21-ae59-5bec3f71612c', json={'name': '-' * 100})
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json['detail'] == 'Job 33d85ea0-9342-4c21-ae59-5bec3f71612c does not exist'
+
+    response = client.patch(f'{JOBS_URI}/33d85ea0-9342-4c21-ae59-5bec3f71612c', json={'name': '-' * 101})
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert 'is too long' in response.json['detail']
+
+    response = client.patch(f'{JOBS_URI}/33d85ea0-9342-4c21-ae59-5bec3f71612c', json={'name': True})
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert "True is not of type 'string'" in response.json['detail']
