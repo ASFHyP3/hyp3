@@ -239,7 +239,6 @@ def update_job(job: dict) -> None:
 
 # TODO:
 #  - add dynamo and api tests for updating name when the job doesn't have one
-#  - allow updating arbitrary fields? and handle name=None as special case?
 def update_job_for_user(job_id: str, name: str | None, user_id: str) -> dict:
     """Update the user's job at their request."""
     if name is not None:
