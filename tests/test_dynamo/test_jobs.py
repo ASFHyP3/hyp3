@@ -764,6 +764,27 @@ def test_update_job_for_user(tables):
         },
     ]
 
+    assert dynamo.jobs.update_job_for_user('job1', 'anothernewname', 'user1') == {
+        'job_id': 'job1',
+        'name': 'anothernewname',
+        'somefield': 'somevalue',
+        'user_id': 'user1',
+    }
+    assert tables.jobs_table.scan()['Items'] == [
+        {
+            'job_id': 'job1',
+            'name': 'anothernewname',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+        {
+            'job_id': 'job2',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user2',
+        },
+    ]
+
 
 def test_update_job_for_different_user(tables):
     table_items = [

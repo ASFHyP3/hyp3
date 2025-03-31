@@ -69,6 +69,30 @@ def test_patch_job(client, tables):
         },
     ]
 
+    response = client.patch(f'{JOBS_URI}/33d85ea0-9342-4c21-ae59-5bec3f71612c', json={'name': 'anothernewname'})
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json == {
+        'job_id': '33d85ea0-9342-4c21-ae59-5bec3f71612c',
+        'name': 'anothernewname',
+        'somefield': 'somevalue',
+        'user_id': 'user1',
+    }
+    assert tables.jobs_table.scan()['Items'] == [
+        {
+            'job_id': '33d85ea0-9342-4c21-ae59-5bec3f71612c',
+            'name': 'anothernewname',
+            'somefield': 'somevalue',
+            'user_id': 'user1',
+        },
+        {
+            'job_id': '40183948-48a1-42d2-a96b-ce44fbba301b',
+            'name': 'oldname',
+            'somefield': 'somevalue',
+            'user_id': 'user2',
+        },
+    ]
+
 
 def test_patch_job_different_user(client, tables):
     table_items = [
