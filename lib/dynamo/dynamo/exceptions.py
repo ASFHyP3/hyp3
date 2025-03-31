@@ -2,7 +2,7 @@
 
 
 class DatabaseConditionException(Exception):
-    """Raised when a DynamoDB condition expression check fails and does not warrant a more specific exception type."""
+    """Raised for any DynamoDB ConditionExpression check failure that does not fall under a more specific exception type."""
 
 
 class AccessCodeError(Exception):
