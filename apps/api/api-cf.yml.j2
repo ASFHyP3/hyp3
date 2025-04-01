@@ -167,6 +167,7 @@ Resources:
               - dynamodb:BatchWriteItem
               - dynamodb:Query
               - dynamodb:GetItem
+              - dynamodb:UpdateItem
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
           - Effect: Allow
             Action:

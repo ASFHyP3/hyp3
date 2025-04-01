@@ -165,6 +165,12 @@ def jobs_get_by_job_id(job_id: str) -> Response:
     return jsonify(handlers.get_job_by_id(job_id))
 
 
+@app.route('/jobs/<job_id>', methods=['PATCH'])
+@openapi
+def jobs_patch_by_job_id(job_id: str) -> Response:
+    return jsonify(handlers.patch_job_by_id(request.get_json(), job_id, g.user))
+
+
 @app.route('/user', methods=['PATCH'])
 @openapi
 def user_patch() -> Response:

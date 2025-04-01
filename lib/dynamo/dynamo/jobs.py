@@ -4,6 +4,7 @@ from os import environ
 from pathlib import Path
 from uuid import uuid4
 
+import botocore.exceptions
 from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
@@ -13,6 +14,8 @@ from dynamo.exceptions import (
     NotStartedApplicationError,
     PendingApplicationError,
     RejectedApplicationError,
+    UpdateJobForDifferentUserError,
+    UpdateJobNotFoundError,
 )
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, current_utc_time, get_request_time_expression
@@ -217,6 +220,7 @@ def get_job(job_id: str) -> dict:
 
 
 def update_job(job: dict) -> None:
+    """Update the job as it progresses through its execution."""
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     primary_key = 'job_id'
     key = {'job_id': job[primary_key]}
@@ -230,6 +234,38 @@ def update_job(job: dict) -> None:
         UpdateExpression=update_expression,
         ExpressionAttributeValues=expression_attribute_values,
     )
+
+
+def update_job_for_user(job_id: str, name: str | None, user_id: str) -> dict:
+    """Update the user's job at their request."""
+    if name is not None:
+        update_expression = 'SET #name = :name'
+        name_value = {':name': name}
+    else:
+        update_expression = 'REMOVE #name'
+        name_value = {}
+
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
+    try:
+        job = table.update_item(
+            Key={'job_id': job_id},
+            UpdateExpression=update_expression,
+            ConditionExpression='user_id = :user_id',  # Also implicitly checks that job exists
+            ExpressionAttributeValues={':user_id': user_id, **name_value},
+            ExpressionAttributeNames={'#name': 'name'},
+            ReturnValues='ALL_NEW',
+            ReturnValuesOnConditionCheckFailure='ALL_OLD',
+        )['Attributes']
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
+            if 'Item' not in e.response:
+                raise UpdateJobNotFoundError(f'Job {job_id} does not exist')
+            else:
+                assert e.response['Item']['user_id']['S'] != user_id
+                raise UpdateJobForDifferentUserError("You cannot modify a different user's job")
+        raise
+
+    return job
 
 
 def get_jobs_waiting_for_execution(limit: int) -> list[dict]:
