@@ -2,7 +2,7 @@
 
 
 class DatabaseConditionException(Exception):
-    """Raised when a DynamoDB condition expression check fails."""
+    """Raised for any DynamoDB ConditionExpression check failure that does not fall under a more specific exception type."""
 
 
 class AccessCodeError(Exception):
@@ -11,6 +11,14 @@ class AccessCodeError(Exception):
 
 class InsufficientCreditsError(Exception):
     """Raised when trying to submit jobs whose total cost exceeds the user's remaining credits."""
+
+
+class UpdateJobNotFoundError(Exception):
+    """Raised when a user attempts to update a job that doesn't exist."""
+
+
+class UpdateJobForDifferentUserError(Exception):
+    """Raised when a user attempts to update a different user's job."""
 
 
 class InvalidApplicationStatusError(Exception):
