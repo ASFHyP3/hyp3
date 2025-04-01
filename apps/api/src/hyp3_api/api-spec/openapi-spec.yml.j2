@@ -326,7 +326,7 @@ components:
         logs:
           $ref: "#/components/schemas/list_of_urls"
         expiration_time:
-          $ref: "#/components/schemas/datetime_nullable"
+          $ref: "#/components/schemas/expiration_time"
         processing_times:
           $ref: "#/components/schemas/processing_times"
         priority:
@@ -365,8 +365,8 @@ components:
       format: date-time
       example: "2020-06-04T18:00:03+00:00"
 
-    datetime_nullable:
-      description: Date and time object formatted according to ISO 8601
+    expiration_time:
+      description: Date and time object formatted according to ISO 8601, representing the job's expiration time
       type: string
       nullable: true
       format: date-time
