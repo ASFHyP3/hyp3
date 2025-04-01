@@ -260,8 +260,9 @@ def update_job_for_user(job_id: str, name: str | None, user_id: str) -> dict:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
             if 'Item' not in e.response:
                 raise UpdateJobNotFoundError(f'Job {job_id} does not exist')
-            assert e.response['Item']['user_id']['S'] != user_id
-            raise UpdateJobForDifferentUserError("You cannot modify a different user's job")
+            else:
+                assert e.response['Item']['user_id']['S'] != user_id
+                raise UpdateJobForDifferentUserError("You cannot modify a different user's job")
         raise
 
     return job
