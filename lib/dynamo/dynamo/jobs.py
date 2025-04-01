@@ -15,6 +15,7 @@ from dynamo.exceptions import (
     PendingApplicationError,
     RejectedApplicationError,
     UpdateJobForDifferentUserError,
+    UpdateJobNotFoundError,
 )
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, current_utc_time, get_request_time_expression
@@ -235,9 +236,6 @@ def update_job(job: dict) -> None:
     )
 
 
-# TODO:
-#  - add dynamo and api tests for updating name when the job doesn't have one
-#  - allow updating arbitrary fields? and handle name=None as special case?
 def update_job_for_user(job_id: str, name: str | None, user_id: str) -> dict:
     """Update the user's job at their request."""
     if name is not None:
@@ -252,13 +250,17 @@ def update_job_for_user(job_id: str, name: str | None, user_id: str) -> dict:
         job = table.update_item(
             Key={'job_id': job_id},
             UpdateExpression=update_expression,
-            ConditionExpression='user_id = :user_id',
+            ConditionExpression='user_id = :user_id',  # Also implicitly checks that job exists
             ExpressionAttributeValues={':user_id': user_id, **name_value},
             ExpressionAttributeNames={'#name': 'name'},
             ReturnValues='ALL_NEW',
+            ReturnValuesOnConditionCheckFailure='ALL_OLD',
         )['Attributes']
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
+            if 'Item' not in e.response:
+                raise UpdateJobNotFoundError(f'Job {job_id} does not exist')
+            assert e.response['Item']['user_id']['S'] != user_id
             raise UpdateJobForDifferentUserError("You cannot modify a different user's job")
         raise
 
