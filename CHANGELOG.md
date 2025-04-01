@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.4.0]
 
-TODO: finish this entry
+### Added
+- Added a new `PATCH /jobs/{job_id}` API endpoint to allow updating a job. Currently only the job's `name` field can be updated. Setting `name` to `null` deletes the field.
 
 ### Fixed
 - The `job.expiration_time` field is now documented as nullable using the correct OpenAPI syntax. The incorrect syntax was introduced by [`c2625ee`](https://github.com/ASFHyP3/hyp3/commit/c2625ee33c73429132eb99279e86a5846271b8f6) in [HyP3 v2.17.1](https://github.com/ASFHyP3/hyp3/releases/tag/v2.17.1).
