@@ -326,9 +326,7 @@ components:
         logs:
           $ref: "#/components/schemas/list_of_urls"
         expiration_time:
-          $ref: "#/components/schemas/datetime"
-          # FIXME: not sure this is a valid use of nullable, as it didn't work for the name schema (hence name_patch)
-          nullable: true
+          $ref: "#/components/schemas/datetime_nullable"
         processing_times:
           $ref: "#/components/schemas/processing_times"
         priority:
@@ -367,6 +365,13 @@ components:
       format: date-time
       example: "2020-06-04T18:00:03+00:00"
 
+    datetime_nullable:
+      description: Date and time object formatted according to ISO 8601
+      type: string
+      nullable: true
+      format: date-time
+      example: "2020-06-04T18:00:03+00:00"
+
     status_code:
       description: Status of a submitted job.
       type: string
@@ -391,10 +396,10 @@ components:
     name_patch:
       description: User provided text to name the job, or null to delete the name
       type: string
+      nullable: true
       minLength: 1
       maxLength: 100
       example: Job Name
-      nullable: true
 
     start_token:
       description: Token used for fetching subsequent results for large queries
