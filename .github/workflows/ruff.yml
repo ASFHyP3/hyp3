@@ -1,7 +1,5 @@
 name: Static code analysis
 
-permissions:
-
 on: push
 
 env:
