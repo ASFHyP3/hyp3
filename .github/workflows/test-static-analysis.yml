@@ -2,6 +2,7 @@ name: Test static analysis workflow
 
 on: push
 
+
 jobs:
   call-ruff-workflow:
     # Docs: https://github.com/ASFHyP3/actions
