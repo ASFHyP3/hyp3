@@ -1,5 +1,7 @@
 name: Changelog updated?
 
+permissions: {}
+
 on:
   pull_request:
     types:
