@@ -9,7 +9,7 @@ jobs:
   call-ruff-workflow:
     # Docs: https://github.com/ASFHyP3/actions
     permissions:
-      contents: write
+      pull-requests: read
     uses: ASFHyP3/actions/.github/workflows/reusable-ruff.yml@v0.18.0
 
   call-mypy-workflow:
