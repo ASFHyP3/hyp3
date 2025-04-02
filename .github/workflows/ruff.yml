@@ -10,4 +10,4 @@ env:
 jobs:
   call-ruff-workflow:
     # Docs: https://github.com/ASFHyP3/actions
-    uses: ASFHyP3/actions/.github/workflows/reusable-ruff.yml@workflow-perms
+    uses: ASFHyP3/actions/.github/workflows/reusable-ruff.yml@v0.18.0
