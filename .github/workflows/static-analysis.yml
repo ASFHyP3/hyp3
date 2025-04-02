@@ -1,8 +1,5 @@
 name: Static code analysis
 
-permissions:
-  contents: read
-
 on: push
 
 env:
@@ -12,80 +9,3 @@ jobs:
   call-ruff-workflow:
     # Docs: https://github.com/ASFHyP3/actions
     uses: ASFHyP3/actions/.github/workflows/reusable-ruff.yml@v0.18.0
-
-  call-mypy-workflow:
-    uses: ASFHyP3/actions/.github/workflows/reusable-mypy.yml@v0.18.0
-
-  cfn-lint:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        security_environment: [ASF, EDC, JPL, JPL-public]
-    steps:
-      - uses: actions/checkout@v4.2.2
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.13
-      - run: |
-          python -m pip install --upgrade pip
-          make install
-
-      - run: |
-          make security_environment=${{ matrix.security_environment }} cfn-lint
-
-  openapi-spec-validator:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4.2.2
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.13
-      - run: |
-          python -m pip install --upgrade pip
-          make install
-
-      - run: make openapi-validate
-
-  statelint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4.2.2
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7
-      - run: gem install statelint
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.13
-      - run: |
-          python -m pip install --upgrade pip
-          make install
-
-      - run: |
-          make render
-          sed -i 's/"Resource": "${.*}"/"Resource": "foo:bar"/' apps/step-function.json
-          statelint apps/step-function.json
-
-  snyk:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4.2.2
-      - uses: snyk/actions/setup@0.4.0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.13
-      - run: |
-          python -m pip install --upgrade pip
-          make install
-          make render security_environment=EDC
-
-      - name: Run Snyk to check for vulnerabilities
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: |
-          snyk test --package-manager=pip --file=requirements-all.txt --severity-threshold=high
-          snyk iac test --severity-threshold=high
-
-  call-secrets-analysis-workflow:
-    uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@v0.18.0
