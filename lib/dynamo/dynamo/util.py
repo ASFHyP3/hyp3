@@ -34,7 +34,7 @@ def current_utc_time() -> str:
     return format_time(datetime.now(UTC))
 
 
-def convert_floats_to_decimals(element: Any) -> Any:
+def convert_floats_to_decimals(element: Any) -> Any:  # noqa: ANN401
     if type(element) is float:
         return Decimal(str(element))
     if type(element) is list:
@@ -44,7 +44,7 @@ def convert_floats_to_decimals(element: Any) -> Any:
     return element
 
 
-def convert_decimals_to_numbers(element: Any) -> Any:
+def convert_decimals_to_numbers(element: Any) -> Any:  # noqa: ANN401
     if type(element) is Decimal:
         as_float = float(element)
         if as_float.is_integer():

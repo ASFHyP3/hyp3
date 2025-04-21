@@ -4,7 +4,13 @@ import requests
 from flask import Response, abort, jsonify, request
 
 import dynamo
-from dynamo.exceptions import AccessCodeError, InsufficientCreditsError, UnexpectedApplicationStatusError
+from dynamo.exceptions import (
+    AccessCodeError,
+    InsufficientCreditsError,
+    UnexpectedApplicationStatusError,
+    UpdateJobForDifferentUserError,
+    UpdateJobNotFoundError,
+)
 from hyp3_api import util
 from hyp3_api.multi_burst_validation import MultiBurstValidationError
 from hyp3_api.validation import BoundsValidationError, GranuleValidationError, validate_jobs
@@ -63,6 +69,16 @@ def get_job_by_id(job_id: str) -> dict:
     job = dynamo.jobs.get_job(job_id)
     if job is None:
         abort(problem_format(404, f'job_id does not exist: {job_id}'))
+    return job
+
+
+def patch_job_by_id(body: dict, job_id: str, user: str) -> dict:
+    try:
+        job = dynamo.jobs.update_job_for_user(job_id, body['name'], user)
+    except UpdateJobForDifferentUserError as e:
+        abort(problem_format(403, str(e)))
+    except UpdateJobNotFoundError as e:
+        abort(problem_format(404, str(e)))
     return job
 
 

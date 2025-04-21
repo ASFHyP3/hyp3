@@ -86,6 +86,29 @@ paths:
                 $ref: "#/components/schemas/jobs_response"
 
   /jobs/{job_id}:
+
+    patch:
+      description: Update a job.
+      parameters:
+        - name: job_id
+          in: path
+          schema:
+            $ref: "#/components/schemas/job_id"
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/patch_job_body"
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/job"
+
     get:
       description: Get a previously run job.
       parameters:
@@ -257,6 +280,15 @@ components:
       items:
         $ref: "#/components/schemas/job"
 
+    patch_job_body:
+      description: Job fields to update.
+      type: object
+      minProperties: 1
+      additionalProperties: false
+      properties:
+        name:
+          $ref: "#/components/schemas/name_patch"
+
     job:
       description: Contains information about a submitted job.
       type: object
@@ -294,8 +326,7 @@ components:
         logs:
           $ref: "#/components/schemas/list_of_urls"
         expiration_time:
-          $ref: "#/components/schemas/datetime"
-          nullable: true
+          $ref: "#/components/schemas/expiration_time"
         processing_times:
           $ref: "#/components/schemas/processing_times"
         priority:
@@ -334,6 +365,13 @@ components:
       format: date-time
       example: "2020-06-04T18:00:03+00:00"
 
+    expiration_time:
+      description: Date and time object formatted according to ISO 8601, representing the job's expiration time
+      type: string
+      nullable: true
+      format: date-time
+      example: "2020-06-04T18:00:03+00:00"
+
     status_code:
       description: Status of a submitted job.
       type: string
@@ -351,6 +389,14 @@ components:
     name:
       description: User provided text to name the job
       type: string
+      minLength: 1
+      maxLength: 100
+      example: Job Name
+
+    name_patch:
+      description: User provided text to name the job, or null to delete the name
+      type: string
+      nullable: true
       minLength: 1
       maxLength: 100
       example: Job Name

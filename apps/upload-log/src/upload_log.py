@@ -1,6 +1,5 @@
 import json
 from os import environ
-from typing import Any
 
 import boto3
 from botocore.config import Config
@@ -59,7 +58,7 @@ def write_log_to_s3(bucket: str, prefix: str, content: str) -> None:
     S3.put_object_tagging(Bucket=bucket, Key=key, Tagging=tag_set)
 
 
-def lambda_handler(event: dict, context: Any) -> None:
+def lambda_handler(event: dict, context: object) -> None:
     results_dict = event['processing_results']
     result = results_dict[max(results_dict.keys())]
 

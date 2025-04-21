@@ -3,7 +3,6 @@ import urllib.parse
 from datetime import datetime
 from os import environ
 from pathlib import Path
-from typing import Any
 
 import boto3
 
@@ -91,7 +90,7 @@ def organize_files(s3_objects: list[dict], bucket: str) -> dict:
     }
 
 
-def lambda_handler(event: dict, context: Any) -> None:
+def lambda_handler(event: dict, context: object) -> None:
     bucket = environ['BUCKET']
 
     response = S3_CLIENT.list_objects_v2(Bucket=bucket, Prefix=event['job_id'])

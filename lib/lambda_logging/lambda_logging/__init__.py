@@ -1,7 +1,6 @@
 import logging
 from collections.abc import Callable
 from functools import wraps
-from typing import Any
 
 
 logging.basicConfig()
@@ -13,9 +12,9 @@ class UnhandledException(Exception):
     pass
 
 
-def log_exceptions[T](lambda_handler: Callable[[dict, Any], T]) -> Callable[[dict, Any], T]:
+def log_exceptions[T](lambda_handler: Callable[[dict, object], T]) -> Callable[[dict, object], T]:
     @wraps(lambda_handler)
-    def wrapper(event: dict, context: Any) -> T:
+    def wrapper(event: dict, context: object) -> T:
         try:
             return lambda_handler(event, context)
         except:  # noqa: E722

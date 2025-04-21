@@ -1,5 +1,4 @@
 import os
-from typing import Any
 
 import boto3
 
@@ -41,7 +40,7 @@ def disable_private_dns(vpc_id: str, endpoint_name: str) -> None:
         print(f'Private DNS already disabled for VPC Endpoint: {endpoint["VpcEndpointId"]}, doing nothing.')
 
 
-def lambda_handler(event: dict, context: Any) -> None:
+def lambda_handler(event: dict, context: object) -> None:
     vpc_id = os.environ['VPCID']
     endpoint_name = os.environ['ENDPOINT_NAME']
     print(f'VPC ID {vpc_id}')

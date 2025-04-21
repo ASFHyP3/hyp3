@@ -4,7 +4,6 @@ from collections.abc import Iterable
 from decimal import Decimal
 from os import environ
 from pathlib import Path
-from typing import Any
 
 import werkzeug
 import yaml
@@ -104,10 +103,10 @@ class CustomEncoder(json.JSONEncoder):
 
 
 class CustomJSONProvider(JSONProvider):
-    def dumps(self, obj: Any, **kwargs: Any) -> str:
+    def dumps(self, obj: object, **kwargs: object) -> str:
         return json.dumps(obj, cls=CustomEncoder)
 
-    def loads(self, s: str | bytes, **kwargs: Any) -> Any:
+    def loads(self, s: str | bytes, **kwargs: object) -> object:
         return json.loads(s)
 
 
@@ -164,6 +163,12 @@ def jobs_get() -> Response:
 @openapi
 def jobs_get_by_job_id(job_id: str) -> Response:
     return jsonify(handlers.get_job_by_id(job_id))
+
+
+@app.route('/jobs/<job_id>', methods=['PATCH'])
+@openapi
+def jobs_patch_by_job_id(job_id: str) -> Response:
+    return jsonify(handlers.patch_job_by_id(request.get_json(), job_id, g.user))
 
 
 @app.route('/user', methods=['PATCH'])
