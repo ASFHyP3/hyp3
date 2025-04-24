@@ -2,6 +2,7 @@ OPERA_RTC:
   required_parameters:
     - granules
   parameters:
+    # TODO: expose resolution param?
     # TODO: consider modifying hyp3_api.util.get_granules to allow a single granule? (not an array)
     granules:
       api_schema:
