@@ -24,14 +24,21 @@ OPERA_RTC:
     DEFAULT:
       cost: 1.0
   validators:
+    - check_dem_coverage
+    # TODO additional validators?
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-opera-rtc
-      command: # TODO
-      timeout: # TODO
+      command:
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - Ref::granules
+      timeout: 3600 # 1 hr # TODO
       compute_environment: Default
       vcpu: 1
-      memory: # TODO
+      memory: 31500 # TODO
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
