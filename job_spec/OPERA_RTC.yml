@@ -31,11 +31,11 @@ OPERA_RTC:
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/asfhyp3/hyp3-opera-rtc
       command:
+        - Ref::granules
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
-        - Ref::granules
       timeout: 3600 # 1 hr # TODO
       compute_environment: Default
       vcpu: 1
