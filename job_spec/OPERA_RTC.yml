@@ -1,0 +1,37 @@
+OPERA_RTC:
+  required_parameters:
+    - granules
+  parameters:
+    # TODO: consider modifying hyp3_api.util.get_granules to allow a single granule? (not an array)
+    granules:
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 1
+        example:
+          - S1_073251_IW2_20250413T020809_VV_EF1E-BURST
+        items:
+          anyOf:
+            - description: TODO # TODO
+              type: string
+              pattern: '^S1_\d{6}_IW\d_\d{8}T\d{6}_(VV|HH)_[\dA-F]{4}-BURST$'
+              minLength: 43
+              maxLength: 43
+              example: S1_073251_IW2_20250413T020809_VV_EF1E-BURST
+  cost_profiles:
+    EDC:
+      cost: 1.0 # TODO
+    DEFAULT:
+      cost: 1.0
+  validators:
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-opera-rtc
+      command: # TODO
+      timeout: # TODO
+      compute_environment: Default
+      vcpu: 1
+      memory: # TODO
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
