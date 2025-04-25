@@ -42,13 +42,17 @@ def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
         'short_name': [
             'SENTINEL-1A_SLC',
             'SENTINEL-1B_SLC',
+            'SENTINEL-1C_SLC',
             'SENTINEL-1A_SP_GRD_HIGH',
             'SENTINEL-1B_SP_GRD_HIGH',
+            'SENTINEL-1C_SP_GRD_HIGH',
             'SENTINEL-1A_DP_GRD_HIGH',
             'SENTINEL-1B_DP_GRD_HIGH',
+            'SENTINEL-1C_DP_GRD_HIGH',
             'SENTINEL-1_BURSTS',
             'SENTINEL-1A_RAW',
             'SENTINEL-1B_RAW',
+            'SENTINEL-1C_RAW',
         ],
         'page_size': 2000,
     }
