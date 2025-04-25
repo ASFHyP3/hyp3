@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.4.1]
+
+### Added
+- Sentinel-1C support for `RTC_GAMMA`, `INSAR_GAMMA`, `WATER_MAP`, and `WATER_MAP_EQ` job types.
+
+### Removed
+- Removed `PUBLISH` step of `ARIA_S1_GUNW` jobs so outputs are no longer published to the ASF archive.
+
 ## [10.4.0]
 
 ### Added

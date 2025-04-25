@@ -13,13 +13,13 @@ RTC_GAMMA:
           anyOf:
             - description: The name of the Sentinel-1 GRDH granule to process
               type: string
-              pattern: "^S1[AB]_IW_GRDH_1S[SD][VH]"
+              pattern: "^S1[ABC]_IW_GRDH_1S[SD][VH]"
               minLength: 67
               maxLength: 67
               example: S1B_IW_GRDH_1SDV_20211013T183321_20211013T183346_029121_037995_5B38
             - description: The name of the Sentinel-1 SLC granule to process
               type: string
-              pattern: "^S1[AB]_IW_SLC__1S[SD][VH]"
+              pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
               minLength: 67
               maxLength: 67
               example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
