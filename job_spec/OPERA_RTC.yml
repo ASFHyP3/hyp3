@@ -14,7 +14,6 @@ OPERA_RTC:
           anyOf:
             - description: TODO # TODO
               type: string
-              # TODO confirm IW only
               pattern: '^S1_\d{6}_IW\d_\d{8}T\d{6}_(VV|HH)_[\dA-F]{4}-BURST$'
               minLength: 43
               maxLength: 43
