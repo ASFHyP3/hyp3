@@ -11,13 +11,13 @@ WATER_MAP:
           anyOf:
             - description: The name of the IW VV+VH Sentinel-1 GRDH granule to process
               type: string
-              pattern: "^S1[AB]_IW_GRDH_1SDV"
+              pattern: "^S1[ABC]_IW_GRDH_1SDV"
               minLength: 67
               maxLength: 67
               example: S1A_IW_GRDH_1SDV_20210413T235641_20210413T235706_037439_0469D0_3F2B
             - description: The name of the IW VV+VH Sentinel-1 SLC granule to process
               type: string
-              pattern: "^S1[AB]_IW_SLC__1SDV"
+              pattern: "^S1[ABC]_IW_SLC__1SDV"
               minLength: 67
               maxLength: 67
               example: S1A_IW_SLC__1SDV_20211110T234815_20211110T234842_040516_04CE0A_E717
