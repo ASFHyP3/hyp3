@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sentinel-1C support for `RTC_GAMMA`, `INSAR_GAMMA`, `WATER_MAP`, and `WATER_MAP_EQ` job types.
 
 ### Removed
-- Removed `PUBLISH` step of `ARIA_S1_GUNW` jobs so outputs are no longer published the ASF archive.
+- Removed `PUBLISH` step of `ARIA_S1_GUNW` jobs so outputs are no longer published to the ASF archive.
 
 ## [10.4.0]
 
