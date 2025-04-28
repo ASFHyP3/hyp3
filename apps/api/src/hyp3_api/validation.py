@@ -216,6 +216,7 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
 
 
 def check_ipf_version(job: dict, granule_metadata: list[dict]) -> None:
+    # TODO support multiple granules?
     granule = job['job_parameters']['granules'][0]
     if len(granule_metadata) != 1:
         raise InternalValidationError(f'Got {len(granule_metadata)} CMR records for {granule}')
