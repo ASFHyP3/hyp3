@@ -3,7 +3,6 @@ from unittest import mock
 
 import pytest
 import responses
-from pytest import raises
 from shapely.geometry import Polygon
 
 from hyp3_api import CMR_URL, multi_burst_validation, validation
@@ -25,7 +24,7 @@ def test_not_antimeridian():
     validation.check_not_antimeridian({}, good_granules)
 
     bad_granules = [{'polygon': good_rect, 'name': 'good'}, {'polygon': bad_rect, 'name': 'bad'}]
-    with raises(validation.GranuleValidationError, match=r'.*crosses the antimeridian.*'):
+    with pytest.raises(validation.GranuleValidationError, match=r'.*crosses the antimeridian.*'):
         validation.check_not_antimeridian({}, bad_granules)
 
 
@@ -93,11 +92,11 @@ def test_check_dem_coverage():
     validation.check_dem_coverage({}, [covered2])
     validation.check_dem_coverage({}, [covered1, covered2])
 
-    with raises(validation.GranuleValidationError) as e:
+    with pytest.raises(validation.GranuleValidationError) as e:
         validation.check_dem_coverage({}, [not_covered])
     assert 'not_covered' in str(e)
 
-    with raises(validation.GranuleValidationError) as e:
+    with pytest.raises(validation.GranuleValidationError) as e:
         validation.check_dem_coverage({}, [covered1, not_covered])
     assert 'not_covered' in str(e)
     assert 'covered1' not in str(e)
@@ -157,7 +156,7 @@ def test_check_single_burst_pair():
             ]
         }
     }
-    with raises(
+    with pytest.raises(
         validation.GranuleValidationError,
         match=r'^Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and S1_136232_IW2_20200616T022313_VV_5D11-BURST\.$',
     ):
@@ -171,7 +170,7 @@ def test_check_single_burst_pair():
             ]
         }
     }
-    with raises(
+    with pytest.raises(
         validation.GranuleValidationError,
         match=r'^Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and S1_136231_IW3_20200616T022313_VV_5D11-BURST\.$',
     ):
@@ -185,7 +184,7 @@ def test_check_single_burst_pair():
             ]
         }
     }
-    with raises(
+    with pytest.raises(
         validation.GranuleValidationError,
         match=r'^The requested scenes need to have the same polarization, got: VV, HH$',
     ):
@@ -199,7 +198,7 @@ def test_check_single_burst_pair():
             ]
         }
     }
-    with raises(
+    with pytest.raises(
         validation.GranuleValidationError, match=r'^Only VV and HH polarizations are currently supported, got: VH$'
     ):
         validation.check_single_burst_pair(invalid_job_unsupported_pol, None)
@@ -219,7 +218,7 @@ def test_make_sure_granules_exist():
     validation._make_sure_granules_exist(['scene1'], granule_metadata)
     validation._make_sure_granules_exist(['scene1', 'scene2'], granule_metadata)
 
-    with raises(validation.GranuleValidationError) as e:
+    with pytest.raises(validation.GranuleValidationError) as e:
         validation._make_sure_granules_exist(
             ['scene1', 'scene2', 'scene3', 'scene4', 'S2_foo', 'LC08_bar', 'LC09_bar'], granule_metadata
         )
@@ -350,7 +349,7 @@ def test_validate_jobs():
             },
         }
     ]
-    with raises(validation.GranuleValidationError):
+    with pytest.raises(validation.GranuleValidationError):
         validation.validate_jobs(jobs)
 
     jobs = [
@@ -361,7 +360,7 @@ def test_validate_jobs():
             },
         }
     ]
-    with raises(validation.GranuleValidationError):
+    with pytest.raises(validation.GranuleValidationError):
         validation.validate_jobs(jobs)
 
     jobs = [
@@ -370,13 +369,13 @@ def test_validate_jobs():
             'job_parameters': {'reference': [invalid_burst_pair[0]], 'secondary': [invalid_burst_pair[1]]},
         }
     ]
-    with raises(multi_burst_validation.MultiBurstValidationError):
+    with pytest.raises(multi_burst_validation.MultiBurstValidationError):
         validation.validate_jobs(jobs)
 
     jobs = [
         {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'granules': [invalid_burst_pair[0], invalid_burst_pair[1]]}}
     ]
-    with raises(validation.GranuleValidationError):
+    with pytest.raises(validation.GranuleValidationError):
         validation.validate_jobs(jobs)
 
 
@@ -415,13 +414,13 @@ def test_check_bounds_formatting():
     for valid_job in valid_jobs:
         validation.check_bounds_formatting(valid_job, {})
     for invalid_job in invalid_jobs_bad_order:
-        with raises(validation.BoundsValidationError, match=r'.*Invalid order for bounds.*'):
+        with pytest.raises(validation.BoundsValidationError, match=r'.*Invalid order for bounds.*'):
             validation.check_bounds_formatting(invalid_job, {})
     for invalid_job in invalid_jobs_bad_values:
-        with raises(validation.BoundsValidationError, match=r'.*Invalid lon/lat value(s)*'):
+        with pytest.raises(validation.BoundsValidationError, match=r'.*Invalid lon/lat value(s)*'):
             validation.check_bounds_formatting(invalid_job, {})
 
-    with raises(validation.BoundsValidationError, match=r'.*Bounds cannot be.*'):
+    with pytest.raises(validation.BoundsValidationError, match=r'.*Bounds cannot be.*'):
         validation.check_bounds_formatting(job_with_bad_bounds, {})
 
 
@@ -443,15 +442,15 @@ def test_check_granules_intersecting_bounds():
     validation.check_granules_intersecting_bounds(job_with_specified_bounds, valid_granule_metadata)
 
     error_pattern = r'.*Bounds cannot be.*'
-    with raises(validation.BoundsValidationError, match=error_pattern):
+    with pytest.raises(validation.BoundsValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_bad_bounds, valid_granule_metadata)
 
-    with raises(validation.BoundsValidationError, match=error_pattern):
+    with pytest.raises(validation.BoundsValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_bad_bounds, invalid_granule_metadata)
 
     error_pattern = r".*bounds: \['does_not_intersect1', 'does_not_intersect2', 'does_not_intersect3'\]*"
 
-    with raises(validation.GranuleValidationError, match=error_pattern):
+    with pytest.raises(validation.GranuleValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_specified_bounds, invalid_granule_metadata)
 
 
@@ -466,7 +465,7 @@ def test_check_same_relative_orbits():
     invalid_granule_metadata.append({'name': 'S1B_IW_RAW__0SDV_20200623T161535_20200623T161607_012345_02A10F_7FD6'})
     validation.check_same_relative_orbits({}, valid_granule_metadata)
     error_pattern = r'.*69 is not 87.*'
-    with raises(validation.GranuleValidationError, match=error_pattern):
+    with pytest.raises(validation.GranuleValidationError, match=error_pattern):
         validation.check_same_relative_orbits({}, invalid_granule_metadata)
 
 
@@ -476,5 +475,5 @@ def test_check_bounding_box_size():
     validation.check_bounding_box_size(job, None, max_bounds_area=100)
 
     error_pattern = r'.*Bounds must be smaller.*'
-    with raises(validation.BoundsValidationError, match=error_pattern):
+    with pytest.raises(validation.BoundsValidationError, match=error_pattern):
         validation.check_bounding_box_size(job, None, max_bounds_area=99.9)
