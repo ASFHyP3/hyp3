@@ -477,3 +477,56 @@ def test_check_bounding_box_size():
     error_pattern = r'.*Bounds must be smaller.*'
     with pytest.raises(validation.BoundsValidationError, match=error_pattern):
         validation.check_bounding_box_size(job, None, max_bounds_area=99.9)
+
+
+def test_check_ipf_version():
+    job = {'job_parameters': {'granules': ['foo']}}
+
+    validation.check_ipf_version(
+        job,
+        [
+            {
+                'umm': {
+                    'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.70'},
+                }
+            }
+        ],
+    )
+
+    validation.check_ipf_version(
+        job,
+        [
+            {
+                'umm': {
+                    'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.71'},
+                }
+            }
+        ],
+    )
+
+    with pytest.raises(
+        validation.GranuleValidationError,
+        match=r'^Granule foo has IPF version 002.69, minimum supported version is 002.70$',
+    ):
+        validation.check_ipf_version(
+            job,
+            [
+                {
+                    'umm': {
+                        'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.69'},
+                    }
+                }
+            ],
+        )
+
+    with pytest.raises(validation.InternalValidationError, match=r'^Got 2 CMR records for foo$'):
+        validation.check_ipf_version(job, [{}, {}])
+
+    with pytest.raises(validation.InternalValidationError, match=r'^Got 0 CMR records for foo$'):
+        validation.check_ipf_version(job, [])
+
+    with pytest.raises(validation.InternalValidationError, match=r"^Got unexpected PGEName 'badname' for foo$"):
+        validation.check_ipf_version(
+            job,
+            [{'umm': {'PGEVersionClass': {'PGEName': 'badname'}}}],
+        )

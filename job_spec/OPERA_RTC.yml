@@ -25,7 +25,8 @@ OPERA_RTC:
       cost: 1.0
   validators:
     - check_dem_coverage
-    # TODO additional validators?
+    - check_ipf_version
+    # TODO additional validators
   steps:
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/asfhyp3/hyp3-opera-rtc
