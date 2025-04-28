@@ -209,6 +209,24 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
         )
 
 
+def _has_rtc_static_coverage(granule_name: str) -> bool:
+    burst_id, swath = granule_name.split('_')[1:3]
+    params = {
+        'short_name': 'OPERA_L2_RTC-S1-STATIC_V1',
+        'granule_ur': f'OPERA_L2_RTC-S1-STATIC_T*-{burst_id}-{swath}_*',
+        'options[granule_ur][pattern]': 'true',
+    }
+    response = requests.get(CMR_URL, params=params)
+    response.raise_for_status()
+    return len(response.json()['feed']['entry']) > 0
+
+
+def check_rtc_static_coverage(_, granule_metadata: list[dict]) -> None:
+    bad_granules = [g['name'] for g in granule_metadata if not _has_rtc_static_coverage(g['name'])]
+    if bad_granules:
+        raise GranuleValidationError(f'Some requested scenes are outside the OPERA RTC processing extent: {", ".join(bad_granules)}')
+
+
 def validate_jobs(jobs: list[dict]) -> None:
     granules = get_granules(jobs)
     granule_metadata = _get_cmr_metadata(granules)

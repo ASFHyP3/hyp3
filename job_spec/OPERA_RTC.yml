@@ -25,6 +25,7 @@ OPERA_RTC:
       cost: 1.0
   validators:
     - check_dem_coverage
+    - check_rtc_static_coverage
     # TODO additional validators?
   steps:
     - name: ''

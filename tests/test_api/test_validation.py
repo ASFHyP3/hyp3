@@ -478,3 +478,23 @@ def test_check_bounding_box_size():
     error_pattern = r'.*Bounds must be smaller.*'
     with raises(validation.BoundsValidationError, match=error_pattern):
         validation.check_bounding_box_size(job, None, max_bounds_area=99.9)
+
+
+def test_has_rtc_static_coverage():
+    assert validation._has_rtc_static_coverage('S1_177314_IW3_20160110T095124_VV_AE7B-BURST')
+    assert validation._has_rtc_static_coverage('S1_078022_IW3_20160224T054649_VV_4352-BURST')
+    assert validation._has_rtc_static_coverage('S1_198787_IW3_20160228T021832_VV_930E-BURST')
+    assert validation._has_rtc_static_coverage('S1_178517_IW2_20160322T104641_VV_742C-BURST')
+    assert validation._has_rtc_static_coverage('S1_273778_IW1_20160524T114558_VV_9826-BURST')
+    assert validation._has_rtc_static_coverage('S1_097501_IW1_20160530T204219_VV_C0AD-BURST')
+    assert validation._has_rtc_static_coverage('S1_092651_IW2_20160611T165923_VV_79EF-BURST')
+    assert validation._has_rtc_static_coverage('S1_163128_IW3_20160613T225919_VV_A2CB-BURST')
+    assert validation._has_rtc_static_coverage('S1_100853_IW1_20160915T231630_VV_8503-BURST')
+    assert validation._has_rtc_static_coverage('S1_329501_IW3_20161023T062704_VV_BD45-BURST')
+    assert validation._has_rtc_static_coverage('S1_185140_IW3_20161030T155037_VV_582A-BURST')
+    assert validation._has_rtc_static_coverage('S1_045891_IW2_20161113T050951_VV_181E-BURST')
+    assert validation._has_rtc_static_coverage('S1_071554_IW2_20161214T004854_VV_2A21-BURST')
+    assert validation._has_rtc_static_coverage('S1_118338_IW2_20170102T124017_VV_0675-BURST')
+    assert not validation._has_rtc_static_coverage('S1_034724_IW3_20160317T203621_HH_4001-BURST')
+    assert not validation._has_rtc_static_coverage('S1_175498_IW2_20160415T082755_HH_C4A7-BURST')
+    assert not validation._has_rtc_static_coverage('S1_020134_IW2_20161031T092546_HH_CCD1-BURST')
