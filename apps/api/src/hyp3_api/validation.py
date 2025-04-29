@@ -216,23 +216,22 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
         )
 
 
-def check_ipf_version(job: dict, granule_metadata: list[dict]) -> None:
-    # TODO support multiple granules?
-    granule = job['job_parameters']['granules'][0]
-    if len(granule_metadata) != 1:
-        raise InternalValidationError(f'Got {len(granule_metadata)} CMR records for {granule}')
+def check_ipf_version(_, granule_metadata: list[dict]) -> None:
+    # FIXME: granule metadata must be umm_json not json
+    for granule in granule_metadata:
+        granule_name = granule['umm']['GranuleUR']
+        version_class = granule['umm']['PGEVersionClass']
 
-    version_class = granule_metadata[0]['umm']['PGEVersionClass']
-    name = version_class['PGEName']
-    if name != 'Sentinel-1 IPF':
-        raise InternalValidationError(f"Got unexpected PGEName '{name}' for {granule}")
+        pge_name = version_class['PGEName']
+        if pge_name != 'Sentinel-1 IPF':
+            raise InternalValidationError(f"Got unexpected PGEName '{pge_name}' for {granule_name}")
 
-    version = version_class['PGEVersion']
-    min_version = '002.70'
-    if version < min_version:
-        raise GranuleValidationError(
-            f'Granule {granule} has IPF version {version}, minimum supported version is {min_version}'
-        )
+        version = version_class['PGEVersion']
+        min_version = '002.70'
+        if version < min_version:
+            raise GranuleValidationError(
+                f'Granule {granule_name} has IPF version {version}, minimum supported version is {min_version}'
+            )
 
 
 def check_opera_rtc_date(job: dict, _) -> None:

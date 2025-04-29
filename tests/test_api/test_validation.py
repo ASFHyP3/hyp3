@@ -480,55 +480,75 @@ def test_check_bounding_box_size():
 
 
 def test_check_ipf_version():
-    job = {'job_parameters': {'granules': ['foo']}}
-
     validation.check_ipf_version(
-        job,
+        {},
         [
             {
                 'umm': {
+                    'GranuleUR': 'granule1',
                     'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.70'},
                 }
-            }
-        ],
-    )
-
-    validation.check_ipf_version(
-        job,
-        [
+            },
             {
                 'umm': {
+                    'GranuleUR': 'granule2',
                     'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.71'},
                 }
-            }
+            },
         ],
     )
 
-    with pytest.raises(
-        validation.GranuleValidationError,
-        match=r'^Granule foo has IPF version 002.69, minimum supported version is 002.70$',
-    ):
+    with pytest.raises(validation.InternalValidationError, match=r"^Got unexpected PGEName 'badname' for granule3$"):
         validation.check_ipf_version(
-            job,
+            {},
             [
                 {
                     'umm': {
-                        'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.69'},
+                        'GranuleUR': 'granule1',
+                        'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.70'},
                     }
-                }
+                },
+                {
+                    'umm': {
+                        'GranuleUR': 'granule2',
+                        'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.71'},
+                    }
+                },
+                {
+                    'umm': {
+                        'GranuleUR': 'granule3',
+                        'PGEVersionClass': {'PGEName': 'badname', 'PGEVersion': '002.71'},
+                    }
+                },
             ],
         )
 
-    with pytest.raises(validation.InternalValidationError, match=r'^Got 2 CMR records for foo$'):
-        validation.check_ipf_version(job, [{}, {}])
-
-    with pytest.raises(validation.InternalValidationError, match=r'^Got 0 CMR records for foo$'):
-        validation.check_ipf_version(job, [])
-
-    with pytest.raises(validation.InternalValidationError, match=r"^Got unexpected PGEName 'badname' for foo$"):
+    with pytest.raises(
+            validation.GranuleValidationError,
+            match=r'^Granule granule3 has IPF version 002.69, minimum supported version is 002.70$',
+    ):
         validation.check_ipf_version(
-            job,
-            [{'umm': {'PGEVersionClass': {'PGEName': 'badname'}}}],
+            {},
+            [
+                {
+                    'umm': {
+                        'GranuleUR': 'granule1',
+                        'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.70'},
+                    }
+                },
+                {
+                    'umm': {
+                        'GranuleUR': 'granule2',
+                        'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.71'},
+                    }
+                },
+                {
+                    'umm': {
+                        'GranuleUR': 'granule3',
+                        'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.69'},
+                    }
+                },
+            ],
         )
 
 
