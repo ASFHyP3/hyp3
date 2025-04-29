@@ -25,7 +25,7 @@ OPERA_RTC:
   validators:
     - check_dem_coverage
     - check_ipf_version
-    # TODO additional validators
+    - check_opera_rtc_date
   steps:
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/asfhyp3/hyp3-opera-rtc
