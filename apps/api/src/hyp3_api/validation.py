@@ -15,12 +15,6 @@ from hyp3_api.util import get_granules
 DEM_COVERAGE = None
 
 
-class InternalValidationError(Exception):
-    """Raised for internal validation errors that should not be displayed to the user."""
-
-    pass
-
-
 class GranuleValidationError(Exception):
     pass
 
@@ -214,23 +208,6 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
         raise BoundsValidationError(
             f'Bounds must be smaller than {max_bounds_area} degrees squared. Box provided was {bounds_area:.2f}'
         )
-
-
-def check_ipf_version(_, granule_metadata: list[dict]) -> None:
-    for granule in granule_metadata:
-        granule_name = granule['umm']['GranuleUR']
-        version_class = granule['umm']['PGEVersionClass']
-
-        pge_name = version_class['PGEName']
-        if pge_name != 'Sentinel-1 IPF':
-            raise InternalValidationError(f"Got unexpected PGEName '{pge_name}' for {granule_name}")
-
-        version = version_class['PGEVersion']
-        min_version = '002.70'
-        if version < min_version:
-            raise GranuleValidationError(
-                f'Granule {granule_name} has IPF version {version}, minimum supported version is {min_version}'
-            )
 
 
 def check_opera_rtc_date(job: dict, _) -> None:

@@ -24,7 +24,6 @@ OPERA_RTC:
       cost: 1.0
   validators:
     - check_dem_coverage
-    - check_ipf_version
     - check_opera_rtc_date
   steps:
     - name: ''
