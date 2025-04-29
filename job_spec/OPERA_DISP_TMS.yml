@@ -40,7 +40,7 @@ OPERA_DISP_TMS:
       timeout: 1800 # 30 min
       compute_environment: Default
       vcpu: 1
-      memory: 40000
+      memory: 63500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
