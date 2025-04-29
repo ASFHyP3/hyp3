@@ -217,7 +217,6 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
 
 
 def check_ipf_version(_, granule_metadata: list[dict]) -> None:
-    # FIXME: granule metadata must be umm_json not json
     for granule in granule_metadata:
         granule_name = granule['umm']['GranuleUR']
         version_class = granule['umm']['PGEVersionClass']
