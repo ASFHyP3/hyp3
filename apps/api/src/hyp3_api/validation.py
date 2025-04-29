@@ -1,7 +1,7 @@
 import json
 import sys
 from collections.abc import Iterable
-from datetime import datetime, date
+from datetime import date, datetime
 from pathlib import Path
 
 import requests
