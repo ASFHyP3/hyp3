@@ -1,3 +1,4 @@
+# TODO: rename file / job name to OPERA_RTC_S1?
 OPERA_RTC:
   required_parameters:
     - granules
