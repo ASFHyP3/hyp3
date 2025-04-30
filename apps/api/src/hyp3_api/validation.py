@@ -231,7 +231,9 @@ def _has_rtc_static_coverage(granule_name: str) -> bool:
 def check_rtc_static_coverage(_, granule_metadata: list[dict]) -> None:
     bad_granules = [g['name'] for g in granule_metadata if not _has_rtc_static_coverage(g['name'])]
     if bad_granules:
-        raise GranuleValidationError(f'Some requested scenes are outside the OPERA RTC processing extent: {", ".join(bad_granules)}')
+        raise GranuleValidationError(
+            f'Some requested scenes are outside the OPERA RTC processing extent: {", ".join(bad_granules)}'
+        )
 
 
 def check_opera_rtc_date(job: dict, _) -> None:
