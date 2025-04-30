@@ -38,7 +38,7 @@ A processing environment for HyP3 Plugins in AWS.
    eval $(make env)
    make render && pytest
    ```
-   In particular, if you want to skip the slower integration tests, you can run:
+   In particular, if you want to skip the slower tests, you can run:
    ```
    pytest -m 'not slow'
    ```
