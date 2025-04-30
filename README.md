@@ -42,7 +42,8 @@ A processing environment for HyP3 Plugins in AWS.
    ```
    pytest -m 'not slow'
    ```
-
+   When writing new tests, please decorate slow tests with `@pytest.mark.slow`
+   (where "slow" is according to your best judgment).
 
 ## Deployment
 
