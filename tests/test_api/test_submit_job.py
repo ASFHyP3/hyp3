@@ -1,11 +1,14 @@
 from decimal import Decimal
 from http import HTTPStatus
 
+import responses
+
 from dynamo.user import APPLICATION_PENDING
 from dynamo.util import current_utc_time
 from test_api.conftest import login, make_job, setup_requests_mock, submit_batch
 
 
+@responses.activate
 def test_submit_one_job(client, approved_user):
     login(client, username=approved_user)
     batch = [make_job()]
@@ -19,6 +22,7 @@ def test_submit_one_job(client, approved_user):
     assert jobs[0]['user_id'] == approved_user
 
 
+@responses.activate
 def test_submit_insar_gamma(client, approved_user):
     login(client, username=approved_user)
     granules = [
@@ -55,6 +59,7 @@ def test_submit_insar_gamma(client, approved_user):
     assert response.status_code == HTTPStatus.OK
 
 
+@responses.activate
 def test_submit_autorift(client, approved_user):
     login(client, username=approved_user)
     job = make_job(
@@ -70,6 +75,7 @@ def test_submit_autorift(client, approved_user):
     assert response.status_code == HTTPStatus.OK
 
 
+@responses.activate
 def test_submit_multiple_job_types(client, approved_user):
     login(client, username=approved_user)
     rtc_gamma_job = make_job()
@@ -93,6 +99,7 @@ def test_submit_multiple_job_types(client, approved_user):
     assert response.status_code == HTTPStatus.OK
 
 
+@responses.activate
 def test_submit_many_jobs(client, approved_user):
     max_jobs = 25
     login(client, username=approved_user)
@@ -112,6 +119,7 @@ def test_submit_many_jobs(client, approved_user):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
+@responses.activate
 def test_submit_exceeds_remaining_credits(client, approved_user, monkeypatch):
     login(client, username=approved_user)
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
@@ -130,6 +138,7 @@ def test_submit_exceeds_remaining_credits(client, approved_user, monkeypatch):
     assert response2.json['detail'] == 'These jobs would cost 10.0 credits, but you have only 5.0 remaining.'
 
 
+@responses.activate
 def test_submit_unapproved_user(client, tables):
     tables.users_table.put_item(
         Item={
@@ -155,6 +164,7 @@ def test_submit_without_jobs(client):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
+@responses.activate
 def test_submit_job_without_name(client, approved_user):
     login(client, username=approved_user)
     batch = [make_job(name=None)]
@@ -164,6 +174,7 @@ def test_submit_job_without_name(client, approved_user):
     assert response.status_code == HTTPStatus.OK
 
 
+@responses.activate
 def test_submit_job_with_empty_name(client):
     login(client)
     batch = [make_job(name='')]
@@ -172,6 +183,7 @@ def test_submit_job_with_empty_name(client):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
+@responses.activate
 def test_submit_job_with_long_name(client):
     login(client)
     batch = [make_job(name='X' * 101)]
@@ -194,6 +206,7 @@ def test_submit_job_without_granules(client):
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
+@responses.activate
 def test_submit_job_granule_does_not_exist(client, tables):
     batch = [
         make_job(['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38']),
@@ -212,6 +225,7 @@ def test_submit_job_granule_does_not_exist(client, tables):
     )
 
 
+@responses.activate
 def test_submit_good_rtc_granule_names(client, approved_user):
     login(client, username=approved_user)
     good_granule_names = [
@@ -231,6 +245,7 @@ def test_submit_good_rtc_granule_names(client, approved_user):
         assert response.status_code == HTTPStatus.OK
 
 
+@responses.activate
 def test_submit_bad_rtc_granule_names(client):
     login(client)
     bad_granule_names = [
@@ -268,6 +283,7 @@ def test_submit_bad_rtc_granule_names(client):
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
+@responses.activate
 def test_submit_good_autorift_granule_names(client, approved_user):
     login(client, username=approved_user)
     good_granule_names = [
@@ -290,6 +306,7 @@ def test_submit_good_autorift_granule_names(client, approved_user):
         assert response.status_code == HTTPStatus.OK
 
 
+@responses.activate
 def test_submit_bad_autorift_granule_names(client):
     login(client)
     bad_granule_names = [
@@ -334,6 +351,7 @@ def test_submit_bad_autorift_granule_names(client):
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
+@responses.activate
 def test_submit_mixed_job_parameters(client, approved_user):
     login(client, username=approved_user)
 
@@ -391,6 +409,7 @@ def test_submit_mixed_job_parameters(client, approved_user):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
+@responses.activate
 def test_float_input(client, approved_user):
     login(client, username=approved_user)
     batch = [make_job(parameters={'resolution': 30.0})]
@@ -406,6 +425,7 @@ def test_float_input(client, approved_user):
     assert isinstance(response.json['jobs'][0]['job_parameters']['resolution'], int)
 
 
+@responses.activate
 def test_submit_validate_only(client, tables, approved_user):
     login(client, username=approved_user)
     batch = [make_job()]

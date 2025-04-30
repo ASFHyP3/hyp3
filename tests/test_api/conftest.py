@@ -103,7 +103,6 @@ def setup_requests_mock_with_given_polygons(granule_polygon_pairs):
             ]
         }
     }
-    responses.reset()
     responses.add(responses.POST, CMR_URL_RE, json.dumps(cmr_response))
 
 
