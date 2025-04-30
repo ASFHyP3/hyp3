@@ -3,16 +3,56 @@ from http import HTTPStatus
 
 import responses
 
+import hyp3_api.util
 from dynamo.user import APPLICATION_PENDING
 from dynamo.util import current_utc_time
-from test_api.conftest import login, make_job, setup_requests_mock, submit_batch
+from test_api.conftest import login, setup_mock_cmr_response_for_polygons, JOBS_URI
+
+
+def make_job(granules=None, name='someName', job_type='RTC_GAMMA', parameters=None):
+    if granules is None:
+        granules = ['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38']
+    if parameters is None:
+        parameters = {}
+    job = {'job_type': job_type, 'job_parameters': {'granules': granules, **parameters}}
+    if name is not None:
+        job['name'] = name
+
+    return job
+
+
+def submit_batch(client, batch=None, validate_only=None):
+    if batch is None:
+        batch = [make_job()]
+    payload = {
+        'jobs': batch,
+    }
+    if validate_only is not None:
+        payload['validate_only'] = validate_only
+    return client.post(JOBS_URI, json=payload)
+
+
+def setup_mock_cmr_response_for_jobs(batch):
+    granule_polygon_pairs = [
+        (
+            granule,
+            [
+                [
+                    '3.871941 -157.47052 62.278873 -156.62677 62.712959 -151.784653 '
+                    '64.318275 -152.353271 63.871941 -157.47052'
+                ]
+            ],
+        )
+        for granule in hyp3_api.util.get_granules(batch)
+    ]
+    setup_mock_cmr_response_for_polygons(granule_polygon_pairs)
 
 
 @responses.activate
 def test_submit_one_job(client, approved_user):
     login(client, username=approved_user)
     batch = [make_job()]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
     jobs = response.json['jobs']
@@ -35,7 +75,7 @@ def test_submit_insar_gamma(client, approved_user):
         job_type='INSAR_GAMMA',
     )
     batch = [job]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
     response = submit_batch(client, batch=batch)
     assert response.status_code == HTTPStatus.OK
 
@@ -54,7 +94,7 @@ def test_submit_insar_gamma(client, approved_user):
         },
     )
     batch = [job]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
     response = submit_batch(client, batch=batch)
     assert response.status_code == HTTPStatus.OK
 
@@ -70,7 +110,7 @@ def test_submit_autorift(client, approved_user):
         job_type='AUTORIFT',
     )
     batch = [job]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
 
@@ -94,7 +134,7 @@ def test_submit_multiple_job_types(client, approved_user):
         job_type='AUTORIFT',
     )
     batch = [rtc_gamma_job, insar_gamma_job, autorift_job]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
 
@@ -105,7 +145,7 @@ def test_submit_many_jobs(client, approved_user):
     login(client, username=approved_user)
 
     batch = [make_job() for ii in range(max_jobs)]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
 
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
@@ -125,13 +165,13 @@ def test_submit_exceeds_remaining_credits(client, approved_user, monkeypatch):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '25')
 
     batch1 = [make_job() for _ in range(20)]
-    setup_requests_mock(batch1)
+    setup_mock_cmr_response_for_jobs(batch1)
 
     response1 = submit_batch(client, batch1)
     assert response1.status_code == HTTPStatus.OK
 
     batch2 = [make_job() for _ in range(10)]
-    setup_requests_mock(batch2)
+    setup_mock_cmr_response_for_jobs(batch2)
 
     response2 = submit_batch(client, batch2)
     assert response2.status_code == HTTPStatus.BAD_REQUEST
@@ -150,7 +190,7 @@ def test_submit_unapproved_user(client, tables):
     login(client, username='foo')
 
     batch = [make_job()]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
 
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -168,7 +208,7 @@ def test_submit_without_jobs(client):
 def test_submit_job_without_name(client, approved_user):
     login(client, username=approved_user)
     batch = [make_job(name=None)]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
 
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
@@ -178,7 +218,7 @@ def test_submit_job_without_name(client, approved_user):
 def test_submit_job_with_empty_name(client):
     login(client)
     batch = [make_job(name='')]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
@@ -187,7 +227,7 @@ def test_submit_job_with_empty_name(client):
 def test_submit_job_with_long_name(client):
     login(client)
     batch = [make_job(name='X' * 101)]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
@@ -212,7 +252,7 @@ def test_submit_job_granule_does_not_exist(client, tables):
         make_job(['S1B_IW_SLC__1SDV_20200604T082207_20200604T082234_021881_029874_5E38']),
         make_job(['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2B']),
     ]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
     batch.append(make_job(['S1A_IW_SLC__1SDV_20200610T173646_20200610T173704_032958_03D14C_5F2A']))
 
     login(client)
@@ -240,7 +280,7 @@ def test_submit_good_rtc_granule_names(client, approved_user):
         batch = [
             make_job([granule]),
         ]
-        setup_requests_mock(batch)
+        setup_mock_cmr_response_for_jobs(batch)
         response = submit_batch(client, batch)
         assert response.status_code == HTTPStatus.OK
 
@@ -278,7 +318,7 @@ def test_submit_bad_rtc_granule_names(client):
         batch = [
             make_job(granule),
         ]
-        setup_requests_mock(batch)
+        setup_mock_cmr_response_for_jobs(batch)
         response = submit_batch(client, batch)
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
@@ -301,7 +341,7 @@ def test_submit_good_autorift_granule_names(client, approved_user):
         batch = [
             make_job(job_type='AUTORIFT', granules=[granule, granule]),
         ]
-        setup_requests_mock(batch)
+        setup_mock_cmr_response_for_jobs(batch)
         response = submit_batch(client, batch)
         assert response.status_code == HTTPStatus.OK
 
@@ -346,7 +386,7 @@ def test_submit_bad_autorift_granule_names(client):
         batch = [
             make_job(job_type='AUTORIFT', granules=[granule, granule]),
         ]
-        setup_requests_mock(batch)
+        setup_mock_cmr_response_for_jobs(batch)
         response = submit_batch(client, batch)
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
@@ -368,7 +408,7 @@ def test_submit_mixed_job_parameters(client, approved_user):
 
     job = make_job(job_type='RTC_GAMMA', parameters=rtc_parameters)
     batch = [job]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
 
@@ -382,7 +422,7 @@ def test_submit_mixed_job_parameters(client, approved_user):
 
     job = make_job(granules=granule_pair, job_type='INSAR_GAMMA', parameters=insar_parameters)
     batch = [job]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
 
@@ -396,7 +436,7 @@ def test_submit_mixed_job_parameters(client, approved_user):
 
     job = make_job(granules=granule_pair, job_type='AUTORIFT')
     batch = [job]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
 
@@ -413,13 +453,13 @@ def test_submit_mixed_job_parameters(client, approved_user):
 def test_float_input(client, approved_user):
     login(client, username=approved_user)
     batch = [make_job(parameters={'resolution': 30.0})]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
     assert isinstance(response.json['jobs'][0]['job_parameters']['resolution'], float)
 
     batch = [make_job(parameters={'resolution': 30})]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
     response = submit_batch(client, batch)
     assert response.status_code == HTTPStatus.OK
     assert isinstance(response.json['jobs'][0]['job_parameters']['resolution'], int)
@@ -429,7 +469,7 @@ def test_float_input(client, approved_user):
 def test_submit_validate_only(client, tables, approved_user):
     login(client, username=approved_user)
     batch = [make_job()]
-    setup_requests_mock(batch)
+    setup_mock_cmr_response_for_jobs(batch)
 
     response = submit_batch(client, batch, validate_only=True)
     assert response.status_code == HTTPStatus.OK

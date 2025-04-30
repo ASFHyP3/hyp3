@@ -6,7 +6,7 @@ import responses
 from shapely.geometry import Polygon
 
 from hyp3_api import CMR_URL, multi_burst_validation, validation
-from test_api.conftest import setup_requests_mock_with_given_polygons
+from test_api.conftest import setup_mock_cmr_response_for_polygons
 
 
 def rectangle(north, south, east, west):
@@ -304,7 +304,7 @@ def test_validate_jobs():
             ],
         ),
     ]
-    setup_requests_mock_with_given_polygons(granule_polygon_pairs)
+    setup_mock_cmr_response_for_polygons(granule_polygon_pairs)
 
     jobs = [
         {
