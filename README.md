@@ -28,10 +28,21 @@ A processing environment for HyP3 Plugins in AWS.
    conda env create -f environment.yml
    conda activate hyp3
    ```
-3. Run the tests
+3. Run the tests:
    ```
    make tests
    ```
+   Alternatively, you can run:
+   ```
+   eval $(make env)
+   make render && pytest
+   ```
+   if you want to invoke `pytest` directly (e.g. for passing command-line arguments).
+   In particular, if you want to skip the slower integration tests, you can run:
+   ```
+   pytest -m 'not slow'
+   ```
+
 
 ## Deployment
 

@@ -1,8 +1,11 @@
 from http import HTTPStatus
 
+import pytest
+
 from test_api.conftest import JOBS_URI, login
 
 
+@pytest.mark.slow
 def test_submit_opera_rtc_validate_only(client, tables, approved_user):
     login(client, username=approved_user)
 
