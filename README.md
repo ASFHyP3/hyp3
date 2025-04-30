@@ -32,12 +32,12 @@ A processing environment for HyP3 Plugins in AWS.
    ```
    make tests
    ```
-   Alternatively, you can run:
+   Alternatively, you can run the following if you want to invoke `pytest` directly
+   (e.g. for passing command-line arguments):
    ```
    eval $(make env)
    make render && pytest
    ```
-   if you want to invoke `pytest` directly (e.g. for passing command-line arguments).
    In particular, if you want to skip the slower integration tests, you can run:
    ```
    pytest -m 'not slow'
