@@ -15,6 +15,12 @@ from hyp3_api.util import get_granules
 DEM_COVERAGE = None
 
 
+class InternalValidationError(Exception):
+    """Raised for internal validation errors that should not be displayed to the user."""
+
+    pass
+
+
 class GranuleValidationError(Exception):
     pass
 
@@ -212,15 +218,17 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
 
 def check_opera_rtc_date(job: dict, _) -> None:
     granules = job['job_parameters']['granules']
-    if len(granules) == 1:
-        granule = granules[0]
-        granule_date = datetime.strptime(granule.split('_')[3][:8], '%Y%m%d').date()
-        if granule_date >= date(2022, 1, 1):
-            raise GranuleValidationError(
-                f'Granule {granule} was acquired on or after 2022-01-01 '
-                'and is not available for On Demand OPERA_RTC processing. '
-                'You can download the product from the ASF DAAC archive.'
-            )
+    if len(granules) != 1:
+        raise InternalValidationError(f'Expected 1 granule, got {granules}')
+
+    granule = granules[0]
+    granule_date = datetime.strptime(granule.split('_')[3][:8], '%Y%m%d').date()
+    if granule_date >= date(2022, 1, 1):
+        raise GranuleValidationError(
+            f'Granule {granule} was acquired on or after 2022-01-01 '
+            'and is not available for On Demand OPERA_RTC processing. '
+            'You can download the product from the ASF DAAC archive.'
+        )
 
 
 def validate_jobs(jobs: list[dict]) -> None:

@@ -484,17 +484,24 @@ def test_check_opera_rtc_date():
         {'job_parameters': {'granules': ['S1_000000_IW1_20211231T235959_VV_0000-BURST']}}, []
     )
 
-    validation.check_opera_rtc_date(
-        {
-            'job_parameters': {
-                'granules': [
-                    'S1_000000_IW1_20220101T000000_VV_0000-BURST',
-                    'S1_000000_IW1_20220101T000000_VV_0000-BURST',
-                ]
-            }
-        },
-        [],
-    )
+    with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
+        validation.check_opera_rtc_date(
+            {
+                'job_parameters': {
+                    'granules': [
+                        'S1_000000_IW1_20211231T235959_VV_0000-BURST',
+                        'S1_000000_IW1_20211231T235959_VV_0000-BURST',
+                    ]
+                }
+            },
+            [],
+        )
+
+    with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
+        validation.check_opera_rtc_date(
+            {'job_parameters': {'granules': []}},
+            [],
+        )
 
     with pytest.raises(
         validation.GranuleValidationError,
