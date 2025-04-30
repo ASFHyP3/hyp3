@@ -223,6 +223,15 @@ def check_opera_rtc_date(job: dict, _) -> None:
 
     granule = granules[0]
     granule_date = datetime.strptime(granule.split('_')[3][:8], '%Y%m%d').date()
+
+    # Disallow IPF version < 002.70 according to the dates given at https://sar-mpc.eu/processor/ipf/
+    # Also see https://github.com/ASFHyP3/hyp3/issues/2739
+    if granule_date < date(2016, 4, 14):
+        raise GranuleValidationError(
+            f'Granule {granule} was acquired before 2016-04-14 '
+            'and is not available for On Demand OPERA_RTC processing.'
+        )
+
     if granule_date >= date(2022, 1, 1):
         raise GranuleValidationError(
             f'Granule {granule} was acquired on or after 2022-01-01 '
