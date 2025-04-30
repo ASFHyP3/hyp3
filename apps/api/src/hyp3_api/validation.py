@@ -234,36 +234,27 @@ def check_rtc_static_coverage(_, granule_metadata: list[dict]) -> None:
         raise GranuleValidationError(f'Some requested scenes are outside the OPERA RTC processing extent: {", ".join(bad_granules)}')
 
 
-def check_ipf_version(job: dict, granule_metadata: list[dict]) -> None:
-    # TODO support multiple granules?
-    granule = job['job_parameters']['granules'][0]
-    if len(granule_metadata) != 1:
-        raise InternalValidationError(f'Got {len(granule_metadata)} CMR records for {granule}')
-
-    version_class = granule_metadata[0]['umm']['PGEVersionClass']
-    name = version_class['PGEName']
-    if name != 'Sentinel-1 IPF':
-        raise InternalValidationError(f"Got unexpected PGEName '{name}' for {granule}")
-
-    version = version_class['PGEVersion']
-    min_version = '002.70'
-    if version < min_version:
-        raise GranuleValidationError(
-            f'Granule {granule} has IPF version {version}, minimum supported version is {min_version}'
-        )
-
-
 def check_opera_rtc_date(job: dict, _) -> None:
     granules = job['job_parameters']['granules']
-    if len(granules) == 1:
-        granule = granules[0]
-        granule_date = datetime.strptime(granule.split('_')[3][:8], '%Y%m%d').date()
-        if granule_date >= date(2022, 1, 1):
-            raise GranuleValidationError(
-                f'Granule {granule} was acquired on or after 2022-01-01 '
-                'and is not available for On Demand OPERA_RTC processing. '
-                'You can download the product from the ASF DAAC archive.'
-            )
+    if len(granules) != 1:
+        raise InternalValidationError(f'Expected 1 granule, got {granules}')
+
+    granule = granules[0]
+    granule_date = datetime.strptime(granule.split('_')[3][:8], '%Y%m%d').date()
+
+    # Disallow IPF version < 002.70 according to the dates given at https://sar-mpc.eu/processor/ipf/
+    # Also see https://github.com/ASFHyP3/hyp3/issues/2739
+    if granule_date < date(2016, 4, 14):
+        raise GranuleValidationError(
+            f'Granule {granule} was acquired before 2016-04-14 and is not available for On Demand OPERA_RTC processing.'
+        )
+
+    if granule_date >= date(2022, 1, 1):
+        raise GranuleValidationError(
+            f'Granule {granule} was acquired on or after 2022-01-01 '
+            'and is not available for On Demand OPERA_RTC processing. '
+            'You can download the product from the ASF DAAC archive.'
+        )
 
 
 def validate_jobs(jobs: list[dict]) -> None:

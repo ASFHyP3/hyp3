@@ -499,74 +499,37 @@ def test_has_rtc_static_coverage():
     assert not validation._has_rtc_static_coverage('S1_020134_IW2_20161031T092546_HH_CCD1-BURST')
 
 
-def test_check_ipf_version():
-    job = {'job_parameters': {'granules': ['foo']}}
+def test_check_opera_rtc_date_1_granule():
+    with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
+        validation.check_opera_rtc_date(
+            {'job_parameters': {'granules': ['foo', 'bar']}},
+            [],
+        )
 
-    validation.check_ipf_version(
-        job,
-        [
-            {
-                'umm': {
-                    'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.70'},
-                }
-            }
-        ],
-    )
+    with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
+        validation.check_opera_rtc_date(
+            {'job_parameters': {'granules': []}},
+            [],
+        )
 
-    validation.check_ipf_version(
-        job,
-        [
-            {
-                'umm': {
-                    'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.71'},
-                }
-            }
-        ],
+
+def test_check_opera_rtc_date_min_date():
+    validation.check_opera_rtc_date(
+        {'job_parameters': {'granules': ['S1_000000_IW1_20160414T000000_VV_0000-BURST']}}, []
     )
 
     with pytest.raises(
         validation.GranuleValidationError,
-        match=r'^Granule foo has IPF version 002.69, minimum supported version is 002.70$',
+        match=r'^Granule S1_000000_IW1_20160413T235959_VV_0000-BURST was acquired before 2016-04-14 .*$',
     ):
-        validation.check_ipf_version(
-            job,
-            [
-                {
-                    'umm': {
-                        'PGEVersionClass': {'PGEName': 'Sentinel-1 IPF', 'PGEVersion': '002.69'},
-                    }
-                }
-            ],
-        )
-
-    with pytest.raises(validation.InternalValidationError, match=r'^Got 2 CMR records for foo$'):
-        validation.check_ipf_version(job, [{}, {}])
-
-    with pytest.raises(validation.InternalValidationError, match=r'^Got 0 CMR records for foo$'):
-        validation.check_ipf_version(job, [])
-
-    with pytest.raises(validation.InternalValidationError, match=r"^Got unexpected PGEName 'badname' for foo$"):
-        validation.check_ipf_version(
-            job,
-            [{'umm': {'PGEVersionClass': {'PGEName': 'badname'}}}],
+        validation.check_opera_rtc_date(
+            {'job_parameters': {'granules': ['S1_000000_IW1_20160413T235959_VV_0000-BURST']}}, []
         )
 
 
-def test_check_opera_rtc_date():
+def test_check_opera_rtc_date_max_date():
     validation.check_opera_rtc_date(
         {'job_parameters': {'granules': ['S1_000000_IW1_20211231T235959_VV_0000-BURST']}}, []
-    )
-
-    validation.check_opera_rtc_date(
-        {
-            'job_parameters': {
-                'granules': [
-                    'S1_000000_IW1_20220101T000000_VV_0000-BURST',
-                    'S1_000000_IW1_20220101T000000_VV_0000-BURST',
-                ]
-            }
-        },
-        [],
     )
 
     with pytest.raises(
