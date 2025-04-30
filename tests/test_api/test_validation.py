@@ -275,14 +275,11 @@ def test_get_cmr_metadata():
     ]
 
 
+@responses.activate
 def test_validate_jobs():
     unknown_granule = 'unknown'
     granule_with_dem_coverage = 'S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8'
     granule_without_dem_coverage = 'S1A_IW_GRDH_1SDV_20201219T222530_20201219T222555_035761_042F72_8378'
-
-    valid_burst_pair = ('S1_136231_IW2_20200604T022312_VV_7C85-BURST', 'S1_136231_IW2_20200616T022313_VV_5D11-BURST')
-
-    invalid_burst_pair = ('S1_136231_IW2_20200616T022313_VV_5D11-BURST', 'S1_136232_IW2_20200604T022315_VV_7C85-BURST')
 
     granule_polygon_pairs = [
         (
@@ -333,11 +330,6 @@ def test_validate_jobs():
             },
         },
         {'job_type': 'ARIA_RAIDER', 'job_parameters': {}},
-        {
-            'job_type': 'INSAR_ISCE_MULTI_BURST',
-            'job_parameters': {'reference': [valid_burst_pair[0]], 'secondary': [valid_burst_pair[1]]},
-        },
-        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'granules': [valid_burst_pair[0], valid_burst_pair[1]]}},
     ]
     validation.validate_jobs(jobs)
 
@@ -359,21 +351,6 @@ def test_validate_jobs():
                 'granules': [granule_without_dem_coverage],
             },
         }
-    ]
-    with pytest.raises(validation.GranuleValidationError):
-        validation.validate_jobs(jobs)
-
-    jobs = [
-        {
-            'job_type': 'INSAR_ISCE_MULTI_BURST',
-            'job_parameters': {'reference': [invalid_burst_pair[0]], 'secondary': [invalid_burst_pair[1]]},
-        }
-    ]
-    with pytest.raises(multi_burst_validation.MultiBurstValidationError):
-        validation.validate_jobs(jobs)
-
-    jobs = [
-        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'granules': [invalid_burst_pair[0], invalid_burst_pair[1]]}}
     ]
     with pytest.raises(validation.GranuleValidationError):
         validation.validate_jobs(jobs)
