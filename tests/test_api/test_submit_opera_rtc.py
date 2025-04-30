@@ -21,3 +21,6 @@ def test_submit_opera_rtc_validate_only(client, tables, approved_user):
     assert response.status_code == HTTPStatus.OK
     jobs = tables.jobs_table.scan()['Items']
     assert len(jobs) == 0
+
+
+# TODO: more tests
