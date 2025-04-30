@@ -228,8 +228,7 @@ def check_opera_rtc_date(job: dict, _) -> None:
     # Also see https://github.com/ASFHyP3/hyp3/issues/2739
     if granule_date < date(2016, 4, 14):
         raise GranuleValidationError(
-            f'Granule {granule} was acquired before 2016-04-14 '
-            'and is not available for On Demand OPERA_RTC processing.'
+            f'Granule {granule} was acquired before 2016-04-14 and is not available for On Demand OPERA_RTC processing.'
         )
 
     if granule_date >= date(2022, 1, 1):
