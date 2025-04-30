@@ -470,6 +470,7 @@ def test_check_opera_rtc_static_coverage_1_granule():
         )
 
 
+@pytest.mark.slow
 def test_check_opera_rtc_static_coverage():
     validation.check_opera_rtc_static_coverage(
         {'job_parameters': {'granules': ['S1_118338_IW2_20170102T124017_VV_0675-BURST']}},
