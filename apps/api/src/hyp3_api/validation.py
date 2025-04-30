@@ -216,6 +216,28 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
         )
 
 
+def _has_opera_rtc_static_coverage(granule_name: str) -> bool:
+    burst_number, swath = granule_name.split('_')[1:3]
+    params = {
+        'short_name': 'OPERA_L2_RTC-S1-STATIC_V1',
+        'granule_ur': f'OPERA_L2_RTC-S1-STATIC_T*-{burst_number}-{swath}_*',
+        'options[granule_ur][pattern]': 'true',
+    }
+    response = requests.get(CMR_URL, params=params)
+    response.raise_for_status()
+    return bool(response.json()['feed']['entry'])
+
+
+def check_opera_rtc_static_coverage(job: dict, _) -> None:
+    granules = job['job_parameters']['granules']
+    if len(granules) != 1:
+        raise InternalValidationError(f'Expected 1 granule, got {granules}')
+
+    granule = granules[0]
+    if not _has_opera_rtc_static_coverage(granule):
+        raise GranuleValidationError(f'Granule {granule} is outside of the OPERA RTC processing extent.')
+
+
 def check_opera_rtc_date(job: dict, _) -> None:
     granules = job['job_parameters']['granules']
     if len(granules) != 1:
@@ -228,13 +250,13 @@ def check_opera_rtc_date(job: dict, _) -> None:
     # Also see https://github.com/ASFHyP3/hyp3/issues/2739
     if granule_date < date(2016, 4, 14):
         raise GranuleValidationError(
-            f'Granule {granule} was acquired before 2016-04-14 and is not available for On Demand OPERA_RTC processing.'
+            f'Granule {granule} was acquired before 2016-04-14 and is not available for On Demand OPERA RTC processing.'
         )
 
     if granule_date >= date(2022, 1, 1):
         raise GranuleValidationError(
             f'Granule {granule} was acquired on or after 2022-01-01 '
-            'and is not available for On Demand OPERA_RTC processing. '
+            'and is not available for On Demand OPERA RTC processing. '
             'You can download the product from the ASF DAAC archive.'
         )
 

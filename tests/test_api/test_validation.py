@@ -479,23 +479,53 @@ def test_check_bounding_box_size():
         validation.check_bounding_box_size(job, None, max_bounds_area=99.9)
 
 
+def test_check_opera_rtc_static_coverage_1_granule():
+    with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
+        validation.check_opera_rtc_static_coverage(
+            {'job_parameters': {'granules': ['foo', 'bar']}},
+            None,
+        )
+
+    with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
+        validation.check_opera_rtc_static_coverage(
+            {'job_parameters': {'granules': []}},
+            None,
+        )
+
+
+def test_check_opera_rtc_static_coverage():
+    validation.check_opera_rtc_static_coverage(
+        {'job_parameters': {'granules': ['S1_118338_IW2_20170102T124017_VV_0675-BURST']}},
+        None,
+    )
+
+    with pytest.raises(
+        validation.GranuleValidationError,
+        match=r'^Granule S1_020134_IW2_20161031T092546_HH_CCD1-BURST is outside of the OPERA RTC processing extent\.$',
+    ):
+        validation.check_opera_rtc_static_coverage(
+            {'job_parameters': {'granules': ['S1_020134_IW2_20161031T092546_HH_CCD1-BURST']}},
+            None,
+        )
+
+
 def test_check_opera_rtc_date_1_granule():
     with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
         validation.check_opera_rtc_date(
             {'job_parameters': {'granules': ['foo', 'bar']}},
-            [],
+            None,
         )
 
     with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
         validation.check_opera_rtc_date(
             {'job_parameters': {'granules': []}},
-            [],
+            None,
         )
 
 
 def test_check_opera_rtc_date_min_date():
     validation.check_opera_rtc_date(
-        {'job_parameters': {'granules': ['S1_000000_IW1_20160414T000000_VV_0000-BURST']}}, []
+        {'job_parameters': {'granules': ['S1_000000_IW1_20160414T000000_VV_0000-BURST']}}, None
     )
 
     with pytest.raises(
@@ -503,13 +533,13 @@ def test_check_opera_rtc_date_min_date():
         match=r'^Granule S1_000000_IW1_20160413T235959_VV_0000-BURST was acquired before 2016-04-14 .*$',
     ):
         validation.check_opera_rtc_date(
-            {'job_parameters': {'granules': ['S1_000000_IW1_20160413T235959_VV_0000-BURST']}}, []
+            {'job_parameters': {'granules': ['S1_000000_IW1_20160413T235959_VV_0000-BURST']}}, None
         )
 
 
 def test_check_opera_rtc_date_max_date():
     validation.check_opera_rtc_date(
-        {'job_parameters': {'granules': ['S1_000000_IW1_20211231T235959_VV_0000-BURST']}}, []
+        {'job_parameters': {'granules': ['S1_000000_IW1_20211231T235959_VV_0000-BURST']}}, None
     )
 
     with pytest.raises(
@@ -517,7 +547,7 @@ def test_check_opera_rtc_date_max_date():
         match=r'^Granule S1_000000_IW1_20220101T000000_VV_0000-BURST was acquired on or after 2022-01-01 .*',
     ):
         validation.check_opera_rtc_date(
-            {'job_parameters': {'granules': ['S1_000000_IW1_20220101T000000_VV_0000-BURST']}}, []
+            {'job_parameters': {'granules': ['S1_000000_IW1_20220101T000000_VV_0000-BURST']}}, None
         )
 
     with pytest.raises(
@@ -525,5 +555,5 @@ def test_check_opera_rtc_date_max_date():
         match=r'^Granule S1_000000_IW1_20250428T000000_VV_0000-BURST was acquired on or after 2022-01-01 .*',
     ):
         validation.check_opera_rtc_date(
-            {'job_parameters': {'granules': ['S1_000000_IW1_20250428T000000_VV_0000-BURST']}}, []
+            {'job_parameters': {'granules': ['S1_000000_IW1_20250428T000000_VV_0000-BURST']}}, None
         )
