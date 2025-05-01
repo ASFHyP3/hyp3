@@ -9,6 +9,7 @@ OPERA_RTC:
         minItems: 1
         maxItems: 1
         example:
+          # TODO: replace these examples with a dual-pol granule that falls in the valid date range
           - S1_073251_IW2_20250413T020809_VV_EF1E-BURST
         items:
           anyOf:
