@@ -32,7 +32,7 @@ A processing environment for HyP3 Plugins in AWS.
    ```
    make tests
    ```
-   Alternatively, you can invoke `pytest` directly (for passing command-line arguments):
+   Alternatively, you can invoke `pytest` directly (e.g. for passing command-line arguments):
    ```
    eval $(make env)
    make render && pytest
@@ -46,6 +46,7 @@ A processing environment for HyP3 Plugins in AWS.
    pytest -m network
    ```
    When writing new tests, decorate such tests with `@pytest.mark.network`.
+
    Also, remember to re-run `make render` after making changes to rendered files.
 
 ## Deployment
