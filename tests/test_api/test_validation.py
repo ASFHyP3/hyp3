@@ -501,7 +501,7 @@ def test_check_opera_rtc_s1_date_1_granule():
         )
 
 
-def test_check_opera_rtc_s1_date_min_date():
+def test_check_opera_rtc_s1_date_min():
     validation.check_opera_rtc_s1_date(
         {'job_parameters': {'granules': ['S1_000000_IW1_20160414T000000_VV_0000-BURST']}}, None
     )
@@ -515,7 +515,7 @@ def test_check_opera_rtc_s1_date_min_date():
         )
 
 
-def test_check_opera_rtc_s1_date_max_date():
+def test_check_opera_rtc_s1_date_max():
     validation.check_opera_rtc_s1_date(
         {'job_parameters': {'granules': ['S1_000000_IW1_20211231T235959_VV_0000-BURST']}}, None
     )
