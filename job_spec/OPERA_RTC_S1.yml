@@ -36,7 +36,7 @@ OPERA_RTC_S1:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
-      timeout: 3600 # 1 hr # TODO
+      timeout: 28800 # 8 hr # TODO reduce after cost estimate
       compute_environment: Default
       vcpu: 1
       memory: 7500
