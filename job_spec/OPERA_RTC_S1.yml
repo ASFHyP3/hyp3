@@ -1,5 +1,4 @@
-# TODO: rename file / job name to OPERA_RTC_S1?
-OPERA_RTC:
+OPERA_RTC_S1:
   required_parameters:
     - granules
   parameters:
@@ -25,9 +24,9 @@ OPERA_RTC:
     DEFAULT:
       cost: 1.0
   validators:
-    - check_opera_rtc_date
+    - check_opera_rtc_s1_date
     - check_dem_coverage
-    - check_opera_rtc_static_coverage
+    - check_opera_rtc_s1_static_coverage
   steps:
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/asfhyp3/hyp3-opera-rtc
