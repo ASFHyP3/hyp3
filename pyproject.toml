@@ -9,7 +9,7 @@ dynamic = ["version"]
 [tool.pytest.ini_options]
 addopts = ['--strict-markers']
 markers = [
-    "slow: mark tests as slow (deselect with '-m \"not slow\"')",
+    "network: mark tests that require a network connection",
 ]
 
 [tool.ruff]

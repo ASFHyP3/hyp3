@@ -32,19 +32,21 @@ A processing environment for HyP3 Plugins in AWS.
    ```
    make tests
    ```
-   Alternatively, you can run the following if you want to invoke `pytest` directly
-   (e.g. for passing command-line arguments):
+   Alternatively, you can invoke `pytest` directly (for passing command-line arguments):
    ```
    eval $(make env)
    make render && pytest
    ```
-   In particular, if you want to skip the slower tests, you can run:
+   In particular, to skip tests that require a network connection, run:
    ```
-   pytest -m 'not slow'
+   pytest -m 'not network'
    ```
-   When writing new tests, please decorate slow tests with `@pytest.mark.slow`
-   (where "slow" is according to your best judgment),
-   particularly any tests that involve making network connections.
+   And to run *only* those tests:
+   ```
+   pytest -m network
+   ```
+   When writing new tests, decorate such tests with `@pytest.mark.network`.
+   Also, remember to re-run `make render` after making changes to rendered files.
 
 ## Deployment
 

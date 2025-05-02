@@ -5,7 +5,7 @@ import pytest
 from test_api.conftest import JOBS_URI, login
 
 
-@pytest.mark.slow
+@pytest.mark.network
 def test_submit_opera_rtc_s1_validate_only(client, tables, approved_user):
     login(client, username=approved_user)
 
