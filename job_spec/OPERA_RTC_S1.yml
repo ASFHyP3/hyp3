@@ -8,8 +8,7 @@ OPERA_RTC_S1:
         minItems: 1
         maxItems: 1
         example:
-          # TODO: replace these examples with a dual-pol granule that falls in the valid date range
-          - S1_073251_IW2_20250413T020809_VV_EF1E-BURST
+          - S1_073251_IW2_20200128T020712_VV_2944-BURST
         items:
           anyOf:
             - description: TODO # TODO
@@ -17,7 +16,7 @@ OPERA_RTC_S1:
               pattern: '^S1_\d{6}_IW\d_\d{8}T\d{6}_(VV|HH)_[\dA-F]{4}-BURST$'
               minLength: 43
               maxLength: 43
-              example: S1_073251_IW2_20250413T020809_VV_EF1E-BURST
+              example: S1_073251_IW2_20200128T020712_VV_2944-BURST
   cost_profiles:
     EDC:
       cost: 1.0 # TODO
