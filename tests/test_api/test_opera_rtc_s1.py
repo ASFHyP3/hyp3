@@ -8,7 +8,7 @@ from test_api.conftest import JOBS_URI, login
 
 
 @pytest.mark.network
-def test_submit_opera_rtc_s1_vv(client, tables, approved_user):
+def test_opera_rtc_s1_vv(client, tables, approved_user):
     login(client, username=approved_user)
 
     response = client.post(
@@ -27,7 +27,7 @@ def test_submit_opera_rtc_s1_vv(client, tables, approved_user):
 
 
 @pytest.mark.network
-def test_submit_opera_rtc_s1_hh(client, tables, approved_user):
+def test_opera_rtc_s1_hh(client, tables, approved_user):
     login(client, username=approved_user)
 
     response = client.post(
@@ -46,7 +46,7 @@ def test_submit_opera_rtc_s1_hh(client, tables, approved_user):
 
 
 @pytest.mark.network
-def test_submit_opera_rtc_s1_validation_order(client, tables, approved_user, monkeypatch):
+def test_opera_rtc_s1_validation_order(client, tables, approved_user, monkeypatch):
     """Test that the validators are applied in the expected order."""
     login(client, username=approved_user)
 
@@ -87,7 +87,7 @@ def test_submit_opera_rtc_s1_validation_order(client, tables, approved_user, mon
 
 
 @pytest.mark.network
-def test_submit_opera_rtc_s1_min_date(client, tables, approved_user):
+def test_opera_rtc_s1_min_date(client, tables, approved_user):
     login(client, username=approved_user)
 
     response = client.post(
@@ -111,7 +111,7 @@ def test_submit_opera_rtc_s1_min_date(client, tables, approved_user):
 
 
 @pytest.mark.network
-def test_submit_opera_rtc_s1_max_date(client, tables, approved_user):
+def test_opera_rtc_s1_max_date(client, tables, approved_user):
     login(client, username=approved_user)
 
     response = client.post(
@@ -137,7 +137,7 @@ def test_submit_opera_rtc_s1_max_date(client, tables, approved_user):
 
 
 @pytest.mark.network
-def test_submit_opera_rtc_s1_static_coverage(client, tables, approved_user):
+def test_opera_rtc_s1_static_coverage(client, tables, approved_user):
     login(client, username=approved_user)
 
     response = client.post(
@@ -161,7 +161,7 @@ def test_submit_opera_rtc_s1_static_coverage(client, tables, approved_user):
 
 
 @pytest.mark.network
-def test_submit_opera_rtc_s1_dem_coverage(client, tables, approved_user):
+def test_opera_rtc_s1_dem_coverage(client, tables, approved_user):
     login(client, username=approved_user)
 
     response = client.post(
@@ -185,7 +185,7 @@ def test_submit_opera_rtc_s1_dem_coverage(client, tables, approved_user):
 
 
 @pytest.mark.network
-def test_submit_opera_rtc_s1_nonexistent_granule(client, tables, approved_user):
+def test_opera_rtc_s1_nonexistent_granule(client, tables, approved_user):
     login(client, username=approved_user)
 
     response = client.post(
@@ -206,6 +206,3 @@ def test_submit_opera_rtc_s1_nonexistent_granule(client, tables, approved_user):
         == 'Some requested scenes could not be found: S1_157213_IW3_20190210T182738_HH_D6C7-BURST'
     )
     assert len(tables.jobs_table.scan()['Items']) == 0
-
-
-# TODO: more tests
