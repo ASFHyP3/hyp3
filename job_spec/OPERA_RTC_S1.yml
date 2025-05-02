@@ -38,9 +38,8 @@ OPERA_RTC_S1:
         - Ref::job_id
       timeout: 28800 # 8 hr # TODO reduce after cost estimate
       compute_environment: Default
-      # TODO: determine min vcpu and memory
       vcpu: 1
-      memory: 1960
+      memory: 7600
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
