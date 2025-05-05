@@ -6,7 +6,7 @@ import responses
 import hyp3_api.util
 from dynamo.user import APPLICATION_PENDING
 from dynamo.util import current_utc_time
-from test_api.conftest import JOBS_URI, login, setup_mock_cmr_response_for_polygons
+from test_api.conftest import JOBS_URI, login, setup_mock_cmr_response_for_polygons, CMR_URL_RE
 
 
 def make_job(granules=None, name='someName', job_type='RTC_GAMMA', parameters=None):
@@ -485,3 +485,14 @@ def test_submit_validate_only(client, tables, approved_user):
     assert response.status_code == HTTPStatus.OK
     jobs = tables.jobs_table.scan()['Items']
     assert len(jobs) == 2
+
+
+@responses.activate
+def test_cmr_error(client, tables, approved_user):
+    login(client, username=approved_user)
+    responses.post(url=CMR_URL_RE, status=500)
+
+    response = submit_batch(client, [make_job()])
+    assert response.status_code == HTTPStatus.BAD_GATEWAY
+    assert response.json['detail'] == 'Could not submit jobs due to a CMR error. Please try again later.'
+    assert len(tables.jobs_table.scan()['Items']) == 0

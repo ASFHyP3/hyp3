@@ -29,7 +29,8 @@ def post_jobs(body: dict, user: str) -> dict:
     try:
         validate_jobs(body['jobs'])
     except requests.HTTPError as e:
-        print(f'WARN: CMR search failed: {e}')
+        print(f'CMR search failed: {e}')
+        abort(problem_format(502, 'Could not submit jobs due to a CMR error. Please try again later.'))
     except (BoundsValidationError, GranuleValidationError, MultiBurstValidationError) as e:
         abort(problem_format(400, str(e)))
 
