@@ -479,7 +479,7 @@ def test_check_opera_rtc_s1_static_coverage():
 
     with pytest.raises(
         validation.GranuleValidationError,
-        match=r'^Granule S1_034724_IW3_20160317T203621_HH_4001-BURST is outside of the OPERA RTC S1 processing extent\.$',
+        match=r'^Granule S1_034724_IW3_20160317T203621_HH_4001-BURST is outside of the OPERA RTC-S1 processing extent\.$',
     ):
         validation.check_opera_rtc_s1_static_coverage(
             {'job_parameters': {'granules': ['S1_034724_IW3_20160317T203621_HH_4001-BURST']}},
@@ -488,7 +488,7 @@ def test_check_opera_rtc_s1_static_coverage():
 
     with pytest.raises(
         validation.GranuleValidationError,
-        match=r'^Granule S1_175498_IW2_20160415T082755_HH_C4A7-BURST is outside of the OPERA RTC S1 processing extent\.$',
+        match=r'^Granule S1_175498_IW2_20160415T082755_HH_C4A7-BURST is outside of the OPERA RTC-S1 processing extent\.$',
     ):
         validation.check_opera_rtc_s1_static_coverage(
             {'job_parameters': {'granules': ['S1_175498_IW2_20160415T082755_HH_C4A7-BURST']}},
@@ -497,7 +497,7 @@ def test_check_opera_rtc_s1_static_coverage():
 
     with pytest.raises(
         validation.GranuleValidationError,
-        match=r'^Granule S1_020134_IW2_20161031T092546_HH_CCD1-BURST is outside of the OPERA RTC S1 processing extent\.$',
+        match=r'^Granule S1_020134_IW2_20161031T092546_HH_CCD1-BURST is outside of the OPERA RTC-S1 processing extent\.$',
     ):
         validation.check_opera_rtc_s1_static_coverage(
             {'job_parameters': {'granules': ['S1_020134_IW2_20161031T092546_HH_CCD1-BURST']}},
