@@ -147,7 +147,7 @@ def test_opera_rtc_s1_static_coverage(client, tables, approved_user):
             'jobs': [
                 {
                     'job_type': 'OPERA_RTC_S1',
-                    'job_parameters': {'granules': ['S1_363644_IW2_20200101T083656_HH_267E-BURST']},
+                    'job_parameters': {'granules': ['S1_175498_IW2_20160415T082755_HH_C4A7-BURST']},
                 }
             ],
         },
@@ -156,7 +156,7 @@ def test_opera_rtc_s1_static_coverage(client, tables, approved_user):
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert (
         response.json['detail']
-        == 'Granule S1_363644_IW2_20200101T083656_HH_267E-BURST is outside of the OPERA RTC S1 processing extent.'
+        == 'Granule S1_175498_IW2_20160415T082755_HH_C4A7-BURST is outside of the OPERA RTC S1 processing extent.'
     )
     assert len(tables.jobs_table.scan()['Items']) == 0
 
@@ -176,7 +176,7 @@ def test_opera_rtc_s1_static_coverage_cmr_error(client, tables, approved_user, m
 
     params = {
         'short_name': 'OPERA_L2_RTC-S1-STATIC_V1',
-        'granule_ur': 'OPERA_L2_RTC-S1-STATIC_T*-363644-IW2_*',
+        'granule_ur': 'OPERA_L2_RTC-S1-STATIC_T*-175498-IW2_*',
         'options[granule_ur][pattern]': 'true',
     }
     responses.get(
@@ -191,7 +191,7 @@ def test_opera_rtc_s1_static_coverage_cmr_error(client, tables, approved_user, m
             'jobs': [
                 {
                     'job_type': 'OPERA_RTC_S1',
-                    'job_parameters': {'granules': ['S1_363644_IW2_20200101T083656_HH_267E-BURST']},
+                    'job_parameters': {'granules': ['S1_175498_IW2_20160415T082755_HH_C4A7-BURST']},
                 }
             ],
         },
