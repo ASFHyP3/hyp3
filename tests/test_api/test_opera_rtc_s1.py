@@ -2,6 +2,7 @@ from http import HTTPStatus
 from unittest.mock import MagicMock
 
 import pytest
+import responses
 
 import hyp3_api.validation
 from test_api.conftest import JOBS_URI, login
@@ -157,6 +158,51 @@ def test_opera_rtc_s1_static_coverage(client, tables, approved_user):
         response.json['detail']
         == 'Granule S1_363644_IW2_20200101T083656_HH_267E-BURST is outside of the OPERA RTC S1 processing extent.'
     )
+    assert len(tables.jobs_table.scan()['Items']) == 0
+
+
+@responses.activate
+def test_opera_rtc_s1_static_coverage_cmr_error(client, tables, approved_user, monkeypatch):
+    login(client, username=approved_user)
+
+    mock_get_cmr_metadata = MagicMock()
+    monkeypatch.setattr(hyp3_api.validation, '_get_cmr_metadata', mock_get_cmr_metadata)
+
+    mock_make_sure_granules_exist = MagicMock()
+    monkeypatch.setattr(hyp3_api.validation, '_make_sure_granules_exist', mock_make_sure_granules_exist)
+
+    mock_check_dem_coverage = MagicMock()
+    monkeypatch.setattr(hyp3_api.validation, 'check_dem_coverage', mock_check_dem_coverage)
+
+    params = {
+        'short_name': 'OPERA_L2_RTC-S1-STATIC_V1',
+        'granule_ur': 'OPERA_L2_RTC-S1-STATIC_T*-363644-IW2_*',
+        'options[granule_ur][pattern]': 'true',
+    }
+    responses.get(
+        url=hyp3_api.CMR_URL,
+        match=[responses.matchers.query_param_matcher(params)],
+        status=500,
+    )
+
+    response = client.post(
+        JOBS_URI,
+        json={
+            'jobs': [
+                {
+                    'job_type': 'OPERA_RTC_S1',
+                    'job_parameters': {'granules': ['S1_363644_IW2_20200101T083656_HH_267E-BURST']},
+                }
+            ],
+        },
+    )
+
+    mock_get_cmr_metadata.assert_called_once()
+    mock_make_sure_granules_exist.assert_called_once()
+    mock_check_dem_coverage.assert_called_once()
+
+    assert response.status_code == HTTPStatus.BAD_GATEWAY
+    assert response.json['detail'] == 'Could not submit jobs due to a CMR error. Please try again later.'
     assert len(tables.jobs_table.scan()['Items']) == 0
 
 
