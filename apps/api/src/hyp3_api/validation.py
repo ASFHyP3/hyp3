@@ -1,6 +1,7 @@
 import json
 import sys
 from collections.abc import Iterable
+from datetime import date, datetime
 from pathlib import Path
 
 import requests
@@ -12,6 +13,12 @@ from hyp3_api.util import get_granules
 
 
 DEM_COVERAGE = None
+
+
+class InternalValidationError(Exception):
+    """Raised for internal validation errors that should not be displayed to the user."""
+
+    pass
 
 
 class GranuleValidationError(Exception):
@@ -206,6 +213,52 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
     if bounds_area > max_bounds_area:
         raise BoundsValidationError(
             f'Bounds must be smaller than {max_bounds_area} degrees squared. Box provided was {bounds_area:.2f}'
+        )
+
+
+def _has_opera_rtc_s1_static_coverage(granule_name: str) -> bool:
+    burst_number, swath = granule_name.split('_')[1:3]
+    params = {
+        'short_name': 'OPERA_L2_RTC-S1-STATIC_V1',
+        'granule_ur': f'OPERA_L2_RTC-S1-STATIC_T*-{burst_number}-{swath}_*',
+        'options[granule_ur][pattern]': 'true',
+    }
+    response = requests.get(CMR_URL, params=params)
+    response.raise_for_status()
+    return bool(response.json()['feed']['entry'])
+
+
+def check_opera_rtc_s1_static_coverage(job: dict, _) -> None:
+    granules = job['job_parameters']['granules']
+    if len(granules) != 1:
+        raise InternalValidationError(f'Expected 1 granule, got {granules}')
+
+    granule = granules[0]
+    if not _has_opera_rtc_s1_static_coverage(granule):
+        raise GranuleValidationError(f'Granule {granule} is outside of the OPERA RTC S1 processing extent.')
+
+
+def check_opera_rtc_s1_date(job: dict, _) -> None:
+    granules = job['job_parameters']['granules']
+    if len(granules) != 1:
+        raise InternalValidationError(f'Expected 1 granule, got {granules}')
+
+    granule = granules[0]
+    granule_date = datetime.strptime(granule.split('_')[3][:8], '%Y%m%d').date()
+
+    # Disallow IPF version < 002.70 according to the dates given at https://sar-mpc.eu/processor/ipf/
+    # Also see https://github.com/ASFHyP3/hyp3/issues/2739
+    if granule_date < date(2016, 4, 14):
+        raise GranuleValidationError(
+            f'Granule {granule} was acquired before 2016-04-14 '
+            'and is not available for On Demand OPERA RTC S1 processing.'
+        )
+
+    if granule_date >= date(2022, 1, 1):
+        raise GranuleValidationError(
+            f'Granule {granule} was acquired on or after 2022-01-01 '
+            'and is not available for On Demand OPERA RTC S1 processing. '
+            'You can download the product from the ASF DAAC archive.'
         )
 
 
