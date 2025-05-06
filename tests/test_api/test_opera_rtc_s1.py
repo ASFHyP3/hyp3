@@ -77,7 +77,7 @@ def test_opera_rtc_s1_validation_order(client, tables, approved_user, monkeypatc
     response = client.post(JOBS_URI, json=payload)
 
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert 'outside the valid  processing extent for OPERA RTC-S1 products' in response.json['detail']
+    assert 'outside the valid processing extent for OPERA RTC-S1 products' in response.json['detail']
     assert len(tables.jobs_table.scan()['Items']) == 0
 
     monkeypatch.setattr(hyp3_api.validation, 'check_opera_rtc_s1_static_coverage', MagicMock())
