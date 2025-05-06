@@ -158,7 +158,8 @@ def test_check_single_burst_pair():
     }
     with pytest.raises(
         validation.GranuleValidationError,
-        match=r'^Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and S1_136232_IW2_20200616T022313_VV_5D11-BURST\.$',
+        match=r'^Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and '
+        r'S1_136232_IW2_20200616T022313_VV_5D11-BURST\.$',
     ):
         validation.check_single_burst_pair(invalid_job_different_number, None)
 
@@ -172,7 +173,8 @@ def test_check_single_burst_pair():
     }
     with pytest.raises(
         validation.GranuleValidationError,
-        match=r'^Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and S1_136231_IW3_20200616T022313_VV_5D11-BURST\.$',
+        match=r'^Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and '
+        r'S1_136231_IW3_20200616T022313_VV_5D11-BURST\.$',
     ):
         validation.check_single_burst_pair(invalid_job_different_swath, None)
 
@@ -480,7 +482,7 @@ def test_check_opera_rtc_s1_static_coverage():
     with pytest.raises(
         validation.GranuleValidationError,
         match=r'^Granule S1_034724_IW3_20160317T203621_HH_4001-BURST is outside the valid '
-              r'processing extent for OPERA RTC-S1 products\.$',
+        r'processing extent for OPERA RTC-S1 products\.$',
     ):
         validation.check_opera_rtc_s1_static_coverage(
             {'job_parameters': {'granules': ['S1_034724_IW3_20160317T203621_HH_4001-BURST']}},
@@ -490,7 +492,7 @@ def test_check_opera_rtc_s1_static_coverage():
     with pytest.raises(
         validation.GranuleValidationError,
         match=r'^Granule S1_175498_IW2_20160415T082755_HH_C4A7-BURST is outside the valid '
-              r'processing extent for OPERA RTC-S1 products\.$',
+        r'processing extent for OPERA RTC-S1 products\.$',
     ):
         validation.check_opera_rtc_s1_static_coverage(
             {'job_parameters': {'granules': ['S1_175498_IW2_20160415T082755_HH_C4A7-BURST']}},
@@ -500,7 +502,7 @@ def test_check_opera_rtc_s1_static_coverage():
     with pytest.raises(
         validation.GranuleValidationError,
         match=r'^Granule S1_020134_IW2_20161031T092546_HH_CCD1-BURST is outside the valid '
-              r'processing extent for OPERA RTC-S1 products\.$',
+        r'processing extent for OPERA RTC-S1 products\.$',
     ):
         validation.check_opera_rtc_s1_static_coverage(
             {'job_parameters': {'granules': ['S1_020134_IW2_20161031T092546_HH_CCD1-BURST']}},
