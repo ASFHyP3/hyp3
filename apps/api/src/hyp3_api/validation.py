@@ -235,7 +235,9 @@ def check_opera_rtc_s1_static_coverage(job: dict, _) -> None:
 
     granule = granules[0]
     if not _has_opera_rtc_s1_static_coverage(granule):
-        raise GranuleValidationError(f'Granule {granule} is outside of the OPERA RTC-S1 processing extent.')
+        raise GranuleValidationError(
+            f'Granule {granule} is outside the valid processing extent for OPERA RTC-S1 products.'
+        )
 
 
 def check_opera_rtc_s1_date(job: dict, _) -> None:
@@ -251,13 +253,13 @@ def check_opera_rtc_s1_date(job: dict, _) -> None:
     if granule_date < date(2016, 4, 14):
         raise GranuleValidationError(
             f'Granule {granule} was acquired before 2016-04-14 '
-            'and is not available for On Demand OPERA RTC-S1 processing.'
+            'and is not available for On-Demand OPERA RTC-S1 processing.'
         )
 
     if granule_date >= date(2022, 1, 1):
         raise GranuleValidationError(
             f'Granule {granule} was acquired on or after 2022-01-01 '
-            'and is not available for On Demand OPERA RTC-S1 processing. '
+            'and is not available for On-Demand OPERA RTC-S1 processing. '
             'You can download the product from the ASF DAAC archive.'
         )
 
