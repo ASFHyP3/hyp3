@@ -256,7 +256,8 @@ def check_opera_rtc_s1_date(job: dict, _) -> None:
             'and is not available for On-Demand OPERA RTC-S1 processing.'
         )
 
-    if granule_date >= date(2022, 1, 1):
+    # FIXME: set to date(2022, 1, 1) in edc-prod
+    if granule_date >= date(2026, 1, 1):
         raise GranuleValidationError(
             f'Granule {granule} was acquired on or after 2022-01-01 '
             'and is not available for On-Demand OPERA RTC-S1 processing. '
