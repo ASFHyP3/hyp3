@@ -18,13 +18,32 @@ def test_opera_rtc_s1_vv(client, tables, approved_user):
             'jobs': [
                 {
                     'job_type': 'OPERA_RTC_S1',
-                    'job_parameters': {'granules': ['S1_118338_IW2_20170102T124017_VV_0675-BURST']},
+                    'job_parameters': {'granules': ['S1_073251_IW2_20200128T020712_VV_2944-BURST']},
                 }
             ],
         },
     )
     assert response.status_code == HTTPStatus.OK
     assert len(tables.jobs_table.scan()['Items']) == 1
+
+
+def test_opera_rtc_s1_vh(client, tables, approved_user):
+    login(client, username=approved_user)
+
+    response = client.post(
+        JOBS_URI,
+        json={
+            'jobs': [
+                {
+                    'job_type': 'OPERA_RTC_S1',
+                    'job_parameters': {'granules': ['S1_073251_IW2_20200128T020712_VH_2944-BURST']},
+                }
+            ],
+        },
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert 'is not valid under any of the given schemas' in response.json['detail']
+    assert len(tables.jobs_table.scan()['Items']) == 0
 
 
 @pytest.mark.network
@@ -44,6 +63,68 @@ def test_opera_rtc_s1_hh(client, tables, approved_user):
     )
     assert response.status_code == HTTPStatus.OK
     assert len(tables.jobs_table.scan()['Items']) == 1
+
+
+def test_opera_rtc_s1_hv(client, tables, approved_user):
+    login(client, username=approved_user)
+
+    response = client.post(
+        JOBS_URI,
+        json={
+            'jobs': [
+                {
+                    'job_type': 'OPERA_RTC_S1',
+                    'job_parameters': {'granules': ['S1_011394_IW2_20200102T024334_HV_86EB-BURST']},
+                }
+            ],
+        },
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert 'is not valid under any of the given schemas' in response.json['detail']
+    assert len(tables.jobs_table.scan()['Items']) == 0
+
+
+def test_opera_rtc_s1_ew(client, tables, approved_user):
+    login(client, username=approved_user)
+
+    response = client.post(
+        JOBS_URI,
+        json={
+            'jobs': [
+                {
+                    'job_type': 'OPERA_RTC_S1',
+                    'job_parameters': {'granules': ['S1_148167_EW5_20201225T230343_VV_BB1F-BURST']},
+                }
+            ],
+        },
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert 'is not valid under any of the given schemas' in response.json['detail']
+    assert len(tables.jobs_table.scan()['Items']) == 0
+
+
+def test_opera_rtc_s1_multi_burst(client, tables, approved_user):
+    login(client, username=approved_user)
+
+    response = client.post(
+        JOBS_URI,
+        json={
+            'jobs': [
+                {
+                    'job_type': 'OPERA_RTC_S1',
+                    'job_parameters': {
+                        'granules': [
+                            'S1_073251_IW2_20200128T020712_VV_2944-BURST',
+                            'S1_073251_IW2_20200128T020712_VV_2944-BURST',
+                        ]
+                    },
+                }
+            ],
+        },
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert 'is not valid under any of the given schemas' in response.json['detail']
+    assert len(tables.jobs_table.scan()['Items']) == 0
 
 
 @pytest.mark.network
@@ -201,7 +282,7 @@ def test_opera_rtc_s1_static_coverage_cmr_error(client, tables, approved_user, m
     mock_make_sure_granules_exist.assert_called_once()
     mock_check_dem_coverage.assert_called_once()
 
-    assert response.status_code == HTTPStatus.BAD_GATEWAY
+    assert response.status_code == HTTPStatus.SERVICE_UNAVAILABLE
     assert response.json['detail'] == 'Could not submit jobs due to a CMR error. Please try again later.'
     assert len(tables.jobs_table.scan()['Items']) == 0
 

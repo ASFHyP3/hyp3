@@ -493,6 +493,6 @@ def test_cmr_error(client, tables, approved_user):
     responses.post(url=CMR_URL_RE, status=500)
 
     response = submit_batch(client, [make_job()])
-    assert response.status_code == HTTPStatus.BAD_GATEWAY
+    assert response.status_code == HTTPStatus.SERVICE_UNAVAILABLE
     assert response.json['detail'] == 'Could not submit jobs due to a CMR error. Please try again later.'
     assert len(tables.jobs_table.scan()['Items']) == 0
