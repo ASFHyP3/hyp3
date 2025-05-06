@@ -238,10 +238,10 @@ def test_opera_rtc_s1_max_date_configurable(client, tables, approved_user, monke
 
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert (
-            response.json['detail']
-            == 'Granule S1_073251_IW2_20200128T020712_VV_2944-BURST was acquired on or after 2020-01-01 '
-               'and is not available for On-Demand OPERA RTC-S1 processing. '
-               'You can download the product from the ASF DAAC archive.'
+        response.json['detail']
+        == 'Granule S1_073251_IW2_20200128T020712_VV_2944-BURST was acquired on or after 2020-01-01 '
+        'and is not available for On-Demand OPERA RTC-S1 processing. '
+        'You can download the product from the ASF DAAC archive.'
     )
     assert len(tables.jobs_table.scan()['Items']) == 0
 
