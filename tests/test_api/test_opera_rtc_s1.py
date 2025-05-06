@@ -84,6 +84,25 @@ def test_opera_rtc_s1_hv(client, tables, approved_user):
     assert len(tables.jobs_table.scan()['Items']) == 0
 
 
+def test_opera_rtc_s1_ew(client, tables, approved_user):
+    login(client, username=approved_user)
+
+    response = client.post(
+        JOBS_URI,
+        json={
+            'jobs': [
+                {
+                    'job_type': 'OPERA_RTC_S1',
+                    'job_parameters': {'granules': ['S1_148167_EW5_20201225T230343_VV_BB1F-BURST']},
+                }
+            ],
+        },
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert 'is not valid under any of the given schemas' in response.json['detail']
+    assert len(tables.jobs_table.scan()['Items']) == 0
+
+
 @pytest.mark.network
 def test_opera_rtc_s1_validation_order(client, tables, approved_user, monkeypatch):
     """Test that the validators are applied in the expected order."""
