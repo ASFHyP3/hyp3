@@ -21,6 +21,9 @@ Parameters:
   DefaultApplicationStatus:
     Type: String
 
+  OperaRtcS1EndDate:
+    Type: String
+
   SystemAvailable:
     Type: String
 
@@ -192,6 +195,7 @@ Resources:
           AUTH_ALGORITHM: !Ref AuthAlgorithm
           DEFAULT_CREDITS_PER_USER: !Ref DefaultCreditsPerUser
           DEFAULT_APPLICATION_STATUS: !Ref DefaultApplicationStatus
+          OPERA_RTC_S1_END_DATE: !Ref OperaRtcS1EndDate
           SYSTEM_AVAILABLE: !Ref SystemAvailable
       Code: src/
       Handler: hyp3_api.lambda_handler.handler
