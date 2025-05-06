@@ -558,3 +558,27 @@ def test_check_opera_rtc_s1_date_max():
         validation.check_opera_rtc_s1_date(
             {'job_parameters': {'granules': ['S1_000000_IW1_20250428T000000_VV_0000-BURST']}}, None
         )
+
+
+def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
+    monkeypatch.setenv('OPERA_RTC_S1_END_DATE', '2025-05-02')
+
+    validation.check_opera_rtc_s1_date(
+        {'job_parameters': {'granules': ['S1_000000_IW1_20250501T235959_VV_0000-BURST']}}, None
+    )
+
+    with pytest.raises(
+        validation.GranuleValidationError,
+        match=r'^Granule S1_000000_IW1_20250502T000000_VV_0000-BURST was acquired on or after 2025-05-02 .*',
+    ):
+        validation.check_opera_rtc_s1_date(
+            {'job_parameters': {'granules': ['S1_000000_IW1_20250502T000000_VV_0000-BURST']}}, None
+        )
+
+    with pytest.raises(
+        validation.GranuleValidationError,
+        match=r'^Granule S1_000000_IW1_20250506T000000_VV_0000-BURST was acquired on or after 2025-05-02 .*',
+    ):
+        validation.check_opera_rtc_s1_date(
+            {'job_parameters': {'granules': ['S1_000000_IW1_20250506T000000_VV_0000-BURST']}}, None
+        )
