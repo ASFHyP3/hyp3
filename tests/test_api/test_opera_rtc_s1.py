@@ -219,6 +219,34 @@ def test_opera_rtc_s1_max_date(client, tables, approved_user):
 
 
 @pytest.mark.network
+def test_opera_rtc_s1_max_date_configurable(client, tables, approved_user, monkeypatch):
+    login(client, username=approved_user)
+
+    monkeypatch.setenv('OPERA_RTC_S1_END_DATE', '2020-01-01')
+
+    response = client.post(
+        JOBS_URI,
+        json={
+            'jobs': [
+                {
+                    'job_type': 'OPERA_RTC_S1',
+                    'job_parameters': {'granules': ['S1_073251_IW2_20200128T020712_VV_2944-BURST']},
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert (
+            response.json['detail']
+            == 'Granule S1_073251_IW2_20200128T020712_VV_2944-BURST was acquired on or after 2020-01-01 '
+               'and is not available for On-Demand OPERA RTC-S1 processing. '
+               'You can download the product from the ASF DAAC archive.'
+    )
+    assert len(tables.jobs_table.scan()['Items']) == 0
+
+
+@pytest.mark.network
 def test_opera_rtc_s1_static_coverage(client, tables, approved_user):
     login(client, username=approved_user)
 
