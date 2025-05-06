@@ -112,10 +112,12 @@ def test_opera_rtc_s1_multi_burst(client, tables, approved_user):
             'jobs': [
                 {
                     'job_type': 'OPERA_RTC_S1',
-                    'job_parameters': {'granules': [
-                        'S1_073251_IW2_20200128T020712_VV_2944-BURST',
-                        'S1_073251_IW2_20200128T020712_VV_2944-BURST',
-                    ]},
+                    'job_parameters': {
+                        'granules': [
+                            'S1_073251_IW2_20200128T020712_VV_2944-BURST',
+                            'S1_073251_IW2_20200128T020712_VV_2944-BURST',
+                        ]
+                    },
                 }
             ],
         },
