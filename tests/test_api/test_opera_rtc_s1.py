@@ -201,7 +201,7 @@ def test_opera_rtc_s1_static_coverage_cmr_error(client, tables, approved_user, m
     mock_make_sure_granules_exist.assert_called_once()
     mock_check_dem_coverage.assert_called_once()
 
-    assert response.status_code == HTTPStatus.BAD_GATEWAY
+    assert response.status_code == HTTPStatus.SERVICE_UNAVAILABLE
     assert response.json['detail'] == 'Could not submit jobs due to a CMR error. Please try again later.'
     assert len(tables.jobs_table.scan()['Items']) == 0
 

@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added new `OPERA_RTC_S1` job type to EDC prod deployment.
 
 ### Fixed
-- The `POST /jobs` endpoint now returns a `502 Bad Gateway` response if any of the CMR queries fail during job validation. Previously, jobs would still be submitted successfully and the CMR error would appear in the HyP3 API logs. This was a fine approach when jobs were only validated for DEM coverage, but is not strict enough now that some job types include additional validators. Fixes https://github.com/ASFHyP3/hyp3/issues/2742
+- The `POST /jobs` endpoint now returns a `503 Service Unavailable` response if any of the CMR queries fail during job validation. Previously, jobs would still be submitted successfully and the CMR error would appear in the HyP3 API logs. This was a fine approach when jobs were only validated for DEM coverage, but is not strict enough now that some job types include additional validators. Fixes https://github.com/ASFHyP3/hyp3/issues/2742
 
 ## [10.4.2]
 
