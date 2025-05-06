@@ -562,6 +562,7 @@ def test_check_opera_rtc_s1_date_max():
 
 def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
     monkeypatch.setenv('OPERA_RTC_S1_END_DATE', '2025-05-02')
+
     validation.check_opera_rtc_s1_date(
         {'job_parameters': {'granules': ['S1_000000_IW1_20250501T235959_VV_0000-BURST']}}, None
     )
