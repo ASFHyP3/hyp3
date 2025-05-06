@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 from collections.abc import Iterable
 from datetime import date, datetime
@@ -256,10 +257,11 @@ def check_opera_rtc_s1_date(job: dict, _) -> None:
             'and is not available for On-Demand OPERA RTC-S1 processing.'
         )
 
-    # FIXME: set to date(2022, 1, 1) in edc-prod
-    if granule_date >= date(2026, 1, 1):
+    end_date_str = os.getenv('OPERA_RTC_S1_END_DATE', '2022-01-01')
+    end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+    if granule_date >= end_date:
         raise GranuleValidationError(
-            f'Granule {granule} was acquired on or after 2022-01-01 '
+            f'Granule {granule} was acquired on or after {end_date_str} '
             'and is not available for On-Demand OPERA RTC-S1 processing. '
             'You can download the product from the ASF DAAC archive.'
         )
