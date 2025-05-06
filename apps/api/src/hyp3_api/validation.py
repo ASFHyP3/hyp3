@@ -257,7 +257,10 @@ def check_opera_rtc_s1_date(job: dict, _) -> None:
             'and is not available for On-Demand OPERA RTC-S1 processing.'
         )
 
-    end_date_str = os.getenv('OPERA_RTC_S1_END_DATE', '2022-01-01')
+    end_date_str = os.environ['OPERA_RTC_S1_END_DATE']
+    if end_date_str == 'Default':
+        end_date_str = '2022-01-01'
+
     end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
     if granule_date >= end_date:
         raise GranuleValidationError(
