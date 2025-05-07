@@ -43,6 +43,13 @@ Parameters:
       - NOT_STARTED
       - APPROVED
 
+  OperaRtcS1EndDate:
+    Description: >-
+      The upper bound on the granule date range allowed for OPERA_RTC_S1 jobs, formatted like 'yyyy-mm-dd',
+      or 'Default' to use the default end date.
+    Type: String
+    Default: Default
+
   SystemAvailable:
     Description: Set to false to shutdown system, API will run and provide errors to users, but will not accept jobs.
     Type: String
@@ -125,6 +132,7 @@ Resources:
         AuthAlgorithm: !Ref AuthAlgorithm
         DefaultCreditsPerUser: !Ref DefaultCreditsPerUser
         DefaultApplicationStatus: !Ref DefaultApplicationStatus
+        OperaRtcS1EndDate: !Ref OperaRtcS1EndDate
         SystemAvailable: !Ref SystemAvailable
         {% if security_environment == 'EDC' %}
         VpcId: !Ref VpcId

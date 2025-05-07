@@ -22,6 +22,7 @@ jobs:
             default_credits_per_user: 10000
             default_application_status: APPROVED
             cost_profile: EDC
+            opera_rtc_s1_end_date: 2026-01-01
             job_files: >-
               job_spec/AUTORIFT.yml
               job_spec/INSAR_GAMMA.yml
@@ -29,6 +30,7 @@ jobs:
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
               job_spec/ARIA_S1_GUNW.yml
+              job_spec/OPERA_RTC_S1.yml
               job_spec/OPERA_DISP_TMS.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 1500
@@ -67,6 +69,7 @@ jobs:
             --arg AuthPublicKey '${{ secrets.AUTH_PUBLIC_KEY }}' \
             --arg DefaultCreditsPerUser '${{ matrix.default_credits_per_user }}' \
             --arg DefaultApplicationStatus '${{ matrix.default_application_status }}' \
+            --arg OperaRtcS1EndDate '${{ matrix.opera_rtc_s1_end_date }}' \
             --arg AmiId '${{ matrix.ami_id }}' \
             --arg DefaultMaxvCpus '${{ matrix.default_max_vcpus }}' \
             --arg ExpandedMaxvCpus '${{ matrix.expanded_max_vcpus }}' \

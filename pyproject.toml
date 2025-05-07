@@ -5,6 +5,13 @@ dynamic = ["version"]
 
 [tool.setuptools_scm]
 
+# https://docs.pytest.org/en/stable/how-to/mark.html
+[tool.pytest.ini_options]
+addopts = ['--strict-markers']
+markers = [
+    "network: mark tests that require a network connection",
+]
+
 [tool.ruff]
 line-length = 120
 src = [

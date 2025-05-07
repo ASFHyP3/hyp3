@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.5.0]
+
+### Added
+- Added new `OPERA_RTC_S1` job type to https://hyp3-test-api.asf.alaska.edu (EDC UAT) deployment.
+- Added new `opera_rtc_s1_end_date` deployment parameter for configuring the upper bound on the granule date range allowed for `OPERA_RTC_S1` jobs, formatted like `yyyy-mm-dd`, or `Default` to use the default end date (currently `2022-01-01`).
+
+### Fixed
+- The `POST /jobs` endpoint now returns a `503 Service Unavailable` response if any of the CMR queries fail during job validation. Previously, jobs would still be submitted successfully and the CMR error would appear in the HyP3 API logs. This was a fine approach when jobs were only validated for DEM coverage, but is not strict enough now that some job types include additional validators. Fixes https://github.com/ASFHyP3/hyp3/issues/2742
+
 ## [10.4.2]
 
 ### Changed

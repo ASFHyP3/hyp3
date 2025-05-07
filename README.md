@@ -28,10 +28,26 @@ A processing environment for HyP3 Plugins in AWS.
    conda env create -f environment.yml
    conda activate hyp3
    ```
-3. Run the tests
+3. Run the tests:
    ```
    make tests
    ```
+   Alternatively, you can invoke `pytest` directly (e.g. for passing command-line arguments):
+   ```
+   eval $(make env)
+   make render && pytest
+   ```
+   In particular, to skip tests that require a network connection, run:
+   ```
+   pytest -m 'not network'
+   ```
+   And to run *only* those tests:
+   ```
+   pytest -m network
+   ```
+   When writing new tests, decorate such tests with `@pytest.mark.network`.
+
+   Also, remember to re-run `make render` after making changes to rendered files.
 
 ## Deployment
 
