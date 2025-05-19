@@ -84,14 +84,14 @@ suitable bucket if you try and create a new CloudFormation Stack in the AWS Cons
 1. Navigate to the CloudFormation service in the region you are going to deploy to
 1. Click the orange "Create stack" button
 1. On the create stack screen:
-  1. For "Prepare template" make select "Template is ready"
-  1. For "Template source" select "Upload a template file"
-  1. Choose any JSON or YAML formatted file from your computer to upload
-  1. Once the file is uploaded, you should see an S3 URL on the bottom indicating the
-     bucket the template file was uploaded. This is your newly created CloudFormation
-     templates bucket and should be named something like `cf-templates-<HASH>-<region>`
-  1. Click "Cancel" to exit the CloudFormation stack creation now that we have a
-     templates bucket
+   1. For "Prepare template" make select "Template is ready"
+   1. For "Template source" select "Upload a template file"
+   1. Choose any JSON or YAML formatted file from your computer to upload
+   1. Once the file is uploaded, you should see an S3 URL on the bottom indicating the
+      bucket the template file was uploaded. This is your newly created CloudFormation
+      templates bucket and should be named something like `cf-templates-<HASH>-<region>`
+   1. Click "Cancel" to exit the CloudFormation stack creation now that we have a
+      templates bucket
 
 </details>
 
