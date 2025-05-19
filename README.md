@@ -43,6 +43,10 @@ A processing environment for HyP3 Plugins in AWS.
 
 ## Deployment
 
+*Note: To delete a HyP3 deployment, delete any of the resources listed below that are no longer needed.
+Before deleting the HyP3 CloudFormation stack, you should manually empty and delete the `contentbucket` and `logbucket`
+for the deployment via the S3 console.*
+
 > [!IMPORTANT]
 > It's not currently possible to deploy HyP3 fully independent of ASF due to our integration with 
 > [ASF Vertex](https://search.alaska.edu). If you'd like your own deployment of HyP3, please open an issue here or
@@ -338,6 +342,16 @@ Changes should take effect within 15-60 minutes after merging.
 Confirm that a Swagger UI is available at your chosen API URL.
 
 Update the [AWS Accounts and HyP3 Deployments](https://docs.google.com/spreadsheets/d/1gHxgVbgQbqFNMQQe042Ku5L2pM6LLTOBDOFgO1FgZeU/) spreadsheet.
+
+> [!TIP]
+> While waiting for the DNS PR, you can edit your local DNS name resolution so you can connect to your deployment:
+> 1. Retrieve the API Gateway domain name from API Gateway -> Custom Domain Names -> deployment domain name
+> 2. Look up the IP address for the API Gateway domain name via `nslookup <gateway-domain-name>`
+> 3. Edit your `/etc/hosts` to connect one of the returned IP addresses with your custom domain name, like:
+>    ```
+>    XX.XX.XXX.XXX   <deployment-name>.asf.alaska.edu
+>    ```
+> Remember to remove this after the DNS PR is merged!
 
 #### Optional
 
