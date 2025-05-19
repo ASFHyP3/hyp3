@@ -1,9 +1,10 @@
-name: Deploy Multi-Burst Sandbox Stack to AWS
+name: Deploy LAVAS prod to AWS
 
 on:
   push:
-    branches:
-      - hyp3-multi-burst-sandbox
+    tags:
+      - 'v*'
+
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -14,22 +15,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-multi-burst-sandbox
-            domain: hyp3-multi-burst-sandbox.asf.alaska.edu
-            template_bucket: cf-templates-1hz9ldhhl4ahu-us-west-2
-            image_tag: test
+          - environment: hyp3-lavas
+            domain: hyp3-lavas.asf.alaska.edu
+            template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
+            image_tag: latest
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             default_application_status: APPROVED
-            cost_profile: EDC
+            cost_profile: DEFAULT
             job_files: >-
-              job_spec/AUTORIFT.yml
-              job_spec/INSAR_GAMMA.yml
-              job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
-              job_spec/INSAR_ISCE_MULTI_BURST.yml
-              job_spec/ARIA_S1_GUNW.yml
-              job_spec/OPERA_RTC_S1.yml
+              job_spec/SRG_GSLC.yml
+              job_spec/SRG_TIME_SERIES.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640

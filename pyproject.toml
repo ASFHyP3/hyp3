@@ -1,5 +1,16 @@
 [project]
-requires-python = "==3.13"
+name = "hyp3"
+requires-python = "==3.13.*"
+dynamic = ["version"]
+
+[tool.setuptools_scm]
+
+# https://docs.pytest.org/en/stable/how-to/mark.html
+[tool.pytest.ini_options]
+addopts = ['--strict-markers']
+markers = [
+    "network: mark tests that require a network connection",
+]
 
 [tool.ruff]
 line-length = 120
@@ -31,13 +42,11 @@ case-sensitive = true
 lines-after-imports = 2
 
 [tool.ruff.lint.flake8-annotations]
-ignore-fully-untyped = true
-mypy-init-return = true
 suppress-dummy-args = true
 
 [tool.ruff.lint.extend-per-file-ignores]
-"*" = ["D1", "ANN401"]
-"tests/*" = ["ANN"]
+"*" = ["D1"]
+"tests/*" = ["D1", "ANN"]
 
 [tool.mypy]
 python_version = "3.13"

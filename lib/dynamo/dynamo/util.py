@@ -1,15 +1,16 @@
 from datetime import UTC, datetime
 from decimal import Decimal
+from typing import Any
 
 import boto3
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import ConditionBase, Key
 from dateutil.parser import parse
 
 
 DYNAMODB_RESOURCE = boto3.resource('dynamodb')
 
 
-def get_request_time_expression(start, end):
+def get_request_time_expression(start: str | None, end: str | None) -> ConditionBase:
     key = Key('request_time')
     formatted_start = format_time(parse(start)) if start else None
     formatted_end = format_time(parse(end)) if end else None
@@ -33,7 +34,7 @@ def current_utc_time() -> str:
     return format_time(datetime.now(UTC))
 
 
-def convert_floats_to_decimals(element):
+def convert_floats_to_decimals(element: Any) -> Any:  # noqa: ANN401
     if type(element) is float:
         return Decimal(str(element))
     if type(element) is list:
@@ -43,7 +44,7 @@ def convert_floats_to_decimals(element):
     return element
 
 
-def convert_decimals_to_numbers(element):
+def convert_decimals_to_numbers(element: Any) -> Any:  # noqa: ANN401
     if type(element) is Decimal:
         as_float = float(element)
         if as_float.is_integer():

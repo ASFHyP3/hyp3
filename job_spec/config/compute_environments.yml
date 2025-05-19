@@ -7,6 +7,10 @@ compute_environments:
   SrgGslc:
     instance_types: g6.2xlarge
     ami_id: ami-0729c079aae647cb3  # /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
+  SrgTimeSeries:
+    instance_types: c6id.16xlarge
+    allocation_type: EC2
+    allocation_strategy: BEST_FIT_PROGRESSIVE
   AriaAutorift:
     instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
   InsarIsceAria:

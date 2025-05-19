@@ -1,10 +1,10 @@
 import json
 import os
 from pathlib import Path
-from typing import Any
 
 import boto3
 
+import dynamo
 from lambda_logging import log_exceptions, logger
 
 
@@ -18,7 +18,7 @@ else:
     BATCH_PARAMS_BY_JOB_TYPE = {}
 
 
-def convert_to_string(obj: Any) -> str:
+def convert_to_string(obj: object) -> str:
     if isinstance(obj, list):
         return ' '.join([str(item) for item in obj])
     return str(obj)
@@ -47,8 +47,9 @@ def submit_jobs(jobs: list[dict]) -> None:
 
 
 @log_exceptions
-def lambda_handler(event: dict, _) -> None:
-    jobs = event['jobs']
-    logger.info(f'Submitting {len(jobs)} jobs')
-    submit_jobs(jobs)
-    logger.info('Successfully submitted jobs')
+def lambda_handler(event: dict, context: object) -> None:
+    pending_jobs = dynamo.jobs.get_jobs_waiting_for_execution(limit=500)
+    pending_jobs = dynamo.util.convert_decimals_to_numbers(pending_jobs)
+    logger.info(f'Got {len(pending_jobs)} pending jobs')
+
+    submit_jobs(pending_jobs)

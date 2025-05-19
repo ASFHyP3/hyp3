@@ -4,8 +4,15 @@ import requests
 from flask import Response, abort, jsonify, request
 
 import dynamo
-from dynamo.exceptions import AccessCodeError, InsufficientCreditsError, UnexpectedApplicationStatusError
+from dynamo.exceptions import (
+    AccessCodeError,
+    InsufficientCreditsError,
+    UnexpectedApplicationStatusError,
+    UpdateJobForDifferentUserError,
+    UpdateJobNotFoundError,
+)
 from hyp3_api import util
+from hyp3_api.multi_burst_validation import MultiBurstValidationError
 from hyp3_api.validation import BoundsValidationError, GranuleValidationError, validate_jobs
 
 
@@ -22,8 +29,9 @@ def post_jobs(body: dict, user: str) -> dict:
     try:
         validate_jobs(body['jobs'])
     except requests.HTTPError as e:
-        print(f'WARN: CMR search failed: {e}')
-    except (BoundsValidationError, GranuleValidationError) as e:
+        print(f'CMR search failed: {e}')
+        abort(problem_format(503, 'Could not submit jobs due to a CMR error. Please try again later.'))
+    except (BoundsValidationError, GranuleValidationError, MultiBurstValidationError) as e:
         abort(problem_format(400, str(e)))
 
     try:
@@ -49,7 +57,7 @@ def get_jobs(
     except util.TokenDeserializeError:
         abort(problem_format(400, 'Invalid start_token value'))
     jobs, last_evaluated_key = dynamo.jobs.query_jobs(user, start, end, status_code, name, job_type, start_key)
-    payload = {'jobs': jobs}
+    payload: dict = {'jobs': jobs}
     if last_evaluated_key is not None:
         next_token = util.serialize(last_evaluated_key)
         payload['next'] = util.build_next_url(
@@ -62,6 +70,16 @@ def get_job_by_id(job_id: str) -> dict:
     job = dynamo.jobs.get_job(job_id)
     if job is None:
         abort(problem_format(404, f'job_id does not exist: {job_id}'))
+    return job
+
+
+def patch_job_by_id(body: dict, job_id: str, user: str) -> dict:
+    try:
+        job = dynamo.jobs.update_job_for_user(job_id, body['name'], user)
+    except UpdateJobForDifferentUserError as e:
+        abort(problem_format(403, str(e)))
+    except UpdateJobNotFoundError as e:
+        abort(problem_format(404, str(e)))
     return job
 
 
