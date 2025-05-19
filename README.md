@@ -105,7 +105,7 @@ a service user's credentials or by assuming a deployment with a service user.
 
 In order to integrate an ASF deployment we'll need:
 
-1. Set the account-wide API Gateway logging permissions
+1. Account-wide API Gateway logging permissions
 2. A deployment role with the necessary permissions to deploy HyP3
 3. A "service user" so that we can generate long-term AWS access keys and
    integrate the deployment into our CI/CD pipelines
