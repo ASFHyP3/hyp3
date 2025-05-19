@@ -44,7 +44,7 @@ also referred to as "security environments" throughout our code and docs
 - JPL-public 
 
 > [!IMPORTANT]
-> JPL deployments _must_ start with the JPL security environment, but can be migrated to the `JPL-public` one
+> JPL deployments _must_ start with the JPL security environment, but can be migrated to `JPL-public`
 > after they are fully deployed and approved to have a public bucket.
 
 EDC deployment steps are not fully documented here.
@@ -163,7 +163,7 @@ In order to integrate a JPL deployment into our CI/CD pipelines, a JPL-created "
 is needed to get long-term (90-day) AWS access keys. When requesting a service user, you'll
 need to request an appropriate deployment policy containing all the necessary permissions for
 deployment is attached to the user. An appropriate deployment policy can be created in a
-JPL account by deploying the [JPL CI stack](cicd-stacks/JPL-deployment-ci-cf.yml). 
+JPL account by deploying the [JPL CI stack](cicd-stacks/JPL-deployment-policy-cf.yml). 
 
 From the repository root, run:
 ```shell
@@ -190,8 +190,8 @@ Once the JPL service user has been created, you should receive a set of AWS Acce
 which can be used to deploy HyP3 via CI/CD tooling.
 
 > [!IMPORTANT]
-> These keys will be stored in the associated JPL-managed AWS account an AWS SecretsManager secret
-> with the same name as the service user. They automatically rotated by JPL every 90 days and so
+> These keys will be stored in the associated JPL-managed AWS account in an AWS SecretsManager secret
+> with the same name as the service user. JPL automatically rotates them every 90 days and so
 > will need to be periodically refreshed in the GitHub deploy environment secrets (described below).
 </details>
 
@@ -296,7 +296,7 @@ a new one for the deployment. If you need to create a new one, we recommend copy
 as appropriate for your deployment. Also make sure to update the top-level `name` of the workflow and the name
 of the branch to deploy from. (This is typically `main` for prod deployments, `develop` for test deployments, or a feature branch name for sandbox deployments.)
 
-> ![TIP]
+> [!TIP]
 > If you're deploying from a feature branch, make sure to [protect](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
 > it from accidental deletion.
 
@@ -324,7 +324,7 @@ Update the [AWS Accounts and HyP3 Deployments](https://docs.google.com/spreadshe
 #### Optional
 
 <details>
-<summary>##### JPL: Allow a public HyP3 content bucket for JPL accounts</summary>
+<summary>JPL: Allow a public HyP3 content bucket for JPL accounts</summary>
 
 
 By default, JPL commercial AWS accounts have an S3 account level Block All Public
@@ -341,7 +341,7 @@ HyP3 content bucket by redeploying HyP3 using the `JPL-public` security environm
 
 
 <details>
-<summary>##### All: Grant AWS account permission to pull the hyp3-gamma container</summary>
+<summary>All: Grant AWS account permission to pull the hyp3-gamma container</summary>
 
 > [!WARNING]
 > This step must be done by an ASF employee.
