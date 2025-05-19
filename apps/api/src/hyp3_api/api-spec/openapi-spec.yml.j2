@@ -2,7 +2,7 @@ openapi: 3.0.1
 
 info:
   title: {{ api_name }}-api
-  version: ""
+  version: {{ api_version }}
 
 security:
   - EarthDataLogin: []
@@ -86,6 +86,29 @@ paths:
                 $ref: "#/components/schemas/jobs_response"
 
   /jobs/{job_id}:
+
+    patch:
+      description: Update a job.
+      parameters:
+        - name: job_id
+          in: path
+          schema:
+            $ref: "#/components/schemas/job_id"
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/patch_job_body"
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/job"
+
     get:
       description: Get a previously run job.
       parameters:
@@ -134,33 +157,34 @@ components:
   schemas:
 
     costs_response:
-      description: List of job costs.
-      type: array
-      items:
-        type: object
-        required:
-          - job_type
-        properties:
-          job_type:
-            $ref: "./job_parameters.yml#/components/schemas/job_type"
-          cost:
-            $ref: "#/components/schemas/credits"
-          cost_parameter:
-            type: string
+      type: object
+      description: >
+        Dictionary whose keys are the job types available in this deployment.
+        Each value is a fixed or variable cost definition.
+        A fixed cost definition has a single cost key whose value is the credit cost of the job type.
+        A variable cost definition has a cost_parameters key whose value is a list of job parameters,
+        and a cost_table key whose value is a dictionary that allows looking up credit cost based on the job parameters listed in cost_parameters.
+        The example response structure shows JOB_TYPE_A with a fixed cost definition,
+        JOB_TYPE_B with a variable cost definition with one cost parameter,
+        and JOB_TYPE_C with a variable cost definition with two cost parameters.
+        For example, a JOB_TYPE_C job with job parameters {"foo": "foo_value1", "bar": "bar_value2"} would have a credit cost of 5.
+      example:
+        JOB_TYPE_A:
+          cost: 1.0
+        JOB_TYPE_B:
+          cost_parameters: [foo]
           cost_table:
-            type: array
-            items:
-              type: object
-              required:
-                - parameter_value
-                - cost
-              properties:
-                parameter_value:
-                  oneOf:
-                    - type: string
-                    - type: number
-                cost:
-                  $ref: "#/components/schemas/credits"
+            foo_value1: 1.0
+            foo_value2: 5.0
+        JOB_TYPE_C:
+          cost_parameters: [foo, bar]
+          cost_table:
+            foo_value1:
+              bar_value1: 1.0
+              bar_value2: 5.0
+            foo_value2:
+              bar_value1: 2.0
+              bar_value2: 10.0
 
     post_jobs_body:
       description: List for new jobs to submit for processing.
@@ -256,6 +280,15 @@ components:
       items:
         $ref: "#/components/schemas/job"
 
+    patch_job_body:
+      description: Job fields to update.
+      type: object
+      minProperties: 1
+      additionalProperties: false
+      properties:
+        name:
+          $ref: "#/components/schemas/name_patch"
+
     job:
       description: Contains information about a submitted job.
       type: object
@@ -293,8 +326,7 @@ components:
         logs:
           $ref: "#/components/schemas/list_of_urls"
         expiration_time:
-          $ref: "#/components/schemas/datetime"
-          nullable: true
+          $ref: "#/components/schemas/expiration_time"
         processing_times:
           $ref: "#/components/schemas/processing_times"
         priority:
@@ -333,6 +365,13 @@ components:
       format: date-time
       example: "2020-06-04T18:00:03+00:00"
 
+    expiration_time:
+      description: Date and time object formatted according to ISO 8601, representing the job's expiration time
+      type: string
+      nullable: true
+      format: date-time
+      example: "2020-06-04T18:00:03+00:00"
+
     status_code:
       description: Status of a submitted job.
       type: string
@@ -350,6 +389,14 @@ components:
     name:
       description: User provided text to name the job
       type: string
+      minLength: 1
+      maxLength: 100
+      example: Job Name
+
+    name_patch:
+      description: User provided text to name the job, or null to delete the name
+      type: string
+      nullable: true
       minLength: 1
       maxLength: 100
       example: Job Name

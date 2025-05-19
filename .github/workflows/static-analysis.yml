@@ -5,13 +5,16 @@ permissions:
 
 on: push
 
+env:
+  SETUPTOOLS_SCM_PRETEND_VERSION_FOR_HYP3: v0.0.0
+
 jobs:
   call-ruff-workflow:
     # Docs: https://github.com/ASFHyP3/actions
-    uses: ASFHyP3/actions/.github/workflows/reusable-ruff.yml@v0.17.1
+    uses: ASFHyP3/actions/.github/workflows/reusable-ruff.yml@v0.18.1
 
   call-mypy-workflow:
-    uses: ASFHyP3/actions/.github/workflows/reusable-mypy.yml@v0.17.1
+    uses: ASFHyP3/actions/.github/workflows/reusable-mypy.yml@v0.18.1
 
   cfn-lint:
     runs-on: ubuntu-latest
@@ -76,6 +79,7 @@ jobs:
           python -m pip install --upgrade pip
           make install
           make render security_environment=EDC
+
       - name: Run Snyk to check for vulnerabilities
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -84,4 +88,4 @@ jobs:
           snyk iac test --severity-threshold=high
 
   call-secrets-analysis-workflow:
-    uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@v0.17.1
+    uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@v0.18.1

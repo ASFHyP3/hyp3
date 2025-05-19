@@ -1,4 +1,4 @@
-name: Deploy OPERA-DISP Sandbox Stack to AWS
+name: Deploy LAVAS test to AWS
 
 on:
   push:
@@ -14,16 +14,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-opera-disp-sandbox
-            domain: hyp3-opera-disp-sandbox.asf.alaska.edu
-            template_bucket: cf-templates-1hz9ldhhl4ahu-us-west-2
+          - environment: hyp3-lavas-test
+            domain: hyp3-lavas-test.asf.alaska.edu
+            template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
             job_files: >-
-              job_spec/OPERA_DISP_TMS.yml
+              job_spec/INSAR_ISCE_BURST.yml
+              job_spec/SRG_GSLC.yml
+              job_spec/SRG_TIME_SERIES.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -37,6 +39,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -65,7 +69,7 @@ jobs:
             --arg MonthlyBudget '${{ secrets.MONTHLY_BUDGET }}' \
             --arg RequiredSurplus '${{ matrix.required_surplus }}' \
             --arg InstanceTypes '${{ matrix.instance_types }}' \
-            --arg Domain '${{ matrix.domain }}' \
+            --arg DomainName '${{ matrix.domain }}' \
             --arg CertificateArn '${{ secrets.CERTIFICATE_ARN }}' \
             > parameters.json
 

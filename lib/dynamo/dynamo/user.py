@@ -110,7 +110,7 @@ def _get_current_month() -> str:
     return datetime.now(tz=UTC).strftime('%Y-%m')
 
 
-def _create_user(user_id: str, users_table: Any) -> dict:
+def _create_user(user_id: str, users_table: Any) -> dict:  # noqa: ANN401
     user = {
         'user_id': user_id,
         'remaining_credits': Decimal(0),
@@ -125,11 +125,11 @@ def _create_user(user_id: str, users_table: Any) -> dict:
     return user
 
 
-def _reset_credits_if_needed(user: dict, current_month: str, users_table: Any) -> dict:
+def _reset_credits_if_needed(user: dict, current_month: str, users_table: Any) -> dict:  # noqa: ANN401
     if (
         user['application_status'] == APPLICATION_APPROVED
-        and user.get('_month_of_last_credit_reset', '0') < current_month  # noqa: W503
-        and user['remaining_credits'] is not None  # noqa: W503
+        and user.get('_month_of_last_credit_reset', '0') < current_month
+        and user['remaining_credits'] is not None
     ):
         try:
             user = users_table.update_item(

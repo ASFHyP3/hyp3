@@ -1,10 +1,10 @@
-name: Deploy DAAC Stacks to AWS
+name: Deploy Services Sandbox Stack to AWS
 
 on:
+  workflow_dispatch: {}
   push:
     branches:
-      - main
-      - develop
+      - hyp3-services-sandbox
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -15,57 +15,32 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-edc-prod
-            api_name: hyp3
-            template_bucket: cf-templates-118mtzosmrltk-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 14
-            default_credits_per_user: 10000
-            default_application_status: APPROVED
-            cost_profile: EDC
-            deploy_ref: refs/heads/main
-            job_files: >-
-              job_spec/AUTORIFT.yml
-              job_spec/INSAR_GAMMA.yml
-              job_spec/RTC_GAMMA.yml
-              job_spec/INSAR_ISCE_BURST.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 1500
-            expanded_max_vcpus: 3000
-            required_surplus: 2000
-            security_environment: EDC
-            ami_id: /ngap/amis/image_id_ecs_al2023_x86
-            distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
-
-          - environment: hyp3-edc-uat
-            api_name: hyp3-test
-            template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
+          - environment: hyp3-services-sandbox
+            domain: hyp3-services-sandbox.asf.alaska.edu
+            template_bucket: services-hyp3-artifacts
             image_tag: test
             product_lifetime_in_days: 14
-            default_credits_per_user: 10000
+            default_credits_per_user: 0
             default_application_status: APPROVED
-            cost_profile: EDC
-            deploy_ref: refs/heads/develop
+            cost_profile: DEFAULT
             job_files: >-
               job_spec/AUTORIFT.yml
-              job_spec/INSAR_GAMMA.yml
-              job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
-              job_spec/OPERA_DISP_TMS.yml
-              job_spec/ARIA_S1_GUNW.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 1500
-            expanded_max_vcpus: 3000
-            required_surplus: 2000
-            security_environment: EDC
-            ami_id: /ngap/amis/image_id_ecs_al2023_x86
-            distribution_url: 'https://d1riv60tezqha9.cloudfront.net'
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
     environment:
       name: ${{ matrix.environment }}
+      url: https://${{ matrix.domain }}
 
     steps:
       - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -94,25 +69,17 @@ jobs:
             --arg MonthlyBudget '${{ secrets.MONTHLY_BUDGET }}' \
             --arg RequiredSurplus '${{ matrix.required_surplus }}' \
             --arg InstanceTypes '${{ matrix.instance_types }}' \
-            --arg BucketReadPrincipals '${{ secrets.BUCKET_READ_PRINCIPALS }}' \
-            --arg DistributionUrl '${{ matrix.distribution_url }}' \
+            --arg DomainName '${{ matrix.domain }}' \
+            --arg CertificateArn '${{ secrets.CERTIFICATE_ARN }}' \
             > parameters.json
 
       - uses: ./.github/actions/deploy-hyp3
-        if: github.ref == matrix.deploy_ref
         with:
           TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
           STACK_NAME: ${{ matrix.environment }}
-          API_NAME: ${{ matrix.api_name }}
+          API_NAME: ${{ matrix.environment }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
           COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
           PARAMETER_FILE: parameters.json
-
-  call-bump-version-workflow:
-    if: github.ref == 'refs/heads/main'
-    needs: deploy
-    uses: ASFHyP3/actions/.github/workflows/reusable-bump-version.yml@v0.17.1
-    secrets:
-      USER_TOKEN: ${{ secrets.TOOLS_BOT_PAK }}

@@ -177,6 +177,9 @@ Resources:
           - Effect: Allow
             Action: s3:PutObjectTagging
             Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
+          - Effect: Allow
+            Action: sns:Publish
+            Resource: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:*"
 
   BatchServiceRole:
     Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}

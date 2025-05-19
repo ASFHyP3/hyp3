@@ -4,6 +4,7 @@ from os import environ
 from pathlib import Path
 from uuid import uuid4
 
+import botocore.exceptions
 from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
@@ -13,6 +14,8 @@ from dynamo.exceptions import (
     NotStartedApplicationError,
     PendingApplicationError,
     RejectedApplicationError,
+    UpdateJobForDifferentUserError,
+    UpdateJobNotFoundError,
 )
 from dynamo.user import APPLICATION_APPROVED, APPLICATION_NOT_STARTED, APPLICATION_PENDING, APPLICATION_REJECTED
 from dynamo.util import DYNAMODB_RESOURCE, convert_floats_to_decimals, current_utc_time, get_request_time_expression
@@ -115,26 +118,73 @@ def _prepare_job_for_database(
     return prepared_job
 
 
-def _get_credit_cost(job: dict, costs: list[dict]) -> Decimal:
+def _get_credit_cost(job: dict, costs: dict) -> Decimal:
     job_type = job['job_type']
-    for cost_definition in costs:
-        if cost_definition['job_type'] == job_type:
-            if cost_definition.keys() not in ({'job_type', 'cost_parameter', 'cost_table'}, {'job_type', 'cost'}):
-                raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
+    cost_definition = costs[job_type]
 
-            if 'cost_parameter' in cost_definition:
-                cost_parameter = cost_definition['cost_parameter']
-                parameter_value = job['job_parameters'][cost_parameter]
-                for item in cost_definition['cost_table']:
-                    if item['parameter_value'] == parameter_value:
-                        return item['cost']
-                raise ValueError(f'Cost not found for job type {job_type} with {cost_parameter} == {parameter_value}')
+    if cost_definition.keys() not in ({'cost_parameters', 'cost_table'}, {'cost'}):
+        raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {cost_definition.keys()}')
 
-            return cost_definition['cost']
-    raise ValueError(f'Cost not found for job type {job_type}')
+    if 'cost' in cost_definition:
+        cost = cost_definition['cost']
+    else:
+        cost = _get_cost_from_table(job, cost_definition)
+
+    if not isinstance(cost, Decimal):
+        raise ValueError(f'Job type {job["job_type"]} has non-Decimal cost value')
+
+    return cost
 
 
-def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type=None, start_key=None):
+def _get_cost_from_table(job: dict, cost_definition: dict) -> Decimal:
+    cost_lookup = cost_definition['cost_table']
+
+    for cost_parameter in cost_definition['cost_parameters']:
+        parameter_value = _get_cost_parameter_value(job, cost_parameter)
+
+        try:
+            cost_lookup = cost_lookup[parameter_value]
+        except KeyError:
+            raise ValueError(
+                f'Cost not found for job type {job["job_type"]} with {cost_parameter} == {parameter_value}'
+            )
+
+    return cost_lookup
+
+
+def _get_cost_parameter_value(job: dict, cost_parameter: str) -> str:
+    parameter_value = job['job_parameters'][cost_parameter]
+
+    if isinstance(parameter_value, str):
+        cost_parameter_value = parameter_value
+
+    elif isinstance(parameter_value, int):
+        cost_parameter_value = str(parameter_value)
+
+    elif isinstance(parameter_value, float):
+        cost_parameter_value = str(int(parameter_value))
+
+    elif isinstance(parameter_value, list):
+        cost_parameter_value = str(len(parameter_value))
+
+    else:
+        raise ValueError(
+            f'Cost parameter {cost_parameter} for job type {job["job_type"]} has '
+            f'unsupported type {type(parameter_value)}'
+        )
+
+    return cost_parameter_value
+
+
+def query_jobs(
+    user: str,
+    start: str | None = None,
+    end: str | None = None,
+    status_code: str | None = None,
+    name: str | None = None,
+    job_type: str | None = None,
+    start_key: dict | None = None,
+) -> tuple[list[dict], dict | None]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
 
     key_expression = Key('user_id').eq(user)
@@ -163,13 +213,14 @@ def query_jobs(user, start=None, end=None, status_code=None, name=None, job_type
     return jobs, response.get('LastEvaluatedKey')
 
 
-def get_job(job_id):
+def get_job(job_id: str) -> dict:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     response = table.get_item(Key={'job_id': job_id})
     return response.get('Item')
 
 
-def update_job(job):
+def update_job(job: dict) -> None:
+    """Update the job as it progresses through its execution."""
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     primary_key = 'job_id'
     key = {'job_id': job[primary_key]}
@@ -183,6 +234,38 @@ def update_job(job):
         UpdateExpression=update_expression,
         ExpressionAttributeValues=expression_attribute_values,
     )
+
+
+def update_job_for_user(job_id: str, name: str | None, user_id: str) -> dict:
+    """Update the user's job at their request."""
+    if name is not None:
+        update_expression = 'SET #name = :name'
+        name_value = {':name': name}
+    else:
+        update_expression = 'REMOVE #name'
+        name_value = {}
+
+    table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
+    try:
+        job = table.update_item(
+            Key={'job_id': job_id},
+            UpdateExpression=update_expression,
+            ConditionExpression='user_id = :user_id',  # Also implicitly checks that job exists
+            ExpressionAttributeValues={':user_id': user_id, **name_value},
+            ExpressionAttributeNames={'#name': 'name'},
+            ReturnValues='ALL_NEW',
+            ReturnValuesOnConditionCheckFailure='ALL_OLD',
+        )['Attributes']
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
+            if 'Item' not in e.response:
+                raise UpdateJobNotFoundError(f'Job {job_id} does not exist')
+            else:
+                assert e.response['Item']['user_id']['S'] != user_id
+                raise UpdateJobForDifferentUserError("You cannot modify a different user's job")
+        raise
+
+    return job
 
 
 def get_jobs_waiting_for_execution(limit: int) -> list[dict]:
