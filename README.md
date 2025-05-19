@@ -210,16 +210,17 @@ you will need to create an Earthdata Login user for your deployment if you do no
 #### Create secret with AWS Secrets Manager
 
 Go to AWS console -> Secrets Manager, then:
-- Click the orange "Store a new secret" button
-- On the create secret screen:
-  - For "Secret Type" select "Other type of secret"
-  - Enter all required secret key-value pairs. Notably, the keys should be the secret names as listed (case-sensitive)
-    in the [job specs](./job_spec/) that will be deployed
-  - Click the orange "Next" button
-  - Give the secret the same name that you plan to give to the HyP3 CloudFormation stack when you deploy it (below)
-  - Click the orange "Next" button
-  - Click the orange "Next" button (we won't configure rotation)
-  - Click the orange "Store" button to save the Secret
+
+1. Click the orange "Store a new secret" button
+1. On the create secret screen:
+   1. For "Secret Type" select "Other type of secret"
+   1. Enter all required secret key-value pairs. Notably, the keys should be the secret names as listed (case-sensitive)
+      in the [job specs](./job_spec/) that will be deployed
+   1. Click the orange "Next" button
+   1. Give the secret the same name that you plan to give to the HyP3 CloudFormation stack when you deploy it (below)
+   1. Click the orange "Next" button
+   1. Click the orange "Next" button (we won't configure rotation)
+   1. Click the orange "Store" button to save the Secret
 
 #### Upload SSL cert
 
