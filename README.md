@@ -75,6 +75,7 @@ for a bucket named something like `cf-templates-<HASH>-<region>`. If not, follow
 
 <details>
 <summary>ASF: Create a CloudFormation templates bucket</summary>
+<br />
 
 *Note: This section only needs to be completed once per AWS account.*
 
@@ -102,6 +103,7 @@ a service user's credentials or by assuming a deployment with a service user.
 
 <details>
 <summary>ASF: Create a service user and deployment role</summary>
+<br />
 
 In order to integrate an ASF deployment we'll need:
 
@@ -112,11 +114,10 @@ In order to integrate an ASF deployment we'll need:
 
 These can be done by deploying the [ASF CI stack](cicd-stacks/ASF-deployment-ci-cf.yml).
 
-> [!WARNING]
-> This stack should only be deployed once per AWS account. This stack also
-> assumes you are only deploying into a single AWS Region. If you are deploying into
-> multiple regions in the same AWS account, you'll need to adjust the IAM permissions
-> that are limited to a single region.
+*Warning: This stack should only be deployed once per AWS account. This stack also
+assumes you are only deploying into a single AWS Region. If you are deploying into
+multiple regions in the same AWS account, you'll need to adjust the IAM permissions
+that are limited to a single region.*
 
 From the repository root, run the following command, replacing `<profile>` and `<template-bucket>`
 with the appropriate values for your AWS account:
@@ -154,8 +155,7 @@ For more information about `roles-as-code`, see:
 * https://wiki.jpl.nasa.gov/display/cloudcomputing/IAM+Roles+and+Policies
 * https://github.jpl.nasa.gov/cloud/roles-as-code/blob/master/Documentation.md
 
-> [!NOTE]
-> You must be on the JPL VPN to view the JPL `.jpl.nasa.gov` links in this document.
+*Note: You must be on the JPL VPN to view the JPL `.jpl.nasa.gov` links in this document.*
 
 ##### Set up a service user for JPL accounts
 
@@ -172,11 +172,10 @@ aws cloudformation deploy \
     --template-file cicd-stacks/JPL-deployment-policy-cf.yml
 ```
 
-> [!WARNING]
-> This stack should only be deployed once per AWS account. This stack also
-> assumes you are only deploying into a single AWS Region. If you are deploying into
-> multiple regions in the same AWS account, you'll need to adjust the IAM permissions
-> that are limited to a single region.
+*Warning: This stack should only be deployed once per AWS account. This stack also
+assumes you are only deploying into a single AWS Region. If you are deploying into
+multiple regions in the same AWS account, you'll need to adjust the IAM permissions
+that are limited to a single region.*
 
 Then open a [Cloud Team Service Desk](https://itsd-jira.jpl.nasa.gov/servicedesk/customer/portal/13)
 request for a service user account here:
@@ -189,10 +188,10 @@ the `hyp3-ci` CloudFormation Stack Resources.
 Once the JPL service user has been created, you should receive a set of AWS Access Keys
 which can be used to deploy HyP3 via CI/CD tooling.
 
-> [!IMPORTANT]
-> These keys will be stored in the associated JPL-managed AWS account in an AWS SecretsManager secret
-> with the same name as the service user. JPL automatically rotates them every 90 days and so
-> will need to be periodically refreshed in the GitHub deploy environment secrets (described below).
+*Important: These keys will be stored in the associated JPL-managed AWS account in an AWS SecretsManager secret
+with the same name as the service user. JPL automatically rotates them every 90 days and so
+will need to be periodically refreshed in the GitHub deploy environment secrets (described below).*
+
 </details>
 
 #### Create Earthdata Login user
@@ -234,6 +233,7 @@ If HyP3 is being deployed to an ASF-managed AWS account, we can use the master c
 
 <details>
 <summary>ASF: Upload the ASF Master SSL Certificate</summary>
+<br />
 
 Upload the `*.asf.alaska.edu` SSL certificate to AWS Certificate Manager (ACM).
 
@@ -247,6 +247,7 @@ Open https://gitlab.asf.alaska.edu/operations/puppet/-/tree/production/site/modu
 
 <details>
 <summary>JPL and EDC: Request and upload deployment specific SSL Certificate</summary>
+<br />
 
 Submit a Platform request in ASF JIRA for a new certificate, including the domain name
 (e.g. `hyp3-foobar.asf.alaska.edu`).
@@ -326,7 +327,7 @@ Update the [AWS Accounts and HyP3 Deployments](https://docs.google.com/spreadshe
 
 <details>
 <summary>JPL: Allow a public HyP3 content bucket for JPL accounts</summary>
-
+<br />
 
 By default, JPL commercial AWS accounts have an S3 account level Block All Public
 Access set which must be disabled by the JPL Cloud team in order to attach a public
@@ -340,12 +341,11 @@ Once this setting has been disabled, you can attach a public bucket policy to th
 HyP3 content bucket by redeploying HyP3 using the `JPL-public` security environment.
 </details>
 
-
 <details>
 <summary>All: Grant AWS account permission to pull the hyp3-gamma container</summary>
+<br />
 
-> [!WARNING]
-> This step must be done by an ASF employee.
+*Warning: This step must be done by an ASF employee.*
 
 If your HyP3 deployment uses the `RTC_GAMMA` or `INSAR_GAMMA` job types
 and is the first such deployment in this AWS account,
