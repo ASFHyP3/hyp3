@@ -98,24 +98,22 @@ for a bucket named something like `cf-templates-<HASH>-<region>`. If not, follow
 A new account will not have a bucket for storing AWS CloudFormation templates,
 which is needed to deploy a CloudFormation stack. AWS will automatically make a
 suitable bucket if you try and create a new CloudFormation Stack in the AWS Console:
+
 1. Navigate to the CloudFormation service in the region you are going to deploy to
 1. Click the orange "Create stack" button
-1. On the create stack screen:
-   1. For "Prepare template" make select "Template is ready"
-   1. For "Template source" select "Upload a template file"
-   1. Choose any JSON or YAML formatted file from your computer to upload
-   1. Once the file is uploaded, you should see an S3 URL on the bottom indicating the
-      bucket the template file was uploaded. This is your newly created CloudFormation
-      templates bucket and should be named something like `cf-templates-<HASH>-<region>`
-   1. Click "Cancel" to exit the CloudFormation stack creation now that we have a
-      templates bucket
+1. For "Prepare template" make select "Template is ready"
+1. For "Template source" select "Upload a template file"
+1. Choose any JSON or YAML formatted file from your computer to upload
+1. Once the file is uploaded, you should see an S3 URL on the bottom indicating the
+   bucket the template file was uploaded. This is your newly created CloudFormation
+   templates bucket and should be named something like `cf-templates-<HASH>-<region>`
+1. Click "Cancel" to exit the CloudFormation stack creation now that we have a templates bucket
 
 </details>
 
 #### Enable CI/CD
 
-The primary and recommended way to deploy HyP3 is though our GitHub Actions CI/CD pipelines, which uses either
-a service user's credentials or by assuming a deployment with a service user.
+The primary and recommended way to deploy HyP3 is though our GitHub Actions CI/CD pipeline:
 
 <details>
 <summary>ASF: Create a service user and deployment role</summary>
@@ -146,21 +144,21 @@ aws --profile <profile> cloudformation deploy \
     --parameter-overrides TemplateBucketName=<template-bucket>
 ```
 
-Once the `github-actions` IAM user has been created, you can create a set of AWS
-Access Keys for that user, which can be used to deploy HyP3 via CI/CD tooling.
+Once the `github-actions` IAM user has been created, you can create an AWS access key for that user,
+which we will use to deploy HyP3 via CI/CD tooling:
 
-Go to AWS console -> IAM -> Users -> github-actions -> security credentials tab -> "create access key".
-Store the access key ID and secret access key using your team's password manager.
+1. Go to AWS console -> IAM -> Users -> github-actions -> security credentials tab -> "create access key".
+2. Store the access key ID and secret access key using your team's password manager.
 </details>
 
 <details>
-<summary>JPL: Setup Roles as Code and Request a service user</summary>
+<summary>JPL: Set up roles-as-code and request a service user</summary>
 
 ##### Roles-as-code for JPL accounts
 
 JPL restricts developers from creating IAM roles or policies inside their AWS commercial cloud accounts.
 However, HyP3 can be deployed into a JPL managed AWS commercial account as long as JPL's `roles-as-code`
-tooling is provided in the account and in same region as the deployment. Currently, the only
+tooling is provided in the account and in the same region as the deployment. Currently, the only
 regions supported are `us-west-1`, `us-west-2`, `us-east-1`, and `us-east-2`.
 
 To request `roles-as-code` tooling be deployed in a JPL account, open a
@@ -171,13 +169,13 @@ For more information about `roles-as-code`, see:
 * https://wiki.jpl.nasa.gov/display/cloudcomputing/IAM+Roles+and+Policies
 * https://github.jpl.nasa.gov/cloud/roles-as-code/blob/master/Documentation.md
 
-*Note: You must be on the JPL VPN to view the JPL `.jpl.nasa.gov` links in this document.*
+*Note: You must be on the JPL VPN to view the `.jpl.nasa.gov` links in this document.*
 
 ##### Set up a service user for JPL accounts
 
 In order to integrate a JPL deployment into our CI/CD pipelines, a JPL-created "service user"
 is needed to get long-term (90-day) AWS access keys. When requesting a service user, you'll
-need to request an appropriate deployment policy containing all the necessary permissions for
+need to request that an appropriate deployment policy containing all the necessary permissions for
 deployment is attached to the user. An appropriate deployment policy can be created in a
 JPL account by deploying the [JPL CI stack](cicd-stacks/JPL-deployment-policy-cf.yml). 
 
@@ -201,7 +199,7 @@ The policy name should look like `hyp3-ci-DeployPolicy-*`, and can be found eith
 in the [IAM console](https://console.aws.amazon.com/iamv2/home?#/policies) or listed under
 the `hyp3-ci` CloudFormation Stack Resources.
 
-Once the JPL service user has been created, you should receive a set of AWS Access Keys
+Once the JPL service user has been created, you should receive an AWS access key
 which can be used to deploy HyP3 via CI/CD tooling.
 
 *Important: These keys will be stored in the associated JPL-managed AWS account in an AWS SecretsManager secret
@@ -227,42 +225,39 @@ you will need to create an Earthdata Login user for your deployment if you do no
 Go to AWS console -> Secrets Manager, then:
 
 1. Click the orange "Store a new secret" button
-1. On the create secret screen:
-   1. For "Secret Type" select "Other type of secret"
-   1. Enter all required secret key-value pairs. Notably, the keys should be the secret names as listed (case-sensitive)
-      in the [job specs](./job_spec/) that will be deployed
-   1. Click the orange "Next" button
-   1. Give the secret the same name that you plan to give to the HyP3 CloudFormation stack when you deploy it (below)
-   1. Click the orange "Next" button
-   1. Click the orange "Next" button (we won't configure rotation)
-   1. Click the orange "Store" button to save the Secret
+1. For "Secret Type" select "Other type of secret"
+1. Enter all required secret key-value pairs. Notably, the keys should be the secret names as listed (case-sensitive) in the [job specs](./job_spec/) that will be deployed
+1. Click the orange "Next" button
+1. Give the secret the same name that you plan to give to the HyP3 CloudFormation stack when you deploy it (below)
+1. Click the orange "Next" button
+1. Click the orange "Next" button (we won't configure rotation)
+1. Click the orange "Store" button to save the Secret
 
 #### Upload SSL cert
 
 > [!WARNING]
 > This step must be done by an ASF employee.
 
-To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for it's deployment domain name (URL).
+To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for its deployment domain name (URL).
 
 If HyP3 is being deployed to an ASF-managed AWS account, we can use the master certificate that covers all 
 `*.asf.alaska.edu` domains. Otherwise, we'll need a deployment specific certificate.
 
 <details>
-<summary>ASF: Upload the ASF Master SSL Certificate</summary>
+<summary>ASF: Upload the ASF master SSL certificate</summary>
 <br />
 
-Upload the `*.asf.alaska.edu` SSL certificate to AWS Certificate Manager (ACM).
+Upload the `*.asf.alaska.edu` SSL certificate to AWS Certificate Manager (ACM):
 
-AWS console -> Certificate Manager (ACM) -> import certificate
-
-Open https://gitlab.asf.alaska.edu/operations/puppet/-/tree/production/site/modules/certificates/files
-- The contents of the `asf.alaska.edu.cer` file go in Certificate body
-- The contents of the `asf.alaska.edu.key` file go in Certificate private key
-- The contents of the `incommon.cer` file goes in Certificate chain
+1. AWS console -> Certificate Manager (ACM) -> import certificate
+1. Open https://gitlab.asf.alaska.edu/operations/puppet/-/tree/production/site/modules/certificates/files
+   1. The contents of the `asf.alaska.edu.cer` file go in Certificate body
+   1. The contents of the `asf.alaska.edu.key` file go in Certificate private key
+   1. The contents of the `incommon.cer` file goes in Certificate chain
 </details>
 
 <details>
-<summary>JPL and EDC: Request and upload deployment specific SSL Certificate</summary>
+<summary>JPL and EDC: Request and upload deployment specific SSL certificate</summary>
 <br />
 
 Submit a Platform request in ASF JIRA for a new certificate, including the domain name
@@ -272,15 +267,14 @@ Once you receive the certificate's private key and links to download the certifi
 download these files:
 1. Certificate Body (the "as Certificate Only, PEM encoded" link from the email)
 2. Certificate Private Key (from the Platform team; typically in MatterMost)
-3. Certificate Chain (the "as Root/Intermediate(s) only, PEM encoded link from the email)
+3. Certificate Chain (the "as Root/Intermediate(s) only, PEM encoded" link from the email)
 
-and then upload them to AWS Certificate Manager (ACM).
+and then upload them to AWS Certificate Manager (ACM):
 
-AWS console -> Certificate Manager (ACM) -> import certificate
-
-- The contents of the (1) above goes in Certificate body
-- The contents of the (2) above goes in Certificate private key
-- The contents of the (3) above goes in Certificate chain
+1. AWS console -> Certificate Manager (ACM) -> import certificate
+   1. The contents of (1) above goes in Certificate body
+   1. The contents of (2) above goes in Certificate private key
+   1. The contents of (3) above goes in Certificate chain
 
 </details>
 
@@ -299,12 +293,15 @@ AWS console -> Certificate Manager (ACM) -> import certificate
 4. Add the following environment secrets:
     - `AWS_REGION` - e.g. `us-west-2`
     - `CERTIFICATE_ARN` - ARN of the AWS Certificate Manager certificate that you imported manually (aws console -> certificate manager -> list certificates, e.g. `arn:aws:acm:us-west-2:xxxxxxxxxxxx:certificate/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`)
-    - `CLOUDFORMATION_ROLE_ARN` (ASF Only) - part of the `hyp3-ci` stack that you deployed, e.g. `arn:aws:iam::xxxxxxxxxxxx:role/hyp3-ci-CloudformationDeploymentRole-XXXXXXXXXXXXX`
+    - `CLOUDFORMATION_ROLE_ARN` (ASF security environment) - part of the `hyp3-ci` stack that you deployed, e.g. `arn:aws:iam::xxxxxxxxxxxx:role/hyp3-ci-CloudformationDeploymentRole-XXXXXXXXXXXXX`
     - `SECRET_ARN` - ARN for the AWS Secrets Manager Secret that you created manually
-    - `SUBNET_IDS` - Comma delimited list (no spaces) of the default subnets for vpc specified in `VPC_ID` (aws console -> vpc -> subnets, e.g. `subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx`)
-    - `V2_AWS_ACCESS_KEY_ID` - Access key ID of the service user that you requested (JPL) or created for the `github-actions` user (ASF)
-    - `V2_AWS_SECRET_ACCESS_KEY` - Secret access key that you  requested (JPL) or created for the `github-actions` user (ASF)
+    - `V2_AWS_ACCESS_KEY_ID` - AWS access key ID:
+      - ASF: for the `github-actions` user
+      - JPL: for the service user
+      - EDC: created by an ASF developer via Kion
+    - `V2_AWS_SECRET_ACCESS_KEY` - The corresponding secret access key
     - `VPC_ID` - ID of the default VPC for this AWS account and region (aws console -> vpc -> your VPCs, e.g. `vpc-xxxxxxxxxxxxxxxxx`)
+    - `SUBNET_IDS` - Comma delimited list (no spaces) of the default subnets for the VPC specified in `VPC_ID` (aws console -> vpc -> subnets, e.g. `subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx`)
 
 ### Create the HyP3 deployment
 
