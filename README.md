@@ -43,10 +43,6 @@ A processing environment for HyP3 Plugins in AWS.
 
 ## Deployment
 
-*Note: To delete a HyP3 deployment, delete any of the resources listed below that are no longer needed.
-Before deleting the HyP3 CloudFormation stack, you should manually empty and delete the `contentbucket` and `logbucket`
-for the deployment via the S3 console.*
-
 > [!IMPORTANT]
 > It's not currently possible to deploy HyP3 fully independent of ASF due to our integration with 
 > [ASF Vertex](https://search.alaska.edu). If you'd like your own deployment of HyP3, please open an issue here or
@@ -387,6 +383,13 @@ go to AWS console -> Elastic Container Registry -> hyp3-gamma -> Permissions -> 
 2. Update list of account names in the `SID`
 
 </details>
+
+### Deleting a HyP3 deployment
+
+To delete a HyP3 deployment, delete any of the resources created above that are no longer needed.
+
+Before deleting the HyP3 CloudFormation stack,
+you should manually empty and delete the `contentbucket` and `logbucket` for the deployment via the S3 console.
 
 ## Running the API Locally
 
