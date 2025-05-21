@@ -93,7 +93,7 @@ for a bucket named something like `cf-templates-<HASH>-<region>`. If not, follow
 <summary>ASF: Create a CloudFormation templates bucket</summary>
 <br />
 
-*Note: This section only needs to be completed once per AWS account.*
+*Note: This section only needs to be completed once per region used in an AWS account.*
 
 A new account will not have a bucket for storing AWS CloudFormation templates,
 which is needed to deploy a CloudFormation stack. AWS will automatically make a
