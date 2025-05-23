@@ -255,7 +255,7 @@ def check_aria_s1_gunw_dates(job: dict, _) -> None:
         'secondary_date': get_date_from_job('secondary_date'),
     }
 
-    s1_start_date = date('2014/06/15 03:44:43 UTC')
+    s1_start_date = date(2014, 6, 15)
     todays_date = date.today()
 
     for job_date_key, job_date in job_dates.items():
@@ -267,7 +267,7 @@ def check_aria_s1_gunw_dates(job: dict, _) -> None:
                 f'"{job_date_key}" is {job_date} which is before the start of sentinel 1 mission ({s1_start_date}).'
             )
 
-    if job_dates['reference_date'] == job_dates('secondary_date'):
+    if job_dates['reference_date'] == job_dates['secondary_date']:
         raise DateValidationError(
             f'reference and secondary dates are equal, must be different dates ({job_dates["reference_date"]}).'
         )
