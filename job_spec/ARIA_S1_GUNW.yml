@@ -1,25 +1,22 @@
 ARIA_S1_GUNW:
   required_parameters:
-    - reference_date
-    - secondary_date
+    - dates
     - frame_id
   parameters:
-    reference_date:
+    dates:
       api_schema:
-        description: The date to find Sentinel-1 SLC granules to use as reference scenes for InSAR processing
-        type: string
-        maxLength: 10
-        minLength: 10
-        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
-        example: "2025-01-21"
-    secondary_date:
-      api_schema:
-        description: The date to find Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
-        type: string
-        maxLength: 10
-        minLength: 10
-        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
-        example: "2025-01-21"
+        type: array
+        minItems: 2
+        maxItems: 2
+        example:
+          - "2022-01-21"
+          - "2023-01-24"
+        items:
+          type: string
+          maxLength: 10
+          minLength: 10
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          description: Dates to find Sentinel-1 SLC granules on to use as scenes for InSAR processing
     frame_id:
       api_schema:
         description: Subset GUNW products to this frame.
@@ -45,12 +42,9 @@ ARIA_S1_GUNW:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
-        - --reference-date
-        - Ref::reference_date
-        - --secondary-date
-        - Ref::secondary_date
         - --frame-id
         - Ref::frame_id
+        - Ref::dates
       timeout: 21600  # 6 hr
       compute_environment: AriaS1Gunw
       vcpu: 1
