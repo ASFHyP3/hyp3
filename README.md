@@ -77,6 +77,9 @@ When deploying HyP3 to a new EDC account for the first time, you should also ref
 You should then be able to deploy additional copies of HyP3 to an EDC Sandbox account
 by following this README alone.
 
+After deploying HyP3 to an EDC Sandbox account, you'll need to follow our documentation on
+[Accessing Private API Gateways in Earthdata Cloud](https://github.com/ASFHyP3/.github-private/blob/main/docs/Accessing-Private-API-Gateways-in-Earthdata-Cloud.md).
+
 > [!TIP]
 > You can expand and collapse details specific to a security environment as you go through this README.
 > Make sure you're looking at the details for the security environment you're deploying into!  
