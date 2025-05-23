@@ -71,7 +71,7 @@ For a new EDC deployment, you need the following items (not necessarily a compre
 - SSL certificate in AWS Certificate Manager for custom CloudFront domain name
 - ID of the CloudFront Origin Access Identity used to access data in S3
 
-This documentation is not necessarily complete for EDC UAT/prod deployments.
+EDC UAT/prod deployment steps are not fully documented here.
 When deploying HyP3 to a new EDC account for the first time, you should also refer to the
 [SOP for deploying HyP3 to EDC](https://asfdaac.atlassian.net/wiki/spaces/ST/pages/2290319361/SOP-ASF-DAAC-EDC-011).
 You should then be able to deploy additional copies of HyP3 to an EDC Sandbox account
