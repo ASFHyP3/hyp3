@@ -63,11 +63,6 @@ also referred to as "security environments" throughout our code and docs
 > JPL deployments _must_ start with the JPL security environment, but can be migrated to `JPL-public`
 > after they are fully deployed and approved to have a public bucket.
 
-When deploying HyP3 to a new EDC account for the first time, you should also refer to the
-[SOP for deploying HyP3 to EDC](https://asfdaac.atlassian.net/wiki/spaces/ST/pages/2290319361/SOP-ASF-DAAC-EDC-011).
-You should then be able to deploy additional copies of HyP3 (e.g. for EDC Sandbox deployments)
-by following this README alone.
-
 For JPL, these deployment docs assume that:
 - the JPL account was set up in the "default" manner by the JPL cloud team
 - the developer deploying the account is able to log in with the `power_user` role
@@ -75,6 +70,12 @@ For JPL, these deployment docs assume that:
 For a new EDC deployment, you need the following items (not necessarily a comprehensive list):
 - SSL certificate in AWS Certificate Manager for custom CloudFront domain name
 - ID of the CloudFront Origin Access Identity used to access data in S3
+
+This documentation is not necessarily complete for EDC UAT/prod deployments.
+When deploying HyP3 to a new EDC account for the first time, you should also refer to the
+[SOP for deploying HyP3 to EDC](https://asfdaac.atlassian.net/wiki/spaces/ST/pages/2290319361/SOP-ASF-DAAC-EDC-011).
+You should then be able to deploy additional copies of HyP3 to an EDC Sandbox account
+by following this README alone.
 
 > [!TIP]
 > You can expand and collapse details specific to a security environment as you go through this README.
