@@ -26,6 +26,10 @@ class GranuleValidationError(Exception):
     pass
 
 
+class DateValidationError(Exception):
+    pass
+
+
 class BoundsValidationError(Exception):
     pass
 
@@ -238,6 +242,34 @@ def check_opera_rtc_s1_static_coverage(job: dict, _) -> None:
     if not _has_opera_rtc_s1_static_coverage(granule):
         raise GranuleValidationError(
             f'Granule {granule} is outside the valid processing extent for OPERA RTC-S1 products.'
+        )
+
+
+def check_aria_s1_gunw_dates(job: dict, _) -> None:
+    def get_date_from_job(date_param_key: str) -> date:
+        param_date_str = job['job_parameters'][date_param_key]
+        return datetime.strptime(param_date_str, '%Y%m%d').date()
+
+    job_dates = {
+        'reference_date': get_date_from_job('reference_date'),
+        'secondary_date': get_date_from_job('secondary_date'),
+    }
+
+    s1_start_date = date('2014/06/15 03:44:43 UTC')
+    todays_date = date.today()
+
+    for job_date_key, job_date in job_dates.items():
+        if job_date > todays_date:
+            raise DateValidationError(f'"{job_date_key}" is {job_date} which is a value in the future.')
+
+        if job_date < s1_start_date:
+            raise DateValidationError(
+                f'"{job_date_key}" is {job_date} which is before the start of sentinel 1 mission ({s1_start_date}).'
+            )
+
+    if job_dates['reference_date'] == job_dates('secondary_date'):
+        raise DateValidationError(
+            f'reference and secondary dates are equal, must be different dates ({job_dates["reference_date"]}).'
         )
 
 

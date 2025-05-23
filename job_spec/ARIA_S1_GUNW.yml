@@ -1,38 +1,25 @@
 ARIA_S1_GUNW:
   required_parameters:
-    - reference
-    - secondary
+    - reference_date
+    - secondary_date
     - frame_id
   parameters:
-    reference:
+    reference_date:
       api_schema:
-        type: array
-        minItems: 1
-        maxItems: 3
-        example:
-          - S1A_IW_SLC__1SSV_20141127T015250_20141127T015318_003461_0040D8_A29D
-          - S1A_IW_SLC__1SSV_20141127T015314_20141127T015342_003461_0040D8_87BA
-        items:
-          description: The names of the Sentinel-1 SLC granules to use as reference scenes for InSAR processing
-          type: string
-          pattern: "^S1[AB]_IW_SLC__1S[SD]V"
-          minLength: 67
-          maxLength: 67
-          example: S1A_IW_SLC__1SDV_20250127T010136_20250127T010203_057623_07199D_4B63
-    secondary:
+        description: The date to find Sentinel-1 SLC granules to use as reference scenes for InSAR processing
+        type: string
+        maxLength: 10
+        minLength: 10
+        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        example: "2025-01-21"
+    secondary_date:
       api_schema:
-        type: array
-        minItems: 1
-        maxItems: 3
-        example:
-          - S1A_IW_SLC__1SSV_20141103T015256_20141103T015323_003111_00391A_3776
-        items:
-          description: The names of the Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
-          type: string
-          pattern: "^S1[AB]_IW_SLC__1S[SD]V"
-          minLength: 67
-          maxLength: 67
-          example: S1A_IW_SLC__1SDV_20250103T010137_20250103T010204_057273_070BB6_CD45
+        description: The date to find Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
+        type: string
+        maxLength: 10
+        minLength: 10
+        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        example: "2025-01-21"
     frame_id:
       api_schema:
         description: Subset GUNW products to this frame.
@@ -47,6 +34,7 @@ ARIA_S1_GUNW:
       cost: 1.0
   validators:
     - check_dem_coverage
+    - check_aria_s1_gunw_dates
   steps:
     - name: ''
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
@@ -57,10 +45,10 @@ ARIA_S1_GUNW:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
-        - --reference-scenes
-        - Ref::reference
-        - --secondary-scenes
-        - Ref::secondary
+        - --reference-date
+        - Ref::reference_date
+        - --secondary-date
+        - Ref::secondary_date
         - --frame-id
         - Ref::frame_id
       timeout: 21600  # 6 hr
