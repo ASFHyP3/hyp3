@@ -1,11 +1,12 @@
 import inspect
 from unittest import mock
+from datetime import timedelta, date
 
 import pytest
 import responses
-from shapely.geometry import Polygon
 
 from hyp3_api import CMR_URL, multi_burst_validation, validation
+from shapely.geometry import Polygon
 from test_api.conftest import setup_mock_cmr_response_for_polygons
 
 
@@ -581,4 +582,55 @@ def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
     ):
         validation.check_opera_rtc_s1_date(
             {'job_parameters': {'granules': ['S1_000000_IW1_20250506T000000_VV_0000-BURST']}}, None
+        )
+
+
+def test_check_aria_s1_gunw_dates(monkeypatch):
+    validation.check_aria_s1_gunw_dates(
+        {'job_parameters': {'reference_date': '2022-01-01', 'secondary_date': '2022-01-02'}}, None
+    )
+
+    with pytest.raises(
+        validation.DateValidationError,
+        match=r'^\"reference_date\" is 2014-06-14 which is before the start.*',
+    ):
+        validation.check_aria_s1_gunw_dates(
+            {'job_parameters': {'reference_date': '2014-06-14', 'secondary_date': '2022-01-02'}}, None
+        )
+
+    with pytest.raises(
+        validation.DateValidationError,
+        match=r'^\"secondary_date\" is 2014-06-14 which is before the start.*',
+    ):
+        validation.check_aria_s1_gunw_dates(
+            {'job_parameters': {'reference_date': '2022-01-02', 'secondary_date': '2014-06-14'}}, None
+        )
+
+    future_date = date.today() + timedelta(days=1)
+
+    with pytest.raises(
+        validation.DateValidationError,
+        match=r'^\"reference_date\" is.*which is a value in the future.*',
+    ):
+        validation.check_aria_s1_gunw_dates(
+            {'job_parameters': {'reference_date': future_date.strftime('%Y-%m-%d'), 'secondary_date': '2021-01-01'}},
+            None,
+        )
+
+    with pytest.raises(
+        validation.DateValidationError,
+        match=r'^\"secondary_date\" is.*which is a value in the future.*',
+    ):
+        validation.check_aria_s1_gunw_dates(
+            {'job_parameters': {'reference_date': '2021-01-01', 'secondary_date': future_date.strftime('%Y-%m-%d')}},
+            None,
+        )
+
+    with pytest.raises(
+        validation.DateValidationError,
+        match=r'reference and secondary dates are equal, must be different dates \(2021-01-01\)\.',
+    ):
+        validation.check_aria_s1_gunw_dates(
+            {'job_parameters': {'reference_date': '2021-01-01', 'secondary_date': '2021-01-01'}},
+            None,
         )

@@ -248,7 +248,7 @@ def check_opera_rtc_s1_static_coverage(job: dict, _) -> None:
 def check_aria_s1_gunw_dates(job: dict, _) -> None:
     def get_date_from_job(date_param_key: str) -> date:
         param_date_str = job['job_parameters'][date_param_key]
-        return datetime.strptime(param_date_str, '%Y%m%d').date()
+        return datetime.strptime(param_date_str, '%Y-%m-%d').date()
 
     job_dates = {
         'reference_date': get_date_from_job('reference_date'),
