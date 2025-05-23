@@ -263,7 +263,7 @@ Upload the `*.asf.alaska.edu` SSL certificate to AWS Certificate Manager (ACM):
 </details>
 
 <details>
-<summary>JPL and EDC: Request and upload deployment specific SSL certificate</summary>
+<summary>JPL and EDC UAT/prod: Request and upload deployment specific SSL certificate</summary>
 <br />
 
 Submit a Platform request in ASF JIRA for a new certificate, including the domain name
