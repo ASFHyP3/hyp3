@@ -247,7 +247,7 @@ To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for its 
 If HyP3 is being deployed to an ASF-managed AWS account, we can use the master certificate that covers all 
 `*.asf.alaska.edu` domains. Otherwise, we'll need a deployment specific certificate.
 
-**Important: Skip this step for EDC Sandbox deployments.**
+*Important: Skip this step for EDC Sandbox deployments.*
 
 <details>
 <summary>ASF: Upload the ASF master SSL certificate</summary>
@@ -333,7 +333,7 @@ Once HyP3 is deployed, there are a few follow on tasks you may need to do for a 
 > [!WARNING]
 > This step must be done by an ASF employee.
 
-**Important: Skip this step for EDC Sandbox deployments.**
+*Important: Skip this step for EDC Sandbox deployments.*
 
 Open a PR adding a line to https://gitlab.asf.alaska.edu/operations/puppet/-/blob/production/modules/legacy_dns/files/asf.alaska.edu.db
 for the new custom domain name (AWS console -> api gateway -> custom domain names -> "API Gateway domain name").
