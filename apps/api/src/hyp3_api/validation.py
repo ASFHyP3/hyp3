@@ -26,6 +26,10 @@ class GranuleValidationError(Exception):
     pass
 
 
+class DateValidationError(Exception):
+    pass
+
+
 class BoundsValidationError(Exception):
     pass
 
@@ -238,6 +242,30 @@ def check_opera_rtc_s1_static_coverage(job: dict, _) -> None:
     if not _has_opera_rtc_s1_static_coverage(granule):
         raise GranuleValidationError(
             f'Granule {granule} is outside the valid processing extent for OPERA RTC-S1 products.'
+        )
+
+
+def check_aria_s1_gunw_dates(job: dict, _) -> None:
+    dates = [datetime.strptime(date_str, '%Y-%m-%d').date() for date_str in job['job_parameters']['dates']]
+
+    s1_start_date = date(2014, 6, 15)
+    todays_date = date.today()
+
+    if len(dates) != 2:
+        raise InternalValidationError(f'Expected 2 dates, got {dates}')
+
+    for job_date in dates:
+        if job_date > todays_date:
+            raise DateValidationError(f'"{job_date}" is a value in the future.')
+
+        if job_date < s1_start_date:
+            raise DateValidationError(
+                f'"{job_date}" is before the start of the sentinel 1 mission ({s1_start_date}).'
+            )
+
+    if dates[0] == dates[1]:
+        raise DateValidationError(
+            f'dates are equal, must be different dates ({dates[0]}).'
         )
 
 
