@@ -246,26 +246,30 @@ def check_opera_rtc_s1_static_coverage(job: dict, _) -> None:
 
 
 def check_aria_s1_gunw_dates(job: dict, _) -> None:
-    dates = [datetime.strptime(date_str, '%Y-%m-%d').date() for date_str in job['job_parameters']['dates']]
+    def get_date_from_job(date_param_key: str) -> date:
+        param_date_str = job['job_parameters'][date_param_key]
+        return datetime.strptime(param_date_str, '%Y-%m-%d').date()
+
+    job_dates = {
+        'reference_date': get_date_from_job('reference_date'),
+        'secondary_date': get_date_from_job('secondary_date'),
+    }
 
     s1_start_date = date(2014, 6, 15)
     todays_date = date.today()
 
-    if len(dates) != 2:
-        raise InternalValidationError(f'Expected 2 dates, got {dates}')
-
-    for job_date in dates:
+    for job_date_key, job_date in job_dates.items():
         if job_date > todays_date:
-            raise DateValidationError(f'"{job_date}" is a value in the future.')
+            raise DateValidationError(f'"{job_date_key}" is {job_date} which is a value in the future.')
 
         if job_date < s1_start_date:
             raise DateValidationError(
-                f'"{job_date}" is before the start of the sentinel 1 mission ({s1_start_date}).'
+                f'"{job_date_key}" is {job_date} which is before the start of the sentinel 1 mission ({s1_start_date}).'
             )
 
-    if dates[0] == dates[1]:
+    if job_dates['reference_date'] == job_dates['secondary_date']:
         raise DateValidationError(
-            f'dates are equal, must be different dates ({dates[0]}).'
+            f'reference and secondary dates are equal, must be different dates ({job_dates["reference_date"]}).'
         )
 
 
