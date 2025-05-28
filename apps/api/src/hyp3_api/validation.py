@@ -272,6 +272,9 @@ def check_aria_s1_gunw_dates(job: dict, _) -> None:
             f'reference and secondary dates are equal, must be different dates ({job_dates["reference_date"]}).'
         )
 
+    if job_dates['reference_date'] > job_dates['secondary_date']:
+        raise DateValidationError('reference date must be earlier than secondary date.')
+
 
 def check_opera_rtc_s1_date(job: dict, _) -> None:
     granules = job['job_parameters']['granules']

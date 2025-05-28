@@ -634,3 +634,11 @@ def test_check_aria_s1_gunw_dates(monkeypatch):
             {'job_parameters': {'reference_date': '2021-01-01', 'secondary_date': '2021-01-01'}},
             None,
         )
+
+    with pytest.raises(
+        validation.DateValidationError,
+        match=r'reference date must be earlier than secondary date\.',
+    ):
+        validation.check_aria_s1_gunw_dates(
+            {'job_parameters': {'reference_date': '2022-01-02', 'secondary_date': '2022-01-01'}}, None
+        )
