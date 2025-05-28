@@ -2,9 +2,9 @@ import datetime
 import decimal
 
 import pytest
-from boto3.dynamodb.conditions import Key
 
 import dynamo
+from boto3.dynamodb.conditions import Key
 
 
 def test_get_request_time_expression():

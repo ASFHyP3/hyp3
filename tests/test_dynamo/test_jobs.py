@@ -3,9 +3,9 @@ import unittest.mock
 from decimal import Decimal
 from unittest.mock import MagicMock, NonCallableMagicMock
 
-import botocore.exceptions
 import pytest
 
+import botocore.exceptions
 import dynamo
 from conftest import list_have_same_elements
 from dynamo.exceptions import (

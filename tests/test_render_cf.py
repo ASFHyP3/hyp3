@@ -1,9 +1,9 @@
 from pathlib import Path
 
 import pytest
-import yaml
 
 import render_cf
+import yaml
 
 
 def test_parse_map_statement():

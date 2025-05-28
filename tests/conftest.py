@@ -3,9 +3,9 @@ from os import environ
 from pathlib import Path
 
 import pytest
-import yaml
 from moto import mock_aws
 
+import yaml
 from dynamo.user import APPLICATION_APPROVED
 
 

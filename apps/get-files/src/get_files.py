@@ -5,7 +5,6 @@ from os import environ
 from pathlib import Path
 
 import boto3
-
 import dynamo
 
 

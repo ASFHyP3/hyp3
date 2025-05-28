@@ -1,9 +1,9 @@
 import unittest.mock
 from decimal import Decimal
 
-import botocore.exceptions
 import pytest
 
+import botocore.exceptions
 import dynamo.user
 from dynamo.exceptions import (
     AccessCodeError,

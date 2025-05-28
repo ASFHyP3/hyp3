@@ -5,9 +5,8 @@ from pathlib import Path
 from uuid import uuid4
 
 import botocore.exceptions
-from boto3.dynamodb.conditions import Attr, Key
-
 import dynamo.user
+from boto3.dynamodb.conditions import Attr, Key
 from dynamo.exceptions import (
     InsufficientCreditsError,
     InvalidApplicationStatusError,

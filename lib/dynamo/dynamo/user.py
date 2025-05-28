@@ -5,9 +5,8 @@ from os import environ
 from typing import Any
 
 import botocore.exceptions
-import requests
-
 import dynamo.util
+import requests
 from dynamo.exceptions import (
     AccessCodeError,
     ApprovedApplicationError,

@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 
 import boto3
-
 import dynamo
 from lambda_logging import log_exceptions, logger
 
