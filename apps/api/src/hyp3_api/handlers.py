@@ -1,7 +1,9 @@
 from http.client import responses
 
-import dynamo
 import requests
+from flask import Response, abort, jsonify, request
+
+import dynamo
 from dynamo.exceptions import (
     AccessCodeError,
     InsufficientCreditsError,
@@ -9,7 +11,6 @@ from dynamo.exceptions import (
     UpdateJobForDifferentUserError,
     UpdateJobNotFoundError,
 )
-from flask import Response, abort, jsonify, request
 from hyp3_api import util
 from hyp3_api.multi_burst_validation import MultiBurstValidationError
 from hyp3_api.validation import BoundsValidationError, GranuleValidationError, validate_jobs

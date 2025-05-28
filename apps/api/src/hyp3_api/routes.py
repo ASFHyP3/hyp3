@@ -5,17 +5,18 @@ from decimal import Decimal
 from os import environ
 from pathlib import Path
 
-import dynamo
 import werkzeug
 import yaml
 from flask import Response, abort, g, jsonify, make_response, redirect, render_template, request
 from flask.json.provider import JSONProvider
 from flask_cors import CORS
-from hyp3_api import app, auth, handlers
-from hyp3_api.openapi import get_spec_yaml
 from openapi_core import OpenAPI
 from openapi_core.contrib.flask.decorators import FlaskOpenAPIViewDecorator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
+
+import dynamo
+from hyp3_api import app, auth, handlers
+from hyp3_api.openapi import get_spec_yaml
 
 
 api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'

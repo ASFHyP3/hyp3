@@ -3,9 +3,9 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from botocore.stub import Stubber
 
 import get_files
-from botocore.stub import Stubber
 
 
 @pytest.fixture(autouse=True)

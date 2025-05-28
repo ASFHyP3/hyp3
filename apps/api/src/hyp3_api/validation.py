@@ -7,9 +7,10 @@ from pathlib import Path
 
 import requests
 import yaml
+from shapely.geometry import MultiPolygon, Polygon, shape
+
 from hyp3_api import CMR_URL, multi_burst_validation
 from hyp3_api.util import get_granules
-from shapely.geometry import MultiPolygon, Polygon, shape
 
 
 DEM_COVERAGE = None

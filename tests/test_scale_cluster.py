@@ -1,9 +1,9 @@
 from datetime import date
 
 import pytest
+from botocore.stub import Stubber
 
 import scale_cluster
-from botocore.stub import Stubber
 
 
 @pytest.fixture

@@ -2,10 +2,9 @@ import argparse
 import json
 from pathlib import Path
 
-from setuptools_scm import get_version
-
 import jinja2
 import yaml
+from setuptools_scm import get_version
 
 
 def snake_to_pascal_case(input_string: str) -> str:

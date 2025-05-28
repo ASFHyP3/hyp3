@@ -2,9 +2,9 @@ import os
 from unittest.mock import MagicMock, patch
 
 import pytest
+from botocore.stub import Stubber
 
 import upload_log
-from botocore.stub import Stubber
 
 
 @pytest.fixture
