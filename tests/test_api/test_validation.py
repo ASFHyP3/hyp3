@@ -585,7 +585,7 @@ def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
         )
 
 
-def test_check_aria_s1_gunw_dates(monkeypatch):
+def test_check_aria_s1_gunw_dates():
     validation.check_aria_s1_gunw_dates(
         {'job_parameters': {'reference_date': '2022-01-01', 'secondary_date': '2022-01-02'}}, None
     )
