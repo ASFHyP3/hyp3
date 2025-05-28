@@ -4,9 +4,9 @@ from unittest import mock
 
 import pytest
 import responses
+from shapely.geometry import Polygon
 
 from hyp3_api import CMR_URL, multi_burst_validation, validation
-from shapely.geometry import Polygon
 from test_api.conftest import setup_mock_cmr_response_for_polygons
 
 
