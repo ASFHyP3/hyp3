@@ -22,15 +22,19 @@ class InternalValidationError(Exception):
     pass
 
 
-class GranuleValidationError(Exception):
+class ValidationError(Exception):
     pass
 
 
-class DateValidationError(Exception):
+class GranuleValidationError(ValidationError):
     pass
 
 
-class BoundsValidationError(Exception):
+class DateValidationError(ValidationError):
+    pass
+
+
+class BoundsValidationError(ValidationError):
     pass
 
 
