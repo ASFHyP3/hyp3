@@ -306,8 +306,13 @@ def check_opera_rtc_s1_date(job: dict, _) -> None:
 
 def validate_jobs(jobs: list[dict]) -> None:
     granules = get_granules(jobs)
-    granule_metadata = _get_cmr_metadata(granules)
-    _make_sure_granules_exist(granules, granule_metadata)
+
+    if granules:
+        granule_metadata = _get_cmr_metadata(granules)
+        _make_sure_granules_exist(granules, granule_metadata)
+    else:
+        granule_metadata = []
+
     for job in jobs:
         for validator_name in JOB_VALIDATION_MAP[job['job_type']]:
             job_granule_metadata = [granule for granule in granule_metadata if granule['name'] in get_granules([job])]
