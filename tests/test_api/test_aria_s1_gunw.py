@@ -1,10 +1,7 @@
 from http import HTTPStatus
-from unittest.mock import MagicMock
 
 import pytest
-import responses
 
-import hyp3_api.validation
 from test_api.conftest import JOBS_URI, login
 
 
@@ -18,7 +15,7 @@ def test_aria_s1_gunw_job(client, tables, approved_user):
             'jobs': [
                 {
                     'job_type': 'ARIA_S1_GUNW',
-                    'job_parameters': {'reference_date': '2022-01-01', 'secondary_date': '2022-01-02', 'frame_id': 1}
+                    'job_parameters': {'reference_date': '2022-01-02', 'secondary_date': '2022-01-01', 'frame_id': 1}
                 }
             ],
         },

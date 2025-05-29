@@ -25,7 +25,7 @@ def test_not_antimeridian():
     validation.check_not_antimeridian({}, good_granules)
 
     bad_granules = [{'polygon': good_rect, 'name': 'good'}, {'polygon': bad_rect, 'name': 'bad'}]
-    with pytest.raises(validation.GranuleValidationError, match=r'.*crosses the antimeridian.*'):
+    with pytest.raises(validation.ValidationError, match=r'.*crosses the antimeridian.*'):
         validation.check_not_antimeridian({}, bad_granules)
 
 
@@ -93,11 +93,11 @@ def test_check_dem_coverage():
     validation.check_dem_coverage({}, [covered2])
     validation.check_dem_coverage({}, [covered1, covered2])
 
-    with pytest.raises(validation.GranuleValidationError) as e:
+    with pytest.raises(validation.ValidationError) as e:
         validation.check_dem_coverage({}, [not_covered])
     assert 'not_covered' in str(e)
 
-    with pytest.raises(validation.GranuleValidationError) as e:
+    with pytest.raises(validation.ValidationError) as e:
         validation.check_dem_coverage({}, [covered1, not_covered])
     assert 'not_covered' in str(e)
     assert 'covered1' not in str(e)
@@ -158,7 +158,7 @@ def test_check_single_burst_pair():
         }
     }
     with pytest.raises(
-        validation.GranuleValidationError,
+        validation.ValidationError,
         match=r'^Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and '
         r'S1_136232_IW2_20200616T022313_VV_5D11-BURST\.$',
     ):
@@ -173,7 +173,7 @@ def test_check_single_burst_pair():
         }
     }
     with pytest.raises(
-        validation.GranuleValidationError,
+        validation.ValidationError,
         match=r'^Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and '
         r'S1_136231_IW3_20200616T022313_VV_5D11-BURST\.$',
     ):
@@ -188,7 +188,7 @@ def test_check_single_burst_pair():
         }
     }
     with pytest.raises(
-        validation.GranuleValidationError,
+        validation.ValidationError,
         match=r'^The requested scenes need to have the same polarization, got: VV, HH$',
     ):
         validation.check_single_burst_pair(invalid_job_different_pol, None)
@@ -202,7 +202,7 @@ def test_check_single_burst_pair():
         }
     }
     with pytest.raises(
-        validation.GranuleValidationError, match=r'^Only VV and HH polarizations are currently supported, got: VH$'
+        validation.ValidationError, match=r'^Only VV and HH polarizations are currently supported, got: VH$'
     ):
         validation.check_single_burst_pair(invalid_job_unsupported_pol, None)
 
@@ -221,7 +221,7 @@ def test_make_sure_granules_exist():
     validation._make_sure_granules_exist(['scene1'], granule_metadata)
     validation._make_sure_granules_exist(['scene1', 'scene2'], granule_metadata)
 
-    with pytest.raises(validation.GranuleValidationError) as e:
+    with pytest.raises(validation.ValidationError) as e:
         validation._make_sure_granules_exist(
             ['scene1', 'scene2', 'scene3', 'scene4', 'S2_foo', 'LC08_bar', 'LC09_bar'], granule_metadata
         )
@@ -344,7 +344,7 @@ def test_validate_jobs():
             },
         }
     ]
-    with pytest.raises(validation.GranuleValidationError):
+    with pytest.raises(validation.ValidationError):
         validation.validate_jobs(jobs)
 
     jobs = [
@@ -355,7 +355,7 @@ def test_validate_jobs():
             },
         }
     ]
-    with pytest.raises(validation.GranuleValidationError):
+    with pytest.raises(validation.ValidationError):
         validation.validate_jobs(jobs)
 
 
@@ -394,13 +394,13 @@ def test_check_bounds_formatting():
     for valid_job in valid_jobs:
         validation.check_bounds_formatting(valid_job, {})
     for invalid_job in invalid_jobs_bad_order:
-        with pytest.raises(validation.BoundsValidationError, match=r'.*Invalid order for bounds.*'):
+        with pytest.raises(validation.ValidationError, match=r'.*Invalid order for bounds.*'):
             validation.check_bounds_formatting(invalid_job, {})
     for invalid_job in invalid_jobs_bad_values:
-        with pytest.raises(validation.BoundsValidationError, match=r'.*Invalid lon/lat value(s)*'):
+        with pytest.raises(validation.ValidationError, match=r'.*Invalid lon/lat value(s)*'):
             validation.check_bounds_formatting(invalid_job, {})
 
-    with pytest.raises(validation.BoundsValidationError, match=r'.*Bounds cannot be.*'):
+    with pytest.raises(validation.ValidationError, match=r'.*Bounds cannot be.*'):
         validation.check_bounds_formatting(job_with_bad_bounds, {})
 
 
@@ -422,15 +422,15 @@ def test_check_granules_intersecting_bounds():
     validation.check_granules_intersecting_bounds(job_with_specified_bounds, valid_granule_metadata)
 
     error_pattern = r'.*Bounds cannot be.*'
-    with pytest.raises(validation.BoundsValidationError, match=error_pattern):
+    with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_bad_bounds, valid_granule_metadata)
 
-    with pytest.raises(validation.BoundsValidationError, match=error_pattern):
+    with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_bad_bounds, invalid_granule_metadata)
 
     error_pattern = r".*bounds: \['does_not_intersect1', 'does_not_intersect2', 'does_not_intersect3'\]*"
 
-    with pytest.raises(validation.GranuleValidationError, match=error_pattern):
+    with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_specified_bounds, invalid_granule_metadata)
 
 
@@ -445,7 +445,7 @@ def test_check_same_relative_orbits():
     invalid_granule_metadata.append({'name': 'S1B_IW_RAW__0SDV_20200623T161535_20200623T161607_012345_02A10F_7FD6'})
     validation.check_same_relative_orbits({}, valid_granule_metadata)
     error_pattern = r'.*69 is not 87.*'
-    with pytest.raises(validation.GranuleValidationError, match=error_pattern):
+    with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_same_relative_orbits({}, invalid_granule_metadata)
 
 
@@ -455,7 +455,7 @@ def test_check_bounding_box_size():
     validation.check_bounding_box_size(job, None, max_bounds_area=100)
 
     error_pattern = r'.*Bounds must be smaller.*'
-    with pytest.raises(validation.BoundsValidationError, match=error_pattern):
+    with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_bounding_box_size(job, None, max_bounds_area=99.9)
 
 
@@ -481,7 +481,7 @@ def test_check_opera_rtc_s1_static_coverage():
     )
 
     with pytest.raises(
-        validation.GranuleValidationError,
+        validation.ValidationError,
         match=r'^Granule S1_034724_IW3_20160317T203621_HH_4001-BURST is outside the valid '
         r'processing extent for OPERA RTC-S1 products\.$',
     ):
@@ -491,7 +491,7 @@ def test_check_opera_rtc_s1_static_coverage():
         )
 
     with pytest.raises(
-        validation.GranuleValidationError,
+        validation.ValidationError,
         match=r'^Granule S1_175498_IW2_20160415T082755_HH_C4A7-BURST is outside the valid '
         r'processing extent for OPERA RTC-S1 products\.$',
     ):
@@ -501,7 +501,7 @@ def test_check_opera_rtc_s1_static_coverage():
         )
 
     with pytest.raises(
-        validation.GranuleValidationError,
+        validation.ValidationError,
         match=r'^Granule S1_020134_IW2_20161031T092546_HH_CCD1-BURST is outside the valid '
         r'processing extent for OPERA RTC-S1 products\.$',
     ):
@@ -531,7 +531,7 @@ def test_check_opera_rtc_s1_date_min():
     )
 
     with pytest.raises(
-        validation.GranuleValidationError,
+        validation.ValidationError,
         match=r'^Granule S1_000000_IW1_20160413T235959_VV_0000-BURST was acquired before 2016-04-14 .*$',
     ):
         validation.check_opera_rtc_s1_date(
@@ -545,7 +545,7 @@ def test_check_opera_rtc_s1_date_max():
     )
 
     with pytest.raises(
-        validation.GranuleValidationError,
+        validation.ValidationError,
         match=r'^Granule S1_000000_IW1_20220101T000000_VV_0000-BURST was acquired on or after 2022-01-01 .*',
     ):
         validation.check_opera_rtc_s1_date(
@@ -553,7 +553,7 @@ def test_check_opera_rtc_s1_date_max():
         )
 
     with pytest.raises(
-        validation.GranuleValidationError,
+        validation.ValidationError,
         match=r'^Granule S1_000000_IW1_20250428T000000_VV_0000-BURST was acquired on or after 2022-01-01 .*',
     ):
         validation.check_opera_rtc_s1_date(
@@ -569,7 +569,7 @@ def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
     )
 
     with pytest.raises(
-        validation.GranuleValidationError,
+        validation.ValidationError,
         match=r'^Granule S1_000000_IW1_20250502T000000_VV_0000-BURST was acquired on or after 2025-05-02 .*',
     ):
         validation.check_opera_rtc_s1_date(
@@ -577,7 +577,7 @@ def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
         )
 
     with pytest.raises(
-        validation.GranuleValidationError,
+        validation.ValidationError,
         match=r'^Granule S1_000000_IW1_20250506T000000_VV_0000-BURST was acquired on or after 2025-05-02 .*',
     ):
         validation.check_opera_rtc_s1_date(
@@ -587,11 +587,11 @@ def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
 
 def test_check_aria_s1_gunw_dates():
     validation.check_aria_s1_gunw_dates(
-        {'job_parameters': {'reference_date': '2022-01-01', 'secondary_date': '2022-01-02'}}, None
+        {'job_parameters': {'reference_date': '2022-01-02', 'secondary_date': '2022-01-01'}}, None
     )
 
     with pytest.raises(
-        validation.DateValidationError,
+        validation.ValidationError,
         match=r'.*is before the start of the sentinel 1 mission.*',
     ):
         validation.check_aria_s1_gunw_dates(
@@ -599,7 +599,7 @@ def test_check_aria_s1_gunw_dates():
         )
 
     with pytest.raises(
-        validation.DateValidationError,
+        validation.ValidationError,
         match=r'.*is before the start of the sentinel 1 mission.*',
     ):
         validation.check_aria_s1_gunw_dates(
@@ -609,7 +609,7 @@ def test_check_aria_s1_gunw_dates():
     future_date = date.today() + timedelta(days=1)
 
     with pytest.raises(
-        validation.DateValidationError,
+        validation.ValidationError,
         match=r'.*is a value in the future.*',
     ):
         validation.check_aria_s1_gunw_dates(
@@ -618,7 +618,7 @@ def test_check_aria_s1_gunw_dates():
         )
 
     with pytest.raises(
-        validation.DateValidationError,
+        validation.ValidationError,
         match=r'.*is a value in the future.*',
     ):
         validation.check_aria_s1_gunw_dates(
@@ -627,8 +627,8 @@ def test_check_aria_s1_gunw_dates():
         )
 
     with pytest.raises(
-        validation.DateValidationError,
-        match=r'dates are equal, must be different dates \(2021-01-01\)\.',
+        validation.ValidationError,
+        match=r'secondary date must be earlier than reference date\.',
     ):
         validation.check_aria_s1_gunw_dates(
             {'job_parameters': {'reference_date': '2021-01-01', 'secondary_date': '2021-01-01'}},
@@ -636,9 +636,9 @@ def test_check_aria_s1_gunw_dates():
         )
 
     with pytest.raises(
-        validation.DateValidationError,
-        match=r'reference date must be earlier than secondary date\.',
+        validation.ValidationError,
+        match=r'secondary date must be earlier than reference date\.',
     ):
         validation.check_aria_s1_gunw_dates(
-            {'job_parameters': {'reference_date': '2022-01-02', 'secondary_date': '2022-01-01'}}, None
+            {'job_parameters': {'reference_date': '2022-01-01', 'secondary_date': '2022-01-02'}}, None
         )
