@@ -1,5 +1,6 @@
 import json
 import re
+from datetime import date, timedelta
 
 import pytest
 import responses
@@ -14,6 +15,7 @@ USER_URI = '/user'
 
 DEFAULT_USERNAME = 'test_username'
 DEFAULT_ACCESS_TOKEN = 'test_access_token'
+FUTURE_DATE = (date.today() + timedelta(days=1)).strftime('%Y-%m-%d')
 
 CMR_URL_RE = re.compile(f'{CMR_URL}.*')
 

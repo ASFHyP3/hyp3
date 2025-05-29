@@ -13,7 +13,7 @@ from dynamo.exceptions import (
 )
 from hyp3_api import util
 from hyp3_api.multi_burst_validation import MultiBurstValidationError
-from hyp3_api.validation import BoundsValidationError, GranuleValidationError, validate_jobs
+from hyp3_api.validation import ValidationError, validate_jobs
 
 
 def problem_format(status: int, message: str) -> Response:
@@ -31,7 +31,7 @@ def post_jobs(body: dict, user: str) -> dict:
     except requests.HTTPError as e:
         print(f'CMR search failed: {e}')
         abort(problem_format(503, 'Could not submit jobs due to a CMR error. Please try again later.'))
-    except (BoundsValidationError, GranuleValidationError, MultiBurstValidationError) as e:
+    except (ValidationError, MultiBurstValidationError) as e:
         abort(problem_format(400, str(e)))
 
     try:
