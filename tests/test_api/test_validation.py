@@ -1,5 +1,4 @@
 import inspect
-from datetime import date, timedelta
 from unittest import mock
 
 import pytest
@@ -7,7 +6,7 @@ import responses
 from shapely.geometry import Polygon
 
 from hyp3_api import CMR_URL, multi_burst_validation, validation
-from test_api.conftest import setup_mock_cmr_response_for_polygons
+from test_api.conftest import FUTURE_DATE, setup_mock_cmr_response_for_polygons
 
 
 def rectangle(north, south, east, west):
@@ -590,55 +589,30 @@ def test_check_aria_s1_gunw_dates():
         {'job_parameters': {'reference_date': '2022-01-02', 'secondary_date': '2022-01-01'}}, None
     )
 
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'.*is before the start of the sentinel 1 mission.*',
-    ):
-        validation.check_aria_s1_gunw_dates(
-            {'job_parameters': {'reference_date': '2014-06-14', 'secondary_date': '2022-01-02'}}, None
-        )
 
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'.*is before the start of the sentinel 1 mission.*',
-    ):
-        validation.check_aria_s1_gunw_dates(
-            {'job_parameters': {'reference_date': '2022-01-02', 'secondary_date': '2014-06-14'}}, None
-        )
-
-    future_date = date.today() + timedelta(days=1)
-
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'.*is a value in the future.*',
-    ):
-        validation.check_aria_s1_gunw_dates(
-            {'job_parameters': {'reference_date': future_date.strftime('%Y-%m-%d'), 'secondary_date': '2021-01-01'}},
-            None,
-        )
-
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'.*is a value in the future.*',
-    ):
-        validation.check_aria_s1_gunw_dates(
-            {'job_parameters': {'reference_date': '2021-01-01', 'secondary_date': future_date.strftime('%Y-%m-%d')}},
-            None,
-        )
-
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'secondary date must be earlier than reference date\.',
-    ):
-        validation.check_aria_s1_gunw_dates(
-            {'job_parameters': {'reference_date': '2021-01-01', 'secondary_date': '2021-01-01'}},
-            None,
-        )
-
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'secondary date must be earlier than reference date\.',
-    ):
-        validation.check_aria_s1_gunw_dates(
-            {'job_parameters': {'reference_date': '2022-01-01', 'secondary_date': '2022-01-02'}}, None
-        )
+@pytest.mark.parametrize(
+    'job_parameters,error_pattern',
+    [
+        (
+            {'reference_date': '2014-06-14', 'secondary_date': '2022-01-02'},
+            r'.*is before the start of the sentinel 1 mission.*',
+        ),
+        (
+            {'reference_date': '2022-01-02', 'secondary_date': '2014-06-14'},
+            r'.*is before the start of the sentinel 1 mission.*',
+        ),
+        ({'reference_date': FUTURE_DATE, 'secondary_date': '2021-01-01'}, r'.*is a date in the future.*'),
+        ({'reference_date': '2021-01-01', 'secondary_date': FUTURE_DATE}, r'.*is a date in the future.*'),
+        (
+            {'reference_date': '2021-01-01', 'secondary_date': '2021-01-01'},
+            r'secondary date must be earlier than reference date\.',
+        ),
+        (
+            {'reference_date': '2022-01-01', 'secondary_date': '2022-01-02'},
+            r'secondary date must be earlier than reference date\.',
+        ),
+    ],
+)
+def test_check_aria_s1_gunw_dates_errors(job_parameters, error_pattern):
+    with pytest.raises(validation.ValidationError, match=error_pattern):
+        validation.check_aria_s1_gunw_dates({'job_parameters': job_parameters}, None)

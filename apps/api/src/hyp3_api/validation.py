@@ -232,9 +232,7 @@ def check_opera_rtc_s1_static_coverage(job: dict, _) -> None:
 
     granule = granules[0]
     if not _has_opera_rtc_s1_static_coverage(granule):
-        raise ValidationError(
-            f'Granule {granule} is outside the valid processing extent for OPERA RTC-S1 products.'
-        )
+        raise ValidationError(f'Granule {granule} is outside the valid processing extent for OPERA RTC-S1 products.')
 
 
 def check_aria_s1_gunw_dates(job: dict, _) -> None:
@@ -252,7 +250,7 @@ def check_aria_s1_gunw_dates(job: dict, _) -> None:
 
     for job_date_key, job_date in job_dates.items():
         if job_date > todays_date:
-            raise ValidationError(f'"{job_date_key}" is {job_date} which is a value in the future.')
+            raise ValidationError(f'"{job_date_key}" is {job_date} which is a date in the future.')
 
         if job_date < s1_start_date:
             raise ValidationError(
