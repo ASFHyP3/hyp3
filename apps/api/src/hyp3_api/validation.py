@@ -271,13 +271,8 @@ def check_aria_s1_gunw_dates(job: dict, _) -> None:
                 f'"{job_date_key}" is {job_date} which is before the start of the sentinel 1 mission ({s1_start_date}).'
             )
 
-    if job_dates['reference_date'] == job_dates['secondary_date']:
-        raise DateValidationError(
-            f'reference and secondary dates are equal, must be different dates ({job_dates["reference_date"]}).'
-        )
-
-    if job_dates['reference_date'] > job_dates['secondary_date']:
-        raise DateValidationError('reference date must be earlier than secondary date.')
+    if job_dates['secondary_date'] >= job_dates['reference_date']:
+        raise DateValidationError('secondary date must be earlier than reference date.')
 
 
 def check_opera_rtc_s1_date(job: dict, _) -> None:

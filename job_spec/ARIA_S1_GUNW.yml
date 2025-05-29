@@ -8,17 +8,13 @@ ARIA_S1_GUNW:
       api_schema:
         description: The date to find Sentinel-1 SLC granules to use as reference scenes for InSAR processing
         type: string
-        maxLength: 10
-        minLength: 10
-        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        format: date
         example: "2025-01-21"
     secondary_date:
       api_schema:
         description: The date to find Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
         type: string
-        maxLength: 10
-        minLength: 10
-        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        format: date
         example: "2025-01-21"
     frame_id:
       api_schema:

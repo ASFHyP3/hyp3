@@ -27,6 +27,7 @@ def test_aria_s1_gunw_job(client, tables, approved_user):
     assert len(tables.jobs_table.scan()['Items']) == 1
 
 
+@pytest.mark.network
 def test_aria_job_with_bad_date(client, tables, approved_user):
     login(client, username=approved_user)
 
