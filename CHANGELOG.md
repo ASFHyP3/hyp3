@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update `OPERA_RTC_S1` job type to use ghcr image
 
+### Removed
+- Remove the `hyp3-multi-burst-sandbox` deployment
+
 ## [10.5.1]
 
 ### Changed
