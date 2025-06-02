@@ -1,5 +1,5 @@
 AUTORIFT:
-  required_parameters:
+  required_parameters: []
     - granules
   parameters:
     granules:

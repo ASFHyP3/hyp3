@@ -1,5 +1,5 @@
 AUTORIFT_EDC:
-  required_parameters:
+  required_parameters: []
   parameters:
     reference:
       api_schema:
