@@ -50,6 +50,7 @@ ARIA_S1_GUNW:
   steps:
     - name: ''
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
+      image_tag: 0.4.1.dev17_gc6d7b49 # TODO: remove after done testing
       command:
         - ++omp-num-threads
         - '4'  # 8 vCPUs per 16 GB RAM for the C instance family; 4 for M; 2 for R
