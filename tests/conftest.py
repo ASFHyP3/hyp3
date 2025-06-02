@@ -28,7 +28,6 @@ def get_table_properties_from_template(resource_name):
     return table_properties
 
 
-@mock_aws
 @pytest.fixture
 def tables(table_properties):
     with mock_aws():
