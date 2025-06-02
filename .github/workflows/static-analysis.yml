@@ -11,10 +11,10 @@ env:
 jobs:
   call-ruff-workflow:
     # Docs: https://github.com/ASFHyP3/actions
-    uses: ASFHyP3/actions/.github/workflows/reusable-ruff.yml@v0.19.0
+    uses: ASFHyP3/actions/.github/workflows/reusable-ruff.yml@v0.20.0
 
   call-mypy-workflow:
-    uses: ASFHyP3/actions/.github/workflows/reusable-mypy.yml@v0.19.0
+    uses: ASFHyP3/actions/.github/workflows/reusable-mypy.yml@v0.20.0
 
   cfn-lint:
     runs-on: ubuntu-latest
@@ -88,4 +88,4 @@ jobs:
           snyk iac test --severity-threshold=high
 
   call-secrets-analysis-workflow:
-    uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@v0.19.0
+    uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@v0.20.0
