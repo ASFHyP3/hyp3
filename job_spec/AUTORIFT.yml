@@ -47,7 +47,7 @@ AUTORIFT:
         - --bucket-prefix
         - Ref::job_id
         - --parameter-file
-        - '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+        - '/vsicurl/https://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
         - --naming-scheme
         - ITS_LIVE_OD
         - Ref::granules
