@@ -86,7 +86,7 @@ INSAR_ISCE:
           - HRRR
     min_frame_coverage:
       api_schema:
-        description: Minimum amount of common area the reference and secondary granules overlap. Default is 0.01.
+        description: Minimum amount of the frame that must be covered by the overlap of the reference and secondary granules.
         default: 0.01 # Must be kept in sync with DockerizedTopsApp
         type: number
         minimum: 0
