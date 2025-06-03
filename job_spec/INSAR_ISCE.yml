@@ -89,7 +89,8 @@ INSAR_ISCE:
         description: Minimum amount of the frame that must be covered by the overlap of the reference and secondary granules.
         default: 0.01 # Must be kept in sync with DockerizedTopsApp
         type: number
-        minimum: 0
+        minimum: 0.0
+        maximum: 1.0
   cost_profiles:
     DEFAULT:
       cost: 1.0
