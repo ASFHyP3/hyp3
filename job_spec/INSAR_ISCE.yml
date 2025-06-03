@@ -84,6 +84,12 @@ INSAR_ISCE:
           - GMAO
           - HRES
           - HRRR
+    min_frame_coverage:
+      api_schema:
+        description: Minimum amount the reference and secondary granules overlap. Default is 0.95.
+        default: 0.95
+        type: number
+        minimum: 0
   cost_profiles:
     DEFAULT:
       cost: 1.0
