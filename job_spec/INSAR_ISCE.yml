@@ -87,7 +87,7 @@ INSAR_ISCE:
     min_frame_coverage:
       api_schema:
         description: Minimum amount of the frame that must be covered by the overlap of the reference and secondary granules.
-        default: 0.01 # Must be kept in sync with DockerizedTopsApp
+        default: 0.01
         type: number
         minimum: 0.0
         maximum: 1.0
