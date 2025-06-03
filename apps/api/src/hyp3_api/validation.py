@@ -2,7 +2,7 @@ import json
 import os
 import sys
 from collections.abc import Iterable
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import requests
@@ -235,30 +235,26 @@ def check_opera_rtc_s1_static_coverage(job: dict, _) -> None:
         raise ValidationError(f'Granule {granule} is outside the valid processing extent for OPERA RTC-S1 products.')
 
 
-def check_aria_s1_gunw_dates(job: dict, _) -> None:
-    def get_date_from_job(date_param_key: str) -> date:
-        param_date_str = job['job_parameters'][date_param_key]
-        return date.fromisoformat(param_date_str)
+def get_datetime_from_granule(granule: str) -> datetime:
+    # S1A_IW_SLC__1SDV_20250308T020858_20250308T020926_058207_073136_3B06
+    return datetime.strptime(granule.split('_')[5], '%Y%m%dT%H%M%S')
 
-    job_dates = {
-        'reference_date': get_date_from_job('reference_date'),
-        'secondary_date': get_date_from_job('secondary_date'),
+
+def check_aria_s1_gunw_dates(job: dict, _) -> None:
+    dates = {
+        'reference': [get_datetime_from_granule(granule) for granule in job['job_parameters']['reference']],
+        'secondary': [get_datetime_from_granule(granule) for granule in job['job_parameters']['secondary']],
     }
 
-    s1_start_date = date(2014, 6, 15)
-    todays_date = date.today()
+    error_threshold = timedelta(minutes=5)
+    reference_timedelta = max(dates['reference']) - min(dates['reference'])
+    secondary_timedelta = max(dates['secondary']) - min(dates['secondary'])
 
-    for job_date_key, job_date in job_dates.items():
-        if job_date > todays_date:
-            raise ValidationError(f'"{job_date_key}" is {job_date} which is a date in the future.')
+    if reference_timedelta > error_threshold:
+        raise ValidationError('scenes in reference list are too far apart in time.')
 
-        if job_date < s1_start_date:
-            raise ValidationError(
-                f'"{job_date_key}" is {job_date} which is before the start of the sentinel 1 mission ({s1_start_date}).'
-            )
-
-    if job_dates['secondary_date'] >= job_dates['reference_date']:
-        raise ValidationError('secondary date must be earlier than reference date.')
+    if secondary_timedelta > error_threshold:
+        raise ValidationError('scenes in secondary list are too far apart in time.')
 
 
 def check_opera_rtc_s1_date(job: dict, _) -> None:
@@ -292,12 +288,8 @@ def check_opera_rtc_s1_date(job: dict, _) -> None:
 
 def validate_jobs(jobs: list[dict]) -> None:
     granules = get_granules(jobs)
-
-    if granules:
-        granule_metadata = _get_cmr_metadata(granules)
-        _make_sure_granules_exist(granules, granule_metadata)
-    else:
-        granule_metadata = []
+    granule_metadata = _get_cmr_metadata(granules)
+    _make_sure_granules_exist(granules, granule_metadata)
 
     for job in jobs:
         for validator_name in JOB_VALIDATION_MAP[job['job_type']]:

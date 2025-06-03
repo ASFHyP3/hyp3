@@ -1,3 +1,4 @@
+from datetime import datetime
 import inspect
 from unittest import mock
 
@@ -6,7 +7,7 @@ import responses
 from shapely.geometry import Polygon
 
 from hyp3_api import CMR_URL, multi_burst_validation, validation
-from test_api.conftest import FUTURE_DATE, setup_mock_cmr_response_for_polygons
+from test_api.conftest import setup_mock_cmr_response_for_polygons
 
 
 def rectangle(north, south, east, west):
@@ -586,30 +587,53 @@ def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
 
 def test_check_aria_s1_gunw_dates():
     validation.check_aria_s1_gunw_dates(
-        {'job_parameters': {'reference_date': '2022-01-02', 'secondary_date': '2022-01-01'}}, None
+        {'job_parameters': {
+            'reference': [
+                "S1A_IW_SLC__1SDV_20250308T020834_20250308T020900_058207_073136_ECE5",
+                "S1A_IW_SLC__1SDV_20250308T020858_20250308T020926_058207_073136_3B06",
+            ],
+            'secondary': [
+                "S1A_IW_SLC__1SDV_20250212T020834_20250212T020900_057857_0722EF_6432",
+                "S1A_IW_SLC__1SDV_20250212T020858_20250212T020926_057857_0722EF_B232"
+            ]
+        }}, None
     )
+
+
+def test_get_datetime_from_granule():
+    result = validation.get_datetime_from_granule('S1A_IW_SLC__1SDV_20250308T020858_20250308T020926_058207_073136_3B06')
+
+    assert result == datetime(2025, 3, 8, 2, 8, 58)
 
 
 @pytest.mark.parametrize(
     'job_parameters,error_pattern',
     [
         (
-            {'reference_date': '2014-06-14', 'secondary_date': '2022-01-02'},
-            r'.*is before the start of the sentinel 1 mission.*',
+            {
+                'reference': [
+                    "S1A_IW_SLC__1SDV_20250308T020834_20250308T020900_058207_073136_ECE5",
+                    "S1A_IW_SLC__1SDV_20250212T020834_20250212T020900_057857_0722EF_6432",
+                ],
+                'secondary': [
+                    "S1A_IW_SLC__1SDV_20250212T020834_20250212T020900_057857_0722EF_6432",
+                    "S1A_IW_SLC__1SDV_20250212T020858_20250212T020926_057857_0722EF_B232"
+                ]
+            },
+            r'scenes in reference list are too far apart in time.',
         ),
         (
-            {'reference_date': '2022-01-02', 'secondary_date': '2014-06-14'},
-            r'.*is before the start of the sentinel 1 mission.*',
-        ),
-        ({'reference_date': FUTURE_DATE, 'secondary_date': '2021-01-01'}, r'.*is a date in the future.*'),
-        ({'reference_date': '2021-01-01', 'secondary_date': FUTURE_DATE}, r'.*is a date in the future.*'),
-        (
-            {'reference_date': '2021-01-01', 'secondary_date': '2021-01-01'},
-            r'secondary date must be earlier than reference date\.',
-        ),
-        (
-            {'reference_date': '2022-01-01', 'secondary_date': '2022-01-02'},
-            r'secondary date must be earlier than reference date\.',
+            {
+                'reference': [
+                    "S1A_IW_SLC__1SDV_20250308T020834_20250308T020900_058207_073136_ECE5",
+                    "S1A_IW_SLC__1SDV_20250308T020858_20250308T020926_058207_073136_3B06",
+                ],
+                'secondary': [
+                    "S1A_IW_SLC__1SDV_20250308T020858_20250308T020926_058207_073136_3B06",
+                    "S1A_IW_SLC__1SDV_20250212T020858_20250212T020926_057857_0722EF_B232"
+                ]
+            },
+            r'scenes in secondary list are too far apart in time.',
         ),
     ],
 )

@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 import pytest
 
-from test_api.conftest import FUTURE_DATE, JOBS_URI, login
+from test_api.conftest import JOBS_URI, login
 
 
 @pytest.mark.network
@@ -15,7 +15,16 @@ def test_aria_s1_gunw_job(client, tables, approved_user):
             'jobs': [
                 {
                     'job_type': 'ARIA_S1_GUNW',
-                    'job_parameters': {'reference_date': '2022-01-02', 'secondary_date': '2022-01-01', 'frame_id': 1},
+                    'job_parameters': {
+                        'reference': [
+                            "S1A_IW_SLC__1SDV_20250308T020834_20250308T020900_058207_073136_ECE5",
+                            "S1A_IW_SLC__1SDV_20250308T020858_20250308T020926_058207_073136_3B06",
+                        ],
+                        'secondary': [
+                            "S1A_IW_SLC__1SDV_20250212T020834_20250212T020900_057857_0722EF_6432",
+                            "S1A_IW_SLC__1SDV_20250212T020858_20250212T020926_057857_0722EF_B232"
+                        ]
+                    }
                 }
             ],
         },
@@ -24,12 +33,17 @@ def test_aria_s1_gunw_job(client, tables, approved_user):
     assert len(tables.jobs_table.scan()['Items']) == 1
 
 
-@pytest.mark.network
 @pytest.mark.parametrize(
     'job_parameters',
     [
-        ({'reference_date': 'foo', 'secondary_date': '2022-01-01', 'frame_id': 1}),
-        ({'reference_date': '2022-01-01', 'secondary_date': 'bar', 'frame_id': 1}),
+        ({'reference': 'foo', 'secondary': [
+            "S1A_IW_SLC__1SDV_20250212T020834_20250212T020900_057857_0722EF_6432",
+            "S1A_IW_SLC__1SDV_20250212T020858_20250212T020926_057857_0722EF_B232"
+        ], 'frame_id': 1}),
+        ({'reference': [
+            "S1A_IW_SLC__1SDV_20250308T020834_20250308T020900_058207_073136_ECE5",
+            "S1A_IW_SLC__1SDV_20250308T020858_20250308T020926_058207_073136_3B06",
+        ], 'secondary': 'bar', 'frame_id': 1}),
     ],
 )
 def test_aria_s1_gunw_job_schema(client, tables, approved_user, job_parameters):
@@ -52,13 +66,32 @@ def test_aria_s1_gunw_job_schema(client, tables, approved_user, job_parameters):
     'job_parameters,error_message',
     [
         (
-            {'reference_date': '2014-06-14', 'secondary_date': '2022-01-02', 'frame_id': 100},
-            'is before the start of the sentinel 1 mission',
+            {
+                'reference': [
+                    "S1A_IW_SLC__1SDV_20250308T020834_20250308T020900_058207_073136_ECE5",
+                    "S1A_IW_SLC__1SDV_20250308T021358_20250308T020926_058207_073136_3B06",
+                ],
+                'secondary': [
+                    "S1A_IW_SLC__1SDV_20250212T020834_20250212T020900_057857_0722EF_6432",
+                    "S1A_IW_SLC__1SDV_20250212T020858_20250212T020926_057857_0722EF_B232"
+                ],
+                'frame_id': 100
+            },
+            r'scenes in reference list are too far apart in time.',
         ),
-        ({'reference_date': FUTURE_DATE, 'secondary_date': '2021-01-01', 'frame_id': 1}, 'is a date in the future'),
         (
-            {'reference_date': '2021-01-01', 'secondary_date': '2021-01-02', 'frame_id': 1},
-            'secondary date must be earlier than reference date',
+            {
+                'reference': [
+                    "S1A_IW_SLC__1SDV_20250308T020834_20250308T020900_058207_073136_ECE5",
+                    "S1A_IW_SLC__1SDV_20250308T020858_20250308T020926_058207_073136_3B06",
+                ],
+                'secondary': [
+                    "S1A_IW_SLC__1SDV_20250212T020834_20250212T020900_057857_0722EF_6432",
+                    "S1A_IW_SLC__1SDV_20250212T021358_20250212T020926_057857_0722EF_B232"
+                ],
+                'frame_id': 100
+            },
+            r'scenes in secondary list are too far apart in time.',
         ),
     ],
 )
