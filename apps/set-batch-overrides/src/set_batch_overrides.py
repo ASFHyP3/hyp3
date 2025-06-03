@@ -1,3 +1,6 @@
+from math import ceil
+
+
 AUTORIFT_S2_MEMORY = '7875'
 AUTORIFT_LANDSAT_MEMORY = '15750'
 RTC_GAMMA_10M_MEMORY = '63200'
@@ -31,6 +34,18 @@ def get_container_overrides(memory: str, omp_num_threads: str | None = None) -> 
     if omp_num_threads is not None:
         container_overrides['Environment'] = [{'Name': 'OMP_NUM_THREADS', 'Value': omp_num_threads}]
     return container_overrides
+
+
+def get_autorift_memory(job_parameters: dict) -> (str | None):
+    granules = job_parameters.get('granules', []) + job_parameters.get('reference', [])
+    granules = [granule for granule in granules if granule]
+
+    if granules[0].startswith('S2'):
+        return AUTORIFT_S2_MEMORY
+    elif granules[0].startswith('L'):
+        return AUTORIFT_LANDSAT_MEMORY
+
+    return None
 
 
 def get_insar_isce_burst_memory(job_parameters: dict) -> str:
@@ -70,11 +85,12 @@ def lambda_handler(event: dict, _) -> dict:
         omp_num_threads = INSAR_ISCE_BURST_OMP_NUM_THREADS[memory]
         return get_container_overrides(memory, omp_num_threads)
 
-    if job_type == 'AUTORIFT' and job_parameters['granules'][0].startswith('S2'):
-        return get_container_overrides(AUTORIFT_S2_MEMORY)
-
-    if job_type == 'AUTORIFT' and job_parameters['granules'][0].startswith('L'):
-        return get_container_overrides(AUTORIFT_LANDSAT_MEMORY)
+    if job_type.startswith('AUTORIFT'):
+        memory= get_autorift_memory(job_parameters)
+        if memory is not None:
+            # vCPU = Memory in GB / 8 for r6 instance types
+            omp_num_threads = str(ceil(int(memory) / 8000))
+            return get_container_overrides(memory, omp_num_threads)
 
     if job_type == 'RTC_GAMMA' and job_parameters['resolution'] in [10, 20]:
         return get_container_overrides(RTC_GAMMA_10M_MEMORY)
