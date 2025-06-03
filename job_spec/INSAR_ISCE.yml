@@ -115,6 +115,8 @@ INSAR_ISCE:
         - Ref::estimate_ionosphere_delay
         - --frame-id
         - Ref::frame_id
+        - --min-frame-coverage
+        - Ref::min_frame_coverage
         - --compute-solid-earth-tide
         - Ref::compute_solid_earth_tide
         - --output-resolution
@@ -125,8 +127,6 @@ INSAR_ISCE:
         - Ref::goldstein_filter_power
         - --unfiltered-coherence
         - Ref::unfiltered_coherence
-        - --min-frame-coverage
-        - Ref::min_frame_coverage
       timeout: 21600
       compute_environment: InsarIsceAria
       vcpu: 1
