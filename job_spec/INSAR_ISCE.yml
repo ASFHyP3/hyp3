@@ -86,7 +86,7 @@ INSAR_ISCE:
           - HRRR
     min_frame_coverage:
       api_schema:
-        description: Minimum amount of the frame that must be covered by the overlap of the reference and secondary granules.
+        description: Minimum amount of the frame that must be covered by the overlap between the reference and secondary granules; standard ARIA products require this to be set to 0.9.
         default: 0.01
         type: number
         minimum: 0.0
