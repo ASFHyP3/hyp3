@@ -5,7 +5,7 @@ AUTORIFT_EDC:
       api_schema:
         type: array
         minItems: 1
-        maxItems: 10
+        maxItems: 27
         example:
           - S2B_MSIL1C_20200105T152259_N0208_R039_T13CES_20200105T181230
         default:
@@ -44,7 +44,7 @@ AUTORIFT_EDC:
       api_schema:
         type: array
         minItems: 1
-        maxItems: 10
+        maxItems: 27
         example:
           - S2B_MSIL1C_20200315T152259_N0209_R039_T13CES_20200315T181115
         default:
