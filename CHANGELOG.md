@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.6.0]
 
 ### Added
-- `min_frame_coverage` parameter for `INSAR_ISCE` jobs
+- `INSAR_ISCE` jobs now include a `min_frame_coverage` parameter.
+
+### Changed
+- `ARIA_S1_GUNW` jobs now pass `--min-frame-coverage 0.9` to the `DockerizedTopsApp` container.
 
 ## [10.5.2]
 
