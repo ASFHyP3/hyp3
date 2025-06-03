@@ -86,8 +86,8 @@ INSAR_ISCE:
           - HRRR
     min_frame_coverage:
       api_schema:
-        description: Minimum amount of common area the reference and secondary granules overlap. Default is 0.90.
-        default: 0.90
+        description: Minimum amount of common area the reference and secondary granules overlap. Default is 0.01.
+        default: 0.01
         type: number
         minimum: 0
   cost_profiles:
