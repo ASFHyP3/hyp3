@@ -141,7 +141,7 @@ AUTORIFT:
         - Ref::secondary
       timeout: 10800
       compute_environment: AriaAutorift
-      vcpu: 8
+      vcpu: 1
       memory: 63500
       secrets:
         - EARTHDATA_USERNAME
