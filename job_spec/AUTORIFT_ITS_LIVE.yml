@@ -135,8 +135,6 @@ AUTORIFT:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
       command:
-        - ++omp-num-threads
-        - '8'  # 1 vCPUs per 8 GB RAM for the R instance family
         - Ref::granules
         - --bucket
         - '!Ref Bucket'
