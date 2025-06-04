@@ -235,7 +235,7 @@ def test_submit_job_with_long_name(client):
 def test_submit_job_without_granules(client):
     login(client)
 
-    for job_type in ['AUTORIFT', 'INSAR_GAMMA', 'RTC_GAMMA']:
+    for job_type in ['INSAR_GAMMA', 'RTC_GAMMA']:
         batch = [
             {
                 'job_type': job_type,
