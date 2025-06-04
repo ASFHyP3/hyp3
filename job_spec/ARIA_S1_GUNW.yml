@@ -10,36 +10,37 @@ ARIA_S1_GUNW:
         minItems: 1
         maxItems: 3
         example:
-          - S1A_IW_SLC__1SSV_20141127T015250_20141127T015318_003461_0040D8_A29D
-          - S1A_IW_SLC__1SSV_20141127T015314_20141127T015342_003461_0040D8_87BA
+          - S1A_IW_SLC__1SDV_20191231T135206_20191231T135234_030593_03813A_D336
+          - S1A_IW_SLC__1SDV_20191231T135141_20191231T135208_030593_03813A_837F
         items:
           description: The names of the Sentinel-1 SLC granules to use as reference scenes for InSAR processing
           type: string
           pattern: "^S1[AB]_IW_SLC__1S[SD]V"
           minLength: 67
           maxLength: 67
-          example: S1A_IW_SLC__1SDV_20250127T010136_20250127T010203_057623_07199D_4B63
+          example: S1A_IW_SLC__1SDV_20191231T135206_20191231T135234_030593_03813A_D336
     secondary:
       api_schema:
         type: array
         minItems: 1
         maxItems: 3
         example:
-          - S1A_IW_SLC__1SSV_20141103T015256_20141103T015323_003111_00391A_3776
+          - S1A_IW_SLC__1SDV_20181212T135155_20181212T135222_024993_02C174_2111
+          - S1A_IW_SLC__1SDV_20181212T135130_20181212T135157_024993_02C174_57AC
         items:
           description: The names of the Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
           type: string
           pattern: "^S1[AB]_IW_SLC__1S[SD]V"
           minLength: 67
           maxLength: 67
-          example: S1A_IW_SLC__1SDV_20250103T010137_20250103T010204_057273_070BB6_CD45
+          example: S1A_IW_SLC__1SDV_20181212T135155_20181212T135222_024993_02C174_2111
     frame_id:
       api_schema:
         description: Subset GUNW products to this frame.
         type: integer
         minimum: 0
         maximum: 27397
-        example: 9859
+        example: 11040
   cost_profiles:
     EDC:
       cost: 60.0
@@ -63,6 +64,8 @@ ARIA_S1_GUNW:
         - Ref::secondary
         - --frame-id
         - Ref::frame_id
+        - --min-frame-coverage
+        - '0.9'
       timeout: 21600  # 6 hr
       compute_environment: AriaS1Gunw
       vcpu: 1
