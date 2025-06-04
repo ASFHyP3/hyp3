@@ -5,7 +5,7 @@ AUTORIFT:
       api_schema:
         type: array
         minItems: 1
-        maxItems: 27
+        maxItems: 30
         example:
           - S2B_MSIL1C_20200105T152259_N0208_R039_T13CES_20200105T181230
         default:
@@ -44,7 +44,7 @@ AUTORIFT:
       api_schema:
         type: array
         minItems: 1
-        maxItems: 27
+        maxItems: 30
         example:
           - S2B_MSIL1C_20200315T152259_N0209_R039_T13CES_20200315T181115
         default:
@@ -113,13 +113,6 @@ AUTORIFT:
               maxLength: 40
               example: LC08_L1GT_118112_20210107_20210107_02_T2
               nullable: true
-            - description: Name of the Sentinel-1 SLC IW burst granule to process
-              type: string
-              pattern: "^S1_\\d{6}_IW.*-BURST"
-              minLength: 43
-              maxLength: 43
-              example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
-              nullable: true
     parameter_file:
       api_schema:
         description: Shapefile for determining the correct search parameters by geographic location. Path to shapefile must be understood by GDAL.
@@ -134,7 +127,7 @@ AUTORIFT:
       image: ghcr.io/asfhyp3/hyp3-autorift
       command:
         - ++omp-num-threads
-        - '8'  # 4 vCPUs per 32 GB RAM for the R instance family
+        - '8'  # 1 vCPUs per 8 GB RAM for the R instance family
         - Ref::granules
         - --bucket
         - '!Ref Bucket'
