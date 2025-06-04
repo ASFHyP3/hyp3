@@ -115,7 +115,7 @@ AUTORIFT:
               nullable: true
   cost_profiles:
     EDC:
-      cost: 25.0
+      cost: 50.0
     DEFAULT:
       cost: 1.0
   validators: []
