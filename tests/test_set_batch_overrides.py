@@ -166,7 +166,8 @@ def test_set_batch_overrides_autorift_s2():
                 'Type': 'MEMORY',
                 'Value': AUTORIFT_S2_MEMORY,
             }
-        ]
+        ],
+        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '1'}],
     }
 
 
@@ -183,7 +184,8 @@ def test_set_batch_overrides_autorift_landsat():
                 'Type': 'MEMORY',
                 'Value': AUTORIFT_LANDSAT_MEMORY,
             }
-        ]
+        ],
+        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '2'}],
     }
 
 

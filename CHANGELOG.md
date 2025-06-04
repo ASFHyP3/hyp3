@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `ARIA_S1_GUNW` jobs now pass `--min-frame-coverage 0.9` to the `DockerizedTopsApp` container.
+- Updates to `AUTORIFT` jobs to support the hyp3-autorift plugin v0.22.0:
+  - All job specs allow Sentinel-1C granules to be submitted
+  - The default memory for all job specs has been bumped to 64 GB from 32 GB
+    - The credit cost in EDC/DAAC deployments has been doubled accordingly
+  - HyP3 now sets the number of threads to be used by OpenMP via AWS Batch environment overrides based on the memory required.
+  - `AUTORIFT_ITS_LIVE.yml` and `ARIA_AUTORIFT.yml` job specs, used in JPL deployments, allows Landsat, S2, S1 SLC, and multiple S1 bursts to be submitted via the new `reference`/`secondary` parameters (`granules` is no longer required).
 
 ## [10.5.2]
 
