@@ -81,16 +81,16 @@ def lambda_handler(event: dict, _) -> dict:
     job_type, job_parameters = event['job_type'], event['job_parameters']
 
     if job_type == 'INSAR_ISCE_MULTI_BURST':
-        memory = get_insar_isce_burst_memory(job_parameters)
-        omp_num_threads = INSAR_ISCE_BURST_OMP_NUM_THREADS[memory]
-        return get_container_overrides(memory, omp_num_threads)
+        burst_memory = get_insar_isce_burst_memory(job_parameters)
+        omp_num_threads = INSAR_ISCE_BURST_OMP_NUM_THREADS[burst_memory]
+        return get_container_overrides(burst_memory, omp_num_threads)
 
-    if job_type.startswith('AUTORIFT'):
-        memory = get_autorift_memory(job_parameters)
-        if memory is not None:
+    if job_type == 'AUTORIFT':
+        autorift_memory = get_autorift_memory(job_parameters)
+        if autorift_memory is not None:
             # vCPU = Memory in GB / 8 for r6 instance types
-            omp_num_threads = str(ceil(int(memory) / 8000))
-            return get_container_overrides(memory, omp_num_threads)
+            omp_num_threads = str(ceil(int(autorift_memory) / 8000))
+            return get_container_overrides(autorift_memory, omp_num_threads)
 
     if job_type == 'RTC_GAMMA' and job_parameters['resolution'] in [10, 20]:
         return get_container_overrides(RTC_GAMMA_10M_MEMORY)
