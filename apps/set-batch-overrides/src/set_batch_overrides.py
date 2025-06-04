@@ -36,7 +36,7 @@ def get_container_overrides(memory: str, omp_num_threads: str | None = None) -> 
     return container_overrides
 
 
-def get_autorift_memory(job_parameters: dict) -> (str | None):
+def get_autorift_memory(job_parameters: dict) -> str | None:
     granules = job_parameters.get('granules', []) + job_parameters.get('reference', [])
     granules = [granule for granule in granules if granule]
 
@@ -86,7 +86,7 @@ def lambda_handler(event: dict, _) -> dict:
         return get_container_overrides(memory, omp_num_threads)
 
     if job_type.startswith('AUTORIFT'):
-        memory= get_autorift_memory(job_parameters)
+        memory = get_autorift_memory(job_parameters)
         if memory is not None:
             # vCPU = Memory in GB / 8 for r6 instance types
             omp_num_threads = str(ceil(int(memory) / 8000))
