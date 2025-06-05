@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.6.0]
+
+### Changed
+- Updates to `AUTORIFT` jobs to support the hyp3-autorift plugin v0.22.0:
+  - All job specs allow Sentinel-1C granules to be submitted
+  - The default memory for all job specs has been bumped to 64 GB from 32 GB
+  - The credit cost in EDC/DAAC deployments has been doubled accordingly
+
 ## [10.5.2]
 
 ### Changed
