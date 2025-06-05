@@ -31,13 +31,6 @@ INSAR_ISCE:
         description: Subset GUNW products to this frame. Standard products require frame id to be specified. When set to `-1`, no subsetting applied. If no frame specified (i.e. `-1`), then output GUNW is not a standard ARIA-S1-GUNW.
         type: integer
         minimum: -1
-    min_frame_coverage:
-      api_schema:
-        description: Minimum amount of the frame that must be covered by the overlap between the reference and secondary granules; standard ARIA products require this to be set to 0.9.
-        default: 0.01
-        type: number
-        minimum: 0.0
-        maximum: 1.0
     compute_solid_earth_tide:
       api_schema:
         default: true
@@ -115,8 +108,6 @@ INSAR_ISCE:
         - Ref::estimate_ionosphere_delay
         - --frame-id
         - Ref::frame_id
-        - --min-frame-coverage
-        - Ref::min_frame_coverage
         - --compute-solid-earth-tide
         - Ref::compute_solid_earth_tide
         - --output-resolution
