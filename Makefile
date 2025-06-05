@@ -47,10 +47,13 @@ cost_profile ?= DEFAULT
 render:
 	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -e $(compute_env_file) -s $(security_environment) -n $(api_name) -c $(cost_profile)
 
-static: ruff openapi-validate cfn-lint
+static: ruff mypy openapi-validate cfn-lint
 
 ruff:
 	ruff check . && ruff format --diff .
+
+mypy:
+	mkdir -p .mypy_cache && mypy .
 
 openapi-validate: render
 	openapi-spec-validator apps/api/src/hyp3_api/api-spec/openapi-spec.yml
@@ -63,4 +66,5 @@ clean:
 	git ls-files -o -- lib/dynamo | xargs rm; \
 	git ls-files -o -- .pytest_cache | xargs rm; \
 	find ./ -empty -type d -delete; \
+	rm -rf .mypy_cache; \
 	rm -f packaged.yml
