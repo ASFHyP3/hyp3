@@ -14,7 +14,7 @@ AUTORIFT:
           anyOf:
             - description: The name of the Sentinel-1 SLC granule to process
               type: string
-              pattern: "^S1[AB]_IW_SLC__1S[SD][VH]"
+              pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
               minLength: 67
               maxLength: 67
               example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
@@ -30,17 +30,11 @@ AUTORIFT:
               minLength: 40
               maxLength: 40
               example: LC08_L1GT_118112_20210107_20210107_02_T2
-            - description: Name of the Sentinel-1 SLC IW burst granule to process
-              type: string
-              pattern: "^S1_\\d{6}_IW.*-BURST"
-              minLength: 43
-              maxLength: 43
-              example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
     parameter_file:
       api_schema:
         description: Shapefile for determining the correct search parameters by geographic location. Path to shapefile must be understood by GDAL.
         type: string
-        default: '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+        default: '/vsicurl/https://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
     publish_bucket:
       api_schema:
         description: Publish the resulting product to the ITS_LIVE AWS Open Data (or test) S3 Bucket
@@ -74,7 +68,7 @@ AUTORIFT:
       timeout: 10800
       compute_environment: Default
       vcpu: 1
-      memory: 31500
+      memory: 63500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
