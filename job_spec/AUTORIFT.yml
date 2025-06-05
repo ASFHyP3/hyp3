@@ -32,7 +32,7 @@ AUTORIFT:
               example: LC08_L1GT_118112_20210107_20210107_02_T2
   cost_profiles:
     EDC:
-      cost: 25.0
+      cost: 50.0
     DEFAULT:
       cost: 1.0
   validators: []
