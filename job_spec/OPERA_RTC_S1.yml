@@ -29,7 +29,7 @@ OPERA_RTC_S1:
     - check_opera_rtc_s1_static_coverage
   steps:
     - name: ''
-      image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/asfhyp3/hyp3-opera-rtc
+      image: ghcr.io/asfhyp3/hyp3-opera-rtc
       command:
         - Ref::granules
         - --bucket

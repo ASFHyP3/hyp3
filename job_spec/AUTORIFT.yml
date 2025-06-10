@@ -14,7 +14,7 @@ AUTORIFT:
           anyOf:
             - description: The name of the Sentinel-1 SLC granule to process
               type: string
-              pattern: "^S1[AB]_IW_SLC__1S[SD][VH]"
+              pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
               minLength: 67
               maxLength: 67
               example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
@@ -32,7 +32,7 @@ AUTORIFT:
               example: LC08_L1GT_118112_20210107_20210107_02_T2
   cost_profiles:
     EDC:
-      cost: 25.0
+      cost: 50.0
     DEFAULT:
       cost: 1.0
   validators: []
@@ -47,14 +47,14 @@ AUTORIFT:
         - --bucket-prefix
         - Ref::job_id
         - --parameter-file
-        - '/vsicurl/http://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+        - '/vsicurl/https://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
         - --naming-scheme
         - ITS_LIVE_OD
         - Ref::granules
       timeout: 10800
       compute_environment: Default
       vcpu: 1
-      memory: 31500
+      memory: 63500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
