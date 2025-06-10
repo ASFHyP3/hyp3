@@ -22,7 +22,7 @@ ARIA_S1_GUNW:
         type: integer
         minimum: 0
         maximum: 27397
-        example: 9859
+        example: 11040
   cost_profiles:
     EDC:
       cost: 60.0
@@ -47,6 +47,8 @@ ARIA_S1_GUNW:
         - Ref::secondary_date
         - --frame-id
         - Ref::frame_id
+        - --min-frame-coverage
+        - '0.01'
       timeout: 21600  # 6 hr
       compute_environment: AriaS1Gunw
       vcpu: 1
