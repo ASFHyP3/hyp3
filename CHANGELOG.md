@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.8.0]
+
+### Changed
+- `ARIA_S1_GUNW` now takes `reference_date` and `secondary_date` as inputs instead of `reference` and `secondary` granule lists
+
 ## [10.7.0]
 
 ### Added
@@ -11,7 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `ARIA_S1_GUNW` jobs now pass `--min-frame-coverage 0.01` to the `DockerizedTopsApp` container.
-- `ARIA_S1_GUNW` now takes `reference_date` and `secondary_date` as inputs instead of `reference` and `secondary` granule lists
 
 ## [10.6.0]
 
@@ -83,7 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `render-cf.py` now determines the version number to report in the API from the git history and tags using [`setuptools_scm`](https://pypi.org/project/setuptools-scm/).
-  
+
 > [!WARNING]
 > In CI/CD pipelines, to dynamically calculate the version number you must now check out the full history and tags (no shallow clones). In GitHub Actions, this usually looks like specifying `fetch-depth: 0` with `actions/checkout`. For pipelines where you *do not* care about an accurate version number, you can still use a shallow clone by setting the `SETUPTOOLS_SCM_PRETEND_VERSION_FOR_HYP3` environment variable, see: <http://setuptools-scm.readthedocs.io/en/latest/overrides/>.
 
