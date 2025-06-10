@@ -239,7 +239,7 @@ def check_dates_within_s1(job: dict, _) -> None:
     date_params = {name: date.fromisoformat(value) for name, value in job['job_parameters'].items() if 'date' in name}
 
     for param_name, date_value in date_params.items():
-        _check_date_during_s1(param_name, date_value)
+        _validate_date_during_s1(param_name, date_value)
 
 
 def check_secondary_before_reference_date(job: dict, _) -> None:
@@ -252,7 +252,7 @@ def check_secondary_before_reference_date(job: dict, _) -> None:
         raise ValidationError('secondary date must be earlier than reference date.')
 
 
-def _check_date_during_s1(date_name: str, date_value: date) -> None:
+def _validate_date_during_s1(date_name: str, date_value: date) -> None:
     s1_start_date = date(2014, 6, 15)
     todays_date = date.today()
 
