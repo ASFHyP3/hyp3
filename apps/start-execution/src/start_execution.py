@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+from pprint import pprint
 
 import boto3
 
@@ -27,6 +28,8 @@ def convert_to_string(obj: object) -> str:
 def get_batch_job_parameters(job: dict) -> dict[str, str]:
     # Convert parameters to strings so they can be passed to Batch; see:
     # https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html#Batch-SubmitJob-request-parameters
+    pprint(job['job_parameters'].items())
+    pprint(BATCH_PARAMS_BY_JOB_TYPE[job['job_type']])
     return {
         key: convert_to_string(value)
         for key, value in job['job_parameters'].items()
@@ -39,6 +42,7 @@ def submit_jobs(jobs: list[dict]) -> None:
     logger.info(f'Step function ARN: {step_function_arn}')
     for job in jobs:
         job['batch_job_parameters'] = get_batch_job_parameters(job)
+        pprint(job['batch_job_parameters'])
         STEP_FUNCTION.start_execution(
             stateMachineArn=step_function_arn,
             input=json.dumps(job, sort_keys=True),
