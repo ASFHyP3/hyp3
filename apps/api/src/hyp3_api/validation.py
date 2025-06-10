@@ -265,11 +265,6 @@ def _validate_date_during_s1(date_name: str, date_value: date) -> None:
         )
 
 
-def _get_date_from_job(job_parameters: dict, date_param_key: str) -> date:
-    param_date_str = job_parameters[date_param_key]
-    return date.fromisoformat(param_date_str)
-
-
 def check_opera_rtc_s1_date(job: dict, _) -> None:
     granules = job['job_parameters']['granules']
     if len(granules) != 1:
