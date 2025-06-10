@@ -9,13 +9,13 @@ ARIA_S1_GUNW:
         description: The date to find Sentinel-1 SLC granules to use as reference scenes for InSAR processing
         type: string
         format: date
-        example: "2025-01-21"
+        example: "2019-12-31"
     secondary_date:
       api_schema:
         description: The date to find Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
         type: string
         format: date
-        example: "2025-01-21"
+        example: "2018-12-12"
     frame_id:
       api_schema:
         description: Subset GUNW products to this frame.
