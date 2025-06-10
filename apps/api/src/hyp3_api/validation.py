@@ -235,30 +235,39 @@ def check_opera_rtc_s1_static_coverage(job: dict, _) -> None:
         raise ValidationError(f'Granule {granule} is outside the valid processing extent for OPERA RTC-S1 products.')
 
 
-def check_aria_s1_gunw_dates(job: dict, _) -> None:
-    def get_date_from_job(date_param_key: str) -> date:
-        param_date_str = job['job_parameters'][date_param_key]
-        return date.fromisoformat(param_date_str)
+def check_dates_within_s1(job: dict, _) -> None:
+    date_params = {name: date.fromisoformat(value) for name, value in job['job_parameters'].items() if 'date' in name}
 
-    job_dates = {
-        'reference_date': get_date_from_job('reference_date'),
-        'secondary_date': get_date_from_job('secondary_date'),
-    }
+    for param_name, date_value in date_params.items():
+        _check_date_during_s1(param_name, date_value)
 
+
+def check_secondary_before_reference_date(job: dict, _) -> None:
+    def format_date(key: str) -> date:
+        return date.fromisoformat(job['job_parameters'][key])
+
+    reference, secondary = format_date('reference_date'), format_date('secondary_date')
+
+    if secondary >= reference:
+        raise ValidationError('secondary date must be earlier than reference date.')
+
+
+def _check_date_during_s1(date_name: str, date_value: date) -> None:
     s1_start_date = date(2014, 6, 15)
     todays_date = date.today()
 
-    for job_date_key, job_date in job_dates.items():
-        if job_date > todays_date:
-            raise ValidationError(f'"{job_date_key}" is {job_date} which is a date in the future.')
+    if date_value > todays_date:
+        raise ValidationError(f'"{date_name}" is {date_value} which is a date in the future.')
 
-        if job_date < s1_start_date:
-            raise ValidationError(
-                f'"{job_date_key}" is {job_date} which is before the start of the sentinel 1 mission ({s1_start_date}).'
-            )
+    if date_value < s1_start_date:
+        raise ValidationError(
+            f'"{date_name}" is {date_value} which is before the start of the sentinel 1 mission ({s1_start_date}).'
+        )
 
-    if job_dates['secondary_date'] >= job_dates['reference_date']:
-        raise ValidationError('secondary date must be earlier than reference date.')
+
+def _get_date_from_job(job_parameters: dict, date_param_key: str) -> date:
+    param_date_str = job_parameters[date_param_key]
+    return date.fromisoformat(param_date_str)
 
 
 def check_opera_rtc_s1_date(job: dict, _) -> None:

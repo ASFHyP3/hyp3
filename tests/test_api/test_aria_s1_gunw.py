@@ -24,7 +24,6 @@ def test_aria_s1_gunw_job(client, tables, approved_user):
     assert len(tables.jobs_table.scan()['Items']) == 1
 
 
-@pytest.mark.network
 @pytest.mark.parametrize(
     'job_parameters',
     [
