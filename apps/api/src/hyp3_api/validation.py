@@ -235,18 +235,13 @@ def check_opera_rtc_s1_static_coverage(job: dict, _) -> None:
         raise ValidationError(f'Granule {granule} is outside the valid processing extent for OPERA RTC-S1 products.')
 
 
-def check_dates_within_s1(job: dict, _) -> None:
-    date_params = {name: date.fromisoformat(value) for name, value in job['job_parameters'].items() if 'date' in name}
-
-    for param_name, date_value in date_params.items():
-        _validate_date_during_s1(param_name, date_value)
-
-
-def check_secondary_before_reference_date(job: dict, _) -> None:
+def check_aria_s1_gunw_dates(job: dict, _) -> None:
     def format_date(key: str) -> date:
         return date.fromisoformat(job['job_parameters'][key])
 
     reference, secondary = format_date('reference_date'), format_date('secondary_date')
+    _validate_date_during_s1('reference_date', reference)
+    _validate_date_during_s1('secondary_date', secondary)
 
     if secondary >= reference:
         raise ValidationError('secondary date must be earlier than reference date.')
