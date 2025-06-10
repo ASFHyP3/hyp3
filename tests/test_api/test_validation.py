@@ -1,3 +1,4 @@
+import contextlib
 import inspect
 from unittest import mock
 
@@ -584,46 +585,53 @@ def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
         )
 
 
-def test_check_aria_s1_gunw_dates():
-    valid_aria_params = {'job_parameters': {'reference_date': '2022-01-02', 'secondary_date': '2022-01-01'}}
-
-    validation.check_dates_within_s1(valid_aria_params, None)
-    validation.check_secondary_before_reference_date(valid_aria_params, None)
-
-
 @pytest.mark.parametrize(
-    'job_parameters,error_pattern',
+    'job_parameters,error',
     [
         (
+            {'reference_date': '2022-01-02', 'secondary_date': '2022-01-01'},
+            contextlib.nullcontext()
+        ),
+        (
             {'reference_date': '2014-06-14', 'secondary_date': '2022-01-02'},
-            r'.*is before the start of the sentinel 1 mission.*',
+            pytest.raises(validation.ValidationError, match=r'.*is before the start of the sentinel 1 mission.*'),
         ),
         (
             {'reference_date': '2022-01-02', 'secondary_date': '2014-06-14'},
-            r'.*is before the start of the sentinel 1 mission.*',
+            pytest.raises(validation.ValidationError, match=r'.*is before the start of the sentinel 1 mission.*'),
         ),
-        ({'reference_date': FUTURE_DATE, 'secondary_date': '2021-01-01'}, r'.*is a date in the future.*'),
-        ({'reference_date': '2021-01-01', 'secondary_date': FUTURE_DATE}, r'.*is a date in the future.*'),
+        (
+            {'reference_date': FUTURE_DATE, 'secondary_date': '2021-01-01'},
+            pytest.raises(validation.ValidationError, match=r'.*is a date in the future.*'),
+        ),
+        (
+            {'reference_date': '2021-01-01', 'secondary_date': FUTURE_DATE},
+            pytest.raises(validation.ValidationError, match=r'.*is a date in the future.*'),
+        ),
     ],
 )
-def test_check_secondary_before_reference_date_errors(job_parameters, error_pattern):
-    with pytest.raises(validation.ValidationError, match=error_pattern):
+def test_check_secondary_before_reference_date_errors(job_parameters, error):
+    with error:
         validation.check_dates_within_s1({'job_parameters': job_parameters}, None)
 
 
 @pytest.mark.parametrize(
-    'job_parameters,error_pattern',
+    'job_parameters,error',
     [
         (
+            {'reference_date': '2022-01-02', 'secondary_date': '2022-01-01'},
+            contextlib.nullcontext()
+        ),
+        (
             {'reference_date': '2021-01-01', 'secondary_date': '2021-01-01'},
-            r'secondary date must be earlier than reference date\.',
+            pytest.raises(validation.ValidationError, match=r'secondary date must be earlier than reference date\.'),
         ),
         (
             {'reference_date': '2022-01-01', 'secondary_date': '2022-01-02'},
-            r'secondary date must be earlier than reference date\.',
+            pytest.raises(validation.ValidationError, match=r'secondary date must be earlier than reference date\.'),
         ),
     ],
 )
-def test_check_dates_within_s1_errors(job_parameters, error_pattern):
-    with pytest.raises(validation.ValidationError, match=error_pattern):
+def test_check_dates_within_s1_errors(job_parameters, error):
+    with error:
         validation.check_secondary_before_reference_date({'job_parameters': job_parameters}, None)
