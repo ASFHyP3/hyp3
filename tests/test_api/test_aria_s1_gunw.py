@@ -29,6 +29,7 @@ def test_aria_s1_gunw_job(client, tables, approved_user):
     [
         ({'reference_date': 'foo', 'secondary_date': '2022-01-01', 'frame_id': 1}),
         ({'reference_date': '2022-01-01', 'secondary_date': 'bar', 'frame_id': 1}),
+        ({'reference_date': '2022-01-02', 'secondary_date': '2022-01-01', 'frame_id': 'foo'}),
     ],
 )
 def test_aria_s1_gunw_job_schema(client, tables, approved_user, job_parameters):
