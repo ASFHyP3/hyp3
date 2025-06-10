@@ -29,8 +29,7 @@ ARIA_S1_GUNW:
     DEFAULT:
       cost: 1.0
   validators:
-    - check_dates_within_s1
-    - check_secondary_before_reference_date
+    - check_aria_s1_gunw_dates
   steps:
     - name: ''
       image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp

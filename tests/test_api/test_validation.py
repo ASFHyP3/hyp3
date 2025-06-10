@@ -608,20 +608,6 @@ def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
             {'reference_date': '2021-01-01', 'secondary_date': FUTURE_DATE},
             pytest.raises(validation.ValidationError, match=r'.*is a date in the future.*'),
         ),
-    ],
-)
-def test_check_secondary_before_reference_date_errors(job_parameters, error):
-    with error:
-        validation.check_dates_within_s1({'job_parameters': job_parameters}, None)
-
-
-@pytest.mark.parametrize(
-    'job_parameters,error',
-    [
-        (
-            {'reference_date': '2022-01-02', 'secondary_date': '2022-01-01'},
-            contextlib.nullcontext()
-        ),
         (
             {'reference_date': '2021-01-01', 'secondary_date': '2021-01-01'},
             pytest.raises(validation.ValidationError, match=r'secondary date must be earlier than reference date\.'),
@@ -632,6 +618,6 @@ def test_check_secondary_before_reference_date_errors(job_parameters, error):
         ),
     ],
 )
-def test_check_dates_within_s1_errors(job_parameters, error):
+def test_check_aria_s1_gunw_dates(job_parameters, error):
     with error:
-        validation.check_secondary_before_reference_date({'job_parameters': job_parameters}, None)
+        validation.check_aria_s1_gunw_dates({'job_parameters': job_parameters}, None)
