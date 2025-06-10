@@ -588,10 +588,7 @@ def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
 @pytest.mark.parametrize(
     'job_parameters,error',
     [
-        (
-            {'reference_date': '2022-01-02', 'secondary_date': '2022-01-01'},
-            contextlib.nullcontext()
-        ),
+        ({'reference_date': '2022-01-02', 'secondary_date': '2022-01-01'}, contextlib.nullcontext()),
         (
             {'reference_date': '2014-06-14', 'secondary_date': '2022-01-02'},
             pytest.raises(validation.ValidationError, match=r'.*is before the start of the sentinel 1 mission.*'),
