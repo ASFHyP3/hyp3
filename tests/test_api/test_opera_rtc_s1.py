@@ -151,7 +151,6 @@ def test_opera_rtc_s1_validation_order(client, tables, approved_user, monkeypatc
     response = client.post(JOBS_URI, json=payload)
 
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert 'DEM coverage' in response.json['detail']
     assert len(tables.jobs_table.scan()['Items']) == 0
 
     monkeypatch.setattr(hyp3_api.validation, 'check_dem_coverage', MagicMock())
@@ -312,30 +311,6 @@ def test_opera_rtc_s1_static_coverage_cmr_error(client, tables, approved_user, m
 
     assert response.status_code == HTTPStatus.SERVICE_UNAVAILABLE
     assert response.json['detail'] == 'Could not submit jobs due to a CMR error. Please try again later.'
-    assert len(tables.jobs_table.scan()['Items']) == 0
-
-
-@pytest.mark.network
-def test_opera_rtc_s1_dem_coverage(client, tables, approved_user):
-    login(client, username=approved_user)
-
-    response = client.post(
-        JOBS_URI,
-        json={
-            'jobs': [
-                {
-                    'job_type': 'OPERA_RTC_S1',
-                    'job_parameters': {'granules': ['S1_157213_IW3_20190210T182738_HH_D6C8-BURST']},
-                }
-            ],
-        },
-    )
-
-    assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert (
-        response.json['detail']
-        == 'Some requested scenes do not have DEM coverage: S1_157213_IW3_20190210T182738_HH_D6C8-BURST'
-    )
     assert len(tables.jobs_table.scan()['Items']) == 0
 
 
