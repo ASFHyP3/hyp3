@@ -38,18 +38,18 @@ def check_system_available() -> Response | None:
 
 @app.before_request
 def authenticate_user() -> None:
-    if request.authorization and request.authorization.type == 'bearer':
+    if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
         try:
-            if 'jwks_client' not in g:
-                g.jwks_client = auth.get_jwks_client()
-            payload = auth.decode_token(request.authorization.token, g.jwks_client)
+            if request.authorization and request.authorization.type == 'bearer':
+                if 'jwks_client' not in g:
+                    g.jwks_client = auth.get_jwks_client()
+                g.user, g.edl_access_token = auth.decode_edl_bearer_token(request.authorization.token, g.jwks_client)
+            elif 'asf-urs' in request.cookies:
+                g.user, g.edl_access_token = auth.decode_asf_cookie(request.cookies['asf-urs'])
+            else:
+                abort(handlers.problem_format(401, 'No authorization token provided'))
         except auth.InvalidTokenException as e:
-            abort(handlers.problem_format(401, f'Invalid authorization token provided: {str(e)}'))
-        g.user = payload['uid']
-        g.edl_access_token = request.authorization.token
-    else:
-        if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
-            abort(handlers.problem_format(401, 'No authorization token provided'))
+            abort(handlers.problem_format(401, str(e)))
 
 
 @app.route('/')
