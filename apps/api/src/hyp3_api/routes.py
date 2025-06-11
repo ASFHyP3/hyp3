@@ -40,8 +40,8 @@ def check_system_available() -> Response | None:
 def authenticate_user() -> None:
     token = None
     payload = None
-    if request.authorization and request.authorization.type == 'Bearer':
-        token = request.authorization.token
+    if 'Authorization' in request.headers and request.headers['Authorization'].startswith('Bearer '):
+        token = request.headers['Authorization'].split(' ')[1]
         payload = auth.decode_token(token)
 
     if payload is not None:
