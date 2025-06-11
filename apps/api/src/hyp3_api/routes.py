@@ -38,11 +38,15 @@ def check_system_available() -> Response | None:
 
 @app.before_request
 def authenticate_user() -> None:
-    cookie = request.cookies.get('asf-urs')
-    payload = auth.decode_token(cookie)
+    token = None
+    payload = None
+    if request.authorization.type == 'Bearer':
+        token = request.authorization.token
+        payload = auth.decode_token(token)
+
     if payload is not None:
-        g.user = payload['urs-user-id']
-        g.edl_access_token = payload['urs-access-token']
+        g.user = payload['uid']
+        g.edl_access_token = token
     else:
         if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
             abort(handlers.problem_format(401, 'No authorization token provided'))

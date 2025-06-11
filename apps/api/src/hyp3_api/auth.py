@@ -8,7 +8,9 @@ def decode_token(token: str | None) -> dict | None:
     if token is None:
         return None
     try:
-        return jwt.decode(token, environ['AUTH_PUBLIC_KEY'], algorithms=environ['AUTH_ALGORITHM'])
+        jwks_client = jwt.PyJWKClient('https://urs.earthdata.nasa.gov/.well-known/edl_ops_jwks.json')
+        signing_key = jwks_client.get_signing_key('edljwtpubkey_ops')
+        return jwt.decode(token, signing_key, algorithms=['RS256'])
     except (jwt.ExpiredSignatureError, jwt.DecodeError):
         return None
 
