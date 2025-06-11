@@ -4,15 +4,17 @@ from os import environ
 import jwt
 
 
-def decode_token(token: str | None) -> dict | None:
-    if token is None:
-        return None
+class InvalidTokenException(Exception):
+    """Raised when authorization token cannot be decoded"""
+
+
+def decode_token(token: str) -> dict:
     try:
         jwks_client = jwt.PyJWKClient('https://urs.earthdata.nasa.gov/.well-known/edl_ops_jwks.json')
         signing_key = jwks_client.get_signing_key('edljwtpubkey_ops')
         return jwt.decode(token, signing_key, algorithms=['RS256'])
-    except (jwt.ExpiredSignatureError, jwt.DecodeError):
-        return None
+    except jwt.exceptions.InvalidTokenError as e:
+        raise InvalidTokenException(e)
 
 
 def get_mock_jwt_cookie(user: str, lifetime_in_seconds: int, access_token: str) -> str:

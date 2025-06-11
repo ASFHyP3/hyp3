@@ -38,15 +38,13 @@ def check_system_available() -> Response | None:
 
 @app.before_request
 def authenticate_user() -> None:
-    token = None
-    payload = None
-    if 'Authorization' in request.headers and request.headers['Authorization'].startswith('Bearer '):
-        token = request.headers['Authorization'].split(' ')[1]
-        payload = auth.decode_token(token)
-
-    if payload is not None:
+    if request.authorization and request.authorization.type == 'bearer':
+        try:
+            payload = auth.decode_token(request.authorization.token)
+        except auth.InvalidTokenException as e:
+            abort(handlers.problem_format(401, f'Invalid authorization token provided: {str(e)}'))
         g.user = payload['uid']
-        g.edl_access_token = token
+        g.edl_access_token = request.authorization.token
     else:
         if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
             abort(handlers.problem_format(401, 'No authorization token provided'))
