@@ -6,6 +6,7 @@ info:
 
 security:
   - BearerAuth: []
+  - EarthDataLogin: []
 
 {% if security_environment == 'EDC' %}
 # See https://github.com/ASFHyP3/hyp3/pull/2009 for context.
@@ -483,3 +484,10 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+    EarthDataLogin:
+      description: |-
+        Authentication requires the user to have an account at urs.earthdata.nasa.gov and log in at auth.asf.alaska.edu
+      type: apiKey
+      in: cookie
+      name: asf-urs
