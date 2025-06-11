@@ -8,7 +8,7 @@ class InvalidTokenException(Exception):
     """Raised when authorization token cannot be decoded."""
 
 
-def decode_edl_bearer_token(token: str | None) -> tuple[str, str]:
+def decode_edl_bearer_token(token: str) -> tuple[str, str]:
     jwks_client = jwt.PyJWKClient('https://urs.earthdata.nasa.gov/.well-known/edl_ops_jwks.json')
     signing_key = jwks_client.get_signing_key('edljwtpubkey_ops')
     try:

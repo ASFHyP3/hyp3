@@ -41,7 +41,7 @@ def authenticate_user() -> None:
     if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
         try:
             if request.authorization and request.authorization.type == 'bearer':
-                g.user, g.edl_access_token = auth.decode_edl_bearer_token(request.authorization.token)
+                g.user, g.edl_access_token = auth.decode_edl_bearer_token(str(request.authorization.token))
             elif 'asf-urs' in request.cookies:
                 g.user, g.edl_access_token = auth.decode_asf_cookie(request.cookies['asf-urs'])
             else:
