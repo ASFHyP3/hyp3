@@ -5,16 +5,19 @@ import jwt
 
 
 class InvalidTokenException(Exception):
-    """Raised when authorization token cannot be decoded"""
+    """Raised when authorization token cannot be decoded."""
 
 
-def decode_token(token: str) -> dict:
+def decode_token(token: str, jwks_client: jwt.PyJWKClient) -> dict:
     try:
-        jwks_client = jwt.PyJWKClient('https://urs.earthdata.nasa.gov/.well-known/edl_ops_jwks.json')
         signing_key = jwks_client.get_signing_key('edljwtpubkey_ops')
         return jwt.decode(token, signing_key, algorithms=['RS256'])
     except jwt.exceptions.InvalidTokenError as e:
         raise InvalidTokenException(e)
+
+
+def get_jwks_client() -> jwt.PyJWKClient:
+    return jwt.PyJWKClient('https://urs.earthdata.nasa.gov/.well-known/edl_ops_jwks.json')
 
 
 def get_mock_jwt_cookie(user: str, lifetime_in_seconds: int, access_token: str) -> str:

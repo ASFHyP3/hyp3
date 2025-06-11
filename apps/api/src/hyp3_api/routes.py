@@ -40,7 +40,9 @@ def check_system_available() -> Response | None:
 def authenticate_user() -> None:
     if request.authorization and request.authorization.type == 'bearer':
         try:
-            payload = auth.decode_token(request.authorization.token)
+            if 'jwks_client' not in g:
+                g.jwks_client = auth.get_jwks_client()
+            payload = auth.decode_token(request.authorization.token, g.jwks_client)
         except auth.InvalidTokenException as e:
             abort(handlers.problem_format(401, f'Invalid authorization token provided: {str(e)}'))
         g.user = payload['uid']
