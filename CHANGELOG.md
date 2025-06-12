@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `ARIA_S1_GUNW` now takes `reference_date` and `secondary_date` as inputs instead of `reference` and `secondary` granule lists
+- `ARIA_S1_GUNW` jobs now enforce minimum frame coverage of `0.9`.
+
+### Removed
+- DEM bounds check for OPERA_RTC_S1 job type since it uses a different DEM.
 
 ## [10.7.0]
 

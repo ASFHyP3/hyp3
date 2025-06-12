@@ -47,7 +47,7 @@ ARIA_S1_GUNW:
         - --frame-id
         - Ref::frame_id
         - --min-frame-coverage
-        - '0.01'
+        - '0.9'
       timeout: 21600  # 6 hr
       compute_environment: AriaS1Gunw
       vcpu: 1
