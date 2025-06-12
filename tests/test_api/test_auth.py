@@ -3,25 +3,48 @@ import pytest
 from hyp3_api import auth
 
 
-@pytest.mark.network
-def test_get_jwks_client(client):
-    assert 'urs.earthdata.nasa.gov' in client.uri
+def test_decode_asf_cookie(monkeypatch, jwks_client):
+    def mock_decode(*args, **kwargs):
+        return {'urs-user-id': 'test-user', 'urs-access-token': 'test-token'}
+
+    monkeypatch.setattr(auth.jwt, 'decode', mock_decode)
+
+    user, token = auth.decode_asf_cookie('test-token')
+    assert user == 'test-user'
+    assert token == 'test-token'
 
 
 @pytest.mark.network
-def test_bad_bearer_token(client):
+def test_decode_edl_bearer_token(monkeypatch, jwks_client):
+    def mock_decode(*args, **kwargs):
+        return {'uid': 'test-user'}
+
+    monkeypatch.setattr(auth.jwt, 'decode', mock_decode)
+
+    user, token = auth.decode_edl_bearer_token('test-token', jwks_client)
+    assert user == 'test-user'
+    assert token == 'test-token'
+
+
+@pytest.mark.network
+def test_get_jwks_client(jwks_client):
+    assert 'urs.earthdata.nasa.gov' in jwks_client.uri
+
+
+@pytest.mark.network
+def test_bad_bearer_token(jwks_client):
     with pytest.raises(auth.InvalidTokenException, match=r'.*Invalid authorization token provided.*'):
-        auth.decode_edl_bearer_token('bad token', client)
+        auth.decode_edl_bearer_token('bad token', jwks_client)
 
 
-def test_bad_asf_cookie(client, monkeypatch):
-    monkeypatch.setenv("AUTH_PUBLIC_KEY", "public key")
-    monkeypatch.setenv("AUTH_ALGORITHM", "RS256")
+def test_bad_asf_cookie(jwks_client, monkeypatch):
+    monkeypatch.setenv('AUTH_PUBLIC_KEY', 'public key')
+    monkeypatch.setenv('AUTH_ALGORITHM', 'RS256')
 
     with pytest.raises(auth.InvalidTokenException, match=r'.*Invalid authorization cookie provided.*'):
         auth.decode_asf_cookie('bad token')
 
 
 @pytest.fixture(scope='session')
-def client():
+def jwks_client():
     return auth.get_jwks_client()
