@@ -22,6 +22,7 @@ def test_decode_edl_bearer_token(jwks_client):
         mock_decode.assert_called_once()
         assert mock_decode.call_args.args[0] == 'test-token'
         assert mock_decode.call_args.kwargs['algorithms'] == ['RS256']
+
         assert user == 'test-user'
         assert token == 'test-token'
 
