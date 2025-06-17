@@ -24,8 +24,7 @@ OPERA_RTC_S1:
       cost: 1.0
   validators:
     - check_opera_rtc_s1_date
-    # Static coverage check is the slowest because it involves a CMR query, so should come last
-    - check_opera_rtc_s1_static_coverage
+    - check_opera_rtc_s1_bounds
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-opera-rtc

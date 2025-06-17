@@ -136,7 +136,7 @@ def test_opera_rtc_s1_validation_order(client, tables, approved_user, monkeypatc
         'jobs': [
             {
                 'job_type': 'OPERA_RTC_S1',
-                'job_parameters': {'granules': ['S1_271383_IW1_20160101T095550_HH_51B7-BURST']},
+                'job_parameters': {'granules': ['S1_190713_IW1_20151030T200722_HH_617F-BURST']},
             }
         ]
     }
@@ -154,7 +154,7 @@ def test_opera_rtc_s1_validation_order(client, tables, approved_user, monkeypatc
     assert 'outside the valid processing extent for OPERA RTC-S1 products' in response.json['detail']
     assert len(tables.jobs_table.scan()['Items']) == 0
 
-    monkeypatch.setattr(hyp3_api.validation, 'check_opera_rtc_s1_static_coverage', MagicMock())
+    monkeypatch.setattr(hyp3_api.validation, 'check_opera_rtc_s1_bounds', MagicMock())
     response = client.post(JOBS_URI, json=payload)
 
     assert response.status_code == HTTPStatus.OK
@@ -240,7 +240,7 @@ def test_opera_rtc_s1_max_date_configurable(client, tables, approved_user, monke
 
 
 @pytest.mark.network
-def test_opera_rtc_s1_static_coverage(client, tables, approved_user):
+def test_opera_rtc_s1_bounds(client, tables, approved_user):
     login(client, username=approved_user)
 
     response = client.post(
@@ -249,7 +249,7 @@ def test_opera_rtc_s1_static_coverage(client, tables, approved_user):
             'jobs': [
                 {
                     'job_type': 'OPERA_RTC_S1',
-                    'job_parameters': {'granules': ['S1_175498_IW2_20160415T082755_HH_C4A7-BURST']},
+                    'job_parameters': {'granules': ['S1_018641_IW1_20180307T081710_HH_20C9-BURST']},
                 }
             ],
         },
@@ -257,50 +257,9 @@ def test_opera_rtc_s1_static_coverage(client, tables, approved_user):
 
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert (
-        response.json['detail'] == 'Granule S1_175498_IW2_20160415T082755_HH_C4A7-BURST is outside the valid '
-        'processing extent for OPERA RTC-S1 products.'
+        response.json['detail'] == 'Granule S1_018641_IW1_20180307T081710_HH_20C9-BURST is south of -60 degrees '
+                                   'latitude and outside the valid processing extent for OPERA RTC-S1 products.'
     )
-    assert len(tables.jobs_table.scan()['Items']) == 0
-
-
-@responses.activate
-def test_opera_rtc_s1_static_coverage_cmr_error(client, tables, approved_user, monkeypatch):
-    login(client, username=approved_user)
-
-    mock_get_cmr_metadata = MagicMock()
-    monkeypatch.setattr(hyp3_api.validation, '_get_cmr_metadata', mock_get_cmr_metadata)
-
-    mock_make_sure_granules_exist = MagicMock()
-    monkeypatch.setattr(hyp3_api.validation, '_make_sure_granules_exist', mock_make_sure_granules_exist)
-
-    params = {
-        'short_name': 'OPERA_L2_RTC-S1-STATIC_V1',
-        'granule_ur': 'OPERA_L2_RTC-S1-STATIC_T*-175498-IW2_*',
-        'options[granule_ur][pattern]': 'true',
-    }
-    responses.get(
-        url=hyp3_api.CMR_URL,
-        match=[responses.matchers.query_param_matcher(params)],
-        status=500,
-    )
-
-    response = client.post(
-        JOBS_URI,
-        json={
-            'jobs': [
-                {
-                    'job_type': 'OPERA_RTC_S1',
-                    'job_parameters': {'granules': ['S1_175498_IW2_20160415T082755_HH_C4A7-BURST']},
-                }
-            ],
-        },
-    )
-
-    mock_get_cmr_metadata.assert_called_once()
-    mock_make_sure_granules_exist.assert_called_once()
-
-    assert response.status_code == HTTPStatus.SERVICE_UNAVAILABLE
-    assert response.json['detail'] == 'Could not submit jobs due to a CMR error. Please try again later.'
     assert len(tables.jobs_table.scan()['Items']) == 0
 
 

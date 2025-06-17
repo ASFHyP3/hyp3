@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.8.1]
+
+### Changed
+- `OPERA_RTC_S1` processing bounds have been expanded to scenes north of (or intersecting) -60 degrees latitude.
+
 ## [10.8.0]
 
 ### Added
