@@ -20,8 +20,10 @@ def test_decode_edl_bearer_token(jwks_client):
         user, token = auth.decode_edl_bearer_token('test-token', jwks_client)
 
         mock_decode.assert_called_once()
+        assert len(mock_decode.call_args.args) == 2
         assert mock_decode.call_args.args[0] == 'test-token'
-        assert mock_decode.call_args.kwargs['algorithms'] == ['RS256']
+        assert isinstance(mock_decode.call_args.args[1], jwt.api_jwk.PyJWK)
+        assert mock_decode.call_args.kwargs == {'algorithms': ['RS256']}
 
         assert user == 'test-user'
         assert token == 'test-token'
