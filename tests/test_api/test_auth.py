@@ -37,7 +37,7 @@ def test_get_jwks_client(jwks_client):
 
 @pytest.mark.network
 def test_bad_bearer_token(jwks_client):
-    with pytest.raises(auth.InvalidTokenException, match='Invalid authorization token provided'):
+    with pytest.raises(auth.InvalidTokenException, match=r'^Invalid authorization token provided'):
         auth.decode_edl_bearer_token('bad token', jwks_client)
 
 
