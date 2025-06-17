@@ -46,8 +46,8 @@ def test_invalid_cookie(client):
 def test_invalid_bearer(client):
     for uri in ENDPOINTS:
         response = client.get(uri, headers={'Authorization': 'Bearer BAD TOKEN'})
-        assert 'Invalid authorization token provided' in response.json['detail']
         assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert 'Invalid authorization token provided' in response.json['detail']
 
 
 def test_expired_cookie(client):
