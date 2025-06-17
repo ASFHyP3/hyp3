@@ -41,7 +41,7 @@ def test_bad_bearer_token(jwks_client):
         auth.decode_edl_bearer_token('bad token', jwks_client)
 
 
-def test_bad_asf_cookie(monkeypatch):
+def test_bad_asf_cookie():
     with pytest.raises(auth.InvalidTokenException, match=r'^Invalid authorization cookie provided'):
         auth.decode_asf_cookie('bad token')
 
