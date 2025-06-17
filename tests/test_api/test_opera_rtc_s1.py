@@ -258,7 +258,7 @@ def test_opera_rtc_s1_bounds(client, tables, approved_user):
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert (
         response.json['detail'] == 'Granule S1_018641_IW1_20180307T081710_HH_20C9-BURST is south of -60 degrees '
-                                   'latitude and outside the valid processing extent for OPERA RTC-S1 products.'
+        'latitude and outside the valid processing extent for OPERA RTC-S1 products.'
     )
     assert len(tables.jobs_table.scan()['Items']) == 0
 
