@@ -2,7 +2,6 @@ from http import HTTPStatus
 from unittest.mock import MagicMock
 
 import pytest
-import responses
 
 import hyp3_api.validation
 from test_api.conftest import JOBS_URI, login
