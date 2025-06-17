@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.8.0]
 
 ### Added
+- Support for API authentication via [Earthdata Login bearer tokens](https://urs.earthdata.nasa.gov/documentation/for_users/user_token)
 - `cloudformation:DeleteStack` permissions to the [HyP3 deployment policy](cicd-stacks/JPL-deployment-policy-cf.yml) for JPL accounts
 
 ### Changed

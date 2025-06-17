@@ -5,6 +5,7 @@ info:
   version: {{ api_version }}
 
 security:
+  - BearerAuth: []
   - EarthDataLogin: []
 
 {% if security_environment == 'EDC' %}
@@ -477,6 +478,13 @@ components:
       example: 50
 
   securitySchemes:
+    BearerAuth:
+      description: |-
+        Authentication via Earthdata Login Bearer Tokens; https://urs.earthdata.nasa.gov/documentation/for_users/user_token
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
     EarthDataLogin:
       description: |-
         Authentication requires the user to have an account at urs.earthdata.nasa.gov and log in at auth.asf.alaska.edu

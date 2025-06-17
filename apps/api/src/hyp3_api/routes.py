@@ -24,6 +24,8 @@ api_spec_dict = get_spec_yaml(api_spec_file)
 api_spec = OpenAPI.from_dict(api_spec_dict)
 CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=True)
 
+
+JWKS_CLIENT = auth.get_jwks_client()
 AUTHENTICATED_ROUTES = ['/jobs', '/user']
 
 
@@ -33,19 +35,22 @@ def check_system_available() -> Response | None:
         message = 'HyP3 is currently unavailable. Please try again later.'
         error = {'detail': message, 'status': 503, 'title': 'Service Unavailable', 'type': 'about:blank'}
         return make_response(jsonify(error), 503)
+
     return None
 
 
 @app.before_request
 def authenticate_user() -> None:
-    cookie = request.cookies.get('asf-urs')
-    payload = auth.decode_token(cookie)
-    if payload is not None:
-        g.user = payload['urs-user-id']
-        g.edl_access_token = payload['urs-access-token']
-    else:
-        if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
-            abort(handlers.problem_format(401, 'No authorization token provided'))
+    if any([request.path.startswith(route) for route in AUTHENTICATED_ROUTES]) and request.method != 'OPTIONS':
+        try:
+            if request.authorization and request.authorization.type == 'bearer':
+                g.user, g.edl_access_token = auth.decode_edl_bearer_token(str(request.authorization.token), JWKS_CLIENT)
+            elif 'asf-urs' in request.cookies:
+                g.user, g.edl_access_token = auth.decode_asf_cookie(request.cookies['asf-urs'])
+            else:
+                abort(handlers.problem_format(401, 'No authorization token provided'))
+        except auth.InvalidTokenException as e:
+            abort(handlers.problem_format(401, str(e)))
 
 
 @app.route('/')
