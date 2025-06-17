@@ -7,7 +7,7 @@ from pathlib import Path
 
 import requests
 import yaml
-from shapely.geometry import MultiPolygon, Polygon, shape
+from shapely.geometry import MultiPolygon, Polygon, box, shape
 
 from hyp3_api import CMR_URL, multi_burst_validation
 from hyp3_api.util import get_granules
@@ -213,26 +213,14 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
         )
 
 
-def _has_opera_rtc_s1_static_coverage(granule_name: str) -> bool:
-    burst_number, swath = granule_name.split('_')[1:3]
-    params = {
-        'short_name': 'OPERA_L2_RTC-S1-STATIC_V1',
-        'granule_ur': f'OPERA_L2_RTC-S1-STATIC_T*-{burst_number}-{swath}_*',
-        'options[granule_ur][pattern]': 'true',
-    }
-    response = requests.get(CMR_URL, params=params)
-    response.raise_for_status()
-    return bool(response.json()['feed']['entry'])
-
-
-def check_opera_rtc_s1_static_coverage(job: dict, _) -> None:
-    granules = job['job_parameters']['granules']
-    if len(granules) != 1:
-        raise InternalValidationError(f'Expected 1 granule, got {granules}')
-
-    granule = granules[0]
-    if not _has_opera_rtc_s1_static_coverage(granule):
-        raise ValidationError(f'Granule {granule} is outside the valid processing extent for OPERA RTC-S1 products.')
+def check_opera_rtc_s1_bounds(_, granule_metadata: list[dict]) -> None:
+    opera_rtc_s1_bounds = box(-180, -60, 180, 90)
+    for granule in granule_metadata:
+        if not granule['polygon'].intersects(opera_rtc_s1_bounds):
+            raise ValidationError(
+                f'Granule {granule["name"]} is south of -60 degrees latitude and outside the valid processing extent '
+                f'for OPERA RTC-S1 products.'
+            )
 
 
 def check_aria_s1_gunw_dates(job: dict, _) -> None:

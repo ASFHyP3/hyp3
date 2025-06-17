@@ -459,56 +459,27 @@ def test_check_bounding_box_size():
         validation.check_bounding_box_size(job, None, max_bounds_area=99.9)
 
 
-def test_check_opera_rtc_s1_static_coverage_1_granule():
-    with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
-        validation.check_opera_rtc_s1_static_coverage(
-            {'job_parameters': {'granules': ['foo', 'bar']}},
-            None,
-        )
+def test_check_opera_rtc_s1_bounds():
+    granule_metadata = [
+        {
+            'name': 'valid1',
+            'polygon': rectangle(-59.99, -60.01, -180, -179),
+        },
+        {
+            'name': 'valid2',
+            'polygon': rectangle(0, 1, 0, 1),
+        },
+    ]
+    validation.check_opera_rtc_s1_bounds(None, granule_metadata)
 
-    with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
-        validation.check_opera_rtc_s1_static_coverage(
-            {'job_parameters': {'granules': []}},
-            None,
-        )
-
-
-@pytest.mark.network
-def test_check_opera_rtc_s1_static_coverage():
-    validation.check_opera_rtc_s1_static_coverage(
-        {'job_parameters': {'granules': ['S1_118338_IW2_20170102T124017_VV_0675-BURST']}},
-        None,
+    granule_metadata.append(
+        {
+            'name': 'invalid',
+            'polygon': rectangle(-60.01, -61, 23, 24),
+        }
     )
-
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'^Granule S1_034724_IW3_20160317T203621_HH_4001-BURST is outside the valid '
-        r'processing extent for OPERA RTC-S1 products\.$',
-    ):
-        validation.check_opera_rtc_s1_static_coverage(
-            {'job_parameters': {'granules': ['S1_034724_IW3_20160317T203621_HH_4001-BURST']}},
-            None,
-        )
-
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'^Granule S1_175498_IW2_20160415T082755_HH_C4A7-BURST is outside the valid '
-        r'processing extent for OPERA RTC-S1 products\.$',
-    ):
-        validation.check_opera_rtc_s1_static_coverage(
-            {'job_parameters': {'granules': ['S1_175498_IW2_20160415T082755_HH_C4A7-BURST']}},
-            None,
-        )
-
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'^Granule S1_020134_IW2_20161031T092546_HH_CCD1-BURST is outside the valid '
-        r'processing extent for OPERA RTC-S1 products\.$',
-    ):
-        validation.check_opera_rtc_s1_static_coverage(
-            {'job_parameters': {'granules': ['S1_020134_IW2_20161031T092546_HH_CCD1-BURST']}},
-            None,
-        )
+    with pytest.raises(validation.ValidationError, match=r'Granule invalid is south of -60 degrees latitude'):
+        validation.check_opera_rtc_s1_bounds(None, granule_metadata)
 
 
 def test_check_opera_rtc_s1_date_1_granule():
