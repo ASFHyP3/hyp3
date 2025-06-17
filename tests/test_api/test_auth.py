@@ -36,9 +36,6 @@ def test_bad_bearer_token(jwks_client):
 
 
 def test_bad_asf_cookie(jwks_client, monkeypatch):
-    monkeypatch.setenv('AUTH_PUBLIC_KEY', 'public key')
-    monkeypatch.setenv('AUTH_ALGORITHM', 'RS256')
-
     with pytest.raises(auth.InvalidTokenException, match=r'.*Invalid authorization cookie provided.*'):
         auth.decode_asf_cookie('bad token')
 
