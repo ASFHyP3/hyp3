@@ -1,17 +1,15 @@
 import pytest
 
 from hyp3_api import auth
+from test_api import conftest
 
 
 def test_decode_asf_cookie(monkeypatch, jwks_client):
-    def mock_decode(*args, **kwargs):
-        return {'urs-user-id': 'test-user', 'urs-access-token': 'test-token'}
+    cookie = conftest.get_mock_jwt_cookie('user', lifetime_in_seconds=100, access_token='token')
 
-    monkeypatch.setattr(auth.jwt, 'decode', mock_decode)
-
-    user, token = auth.decode_asf_cookie('test-token')
-    assert user == 'test-user'
-    assert token == 'test-token'
+    user, token = auth.decode_asf_cookie(cookie)
+    assert user == 'user'
+    assert token == 'token'
 
 
 @pytest.mark.network

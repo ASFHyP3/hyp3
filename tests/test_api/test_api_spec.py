@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
-from hyp3_api import auth
-from test_api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login
+from test_api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login, get_mock_jwt_cookie
 
 
 ENDPOINTS = {
@@ -48,7 +47,7 @@ def test_expired_cookie(client):
         client.set_cookie(
             domain='localhost',
             key=AUTH_COOKIE,
-            value=auth.get_mock_jwt_cookie('user', lifetime_in_seconds=-1, access_token='token'),
+            value=get_mock_jwt_cookie('user', lifetime_in_seconds=-1, access_token='token'),
         )
         response = client.get(uri)
         assert response.status_code == HTTPStatus.UNAUTHORIZED
