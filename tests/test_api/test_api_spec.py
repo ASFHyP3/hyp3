@@ -39,8 +39,8 @@ def test_invalid_cookie(client):
     for uri in ENDPOINTS:
         client.set_cookie(domain='localhost', key=AUTH_COOKIE, value='garbage I say!!! GARGBAGE!!!')
         response = client.get(uri)
-        assert 'Invalid authorization cookie provided' in response.json['detail']
         assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert 'Invalid authorization cookie provided' in response.json['detail']
 
 
 def test_invalid_bearer(client):
