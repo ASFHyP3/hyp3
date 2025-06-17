@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
-from hyp3_api import auth
-from test_api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login
+from test_api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, get_mock_jwt_cookie, login
 
 
 ENDPOINTS = {
@@ -41,6 +40,14 @@ def test_invalid_cookie(client):
         client.set_cookie(domain='localhost', key=AUTH_COOKIE, value='garbage I say!!! GARGBAGE!!!')
         response = client.get(uri)
         assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert 'Invalid authorization cookie provided' in response.json['detail']
+
+
+def test_invalid_bearer(client):
+    for uri in ENDPOINTS:
+        response = client.get(uri, headers={'Authorization': 'Bearer BAD TOKEN'})
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert 'Invalid authorization token provided' in response.json['detail']
 
 
 def test_expired_cookie(client):
@@ -48,7 +55,7 @@ def test_expired_cookie(client):
         client.set_cookie(
             domain='localhost',
             key=AUTH_COOKIE,
-            value=auth.get_mock_jwt_cookie('user', lifetime_in_seconds=-1, access_token='token'),
+            value=get_mock_jwt_cookie('user', lifetime_in_seconds=-1, access_token='token'),
         )
         response = client.get(uri)
         assert response.status_code == HTTPStatus.UNAUTHORIZED
