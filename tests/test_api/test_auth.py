@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+import jwt
 import pytest
 
 from hyp3_api import auth
