@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from test_api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, login, get_mock_jwt_cookie
+from test_api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, get_mock_jwt_cookie, login
 
 
 ENDPOINTS = {

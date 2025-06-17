@@ -1,7 +1,7 @@
 import json
-import time
 import os
 import re
+import time
 
 import jwt
 import pytest
