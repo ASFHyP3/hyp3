@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import patch
 
 from hyp3_api import auth
 from test_api import conftest
@@ -13,15 +14,15 @@ def test_decode_asf_cookie(monkeypatch, jwks_client):
 
 
 @pytest.mark.network
-def test_decode_edl_bearer_token(monkeypatch, jwks_client):
-    def mock_decode(*args, **kwargs):
-        return {'uid': 'test-user'}
+def test_decode_edl_bearer_token(jwks_client):
+    with patch('hyp3_api.auth.jwt.decode', return_value={'uid': 'test-user'}) as mock_decode:
+        user, token = auth.decode_edl_bearer_token('test-token', jwks_client)
 
-    monkeypatch.setattr(auth.jwt, 'decode', mock_decode)
-
-    user, token = auth.decode_edl_bearer_token('test-token', jwks_client)
-    assert user == 'test-user'
-    assert token == 'test-token'
+        mock_decode.assert_called_once()
+        assert mock_decode.call_args.args[0] == 'test-token'
+        assert mock_decode.call_args.kwargs['algorithms'] == ['RS256']
+        assert user == 'test-user'
+        assert token == 'test-token'
 
 
 @pytest.mark.network
