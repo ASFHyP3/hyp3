@@ -408,7 +408,7 @@ The API can be run locally for testing and development purposes:
 2. Set up credentials for the corresponding AWS account as described
    [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration).
    Also see our [developer docs article](https://github.com/ASFHyP3/.github-private/blob/main/docs/AWS-Access.md#aws-access-keys).
-3. Clone this repo if you haven't already, then `cd` into your local clone.
+3. If you haven't already, follow the [Developer Setup](#developer-setup) section to clone this repo and activate your conda environment.
 4. Edit your local copy of [`tests/cfg.env`](./tests/cfg.env) to specify the names of the DynamoDB tables from the HyP3 deployment.
    Delete all of the `AWS_*` variables.
 5. Run the following command, replacing `<profile>` with the AWS config profile that corresponds to the HyP3 deployment:
