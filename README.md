@@ -400,30 +400,22 @@ To delete a HyP3 deployment, delete any of the resources created above that are 
 Before deleting the HyP3 CloudFormation stack,
 you should manually empty and delete the `contentbucket` and `logbucket` for the deployment via the S3 console.
 
-## Running the API Locally
+## Running the API locally
 
-The API can be run locally to verify changes, but must be connected to a set of existing DynamoDB tables.
+The API can be run locally for testing and development purposes:
 
-1. Set up AWS credentials in your environment as described
+1. Choose an existing HyP3 deployment that you want to connect to.
+2. Set up credentials for the corresponding AWS account as described
    [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration).
-   Also see our [wiki page](https://github.com/ASFHyP3/.github-private/wiki/AWS-Access#aws-access-keys).
-2. Edit `tests/cfg.env` to specify the names of existing DynamoDB tables from a particular HyP3 deployment.
+   Also see our [developer docs article](https://github.com/ASFHyP3/.github-private/blob/main/docs/AWS-Access.md#aws-access-keys).
+3. Clone this repo if you haven't already, then `cd` into your local clone.
+4. Edit your local copy of [`tests/cfg.env`](./tests/cfg.env) to specify the names of the DynamoDB tables from the HyP3 deployment.
    Delete all of the `AWS_*` variables.
-3. Run the API (replace `<profile>` with the AWS config profile that corresponds to the HyP3 deployment):
+5. Run the following command, replacing `<profile>` with the AWS config profile that corresponds to the HyP3 deployment:
    ```sh
    AWS_PROFILE=<profile> make run
    ```
-4. You should see something like `Running on http://127.0.0.1:8080` in the output. Open the host URL in your browser.
-   You should see the Swagger UI for the locally running API.
-5. In Chrome or Chromium, from the Swagger UI tab, open Developer tools, select the Application tab, then select
-   the host URL under Cookies. In Firefox, open Web Developer Tools, select the Storage tab, then select
-   the host URL under Cookies. Add a new cookie with the following Name:
-   ```
-   asf-urs
-   ```
-   And the following Value:
-   ```
-   eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1cnMtdXNlci1pZCI6InVzZXIiLCJleHAiOjIxNTk1Mzc0OTYyLCJ1cnMtZ3JvdXBzIjpbeyJuYW1lIjoiYXV0aC1ncm91cCIsImFwcF91aWQiOiJhdXRoLXVpZCJ9XX0.hMtgDTqS5wxDPCzK9MlXB-3j6MAcGYeSZjGf4SYvq9Y
-   ```
-   And `/` for Path.
-6. To verify access, query the `GET /user` endpoint and verify that the response includes `"user_id": "user"`.
+6. You should see something like `Running on http://127.0.0.1:8080` in the output.
+   Open the URL in your browser and verify that you see the Swagger UI for the locally running API.
+7. Click the "Authorize" button in the upper right and input your [Earthdata Login bearer token](https://urs.earthdata.nasa.gov/documentation/for_users/user_token).
+8. To verify access, query the `GET /user` endpoint and verify that it returns the correct information for your username.
