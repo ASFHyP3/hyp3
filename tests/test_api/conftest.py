@@ -1,11 +1,14 @@
 import json
+import os
 import re
+import time
 from datetime import date, timedelta
 
+import jwt
 import pytest
 import responses
 
-from hyp3_api import CMR_URL, app, auth
+from hyp3_api import CMR_URL, app
 
 
 AUTH_COOKIE = 'asf-urs'
@@ -30,7 +33,7 @@ def login(client, username=DEFAULT_USERNAME, access_token=DEFAULT_ACCESS_TOKEN):
     client.set_cookie(
         domain='localhost',
         key=AUTH_COOKIE,
-        value=auth.get_mock_jwt_cookie(username, lifetime_in_seconds=10_000, access_token=access_token),
+        value=get_mock_jwt_cookie(username, lifetime_in_seconds=10_000, access_token=access_token),
     )
 
 
@@ -81,3 +84,17 @@ def setup_mock_cmr_response_for_polygons(granule_polygon_pairs):
         }
     }
     responses.add(responses.POST, CMR_URL_RE, json.dumps(cmr_response))
+
+
+def get_mock_jwt_cookie(user: str, lifetime_in_seconds: int, access_token: str) -> str:
+    payload = {
+        'urs-user-id': user,
+        'urs-access-token': access_token,
+        'exp': int(time.time()) + lifetime_in_seconds,
+    }
+    value = jwt.encode(
+        payload=payload,
+        key=os.environ['AUTH_PUBLIC_KEY'],
+        algorithm=os.environ['AUTH_ALGORITHM'],
+    )
+    return value
