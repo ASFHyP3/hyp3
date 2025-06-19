@@ -19,6 +19,7 @@ AK_FIRE_SAFE:
   cost_profiles:
     DEFAULT:
       cost: 1.0
+  validators: []
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-gather-landsat
