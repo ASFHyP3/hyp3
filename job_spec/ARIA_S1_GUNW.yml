@@ -75,3 +75,14 @@ ARIA_S1_GUNW:
         - EARTHDATA_PASSWORD
         - ESA_USERNAME
         - ESA_PASSWORD
+    - name: PUBLISH
+      image: ghcr.io/asfhyp3/ingest-adapter
+      command:
+        - Ref::job_id
+      timeout: 600
+      compute_environment: Default
+      vcpu: 1
+      memory: 512
+      secrets:
+        - TOPIC_ARN
+        - HYP3_URL
