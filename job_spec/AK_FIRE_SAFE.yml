@@ -1,0 +1,41 @@
+AK_FIRE_SAFE:
+  required_parameters:
+    - location
+  parameters:
+    granules:
+      api_schema:
+        type: array
+        minItems: 2
+        maxItems: 2
+        example:
+          - -163.97
+          - 54.756
+        items:
+          description: Longitude and Latitude for location point
+          type: float
+          minLength: 8
+          maxLength: 8
+          example: -163.97
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-gather-landsat
+      command:
+        - ++process
+        - hyp3_gather_landsat
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --start-date
+        - Ref::start_date
+        - --end-date
+        - Ref::end_date
+        - --location
+        - Ref::location
+      timeout: 5400
+      compute_environment: Default
+      vcpu: 1
+      memory: 7600
