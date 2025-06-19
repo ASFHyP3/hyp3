@@ -1,11 +1,11 @@
 flask==3.1.1
-Flask-Cors==6.0.0
+Flask-Cors==6.0.1
 jsonschema==4.24.0
 openapi-core==0.19.5
 prance==25.4.8.0
 PyJWT==2.10.1
-requests==2.32.3
-serverless_wsgi==3.0.5
+requests==2.32.4
+serverless_wsgi==3.1.0
 shapely==2.1.1
 strict-rfc3339==0.7
 ./lib/dynamo/

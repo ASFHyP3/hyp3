@@ -7,7 +7,7 @@ from pathlib import Path
 
 import requests
 import yaml
-from shapely.geometry import MultiPolygon, Polygon, shape
+from shapely.geometry import MultiPolygon, Polygon, box, shape
 
 from hyp3_api import CMR_URL, multi_burst_validation
 from hyp3_api.util import get_granules
@@ -22,11 +22,7 @@ class InternalValidationError(Exception):
     pass
 
 
-class GranuleValidationError(Exception):
-    pass
-
-
-class BoundsValidationError(Exception):
+class ValidationError(Exception):
     pass
 
 
@@ -84,13 +80,13 @@ def _make_sure_granules_exist(granules: Iterable[str], granule_metadata: list[di
     not_found_granules = set(granules) - set(found_granules)
     not_found_granules = {granule for granule in not_found_granules if not _is_third_party_granule(granule)}
     if not_found_granules:
-        raise GranuleValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
+        raise ValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 
 
 def check_dem_coverage(_, granule_metadata: list[dict]) -> None:
     bad_granules = [g['name'] for g in granule_metadata if not _has_sufficient_coverage(g['polygon'])]
     if bad_granules:
-        raise GranuleValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
+        raise ValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
 def check_multi_burst_pairs(job: dict, _) -> None:
@@ -114,17 +110,17 @@ def check_single_burst_pair(job: dict, _) -> None:
     granule2_id = '_'.join(granule2.split('_')[1:3])
 
     if granule1_id != granule2_id:
-        raise GranuleValidationError(f'Burst IDs do not match for {granule1} and {granule2}.')
+        raise ValidationError(f'Burst IDs do not match for {granule1} and {granule2}.')
 
     granule1_pol = granule1.split('_')[4]
     granule2_pol = granule2.split('_')[4]
 
     if granule1_pol != granule2_pol:
-        raise GranuleValidationError(
+        raise ValidationError(
             f'The requested scenes need to have the same polarization, got: {", ".join([granule1_pol, granule2_pol])}'
         )
     if granule1_pol not in ['VV', 'HH']:
-        raise GranuleValidationError(f'Only VV and HH polarizations are currently supported, got: {granule1_pol}')
+        raise ValidationError(f'Only VV and HH polarizations are currently supported, got: {granule1_pol}')
 
 
 def check_not_antimeridian(_, granule_metadata: list[dict]) -> None:
@@ -135,7 +131,7 @@ def check_not_antimeridian(_, granule_metadata: list[dict]) -> None:
                 f'Granule {granule["name"]} crosses the antimeridian.'
                 ' Processing across the antimeridian is not currently supported.'
             )
-            raise GranuleValidationError(msg)
+            raise ValidationError(msg)
 
 
 def _format_points(point_string: str) -> list:
@@ -155,10 +151,10 @@ def _get_multipolygon_from_geojson(input_file: str) -> MultiPolygon:
 def check_bounds_formatting(job: dict, _) -> None:
     bounds = job['job_parameters']['bounds']
     if bounds == [0.0, 0.0, 0.0, 0.0]:
-        raise BoundsValidationError('Invalid bounds. Bounds cannot be [0, 0, 0, 0].')
+        raise ValidationError('Invalid bounds. Bounds cannot be [0, 0, 0, 0].')
 
     if bounds[0] >= bounds[2] or bounds[1] >= bounds[3]:
-        raise BoundsValidationError(
+        raise ValidationError(
             'Invalid order for bounds. Bounds should be ordered [min lon, min lat, max lon, max lat].'
         )
 
@@ -169,7 +165,7 @@ def check_bounds_formatting(job: dict, _) -> None:
         return lon > 180 or lon < -180
 
     if any([bad_lon(bounds[0]), bad_lon(bounds[2]), bad_lat(bounds[1]), bad_lat(bounds[3])]):
-        raise BoundsValidationError(
+        raise ValidationError(
             'Invalid lon/lat value(s) in bounds. Bounds should be ordered [min lon, min lat, max lon, max lat].'
         )
 
@@ -177,7 +173,7 @@ def check_bounds_formatting(job: dict, _) -> None:
 def check_granules_intersecting_bounds(job: dict, granule_metadata: list[dict]) -> None:
     bounds = job['job_parameters']['bounds']
     if bounds == [0.0, 0.0, 0.0, 0.0]:
-        raise BoundsValidationError('Invalid bounds. Bounds cannot be [0, 0, 0, 0].')
+        raise ValidationError('Invalid bounds. Bounds cannot be [0, 0, 0, 0].')
 
     bounds = Polygon.from_bounds(*bounds)
     bad_granules = []
@@ -186,7 +182,7 @@ def check_granules_intersecting_bounds(job: dict, granule_metadata: list[dict]) 
         if not bbox.intersection(bounds):
             bad_granules.append(granule['name'])
     if bad_granules:
-        raise GranuleValidationError(f'The following granules do not intersect the provided bounds: {bad_granules}.')
+        raise ValidationError(f'The following granules do not intersect the provided bounds: {bad_granules}.')
 
 
 def check_same_relative_orbits(_, granule_metadata: list[dict]) -> None:
@@ -200,7 +196,7 @@ def check_same_relative_orbits(_, granule_metadata: list[dict]) -> None:
         if not previous_relative_orbit:
             previous_relative_orbit = relative_orbit
         if relative_orbit != previous_relative_orbit:
-            raise GranuleValidationError(
+            raise ValidationError(
                 f'Relative orbit number for {granule["name"]} does not match that of the previous granules: '
                 f'{relative_orbit} is not {previous_relative_orbit}.'
             )
@@ -212,32 +208,43 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
     bounds_area = (bounds[3] - bounds[1]) * (bounds[2] - bounds[0])
 
     if bounds_area > max_bounds_area:
-        raise BoundsValidationError(
+        raise ValidationError(
             f'Bounds must be smaller than {max_bounds_area} degrees squared. Box provided was {bounds_area:.2f}'
         )
 
 
-def _has_opera_rtc_s1_static_coverage(granule_name: str) -> bool:
-    burst_number, swath = granule_name.split('_')[1:3]
-    params = {
-        'short_name': 'OPERA_L2_RTC-S1-STATIC_V1',
-        'granule_ur': f'OPERA_L2_RTC-S1-STATIC_T*-{burst_number}-{swath}_*',
-        'options[granule_ur][pattern]': 'true',
-    }
-    response = requests.get(CMR_URL, params=params)
-    response.raise_for_status()
-    return bool(response.json()['feed']['entry'])
+def check_opera_rtc_s1_bounds(_, granule_metadata: list[dict]) -> None:
+    opera_rtc_s1_bounds = box(-180, -60, 180, 90)
+    for granule in granule_metadata:
+        if not granule['polygon'].intersects(opera_rtc_s1_bounds):
+            raise ValidationError(
+                f'Granule {granule["name"]} is south of -60 degrees latitude and outside the valid processing extent '
+                f'for OPERA RTC-S1 products.'
+            )
 
 
-def check_opera_rtc_s1_static_coverage(job: dict, _) -> None:
-    granules = job['job_parameters']['granules']
-    if len(granules) != 1:
-        raise InternalValidationError(f'Expected 1 granule, got {granules}')
+def check_aria_s1_gunw_dates(job: dict, _) -> None:
+    def format_date(key: str) -> date:
+        return date.fromisoformat(job['job_parameters'][key])
 
-    granule = granules[0]
-    if not _has_opera_rtc_s1_static_coverage(granule):
-        raise GranuleValidationError(
-            f'Granule {granule} is outside the valid processing extent for OPERA RTC-S1 products.'
+    reference, secondary = format_date('reference_date'), format_date('secondary_date')
+    _validate_date_during_s1('reference_date', reference)
+    _validate_date_during_s1('secondary_date', secondary)
+
+    if secondary >= reference:
+        raise ValidationError('secondary date must be earlier than reference date.')
+
+
+def _validate_date_during_s1(date_name: str, date_value: date) -> None:
+    s1_start_date = date(2014, 6, 15)
+    todays_date = date.today()
+
+    if date_value > todays_date:
+        raise ValidationError(f'"{date_name}" is {date_value} which is a date in the future.')
+
+    if date_value < s1_start_date:
+        raise ValidationError(
+            f'"{date_name}" is {date_value} which is before the start of the sentinel 1 mission ({s1_start_date}).'
         )
 
 
@@ -252,7 +259,7 @@ def check_opera_rtc_s1_date(job: dict, _) -> None:
     # Disallow IPF version < 002.70 according to the dates given at https://sar-mpc.eu/processor/ipf/
     # Also see https://github.com/ASFHyP3/hyp3/issues/2739
     if granule_date < date(2016, 4, 14):
-        raise GranuleValidationError(
+        raise ValidationError(
             f'Granule {granule} was acquired before 2016-04-14 '
             'and is not available for On-Demand OPERA RTC-S1 processing.'
         )
@@ -263,7 +270,7 @@ def check_opera_rtc_s1_date(job: dict, _) -> None:
 
     end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
     if granule_date >= end_date:
-        raise GranuleValidationError(
+        raise ValidationError(
             f'Granule {granule} was acquired on or after {end_date_str} '
             'and is not available for On-Demand OPERA RTC-S1 processing. '
             'You can download the product from the ASF DAAC archive.'
@@ -272,8 +279,13 @@ def check_opera_rtc_s1_date(job: dict, _) -> None:
 
 def validate_jobs(jobs: list[dict]) -> None:
     granules = get_granules(jobs)
-    granule_metadata = _get_cmr_metadata(granules)
-    _make_sure_granules_exist(granules, granule_metadata)
+
+    if granules:
+        granule_metadata = _get_cmr_metadata(granules)
+        _make_sure_granules_exist(granules, granule_metadata)
+    else:
+        granule_metadata = []
+
     for job in jobs:
         for validator_name in JOB_VALIDATION_MAP[job['job_type']]:
             job_granule_metadata = [granule for granule in granule_metadata if granule['name'] in get_granules([job])]
