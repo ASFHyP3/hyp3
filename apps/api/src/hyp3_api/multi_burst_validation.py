@@ -44,7 +44,9 @@ def validate_bursts(reference: list[str], secondary: list[str]) -> None:
         )
 
     if len(ref_num_swath_pol) != len(reference):
-        raise MultiBurstValidationError('Each reference scene must have a unique burst number + swath + polarization identifier')
+        raise MultiBurstValidationError(
+            'Each reference scene must have a unique burst number + swath + polarization identifier'
+        )
 
     pols = list(set(g.split('_')[4] for g in reference))
 
