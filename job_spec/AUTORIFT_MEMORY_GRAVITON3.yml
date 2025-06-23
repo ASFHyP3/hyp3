@@ -1,0 +1,170 @@
+AUTORIFT_MEMORY_GRAVITON3:
+  required_parameters: []
+  parameters:
+    reference:
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 27
+        example:
+          - S2B_MSIL1C_20200105T152259_N0208_R039_T13CES_20200105T181230
+        default:
+          - null
+        items:
+          anyOf:
+            - description: The name of the Sentinel-1 IW SLC granule to process
+              type: string
+              pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
+              minLength: 67
+              maxLength: 67
+              example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+              nullable: true
+            - description: Name of the Sentinel-1 IW burst granule(s) to process
+              type: string
+              pattern: '^S1_\d{6}_IW\d_\d{8}T\d{6}_[VH]{2}_([\dA-F]){4}-BURST$'
+              minLength: 43
+              maxLength: 43
+              example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
+              nullable: true
+            - description: The name of the Sentinel-2 granule to process (ESA naming convention)
+              type: string
+              pattern: "^S2[AB]_MSIL1C_"
+              minLength: 60
+              maxLength: 60
+              example: S2A_MSIL1C_20200627T150921_N0209_R025_T22WEB_20200627T170912
+              nullable: true
+            - description: The name of the Landsat 4, 5, 7, 8 or 9 Collection 2 granule to process
+              type: string
+              pattern: "^L([CO]0[89]|E07|T0[45])_L1"
+              minLength: 40
+              maxLength: 40
+              example: LC08_L1GT_118112_20210107_20210107_02_T2
+              nullable: true
+    secondary:
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 27
+        example:
+          - S2B_MSIL1C_20200315T152259_N0209_R039_T13CES_20200315T181115
+        default:
+          - null
+        items:
+          anyOf:
+            - description: The name of the Sentinel-1 IW SLC granule to process
+              type: string
+              pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
+              minLength: 67
+              maxLength: 67
+              example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+              nullable: true
+            - description: Name of the Sentinel-1 IW burst granule(s) to process
+              type: string
+              pattern: '^S1_\d{6}_IW\d_\d{8}T\d{6}_[VH]{2}_([\dA-F]){4}-BURST$'
+              minLength: 43
+              maxLength: 43
+              example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
+              nullable: true
+            - description: The name of the Sentinel-2 granule to process (ESA naming convention)
+              type: string
+              pattern: "^S2[AB]_MSIL1C_"
+              minLength: 60
+              maxLength: 60
+              example: S2A_MSIL1C_20200627T150921_N0209_R025_T22WEB_20200627T170912
+              nullable: true
+            - description: The name of the Landsat 4, 5, 7, 8 or 9 Collection 2 granule to process
+              type: string
+              pattern: "^L([CO]0[89]|E07|T0[45])_L1"
+              minLength: 40
+              maxLength: 40
+              example: LC08_L1GT_118112_20210107_20210107_02_T2
+              nullable: true
+    granules:
+      api_schema:
+        type: array
+        minItems: 2
+        maxItems: 2
+        example:
+          - S2B_MSIL1C_20200105T152259_N0208_R039_T13CES_20200105T181230
+          - S2B_MSIL1C_20200315T152259_N0209_R039_T13CES_20200315T181115
+        default:
+          - null
+          - null
+        items:
+          anyOf:
+            - description: The name of the Sentinel-1 SLC granule to process
+              type: string
+              pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
+              minLength: 67
+              maxLength: 67
+              example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+              nullable: true
+            - description: The name of the Sentinel-2 granule to process (ESA naming convention)
+              type: string
+              pattern: "^S2[AB]_MSIL1C_"
+              minLength: 60
+              maxLength: 60
+              example: S2A_MSIL1C_20200627T150921_N0209_R025_T22WEB_20200627T170912
+              nullable: true
+            - description: The name of the Landsat 4, 5, 7, 8 or 9 Collection 2 granule to process
+              type: string
+              pattern: "^L([CO]0[89]|E07|T0[45])_L1"
+              minLength: 40
+              maxLength: 40
+              example: LC08_L1GT_118112_20210107_20210107_02_T2
+              nullable: true
+            - description: Name of the Sentinel-1 SLC IW burst granule to process
+              type: string
+              pattern: "^S1_\\d{6}_IW.*-BURST"
+              minLength: 43
+              maxLength: 43
+              example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
+              nullable: true
+    parameter_file:
+      api_schema:
+        description: Shapefile for determining the correct search parameters by geographic location. Path to shapefile must be understood by GDAL.
+        type: string
+        default: '/vsicurl/https://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
+    publish_bucket:
+      api_schema:
+        description: Publish the resulting product to the ITS_LIVE AWS Open Data (or test) S3 Bucket
+        default: '""'
+        type: string
+        enum:
+          - '""'
+          - "s1-static-file-testing"
+          - "s1-static-file-testing"
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-autorift
+      command:
+        - ++omp-num-threads
+        - '8'  # 4 vCPUs per 32 GB RAM for the R instance family
+        - Ref::granules
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --parameter-file
+        - Ref::parameter_file
+        - --publish-bucket
+        - Ref::publish_bucket
+        - --naming-scheme
+        - ITS_LIVE_PROD
+        - --reference
+        - Ref::reference
+        - --secondary
+        - Ref::secondary
+      timeout: 10800
+      compute_environment: AutoriftMemoryOptimizedGraviton3
+      vcpu: 4
+      memory: 31500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
+        - PUBLISH_ACCESS_KEY_ID
+        - PUBLISH_SECRET_ACCESS_KEY
