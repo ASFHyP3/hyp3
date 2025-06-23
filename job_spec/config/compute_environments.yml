@@ -21,19 +21,19 @@ compute_environments:
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
   AutoriftComputeOptimized:
-    instance_types: c6id.4xlarge, c6id.8xlarge
+    instance_types: c6id.4xlarge,c6id.8xlarge
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
   AutoriftComputeOptimizedGraviton:
-    instance_types: c8g.4xlarge, c8gd.8xlarge
+    instance_types: c8g.4xlarge,c8gd.8xlarge
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
   AutoriftMemoryOptimizedGraviton4:
-    instance_types: r8gd.2xlarge, r8gd.4xlarge, r8gd.8xlarge
+    instance_types: r8gd.2xlarge,r8gd.4xlarge,r8gd.8xlarge
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
   AutoriftMemoryOptimizedGraviton3:
-    instance_types: r7gd.2xlarge, r7gd.4xlarge, r7gd.8xlarge
+    instance_types: r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
 
