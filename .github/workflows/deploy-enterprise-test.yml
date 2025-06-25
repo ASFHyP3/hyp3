@@ -71,7 +71,8 @@ jobs:
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
-          - environment: hyp3-ak-fire-safe
+          - environment: hyp3-ak-fire-safe-test
+            domain: hyp3-ak-fire-safe-test.asf.alaska.edu
             template_bucket: cf-templates-kc3418cyitfn-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
