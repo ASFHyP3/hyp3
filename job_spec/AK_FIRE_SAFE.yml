@@ -23,13 +23,13 @@ AK_FIRE_SAFE:
         description: Start date of the images (YYYY-MM-DD)
         type: string
         format: date
-        example: 2025-05-01
+        example: "2025-05-01"
     end_date:
       api_schema:
         description: End date of the images (YYYY-MM-DD)
         type: string
         format: date
-        example: 2025-06-01
+        example: "2025-06-01"
   cost_profiles:
     DEFAULT:
       cost: 1.0
