@@ -73,7 +73,7 @@ jobs:
 
           - environment: hyp3-ak-fire-safe-test
             domain: hyp3-ak-fire-safe-test.asf.alaska.edu
-            template_bucket: cf-templates-kc3418cyitfn-us-west-2
+            template_bucket: cf-templates-kc34l8cyitfn-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 0
