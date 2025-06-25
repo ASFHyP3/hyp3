@@ -32,6 +32,24 @@ jobs:
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
+          - environment: hyp3-ak-fire-safe
+            domain: hyp3-ak-fire-safe.asf.alaska.edu
+            template_bucket: cf-templates-kc3418cyitfn-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/AK_FIRE_SAFE.yml
+              job_spec/INSAR_ISCE_BURST.yml
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            default_max_vcpus: 640  # Max: 10,406
+            expanded_max_vcpus: 640  # Max: 10,406
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
           - environment: hyp3-a19-jpl
             domain: hyp3-a19-jpl.asf.alaska.edu
             template_bucket: cf-templates-v4pvone059de-us-west-2
