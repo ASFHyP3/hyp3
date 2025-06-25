@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.9.2]
+
+### Changed
+- Validation of reference and secondary scenes for `INSAR_ISCE_MULTI_BURST` has been updated to match the changes made by [HyP3 ISCE2 v2.3.2](https://github.com/ASFHyP3/hyp3-isce2/releases/tag/v2.3.2):
+    - Reference and secondary scenes are now accepted in any order, but must still have the same set of burst number + swath + polarization identifiers.
+    - Reference scenes are now rejected if they contain any duplicate burst number + swath + polarization identifiers.
+
+## [10.9.1]
+
+### Added
+- Added back `PUBLISH` step of `ARIA_S1_GUNW` jobs so outputs are published to the ASF archive.
+
 ## [10.9.0]
 
 ### Added

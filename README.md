@@ -253,7 +253,7 @@ If HyP3 is being deployed to an ASF-managed AWS account, we can use the master c
 *Important: Skip this step for EDC Sandbox deployments.*
 
 <details>
-<summary>ASF: Upload the ASF master SSL certificate</summary>
+<summary>ASF-managed AWS account: Upload the ASF master SSL certificate</summary>
 <br />
 
 Upload the `*.asf.alaska.edu` SSL certificate to AWS Certificate Manager (ACM):
@@ -266,7 +266,7 @@ Upload the `*.asf.alaska.edu` SSL certificate to AWS Certificate Manager (ACM):
 </details>
 
 <details>
-<summary>JPL and EDC UAT/prod: Request and upload deployment specific SSL certificate</summary>
+<summary>Externally-managed AWS account (e.g., JPL, EDC, CloudBank): Request and upload deployment specific SSL certificate</summary>
 <br />
 
 Submit a Platform request in ASF JIRA for a new certificate, including the domain name
