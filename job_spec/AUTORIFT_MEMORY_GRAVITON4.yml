@@ -141,6 +141,7 @@ AUTORIFT_MEMORY_GRAVITON4:
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
+      image_tag: arm
       command:
         - ++omp-num-threads
         - '8'  # 4 vCPUs per 32 GB RAM for the R instance family
