@@ -13,23 +13,19 @@ AK_FIRE_SAFE:
           - -163.97
           - 54.756
         items:
-          description: Longitude or Latitude for location point
+          description: Longitude and Latitude for location point
           type: number
-          minimum: -180.0
-          maximum: 180.0
+          minLength: 8
+          maxLength: 8
           example: -163.97
     start_date:
       api_schema:
         description: Start date of the images (YYYY-MM-DD)
         type: string
-        format: date
-        example: 2025-05-01
     end_date:
       api_schema:
         description: End date of the images (YYYY-MM-DD)
         type: string
-        format: date
-        example: 2025-06-01
   cost_profiles:
     DEFAULT:
       cost: 1.0
