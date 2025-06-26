@@ -145,7 +145,12 @@ def get_batch_param_names_for_job_step(step: dict) -> set[str]:
 
 
 def render_templates(
-    job_types: dict, compute_envs: dict, security_environment: str, api_name: str, api_version: str, openapi_spec: str,
+    job_types: dict,
+    compute_envs: dict,
+    security_environment: str,
+    api_name: str,
+    api_version: str,
+    openapi_spec: str,
 ) -> None:
     job_states = get_states_for_jobs(job_types)
 
