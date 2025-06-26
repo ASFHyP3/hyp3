@@ -28,14 +28,14 @@ compute_environments:
     instance_types: c8g.4xlarge,c8gd.8xlarge
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
-    ami_id: ami-005b267514bcd7447 # Amazon Linux 2023 kernel-6.1
+    ami_id: ami-003108a738bf4923f  # /aws/service/ecs/optimized-ami/amazon-linux-2/arm64/recommended/image_id
   AutoriftMemoryOptimizedGraviton4:
     instance_types: r8gd.2xlarge,r8gd.4xlarge,r8gd.8xlarge
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
-    ami_id: ami-005b267514bcd7447 # Amazon Linux 2023 kernel-6.1
+    ami_id: ami-003108a738bf4923f
   AutoriftMemoryOptimizedGraviton3:
     instance_types: r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
-    ami_id: ami-005b267514bcd7447 # Amazon Linux 2023 kernel-6.1
+    ami_id: ami-003108a738bf4923f
