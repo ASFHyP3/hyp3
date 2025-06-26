@@ -38,7 +38,6 @@ AK_FIRE_SAFE:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-gather-landsat
       command:
-        - hyp3_gather_landsat
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
