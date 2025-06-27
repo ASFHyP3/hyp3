@@ -14,7 +14,8 @@ def get_granules(jobs: list[dict]) -> set[str]:
         granule
         for key in ['granules', 'reference', 'secondary']
         for job in jobs
-        for granule in job['job_parameters'].get(key, []) if granule
+        for granule in job['job_parameters'].get(key, [])
+        if granule
     }
 
 

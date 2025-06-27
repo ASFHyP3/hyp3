@@ -2,8 +2,8 @@ import pytest
 
 from set_batch_overrides import (
     AUTORIFT_LANDSAT_MEMORY,
-    AUTORIFT_S2_MEMORY,
     AUTORIFT_S1_MEMORY,
+    AUTORIFT_S2_MEMORY,
     INSAR_ISCE_BURST_MEMORY_8G,
     INSAR_ISCE_BURST_MEMORY_16G,
     INSAR_ISCE_BURST_MEMORY_32G,
@@ -171,7 +171,6 @@ def test_set_batch_overrides_autorift_s1():
         ],
         'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '4'}],
     }
-
 
 
 def test_set_batch_overrides_autorift_s2():

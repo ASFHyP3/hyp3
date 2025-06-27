@@ -71,7 +71,7 @@ def get_insar_isce_burst_memory(job_parameters: dict) -> str:
 
 
 def get_vcpus_from_memory(memory: str, mibs_per_vcpu: int = 8000) -> str:
-    """Determine available vCPUs (threads) from memory reservation
+    """Determine available vCPUs (threads) from memory reservation.
 
     Args:
         memory: Memory reservation for job in MiBs
