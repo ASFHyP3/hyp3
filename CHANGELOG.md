@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `AUTORIFT_ITS_LIVE.yml` and `ARIA_AUTORIFT.yml` job specs, used in JPL deployments, allows Landsat, S2, S1 SLC, and multiple S1 bursts to be submitted via the new `reference`/`secondary` parameters (`granules` is no longer required).
-- For all, `AUTORIFT*.yml` job specs, HyP3 now sets the memory required and number of threads to be used by OpenMP via AWS Batch environment overrides.
+- For all `AUTORIFT*.yml` job specs, HyP3 now sets the memory required and number of threads to be used by OpenMP via AWS Batch environment overrides.
     - The default memory for Sentinel-1 processing has been reduced from 64 GB to 32 GB
     - The credit cost in EDC/DAAC deployments has been halved accordingly
 
