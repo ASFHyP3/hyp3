@@ -19,6 +19,8 @@ def test_get_granules():
             {'job_parameters': {'reference': ['G', 'H', 'H', 'I']}},
             {'job_parameters': {'secondary': []}},
             {'job_parameters': {}},
+            {'job_parameters': {'granules': [None]}},
+            {'job_parameters': {'reference': [None], 'secondary': [None]}},
         ]
     ) == {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'}
 

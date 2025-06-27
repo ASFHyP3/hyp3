@@ -1,7 +1,78 @@
 AUTORIFT:
-  required_parameters:
-    - granules
+  required_parameters: []
   parameters:
+    reference:
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 30
+        example:
+          - S2B_MSIL1C_20200105T152259_N0208_R039_T13CES_20200105T181230
+        default:
+          - null
+        items:
+          anyOf:
+            - description: The name of the Sentinel-1 IW SLC granule to process
+              type: string
+              nullable: true
+              pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
+              minLength: 67
+              maxLength: 67
+              example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+            - description: Name of the Sentinel-1 IW burst granule(s) to process
+              type: string
+              pattern: '^S1_\d{6}_IW\d_\d{8}T\d{6}_[VH]{2}_([\dA-F]){4}-BURST$'
+              minLength: 43
+              maxLength: 43
+              example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
+            - description: The name of the Sentinel-2 granule to process (ESA naming convention)
+              type: string
+              pattern: "^S2[AB]_MSIL1C_"
+              minLength: 60
+              maxLength: 60
+              example: S2A_MSIL1C_20200627T150921_N0209_R025_T22WEB_20200627T170912
+            - description: The name of the Landsat 4, 5, 7, 8 or 9 Collection 2 granule to process
+              type: string
+              pattern: "^L([CO]0[89]|E07|T0[45])_L1"
+              minLength: 40
+              maxLength: 40
+              example: LC08_L1GT_118112_20210107_20210107_02_T2
+    secondary:
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 30
+        example:
+          - S2B_MSIL1C_20200315T152259_N0209_R039_T13CES_20200315T181115
+        default:
+          - null
+        items:
+          anyOf:
+            - description: The name of the Sentinel-1 IW SLC granule to process
+              type: string
+              nullable: true
+              pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
+              minLength: 67
+              maxLength: 67
+              example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+            - description: Name of the Sentinel-1 IW burst granule(s) to process
+              type: string
+              pattern: '^S1_\d{6}_IW\d_\d{8}T\d{6}_[VH]{2}_([\dA-F]){4}-BURST$'
+              minLength: 43
+              maxLength: 43
+              example: S1_136231_IW2_20200604T022312_VV_7C85-BURST
+            - description: The name of the Sentinel-2 granule to process (ESA naming convention)
+              type: string
+              pattern: "^S2[AB]_MSIL1C_"
+              minLength: 60
+              maxLength: 60
+              example: S2A_MSIL1C_20200627T150921_N0209_R025_T22WEB_20200627T170912
+            - description: The name of the Landsat 4, 5, 7, 8 or 9 Collection 2 granule to process
+              type: string
+              pattern: "^L([CO]0[89]|E07|T0[45])_L1"
+              minLength: 40
+              maxLength: 40
+              example: LC08_L1GT_118112_20210107_20210107_02_T2
     granules:
       api_schema:
         type: array
@@ -10,10 +81,14 @@ AUTORIFT:
         example:
           - S2B_MSIL1C_20200105T152259_N0208_R039_T13CES_20200105T181230
           - S2B_MSIL1C_20200315T152259_N0209_R039_T13CES_20200315T181115
+        default:
+          - null
+          - null
         items:
           anyOf:
             - description: The name of the Sentinel-1 SLC granule to process
               type: string
+              nullable: true
               pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
               minLength: 67
               maxLength: 67
@@ -52,8 +127,7 @@ AUTORIFT:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
       command:
-        - ++omp-num-threads
-        - '4'  # 4 vCPUs per 32 GB RAM for the R instance family
+        - Ref::granules
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -64,11 +138,14 @@ AUTORIFT:
         - Ref::publish_bucket
         - --naming-scheme
         - ITS_LIVE_PROD
-        - Ref::granules
+        - --reference
+        - Ref::reference
+        - --secondary
+        - Ref::secondary
       timeout: 10800
       compute_environment: Default
       vcpu: 1
-      memory: 63500
+      memory: 8  # Memory is always overridden in the step function by set-batch-overrides
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
