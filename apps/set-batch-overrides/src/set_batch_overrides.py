@@ -78,7 +78,7 @@ def get_vcpus_from_memory(memory: str, mibs_per_vcpu: int = 8000) -> str:
 
     Args:
         memory: Memory reservation for job in MiBs
-        mibs_per_vcpu: Number of MiBs per VCPU. Typically, 8000 for the R instance family, 4000 for M, and 20000 for C.
+        mibs_per_vcpu: Number of MiBs per VCPU. Typically, 8000 for the R instance family, 4000 for M, and 2000 for C.
 
     Returns:
         vcpus: Number of available vCPUs
