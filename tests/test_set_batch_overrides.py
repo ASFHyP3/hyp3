@@ -11,6 +11,7 @@ from set_batch_overrides import (
     INSAR_ISCE_BURST_MEMORY_128G,
     RTC_GAMMA_10M_MEMORY,
     WATER_MAP_10M_MEMORY,
+    get_granules,
     get_vcpus_from_memory,
     lambda_handler,
 )
@@ -297,6 +298,22 @@ def test_set_batch_overrides_water_map_10m():
             }
         ]
     }
+
+@pytest.mark.parametrize(
+    "job_parameters,expected",
+    [
+        ({'granules': []}, []),
+        ({'granules': ['A', 'B']}, ['A', 'B']),
+        ({'reference': ['C', 'D']}, ['C', 'D']),
+        ({'reference': ['C', 'D'], 'secondary': ['E', 'F']}, ['C', 'D', 'E', 'F']),
+        ({'secondary': []}, []),
+        ({}, []),
+        ({'granules': None}, []),
+        ({'reference': None, 'secondary': None}, []),
+    ]
+)
+def test_get_granules(job_parameters, expected):
+    assert get_granules(job_parameters) == expected
 
 
 def test_get_vcpus_from_memory():

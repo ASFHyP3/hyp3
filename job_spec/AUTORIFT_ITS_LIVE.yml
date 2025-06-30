@@ -4,17 +4,16 @@ AUTORIFT:
     reference:
       api_schema:
         type: array
+        nullable: true
         minItems: 1
         maxItems: 30
         example:
           - S2B_MSIL1C_20200105T152259_N0208_R039_T13CES_20200105T181230
-        default:
-          - null
+        default: null
         items:
           anyOf:
             - description: The name of the Sentinel-1 IW SLC granule to process
               type: string
-              nullable: true
               pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
               minLength: 67
               maxLength: 67
@@ -40,17 +39,16 @@ AUTORIFT:
     secondary:
       api_schema:
         type: array
+        nullable: true
         minItems: 1
         maxItems: 30
         example:
           - S2B_MSIL1C_20200315T152259_N0209_R039_T13CES_20200315T181115
-        default:
-          - null
+        default: null
         items:
           anyOf:
             - description: The name of the Sentinel-1 IW SLC granule to process
               type: string
-              nullable: true
               pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
               minLength: 67
               maxLength: 67
@@ -76,19 +74,17 @@ AUTORIFT:
     granules:
       api_schema:
         type: array
+        nullable: true
         minItems: 2
         maxItems: 2
         example:
           - S2B_MSIL1C_20200105T152259_N0208_R039_T13CES_20200105T181230
           - S2B_MSIL1C_20200315T152259_N0209_R039_T13CES_20200315T181115
-        default:
-          - null
-          - null
+        default: null
         items:
           anyOf:
             - description: The name of the Sentinel-1 SLC granule to process
               type: string
-              nullable: true
               pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
               minLength: 67
               maxLength: 67
