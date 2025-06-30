@@ -59,7 +59,7 @@ Resources:
         Types:
           - {{ 'PRIVATE' if security_environment == 'EDC' else 'REGIONAL' }}
       Body:
-        openapi: 3.0.3
+        openapi: {{ openapi_spec }}
         paths:
           /:
             x-amazon-apigateway-any-method:

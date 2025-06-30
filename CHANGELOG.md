@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added new deployment for AK-FIRE-SAFE.
+- The OpenAPI Specification version can now be specified in `render.py` via the `--openapi-spec` argument.
+
+### Fixed
+- The `openapi-spec.yml` and the `api-cf.yml` will now always specify the same OpenAPI Specification version.
 
 ## [10.9.2]
 
