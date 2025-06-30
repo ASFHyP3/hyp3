@@ -30,11 +30,7 @@ def get_container_overrides(memory: str, omp_num_threads: str | None = None) -> 
 
 
 def get_granules(job_parameters: dict) -> list[str]:
-    return [
-        granule
-        for key in ['granules', 'reference', 'secondary']
-        for granule in job_parameters.get(key, []) or []
-    ]
+    return [granule for key in ['granules', 'reference', 'secondary'] for granule in job_parameters.get(key, []) or []]
 
 
 def get_autorift_memory(job_parameters: dict) -> str:

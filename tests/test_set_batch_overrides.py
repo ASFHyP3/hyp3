@@ -299,8 +299,9 @@ def test_set_batch_overrides_water_map_10m():
         ]
     }
 
+
 @pytest.mark.parametrize(
-    "job_parameters,expected",
+    'job_parameters,expected',
     [
         ({'granules': []}, []),
         ({'granules': ['A', 'B']}, ['A', 'B']),
@@ -310,7 +311,7 @@ def test_set_batch_overrides_water_map_10m():
         ({}, []),
         ({'granules': None}, []),
         ({'reference': None, 'secondary': None}, []),
-    ]
+    ],
 )
 def test_get_granules(job_parameters, expected):
     assert get_granules(job_parameters) == expected
