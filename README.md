@@ -259,7 +259,7 @@ If HyP3 is being deployed to an ASF-managed AWS account, we can use the master c
 Upload the `*.asf.alaska.edu` SSL certificate to AWS Certificate Manager (ACM):
 
 1. AWS console -> Certificate Manager (ACM) -> import certificate
-1. Open https://gitlab.asf.alaska.edu/operations/puppet/-/tree/production/site/modules/certificates/files
+1. Open https://gitlab.asf.alaska.edu/operations/puppet/-/tree/production/modules/certificates/files
    1. The contents of the `asf.alaska.edu.cer` file go in Certificate body
    1. The contents of the `asf.alaska.edu.key` file go in Certificate private key
    1. The contents of the `incommon.cer` file goes in Certificate chain
