@@ -161,7 +161,7 @@ AUTORIFT:
         - --secondary
         - Ref::secondary
       timeout: 10800
-      compute_environment: Default
+      compute_environment: AriaAutorift
       vcpu: 4
       memory: 31500
       secrets:
