@@ -109,12 +109,13 @@ AUTORIFT:
     publish_bucket:
       api_schema:
         description: Publish the resulting product to the ITS_LIVE AWS Open Data (or test) S3 Bucket
-        default: '""'
         type: string
+        nullable: true
         enum:
-          - '""'
+          - null
           - "its-live-data"
           - "its-live-data-test"
+        default: null
   cost_profiles:
     DEFAULT:
       cost: 1.0
