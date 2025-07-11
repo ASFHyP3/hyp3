@@ -116,6 +116,11 @@ AUTORIFT:
           - "its-live-data"
           - "its-live-data-test"
         default: null
+    use_static_files:
+      api_schema:
+        description:  Use static topographic correction files for ISCE3 processing if available (Sentinel-1 only)
+        default: true
+        type: boolean
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -135,6 +140,8 @@ AUTORIFT:
         - Ref::publish_bucket
         - --naming-scheme
         - ITS_LIVE_PROD
+        - --use-static-files
+        - Ref::use_static_files
         - --reference
         - Ref::reference
         - --secondary

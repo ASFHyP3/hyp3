@@ -123,6 +123,8 @@ AUTORIFT:
         - Ref::parameter_file
         - --naming-scheme
         - ITS_LIVE_OD
+        - --use-static-files
+        - 'False'
         - --reference
         - Ref::reference
         - --secondary
