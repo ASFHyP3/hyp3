@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added new deployment for AK-FIRE-SAFE.
 - The OpenAPI Specification version can now be specified in `render.py` via the `--openapi-spec` argument.
-- The `AUTORIFT_ITS_LIVE.yml` job spec has a new `use_static_files` parameter to specify wheather to use Sentinel-1 static geometries for processing or not.
+- The `AUTORIFT_ITS_LIVE.yml` job spec has a new `use_static_files` parameter to specify whether to use Sentinel-1 static geometries for processing or not.
   - This parameter has been hard-coded to `False` in the `AUTORIFT.yml` and `ARIA_AUTORIFT.yml` to ensure there is no change in the workflow for those job types. 
 
 ### Fixed
