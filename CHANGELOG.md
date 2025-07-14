@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [10.9.3]
+## [10.10.0]
 
 ### Added
 - Added new deployment for AK-FIRE-SAFE.
@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - For all `AUTORIFT*.yml` job specs, HyP3 now sets the memory required and number of threads to be used by OpenMP via AWS Batch environment overrides.
     - The default memory for Sentinel-1 processing has been reduced from 64 GB to 32 GB
     - The credit cost in EDC/DAAC deployments has been halved accordingly
+
+### Removed
+- `` the deprecated `S1_CORRECTION_ITS_LIVE` job spec that's no longer supported by the hyp3-autorift plugin. 
 
 ## [10.9.2]
 
