@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - The credit cost in EDC/DAAC deployments has been halved accordingly
 
 ### Removed
-- `` the deprecated `S1_CORRECTION_ITS_LIVE` job spec that's no longer supported by the hyp3-autorift plugin. 
+- Removed the deprecated `S1_CORRECTION_ITS_LIVE` job spec that's no longer supported by the hyp3-autorift plugin. 
 
 ## [10.9.2]
 
