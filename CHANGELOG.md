@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.10.1]
 
 ### Added
-- Added a new `ARIA_S1_COSEIS` job spec to JPL deployments.
+- Added a new `ARIA_S1_COSEIS` job spec to ARIA JPL deployments.
 
 ## [10.10.0]
 
