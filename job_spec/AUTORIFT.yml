@@ -32,7 +32,7 @@ AUTORIFT:
               example: LC08_L1GT_118112_20210107_20210107_02_T2
   cost_profiles:
     EDC:
-      cost: 50.0
+      cost: 25.0
     DEFAULT:
       cost: 1.0
   validators: []
@@ -40,8 +40,7 @@ AUTORIFT:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
       command:
-        - ++omp-num-threads
-        - '4'  # 4 vCPUs per 32 GB RAM for the R instance family
+        - Ref::granules
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -50,11 +49,12 @@ AUTORIFT:
         - '/vsicurl/https://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
         - --naming-scheme
         - ITS_LIVE_OD
-        - Ref::granules
+        - --use-static-files
+        - 'False'
       timeout: 10800
       compute_environment: Default
       vcpu: 1
-      memory: 63500
+      memory: 8  # Memory is always overridden in the step function by set-batch-overrides
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD

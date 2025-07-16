@@ -120,10 +120,10 @@ INSAR_ISCE_MULTI_BURST:
         - Ref::reference
         - --secondary
         - Ref::secondary
-      timeout: 126000 # 35 hours
+      timeout: 126000  # 35 hours
       compute_environment: Default
       vcpu: 1
-      memory: 4 # Memory is always overridden by the step function
+      memory: 4  # Memory is always overridden in the step function by set-batch-overrides
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD

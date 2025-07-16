@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.10.0]
+
+### Added
+- Added new deployment for AK-FIRE-SAFE.
+- The OpenAPI Specification version can now be specified in `render.py` via the `--openapi-spec` argument.
+- The `AUTORIFT_ITS_LIVE.yml` job spec has a new `use_static_files` parameter to specify whether to use Sentinel-1 static geometries for processing or not.
+  - This parameter has been hard-coded to `False` in the `AUTORIFT.yml` and `ARIA_AUTORIFT.yml` to ensure there is no change in the workflow for those job types. 
+
+### Fixed
+- The `openapi-spec.yml` and the `api-cf.yml` will now always specify the same OpenAPI Specification version.
+
+### Changed
+- `AUTORIFT_ITS_LIVE.yml` and `ARIA_AUTORIFT.yml` job specs, used in JPL deployments, allows Landsat, S2, S1 SLC, and multiple S1 bursts to be submitted via the new `reference`/`secondary` parameters (`granules` is no longer required).
+- For all `AUTORIFT*.yml` job specs, HyP3 now sets the memory required and number of threads to be used by OpenMP via AWS Batch environment overrides.
+    - The default memory for Sentinel-1 processing has been reduced from 64 GB to 32 GB
+    - The credit cost in EDC/DAAC deployments has been halved accordingly
+
+### Removed
+- Removed the deprecated `S1_CORRECTION_ITS_LIVE` job spec that's no longer supported by the hyp3-autorift plugin. 
+
 ## [10.9.2]
 
 ### Changed

@@ -145,7 +145,12 @@ def get_batch_param_names_for_job_step(step: dict) -> set[str]:
 
 
 def render_templates(
-    job_types: dict, compute_envs: dict, security_environment: str, api_name: str, api_version: str
+    job_types: dict,
+    compute_envs: dict,
+    security_environment: str,
+    api_name: str,
+    api_version: str,
+    openapi_spec: str,
 ) -> None:
     job_states = get_states_for_jobs(job_types)
 
@@ -167,6 +172,7 @@ def render_templates(
             security_environment=security_environment,
             api_name=api_name,
             api_version=api_version,
+            openapi_spec=openapi_spec,
             json=json,
             snake_to_pascal_case=snake_to_pascal_case,
             job_states=job_states,
@@ -289,6 +295,7 @@ def main() -> None:
     parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL', 'JPL-public'])
     parser.add_argument('-n', '--api-name', required=True)
     parser.add_argument('-c', '--cost-profile', default='DEFAULT', choices=['DEFAULT', 'EDC'])
+    parser.add_argument('--openapi-spec', default='3.0.4')
     args = parser.parse_args()
 
     api_version = get_version(root='..', relative_to=__file__)
@@ -309,7 +316,7 @@ def main() -> None:
     render_batch_params_by_job_type(job_types)
     render_default_params_by_job_type(job_types)
     render_costs(job_types, args.cost_profile)
-    render_templates(job_types, compute_envs, args.security_environment, args.api_name, api_version)
+    render_templates(job_types, compute_envs, args.security_environment, args.api_name, api_version, args.openapi_spec)
 
 
 if __name__ == '__main__':
