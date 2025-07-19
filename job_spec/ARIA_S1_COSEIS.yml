@@ -1,4 +1,4 @@
-INSAR_ISCE:
+ARIA_S1_COSEIS:
   required_parameters:
     - granules
     - secondary_granules
