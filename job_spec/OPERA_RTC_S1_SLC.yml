@@ -33,12 +33,12 @@ OPERA_RTC_S1_SLC:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
-        - ++omp-num-threads
-        - '2'
+        - --num-workers
+        - '8'
       timeout: 3600 # 1 hr
       compute_environment: Default
-      vcpu: 1
-      memory: 7600
+      vcpu: 8
+      memory: 15200
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD

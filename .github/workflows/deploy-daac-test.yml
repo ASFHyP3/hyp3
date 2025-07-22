@@ -51,7 +51,7 @@ jobs:
             opera_rtc_s1_end_date: 2026-01-01
             job_files: >-
               job_spec/OPERA_RTC_S1_SLC.yml
-            instance_types: c6id.xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge,c6idn.xlarge
+            instance_types: c6i.2xlarge,c7i.2xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
             default_max_vcpus: 3000
             expanded_max_vcpus: 3000
             required_surplus: 0
