@@ -33,6 +33,8 @@ OPERA_RTC_S1_SLC:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
+        - ++omp-num-threads
+        - '2'
       timeout: 3600 # 1 hr
       compute_environment: Default
       vcpu: 1
