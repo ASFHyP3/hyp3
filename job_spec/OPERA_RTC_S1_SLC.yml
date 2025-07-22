@@ -23,7 +23,6 @@ OPERA_RTC_S1_SLC:
     DEFAULT:
       cost: 1.0
   validators:
-    - check_opera_rtc_s1_date
     - check_opera_rtc_s1_bounds
   steps:
     - name: ''
