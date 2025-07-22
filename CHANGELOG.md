@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [10.9.2]
+## [10.10.1]
 
 ### Added
-- Add `OPERA_RTC_S1_SLC` job spec that processes all bursts in a SLC.
+- Added a new `ARIA_S1_COSEIS` job spec to ARIA JPL deployments.
+- Added `OPERA_RTC_S1_SLC` job spec that processes all bursts in a SLC as well as `hyp3-opera-uat` deployment.
 
 ## [10.10.0]
 
