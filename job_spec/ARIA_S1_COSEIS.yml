@@ -1,0 +1,163 @@
+ARIA_S1_COSEIS:
+  required_parameters:
+    - granules
+    - secondary_granules
+    - frame_id
+  parameters:
+    granules:
+      api_schema:
+        type: array
+        minItems: 1
+        items:
+          description: The name of the Sentinel-1 SLC granules to use as reference scenes for InSAR processing
+          type: string
+          pattern: "^S1[AB]_IW_SLC__1S[SD]V"
+          minLength: 67
+          maxLength: 67
+          example: S1B_IW_SLC__1SDV_20210723T014947_20210723T015014_027915_0354B4_B3A9
+    secondary_granules:
+      api_schema:
+        type: array
+        minItems: 1
+        items:
+          description: The name of the Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
+          type: string
+          pattern: "^S1[AB]_IW_SLC__1S[SD]V"
+          minLength: 67
+          maxLength: 67
+          example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
+    frame_id:
+      api_schema:
+        description: Subset products to this frame. Standard products require frame id to be specified. When set to `-1`, no subsetting applied. If no frame specified (i.e. `-1`), then output is not a standard ARIA-S1-COSEIS-SAR.
+        type: integer
+        minimum: -1
+    min_frame_coverage:
+      api_schema:
+        description: Minimum amount of the frame that must be covered by the overlap between the reference and secondary granules; standard ARIA products require this to be set to 0.9.
+        default: 0.01
+        type: number
+        minimum: 0.0
+        maximum: 1.0
+    compute_solid_earth_tide:
+      api_schema:
+        default: true
+        type: boolean
+        description: Whether to compute a solid earth tide correction layer for ARIA-S1-COSEIS-SAR products; standard ARIA products must include this layer.
+    esd_coherence_threshold:
+      api_schema:
+        description: Coherence threshold value for determining which points to include when performing ESD. Must be any value between 0 and 1 (inclusive), or -1 for no ESD correction. Standard ARIA products do NOT include ESD.
+        default: -1.0
+        type: number
+        minimum: -1.0
+        maximum: 1.0
+    estimate_ionosphere_delay:
+      api_schema:
+        description: Whether to apply ionosphere correction to the ARIA-S1-COSEIS-SAR as an additional layer; standard ARIA products include the ionsphere correction to be turned on and include multiple ionosphere correction layers.
+        default: true
+        type: boolean
+    goldstein_filter_power:
+      api_schema:
+        description: The filter power of the adaptive goldsetin filter; 0 means no filter applied. Standard product requires strength to be set to 0.5.
+        default: 0.5
+        type: number
+        minimum: 0
+    output_resolution:
+      api_schema:
+        default:  30
+        description: Desired output resolution in meters of COSEIS_SAR product.
+        type: integer
+        enum:
+          - 30
+          - 90
+    unfiltered_coherence:
+      api_schema:
+        default: true
+        type: boolean
+        description: Whether to add unfiltered_coherence layer to ARIA-S1-GUNW products; standard ARIA products must include this layer.
+    dense_offsets:
+      api_schema:
+        default: true
+        type: boolean
+        description: Whether to include 2 extra layers (azimuth and range pixel offsets) that measure via patch cross-correlation the change between reference and secondary in radar coordinates; standard ARIA products do NOT include this layer.
+    weather_model:
+      api_schema:
+        description: Weather model used to generate tropospheric delay estimations.
+        default: None
+        type: string
+        enum:
+          - None
+          - ERA5
+          - ERA5T
+          - GMAO
+          - HRES
+          - HRRR
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/access-cloud-based-insar/dockerizedtopsapp
+      command:
+        - ++process
+        - coseis_sar
+        - ++omp-num-threads
+        - '4'  # 8 vCPUs per 16 GB RAM for the C instance family; 4 for M; 2 for R
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --reference-scenes
+        - Ref::granules
+        - --secondary-scenes
+        - Ref::secondary_granules
+        - --esd-coherence-threshold
+        - Ref::esd_coherence_threshold
+        - --estimate-ionosphere-delay
+        - Ref::estimate_ionosphere_delay
+        - --frame-id
+        - Ref::frame_id
+        - --min-frame-coverage
+        - Ref::min_frame_coverage
+        - --compute-solid-earth-tide
+        - Ref::compute_solid_earth_tide
+        - --output-resolution
+        - Ref::output_resolution
+        - --dense-offsets
+        - Ref::dense_offsets
+        - --goldstein-filter-power
+        - Ref::goldstein_filter_power
+        - --unfiltered-coherence
+        - Ref::unfiltered_coherence
+      timeout: 21600
+      compute_environment: InsarIsceAria
+      vcpu: 1
+      memory: 15500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
+    - name: TROPOSPHERE
+      image: ghcr.io/dbekaert/raider
+      command:
+        - ++process
+        - calcDelaysGUNW
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --weather-model
+        - Ref::weather_model
+      timeout: 10800
+      compute_environment: InsarIsceAria
+      vcpu: 1
+      memory: 7500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
+        - ESA_USERNAME
+        - ESA_PASSWORD
+        - RAIDER_ECMWF_ERA5_UID
+        - RAIDER_ECMWF_ERA5_API_KEY
+        - RAIDER_HRES_EMAIL
+        - RAIDER_HRES_API_KEY
+        - RAIDER_HRES_URL
