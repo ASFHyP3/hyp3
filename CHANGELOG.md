@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added a new `ARIA_S1_COSEIS` job spec to ARIA JPL deployments.
+- Added `OPERA_RTC_S1_SLC` job spec that processes all bursts in an SLC.
+- Created new hyp3-opera-uat and hyp3-opera-prod deployments.
 
 ## [10.10.0]
 
