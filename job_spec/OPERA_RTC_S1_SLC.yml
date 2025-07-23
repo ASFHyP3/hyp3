@@ -35,7 +35,7 @@ OPERA_RTC_S1_SLC:
         - Ref::job_id
         - --num-workers
         - '8'
-      timeout: 3600 # 1 hr
+      timeout: 7200 # 2 hr
       compute_environment: Default
       vcpu: 8
       memory: 15200
