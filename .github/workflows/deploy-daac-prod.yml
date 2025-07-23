@@ -38,6 +38,25 @@ jobs:
             ami_id: /ngap/amis/image_id_ecs_al2023_x86
             distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
 
+          - environment: hyp3-opera-prod
+            api_name: hyp3-opera-prod
+            template_bucket: cf-templates-118mtzosmrltk-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: EDC
+            opera_rtc_s1_end_date: 2026-01-01
+            job_files: >-
+              job_spec/OPERA_RTC_S1_SLC.yml
+            instance_types: c6i.2xlarge,c7i.2xlarge,c6id.2xlarge,c6id.4xlarge,c6id.8xlarge
+            default_max_vcpus: 10000
+            expanded_max_vcpus: 10000
+            required_surplus: 0
+            security_environment: EDC
+            ami_id: /ngap/amis/image_id_ecs_al2023_x86
+            distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
+
     environment:
       name: ${{ matrix.environment }}
 
