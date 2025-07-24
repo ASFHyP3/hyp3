@@ -54,7 +54,7 @@ jobs:
             required_surplus: 0
             security_environment: EDC
             ami_id: /ngap/amis/image_id_ecs_al2023_x86
-            distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
+            distribution_url: 's3://hyp3-opera-prod-contentbucket-2ypbtzzskwyr'
 
     environment:
       name: ${{ matrix.environment }}
