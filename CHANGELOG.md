@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.10.2]
+
+### Fixed
+
+- Set unused `opera_rtc_s1_end_date` parameter to `Default` in `hyp3-opera-uat` and `hyp3-opera-prod` deployments.
+- Set `distribution_url` parameter to `''` in `hyp3-opera-uat` and `hyp3-opera-prod` deployments so that download URLs will be the default Amazon S3 URL.
+- Increased timeout and memory values for the `ARIA_S1_COSEIS` job type.
+
 ## [10.10.1]
 
 ### Added
