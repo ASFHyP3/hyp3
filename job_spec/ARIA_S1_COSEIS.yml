@@ -129,10 +129,10 @@ ARIA_S1_COSEIS:
         - Ref::goldstein_filter_power
         - --unfiltered-coherence
         - Ref::unfiltered_coherence
-      timeout: 21600
+      timeout: 43200
       compute_environment: InsarIsceAria
       vcpu: 1
-      memory: 15500
+      memory: 63500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
@@ -147,10 +147,10 @@ ARIA_S1_COSEIS:
         - Ref::job_id
         - --weather-model
         - Ref::weather_model
-      timeout: 10800
+      timeout: 21600
       compute_environment: InsarIsceAria
       vcpu: 1
-      memory: 7500
+      memory: 15500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
