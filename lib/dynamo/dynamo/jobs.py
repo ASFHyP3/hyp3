@@ -88,13 +88,10 @@ def _get_product_from_archive(job: dict) -> asf.ASFProduct | None:
     if job.get('job_type') == 'ARIA_S1_GUNW':
         params = job['job_parameters']
 
-        def format_date(date_str: str) -> datetime.date:
-            return datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
-
         return aria_s1_gunw.get_product(
+            reference_date=datetime.date.fromisoformat(params['reference_date']),
+            secondary_date=datetime.date.fromisoformat(params['secondary_date']),
             frame_id=params['frame_id'],
-            reference_date=format_date(params['reference_date']),
-            secondary_date=format_date(params['secondary_date']),
         )
     else:
         return None
