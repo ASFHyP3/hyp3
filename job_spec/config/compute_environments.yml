@@ -22,5 +22,4 @@ compute_environments:
     allocation_strategy: BEST_FIT_PROGRESSIVE
   AutoriftGraviton:
     instance_types: r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
-    allocation_strategy: BEST_FIT_PROGRESSIVE
     ami_id: ami-003108a738bf4923f
