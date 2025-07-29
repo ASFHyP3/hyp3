@@ -1,16 +1,16 @@
+import datetime
 import json
 from decimal import Decimal
 from os import environ
 from pathlib import Path
 from uuid import uuid4
-import datetime
 
-import botocore.exceptions
-from boto3.dynamodb.conditions import Attr, Key
 import asf_search as asf
 from asf_enumeration import aria_s1_gunw
 
+import botocore.exceptions
 import dynamo.user
+from boto3.dynamodb.conditions import Attr, Key
 from dynamo.exceptions import (
     InsufficientCreditsError,
     InvalidApplicationStatusError,
@@ -51,10 +51,7 @@ def put_jobs(user_id: str, jobs: list[dict], dry_run: bool = False) -> list[dict
     for job in jobs:
         if product := _get_product_from_archive(job):
             prepared_job = _prepare_archive_job_for_database(
-                job=job,
-                user_id=user_id,
-                request_time=request_time,
-                product=product
+                job=job, user_id=user_id, request_time=request_time, product=product
             )
         else:
             job_priority = _get_job_priority(
@@ -88,18 +85,20 @@ def put_jobs(user_id: str, jobs: list[dict], dry_run: bool = False) -> list[dict
 
 
 def _get_product_from_archive(job: dict) -> asf.ASFProduct | None:
-    job_type = job['job_type']
-
-    if job_type == 'ARIA_S1_GUNW':
+    if job.get('job_type') == 'ARIA_S1_GUNW':
         params = job['job_parameters']
 
-        return aria_s1_gunw.get_proudct(
-            frame=params['frame_id'],
-            reference_date=params['reference_date'],
-            secondary_date=params['secondary_date'],
+        def format_date(date_str: str) -> datetime.date:
+            return datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+
+        return aria_s1_gunw.get_product(
+            frame_id=params['frame_id'],
+            reference_date=format_date(params['reference_date']),
+            secondary_date=format_date(params['secondary_date']),
         )
     else:
         return None
+
 
 def _raise_for_application_status(application_status: str, user_id: str) -> None:
     if application_status == APPLICATION_NOT_STARTED:
@@ -126,12 +125,7 @@ def _get_job_priority(
     return priority
 
 
-def _prepare_job_for_database(
-    job: dict,
-    user_id: str,
-    request_time: str,
-    priority: int
-) -> dict:
+def _prepare_job_for_database(job: dict, user_id: str, request_time: str, priority: int) -> dict:
     prepared_job = {
         'job_id': str(uuid4()),
         'user_id': user_id,
@@ -152,12 +146,7 @@ def _prepare_job_for_database(
     return prepared_job
 
 
-def _prepare_archive_job_for_database(
-    job: dict,
-    user_id: str,
-    request_time: str,
-    product: asf.ASFProduct
-) -> dict:
+def _prepare_archive_job_for_database(job: dict, user_id: str, request_time: str, product: asf.ASFProduct) -> dict:
     prepared_job = {
         'job_id': str(uuid4()),
         'user_id': user_id,
@@ -166,12 +155,12 @@ def _prepare_archive_job_for_database(
         'request_time': request_time,
         'processing_times': [0],
         'credit_cost': 0,
-        'browse_images': product.properties.browse,
-        'expiration_time': request_time + datetime.timedelta(years=1000),
+        'browse_images': product.properties['browse'],
+        'expiration_time': request_time + datetime.timedelta(weeks=1000 * 52),
         'files': {
-            'filename': product.properties.fileName,
+            'filename': product.properties['fileName'],
             'size': product.umm['DataGranule']['ArchiveAndDistributionInformation'][0]['SizeInBytes'],
-            'url': product.properties.url
+            'url': product.properties['url'],
         },
         **job,
     }

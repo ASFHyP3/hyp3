@@ -1,11 +1,12 @@
+import datetime
 import os
 import unittest.mock
 from decimal import Decimal
 from unittest.mock import MagicMock, NonCallableMagicMock
 
-import botocore.exceptions
 import pytest
 
+import botocore.exceptions
 import dynamo
 from conftest import list_have_same_elements
 from dynamo.exceptions import (
@@ -931,9 +932,33 @@ def test_decimal_conversion(tables):
     assert response[1]['float_value'] == Decimal('0.0')
     assert response[2]['float_value'] == Decimal('0.1')
 
-def test_get_product_from_archive():
-    dynamo.jobs._get_product_from_archive()
 
+@pytest.mark.network
 def test_prepare_archive_job_for_database():
-    # dynamo.jobs._prepare_archive_job_for_database()
-    pass
+    product = dynamo.jobs._get_product_from_archive(
+        {
+            'job_type': 'ARIA_S1_GUNW',
+            'job_parameters': {'reference_date': '2025-07-14', 'secondary_date': '2025-07-03', 'frame_id': 25388},
+        }
+    )
+    assert product is None
+    job = {
+        'job_type': 'ARIA_S1_GUNW',
+        'job_parameters': {'reference_date': '2025-07-14', 'secondary_date': '2025-07-02', 'frame_id': 25388},
+    }
+    product = dynamo.jobs._get_product_from_archive(job)
+
+    assert (
+        product.properties['sceneName'] == 'S1-GUNW-D-R-163-tops-20250714_20250702-212907-00121E_00010S-PP-b4a1-v3_0_1'
+    )
+
+    user_id = 'test_user'
+    request_time = datetime.datetime.now()
+
+    prepared_archive_job = dynamo.jobs._prepare_archive_job_for_database(job, user_id, request_time, product)
+
+    assert prepared_archive_job['files'] == {
+        'filename': 'S1-GUNW-D-R-163-tops-20250714_20250702-212907-00121E_00010S-PP-b4a1-v3_0_1.nc',
+        'size': 110557947,
+        'url': 'https://grfn.asf.alaska.edu/door/download/S1-GUNW-D-R-163-tops-20250714_20250702-212907-00121E_00010S-PP-b4a1-v3_0_1.nc',
+    }
