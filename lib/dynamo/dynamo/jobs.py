@@ -3,9 +3,12 @@ from decimal import Decimal
 from os import environ
 from pathlib import Path
 from uuid import uuid4
+import datetime
 
 import botocore.exceptions
 from boto3.dynamodb.conditions import Attr, Key
+import asf_search as asf
+from asf_enumeration import aria_s1_gunw
 
 import dynamo.user
 from dynamo.exceptions import (
@@ -46,14 +49,25 @@ def put_jobs(user_id: str, jobs: list[dict], dry_run: bool = False) -> list[dict
     total_cost = Decimal('0.0')
     prepared_jobs = []
     for job in jobs:
-        prepared_job = _prepare_job_for_database(
-            job=job,
-            user_id=user_id,
-            request_time=request_time,
-            remaining_credits=remaining_credits,
-            priority_override=priority_override,
-            running_cost=total_cost,
-        )
+        if product := _get_product_from_archive(job):
+            prepared_job = _prepare_archive_job_for_database(
+                job=job,
+                user_id=user_id,
+                request_time=request_time,
+                product=product
+            )
+        else:
+            job_priority = _get_job_priority(
+                remaining_credits=remaining_credits,
+                priority_override=priority_override,
+                running_cost=total_cost,
+            )
+            prepared_job = _prepare_job_for_database(
+                job=job,
+                user_id=user_id,
+                request_time=request_time,
+                priority=job_priority,
+            )
         prepared_jobs.append(prepared_job)
         total_cost += prepared_job['credit_cost']
 
@@ -73,6 +87,20 @@ def put_jobs(user_id: str, jobs: list[dict], dry_run: bool = False) -> list[dict
     return prepared_jobs
 
 
+def _get_product_from_archive(job: dict) -> asf.ASFProduct | None:
+    job_type = job['job_type']
+
+    if job_type == 'ARIA_S1_GUNW':
+        params = job['job_parameters']
+
+        return aria_s1_gunw.get_proudct(
+            frame=params['frame_id'],
+            reference_date=params['reference_date'],
+            secondary_date=params['secondary_date'],
+        )
+    else:
+        return None
+
 def _raise_for_application_status(application_status: str, user_id: str) -> None:
     if application_status == APPLICATION_NOT_STARTED:
         raise NotStartedApplicationError(user_id)
@@ -84,20 +112,26 @@ def _raise_for_application_status(application_status: str, user_id: str) -> None
         raise InvalidApplicationStatusError(user_id, application_status)
 
 
-def _prepare_job_for_database(
-    job: dict,
-    user_id: str,
-    request_time: str,
+def _get_job_priority(
     remaining_credits: Decimal | None,
     priority_override: int | None,
     running_cost: Decimal,
-) -> dict:
+) -> int:
     if priority_override:
         priority = priority_override
     elif remaining_credits is None:
         priority = 0
     else:
         priority = min(round(remaining_credits - running_cost), 9999)
+    return priority
+
+
+def _prepare_job_for_database(
+    job: dict,
+    user_id: str,
+    request_time: str,
+    priority: int
+) -> dict:
     prepared_job = {
         'job_id': str(uuid4()),
         'user_id': user_id,
@@ -115,6 +149,39 @@ def _prepare_job_for_database(
         prepared_job['credit_cost'] = _get_credit_cost(prepared_job, COSTS)
     else:
         prepared_job['credit_cost'] = Decimal('1.0')
+    return prepared_job
+
+
+def _prepare_archive_job_for_database(
+    job: dict,
+    user_id: str,
+    request_time: str,
+    product: asf.ASFProduct
+) -> dict:
+    prepared_job = {
+        'job_id': str(uuid4()),
+        'user_id': user_id,
+        'status_code': 'SUCCEEDED',
+        'execution_started': True,
+        'request_time': request_time,
+        'processing_times': [0],
+        'credit_cost': 0,
+        'browse_images': product.properties.browse,
+        'expiration_time': request_time + datetime.timedelta(years=1000),
+        'files': {
+            'filename': product.properties.fileName,
+            'size': product.umm['DataGranule']['ArchiveAndDistributionInformation'][0]['SizeInBytes'],
+            'url': product.properties.url
+        },
+        **job,
+    }
+
+    if 'job_type' in prepared_job:
+        prepared_job['job_parameters'] = {
+            **DEFAULT_PARAMS_BY_JOB_TYPE[prepared_job['job_type']],
+            **prepared_job.get('job_parameters', {}),
+        }
+
     return prepared_job
 
 

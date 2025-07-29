@@ -930,3 +930,10 @@ def test_decimal_conversion(tables):
     assert response[0]['float_value'] == Decimal('30.04')
     assert response[1]['float_value'] == Decimal('0.0')
     assert response[2]['float_value'] == Decimal('0.1')
+
+def test_get_product_from_archive():
+    dynamo.jobs._get_product_from_archive()
+
+def test_prepare_archive_job_for_database():
+    # dynamo.jobs._prepare_archive_job_for_database()
+    pass
