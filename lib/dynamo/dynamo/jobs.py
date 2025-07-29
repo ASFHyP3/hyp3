@@ -151,7 +151,7 @@ def _prepare_archive_job_for_database(job: dict, user_id: str, request_time: str
         'execution_started': True,
         'request_time': request_time,
         'processing_times': [0],
-        'credit_cost': 0,
+        'credit_cost': Decimal(0),
         'browse_images': product.properties['browse'],
         'expiration_time': request_time + datetime.timedelta(weeks=1000 * 52),
         'files': {
