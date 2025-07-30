@@ -147,7 +147,7 @@ AUTORIFT:
         - --secondary
         - Ref::secondary
       timeout: 10800
-      compute_environment: AutoriftGraviton
+      compute_environment: Default
       vcpu: 1
       memory: 8  # Memory is always overridden in the step function by set-batch-overrides
       secrets:
