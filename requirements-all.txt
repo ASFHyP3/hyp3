@@ -16,5 +16,3 @@ setuptools==80.9.0
 setuptools_scm==8.3.1
 openapi-spec-validator==0.7.2
 cfn-lint==1.38.0
-asf_enumeration
-asf_search
