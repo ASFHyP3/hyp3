@@ -613,6 +613,60 @@ def test_put_jobs_decrement_credits_failure(tables, approved_user):
     assert tables.jobs_table.scan()['Items'] == []
 
 
+def test_put_jobs_with_archived_product(tables, monkeypatch, approved_user):
+    with (
+        unittest.mock.patch.object(dynamo.jobs.aria_s1_gunw, 'get_product') as mock_get_product,
+        unittest.mock.patch.object(dynamo.jobs, 'current_utc_time') as mock_get_utc_time,
+        unittest.mock.patch.object(dynamo.jobs, '_get_job_id') as mock_job_id
+    ):
+        mock_archive_product = unittest.mock.MagicMock(
+            properties={
+                'browse': ['test-browse.png'],
+                'fileName': 'test-file',
+                'url': 'test-url',
+
+            },
+            umm={'DataGranule': {'ArchiveAndDistributionInformation': [{'SizeInBytes': 1}]}},
+        )
+        mock_get_product.return_value = mock_archive_product
+        mock_get_utc_time.return_value = '2025-06-03T07:07:21+00:00'
+        mock_job_id.return_value = 'test-job-id'
+
+        jobs = dynamo.jobs.put_jobs(approved_user, [{
+            'job_type': 'ARIA_S1_GUNW',
+            'job_parameters': {'reference_date': '2025-07-14', 'secondary_date': '2025-07-02', 'frame_id': 25388},
+        }])
+
+    assert len(jobs) == 1
+    archive_job = jobs[0]
+
+    assert archive_job == {
+        'job_id': 'test-job-id',
+        'user_id': 'approved_user',
+        'status_code': 'SUCCEEDED',
+        'execution_started': True,
+        'request_time': '2025-06-03T07:07:21+00:00',
+        'processing_times': [0],
+        'credit_cost': Decimal('0'),
+        'browse_images': ['test-browse.png'],
+        'expiration_time': '3022-01-08T07:07:21+00:00',
+        'priority': 0,
+        'files': [{
+            'filename': 'test-file',
+            'size': 1,
+            'url': 'test-url'
+        }],
+        'job_type': 'ARIA_S1_GUNW',
+        'job_parameters': {
+            'reference_date': '2025-07-14',
+            'secondary_date': '2025-07-02',
+            'frame_id': 25388
+        }
+    }
+
+    assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
+
+
 def test_get_job(tables):
     table_items = [
         {
@@ -931,34 +985,3 @@ def test_decimal_conversion(tables):
     assert response[0]['float_value'] == Decimal('30.04')
     assert response[1]['float_value'] == Decimal('0.0')
     assert response[2]['float_value'] == Decimal('0.1')
-
-
-@pytest.mark.network
-def test_prepare_archive_job_for_database():
-    product = dynamo.jobs._get_product_from_archive(
-        {
-            'job_type': 'ARIA_S1_GUNW',
-            'job_parameters': {'reference_date': '2025-07-14', 'secondary_date': '2025-07-03', 'frame_id': 25388},
-        }
-    )
-    assert product is None
-    job = {
-        'job_type': 'ARIA_S1_GUNW',
-        'job_parameters': {'reference_date': '2025-07-14', 'secondary_date': '2025-07-02', 'frame_id': 25388},
-    }
-    product = dynamo.jobs._get_product_from_archive(job)
-
-    assert (
-        product.properties['sceneName'] == 'S1-GUNW-D-R-163-tops-20250714_20250702-212907-00121E_00010S-PP-b4a1-v3_0_1'
-    )
-
-    user_id = 'test_user'
-    request_time = datetime.datetime.now()
-
-    prepared_archive_job = dynamo.jobs._prepare_archive_job_for_database(job, user_id, request_time, product)
-
-    assert prepared_archive_job['files'] == {
-        'filename': 'S1-GUNW-D-R-163-tops-20250714_20250702-212907-00121E_00010S-PP-b4a1-v3_0_1.nc',
-        'size': 110557947,
-        'url': 'https://grfn.asf.alaska.edu/door/download/S1-GUNW-D-R-163-tops-20250714_20250702-212907-00121E_00010S-PP-b4a1-v3_0_1.nc',
-    }

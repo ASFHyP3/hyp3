@@ -678,12 +678,7 @@ def test_decrement_credits(tables):
 
 
 def test_decrement_credits_invalid_cost(tables):
-    with pytest.raises(ValueError, match=r'^Cost 0 <= 0$'):
-        dynamo.user.decrement_credits('foo', Decimal(0))
-
-    assert tables.users_table.scan()['Items'] == []
-
-    with pytest.raises(ValueError, match=r'^Cost -1 <= 0$'):
+    with pytest.raises(ValueError, match=r'^Cost -1 < 0$'):
         dynamo.user.decrement_credits('foo', Decimal(-1))
 
     assert tables.users_table.scan()['Items'] == []

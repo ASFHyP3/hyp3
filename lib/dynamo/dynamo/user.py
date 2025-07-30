@@ -5,9 +5,8 @@ from os import environ
 from typing import Any
 
 import botocore.exceptions
-import requests
-
 import dynamo.util
+import requests
 from dynamo.exceptions import (
     AccessCodeError,
     ApprovedApplicationError,
@@ -176,8 +175,8 @@ def _reset_credits_if_needed(user: dict, current_month: str, users_table: Any) -
 
 
 def decrement_credits(user_id: str, cost: Decimal) -> None:
-    if cost <= Decimal(0):
-        raise ValueError(f'Cost {cost} <= 0')
+    if cost < Decimal(0):
+        raise ValueError(f'Cost {cost} < 0')
     users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     try:
         users_table.update_item(

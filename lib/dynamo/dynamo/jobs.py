@@ -89,12 +89,16 @@ def _get_product_from_archive(job: dict) -> asf.ASFProduct | None:
         params = job['job_parameters']
 
         return aria_s1_gunw.get_product(
-            reference_date=datetime.date.fromisoformat(params['reference_date']),
-            secondary_date=datetime.date.fromisoformat(params['secondary_date']),
+            reference_date=params['reference_date'],
+            secondary_date=params['secondary_date'],
             frame_id=params['frame_id'],
         )
     else:
         return None
+
+
+def _get_job_id() -> str:
+    return str(uuid4())
 
 
 def _raise_for_application_status(application_status: str, user_id: str) -> None:
@@ -124,7 +128,7 @@ def _get_job_priority(
 
 def _prepare_job_for_database(job: dict, user_id: str, request_time: str, priority: int) -> dict:
     prepared_job = {
-        'job_id': str(uuid4()),
+        'job_id': _get_job_id(),
         'user_id': user_id,
         'status_code': 'PENDING',
         'execution_started': False,
@@ -144,8 +148,9 @@ def _prepare_job_for_database(job: dict, user_id: str, request_time: str, priori
 
 
 def _prepare_archive_job_for_database(job: dict, user_id: str, request_time: str, product: asf.ASFProduct) -> dict:
+    expiration_datetime = datetime.datetime.fromisoformat(request_time) + datetime.timedelta(weeks=1000 * 52)
     prepared_job = {
-        'job_id': str(uuid4()),
+        'job_id': _get_job_id(),
         'user_id': user_id,
         'status_code': 'SUCCEEDED',
         'execution_started': True,
@@ -153,12 +158,13 @@ def _prepare_archive_job_for_database(job: dict, user_id: str, request_time: str
         'processing_times': [0],
         'credit_cost': Decimal(0),
         'browse_images': product.properties['browse'],
-        'expiration_time': request_time + datetime.timedelta(weeks=1000 * 52),
-        'files': {
+        'expiration_time': expiration_datetime.isoformat(timespec='seconds'),
+        'priority': 0,
+        'files': [{
             'filename': product.properties['fileName'],
             'size': product.umm['DataGranule']['ArchiveAndDistributionInformation'][0]['SizeInBytes'],
             'url': product.properties['url'],
-        },
+        }],
         **job,
     }
 
