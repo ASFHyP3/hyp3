@@ -6,6 +6,9 @@ setup(
     license='BSD',
     include_package_data=True,
     install_requires=[
+        # TODO: unpin these here and pin them in requirements files?
+        'asf_enumeration==0.2.0',
+        'asf_search==9.0.8',
         'boto3',
         'python-dateutil',
         'requests',
