@@ -160,11 +160,13 @@ def _prepare_archive_job_for_database(job: dict, user_id: str, request_time: str
         'browse_images': product.properties['browse'],
         'expiration_time': expiration_datetime.isoformat(timespec='seconds'),
         'priority': 0,
-        'files': [{
-            'filename': product.properties['fileName'],
-            'size': product.umm['DataGranule']['ArchiveAndDistributionInformation'][0]['SizeInBytes'],
-            'url': product.properties['url'],
-        }],
+        'files': [
+            {
+                'filename': product.properties['fileName'],
+                'size': product.umm['DataGranule']['ArchiveAndDistributionInformation'][0]['SizeInBytes'],
+                'url': product.properties['url'],
+            }
+        ],
         **job,
     }
 

@@ -617,14 +617,13 @@ def test_put_jobs_with_archived_product(tables, monkeypatch, approved_user):
     with (
         unittest.mock.patch.object(dynamo.jobs.aria_s1_gunw, 'get_product') as mock_get_product,
         unittest.mock.patch.object(dynamo.jobs, 'current_utc_time') as mock_get_utc_time,
-        unittest.mock.patch.object(dynamo.jobs, '_get_job_id') as mock_job_id
+        unittest.mock.patch.object(dynamo.jobs, '_get_job_id') as mock_job_id,
     ):
         mock_archive_product = unittest.mock.MagicMock(
             properties={
                 'browse': ['test-browse.png'],
                 'fileName': 'test-file',
                 'url': 'test-url',
-
             },
             umm={'DataGranule': {'ArchiveAndDistributionInformation': [{'SizeInBytes': 1}]}},
         )
@@ -632,10 +631,19 @@ def test_put_jobs_with_archived_product(tables, monkeypatch, approved_user):
         mock_get_utc_time.return_value = '2025-06-03T07:07:21+00:00'
         mock_job_id.return_value = 'test-job-id'
 
-        jobs = dynamo.jobs.put_jobs(approved_user, [{
-            'job_type': 'ARIA_S1_GUNW',
-            'job_parameters': {'reference_date': '2025-07-14', 'secondary_date': '2025-07-02', 'frame_id': 25388},
-        }])
+        jobs = dynamo.jobs.put_jobs(
+            approved_user,
+            [
+                {
+                    'job_type': 'ARIA_S1_GUNW',
+                    'job_parameters': {
+                        'reference_date': '2025-07-14',
+                        'secondary_date': '2025-07-02',
+                        'frame_id': 25388,
+                    },
+                }
+            ],
+        )
 
     assert len(jobs) == 1
     archive_job = jobs[0]
@@ -651,17 +659,9 @@ def test_put_jobs_with_archived_product(tables, monkeypatch, approved_user):
         'browse_images': ['test-browse.png'],
         'expiration_time': '3022-01-08T07:07:21+00:00',
         'priority': 0,
-        'files': [{
-            'filename': 'test-file',
-            'size': 1,
-            'url': 'test-url'
-        }],
+        'files': [{'filename': 'test-file', 'size': 1, 'url': 'test-url'}],
         'job_type': 'ARIA_S1_GUNW',
-        'job_parameters': {
-            'reference_date': '2025-07-14',
-            'secondary_date': '2025-07-02',
-            'frame_id': 25388
-        }
+        'job_parameters': {'reference_date': '2025-07-14', 'secondary_date': '2025-07-02', 'frame_id': 25388},
     }
 
     assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
