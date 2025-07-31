@@ -200,6 +200,7 @@ Resources:
         {% endfor %}
         TaskRoleArn: !GetAtt Cluster.Outputs.TaskRoleArn
         JobsTable: !Ref JobsTable
+        UsersTable: !Ref UsersTable
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
         SecretArn: !Ref SecretArn
