@@ -6,7 +6,7 @@
 [![DOI](https://zenodo.org/badge/259996151.svg)](https://zenodo.org/badge/latestdoi/259996151)
 
 
-A processing environment for HyP3 Plugins in AWS.
+A processing environment for HyP3 Pluginsasdfasdf in AWS.
 
 ## Developer Setup
 
