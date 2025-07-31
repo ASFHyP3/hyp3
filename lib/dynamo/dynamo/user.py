@@ -190,3 +190,8 @@ def decrement_credits(user_id: str, cost: Decimal) -> None:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
             raise DatabaseConditionException(f'Failed to decrement credits for user {user_id}')
         raise
+
+
+def add_credits(user_id: str, value: Decimal) -> None:
+    # TODO
+    pass

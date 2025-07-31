@@ -35,9 +35,11 @@
       "Type": "Task",
       "Resource": "${SearchArchiveLambdaArn}",
       "Parameters": {
+        "job_id.$": "$.job_id",
         "job_type.$": "$.job_type",
         "job_parameters.$": "$.job_parameters",
-        "user_id.$": "$.user_id"
+        "user_id.$": "$.user_id",
+        "credit_cost.$": "$.credit_cost"
       },
       {# TODO: fine-tune retry logic #}
       "Retry": [
