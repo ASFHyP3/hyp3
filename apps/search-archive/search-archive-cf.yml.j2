@@ -80,7 +80,7 @@ Resources:
           USERS_TABLE_NAME: !Ref UsersTable
       Code: src/
       Handler: search_archive.lambda_handler
-      MemorySize: 128
+      MemorySize: 3008 # TODO
       Role: !GetAtt Role.Arn
       Runtime: python3.13
       Timeout: 30
