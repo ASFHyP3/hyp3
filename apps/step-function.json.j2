@@ -29,7 +29,52 @@
         }
       ],
       "ResultPath": "$.results.execution_started",
-      "Next": "SET_BATCH_OVERRIDES"
+      "Next": "SEARCH_ARCHIVE"
+    },
+    "SEARCH_ARCHIVE": {
+      "Type": "Task",
+      "Resource": "${SearchArchiveLambdaArn}",
+      "Parameters": {
+        "job_id.$": "$.job_id",
+        "job_type.$": "$.job_type",
+        "job_parameters.$": "$.job_parameters",
+        "user_id.$": "$.user_id",
+        "credit_cost.$": "$.credit_cost"
+      },
+      {# TODO: fine-tune retry logic #}
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "MaxAttempts": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "JOB_FAILED",
+          "ResultPath": "$.exists_in_archive"
+        }
+      ],
+      "ResultPath": "$.exists_in_archive",
+      "Next": "CHECK_IF_ARCHIVED"
+    },
+    "CHECK_IF_ARCHIVED": {
+      "Type" : "Choice",
+      "Choices": [
+        {
+          "Variable": "$.exists_in_archive",
+          "BooleanEquals": true,
+          "Next": "JOB_ARCHIVED"
+        }
+      ],
+      "Default": "SET_BATCH_OVERRIDES"
+    },
+    "JOB_ARCHIVED": {
+      "Type": "Succeed"
     },
     "SET_BATCH_OVERRIDES": {
       "Type": "Task",
