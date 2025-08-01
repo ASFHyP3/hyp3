@@ -55,4 +55,5 @@ def lambda_handler(event: dict, _) -> bool:
 
         return True
 
+    logger.info(f'No archived product exists for job {event["job_id"]}')
     return False
