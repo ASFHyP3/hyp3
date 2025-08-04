@@ -193,5 +193,12 @@ def decrement_credits(user_id: str, cost: Decimal) -> None:
 
 
 def add_credits(user_id: str, value: Decimal) -> None:
-    # TODO
-    pass
+    if value <= Decimal(0):
+        raise ValueError(f'Cannot add credits: {value} <= 0')
+
+    users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
+    users_table.update_item(
+        Key={'user_id': user_id},
+        UpdateExpression='ADD remaining_credits :value',
+        ExpressionAttributeValues={':value': value},
+    )
