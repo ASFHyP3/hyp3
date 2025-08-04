@@ -197,6 +197,7 @@ def add_credits(user_id: str, value: Decimal) -> None:
         raise ValueError(f'Cannot add credits: {value} <= 0')
 
     users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
+    # TODO: need to check if user exists?
     users_table.update_item(
         Key={'user_id': user_id},
         UpdateExpression='ADD remaining_credits :value',
