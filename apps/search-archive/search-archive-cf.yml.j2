@@ -83,7 +83,7 @@ Resources:
       MemorySize: 3008 # TODO
       Role: !GetAtt Role.Arn
       Runtime: python3.13
-      Timeout: 30
+      Timeout: 30 # TODO
       {% if security_environment == 'EDC' %}
       VpcConfig:
         SecurityGroupIds:
