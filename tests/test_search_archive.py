@@ -18,7 +18,6 @@ def test_aria_s1_gunw_exists(tables):
         unittest.mock.patch.object(search_archive.aria_s1_gunw, 'get_product') as mock_get_product,
         unittest.mock.patch.object(search_archive, '_get_utc_time') as mock_get_utc_time,
     ):
-        # TODO: double-check mock structure
         mock_archive_product = unittest.mock.MagicMock(
             properties={
                 'browse': ['test-browse.png'],
@@ -56,7 +55,6 @@ def test_aria_s1_gunw_exists(tables):
         mock_get_utc_time.assert_called_once_with()
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'test-user', 'remaining_credits': Decimal(15)}]
-    # TODO: double-check against actual job
     assert tables.jobs_table.scan()['Items'] == [
         {
             'job_id': 'test-job',
@@ -89,7 +87,6 @@ def test_aria_s1_gunw_exists_infinite_credits(tables):
         unittest.mock.patch.object(search_archive.aria_s1_gunw, 'get_product') as mock_get_product,
         unittest.mock.patch.object(search_archive, '_get_utc_time') as mock_get_utc_time,
     ):
-        # TODO: double-check mock structure
         mock_archive_product = unittest.mock.MagicMock(
             properties={
                 'browse': ['test-browse.png'],
@@ -127,7 +124,6 @@ def test_aria_s1_gunw_exists_infinite_credits(tables):
         mock_get_utc_time.assert_called_once_with()
 
     assert tables.users_table.scan()['Items'] == [{'user_id': 'test-user', 'remaining_credits': None}]
-    # TODO: double-check against actual job
     assert tables.jobs_table.scan()['Items'] == [
         {
             'job_id': 'test-job',
