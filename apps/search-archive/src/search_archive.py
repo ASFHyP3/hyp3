@@ -5,6 +5,7 @@ import asf_search as asf
 from asf_enumeration import aria_s1_gunw
 
 import dynamo
+from dynamo.exceptions import AddToInfiniteCreditsError
 from lambda_logging import log_exceptions, logger
 
 
@@ -21,8 +22,12 @@ def _get_product_from_archive(job_type: str, job_parameters: dict) -> asf.ASFPro
         return None
 
 
+def _get_utc_time() -> datetime:
+    return datetime.now(UTC)
+
+
 def _update_job(job_id: str, product: asf.ASFProduct) -> None:
-    expiration_datetime = datetime.now(UTC) + timedelta(weeks=1000 * 52)
+    expiration_datetime = _get_utc_time() + timedelta(weeks=1000 * 52)
     dynamo.jobs.update_job(
         {
             'job_id': job_id,
@@ -51,7 +56,10 @@ def lambda_handler(event: dict, _) -> bool:
         _update_job(event['job_id'], product)
 
         logger.info(f'Refunding {event["credit_cost"]} credits to user {event["user_id"]}')
-        dynamo.user.add_credits(event['user_id'], Decimal(event['credit_cost']))
+        try:
+            dynamo.user.add_credits(event['user_id'], Decimal(event['credit_cost']))
+        except AddToInfiniteCreditsError:
+            logger.info(f'User {event["user_id"]} has infinite credits')
 
         return True
 
