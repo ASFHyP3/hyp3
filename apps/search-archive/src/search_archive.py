@@ -1,5 +1,6 @@
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
+from typing import TypedDict
 
 import asf_search as asf
 from asf_enumeration import aria_s1_gunw
@@ -47,8 +48,16 @@ def _update_job(job_id: str, product: asf.ASFProduct) -> None:
     )
 
 
+class SearchArchiveEvent(TypedDict):
+    job_id: str
+    job_type: str
+    job_parameters: dict
+    user_id: str
+    credit_cost: int | float
+
+
 @log_exceptions
-def lambda_handler(event: dict, _) -> bool:
+def lambda_handler(event: SearchArchiveEvent, _) -> bool:
     logger.info(event)
 
     if product := _get_product_from_archive(event['job_type'], event['job_parameters']):
@@ -57,7 +66,7 @@ def lambda_handler(event: dict, _) -> bool:
 
         logger.info(f'Refunding {event["credit_cost"]} credits to user {event["user_id"]}')
         try:
-            dynamo.user.add_credits(event['user_id'], Decimal(event['credit_cost']))
+            dynamo.user.add_credits(event['user_id'], Decimal(str(event['credit_cost'])))
         except AddToInfiniteCreditsError:
             logger.info(f'User {event["user_id"]} has infinite credits')
 

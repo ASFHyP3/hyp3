@@ -419,6 +419,7 @@ components:
           - filename
           - size
           - url
+          # TODO: remove s3 from required properties?
           - s3
         additionalProperties: False
         properties:
@@ -474,7 +475,6 @@ components:
         Run time in seconds for a processing step's final attempt.
       type: number
       minimum: 0
-      exclusiveMinimum: true
       example: 50
 
   securitySchemes:

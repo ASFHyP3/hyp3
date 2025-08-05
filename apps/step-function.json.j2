@@ -41,13 +41,16 @@
         "user_id.$": "$.user_id",
         "credit_cost.$": "$.credit_cost"
       },
-      {# TODO: fine-tune retry logic #}
       "Retry": [
         {
           "ErrorEquals": [
             "States.ALL"
           ],
-          "MaxAttempts": 2
+          {# Retry over roughly 4 hours, starting at 30 seconds, doubling each time, and maxing out at 30-minute intervals. #}
+          "IntervalSeconds": 30,
+          "MaxAttempts": 13,
+          "BackoffRate": 2.0,
+          "MaxDelaySeconds": 1800
         }
       ],
       "Catch": [

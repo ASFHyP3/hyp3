@@ -211,16 +211,17 @@ def add_credits(user_id: str, value: Decimal) -> None:
         if e.response['Error']['Code'] != 'ConditionalCheckFailedException':
             raise
 
-        if 'Item' not in e.response:
+        elif 'Item' not in e.response:
             raise DatabaseConditionException(f'User {user_id} does not exist')
 
-        if 'remaining_credits' not in e.response['Item']:
+        elif 'remaining_credits' not in e.response['Item']:
             raise DatabaseConditionException(f'User {user_id} does not have attribute remaining_credits')
 
-        if e.response['Item']['remaining_credits'].get('NULL'):
+        elif e.response['Item']['remaining_credits'].get('NULL'):
             raise AddToInfiniteCreditsError(f'User {user_id} has infinite credits')
 
-        assert 'N' not in e.response['Item']['remaining_credits']
-        raise DatabaseConditionException(
-            f'User {user_id} attribute remaining_credits is not a number: {e.response["Item"]["remaining_credits"]}'
-        )
+        else:
+            assert 'N' not in e.response['Item']['remaining_credits']
+            raise DatabaseConditionException(
+                f'User {user_id} attribute remaining_credits is not a number: {e.response["Item"]["remaining_credits"]}'
+            )

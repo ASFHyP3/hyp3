@@ -80,10 +80,10 @@ Resources:
           USERS_TABLE_NAME: !Ref UsersTable
       Code: src/
       Handler: search_archive.lambda_handler
-      MemorySize: 3008 # TODO
+      MemorySize: 128 # TODO: increase after testing retry strategy; perhaps 1024?
       Role: !GetAtt Role.Arn
       Runtime: python3.13
-      Timeout: 30
+      Timeout: 60
       {% if security_environment == 'EDC' %}
       VpcConfig:
         SecurityGroupIds:
