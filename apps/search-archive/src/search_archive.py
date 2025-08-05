@@ -57,7 +57,7 @@ class SearchArchiveEvent(TypedDict):
 
 
 @log_exceptions
-def lambda_handler(event: Event, _) -> bool:
+def lambda_handler(event: SearchArchiveEvent, _) -> bool:
     logger.info(event)
 
     if product := _get_product_from_archive(event['job_type'], event['job_parameters']):
