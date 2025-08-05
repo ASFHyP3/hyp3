@@ -48,7 +48,7 @@ def _update_job(job_id: str, product: asf.ASFProduct) -> None:
     )
 
 
-class Event(TypedDict):
+class SearchArchiveEvent(TypedDict):
     job_id: str
     job_type: str
     job_parameters: dict
