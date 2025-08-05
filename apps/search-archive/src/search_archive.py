@@ -5,6 +5,7 @@ import asf_search as asf
 from asf_enumeration import aria_s1_gunw
 
 import dynamo
+from dynamo.exceptions import AddToInfiniteCreditsError
 from lambda_logging import log_exceptions, logger
 
 
@@ -55,7 +56,10 @@ def lambda_handler(event: dict, _) -> bool:
         _update_job(event['job_id'], product)
 
         logger.info(f'Refunding {event["credit_cost"]} credits to user {event["user_id"]}')
-        dynamo.user.add_credits(event['user_id'], Decimal(event['credit_cost']))
+        try:
+            dynamo.user.add_credits(event['user_id'], Decimal(event['credit_cost']))
+        except AddToInfiniteCreditsError:
+            logger.info(f'User {event["user_id"]} has infinite credits')
 
         return True
 
