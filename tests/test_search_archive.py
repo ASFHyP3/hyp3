@@ -11,7 +11,7 @@ def test_aria_s1_gunw_exists(tables):
         Item={
             'job_id': 'test-job',
             'status_code': 'PENDING',
-            'credit_cost': Decimal(5),
+            'credit_cost': Decimal('5.1'),
         }
     )
     with (
@@ -40,7 +40,7 @@ def test_aria_s1_gunw_exists(tables):
                         'frame_id': 11040,
                     },
                     'user_id': 'test-user',
-                    'credit_cost': 5,
+                    'credit_cost': 5.1,
                 },
                 None,
             )
@@ -54,7 +54,7 @@ def test_aria_s1_gunw_exists(tables):
         )
         mock_get_utc_time.assert_called_once_with()
 
-    assert tables.users_table.scan()['Items'] == [{'user_id': 'test-user', 'remaining_credits': Decimal(15)}]
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'test-user', 'remaining_credits': Decimal('15.1')}]
     assert tables.jobs_table.scan()['Items'] == [
         {
             'job_id': 'test-job',
@@ -80,7 +80,7 @@ def test_aria_s1_gunw_exists_infinite_credits(tables):
         Item={
             'job_id': 'test-job',
             'status_code': 'PENDING',
-            'credit_cost': Decimal(5),
+            'credit_cost': Decimal(1),
         }
     )
     with (
@@ -109,7 +109,7 @@ def test_aria_s1_gunw_exists_infinite_credits(tables):
                         'frame_id': 11040,
                     },
                     'user_id': 'test-user',
-                    'credit_cost': 5,
+                    'credit_cost': 1,
                 },
                 None,
             )
@@ -157,6 +157,8 @@ def test_aria_s1_gunw_does_not_exist():
                         'secondary_date': '2018-12-12',
                         'frame_id': 11040,
                     },
+                    'user_id': 'test-user',
+                    'credit_cost': 1,
                 },
                 None,
             )
@@ -177,6 +179,8 @@ def test_unsupported_job_type():
                 'job_id': 'test-job',
                 'job_type': 'test-job-type',
                 'job_parameters': {},
+                'user_id': 'test-user',
+                'credit_cost': 1,
             },
             None,
         )
