@@ -48,7 +48,7 @@ def _update_job(job_id: str, product: asf.ASFProduct) -> None:
     )
 
 
-class Event(TypedDict):
+class SearchArchiveEvent(TypedDict):
     job_id: str
     job_type: str
     job_parameters: dict
@@ -57,7 +57,7 @@ class Event(TypedDict):
 
 
 @log_exceptions
-def lambda_handler(event: Event, _) -> bool:
+def lambda_handler(event: SearchArchiveEvent, _) -> bool:
     logger.info(event)
 
     if product := _get_product_from_archive(event['job_type'], event['job_parameters']):
