@@ -219,6 +219,7 @@ def add_credits(user_id: str, value: Decimal) -> None:
 
         elif e.response['Item']['remaining_credits'].get('NULL'):
             raise AddToInfiniteCreditsError(f'User {user_id} has infinite credits')
+
         else:
             assert 'N' not in e.response['Item']['remaining_credits']
             raise DatabaseConditionException(
