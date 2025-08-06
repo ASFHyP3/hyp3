@@ -80,7 +80,7 @@ Resources:
           USERS_TABLE_NAME: !Ref UsersTable
       Code: src/
       Handler: search_archive.lambda_handler
-      MemorySize: 128 # TODO: increase after testing retry strategy; perhaps 1024?
+      MemorySize: 512 # https://github.com/ASFHyP3/hyp3/issues/2853
       Role: !GetAtt Role.Arn
       Runtime: python3.13
       Timeout: 60
