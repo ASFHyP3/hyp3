@@ -7,11 +7,12 @@ SET_BATCH_OVERRIDES = ${PWD}/apps/set-batch-overrides/src
 SCALE_CLUSTER = ${PWD}/apps/scale-cluster/src
 START_EXECUTION = ${PWD}/apps/start-execution/src
 DISABLE_PRIVATE_DNS = ${PWD}/apps/disable-private-dns/src
+SEARCH_ARCHIVE = ${PWD}/apps/search-archive/src
 UPDATE_DB = ${PWD}/apps/update-db/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
 DYNAMO = ${PWD}/lib/dynamo
 LAMBDA_LOGGING = ${PWD}/lib/lambda_logging
-export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SET_BATCH_OVERRIDES}:${SCALE_CLUSTER}:${START_EXECUTION}:${DISABLE_PRIVATE_DNS}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}:${LAMBDA_LOGGING}:${APPS}
+export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SET_BATCH_OVERRIDES}:${SCALE_CLUSTER}:${START_EXECUTION}:${DISABLE_PRIVATE_DNS}:${SEARCH_ARCHIVE}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}:${LAMBDA_LOGGING}:${APPS}
 
 
 build: render
@@ -21,6 +22,7 @@ build: render
 	python -m pip install --upgrade -r requirements-apps-scale-cluster.txt -t ${SCALE_CLUSTER}; \
 	python -m pip install --upgrade -r requirements-apps-start-execution.txt -t ${START_EXECUTION}; \
 	python -m pip install --upgrade -r requirements-apps-disable-private-dns.txt -t ${DISABLE_PRIVATE_DNS}; \
+	python -m pip install --upgrade -r requirements-apps-search-archive.txt -t ${SEARCH_ARCHIVE}; \
 	python -m pip install --upgrade -r requirements-apps-update-db.txt -t ${UPDATE_DB}; \
 	python -m pip install --upgrade -r requirements-apps-get-files.txt -t ${GET_FILES}
 

@@ -5,6 +5,10 @@ class DatabaseConditionException(Exception):
     """Raised for any DynamoDB ConditionExpression check failure that does not fall under a more specific exception type."""
 
 
+class AddToInfiniteCreditsError(Exception):
+    """Raised when attempting to add credits for a user who has infinite credits."""
+
+
 class AccessCodeError(Exception):
     """Raised when a user application includes an invalid or expired access code."""
 
