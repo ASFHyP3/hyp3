@@ -6,8 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.10.3]
 
-### Changed
+### Added
+- Added new deployment for PISM-Cloud.
 
+### Changed
 - `AUTORIFT_ITS_LIVE` now uses `r7gd` memory-optimized Graviton3 instances.
 
 ## [10.10.2]
