@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.0]
+
+### Changed
+
+- If the user submits an `ARIA_S1_GUNW` job whose parameters (`reference_date`, `secondary_date`, and `frame_id`) correspond to an already-archived product, the job will now transition directly from `PENDING` to `SUCCEEDED`, the job's `browse_images` and `files` fields will be populated from the CMR record, and the job's credit cost will be refunded to the user (unless the user has infinite credits).
+- `AUTORIFT_ITS_LIVE` now uses `r7gd` memory-optimized Graviton3 instances.
+
 ## [10.10.2]
 
 ### Fixed

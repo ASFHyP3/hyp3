@@ -65,12 +65,12 @@ jobs:
             cost_profile: DEFAULT
             job_files: >-
               job_spec/AUTORIFT_ITS_LIVE.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            instance_types: r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: JPL-public
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/arm64/recommended/image_id
 
           - environment: hyp3-ak-fire-safe-test
             domain: hyp3-ak-fire-safe-test.asf.alaska.edu
