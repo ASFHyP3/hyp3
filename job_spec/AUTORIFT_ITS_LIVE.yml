@@ -165,7 +165,7 @@ AUTORIFT:
         - --publish-output
         - '!Join ["/", ["s3:/", Ref::publish_bucket, "test-space/stac/ndjson/ingest"]]'
       timeout: 10800
-      compute_environment: Default
+      compute_environment: AriaAutorift
       vcpu: 1
       memory: 7875
       secrets:
