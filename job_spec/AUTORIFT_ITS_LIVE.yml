@@ -116,6 +116,11 @@ AUTORIFT:
           - "its-live-data"
           - "its-live-data-test"
         default: null
+    publish_stac_prefix:
+      api_schema:
+        description: Publish the resulting STAC JSON item under this prefix in the ITS_LIVE AWS Open Data (or test) S3 Bucket
+        type: string
+        default: test-space/stac/ndjson/ingest
     use_static_files:
       api_schema:
         description:  Use static topographic correction files for ISCE3 processing if available (Sentinel-1 only)
@@ -162,8 +167,10 @@ AUTORIFT:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
-        - --publish-output
-        - '!Join ["/", ["s3:/", Ref::publish_bucket, "test-space/stac/ndjson/ingest"]]'
+        - --publish-bucket
+        - Ref::publish_bucket
+        - --publish-prefix
+        - Ref::publish_stac_prefix
       timeout: 10800
       compute_environment: AriaAutorift
       vcpu: 1
