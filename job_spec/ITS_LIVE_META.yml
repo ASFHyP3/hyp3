@@ -1,0 +1,49 @@
+ITS_LIVE_META:
+  required_parameters:
+    - granule_uri
+  parameters:
+    granule_uri:
+      api_schema:
+        description: S3 URI for an ITS_LIVE velocity granule to generate metadata for
+        type: string
+        pattern: '^s3:\/\/.*\.nc$'
+    publish_bucket:
+      api_schema:
+        description: Publish the resulting metadata files to the ITS_LIVE AWS Open Data (or test) S3 Bucket
+        type: string
+        nullable: true
+        enum:
+          - null
+          - "its-live-data"
+          - "its-live-data-test"
+        default: null
+    publish_stac_prefix:
+      api_schema:
+        description: Publish the resulting STAC JSON item under this prefix in the ITS_LIVE AWS Open Data (or test) S3 Bucket
+        type: string
+        default: test-space/stac/ndjson/ingest
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/betolink/itslive-metadata
+      command:
+        - -granule-uri
+        - Ref::granule_uri
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --publish-bucket
+        - Ref::publish_bucket
+        - --publish-prefix
+        - Ref::publish_stac_prefix
+      timeout: 10800
+      compute_environment: AriaAutorift
+      vcpu: 1
+      memory: 7875
+      secrets:
+        - PUBLISH_ACCESS_KEY_ID
+        - PUBLISH_SECRET_ACCESS_KEY
