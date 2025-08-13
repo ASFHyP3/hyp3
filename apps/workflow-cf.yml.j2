@@ -13,6 +13,9 @@ Parameters:
   JobsTable:
     Type: String
 
+  UsersTable:
+    Type: String
+
   Bucket:
     Type: String
 
@@ -97,6 +100,7 @@ Resources:
         {{ snake_to_pascal_case(step['name']) }}: !Ref {{ snake_to_pascal_case(step['name']) }}
         {% endfor %}
         {% endfor %}
+        SearchArchiveLambdaArn: !GetAtt SearchArchive.Outputs.LambdaArn
         UpdateDBLambdaArn: !GetAtt UpdateDB.Outputs.LambdaArn
         SetBatchOverridesLambdaArn: !GetAtt SetBatchOverrides.Outputs.LambdaArn
         GetFilesLambdaArn: !GetAtt GetFiles.Outputs.LambdaArn
@@ -157,11 +161,24 @@ Resources:
           - Effect: Allow
             Action: lambda:InvokeFunction
             Resource:
+             - !GetAtt SearchArchive.Outputs.LambdaArn
              - !GetAtt UpdateDB.Outputs.LambdaArn
              - !GetAtt SetBatchOverrides.Outputs.LambdaArn
              - !GetAtt GetFiles.Outputs.LambdaArn
              - !GetAtt CheckProcessingTime.Outputs.LambdaArn
              - !GetAtt UploadLog.Outputs.LambdaArn
+
+  SearchArchive:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        JobsTable: !Ref JobsTable
+        UsersTable: !Ref UsersTable
+        {% if security_environment == 'EDC' %}
+        SecurityGroupId: !Ref SecurityGroupId
+        SubnetIds: !Join [",", !Ref SubnetIds]
+        {% endif %}
+      TemplateURL: search-archive/search-archive-cf.yml
 
   UpdateDB:
     Type: AWS::CloudFormation::Stack
@@ -189,6 +206,7 @@ Resources:
     Properties:
       Parameters:
         Bucket: !Ref Bucket
+        JobsTable: !Ref JobsTable
         {% if security_environment == 'EDC' %}
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
@@ -206,28 +224,17 @@ Resources:
       {% endif %}
       TemplateURL: check-processing-time/check-processing-time-cf.yml
 
-  StartExecutionManager:
+  StartExecution:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
         JobsTable: !Ref JobsTable
-        StartExecutionWorkerArn: !GetAtt StartExecutionWorker.Outputs.LambdaArn
-        {% if security_environment == 'EDC' %}
-        SecurityGroupId: !Ref SecurityGroupId
-        SubnetIds: !Join [",", !Ref SubnetIds]
-        {% endif %}
-      TemplateURL: start-execution-manager/start-execution-manager-cf.yml
-
-  StartExecutionWorker:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      Parameters:
         StepFunctionArn: !Ref StepFunction
         {% if security_environment == 'EDC' %}
         SecurityGroupId: !Ref SecurityGroupId
         SubnetIds: !Join [",", !Ref SubnetIds]
         {% endif %}
-      TemplateURL: start-execution-worker/start-execution-worker-cf.yml
+      TemplateURL: start-execution/start-execution-cf.yml
 
   UploadLog:
     Type: AWS::CloudFormation::Stack

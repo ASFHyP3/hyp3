@@ -2,8 +2,8 @@ name: Deploy Enterprise Stacks to AWS
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -24,14 +24,47 @@ jobs:
             cost_profile: DEFAULT
             job_files: >-
               job_spec/AUTORIFT_ITS_LIVE.yml
-              job_spec/S1_CORRECTION_ITS_LIVE.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            instance_types: r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
             default_max_vcpus: 2000  # Max: 10,406
             expanded_max_vcpus: 2000  # Max: 10,406
             required_surplus: 0
             security_environment: JPL-public
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/arm64/recommended/image_id
+
+          - environment: hyp3-ak-fire-safe
+            domain: hyp3-ak-fire-safe.asf.alaska.edu
+            template_bucket: cf-templates-kc34l8cyitfn-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/AK_FIRE_SAFE.yml
+              job_spec/INSAR_ISCE_BURST.yml
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            default_max_vcpus: 640  # Max: 10,406
+            expanded_max_vcpus: 640  # Max: 10,406
+            required_surplus: 0
+            security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
+
+          - environment: hyp3-pism-cloud
+            domain: pism-cloud.asf.alaska.edu
+            template_bucket: cf-templates-1qca1gr649g17-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/INSAR_ISCE_BURST.yml
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            default_max_vcpus: 640  # Max: 10,406
+            expanded_max_vcpus: 640  # Max: 10,406
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-a19-jpl
             domain: hyp3-a19-jpl.asf.alaska.edu
@@ -44,6 +77,7 @@ jobs:
             job_files: >-
               job_spec/ARIA_AUTORIFT.yml
               job_spec/ARIA_RAIDER.yml
+              job_spec/ARIA_S1_COSEIS.yml
               job_spec/INSAR_ISCE.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
             default_max_vcpus: 4000  # Max: 13000
@@ -51,7 +85,6 @@ jobs:
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
 
           - environment: hyp3-tibet-jpl
             domain: hyp3-tibet-jpl.asf.alaska.edu
@@ -64,6 +97,7 @@ jobs:
             job_files: >-
               job_spec/ARIA_AUTORIFT.yml
               job_spec/ARIA_RAIDER.yml
+              job_spec/ARIA_S1_COSEIS.yml
               job_spec/INSAR_ISCE.yml
               job_spec/OPERA_DIST_S1.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
@@ -72,7 +106,6 @@ jobs:
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
 
           - environment: hyp3-nisar-jpl
             domain: hyp3-nisar-jpl.asf.alaska.edu
@@ -85,6 +118,7 @@ jobs:
             job_files: >-
               job_spec/ARIA_AUTORIFT.yml
               job_spec/ARIA_RAIDER.yml
+              job_spec/ARIA_S1_COSEIS.yml
               job_spec/INSAR_ISCE.yml
               job_spec/OPERA_DIST_S1.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
@@ -93,7 +127,6 @@ jobs:
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
 
           - environment: hyp3-avo
             domain: hyp3-avo.asf.alaska.edu
@@ -106,13 +139,13 @@ jobs:
             job_files: >-
               job_spec/INSAR_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
 
           - environment: hyp3-watermap
             domain: hyp3-watermap.asf.alaska.edu
@@ -132,7 +165,6 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
 
           - environment: hyp3-streamflow
             domain: hyp3-streamflow.asf.alaska.edu
@@ -152,7 +184,6 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
 
           - environment: azdwr-hyp3
             domain: azdwr-hyp3.asf.alaska.edu
@@ -165,13 +196,13 @@ jobs:
             job_files: >-
               job_spec/INSAR_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
 
           - environment: hyp3-cargill
             domain: hyp3-cargill.asf.alaska.edu
@@ -186,13 +217,13 @@ jobs:
               job_spec/INSAR_GAMMA.yml
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
 
           - environment: hyp3-bgc-engineering
             domain: hyp3-bgc-engineering.asf.alaska.edu
@@ -207,13 +238,13 @@ jobs:
               job_spec/INSAR_GAMMA.yml
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
 
           - environment: hyp3-carter
             domain: hyp3-carter.asf.alaska.edu
@@ -228,33 +259,13 @@ jobs:
               job_spec/INSAR_GAMMA.yml
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
-
-          - environment: hyp3-lavas
-            domain: hyp3-lavas.asf.alaska.edu
-            template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 14
-            default_credits_per_user: 0
-            default_application_status: APPROVED
-            cost_profile: DEFAULT
-            job_files: >-
-              job_spec/INSAR_ISCE_BURST.yml
-              job_spec/SRG_GSLC.yml
-              job_spec/SRG_TIME_SERIES.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
-            required_surplus: 0
-            security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-            distribution_url: ''
 
     environment:
       name: ${{ matrix.environment }}
@@ -262,6 +273,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -274,30 +287,33 @@ jobs:
         with:
           python-version: 3.13
 
+      - run: |
+          jq -n '{"Parameters": $ARGS.named}' \
+            --arg VpcId '${{ secrets.VPC_ID }}' \
+            --arg SubnetIds '${{ secrets.SUBNET_IDS }}' \
+            --arg SecretArn '${{ secrets.SECRET_ARN }}' \
+            --arg ImageTag '${{ matrix.IMAGE_TAG }}' \
+            --arg ProductLifetimeInDays '${{ matrix.product_lifetime_in_days }} ' \
+            --arg AuthPublicKey '${{ secrets.AUTH_PUBLIC_KEY }}' \
+            --arg DefaultCreditsPerUser '${{ matrix.default_credits_per_user }}' \
+            --arg DefaultApplicationStatus '${{ matrix.default_application_status }}' \
+            --arg AmiId '${{ matrix.ami_id }}' \
+            --arg DefaultMaxvCpus '${{ matrix.default_max_vcpus }}' \
+            --arg ExpandedMaxvCpus '${{ matrix.expanded_max_vcpus }}' \
+            --arg MonthlyBudget '${{ secrets.MONTHLY_BUDGET }}' \
+            --arg RequiredSurplus '${{ matrix.required_surplus }}' \
+            --arg InstanceTypes '${{ matrix.instance_types }}' \
+            --arg DomainName '${{ matrix.domain }}' \
+            --arg CertificateArn '${{ secrets.CERTIFICATE_ARN }}' \
+            > parameters.json
+
       - uses: ./.github/actions/deploy-hyp3
         with:
           TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
           STACK_NAME: ${{ matrix.environment }}
-          DOMAIN_NAME: ${{ matrix.domain }}
           API_NAME: ${{ matrix.environment }}
-          CERTIFICATE_ARN:  ${{ secrets.CERTIFICATE_ARN }}
-          IMAGE_TAG: ${{ matrix.image_tag }}
-          PRODUCT_LIFETIME: ${{ matrix.product_lifetime_in_days }}
-          VPC_ID: ${{ secrets.VPC_ID }}
-          SUBNET_IDS: ${{ secrets.SUBNET_IDS }}
-          SECRET_ARN: ${{ secrets.SECRET_ARN }}
           CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
-          DEFAULT_CREDITS_PER_USER: ${{ matrix.default_credits_per_user }}
-          DEFAULT_APPLICATION_STATUS: ${{ matrix.default_application_status }}
           COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
-          DEFAULT_MAX_VCPUS: ${{ matrix.default_max_vcpus }}
-          EXPANDED_MAX_VCPUS: ${{ matrix.expanded_max_vcpus }}
-          MONTHLY_BUDGET: ${{ secrets.MONTHLY_BUDGET }}
-          REQUIRED_SURPLUS: ${{ matrix.required_surplus }}
-          ORIGIN_ACCESS_IDENTITY_ID: ${{ secrets.ORIGIN_ACCESS_IDENTITY_ID }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
-          AMI_ID: ${{ matrix.ami_id }}
-          INSTANCE_TYPES: ${{ matrix.instance_types }}
-          DISTRIBUTION_URL: ${{ matrix.distribution_url }}
-          AUTH_PUBLIC_KEY: ${{ secrets.AUTH_PUBLIC_KEY }}
+          PARAMETER_FILE: parameters.json

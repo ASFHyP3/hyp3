@@ -4,12 +4,252 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.1]
+
+### Added
+- Added new deployment for PISM-Cloud.
+
+## [10.11.0]
+
+### Changed
+
+- If the user submits an `ARIA_S1_GUNW` job whose parameters (`reference_date`, `secondary_date`, and `frame_id`) correspond to an already-archived product, the job will now transition directly from `PENDING` to `SUCCEEDED`, the job's `browse_images` and `files` fields will be populated from the CMR record, and the job's credit cost will be refunded to the user (unless the user has infinite credits).
+- `AUTORIFT_ITS_LIVE` now uses `r7gd` memory-optimized Graviton3 instances.
+
+## [10.10.2]
+
+### Fixed
+
+- Set unused `opera_rtc_s1_end_date` parameter to `Default` in `hyp3-opera-uat` and `hyp3-opera-prod` deployments.
+- Set `distribution_url` parameter to `''` in `hyp3-opera-uat` and `hyp3-opera-prod` deployments so that download URLs will be the default Amazon S3 URL.
+- Increased timeout and memory values for the `ARIA_S1_COSEIS` job type.
+
+## [10.10.1]
+
+### Added
+- Added a new `ARIA_S1_COSEIS` job spec to ARIA JPL deployments.
+- Added `OPERA_RTC_S1_SLC` job spec that processes all bursts in an SLC.
+- Created new hyp3-opera-uat and hyp3-opera-prod deployments.
+
+## [10.10.0]
+
+### Added
+- Added new deployment for AK-FIRE-SAFE.
+- The OpenAPI Specification version can now be specified in `render.py` via the `--openapi-spec` argument.
+- The `AUTORIFT_ITS_LIVE.yml` job spec has a new `use_static_files` parameter to specify whether to use Sentinel-1 static geometries for processing or not.
+  - This parameter has been hard-coded to `False` in the `AUTORIFT.yml` and `ARIA_AUTORIFT.yml` to ensure there is no change in the workflow for those job types. 
+
+### Fixed
+- The `openapi-spec.yml` and the `api-cf.yml` will now always specify the same OpenAPI Specification version.
+
+### Changed
+- `AUTORIFT_ITS_LIVE.yml` and `ARIA_AUTORIFT.yml` job specs, used in JPL deployments, allows Landsat, S2, S1 SLC, and multiple S1 bursts to be submitted via the new `reference`/`secondary` parameters (`granules` is no longer required).
+- For all `AUTORIFT*.yml` job specs, HyP3 now sets the memory required and number of threads to be used by OpenMP via AWS Batch environment overrides.
+    - The default memory for Sentinel-1 processing has been reduced from 64 GB to 32 GB
+    - The credit cost in EDC/DAAC deployments has been halved accordingly
+
+### Removed
+- Removed the deprecated `S1_CORRECTION_ITS_LIVE` job spec that's no longer supported by the hyp3-autorift plugin. 
+
+## [10.9.2]
+
+### Changed
+- Validation of reference and secondary scenes for `INSAR_ISCE_MULTI_BURST` has been updated to match the changes made by [HyP3 ISCE2 v2.3.2](https://github.com/ASFHyP3/hyp3-isce2/releases/tag/v2.3.2):
+    - Reference and secondary scenes are now accepted in any order, but must still have the same set of burst number + swath + polarization identifiers.
+    - Reference scenes are now rejected if they contain any duplicate burst number + swath + polarization identifiers.
+
+## [10.9.1]
+
+### Added
+- Added back `PUBLISH` step of `ARIA_S1_GUNW` jobs so outputs are published to the ASF archive.
+
+## [10.9.0]
+
+### Added
+- Support for API authentication via [Earthdata Login bearer tokens](https://urs.earthdata.nasa.gov/documentation/for_users/user_token)
+
+## [10.8.0]
+
+### Added
+- `cloudformation:DeleteStack` permissions to the [HyP3 deployment policy](cicd-stacks/JPL-deployment-policy-cf.yml) for JPL accounts
+
+### Changed
+- `ARIA_S1_GUNW` now takes `reference_date` and `secondary_date` as inputs instead of `reference` and `secondary` granule lists
+- `ARIA_S1_GUNW` jobs now enforce minimum frame coverage of `0.9`.
+- `OPERA_RTC_S1` processing bounds have been expanded to scenes north of (or intersecting) -60 degrees latitude.
+
+### Removed
+- DEM bounds check for OPERA_RTC_S1 job type since it uses a different DEM.
+
+## [10.7.0]
+
+### Added
+- `INSAR_ISCE` jobs now include a `min_frame_coverage` parameter, which defaults to `0.01`.
+
+### Changed
+- `ARIA_S1_GUNW` jobs now pass `--min-frame-coverage 0.01` to the `DockerizedTopsApp` container.
+
+## [10.6.0]
+
+### Changed
+- Updates to `AUTORIFT` jobs to support the hyp3-autorift plugin v0.22.0:
+  - All job specs allow Sentinel-1C granules to be submitted
+  - The default memory for all job specs has been bumped to 64 GB from 32 GB
+  - The credit cost in EDC/DAAC deployments has been doubled accordingly
+
+## [10.5.2]
+
+### Changed
+- Update `OPERA_RTC_S1` job type to use ghcr image
+
+### Removed
+- Remove the `hyp3-multi-burst-sandbox` deployment
+
+## [10.5.1]
+
+### Changed
+- Increased default and max vCPUs for the edc-prod deployment.
+- Updated the Deployment section of the README to include all of the information necessary to deploy HyP3 to an ASF- or JPL-managed AWS account, as well as some information about deploying to an EDC-managed account.
+
+## [10.5.0]
+
+### Added
+- Added new `OPERA_RTC_S1` job type to https://hyp3-test-api.asf.alaska.edu (EDC UAT) deployment.
+- Added new `opera_rtc_s1_end_date` deployment parameter for configuring the upper bound on the granule date range allowed for `OPERA_RTC_S1` jobs, formatted like `yyyy-mm-dd`, or `Default` to use the default end date (currently `2022-01-01`).
+
+### Fixed
+- The `POST /jobs` endpoint now returns a `503 Service Unavailable` response if any of the CMR queries fail during job validation. Previously, jobs would still be submitted successfully and the CMR error would appear in the HyP3 API logs. This was a fine approach when jobs were only validated for DEM coverage, but is not strict enough now that some job types include additional validators. Fixes https://github.com/ASFHyP3/hyp3/issues/2742
+
+## [10.4.2]
+
+### Changed
+- Increased memory requirement for the `CREATE_MEASUREMENT_GEOTIFF` step of `OPERA_DISP_TMS` jobs.
+
+## [10.4.1]
+
+### Added
+- Sentinel-1C support for `RTC_GAMMA`, `INSAR_GAMMA`, `WATER_MAP`, and `WATER_MAP_EQ` job types.
+
+### Removed
+- Removed `PUBLISH` step of `ARIA_S1_GUNW` jobs so outputs are no longer published to the ASF archive.
+
+## [10.4.0]
+
+### Added
+- Added a new `PATCH /jobs/{job_id}` API endpoint to allow updating a job. Currently only the job's `name` field can be updated. Setting `name` to `null` deletes the field.
+
+### Fixed
+- The `job.expiration_time` field is now documented as nullable using the correct OpenAPI syntax. The incorrect syntax was introduced by [`c2625ee`](https://github.com/ASFHyP3/hyp3/commit/c2625ee33c73429132eb99279e86a5846271b8f6) in [HyP3 v2.17.1](https://github.com/ASFHyP3/hyp3/releases/tag/v2.17.1).
+
+## [10.3.2]
+
+### Changed
+- Increased compute resources for the time series step of `SRG_TIME_SERIES` jobs.
+
+## [10.3.1]
+
+### Fixed
+- We no longer globally ignore ruff's [`ANN401`](https://docs.astral.sh/ruff/rules/any-type/) rule, which flags function parameters annotated with `Any`.
+- Replaced uses of `Any` with static type annotations where appropriate.
+
+## [10.3.0]
+
+### Added
+- The HyP3 API will now report the API version in the OpenAPI specification and the Swagger UI for all deployments.
+
+### Changed
+- `render-cf.py` now determines the version number to report in the API from the git history and tags using [`setuptools_scm`](https://pypi.org/project/setuptools-scm/).
+
+> [!WARNING]
+> In CI/CD pipelines, to dynamically calculate the version number you must now check out the full history and tags (no shallow clones). In GitHub Actions, this usually looks like specifying `fetch-depth: 0` with `actions/checkout`. For pipelines where you *do not* care about an accurate version number, you can still use a shallow clone by setting the `SETUPTOOLS_SCM_PRETEND_VERSION_FOR_HYP3` environment variable, see: <http://setuptools-scm.readthedocs.io/en/latest/overrides/>.
+
+## [10.2.1]
+
+### Changed
+- Adjusted memory requirements for OPERA_DISP_TMS jobs.
+
+## [10.2.0]
+
+### Added
+- Added a new job type `INSAR_ISCE_MULTI_BURST` to process and mosaic multiple bursts to the hyp3-avo, azdwr-hyp3, hyp3-cargill, hyp3-bgc-engineering, and hyp3-carter deployments.
+- Added the `OPERA_DISP_TMS` job type to the hyp3-edc-prod deployment.
+
+### Removed
+- The `measurement_type`, `start_date`, and `end_date` API parameters for the `OPERA_DISP_TMS` job type have been removed
+  in favor of hardcoded constants.
+
+## [10.1.0]
+
+### Added
+- Added a new job type `INSAR_ISCE_MULTI_BURST` to [HyP3](https://hyp3-api.asf.alaska.edu) to process and mosaic multiple bursts.
+
+## [10.0.1]
+
+### Changed
+- `get_files` now directly updates the `files`, `logs`, `browse_images`, `thumbnail_images`, and `expiration_time` fields in the Jobs table, rather than returning those values to be updated later by the `JOB_SUCCEEDED` or `JOB_FAILED` step. Resolves `SRG_TIME_SERIES` jobs with a large number of inputs exceeding the [256 KiB maximum output size for a Step Functions state](https://docs.aws.amazon.com/step-functions/latest/dg/service-quotas.html).
+
+## [10.0.0]
+
+### Added
+- The internal job spec syntax for `cost_profiles` now supports using an array as a cost parameter. The value used for the cost lookup will be the length of the array.
+
+### Changed
+- The response structure of the `/costs` API endpoint has changed to support multiple cost parameters. See the `costs_response` schema in [`openapi-spec.yml.j2`](./apps/api/src/hyp3_api/api-spec/openapi-spec.yml.j2) for a detailed explanation.
+- The internal job spec syntax for `cost_profiles` has changed to support multiple cost parameters. See [`INSAR_ISCE_MULTI_BURST.yml`](./job_spec/INSAR_ISCE_MULTI_BURST.yml) for an example of using multiple cost parameters.
+- The `EDC` cost profile for the `INSAR_ISCE_MULTI_BURST` job type now implements variable credit costs based on the `looks` parameter and the number of scene pairs. Currently this does not affect any user-facing deployments.
+- The API now returns sensible error messages if an `INSAR_ISCE_MULTI_BURST` job is given with less than 1 scene or more than 15 scenes for either `reference` or `secondary`, rather than the generic `not valid under any of the given schemas` error message.
+
+## [9.5.4]
+
+### Changed
+- Combined `start_execution_worker` and `start_execution_manager` into one `start_execution` AWS Lambda function. Fixes [#2518](https://github.com/ASFHyP3/hyp3/issues/2518).
+
+## [9.5.3]
+
+### Fixed
+- When the API returns an error for an `INSAR_ISCE_BURST` job because the requested scenes have different polarizations, the error message now always includes the requested polarizations in the same order as the requested scenes (previously, the order of the polarizations was not guaranteed). For example, passing two scenes with `VV` and `HH` polarizations, respectively, results in the error message: `The requested scenes need to have the same polarization, got: VV, HH`
+- The API validation behavior for the `INSAR_ISCE_MULTI_BURST` job type is now more closely aligned with the CLI validation for the underlying [HyP3 ISCE2](https://github.com/ASFHyP3/hyp3-isce2/) container. Currently, this only affects the `hyp3-multi-burst-sandbox` deployment.
+- The requested scene names are now validated before DEM coverage for both `INSAR_ISCE_BURST` and `INSAR_ISCE_MULTI_BURST`.
+- The `lambda_logging.log_exceptions` decorator (for logging unhandled exceptions in AWS Lambda functions) now returns the wrapped function's return value rather than always returning `None`.
+- Ruff now enforces that all functions and methods must have type annotations.
+- Updated the DIST-S1 entrypoint of the image and changed the job spec accordingly.
+
+## [9.5.2]
+
+### Added
+- The `ARIA_S1_GUNW` job type is now available in the hyp3-edc-prod deployment.
+
+### Changed
+- OPERA-DIST-S1 runtime increases from 3 to 6 hours for experimentation.
+
+### Fixed
+- OPERA-DIST-S1 job spec had wrong CLI interface (e.g. --n-lookbacks should be --n_lookbacks).
+
+## [9.5.1]
+
+### Added
+- `OPERA_DIST_S1` job type to all ARIA Tibet and NISAR JPL deployments.
+- Stood up a new `hyp3-tibet-jpl-test` deployment for the ARIA Tibet project at JPL.
+
+### Changed
+- Increased throughput for `hyp3-cargill` (640 -> 1600 vCPUs) to support their processing needs.
+
+### Removed
+- Removed the `hyp3-enterprise-test` deployment.
+
 ## [9.5.0]
 
 ### Added
-- ARIA_S1_GUNW job type to EDC deployments.
-- OPERA_DIST_S1 job type to JPL deployments.
-- Stand up test deployments in Tibet and NISAR JPL deployments.
+- `ARIA_S1_GUNW` job type to hyp3-edc-uat deployment.
+- All jobs now have `sns:Publish` permissions for SNS topics in the same AWS region and account for the purpose of sending messages to a co-located deployment of <https://github.com/ASFHyP3/ingest-adapter>.
+
+### Changed
+- The reserved `bucket_prefix` job spec parameter has been renamed to `job_id` and can be referenced as `Ref::job_id` within each step's `command` field.
+- The `job_id` parameter of the `ARIA_RAIDER` job type has been renamed to `gunw_job_id`.
+- The `AUTORIFT_ITS_LIVE` job type now accepts Sentinel-1 burst products.
+- `ruff` now checks for incorrect docstrings (missing docstrings are still allowed), incomplete type annotations (missing annotations are still allowed), and opportunities to use `pathlib`.
+- Cloudformation parameter overrides are now provided via a .json file input to the `deploy-hyp3` GitHub action.
+- The `OriginAccessIdentityId` used in EDC deployments has been renamed to `BucketReadPricipals` and now accepts multiple values.
 
 ## [9.4.0]
 

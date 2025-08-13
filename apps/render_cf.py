@@ -4,9 +4,10 @@ from pathlib import Path
 
 import jinja2
 import yaml
+from setuptools_scm import get_version
 
 
-def snake_to_pascal_case(input_string: str):
+def snake_to_pascal_case(input_string: str) -> str:
     split_string = input_string.lower().split('_')
     return ''.join([i.title() for i in split_string])
 
@@ -75,7 +76,7 @@ def get_map_state(job_spec: dict, step: dict) -> dict:
     }
 
 
-def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params=False) -> dict:
+def get_batch_submit_job_state(job_spec: dict, step: dict, filter_batch_params: bool = False) -> dict:
     if filter_batch_params:
         batch_job_parameters: dict | str = get_batch_job_parameters(job_spec, step)
         parameters_key = 'Parameters'
@@ -117,18 +118,22 @@ def parse_map_statement(map_statement: str) -> tuple[str, str]:
         raise ValueError(f"expected 'for', got '{tokens[0]}': {map_statement}")
     if tokens[2] != 'in':
         raise ValueError(f"expected 'in', got '{tokens[2]}': {map_statement}")
-    return tokens[1], tokens[3]
+    item, items = tokens[1], tokens[3]
+    if item == 'job_id':
+        raise ValueError(f"map statement contains reserved parameter name 'job_id': {map_statement}")
+    return item, items
 
 
 def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str | None = None) -> dict:
-    job_params = {'bucket_prefix', *job_spec['parameters'].keys()}
     step_params = get_batch_param_names_for_job_step(step)
     batch_params = {}
     for param in step_params:
-        if param == map_item:
+        if param == 'job_id':
+            batch_params['job_id.$'] = '$.job_id'
+        elif param == map_item:
             batch_params[f'{map_item}.$'] = "States.Format('{}', $$.Map.Item.Value)"
         else:
-            if param not in job_params:
+            if param not in job_spec['parameters']:
                 raise ValueError(f"job parameter '{param}' has not been defined")
             batch_params[f'{param}.$'] = f'$.batch_job_parameters.{param}'
     return batch_params
@@ -139,7 +144,14 @@ def get_batch_param_names_for_job_step(step: dict) -> set[str]:
     return {arg.removeprefix(ref_prefix) for arg in step['command'] if arg.startswith(ref_prefix)}
 
 
-def render_templates(job_types: dict, compute_envs: dict, security_environment: str, api_name: str):
+def render_templates(
+    job_types: dict,
+    compute_envs: dict,
+    security_environment: str,
+    api_name: str,
+    api_version: str,
+    openapi_spec: str,
+) -> None:
     job_states = get_states_for_jobs(job_types)
 
     env = jinja2.Environment(
@@ -159,6 +171,8 @@ def render_templates(job_types: dict, compute_envs: dict, security_environment: 
             compute_envs=compute_envs,
             security_environment=security_environment,
             api_name=api_name,
+            api_version=api_version,
+            openapi_spec=openapi_spec,
             json=json,
             snake_to_pascal_case=snake_to_pascal_case,
             job_states=job_states,
@@ -191,7 +205,7 @@ def render_batch_params_by_job_type(job_types: dict) -> None:
         for step in job_spec['steps']:
             params.update(get_batch_param_names_for_job_step(step))
         batch_params_by_job_type[job_type] = list(params)
-    with (Path('apps') / 'start-execution-worker' / 'src' / 'batch_params_by_job_type.json').open('w') as f:
+    with (Path('apps') / 'start-execution' / 'src' / 'batch_params_by_job_type.json').open('w') as f:
         json.dump(batch_params_by_job_type, f, indent=2)
 
 
@@ -204,19 +218,14 @@ def render_default_params_by_job_type(job_types: dict) -> None:
         }
         for job_type, job_spec in job_types.items()
     }
-    with open(Path('lib') / 'dynamo' / 'dynamo' / 'default_params_by_job_type.json', 'w') as f:
+    with (Path('lib') / 'dynamo' / 'dynamo' / 'default_params_by_job_type.json').open('w') as f:
         json.dump(default_params_by_job_type, f, indent=2)
 
 
 def render_costs(job_types: dict, cost_profile: str) -> None:
-    costs = [
-        {
-            'job_type': job_type,
-            **job_spec['cost_profiles'][cost_profile],
-        }
-        for job_type, job_spec in job_types.items()
-    ]
-    with open(Path('lib') / 'dynamo' / 'dynamo' / 'costs.json', 'w') as f:
+    costs = {job_type: job_spec['cost_profiles'][cost_profile] for job_type, job_spec in job_types.items()}
+
+    with (Path('lib') / 'dynamo' / 'dynamo' / 'costs.json').open('w') as f:
         json.dump(costs, f, indent=2)
 
 
@@ -226,10 +235,8 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
     if actual_fields != expected_fields:
         raise ValueError(f'{job_type} has fields {actual_fields} but should have {expected_fields}')
 
-    reserved_params = {'bucket_prefix'}
-    reserved_params_in_spec = reserved_params.intersection(set(job_spec['parameters'].keys()))
-    if reserved_params_in_spec:
-        raise ValueError(f'{job_type} contains reserved parameter names: {sorted(reserved_params_in_spec)}')
+    if 'job_id' in job_spec['parameters']:
+        raise ValueError(f"{job_type} contains reserved parameter name 'job_id'")
 
     expected_param_fields = ['api_schema']
     for param_name, param_dict in job_spec['parameters'].items():
@@ -240,15 +247,58 @@ def validate_job_spec(job_type: str, job_spec: dict) -> None:
                 f'but should have {expected_param_fields}'
             )
 
+    for profile in job_spec['cost_profiles'].values():
+        if profile.keys() not in ({'cost_parameters', 'cost_table'}, {'cost'}):
+            raise ValueError(f'Cost definition for job type {job_type} has invalid keys: {profile.keys()}')
 
-def main():
+        if 'cost_table' in profile:
+            if not isinstance(profile['cost_parameters'], list):
+                raise ValueError(
+                    f'Cost definition for job type {job_type} has invalid cost_parameters: Must be a list of strings'
+                )
+
+            if len(profile['cost_parameters']) < 1:
+                raise ValueError(f'Cost definition for job type {job_type} has empty cost_parameters')
+
+            validate_cost_table(profile['cost_table'], job_type)
+
+    for step in job_spec['steps']:
+        if not step['image'].islower():
+            raise ValueError(f'{job_type} has image {step["image"]} but docker requires the image to be all lowercase')
+
+
+def validate_cost_table(cost_table: dict | float, job_type: str) -> None:
+    if isinstance(cost_table, dict):
+        if len(cost_table.items()) < 1:
+            raise ValueError(f'Cost definition for job type {job_type} has empty cost_table')
+
+        for key, value in cost_table.items():
+            if not isinstance(key, str) and not isinstance(key, int):
+                raise ValueError(
+                    f'Cost definition for job type {job_type} has invalid cost_table: '
+                    f'all cost_table keys must be strings or ints, but {key} has type {type(key)}'
+                )
+
+            validate_cost_table(value, job_type)
+
+    elif not isinstance(cost_table, float):
+        raise ValueError(
+            f'Cost definition for job type {job_type} has invalid cost_table: '
+            f'Cost table must be a nested dictionary of costs, got type {type(cost_table)}'
+        )
+
+
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
     parser.add_argument('-e', '--compute-environment-file', required=True, type=Path)
     parser.add_argument('-s', '--security-environment', default='ASF', choices=['ASF', 'EDC', 'JPL', 'JPL-public'])
     parser.add_argument('-n', '--api-name', required=True)
     parser.add_argument('-c', '--cost-profile', default='DEFAULT', choices=['DEFAULT', 'EDC'])
+    parser.add_argument('--openapi-spec', default='3.0.4')
     args = parser.parse_args()
+
+    api_version = get_version(root='..', relative_to=__file__)
 
     job_types = {}
     for file in args.job_spec_files:
@@ -266,7 +316,7 @@ def main():
     render_batch_params_by_job_type(job_types)
     render_default_params_by_job_type(job_types)
     render_costs(job_types, args.cost_profile)
-    render_templates(job_types, compute_envs, args.security_environment, args.api_name)
+    render_templates(job_types, compute_envs, args.security_environment, args.api_name, api_version, args.openapi_spec)
 
 
 if __name__ == '__main__':

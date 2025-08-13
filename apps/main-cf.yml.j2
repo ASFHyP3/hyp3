@@ -43,6 +43,13 @@ Parameters:
       - NOT_STARTED
       - APPROVED
 
+  OperaRtcS1EndDate:
+    Description: >-
+      The upper bound on the granule date range allowed for OPERA_RTC_S1 jobs, formatted like 'yyyy-mm-dd',
+      or 'Default' to use the default end date.
+    Type: String
+    Default: Default
+
   SystemAvailable:
     Description: Set to false to shutdown system, API will run and provide errors to users, but will not accept jobs.
     Type: String
@@ -94,9 +101,9 @@ Parameters:
     Type: String
 
   {% else %}
-  OriginAccessIdentityId:
-    Description: ID of the CloudFront Origin Access Identity used to access data in S3 for Earthdata Cloud deployments
-    Type: String
+  BucketReadPrincipals:
+    Description: List of AWS IAM principals granted read access to data in S3 for Earthdata Cloud deployments
+    Type: CommaDelimitedList
 
   DistributionUrl:
     Type: String
@@ -125,6 +132,7 @@ Resources:
         AuthAlgorithm: !Ref AuthAlgorithm
         DefaultCreditsPerUser: !Ref DefaultCreditsPerUser
         DefaultApplicationStatus: !Ref DefaultApplicationStatus
+        OperaRtcS1EndDate: !Ref OperaRtcS1EndDate
         SystemAvailable: !Ref SystemAvailable
         {% if security_environment == 'EDC' %}
         VpcId: !Ref VpcId
@@ -192,6 +200,7 @@ Resources:
         {% endfor %}
         TaskRoleArn: !GetAtt Cluster.Outputs.TaskRoleArn
         JobsTable: !Ref JobsTable
+        UsersTable: !Ref UsersTable
         Bucket: !Ref ContentBucket
         ImageTag: !Ref ImageTag
         SecretArn: !Ref SecretArn
@@ -304,7 +313,7 @@ Resources:
           - Effect: Allow
             {% if security_environment == 'EDC' %}
             Principal:
-              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"
+              AWS: !Ref BucketReadPrincipals
             {% else %}
             Principal: "*"
             {% endif %}
@@ -315,7 +324,7 @@ Resources:
           - Effect: Allow
             {% if security_environment == 'EDC' %}
             Principal:
-              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentityId}"
+              AWS: !Ref BucketReadPrincipals
             {% else %}
             Principal: "*"
             {% endif %}

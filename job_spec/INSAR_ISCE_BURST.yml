@@ -37,10 +37,9 @@ INSAR_ISCE_BURST:
     DEFAULT:
       cost: 1.0
   validators:
+    - check_single_burst_pair
     - check_dem_coverage
-    - check_valid_polarizations
-    - check_same_burst_ids
-    - check_not_antimeridian 
+    - check_not_antimeridian
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2
@@ -52,7 +51,7 @@ INSAR_ISCE_BURST:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --apply-water-mask
         - Ref::apply_water_mask
         - --looks

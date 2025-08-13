@@ -1,5 +1,6 @@
 from decimal import Decimal
-from os import environ, path
+from os import environ
+from pathlib import Path
 
 import pytest
 import yaml
@@ -20,14 +21,13 @@ def table_properties():
 
 def get_table_properties_from_template(resource_name):
     yaml.SafeLoader.add_multi_constructor('!', lambda loader, suffix, node: None)
-    template_file = path.join(path.dirname(__file__), '../apps/main-cf.yml')
-    with open(template_file) as f:
+    template_file = Path(__file__).parent / '../apps/main-cf.yml'
+    with Path(template_file).open() as f:
         template = yaml.safe_load(f)
     table_properties = template['Resources'][resource_name]['Properties']
     return table_properties
 
 
-@mock_aws
 @pytest.fixture
 def tables(table_properties):
     with mock_aws():

@@ -1,5 +1,7 @@
+import os
 import unittest.mock
 from decimal import Decimal
+from unittest.mock import MagicMock, NonCallableMagicMock
 
 import botocore.exceptions
 import pytest
@@ -7,6 +9,7 @@ import pytest
 import dynamo.user
 from dynamo.exceptions import (
     AccessCodeError,
+    AddToInfiniteCreditsError,
     ApprovedApplicationError,
     DatabaseConditionException,
     InvalidApplicationStatusError,
@@ -677,16 +680,12 @@ def test_decrement_credits(tables):
     assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(0)}]
 
 
-def test_decrement_credits_invalid_cost(tables):
+def test_decrement_credits_invalid_cost():
     with pytest.raises(ValueError, match=r'^Cost 0 <= 0$'):
         dynamo.user.decrement_credits('foo', Decimal(0))
 
-    assert tables.users_table.scan()['Items'] == []
-
     with pytest.raises(ValueError, match=r'^Cost -1 <= 0$'):
         dynamo.user.decrement_credits('foo', Decimal(-1))
-
-    assert tables.users_table.scan()['Items'] == []
 
 
 def test_decrement_credits_cost_too_high(tables):
@@ -725,3 +724,70 @@ def test_decrement_credits_user_does_not_exist(tables):
         dynamo.user.decrement_credits('foo', Decimal(1))
 
     assert tables.users_table.scan()['Items'] == []
+
+
+def test_add_credits(tables):
+    tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': Decimal(0)})
+
+    dynamo.user.add_credits('foo', Decimal(1))
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(1)}]
+
+    dynamo.user.add_credits('foo', Decimal(5))
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': Decimal(6)}]
+
+
+def test_add_credits_invalid_value():
+    with pytest.raises(ValueError, match=r'^Cannot add credits: 0 <= 0$'):
+        dynamo.user.add_credits('foo', Decimal(0))
+
+    with pytest.raises(ValueError, match=r'^Cannot add credits: -1 <= 0$'):
+        dynamo.user.add_credits('foo', Decimal(-1))
+
+
+def test_add_credits_user_does_not_exist(tables):
+    with pytest.raises(DatabaseConditionException, match=r'^User foo does not exist$'):
+        dynamo.user.add_credits('foo', Decimal(1))
+
+    assert tables.users_table.scan()['Items'] == []
+
+
+def test_add_credits_remaining_credits_does_not_exist(tables):
+    tables.users_table.put_item(Item={'user_id': 'foo'})
+
+    with pytest.raises(DatabaseConditionException, match=r'^User foo does not have attribute remaining_credits$'):
+        dynamo.user.add_credits('foo', Decimal(1))
+
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'foo'}]
+
+
+def test_add_credits_infinite_credits(tables):
+    tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': None})
+
+    with pytest.raises(AddToInfiniteCreditsError, match=r'^User foo has infinite credits$'):
+        dynamo.user.add_credits('foo', Decimal(1))
+
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': None}]
+
+
+def test_add_credits_not_a_number(tables):
+    tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': '1'})
+
+    with pytest.raises(DatabaseConditionException, match=r'remaining_credits is not a number'):
+        dynamo.user.add_credits('foo', Decimal(1))
+
+    assert tables.users_table.scan()['Items'] == [{'user_id': 'foo', 'remaining_credits': '1'}]
+
+
+def test_add_credits_exception():
+    with unittest.mock.patch.object(dynamo.util.DYNAMODB_RESOURCE, 'Table') as mock_table_resource:
+        mock_table = mock_table_resource.return_value = NonCallableMagicMock()
+        mock_table.update_item = MagicMock()
+        mock_table.update_item.side_effect = botocore.exceptions.ClientError(
+            error_response={'Error': {'Code': 'foo'}}, operation_name='foo'
+        )
+
+        with pytest.raises(botocore.exceptions.ClientError):
+            dynamo.user.add_credits('test-user', Decimal(1))
+
+        mock_table_resource.assert_called_once_with(os.environ['USERS_TABLE_NAME'])
+        mock_table.update_item.assert_called_once()

@@ -1,11 +1,13 @@
+import contextlib
 import inspect
+from unittest import mock
 
+import pytest
 import responses
-from pytest import raises
 from shapely.geometry import Polygon
 
-from hyp3_api import CMR_URL, validation
-from test_api.conftest import setup_requests_mock_with_given_polygons
+from hyp3_api import CMR_URL, multi_burst_validation, validation
+from test_api.conftest import FUTURE_DATE, setup_mock_cmr_response_for_polygons
 
 
 def rectangle(north, south, east, west):
@@ -23,7 +25,7 @@ def test_not_antimeridian():
     validation.check_not_antimeridian({}, good_granules)
 
     bad_granules = [{'polygon': good_rect, 'name': 'good'}, {'polygon': bad_rect, 'name': 'bad'}]
-    with raises(validation.GranuleValidationError, match=r'.*crosses the antimeridian.*'):
+    with pytest.raises(validation.ValidationError, match=r'.*crosses the antimeridian.*'):
         validation.check_not_antimeridian({}, bad_granules)
 
 
@@ -91,210 +93,118 @@ def test_check_dem_coverage():
     validation.check_dem_coverage({}, [covered2])
     validation.check_dem_coverage({}, [covered1, covered2])
 
-    with raises(validation.GranuleValidationError) as e:
+    with pytest.raises(validation.ValidationError) as e:
         validation.check_dem_coverage({}, [not_covered])
     assert 'not_covered' in str(e)
 
-    with raises(validation.GranuleValidationError) as e:
+    with pytest.raises(validation.ValidationError) as e:
         validation.check_dem_coverage({}, [covered1, not_covered])
     assert 'not_covered' in str(e)
     assert 'covered1' not in str(e)
 
 
-def test_check_same_burst_ids():
-    valid_jobs = [
-        {
-            'job_parameters': {
-                'reference': ['S1_136231_IW2_20200604T022312_VV_7C85-BURST'],
-                'secondary': ['S1_136231_IW2_20200616T022313_VV_5D11-BURST'],
-            }
-        },
-        {
-            'job_parameters': {
-                'reference': [
-                    'S1_136231_IW2_20200604T022312_VV_7C85-BURST',
-                    'S1_136232_IW2_20200616T022315_VV_5D11-BURST',
-                ],
-                'secondary': [
-                    'S1_136231_IW2_20200616T022313_VV_5411-BURST',
-                    'S1_136232_IW2_20200616T022345_VV_5D13-BURST',
-                ],
-            }
-        },
-        {
-            'job_parameters': {
-                'reference': [
-                    'S1_136231_IW2_20200604T022312_VV_7C85-BURST',
-                    'S1_136231_IW3_20200616T022315_VV_5D11-BURST',
-                ],
-                'secondary': [
-                    'S1_136231_IW2_20200616T022313_VV_5411-BURST',
-                    'S1_136231_IW3_20200616T022345_VV_5D13-BURST',
-                ],
-            }
-        },
-    ]
-    invalid_job_different_lengths = {
+def test_check_multi_burst_pairs():
+    with mock.patch.object(multi_burst_validation, 'validate_bursts') as mock_validate_bursts:
+        validation.check_multi_burst_pairs(
+            {'job_parameters': {'reference': 'mock_reference', 'secondary': 'mock_secondary'}}, None
+        )
+
+        mock_validate_bursts.assert_called_once_with('mock_reference', 'mock_secondary')
+
+
+def test_check_multi_burst_max_length():
+    job_with_15_pairs = {'job_parameters': {'reference': list(range(15)), 'secondary': list(range(15))}}
+    job_with_16_reference = {'job_parameters': {'reference': list(range(16)), 'secondary': list(range(15))}}
+    job_with_16_secondary = {'job_parameters': {'reference': list(range(15)), 'secondary': list(range(16))}}
+
+    validation.check_multi_burst_max_length(job_with_15_pairs, None)
+
+    with pytest.raises(
+        multi_burst_validation.MultiBurstValidationError,
+        match=r'^Must provide no more than 15 scene pairs, got 16 reference and 15 secondary$',
+    ):
+        validation.check_multi_burst_max_length(job_with_16_reference, None)
+
+    with pytest.raises(
+        multi_burst_validation.MultiBurstValidationError,
+        match=r'^Must provide no more than 15 scene pairs, got 15 reference and 16 secondary$',
+    ):
+        validation.check_multi_burst_max_length(job_with_16_secondary, None)
+
+    with pytest.raises(
+        multi_burst_validation.MultiBurstValidationError,
+        match=r'^Must provide no more than 14 scene pairs, got 15 reference and 15 secondary$',
+    ):
+        validation.check_multi_burst_max_length(job_with_15_pairs, None, max_pairs=14)
+
+
+def test_check_single_burst_pair():
+    valid_job = {
         'job_parameters': {
-            'reference': ['S1_136231_IW2_20200604T022312_VV_7C85-BURST'],
-            'secondary': ['S1_136232_IW2_20200616T022313_VV_5D11-BURST', 'S1_136233_IW2_20200616T022313_VV_5D11-BURST'],
+            'granules': [
+                'S1_136231_IW2_20200604T022312_VV_7C85-BURST',
+                'S1_136231_IW2_20200616T022313_VV_5D11-BURST',
+            ]
         }
     }
-    invalid_jobs_not_matching = [
-        {
-            'job_parameters': {
-                'reference': ['S1_136231_IW2_20200604T022312_VV_7C85-BURST'],
-                'secondary': ['S1_136232_IW2_20200616T022313_VV_5D11-BURST'],
-            }
-        },
-        {
-            'job_parameters': {
-                'reference': [
-                    'S1_136231_IW2_20200604T022312_VV_7C85-BURST',
-                    'S1_136232_IW2_20200604T123455_VV_ABC5-BURST',
-                ],
-                'secondary': [
-                    'S1_136231_IW2_20200617T022313_VV_5D11-BURST',
-                    'S1_136233_IW2_20200617T123213_VV_5E13-BURST',
-                ],
-            }
-        },
-        {
-            'job_parameters': {
-                'reference': [
-                    'S1_136232_IW2_20200604T022312_VV_7C85-BURST',
-                    'S1_136231_IW2_20200604T123455_VV_ABC5-BURST',
-                ],
-                'secondary': [
-                    'S1_136231_IW2_20200617T022313_VV_5D11-BURST',
-                    'S1_136233_IW2_20200617T123213_VV_5E13-BURST',
-                ],
-            }
-        },
-    ]
-    invalid_jobs_duplicate = [
-        {
-            'job_parameters': {
-                'reference': [
-                    'S1_136231_IW2_20200604T022312_VV_7C85-BURST',
-                    'S1_136231_IW2_20200604T123455_VV_ABC5-BURST',
-                ],
-                'secondary': [
-                    'S1_136231_IW2_20200617T022313_VV_5D11-BURST',
-                    'S1_136231_IW2_20200617T123213_VV_5E13-BURST',
-                ],
-            }
-        },
-        {
-            'job_parameters': {
-                'reference': [
-                    'S1_136231_IW2_20200604T022312_VV_7C85-BURST',
-                    'S1_136231_IW2_20200604T123455_VV_ABC5-BURST',
-                    'S1_136232_IW2_20200604T125455_VV_ABC6-BURST',
-                ],
-                'secondary': [
-                    'S1_136231_IW2_20200617T022313_VV_5D11-BURST',
-                    'S1_136231_IW2_20200617T123213_VV_5E13-BURST',
-                    'S1_136232_IW2_20200604T123475_VV_ABC7-BURST',
-                ],
-            }
-        },
-    ]
-    for valid_job in valid_jobs:
-        validation.check_same_burst_ids(valid_job, {})
-    with raises(validation.GranuleValidationError, match=r'.*Number of reference and secondary scenes must match*'):
-        validation.check_same_burst_ids(invalid_job_different_lengths, {})
-    for invalid_job in invalid_jobs_not_matching:
-        with raises(validation.GranuleValidationError, match=r'.*Burst IDs do not match*'):
-            validation.check_same_burst_ids(invalid_job, {})
-    for invalid_job in invalid_jobs_duplicate:
-        with raises(validation.GranuleValidationError, match=r'.*The requested scenes have more than 1 pair*'):
-            validation.check_same_burst_ids(invalid_job, {})
+    validation.check_single_burst_pair(valid_job, None)
 
+    invalid_job_different_number = {
+        'job_parameters': {
+            'granules': [
+                'S1_136231_IW2_20200604T022312_VV_7C85-BURST',
+                'S1_136232_IW2_20200616T022313_VV_5D11-BURST',
+            ]
+        }
+    }
+    with pytest.raises(
+        validation.ValidationError,
+        match=r'^Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and '
+        r'S1_136232_IW2_20200616T022313_VV_5D11-BURST\.$',
+    ):
+        validation.check_single_burst_pair(invalid_job_different_number, None)
 
-def test_check_valid_polarizations():
-    valid_jobs = [
-        {
-            'job_parameters': {
-                'reference': ['S1_136231_IW2_20200604T022312_VV_7C85-BURST'],
-                'secondary': ['S1_136231_IW2_20200616T022313_VV_5D11-BURST'],
-            }
-        },
-        {
-            'job_parameters': {
-                'reference': [
-                    'S1_136231_IW2_20200604T022312_HH_7C85-BURST',
-                    'S1_136232_IW2_20200616T022315_HH_5D11-BURST',
-                ],
-                'secondary': [
-                    'S1_136231_IW2_20200616T022313_HH_5411-BURST',
-                    'S1_136232_IW2_20200616T022345_HH_5D13-BURST',
-                ],
-            }
-        },
-    ]
-    invalid_jobs_not_matching = [
-        {
-            'job_parameters': {
-                'reference': ['S1_136231_IW2_20200604T022312_VV_7C85-BURST'],
-                'secondary': ['S1_136232_IW2_20200616T022313_HH_5D11-BURST'],
-            }
-        },
-        {
-            'job_parameters': {
-                'reference': [
-                    'S1_136231_IW2_20200604T022312_VV_7C85-BURST',
-                    'S1_136232_IW2_20200604T123455_VV_ABC5-BURST',
-                ],
-                'secondary': [
-                    'S1_136231_IW2_20200617T022313_VV_5D11-BURST',
-                    'S1_136233_IW2_20200617T123213_HH_5E13-BURST',
-                ],
-            }
-        },
-        {
-            'job_parameters': {
-                'reference': [
-                    'S1_136232_IW2_20200604T022312_VV_7C85-BURST',
-                    'S1_136231_IW2_20200604T123455_HH_ABC5-BURST',
-                ],
-                'secondary': [
-                    'S1_136231_IW2_20200617T022313_VV_5D11-BURST',
-                    'S1_136233_IW2_20200617T123213_HH_5E13-BURST',
-                ],
-            }
-        },
-    ]
-    invalid_jobs_unsupported = [
-        {
-            'job_parameters': {
-                'reference': ['S1_136231_IW2_20200604T022312_VH_7C85-BURST'],
-                'secondary': ['S1_136231_IW2_20200617T022313_VH_5D11-BURST'],
-            }
-        },
-        {
-            'job_parameters': {
-                'reference': [
-                    'S1_136231_IW2_20200604T022312_HV_7C85-BURST',
-                    'S1_136231_IW2_20200604T123455_HV_ABC5-BURST',
-                    'S1_136232_IW2_20200604T125455_HV_ABC6-BURST',
-                ],
-                'secondary': [
-                    'S1_136231_IW2_20200617T022313_HV_5D11-BURST',
-                    'S1_136231_IW2_20200617T123213_HV_5E13-BURST',
-                    'S1_136232_IW2_20200604T123475_HV_ABC7-BURST',
-                ],
-            }
-        },
-    ]
-    for valid_job in valid_jobs:
-        validation.check_valid_polarizations(valid_job, {})
-    for invalid_job in invalid_jobs_not_matching:
-        with raises(validation.GranuleValidationError, match=r'.*need to have the same polarization*'):
-            validation.check_valid_polarizations(invalid_job, {})
-    for invalid_job in invalid_jobs_unsupported:
-        with raises(validation.GranuleValidationError, match=r'.*currently supported*'):
-            validation.check_valid_polarizations(invalid_job, {})
+    invalid_job_different_swath = {
+        'job_parameters': {
+            'granules': [
+                'S1_136231_IW2_20200604T022312_VV_7C85-BURST',
+                'S1_136231_IW3_20200616T022313_VV_5D11-BURST',
+            ]
+        }
+    }
+    with pytest.raises(
+        validation.ValidationError,
+        match=r'^Burst IDs do not match for S1_136231_IW2_20200604T022312_VV_7C85-BURST and '
+        r'S1_136231_IW3_20200616T022313_VV_5D11-BURST\.$',
+    ):
+        validation.check_single_burst_pair(invalid_job_different_swath, None)
+
+    invalid_job_different_pol = {
+        'job_parameters': {
+            'granules': [
+                'S1_136231_IW2_20200604T022312_VV_7C85-BURST',
+                'S1_136231_IW2_20200616T022313_HH_5D11-BURST',
+            ]
+        }
+    }
+    with pytest.raises(
+        validation.ValidationError,
+        match=r'^The requested scenes need to have the same polarization, got: VV, HH$',
+    ):
+        validation.check_single_burst_pair(invalid_job_different_pol, None)
+
+    invalid_job_unsupported_pol = {
+        'job_parameters': {
+            'granules': [
+                'S1_136231_IW2_20200604T022312_VH_7C85-BURST',
+                'S1_136231_IW2_20200616T022313_VH_5D11-BURST',
+            ]
+        }
+    }
+    with pytest.raises(
+        validation.ValidationError, match=r'^Only VV and HH polarizations are currently supported, got: VH$'
+    ):
+        validation.check_single_burst_pair(invalid_job_unsupported_pol, None)
 
 
 def test_make_sure_granules_exist():
@@ -311,7 +221,7 @@ def test_make_sure_granules_exist():
     validation._make_sure_granules_exist(['scene1'], granule_metadata)
     validation._make_sure_granules_exist(['scene1', 'scene2'], granule_metadata)
 
-    with raises(validation.GranuleValidationError) as e:
+    with pytest.raises(validation.ValidationError) as e:
         validation._make_sure_granules_exist(
             ['scene1', 'scene2', 'scene3', 'scene4', 'S2_foo', 'LC08_bar', 'LC09_bar'], granule_metadata
         )
@@ -368,14 +278,11 @@ def test_get_cmr_metadata():
     ]
 
 
+@responses.activate
 def test_validate_jobs():
     unknown_granule = 'unknown'
     granule_with_dem_coverage = 'S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8'
     granule_without_dem_coverage = 'S1A_IW_GRDH_1SDV_20201219T222530_20201219T222555_035761_042F72_8378'
-
-    valid_burst_pair = ('S1_136231_IW2_20200604T022312_VV_7C85-BURST', 'S1_136231_IW2_20200616T022313_VV_5D11-BURST')
-
-    invalid_burst_pair = ('S1_136231_IW2_20200616T022313_VV_5D11-BURST', 'S1_136232_IW2_20200604T022315_VV_7C85-BURST')
 
     granule_polygon_pairs = [
         (
@@ -397,7 +304,7 @@ def test_validate_jobs():
             ],
         ),
     ]
-    setup_requests_mock_with_given_polygons(granule_polygon_pairs)
+    setup_mock_cmr_response_for_polygons(granule_polygon_pairs)
 
     jobs = [
         {
@@ -426,11 +333,6 @@ def test_validate_jobs():
             },
         },
         {'job_type': 'ARIA_RAIDER', 'job_parameters': {}},
-        {
-            'job_type': 'INSAR_ISCE_MULTI_BURST',
-            'job_parameters': {'reference': [valid_burst_pair[0]], 'secondary': [valid_burst_pair[1]]},
-        },
-        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'granules': [valid_burst_pair[0], valid_burst_pair[1]]}},
     ]
     validation.validate_jobs(jobs)
 
@@ -442,7 +344,7 @@ def test_validate_jobs():
             },
         }
     ]
-    with raises(validation.GranuleValidationError):
+    with pytest.raises(validation.ValidationError):
         validation.validate_jobs(jobs)
 
     jobs = [
@@ -453,22 +355,7 @@ def test_validate_jobs():
             },
         }
     ]
-    with raises(validation.GranuleValidationError):
-        validation.validate_jobs(jobs)
-
-    jobs = [
-        {
-            'job_type': 'INSAR_ISCE_MULTI_BURST',
-            'job_parameters': {'reference': [invalid_burst_pair[0]], 'secondary': [invalid_burst_pair[1]]},
-        }
-    ]
-    with raises(validation.GranuleValidationError):
-        validation.validate_jobs(jobs)
-
-    jobs = [
-        {'job_type': 'INSAR_ISCE_BURST', 'job_parameters': {'granules': [invalid_burst_pair[0], invalid_burst_pair[1]]}}
-    ]
-    with raises(validation.GranuleValidationError):
+    with pytest.raises(validation.ValidationError):
         validation.validate_jobs(jobs)
 
 
@@ -507,13 +394,13 @@ def test_check_bounds_formatting():
     for valid_job in valid_jobs:
         validation.check_bounds_formatting(valid_job, {})
     for invalid_job in invalid_jobs_bad_order:
-        with raises(validation.BoundsValidationError, match=r'.*Invalid order for bounds.*'):
+        with pytest.raises(validation.ValidationError, match=r'.*Invalid order for bounds.*'):
             validation.check_bounds_formatting(invalid_job, {})
     for invalid_job in invalid_jobs_bad_values:
-        with raises(validation.BoundsValidationError, match=r'.*Invalid lon/lat value(s)*'):
+        with pytest.raises(validation.ValidationError, match=r'.*Invalid lon/lat value(s)*'):
             validation.check_bounds_formatting(invalid_job, {})
 
-    with raises(validation.BoundsValidationError, match=r'.*Bounds cannot be.*'):
+    with pytest.raises(validation.ValidationError, match=r'.*Bounds cannot be.*'):
         validation.check_bounds_formatting(job_with_bad_bounds, {})
 
 
@@ -535,15 +422,15 @@ def test_check_granules_intersecting_bounds():
     validation.check_granules_intersecting_bounds(job_with_specified_bounds, valid_granule_metadata)
 
     error_pattern = r'.*Bounds cannot be.*'
-    with raises(validation.BoundsValidationError, match=error_pattern):
+    with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_bad_bounds, valid_granule_metadata)
 
-    with raises(validation.BoundsValidationError, match=error_pattern):
+    with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_bad_bounds, invalid_granule_metadata)
 
     error_pattern = r".*bounds: \['does_not_intersect1', 'does_not_intersect2', 'does_not_intersect3'\]*"
 
-    with raises(validation.GranuleValidationError, match=error_pattern):
+    with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_specified_bounds, invalid_granule_metadata)
 
 
@@ -558,7 +445,7 @@ def test_check_same_relative_orbits():
     invalid_granule_metadata.append({'name': 'S1B_IW_RAW__0SDV_20200623T161535_20200623T161607_012345_02A10F_7FD6'})
     validation.check_same_relative_orbits({}, valid_granule_metadata)
     error_pattern = r'.*69 is not 87.*'
-    with raises(validation.GranuleValidationError, match=error_pattern):
+    with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_same_relative_orbits({}, invalid_granule_metadata)
 
 
@@ -568,5 +455,137 @@ def test_check_bounding_box_size():
     validation.check_bounding_box_size(job, None, max_bounds_area=100)
 
     error_pattern = r'.*Bounds must be smaller.*'
-    with raises(validation.BoundsValidationError, match=error_pattern):
+    with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_bounding_box_size(job, None, max_bounds_area=99.9)
+
+
+def test_check_opera_rtc_s1_bounds():
+    granule_metadata = [
+        {
+            'name': 'valid1',
+            'polygon': rectangle(-59.99, -60.01, -180, -179),
+        },
+        {
+            'name': 'valid2',
+            'polygon': rectangle(0, 1, 0, 1),
+        },
+    ]
+    validation.check_opera_rtc_s1_bounds(None, granule_metadata)
+
+    granule_metadata.append(
+        {
+            'name': 'invalid',
+            'polygon': rectangle(-60.01, -61, 23, 24),
+        }
+    )
+    with pytest.raises(validation.ValidationError, match=r'Granule invalid is south of -60 degrees latitude'):
+        validation.check_opera_rtc_s1_bounds(None, granule_metadata)
+
+
+def test_check_opera_rtc_s1_date_1_granule():
+    with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
+        validation.check_opera_rtc_s1_date(
+            {'job_parameters': {'granules': ['foo', 'bar']}},
+            None,
+        )
+
+    with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
+        validation.check_opera_rtc_s1_date(
+            {'job_parameters': {'granules': []}},
+            None,
+        )
+
+
+def test_check_opera_rtc_s1_date_min():
+    validation.check_opera_rtc_s1_date(
+        {'job_parameters': {'granules': ['S1_000000_IW1_20160414T000000_VV_0000-BURST']}}, None
+    )
+
+    with pytest.raises(
+        validation.ValidationError,
+        match=r'^Granule S1_000000_IW1_20160413T235959_VV_0000-BURST was acquired before 2016-04-14 .*$',
+    ):
+        validation.check_opera_rtc_s1_date(
+            {'job_parameters': {'granules': ['S1_000000_IW1_20160413T235959_VV_0000-BURST']}}, None
+        )
+
+
+def test_check_opera_rtc_s1_date_max():
+    validation.check_opera_rtc_s1_date(
+        {'job_parameters': {'granules': ['S1_000000_IW1_20211231T235959_VV_0000-BURST']}}, None
+    )
+
+    with pytest.raises(
+        validation.ValidationError,
+        match=r'^Granule S1_000000_IW1_20220101T000000_VV_0000-BURST was acquired on or after 2022-01-01 .*',
+    ):
+        validation.check_opera_rtc_s1_date(
+            {'job_parameters': {'granules': ['S1_000000_IW1_20220101T000000_VV_0000-BURST']}}, None
+        )
+
+    with pytest.raises(
+        validation.ValidationError,
+        match=r'^Granule S1_000000_IW1_20250428T000000_VV_0000-BURST was acquired on or after 2022-01-01 .*',
+    ):
+        validation.check_opera_rtc_s1_date(
+            {'job_parameters': {'granules': ['S1_000000_IW1_20250428T000000_VV_0000-BURST']}}, None
+        )
+
+
+def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
+    monkeypatch.setenv('OPERA_RTC_S1_END_DATE', '2025-05-02')
+
+    validation.check_opera_rtc_s1_date(
+        {'job_parameters': {'granules': ['S1_000000_IW1_20250501T235959_VV_0000-BURST']}}, None
+    )
+
+    with pytest.raises(
+        validation.ValidationError,
+        match=r'^Granule S1_000000_IW1_20250502T000000_VV_0000-BURST was acquired on or after 2025-05-02 .*',
+    ):
+        validation.check_opera_rtc_s1_date(
+            {'job_parameters': {'granules': ['S1_000000_IW1_20250502T000000_VV_0000-BURST']}}, None
+        )
+
+    with pytest.raises(
+        validation.ValidationError,
+        match=r'^Granule S1_000000_IW1_20250506T000000_VV_0000-BURST was acquired on or after 2025-05-02 .*',
+    ):
+        validation.check_opera_rtc_s1_date(
+            {'job_parameters': {'granules': ['S1_000000_IW1_20250506T000000_VV_0000-BURST']}}, None
+        )
+
+
+@pytest.mark.parametrize(
+    'job_parameters,error',
+    [
+        ({'reference_date': '2022-01-02', 'secondary_date': '2022-01-01'}, contextlib.nullcontext()),
+        (
+            {'reference_date': '2014-06-14', 'secondary_date': '2022-01-02'},
+            pytest.raises(validation.ValidationError, match=r'.*is before the start of the sentinel 1 mission.*'),
+        ),
+        (
+            {'reference_date': '2022-01-02', 'secondary_date': '2014-06-14'},
+            pytest.raises(validation.ValidationError, match=r'.*is before the start of the sentinel 1 mission.*'),
+        ),
+        (
+            {'reference_date': FUTURE_DATE, 'secondary_date': '2021-01-01'},
+            pytest.raises(validation.ValidationError, match=r'.*is a date in the future.*'),
+        ),
+        (
+            {'reference_date': '2021-01-01', 'secondary_date': FUTURE_DATE},
+            pytest.raises(validation.ValidationError, match=r'.*is a date in the future.*'),
+        ),
+        (
+            {'reference_date': '2021-01-01', 'secondary_date': '2021-01-01'},
+            pytest.raises(validation.ValidationError, match=r'secondary date must be earlier than reference date\.'),
+        ),
+        (
+            {'reference_date': '2022-01-01', 'secondary_date': '2022-01-02'},
+            pytest.raises(validation.ValidationError, match=r'secondary date must be earlier than reference date\.'),
+        ),
+    ],
+)
+def test_check_aria_s1_gunw_dates(job_parameters, error):
+    with error:
+        validation.check_aria_s1_gunw_dates({'job_parameters': job_parameters}, None)

@@ -136,6 +136,7 @@ OPERA_DIST_S1:
     - name: ''
       image: ghcr.io/opera-adt/dist-s1
       command:
+<<<<<<< HEAD
         - dist-s1 run
         - --mgrs-tile-id
         - Ref::mgrs_tile_id
@@ -145,12 +146,21 @@ OPERA_DIST_S1:
         - Ref::post_date
         - --post-date-buffer-days
         - Ref::post_date_buffer_days
+=======
+>>>>>>> 7892420c93dc5efd364fbcd38ec5218792ca5878
         - --bucket
         - '!Ref Bucket'
-        - --bucket-prefix
-        - Ref::bucket_prefix
-        - --memory-strategy
+        - --bucket_prefix
+        - Ref::job_id
+        - --mgrs_tile_id
+        - Ref::mgrs_tile_id
+        - --track_number
+        - Ref::track_number
+        - --post_date
+        - Ref::post_date
+        - --memory_strategy
         - Ref::memory_strategy
+<<<<<<< HEAD
         - --low-confidence-alert-threshold
         - Ref::low_confidence_alert_threshold
         - --high-confidence-alert-threshold
@@ -176,6 +186,15 @@ OPERA_DIST_S1:
         - --use-date-encoding
         - Ref::use_date_encoding
       timeout: 10800  # 3 hr
+=======
+        - --moderate_confidence_threshold
+        - Ref::moderate_confidence_threshold
+        - --high_confidence_threshold
+        - Ref::high_confidence_threshold
+        - --n_lookbacks
+        - Ref::n_lookbacks
+      timeout: 21600  # 6 hr
+>>>>>>> 7892420c93dc5efd364fbcd38ec5218792ca5878
       compute_environment: Default
       vcpu: 1
       memory: 7500

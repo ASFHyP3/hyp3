@@ -13,7 +13,7 @@ INSAR_GAMMA:
         items:
           description: The name of the Sentinel-1 SLC granule to process
           type: string
-          pattern: "^S1[AB]_IW_SLC__1S[SD][VH]"
+          pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
           minLength: 67
           maxLength: 67
           example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
@@ -69,12 +69,10 @@ INSAR_GAMMA:
         default: 0.6
   cost_profiles:
     EDC:
-      cost_parameter: looks
+      cost_parameters: [looks]
       cost_table:
-        - parameter_value: 20x4
-          cost: 10.0
-        - parameter_value: 10x2
-          cost: 15.0
+         20x4: 10.0
+         10x2: 15.0
     DEFAULT:
       cost: 1.0
   validators:
@@ -90,7 +88,7 @@ INSAR_GAMMA:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --include-look-vectors
         - Ref::include_look_vectors
         - --include-los-displacement

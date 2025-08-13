@@ -13,13 +13,13 @@ RTC_GAMMA:
           anyOf:
             - description: The name of the Sentinel-1 GRDH granule to process
               type: string
-              pattern: "^S1[AB]_IW_GRDH_1S[SD][VH]"
+              pattern: "^S1[ABC]_IW_GRDH_1S[SD][VH]"
               minLength: 67
               maxLength: 67
               example: S1B_IW_GRDH_1SDV_20211013T183321_20211013T183346_029121_037995_5B38
             - description: The name of the Sentinel-1 SLC granule to process
               type: string
-              pattern: "^S1[AB]_IW_SLC__1S[SD][VH]"
+              pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
               minLength: 67
               maxLength: 67
               example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
@@ -88,14 +88,11 @@ RTC_GAMMA:
         type: boolean
   cost_profiles:
     EDC:
-      cost_parameter: resolution
+      cost_parameters: [resolution]
       cost_table:
-        - parameter_value: 30.0
-          cost: 5.0
-        - parameter_value: 20.0
-          cost: 15.0
-        - parameter_value: 10.0
-          cost: 60.0
+        30: 5.0
+        20: 15.0
+        10: 60.0
     DEFAULT:
       cost: 1.0
   validators:
@@ -111,7 +108,7 @@ RTC_GAMMA:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
-        - Ref::bucket_prefix
+        - Ref::job_id
         - --resolution
         - Ref::resolution
         - --dem-name
