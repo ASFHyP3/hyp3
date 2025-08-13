@@ -30,7 +30,7 @@ ITS_LIVE_META:
     - name: ''
       image: ghcr.io/betolink/itslive-metadata
       command:
-        - -granule-uri
+        - --granule-uri
         - Ref::granule_uri
         - --bucket
         - '!Ref Bucket'
