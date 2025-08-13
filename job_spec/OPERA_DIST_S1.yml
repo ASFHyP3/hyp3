@@ -71,7 +71,6 @@ OPERA_DIST_S1:
         type: string
         default: "none"
         example: "4,4,2"
-
     n_workers_for_despeckling:
       api_schema:
         description: N CPUs to use for despeckling the bursts
@@ -136,65 +135,46 @@ OPERA_DIST_S1:
     - name: ''
       image: ghcr.io/opera-adt/dist-s1
       command:
-<<<<<<< HEAD
         - dist-s1 run
-        - --mgrs-tile-id
-        - Ref::mgrs_tile_id
-        - --track-number
-        - Ref::track_number
-        - --post-date
-        - Ref::post_date
-        - --post-date-buffer-days
-        - Ref::post_date_buffer_days
-=======
->>>>>>> 7892420c93dc5efd364fbcd38ec5218792ca5878
-        - --bucket
-        - '!Ref Bucket'
-        - --bucket_prefix
-        - Ref::job_id
         - --mgrs_tile_id
         - Ref::mgrs_tile_id
         - --track_number
         - Ref::track_number
         - --post_date
         - Ref::post_date
+        - --post_date_buffer_days
+        - Ref::post_date_buffer_days
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket_prefix
+        - Ref::job_id
         - --memory_strategy
         - Ref::memory_strategy
-<<<<<<< HEAD
-        - --low-confidence-alert-threshold
+        - --low_confidence_alert_threshold
         - Ref::low_confidence_alert_threshold
-        - --high-confidence-alert-threshold
+        - --high_confidence_alert_threshold
         - Ref::high_confidence_alert_threshold
-        - --delta-lookback-days-mw
+        - --delta_lookback_days_mw
         - Ref::delta_lookback_days_mw
-        - --max-pre-imgs-per-burst-mw
+        - --max_pre_imgs_per_burst_mw
         - Ref::max_pre_imgs_per_burst_mw
-        - --n-workers-for-despeckling
+        - --n_workers_for_despeckling
         - Ref::n_workers_for_despeckling
         - --device
         - Ref::device
-        - --n-workers-for-norm-param-estimation
+        - --n_workers_for_norm_param_estimation
         - Ref::n_workers_for_norm_param_estimation
-        - --model-source
+        - --model_source
         - Ref::model_source
-        - --stride-for-norm-param-estimation
+        - --stride_for_norm_param_estimation
         - Ref::stride_for_norm_param_estimation
-        - --batch-size-for-norm-param-estimation
+        - --batch_size_for_norm_param_estimation
         - Ref::batch_size_for_norm_param_estimation
-        - --model-compilation
+        - --model_compilation
         - Ref::model_compilation
-        - --use-date-encoding
+        - --use_date_encoding
         - Ref::use_date_encoding
       timeout: 10800  # 3 hr
-=======
-        - --moderate_confidence_threshold
-        - Ref::moderate_confidence_threshold
-        - --high_confidence_threshold
-        - Ref::high_confidence_threshold
-        - --n_lookbacks
-        - Ref::n_lookbacks
-      timeout: 21600  # 6 hr
->>>>>>> 7892420c93dc5efd364fbcd38ec5218792ca5878
       compute_environment: Default
       vcpu: 1
       memory: 7500
