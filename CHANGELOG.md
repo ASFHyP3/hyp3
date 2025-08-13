@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added new deployment for PISM-Cloud.
 
+### Fixed
+- Updated DIST-S1 entrypoint.
+
 ## [10.11.0]
 
 ### Changed
