@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  DeployPolicy:
+    Type: Custom::JplPolicy
+    Properties:
+      ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
+      Path: /account-managed/hyp3/
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - apigateway:*
+              - batch:*
+              - cloudformation:DescribeStacks
+              - cloudformation:ValidateTemplate
+              - cloudwatch:*
+              - dynamodb:*
+              - ec2:*
+              - ecs:*
+              - events:*
+              - iam:CreateServiceLinkedRole
+              - iam:DeleteServiceLinkedRole
+              - iam:Get*
+              - iam:List*
+              - iam:PassRole
+              - kms:*
+              - lambda:*
+              - logs:*
+              - s3:*
+              - secretsmanager:*
+              - sns:*
+              - sqs:*
+              - ssm:GetParameters
+              - states:*
+              - sts:AssumeRole
+            Resource: "*"
+
+          - Effect: Allow
+            Action:
+              - iam:AddRoleToInstanceProfile
+              - iam:CreateInstanceProfile
+              - iam:DeleteInstanceProfile
+              - iam:RemoveRoleFromInstanceProfile
+              - iam:TagInstanceProfile
+              - iam:UntagInstanceProfile
+            Resource: !Sub "arn:aws:iam::${AWS::AccountId}:instance-profile/account-managed/*"
+
+          - Effect: Allow
+            Action:
+              - cloudformation:SetStackPolicy
+              - cloudformation:CreateStack
+              - cloudformation:UpdateStack
+              - cloudformation:DeleteStack
+              - cloudformation:CreateChangeSet
+              - cloudformation:DescribeChangeSet
+              - cloudformation:ExecuteChangeSet
+              - cloudformation:DeleteChangeSet
+              - cloudformation:GetTemplateSummary
+            Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+
+  ApiGatewayLoggingRole:
+    Type: Custom::JplRole
+    Properties:
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: apigateway.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+
+  ApiGatewayLoggingPermission:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn: !GetAtt ApiGatewayLoggingRole.Arn

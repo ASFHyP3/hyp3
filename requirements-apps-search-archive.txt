@@ -1,0 +1,4 @@
+./lib/dynamo/
+./lib/lambda_logging/
+asf_enumeration==0.2.0
+asf_search==9.0.9

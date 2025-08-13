@@ -1,0 +1,86 @@
+name: Deploy LAVAS prod to AWS
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - environment: hyp3-lavas
+            domain: hyp3-lavas.asf.alaska.edu
+            template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/INSAR_ISCE_BURST.yml
+              job_spec/SRG_GSLC.yml
+              job_spec/SRG_TIME_SERIES.yml
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
+    environment:
+      name: ${{ matrix.environment }}
+      url: https://${{ matrix.domain }}
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+
+      - run: |
+          jq -n '{"Parameters": $ARGS.named}' \
+            --arg VpcId '${{ secrets.VPC_ID }}' \
+            --arg SubnetIds '${{ secrets.SUBNET_IDS }}' \
+            --arg SecretArn '${{ secrets.SECRET_ARN }}' \
+            --arg ImageTag '${{ matrix.IMAGE_TAG }}' \
+            --arg ProductLifetimeInDays '${{ matrix.product_lifetime_in_days }} ' \
+            --arg AuthPublicKey '${{ secrets.AUTH_PUBLIC_KEY }}' \
+            --arg DefaultCreditsPerUser '${{ matrix.default_credits_per_user }}' \
+            --arg DefaultApplicationStatus '${{ matrix.default_application_status }}' \
+            --arg AmiId '${{ matrix.ami_id }}' \
+            --arg DefaultMaxvCpus '${{ matrix.default_max_vcpus }}' \
+            --arg ExpandedMaxvCpus '${{ matrix.expanded_max_vcpus }}' \
+            --arg MonthlyBudget '${{ secrets.MONTHLY_BUDGET }}' \
+            --arg RequiredSurplus '${{ matrix.required_surplus }}' \
+            --arg InstanceTypes '${{ matrix.instance_types }}' \
+            --arg DomainName '${{ matrix.domain }}' \
+            --arg CertificateArn '${{ secrets.CERTIFICATE_ARN }}' \
+            > parameters.json
+
+      - uses: ./.github/actions/deploy-hyp3
+        with:
+          TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}
+          STACK_NAME: ${{ matrix.environment }}
+          API_NAME: ${{ matrix.environment }}
+          CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
+          COST_PROFILE: ${{ matrix.cost_profile }}
+          JOB_FILES: ${{ matrix.job_files }}
+          SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
+          PARAMETER_FILE: parameters.json

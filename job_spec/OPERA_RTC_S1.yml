@@ -1,0 +1,43 @@
+OPERA_RTC_S1:
+  required_parameters:
+    - granules
+  parameters:
+    granules:
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 1
+        example:
+          - S1_073251_IW2_20200128T020712_VV_2944-BURST
+        items:
+          anyOf:
+            - description: Sentinel-1 co-pol IW burst granule to process.
+              type: string
+              pattern: '^S1_\d{6}_IW\d_\d{8}T\d{6}_(VV|HH)_[\dA-F]{4}-BURST$'
+              minLength: 43
+              maxLength: 43
+              example: S1_073251_IW2_20200128T020712_VV_2944-BURST
+  cost_profiles:
+    EDC:
+      cost: 1.0
+    DEFAULT:
+      cost: 1.0
+  validators:
+    - check_opera_rtc_s1_date
+    - check_opera_rtc_s1_bounds
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-opera-rtc
+      command:
+        - Ref::granules
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+      timeout: 3600 # 1 hr
+      compute_environment: Default
+      vcpu: 1
+      memory: 7600
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD

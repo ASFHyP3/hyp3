@@ -1,0 +1,113 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  TemplateBucketName:
+    Description: AWS S3 bucket name for uploading CloudFormation templates
+    Type: String
+
+Resources:
+  CloudformationDeploymentRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: cloudformation.amazonaws.com
+          Effect: Allow
+      Policies:
+        - PolicyName: cloud-formation-deployment-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:*
+                  - s3:*
+                  - ecs:*
+                  - batch:*
+                  - events:*
+                  - logs:*
+                  - iam:*
+                  - lambda:*
+                  - ssm:GetParameters
+                  - apigateway:*
+                  - states:*
+                  - dynamodb:*
+                  - rds:*
+                  - cloudwatch:*
+                  - sns:*
+                  - secretsmanager:*
+                  - kms:*
+                Resource: "*"
+
+              - Effect: Allow
+                Action:
+                  - cloudformation:SetStackPolicy
+                  - cloudformation:CreateStack
+                  - cloudformation:UpdateStack
+                  - cloudformation:DeleteStack
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:GetTemplateSummary
+                Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+
+  GithubActionsUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: github-actions
+      Policies:
+        - PolicyName: github-actions-user-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:ValidateTemplate
+                  - cloudformation:DescribeStacks
+                  - ssm:GetParameters
+                Resource: "*"
+
+              - Effect: Allow
+                Action: iam:PassRole
+                Resource: !GetAtt CloudformationDeploymentRole.Arn
+                Condition:
+                  StringLike:
+                    iam:AssociatedResourceArn: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub "arn:aws:s3:::${TemplateBucketName}/*"
+
+              - Effect: Allow
+                Action:
+                  - cloudformation:SetStackPolicy
+                  - cloudformation:CreateStack
+                  - cloudformation:UpdateStack
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:GetTemplateSummary
+                Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+
+  ApiGatewayLoggingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Action: sts:AssumeRole
+          Principal:
+            Service: apigateway.amazonaws.com
+          Effect: Allow
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+
+  ApiGatewayLoggingPermission:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn: !GetAtt ApiGatewayLoggingRole.Arn
