@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.11.1]
 
 ### Added
-- Added new deployment for `hyp3-enterprise`.
+- Added new test and production deployments for `hyp3-enterprise`.
 - Added new deployment for PISM-Cloud.
 
 ## [10.11.0]
