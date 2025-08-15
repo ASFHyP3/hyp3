@@ -2,9 +2,8 @@ name: Deploy Enterprise test to AWS
 
 on:
   push:
-    tags:
-      - 'v*'
-
+    branches:
+      - develop
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
