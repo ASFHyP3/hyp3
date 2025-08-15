@@ -1,4 +1,4 @@
-name: Deploy Enterprise test to AWS
+name: Deploy Enterprise prod to AWS
 
 on:
   push:
@@ -15,8 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-enterprise-test # TODO create this env
-            domain: hyp3-enterprise-test.asf.alaska.edu
+          - environment: hyp3-enterprise
+            domain: hyp3-enterprise.asf.alaska.edu
             template_bucket: cf-templates-qgq5ahzym464-us-west-2
             image_tag: latest
             product_lifetime_in_days: 30
