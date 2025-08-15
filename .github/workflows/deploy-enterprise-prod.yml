@@ -1,4 +1,4 @@
-name: Deploy custom prod stacks to AWS
+name: Deploy Enterprise prod to AWS
 
 on:
   push:

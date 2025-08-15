@@ -1,4 +1,4 @@
-name: Deploy Enterprise Stacks to AWS
+name: Deploy custom test stacks to AWS
 
 on:
   push:
