@@ -21,44 +21,112 @@ OPERA_DIST_S1:
         example: "2025-01-21"
     track_number:
       api_schema:
-        description: "Sentinel-1 Track Number; Supply one from the group of bursts collected from a pass; Near the dateline you may have two sequential track numbers but only need one"
+        description: "Sentinel-1 Track Number; Supply one from the group of bursts collected from a pass; Near the dateline you may have two sequential track numbers"
         type: integer
-        default: 1
         minimum: 1
         maximum: 175
         example: 71
+    post_date_buffer_days:
+      api_schema:
+        description: Buffer days around post-date
+        type: integer
+        default: 1
+        minimum: 0
+        maximum: 7
+        example: 1
     memory_strategy:
       api_schema:
-        description: Memory strategy to use for GPU inference
+        description: Memory strategy to use for GPU inference. Options are high, low
         type: string
         enum: ["high", "low"]
-        default: "low"
-    moderate_confidence_threshold:
+        default: "high"
+        example: "high"
+    low_confidence_alert_threshold:
       api_schema:
-        description: Moderate confidence threshold
+        description: Low confidence alert threshold
         type: number
         format: float
         default: 3.5
-        minimum: 1.0
+        minimum: 0.0
         maximum: 15.0
         example: 3.5
-    high_confidence_threshold:
+    high_confidence_alert_threshold:
       api_schema:
-        description: High confidence threshold
+        description: High confidence alert threshold
         type: number
         format: float
         default: 5.5
-        minimum: 1.0
+        minimum: 0.0
         maximum: 15.0
         example: 5.5
-    n_lookbacks:
+    delta_lookback_days_mw:
       api_schema:
-        description: Number of lookbacks to use for change confirmation within SAS. Use value 1, to avoid SAS confirmation
+        description: Delta lookback days for each window relative to post-image acquisition date. Comma-separated list of integers (e.g., 730,365,0) or "none" to use defaults
+        type: string
+        default: "none"
+        example: "730,365,0"
+    max_pre_imgs_per_burst_mw:
+      api_schema:
+        description: Max number of pre-images per burst within each window. Comma-separated list of integers (e.g., 4,4,2) or "none" to use defaults
+        type: string
+        default: "none"
+        example: "4,4,2"
+    n_workers_for_despeckling:
+      api_schema:
+        description: N CPUs to use for despeckling the bursts
         type: integer
-        default: 3
+        default: 8
         minimum: 1
-        maximum: 3
-        example: 3
+        example: 8
+    device:
+      api_schema:
+        description: Device to use for transformer model inference of normal parameters
+        type: string
+        enum: ["cpu", "cuda", "mps", "best"]
+        default: "best"
+        example: "best"
+    n_workers_for_norm_param_estimation:
+      api_schema:
+        description: Number of CPUs to use for normal parameter estimation
+        type: integer
+        default: 8
+        minimum: 1
+        example: 8
+    model_source:
+      api_schema:
+        description: What model to load; external means load model from cfg and wts paths specified in parameters
+        type: string
+        enum: ["external", "transformer_optimized"]
+        default: "transformer_optimized"
+        example: "transformer_optimized"
+    stride_for_norm_param_estimation:
+      api_schema:
+        description: Number of pixels the convolutional filter moves across the input image at each step
+        type: integer
+        default: 16
+        minimum: 1
+        maximum: 16
+        example: 16
+    batch_size_for_norm_param_estimation:
+      api_schema:
+        description: Batch size for norm param estimation; Tune it according to resources i.e. memory
+        type: integer
+        default: 32
+        minimum: 1
+        example: 32
+    model_compilation:
+      api_schema:
+        description: Flag to enable compilation during execution
+        type: boolean
+        default: false
+        example: false
+
+    use_date_encoding:
+      api_schema:
+        description: Whether to use acquisition date encoding in processing
+        type: boolean
+        default: false
+        example: false
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -67,25 +135,46 @@ OPERA_DIST_S1:
     - name: ''
       image: ghcr.io/opera-adt/dist-s1
       command:
-        - --bucket
-        - '!Ref Bucket'
-        - --bucket_prefix
-        - Ref::job_id
+        - dist-s1 run
         - --mgrs_tile_id
         - Ref::mgrs_tile_id
         - --track_number
         - Ref::track_number
         - --post_date
         - Ref::post_date
+        - --post_date_buffer_days
+        - Ref::post_date_buffer_days
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket_prefix
+        - Ref::job_id
         - --memory_strategy
         - Ref::memory_strategy
-        - --moderate_confidence_threshold
-        - Ref::moderate_confidence_threshold
-        - --high_confidence_threshold
-        - Ref::high_confidence_threshold
-        - --n_lookbacks
-        - Ref::n_lookbacks
-      timeout: 21600  # 6 hr
+        - --low_confidence_alert_threshold
+        - Ref::low_confidence_alert_threshold
+        - --high_confidence_alert_threshold
+        - Ref::high_confidence_alert_threshold
+        - --delta_lookback_days_mw
+        - Ref::delta_lookback_days_mw
+        - --max_pre_imgs_per_burst_mw
+        - Ref::max_pre_imgs_per_burst_mw
+        - --n_workers_for_despeckling
+        - Ref::n_workers_for_despeckling
+        - --device
+        - Ref::device
+        - --n_workers_for_norm_param_estimation
+        - Ref::n_workers_for_norm_param_estimation
+        - --model_source
+        - Ref::model_source
+        - --stride_for_norm_param_estimation
+        - Ref::stride_for_norm_param_estimation
+        - --batch_size_for_norm_param_estimation
+        - Ref::batch_size_for_norm_param_estimation
+        - --model_compilation
+        - Ref::model_compilation
+        - --use_date_encoding
+        - Ref::use_date_encoding
+      timeout: 10800  # 3 hr
       compute_environment: Default
       vcpu: 1
       memory: 7500
