@@ -67,7 +67,7 @@ jobs:
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-volcsarvatory
-            domain: volcsarvatory.asf.alaska.edu
+            domain: hyp3-volcsarvatory.asf.alaska.edu
             template_bucket: cf-templates-1uzy61g1h6omf-us-west-2
             image_tag: latest
             product_lifetime_in_days: 365000
