@@ -4,17 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [10.11.2]
-
-### Added
-- Added PUBLISH step to `OPERA_RTC_S1_SLC` job type
-
 ## [10.11.1]
 
 ### Added
 - Added new test and production deployments for `hyp3-enterprise`.
 - Added new deployment for PISM-Cloud.
 - Added new deployment for VolcSARvatory.
+- Added PUBLISH step to `OPERA_RTC_S1_SLC` job type
 
 ### Fixed
 - Updated DIST-S1 entrypoint.
