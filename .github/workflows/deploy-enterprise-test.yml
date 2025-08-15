@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-enterprise-test # TODO create this env
+          - environment: hyp3-enterprise-test
             domain: hyp3-enterprise-test.asf.alaska.edu
             template_bucket: cf-templates-qgq5ahzym464-us-west-2
             image_tag: test
