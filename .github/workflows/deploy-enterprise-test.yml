@@ -18,7 +18,7 @@ jobs:
           - environment: hyp3-enterprise-test # TODO create this env
             domain: hyp3-enterprise-test.asf.alaska.edu
             template_bucket: cf-templates-qgq5ahzym464-us-west-2
-            image_tag: latest
+            image_tag: test
             product_lifetime_in_days: 30
             default_credits_per_user: 0
             default_application_status: APPROVED
