@@ -12,7 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.11.1]
 
 ### Added
+- Added new test and production deployments for `hyp3-enterprise`.
 - Added new deployment for PISM-Cloud.
+- Added new deployment for VolcSARvatory.
+
+### Fixed
+- Updated DIST-S1 entrypoint.
 
 ## [10.11.0]
 
