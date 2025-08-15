@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added new test and production deployments for `hyp3-enterprise`.
 - Added new deployment for PISM-Cloud.
 - Added new deployment for VolcSARvatory.
+- Added PUBLISH step to `OPERA_RTC_S1_SLC` job type
 
 ### Fixed
 - Updated DIST-S1 entrypoint.
