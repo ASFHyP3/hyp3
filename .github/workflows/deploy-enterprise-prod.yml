@@ -16,13 +16,13 @@ jobs:
       matrix:
         include:
           - environment: hyp3-enterprise
-            domain: hyp3-lavas.asf.alaska.edu # TODO update with final domain
+            domain: hyp3-enterprise.asf.alaska.edu
             template_bucket: cf-templates-qgq5ahzym464-us-west-2
             image_tag: latest
             product_lifetime_in_days: 30
             default_credits_per_user: 0
             default_application_status: APPROVED
-            cost_profile: DEFAULT # TODO
+            cost_profile: DEFAULT
             job_files: >-
               job_spec/AUTORIFT.yml
               job_spec/INSAR_GAMMA.yml
@@ -30,8 +30,8 @@ jobs:
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 10000 # TODO
-            expanded_max_vcpus: 10000 # TODO
+            default_max_vcpus: 10000
+            expanded_max_vcpus: 10000
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
