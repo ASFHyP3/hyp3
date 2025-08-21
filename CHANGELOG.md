@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added `PUBLISH` step to `INSAR_ISCE` and `ARIA_RAIDER` job specs.
 
+### Changed
+- Update EDC credit cost for `OPERA_RTC_S1_SLC` to `0.065`.
+
 ## [10.11.1]
 
 ### Added
