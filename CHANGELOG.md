@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Update EDC credit cost for `OPERA_RTC_S1_SLC` to `0.065`.
+- Revised instance types for `hyp3-opera-uat` and `hyp3-opera-prod` deployments.
 
 ## [10.11.1]
 
