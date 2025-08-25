@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added `PUBLISH` step to `INSAR_ISCE` and `ARIA_RAIDER` job specs.
 
+### Changed
+- Adjust Batch job IAM permissions to allow HyP3 job steps to publish to any SNS topic. Allows jobs to publish to the [ingest-adapter](https://github.com/ASFHyP3/ingest-adapter)'s SNS topic across AWS accounts.
+
 ## [10.11.2]
 
 ### Changed
