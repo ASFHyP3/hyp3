@@ -164,7 +164,7 @@ INSAR_ISCE:
       command:
         - Ref::job_id
       timeout: 600
-      compute_environment: Default
+      compute_environment: InsarIsceAria
       vcpu: 1
       memory: 512
       secrets:

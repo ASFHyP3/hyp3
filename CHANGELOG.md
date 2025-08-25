@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added `PUBLISH` step to `INSAR_ISCE` and `ARIA_RAIDER` job specs.
+- Updated `PUBLISH` step of `ARIA_S1_GUNW` job spec to run on the same compute environment as the preceding steps,
+  allowing the container to run on an already-provisioned EC2 instance.
 
 ## [10.11.2]
 
