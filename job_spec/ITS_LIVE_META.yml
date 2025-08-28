@@ -41,7 +41,7 @@ ITS_LIVE_META:
         - --publish-prefix
         - Ref::publish_stac_prefix
       timeout: 10800
-      compute_environment: AriaAutorift
+      compute_environment: ItsLiveMeta
       vcpu: 1
       memory: 7875
       secrets:
