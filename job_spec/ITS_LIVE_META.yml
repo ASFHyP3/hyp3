@@ -28,7 +28,7 @@ ITS_LIVE_META:
   validators: []
   steps:
     - name: ''
-      image: ghcr.io/betolink/itslive-metadata
+      image: ghcr.io/asfhyp3/itslive-metadata
       command:
         - --granule-uri
         - Ref::granule_uri

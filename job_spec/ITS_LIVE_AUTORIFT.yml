@@ -161,7 +161,7 @@ AUTORIFT:
         - PUBLISH_ACCESS_KEY_ID
         - PUBLISH_SECRET_ACCESS_KEY
     - name: METADATA
-      image: ghcr.io/betolink/itslive-metadata
+      image: ghcr.io/asfhyp3/itslive-metadata
       command:
         - --bucket
         - '!Ref Bucket'
