@@ -71,7 +71,7 @@ OPERA_DIST_S1:
       api_schema:
         description: Max number of pre-images per burst within each window. Comma-separated list of integers (e.g., 4,4,2) or "none" to use defaults
         type: string
-        default: "none
+        default: "none"
         example: "4,4,2"
     n_workers_for_despeckling:
       api_schema:
