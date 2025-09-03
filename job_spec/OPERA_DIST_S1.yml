@@ -181,7 +181,7 @@ OPERA_DIST_S1:
       timeout: 10800  # 3 hr
       compute_environment: Default
       vcpu: 1
-      memory: 32000
+      memory: 31500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
