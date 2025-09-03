@@ -4,10 +4,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.4]
+
+### Added
+- Added METADATA step to `ITS_LIVE_AUTORIFT` to generate a project STAC JSON file and other metadata files for ingest into NSIDC DAAC.
+- Added a new `ITS_LIVE_META` job spec which generates STAC JSON and other metadata files for already published ITS_LIVE products.
+- Added the `ITS_LIVE_META` job spec to the ITS_LIVE deployments.
+
+### Changed
+- Renamed the `AUTORIFT_ITS_LIVE` job spec to `ITS_LIVE_AUTORIFT` to better group the ITS_LIVE project specific job specs.
+- Increase throughput for Cargill deployment by increasing max vCPUs to 6000 from 1600.
+
+## [10.11.3]
+
+### Added
+- Added `PUBLISH` step to `INSAR_ISCE` and `ARIA_RAIDER` job specs.
+
+### Changed
+- Updated `PUBLISH` step of `ARIA_S1_GUNW` job spec to run on the same compute environment as the preceding steps, allowing the container to run on an already-provisioned EC2 instance.
+- Adjust Batch job IAM permissions to allow HyP3 job steps to publish to any SNS topic. Allows jobs to publish to the [ingest-adapter](https://github.com/ASFHyP3/ingest-adapter)'s SNS topic across AWS accounts.
+
+## [10.11.2]
+
+### Changed
+- Update EDC credit cost for `OPERA_RTC_S1_SLC` to `0.065`.
+- Revised instance types for `hyp3-opera-uat` and `hyp3-opera-prod` deployments.
+
 ## [10.11.1]
 
 ### Added
+- Added new test and production deployments for `hyp3-enterprise`.
 - Added new deployment for PISM-Cloud.
+- Added new deployment for VolcSARvatory.
+- Added PUBLISH step to `OPERA_RTC_S1_SLC` job type
 
 ### Fixed
 - Updated DIST-S1 entrypoint.

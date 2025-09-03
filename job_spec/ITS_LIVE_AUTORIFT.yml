@@ -116,6 +116,11 @@ AUTORIFT:
           - "its-live-data"
           - "its-live-data-test"
         default: null
+    publish_stac_prefix:
+      api_schema:
+        description: Publish the resulting STAC JSON item under this prefix in the ITS_LIVE AWS Open Data (or test) S3 Bucket
+        type: string
+        default: test-space/stac/ndjson/ingest
     use_static_files:
       api_schema:
         description:  Use static topographic correction files for ISCE3 processing if available (Sentinel-1 only)
@@ -153,5 +158,23 @@ AUTORIFT:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
+        - PUBLISH_ACCESS_KEY_ID
+        - PUBLISH_SECRET_ACCESS_KEY
+    - name: METADATA
+      image: ghcr.io/asfhyp3/itslive-metadata
+      command:
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --publish-bucket
+        - Ref::publish_bucket
+        - --publish-prefix
+        - Ref::publish_stac_prefix
+      timeout: 10800
+      compute_environment: ItsLiveMeta
+      vcpu: 1
+      memory: 7875
+      secrets:
         - PUBLISH_ACCESS_KEY_ID
         - PUBLISH_SECRET_ACCESS_KEY
