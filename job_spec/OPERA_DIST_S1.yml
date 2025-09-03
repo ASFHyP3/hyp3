@@ -38,9 +38,11 @@ OPERA_DIST_S1:
       api_schema:
         description: Memory strategy to use for GPU inference. Options are high, low
         type: string
-        enum: ["high", "low"]
-        default: "high"
-        example: "high"
+        enum:
+          - high
+          - low
+        default: high
+        example: high
     low_confidence_alert_threshold:
       api_schema:
         description: Low confidence alert threshold
@@ -69,7 +71,7 @@ OPERA_DIST_S1:
       api_schema:
         description: Max number of pre-images per burst within each window. Comma-separated list of integers (e.g., 4,4,2) or "none" to use defaults
         type: string
-        default: "none"
+        default: "none
         example: "4,4,2"
     n_workers_for_despeckling:
       api_schema:
@@ -82,9 +84,13 @@ OPERA_DIST_S1:
       api_schema:
         description: Device to use for transformer model inference of normal parameters
         type: string
-        enum: ["cpu", "cuda", "mps", "best"]
-        default: "best"
-        example: "best"
+        enum:
+          - cpu
+          - cuda
+          - mps
+          - best
+        default: best
+        example: best
     n_workers_for_norm_param_estimation:
       api_schema:
         description: Number of CPUs to use for normal parameter estimation
@@ -96,14 +102,15 @@ OPERA_DIST_S1:
       api_schema:
         description: What model to load; external means load model from cfg and wts paths specified in parameters
         type: string
-        enum: ["transformer_original",
-               "transformer_optimized",
-               "transformer_optimized_fine",
-               "transformer_anniversary_trained",
-               "transformer_anniversary_trained_optimized",
-               "transformer_anniversary_trained_optimized_fine"]
-        default: "transformer_optimized"
-        example: "transformer_optimized"
+        enum:
+          - transformer_original
+          - transformer_optimized
+          - transformer_optimized_fine
+          - transformer_anniversary_trained
+          - transformer_anniversary_trained_optimized
+          - transformer_anniversary_trained_optimized_fine
+        default: transformer_optimized
+        example: transformer_optimized
     stride_for_norm_param_estimation:
       api_schema:
         description: Number of pixels the convolutional filter moves across the input image at each step
