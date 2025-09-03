@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Renamed the `AUTORIFT_ITS_LIVE` job spec to `ITS_LIVE_AUTORIFT` to better group the ITS_LIVE project specific job specs.
 - Increase throughput for Cargill deployment by increasing max vCPUs to 6000 from 1600.
+- OPERA DIST-S1 default parameters and memory allocated.
 
 ## [10.11.3]
 
