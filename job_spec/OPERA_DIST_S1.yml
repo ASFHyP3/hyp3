@@ -146,7 +146,6 @@ OPERA_DIST_S1:
     - name: ''
       image: ghcr.io/opera-adt/dist-s1
       command:
-        - dist-s1 run
         - --mgrs_tile_id
         - Ref::mgrs_tile_id
         - --track_number
