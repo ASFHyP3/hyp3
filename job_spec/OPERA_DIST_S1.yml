@@ -38,27 +38,29 @@ OPERA_DIST_S1:
       api_schema:
         description: Memory strategy to use for GPU inference. Options are high, low
         type: string
-        enum: ["high", "low"]
-        default: "high"
-        example: "high"
+        enum:
+          - high
+          - low
+        default: high
+        example: high
     low_confidence_alert_threshold:
       api_schema:
         description: Low confidence alert threshold
         type: number
         format: float
-        default: 3.5
+        default: 2.5
         minimum: 0.0
         maximum: 15.0
-        example: 3.5
+        example: 2.5
     high_confidence_alert_threshold:
       api_schema:
         description: High confidence alert threshold
         type: number
         format: float
-        default: 5.5
+        default: 4.5
         minimum: 0.0
         maximum: 15.0
-        example: 5.5
+        example: 4.5
     delta_lookback_days_mw:
       api_schema:
         description: Delta lookback days for each window relative to post-image acquisition date. Comma-separated list of integers (e.g., 730,365,0) or "none" to use defaults
@@ -82,9 +84,13 @@ OPERA_DIST_S1:
       api_schema:
         description: Device to use for transformer model inference of normal parameters
         type: string
-        enum: ["cpu", "cuda", "mps", "best"]
-        default: "best"
-        example: "best"
+        enum:
+          - cpu
+          - cuda
+          - mps
+          - best
+        default: best
+        example: best
     n_workers_for_norm_param_estimation:
       api_schema:
         description: Number of CPUs to use for normal parameter estimation
@@ -96,17 +102,23 @@ OPERA_DIST_S1:
       api_schema:
         description: What model to load; external means load model from cfg and wts paths specified in parameters
         type: string
-        enum: ["external", "transformer_optimized"]
-        default: "transformer_optimized"
-        example: "transformer_optimized"
+        enum:
+          - transformer_original
+          - transformer_optimized
+          - transformer_optimized_fine
+          - transformer_anniversary_trained
+          - transformer_anniversary_trained_optimized
+          - transformer_anniversary_trained_optimized_fine
+        default: transformer_optimized
+        example: transformer_optimized
     stride_for_norm_param_estimation:
       api_schema:
         description: Number of pixels the convolutional filter moves across the input image at each step
         type: integer
-        default: 16
+        default: 7
         minimum: 1
         maximum: 16
-        example: 16
+        example: 7
     batch_size_for_norm_param_estimation:
       api_schema:
         description: Batch size for norm param estimation; Tune it according to resources i.e. memory
@@ -120,7 +132,6 @@ OPERA_DIST_S1:
         type: boolean
         default: false
         example: false
-
     use_date_encoding:
       api_schema:
         description: Whether to use acquisition date encoding in processing
@@ -135,7 +146,6 @@ OPERA_DIST_S1:
     - name: ''
       image: ghcr.io/opera-adt/dist-s1
       command:
-        - dist-s1 run
         - --mgrs_tile_id
         - Ref::mgrs_tile_id
         - --track_number
@@ -177,7 +187,7 @@ OPERA_DIST_S1:
       timeout: 10800  # 3 hr
       compute_environment: Default
       vcpu: 1
-      memory: 7500
+      memory: 31500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD

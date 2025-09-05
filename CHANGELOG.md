@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.4]
+
+### Added
+- Added METADATA step to `ITS_LIVE_AUTORIFT` to generate a project STAC JSON file and other metadata files for ingest into NSIDC DAAC.
+- Added a new `ITS_LIVE_META` job spec which generates STAC JSON and other metadata files for already published ITS_LIVE products.
+- Added the `ITS_LIVE_META` job spec to the ITS_LIVE deployments.
+
+### Changed
+- Renamed the `AUTORIFT_ITS_LIVE` job spec to `ITS_LIVE_AUTORIFT` to better group the ITS_LIVE project specific job specs.
+- Increase throughput for Cargill deployment by increasing max vCPUs to 6000 from 1600.
+- OPERA DIST-S1 default parameters and memory allocated.
+- Updated OPERA DIST-S1 command to match the entrypoint in the associated plugin (docker container).
+
 ## [10.11.3]
 
 ### Added

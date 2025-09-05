@@ -23,7 +23,8 @@ jobs:
             default_application_status: APPROVED
             cost_profile: DEFAULT
             job_files: >-
-              job_spec/AUTORIFT_ITS_LIVE.yml
+              job_spec/ITS_LIVE_AUTORIFT.yml
+              job_spec/ITS_LIVE_META.yml
             instance_types: r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
             default_max_vcpus: 2000  # Max: 10,406
             expanded_max_vcpus: 2000  # Max: 10,406
@@ -140,8 +141,8 @@ jobs:
               job_spec/INSAR_ISCE.yml
               job_spec/OPERA_DIST_S1.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
-            default_max_vcpus: 1600  # Max 1652
-            expanded_max_vcpus: 1600  # Max 1652
+            default_max_vcpus: 1600  # Max: 1652
+            expanded_max_vcpus: 1600  # Max: 1652
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -237,8 +238,8 @@ jobs:
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
+            default_max_vcpus: 6000  # Max: 6000
+            expanded_max_vcpus: 6000  # Max: 6000
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
