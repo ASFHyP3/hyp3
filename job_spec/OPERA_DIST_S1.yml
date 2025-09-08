@@ -185,7 +185,7 @@ OPERA_DIST_S1:
         - --use_date_encoding
         - Ref::use_date_encoding
       timeout: 10800  # 3 hr
-      compute_environment: Default
+      compute_environment: DistS1
       vcpu: 1
       memory: 31500
       secrets:
