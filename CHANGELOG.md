@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixes for OPERA-DIST-S1 job:
   - Compute environment for OPERA-DIST-S1 - using on-demand instances due to terminations.
   - Fix memory utilization (32 GB requested so need instance that can handle at a minimum this request)
-  - Cap out job at 1 hour
+  - Cap job timeout at 1 hour
 
 ## [10.11.4]
 
