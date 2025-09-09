@@ -6,11 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.11.5]
 
-## Added
-- Fixes for OPERA-DIST-S1 job:
-  - Compute environment for OPERA-DIST-S1 - using on-demand instances due to terminations.
-  - Fix memory utilization (32 GB requested so need instance that can handle at a minimum this request)
-  - Cap job timeout at 1 hour
+### Added
+- A `DistS1` compute environment with `m6id` On Demand instances for the `OEPERA_DIST_S1` job type to avoid spot interruptions.
+
+### Changed
+- `OEPERA_DIST_S1` jobs now time out after 1 hour instead of 3 hours. 
 
 ## [10.11.4]
 
