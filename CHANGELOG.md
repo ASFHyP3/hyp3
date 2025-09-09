@@ -4,16 +4,59 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.5]
+
+### Added
+- A `DistS1` compute environment with `m6id` On Demand instances for the `OEPERA_DIST_S1` job type to avoid spot interruptions.
+
+### Changed
+- `OPERA_DIST_S1` jobs now time out after 1 hour instead of 3 hours. 
+- `OPERA_DIST_S1` jobs utilize less workers for normal parameter estimation and despeckling due to RAM constraints.
+
+## [10.11.4]
+
+### Added
+- Added METADATA step to `ITS_LIVE_AUTORIFT` to generate a project STAC JSON file and other metadata files for ingest into NSIDC DAAC.
+- Added a new `ITS_LIVE_META` job spec which generates STAC JSON and other metadata files for already published ITS_LIVE products.
+- Added the `ITS_LIVE_META` job spec to the ITS_LIVE deployments.
+
+### Changed
+- Renamed the `AUTORIFT_ITS_LIVE` job spec to `ITS_LIVE_AUTORIFT` to better group the ITS_LIVE project specific job specs.
+- Increase throughput for Cargill deployment by increasing max vCPUs to 6000 from 1600.
+- OPERA DIST-S1 default parameters and memory allocated.
+- Updated OPERA DIST-S1 command to match the entrypoint in the associated plugin (docker container).
+
+## [10.11.3]
+
+### Added
+- Added `PUBLISH` step to `INSAR_ISCE` and `ARIA_RAIDER` job specs.
+
+### Changed
+- Updated `PUBLISH` step of `ARIA_S1_GUNW` job spec to run on the same compute environment as the preceding steps, allowing the container to run on an already-provisioned EC2 instance.
+- Adjust Batch job IAM permissions to allow HyP3 job steps to publish to any SNS topic. Allows jobs to publish to the [ingest-adapter](https://github.com/ASFHyP3/ingest-adapter)'s SNS topic across AWS accounts.
+
+## [10.11.2]
+
+### Changed
+- Update EDC credit cost for `OPERA_RTC_S1_SLC` to `0.065`.
+- Revised instance types for `hyp3-opera-uat` and `hyp3-opera-prod` deployments.
+
+## [10.11.1]
+
+### Added
+- Added new test and production deployments for `hyp3-enterprise`.
+- Added new deployment for PISM-Cloud.
+- Added new deployment for VolcSARvatory.
+- Added PUBLISH step to `OPERA_RTC_S1_SLC` job type
+
+### Fixed
+- Updated DIST-S1 entrypoint.
+
 ## [10.11.0]
 
 ### Changed
 
 - If the user submits an `ARIA_S1_GUNW` job whose parameters (`reference_date`, `secondary_date`, and `frame_id`) correspond to an already-archived product, the job will now transition directly from `PENDING` to `SUCCEEDED`, the job's `browse_images` and `files` fields will be populated from the CMR record, and the job's credit cost will be refunded to the user (unless the user has infinite credits).
-
-## [10.10.3]
-
-### Changed
-
 - `AUTORIFT_ITS_LIVE` now uses `r7gd` memory-optimized Graviton3 instances.
 
 ## [10.10.2]

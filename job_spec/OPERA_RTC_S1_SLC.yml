@@ -19,7 +19,7 @@ OPERA_RTC_S1_SLC:
               example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
   cost_profiles:
     EDC:
-      cost: 1.0
+      cost: 0.065
     DEFAULT:
       cost: 1.0
   validators:
@@ -42,3 +42,14 @@ OPERA_RTC_S1_SLC:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
+    - name: PUBLISH
+      image: ghcr.io/asfhyp3/ingest-adapter
+      command:
+        - Ref::job_id
+      timeout: 600
+      compute_environment: Default
+      vcpu: 1
+      memory: 512
+      secrets:
+        - TOPIC_ARN
+        - HYP3_URL
