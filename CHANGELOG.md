@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.5]
+
+### Added
+- A `DistS1` compute environment with `m6id` On Demand instances for the `OEPERA_DIST_S1` job type to avoid spot interruptions.
+
+### Changed
+- `OEPERA_DIST_S1` jobs now time out after 1 hour instead of 3 hours. 
+
 ## [10.11.4]
 
 ### Added
