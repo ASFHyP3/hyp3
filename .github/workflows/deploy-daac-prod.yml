@@ -49,8 +49,8 @@ jobs:
             job_files: >-
               job_spec/OPERA_RTC_S1_SLC.yml
             instance_types: c6i.2xlarge,c6id.2xlarge,c7i.2xlarge,c6i.4xlarge,c6id.4xlarge,c7i.4xlarge
-            default_max_vcpus: 10000
-            expanded_max_vcpus: 10000
+            default_max_vcpus: 12000
+            expanded_max_vcpus: 12000
             required_surplus: 0
             security_environment: EDC
             ami_id: /ngap/amis/image_id_ecs_al2023_x86
