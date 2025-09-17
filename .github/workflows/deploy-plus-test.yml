@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-plus
+          - environment: hyp3-plus-test
             domain: hyp3-plus-test.asf.alaska.edu
             template_bucket: cf-templates-qgq5ahzym464-us-west-2
             image_tag: test
