@@ -1,4 +1,4 @@
-name: Deploy Enterprise test to AWS
+name: Deploy HyP3+ test to AWS
 
 on:
   push:
@@ -14,8 +14,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-enterprise-test
-            domain: hyp3-enterprise-test.asf.alaska.edu
+          - environment: hyp3-plus-test
+            domain: hyp3-plus-test.asf.alaska.edu
             template_bucket: cf-templates-qgq5ahzym464-us-west-2
             image_tag: test
             product_lifetime_in_days: 30
