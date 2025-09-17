@@ -1,4 +1,4 @@
-name: Deploy Enterprise prod to AWS
+name: Deploy HyP3+ prod to AWS
 
 on:
   push:
@@ -14,8 +14,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-enterprise
-            domain: hyp3-enterprise.asf.alaska.edu
+          - environment: hyp3-plus
+            domain: hyp3-plus.asf.alaska.edu
             template_bucket: cf-templates-qgq5ahzym464-us-west-2
             image_tag: latest
             product_lifetime_in_days: 30
@@ -44,14 +44,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: 3.13
 
