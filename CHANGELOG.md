@@ -10,11 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A `DistS1` compute environment with `m6id` On Demand instances for the `OEPERA_DIST_S1` job type to avoid spot interruptions.
 
 ### Changed
-- `OPERA_DIST_S1` jobs now time out after 1 hour instead of 3 hours. 
+- `OPERA_DIST_S1` jobs now time out after 1 hour instead of 3 hours.
 - `OPERA_DIST_S1` jobs utilize less workers for normal parameter estimation and despeckling due to RAM constraints.
 - Increased min/max vCPUs to 12,000 in the `hyp3-opera-prod` deployment
 - Updated INSAR_ISCE.yml job specification for JPL deployments of hyp3 to permit utilization of Sentinel-1C.
 - Increased throughput of the a19 deployment at JPL from 4000 to 13000.
+- Change hyp3-enterprise over to hyp3-plus
 
 ## [10.11.4]
 
@@ -83,7 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added new deployment for AK-FIRE-SAFE.
 - The OpenAPI Specification version can now be specified in `render.py` via the `--openapi-spec` argument.
 - The `AUTORIFT_ITS_LIVE.yml` job spec has a new `use_static_files` parameter to specify whether to use Sentinel-1 static geometries for processing or not.
-  - This parameter has been hard-coded to `False` in the `AUTORIFT.yml` and `ARIA_AUTORIFT.yml` to ensure there is no change in the workflow for those job types. 
+  - This parameter has been hard-coded to `False` in the `AUTORIFT.yml` and `ARIA_AUTORIFT.yml` to ensure there is no change in the workflow for those job types.
 
 ### Fixed
 - The `openapi-spec.yml` and the `api-cf.yml` will now always specify the same OpenAPI Specification version.
@@ -95,7 +96,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - The credit cost in EDC/DAAC deployments has been halved accordingly
 
 ### Removed
-- Removed the deprecated `S1_CORRECTION_ITS_LIVE` job spec that's no longer supported by the hyp3-autorift plugin. 
+- Removed the deprecated `S1_CORRECTION_ITS_LIVE` job spec that's no longer supported by the hyp3-autorift plugin.
 
 ## [10.9.2]
 
