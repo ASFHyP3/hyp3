@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OPERA_DIST_S1` jobs utilize less workers for normal parameter estimation and despeckling due to RAM constraints.
 - Increased min/max vCPUs to 12,000 in the `hyp3-opera-prod` deployment
 - Updated INSAR_ISCE.yml job specification for JPL deployments of hyp3 to permit utilization of Sentinel-1C.
+- Increased throughput of the a19 deployment at JPL from 4000 to 13000.
 
 ## [10.11.4]
 
