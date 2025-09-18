@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.6]
+
+### Changed
+- Increase throughput in the `hyp3-a19-jpl` custom deployment by increasing max vCPUs from 4000 to 13000.
+
 ## [10.11.5]
 
 ### Added
@@ -13,7 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OPERA_DIST_S1` jobs now time out after 1 hour instead of 3 hours.
 - `OPERA_DIST_S1` jobs utilize less workers for normal parameter estimation and despeckling due to RAM constraints.
 - Increased min/max vCPUs to 12,000 in the `hyp3-opera-prod` deployment
-- Increase JPL Custom deployment from 4000 to 13000.
 - Change hyp3-enterprise over to hyp3-plus
 
 ## [10.11.4]
