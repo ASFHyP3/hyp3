@@ -13,7 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OPERA_DIST_S1` jobs now time out after 1 hour instead of 3 hours.
 - `OPERA_DIST_S1` jobs utilize less workers for normal parameter estimation and despeckling due to RAM constraints.
 - Increased min/max vCPUs to 12,000 in the `hyp3-opera-prod` deployment
-- Updated INSAR_ISCE.yml job specification for JPL deployments of hyp3 to permit utilization of Sentinel-1C.
 - Change hyp3-enterprise over to hyp3-plus
 
 ## [10.11.4]
