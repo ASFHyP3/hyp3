@@ -5,14 +5,14 @@
 -r requirements-apps-disable-private-dns.txt
 -r requirements-apps-search-archive.txt
 -r requirements-apps-update-db.txt
-boto3==1.40.30
+boto3==1.40.35
 jinja2==3.1.6
-moto[dynamodb]==5.1.12
+moto[dynamodb]==5.1.13
 pytest==8.4.2
 PyYAML==6.0.2
 responses==0.25.8
-ruff==0.13.0
-mypy==1.18.1
+ruff==0.13.1
+mypy==1.18.2
 setuptools==80.9.0
 setuptools_scm==9.2.0
 openapi-spec-validator==0.7.2
