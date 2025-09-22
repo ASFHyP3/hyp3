@@ -128,7 +128,7 @@ AUTORIFT:
         type: boolean
     frame_id:
       api_schema:
-        description:  Sentinel-1 Opera Frame ID to be placed in product metadata after processing
+        description:  Sentinel-1 OPERA Frame ID to be placed in product metadata after processing
         default: null
         nullable: true
         type: string
