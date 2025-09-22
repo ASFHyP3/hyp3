@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Sentinel-1C support for INSAR_ISCE and ARIA_S1_COSEIS job specifications.
-- Optional Opera `frame_id` parameter to the ITS_LIVE_AUTORIFT job specification.
+- Optional OPERA `frame_id` parameter to the ITS_LIVE_AUTORIFT job specification.
 
 ### Changed
 - Increase throughput in the `hyp3-a19-jpl` custom deployment by increasing max vCPUs from 4000 to 13000.
