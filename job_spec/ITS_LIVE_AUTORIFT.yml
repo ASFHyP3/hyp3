@@ -130,6 +130,7 @@ AUTORIFT:
       api_schema:
         description:  Sentinel-1 Opera Frame ID to be placed in product metadata after processing
         default: null
+        nullable: true
         type: string
   cost_profiles:
     DEFAULT:
