@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Increase throughput in the `hyp3-a19-jpl` custom deployment by increasing max vCPUs from 4000 to 13000.
+- Remove 4xlarge instances from hyp3-opera deployments
 
 ## [10.11.5]
 
