@@ -48,7 +48,7 @@ jobs:
             cost_profile: EDC
             job_files: >-
               job_spec/OPERA_RTC_S1_SLC.yml
-            instance_types: c6i.2xlarge,c6id.2xlarge,c7i.2xlarge,c6i.4xlarge,c6id.4xlarge,c7i.4xlarge
+            instance_types: c6i.2xlarge,c6id.2xlarge,c7i.2xlarge
             default_max_vcpus: 12000
             expanded_max_vcpus: 12000
             required_surplus: 0
