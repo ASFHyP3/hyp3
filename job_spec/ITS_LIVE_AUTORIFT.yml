@@ -126,12 +126,6 @@ AUTORIFT:
         description:  Use static topographic correction files for ISCE3 processing if available (Sentinel-1 only)
         default: true
         type: boolean
-    frame_id:
-      api_schema:
-        description:  Sentinel-1 OPERA Frame ID to be placed in product metadata after processing
-        default: null
-        nullable: true
-        type: string
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -157,8 +151,6 @@ AUTORIFT:
         - Ref::reference
         - --secondary
         - Ref::secondary
-        - --frame-id
-        - Ref::frame_id
       timeout: 10800
       compute_environment: Default
       vcpu: 1
