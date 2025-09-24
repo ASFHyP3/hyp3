@@ -28,6 +28,25 @@ ITS_LIVE_META:
   validators: []
   steps:
     - name: ''
+      image: ghcr.io/asfhyp3/hyp3-autorift
+      command:
+        - ++process
+        - crop_netcdf_product
+        - Ref::granule_uri
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --publish-bucket
+        - Ref::publish_bucket
+      timeout: 10800
+      compute_environment: Default
+      vcpu: 1
+      memory: 7875
+      secrets:
+        - PUBLISH_ACCESS_KEY_ID
+        - PUBLISH_SECRET_ACCESS_KEY
+    - name: METADATA
       image: ghcr.io/asfhyp3/itslive-metadata
       command:
         - --granule-uri
