@@ -21,13 +21,32 @@ ITS_LIVE_META:
       api_schema:
         description: Publish the resulting STAC JSON item under this prefix in the ITS_LIVE AWS Open Data (or test) S3 Bucket
         type: string
-        default: test-space/stac/ndjson/ingest
+        default: stac-ingest
   cost_profiles:
     DEFAULT:
       cost: 1.0
   validators: []
   steps:
     - name: ''
+      image: ghcr.io/asfhyp3/hyp3-autorift
+      command:
+        - ++process
+        - crop_netcdf_product
+        - Ref::granule_uri
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --publish-bucket
+        - Ref::publish_bucket
+      timeout: 10800
+      compute_environment: Default
+      vcpu: 1
+      memory: 7875
+      secrets:
+        - PUBLISH_ACCESS_KEY_ID
+        - PUBLISH_SECRET_ACCESS_KEY
+    - name: METADATA
       image: ghcr.io/asfhyp3/itslive-metadata
       command:
         - --granule-uri
