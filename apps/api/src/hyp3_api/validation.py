@@ -38,7 +38,7 @@ def _has_sufficient_coverage(granule: Polygon) -> bool:
     return granule.intersects(DEM_COVERAGE)
 
 
-def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
+def _get_cmr_metadata(granules: Iterable[str]) -> list[dict] | None:
     cmr_parameters = {
         'granule_ur': [f'{granule}*' for granule in granules],
         'options[granule_ur][pattern]': 'true',
@@ -61,7 +61,13 @@ def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
         'page_size': 2000,
     }
     response = requests.post(CMR_URL, data=cmr_parameters)
-    response.raise_for_status()
+
+    try:
+        response.raise_for_status()
+    except requests.HTTPError as e:
+        print(f'CMR search failed: {e}')
+        return None
+
     return [
         {
             'name': entry.get('producer_granule_id', entry.get('title')),
@@ -83,7 +89,8 @@ def _make_sure_granules_exist(granules: Iterable[str], granule_metadata: list[di
         raise ValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
 
 
-def check_dem_coverage(_, granule_metadata: list[dict]) -> None:
+def check_dem_coverage(_, granule_metadata: list[dict] | None) -> None:
+    # TODO: handle granule_metadata is None
     bad_granules = [g['name'] for g in granule_metadata if not _has_sufficient_coverage(g['polygon'])]
     if bad_granules:
         raise ValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
@@ -123,7 +130,8 @@ def check_single_burst_pair(job: dict, _) -> None:
         raise ValidationError(f'Only VV and HH polarizations are currently supported, got: {granule1_pol}')
 
 
-def check_not_antimeridian(_, granule_metadata: list[dict]) -> None:
+def check_not_antimeridian(_, granule_metadata: list[dict] | None) -> None:
+    # TODO: handle granule_metadata is None
     for granule in granule_metadata:
         bbox = granule['polygon'].bounds
         if abs(bbox[0] - bbox[2]) > 180.0 and bbox[0] * bbox[2] < 0.0:
@@ -170,7 +178,8 @@ def check_bounds_formatting(job: dict, _) -> None:
         )
 
 
-def check_granules_intersecting_bounds(job: dict, granule_metadata: list[dict]) -> None:
+def check_granules_intersecting_bounds(job: dict, granule_metadata: list[dict] | None) -> None:
+    # TODO: handle granule_metadata is None
     bounds = job['job_parameters']['bounds']
     if bounds == [0.0, 0.0, 0.0, 0.0]:
         raise ValidationError('Invalid bounds. Bounds cannot be [0, 0, 0, 0].')
@@ -185,7 +194,8 @@ def check_granules_intersecting_bounds(job: dict, granule_metadata: list[dict]) 
         raise ValidationError(f'The following granules do not intersect the provided bounds: {bad_granules}.')
 
 
-def check_same_relative_orbits(_, granule_metadata: list[dict]) -> None:
+def check_same_relative_orbits(_, granule_metadata: list[dict] | None) -> None:
+    # TODO: handle granule_metadata is None
     previous_relative_orbit = None
     for granule in granule_metadata:
         name_split = granule['name'].split('_')
@@ -213,7 +223,8 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
         )
 
 
-def check_opera_rtc_s1_bounds(_, granule_metadata: list[dict]) -> None:
+def check_opera_rtc_s1_bounds(_, granule_metadata: list[dict] | None) -> None:
+    # TODO: handle granule_metadata is None
     opera_rtc_s1_bounds = box(-180, -60, 180, 90)
     for granule in granule_metadata:
         if not granule['polygon'].intersects(opera_rtc_s1_bounds):
@@ -282,13 +293,19 @@ def validate_jobs(jobs: list[dict]) -> None:
 
     if granules:
         granule_metadata = _get_cmr_metadata(granules)
-        _make_sure_granules_exist(granules, granule_metadata)
+        if granule_metadata is not None:
+            # TODO: fine to make this optional?
+            _make_sure_granules_exist(granules, granule_metadata)
     else:
         granule_metadata = []
 
     for job in jobs:
         for validator_name in JOB_VALIDATION_MAP[job['job_type']]:
-            job_granule_metadata = [granule for granule in granule_metadata if granule['name'] in get_granules([job])]
+            job_granule_metadata = (
+                None
+                if granule_metadata is None
+                else [granule for granule in granule_metadata if granule['name'] in get_granules([job])]
+            )
             module = sys.modules[__name__]
             validator = getattr(module, validator_name)
             validator(job, job_granule_metadata)
