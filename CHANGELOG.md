@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - The ITS_LIVE_METADATA job now includes a cropping step to ensure ITS_LIVE granules are chunk-aligned and have a time dimension before generating STAC and NSIDC ingest metadata files.
 - The default `publish_stac_prefix` has been changed to `stac-ingest` for ITS_LIVE_METADATA and ITS_LIVE_AUTORIFT jobs.
+- Lower A19 account back to 4000 VCPUs for nominal processing throughput.
 
 ## [10.11.6]
 
