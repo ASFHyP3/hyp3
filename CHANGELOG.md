@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.7]
+
+### Added
+- Optional OPERA `frame_id` parameter to the ITS_LIVE_AUTORIFT job specification.
+
+### Changed
+- The ITS_LIVE_METADATA job now includes a cropping step to ensure ITS_LIVE granules are chunk-aligned and have a time dimension before generating STAC and NSIDC ingest metadata files.
+- The default `publish_stac_prefix` has been changed to `stac-ingest` for ITS_LIVE_METADATA and ITS_LIVE_AUTORIFT jobs.
+
+## [10.11.6]
+
+### Added
+- Sentinel-1C support for INSAR_ISCE and ARIA_S1_COSEIS job specifications.
+
+### Changed
+- Increase throughput in the `hyp3-a19-jpl` custom deployment by increasing max vCPUs from 4000 to 13000.
+- Remove 4xlarge instances from hyp3-opera deployments
+
 ## [10.11.5]
 
 ### Added
@@ -13,7 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OPERA_DIST_S1` jobs now time out after 1 hour instead of 3 hours.
 - `OPERA_DIST_S1` jobs utilize less workers for normal parameter estimation and despeckling due to RAM constraints.
 - Increased min/max vCPUs to 12,000 in the `hyp3-opera-prod` deployment
-- Updated INSAR_ISCE.yml job specification for JPL deployments of hyp3 to permit utilization of Sentinel-1C.
 - Change hyp3-enterprise over to hyp3-plus
 
 ## [10.11.4]
