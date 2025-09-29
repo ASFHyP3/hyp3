@@ -101,7 +101,7 @@ jobs:
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
             default_max_vcpus: 4000  # Max: 13000
             expanded_max_vcpus: 4000  # Max: 13000
-            expanded_max_vcpus: 4000  # Max: 13000 - recall this number is divided by 4 to get max concurrent jobs
+            expanded_max_vcpus: 4000  # Max: 13000
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
