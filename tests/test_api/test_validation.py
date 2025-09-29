@@ -92,6 +92,7 @@ def test_check_dem_coverage():
     validation.check_dem_coverage({}, [covered1])
     validation.check_dem_coverage({}, [covered2])
     validation.check_dem_coverage({}, [covered1, covered2])
+    validation.check_dem_coverage({}, None)
 
     with pytest.raises(validation.ValidationError) as e:
         validation.check_dem_coverage({}, [not_covered])

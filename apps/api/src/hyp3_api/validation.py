@@ -90,10 +90,10 @@ def _make_sure_granules_exist(granules: Iterable[str], granule_metadata: list[di
 
 
 def check_dem_coverage(_, granule_metadata: list[dict] | None) -> None:
-    # TODO: handle granule_metadata is None
-    bad_granules = [g['name'] for g in granule_metadata if not _has_sufficient_coverage(g['polygon'])]
-    if bad_granules:
-        raise ValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
+    if granule_metadata is not None:
+        bad_granules = [g['name'] for g in granule_metadata if not _has_sufficient_coverage(g['polygon'])]
+        if bad_granules:
+            raise ValidationError(f'Some requested scenes do not have DEM coverage: {", ".join(bad_granules)}')
 
 
 def check_multi_burst_pairs(job: dict, _) -> None:
