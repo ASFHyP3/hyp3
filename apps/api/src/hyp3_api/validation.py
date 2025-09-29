@@ -179,19 +179,19 @@ def check_bounds_formatting(job: dict, _) -> None:
 
 
 def check_granules_intersecting_bounds(job: dict, granule_metadata: list[dict] | None) -> None:
-    # TODO: handle granule_metadata is None
     bounds = job['job_parameters']['bounds']
     if bounds == [0.0, 0.0, 0.0, 0.0]:
         raise ValidationError('Invalid bounds. Bounds cannot be [0, 0, 0, 0].')
 
-    bounds = Polygon.from_bounds(*bounds)
-    bad_granules = []
-    for granule in granule_metadata:
-        bbox = granule['polygon']
-        if not bbox.intersection(bounds):
-            bad_granules.append(granule['name'])
-    if bad_granules:
-        raise ValidationError(f'The following granules do not intersect the provided bounds: {bad_granules}.')
+    if granule_metadata is not None:
+        bounds = Polygon.from_bounds(*bounds)
+        bad_granules = []
+        for granule in granule_metadata:
+            bbox = granule['polygon']
+            if not bbox.intersection(bounds):
+                bad_granules.append(granule['name'])
+        if bad_granules:
+            raise ValidationError(f'The following granules do not intersect the provided bounds: {bad_granules}.')
 
 
 def check_same_relative_orbits(_, granule_metadata: list[dict] | None) -> None:

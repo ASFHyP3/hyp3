@@ -424,12 +424,17 @@ def test_check_granules_intersecting_bounds():
     ]
     validation.check_granules_intersecting_bounds(job_with_specified_bounds, valid_granule_metadata)
 
+    validation.check_granules_intersecting_bounds(job_with_specified_bounds, None)
+
     error_pattern = r'.*Bounds cannot be.*'
     with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_bad_bounds, valid_granule_metadata)
 
     with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_bad_bounds, invalid_granule_metadata)
+
+    with pytest.raises(validation.ValidationError, match=error_pattern):
+        validation.check_granules_intersecting_bounds(job_with_bad_bounds, None)
 
     error_pattern = r".*bounds: \['does_not_intersect1', 'does_not_intersect2', 'does_not_intersect3'\]*"
 
