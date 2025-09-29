@@ -27,3 +27,7 @@ compute_environments:
   ItsLiveMeta:
     instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
     ami_id: ami-0aece254fc7c27a77  # /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+  OperaRtcSlc:
+    instance_types: m6id.2xlarge
+    allocation_type: EC2
+    allocation_strategy: BEST_FIT_PROGRESSIVE

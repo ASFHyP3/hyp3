@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.8]
+
+### Changed
+- Increased disk and memory available to OPERA_RTC_S1_SLC jobs in hyp3-opera-prod and hyp3-opera-test.
+- Run OPERA_RTC_S1_SLC jobs using on-demand instances in hyp3-opera-prod and hyp3-opera-test.
+
 ## [10.11.7]
 
 ### Added

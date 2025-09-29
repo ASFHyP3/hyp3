@@ -44,14 +44,14 @@ jobs:
             api_name: hyp3-opera-test
             template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
             image_tag: test
-            product_lifetime_in_days: 14
+            product_lifetime_in_days: 5
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: EDC
             opera_rtc_s1_end_date: Default
             job_files: >-
               job_spec/OPERA_RTC_S1_SLC.yml
-            instance_types: c6i.2xlarge,c6id.2xlarge,c7i.2xlarge
+            instance_types: m6id.2xlarge
             default_max_vcpus: 800
             expanded_max_vcpus: 800
             required_surplus: 0
