@@ -36,9 +36,9 @@ OPERA_RTC_S1_SLC:
         - --num-workers
         - '8'
       timeout: 7200 # 2 hr
-      compute_environment: Default
+      compute_environment: OperaRtcSlc
       vcpu: 8
-      memory: 15200
+      memory: 30000
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
@@ -47,7 +47,7 @@ OPERA_RTC_S1_SLC:
       command:
         - Ref::job_id
       timeout: 600
-      compute_environment: Default
+      compute_environment: OperaRtcSlc
       vcpu: 1
       memory: 512
       secrets:
