@@ -2,9 +2,10 @@ from http import HTTPStatus
 from unittest.mock import MagicMock
 
 import pytest
+import responses
 
 import hyp3_api.validation
-from test_api.conftest import JOBS_URI, login
+from test_api.conftest import CMR_URL_RE, JOBS_URI, login
 
 
 @pytest.mark.network
@@ -259,6 +260,29 @@ def test_opera_rtc_s1_bounds(client, tables, approved_user):
         response.json['detail'] == 'Granule S1_018641_IW1_20180307T081710_HH_20C9-BURST is south of -60 degrees '
         'latitude and outside the valid processing extent for OPERA RTC-S1 products.'
     )
+    assert len(tables.jobs_table.scan()['Items']) == 0
+
+
+@responses.activate
+def test_opera_rtc_s1_bounds_cmr_error(client, tables, approved_user):
+    login(client, username=approved_user)
+
+    responses.post(url=CMR_URL_RE, status=500)
+
+    response = client.post(
+        JOBS_URI,
+        json={
+            'jobs': [
+                {
+                    'job_type': 'OPERA_RTC_S1',
+                    'job_parameters': {'granules': ['S1_018641_IW1_20180307T081710_HH_20C9-BURST']},
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == HTTPStatus.SERVICE_UNAVAILABLE
+    assert response.json['detail'] == 'Cannot validate job(s) of type OPERA_RTC_S1 because CMR query failed. Please try again later.'
     assert len(tables.jobs_table.scan()['Items']) == 0
 
 

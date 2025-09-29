@@ -12,7 +12,7 @@ from dynamo.exceptions import (
 )
 from hyp3_api import util
 from hyp3_api.multi_burst_validation import MultiBurstValidationError
-from hyp3_api.validation import ValidationError, validate_jobs
+from hyp3_api.validation import ValidationError, validate_jobs, CmrError
 
 
 def problem_format(status: int, message: str) -> Response:
@@ -27,6 +27,8 @@ def post_jobs(body: dict, user: str) -> dict:
 
     try:
         validate_jobs(body['jobs'])
+    except CmrError as e:
+        abort(problem_format(503, str(e)))
     except (ValidationError, MultiBurstValidationError) as e:
         abort(problem_format(400, str(e)))
 
