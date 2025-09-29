@@ -195,21 +195,21 @@ def check_granules_intersecting_bounds(job: dict, granule_metadata: list[dict] |
 
 
 def check_same_relative_orbits(_, granule_metadata: list[dict] | None) -> None:
-    # TODO: handle granule_metadata is None
-    previous_relative_orbit = None
-    for granule in granule_metadata:
-        name_split = granule['name'].split('_')
-        absolute_orbit = name_split[7]
-        # "Relationship between relative and absolute orbit numbers": https://sentiwiki.copernicus.eu/web/s1-products
-        offset = 73 if name_split[0] == 'S1A' else 27
-        relative_orbit = ((int(absolute_orbit) - offset) % 175) + 1
-        if not previous_relative_orbit:
-            previous_relative_orbit = relative_orbit
-        if relative_orbit != previous_relative_orbit:
-            raise ValidationError(
-                f'Relative orbit number for {granule["name"]} does not match that of the previous granules: '
-                f'{relative_orbit} is not {previous_relative_orbit}.'
-            )
+    if granule_metadata is not None:
+        previous_relative_orbit = None
+        for granule in granule_metadata:
+            name_split = granule['name'].split('_')
+            absolute_orbit = name_split[7]
+            # "Relationship between relative and absolute orbit numbers": https://sentiwiki.copernicus.eu/web/s1-products
+            offset = 73 if name_split[0] == 'S1A' else 27
+            relative_orbit = ((int(absolute_orbit) - offset) % 175) + 1
+            if not previous_relative_orbit:
+                previous_relative_orbit = relative_orbit
+            if relative_orbit != previous_relative_orbit:
+                raise ValidationError(
+                    f'Relative orbit number for {granule["name"]} does not match that of the previous granules: '
+                    f'{relative_orbit} is not {previous_relative_orbit}.'
+                )
 
 
 def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
