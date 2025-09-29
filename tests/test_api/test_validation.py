@@ -481,7 +481,7 @@ def test_check_opera_rtc_s1_bounds():
             'polygon': rectangle(0, 1, 0, 1),
         },
     ]
-    validation.check_opera_rtc_s1_bounds(None, granule_metadata)
+    validation.check_opera_rtc_s1_bounds({}, granule_metadata)
 
     granule_metadata.append(
         {
@@ -490,7 +490,7 @@ def test_check_opera_rtc_s1_bounds():
         }
     )
     with pytest.raises(validation.ValidationError, match=r'Granule invalid is south of -60 degrees latitude'):
-        validation.check_opera_rtc_s1_bounds(None, granule_metadata)
+        validation.check_opera_rtc_s1_bounds({}, granule_metadata)
 
     with pytest.raises(
         validation.CmrError,
