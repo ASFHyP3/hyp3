@@ -224,7 +224,9 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
 
 
 def check_opera_rtc_s1_bounds(_, granule_metadata: list[dict] | None) -> None:
-    # TODO: handle granule_metadata is None
+    if granule_metadata is None:
+        raise ValidationError('Could not validate job because CMR query failed. Please try again later.')
+
     opera_rtc_s1_bounds = box(-180, -60, 180, 90)
     for granule in granule_metadata:
         if not granule['polygon'].intersects(opera_rtc_s1_bounds):
