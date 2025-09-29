@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.7]
+
+### Added
+- Optional OPERA `frame_id` parameter to the ITS_LIVE_AUTORIFT job specification.
+
+### Changed
+- The ITS_LIVE_METADATA job now includes a cropping step to ensure ITS_LIVE granules are chunk-aligned and have a time dimension before generating STAC and NSIDC ingest metadata files.
+- The default `publish_stac_prefix` has been changed to `stac-ingest` for ITS_LIVE_METADATA and ITS_LIVE_AUTORIFT jobs.
+- Lower A19 account back to 4000 VCPUs for nominal processing throughput.
+
 ## [10.11.6]
 
 ### Added
