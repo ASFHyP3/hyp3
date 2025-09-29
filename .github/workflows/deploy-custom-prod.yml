@@ -99,7 +99,8 @@ jobs:
               job_spec/ARIA_S1_COSEIS.yml
               job_spec/INSAR_ISCE.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
-            default_max_vcpus: 4000  # Max: 13000 - recall this number is divided by 4 to get max concurrent jobs
+            default_max_vcpus: 4000  # Max: 13000
+            expanded_max_vcpus: 4000  # Max: 13000
             expanded_max_vcpus: 4000  # Max: 13000 - recall this number is divided by 4 to get max concurrent jobs
             required_surplus: 0
             security_environment: JPL-public
