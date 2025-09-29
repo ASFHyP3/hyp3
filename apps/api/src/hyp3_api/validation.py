@@ -231,7 +231,9 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
 
 def check_opera_rtc_s1_bounds(job: dict, granule_metadata: list[dict] | None) -> None:
     if granule_metadata is None:
-        raise CmrError(f'Cannot validate job(s) of type {job["job_type"]} because CMR query failed. Please try again later.')
+        raise CmrError(
+            f'Cannot validate job(s) of type {job["job_type"]} because CMR query failed. Please try again later.'
+        )
 
     opera_rtc_s1_bounds = box(-180, -60, 180, 90)
     for granule in granule_metadata:

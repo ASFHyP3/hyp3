@@ -282,7 +282,10 @@ def test_opera_rtc_s1_bounds_cmr_error(client, tables, approved_user):
     )
 
     assert response.status_code == HTTPStatus.SERVICE_UNAVAILABLE
-    assert response.json['detail'] == 'Cannot validate job(s) of type OPERA_RTC_S1 because CMR query failed. Please try again later.'
+    assert (
+        response.json['detail']
+        == 'Cannot validate job(s) of type OPERA_RTC_S1 because CMR query failed. Please try again later.'
+    )
     assert len(tables.jobs_table.scan()['Items']) == 0
 
 
