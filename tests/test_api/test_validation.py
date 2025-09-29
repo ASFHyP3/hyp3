@@ -492,7 +492,10 @@ def test_check_opera_rtc_s1_bounds():
     with pytest.raises(validation.ValidationError, match=r'Granule invalid is south of -60 degrees latitude'):
         validation.check_opera_rtc_s1_bounds(None, granule_metadata)
 
-    with pytest.raises(validation.ValidationError, match=r'^Could not validate job because CMR query failed\. Please try again later\.$'):
+    with pytest.raises(
+        validation.ValidationError,
+        match=r'^Could not validate job because CMR query failed\. Please try again later\.$',
+    ):
         validation.check_opera_rtc_s1_bounds(None, None)
 
 
