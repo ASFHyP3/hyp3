@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Increased disk and memory available to OPERA_RTC_S1_SLC jobs in hyp3-opera-prod and hyp3-opera-test.
 - Run OPERA_RTC_S1_SLC jobs using on-demand instances in hyp3-opera-prod and hyp3-opera-test.
 
+### Fixed
+- CMR outages no longer block jobs from being submitted, except for the `OPERA_RTC_S1` and `OPERA_RTC_S1_SLC` job types.
+
 ## [10.11.7]
 
 ### Added
