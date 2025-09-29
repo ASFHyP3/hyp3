@@ -26,6 +26,12 @@ class ValidationError(Exception):
     pass
 
 
+class CmrError(Exception):
+    """Raised when the CMR query has failed and the given validator function cannot be safely skipped."""
+
+    pass
+
+
 with (Path(__file__).parent / 'job_validation_map.yml').open() as job_validation_map_file:
     JOB_VALIDATION_MAP = yaml.safe_load(job_validation_map_file.read())
 
@@ -223,9 +229,9 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
         )
 
 
-def check_opera_rtc_s1_bounds(_, granule_metadata: list[dict] | None) -> None:
+def check_opera_rtc_s1_bounds(job: dict, granule_metadata: list[dict] | None) -> None:
     if granule_metadata is None:
-        raise ValidationError('Could not validate job because CMR query failed. Please try again later.')
+        raise CmrError(f'Cannot validate job(s) of type {job["job_type"]} because CMR query failed. Please try again later.')
 
     opera_rtc_s1_bounds = box(-180, -60, 180, 90)
     for granule in granule_metadata:

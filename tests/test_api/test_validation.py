@@ -493,10 +493,10 @@ def test_check_opera_rtc_s1_bounds():
         validation.check_opera_rtc_s1_bounds(None, granule_metadata)
 
     with pytest.raises(
-        validation.ValidationError,
-        match=r'^Could not validate job because CMR query failed\. Please try again later\.$',
+        validation.CmrError,
+        match=r'^Cannot validate job\(s\) of type OPERA_JOB_TYPE because CMR query failed\. Please try again later\.$',
     ):
-        validation.check_opera_rtc_s1_bounds(None, None)
+        validation.check_opera_rtc_s1_bounds({'job_type': 'OPERA_JOB_TYPE'}, None)
 
 
 def test_check_opera_rtc_s1_date_1_granule():
