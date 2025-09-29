@@ -304,7 +304,6 @@ def validate_jobs(jobs: list[dict]) -> None:
     if granules:
         granule_metadata = _get_cmr_metadata(granules)
         if granule_metadata is not None:
-            # TODO: fine to make this optional?
             _make_sure_granules_exist(granules, granule_metadata)
     else:
         granule_metadata = []
