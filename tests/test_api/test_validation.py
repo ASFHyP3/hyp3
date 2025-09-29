@@ -24,6 +24,8 @@ def test_not_antimeridian():
     good_granules = [{'polygon': good_rect, 'name': 'good'}, {'polygon': good_rect, 'name': 'good'}]
     validation.check_not_antimeridian({}, good_granules)
 
+    validation.check_not_antimeridian({}, None)
+
     bad_granules = [{'polygon': good_rect, 'name': 'good'}, {'polygon': bad_rect, 'name': 'bad'}]
     with pytest.raises(validation.ValidationError, match=r'.*crosses the antimeridian.*'):
         validation.check_not_antimeridian({}, bad_granules)
