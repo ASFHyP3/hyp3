@@ -277,6 +277,10 @@ def test_get_cmr_metadata():
         },
     ]
 
+    responses.post(CMR_URL, status=500)
+
+    assert validation._get_cmr_metadata(['foo', 'bar', 'hello']) == []
+
 
 @responses.activate
 def test_validate_jobs():

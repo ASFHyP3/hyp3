@@ -61,7 +61,13 @@ def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
         'page_size': 2000,
     }
     response = requests.post(CMR_URL, data=cmr_parameters)
-    response.raise_for_status()
+
+    try:
+        response.raise_for_status()
+    except requests.HTTPError as e:
+        print(f'CMR search failed: {e}')
+        return []
+
     return [
         {
             'name': entry.get('producer_granule_id', entry.get('title')),
