@@ -28,6 +28,8 @@ def test_not_antimeridian():
     with pytest.raises(validation.ValidationError, match=r'.*crosses the antimeridian.*'):
         validation.check_not_antimeridian({}, bad_granules)
 
+    validation.check_not_antimeridian({}, [])
+
 
 def test_has_sufficient_coverage():
     # Wyoming
@@ -444,6 +446,8 @@ def test_check_granules_intersecting_bounds():
     with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_specified_bounds, invalid_granule_metadata)
 
+    validation.check_granules_intersecting_bounds(job_with_specified_bounds, [])
+
 
 def test_check_same_relative_orbits():
     valid_granule_metadata = [
@@ -454,10 +458,14 @@ def test_check_same_relative_orbits():
     ]
     invalid_granule_metadata = valid_granule_metadata.copy()
     invalid_granule_metadata.append({'name': 'S1B_IW_RAW__0SDV_20200623T161535_20200623T161607_012345_02A10F_7FD6'})
+
     validation.check_same_relative_orbits({}, valid_granule_metadata)
+
     error_pattern = r'.*69 is not 87.*'
     with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_same_relative_orbits({}, invalid_granule_metadata)
+
+    validation.check_same_relative_orbits({}, [])
 
 
 def test_check_bounding_box_size():
