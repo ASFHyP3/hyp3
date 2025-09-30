@@ -613,5 +613,8 @@ def test_check_aria_s1_gunw_dates(job_parameters, error):
 def test_check_cmr_query_succeeded():
     validation.check_cmr_query_succeeded({'job_type': 'FOO'}, [{}])
 
-    with pytest.raises(validation.CmrError, match=r'^Cannot validate job\(s\) of type FOO because CMR query failed\. Please try again later\.$'):
+    with pytest.raises(
+        validation.CmrError,
+        match=r'^Cannot validate job\(s\) of type FOO because CMR query failed\. Please try again later\.$',
+    ):
         validation.check_cmr_query_succeeded({'job_type': 'FOO'}, [])

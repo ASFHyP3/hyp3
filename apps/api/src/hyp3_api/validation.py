@@ -100,7 +100,9 @@ def _make_sure_granules_exist(granules: Iterable[str], granule_metadata: list[di
 
 def check_cmr_query_succeeded(job: dict, granule_metadata: list[dict]) -> None:
     if not granule_metadata:
-        raise CmrError(f'Cannot validate job(s) of type {job["job_type"]} because CMR query failed. Please try again later.')
+        raise CmrError(
+            f'Cannot validate job(s) of type {job["job_type"]} because CMR query failed. Please try again later.'
+        )
 
 
 def check_dem_coverage(_, granule_metadata: list[dict]) -> None:
