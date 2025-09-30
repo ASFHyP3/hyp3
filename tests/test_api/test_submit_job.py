@@ -6,7 +6,7 @@ import responses
 import hyp3_api.util
 from dynamo.user import APPLICATION_PENDING
 from dynamo.util import current_utc_time
-from test_api.conftest import CMR_URL_RE, JOBS_URI, login, setup_mock_cmr_response_for_polygons
+from test_api.conftest import JOBS_URI, login, setup_mock_cmr_response_for_polygons
 
 
 def make_job(granules=None, name='someName', job_type='RTC_GAMMA', parameters=None):

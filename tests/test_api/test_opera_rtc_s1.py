@@ -5,7 +5,7 @@ import pytest
 import responses
 
 import hyp3_api.validation
-from test_api.conftest import JOBS_URI, login, CMR_URL_RE
+from test_api.conftest import CMR_URL_RE, JOBS_URI, login
 
 
 @pytest.mark.network
