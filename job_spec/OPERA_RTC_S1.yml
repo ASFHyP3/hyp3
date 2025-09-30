@@ -23,6 +23,7 @@ OPERA_RTC_S1:
     DEFAULT:
       cost: 1.0
   validators:
+    - check_cmr_query_succeeded
     - check_opera_rtc_s1_date
     - check_opera_rtc_s1_bounds
   steps:

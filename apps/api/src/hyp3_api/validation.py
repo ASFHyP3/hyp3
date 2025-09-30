@@ -26,6 +26,12 @@ class ValidationError(Exception):
     pass
 
 
+class CmrError(Exception):
+    """Raised when the CMR query has failed and is required for the current job type."""
+
+    pass
+
+
 with (Path(__file__).parent / 'job_validation_map.yml').open() as job_validation_map_file:
     JOB_VALIDATION_MAP = yaml.safe_load(job_validation_map_file.read())
 
@@ -90,6 +96,11 @@ def _make_sure_granules_exist(granules: Iterable[str], granule_metadata: list[di
     not_found_granules = {granule for granule in not_found_granules if not _is_third_party_granule(granule)}
     if not_found_granules:
         raise ValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
+
+
+def check_cmr_query_succeeded(job: dict, granule_metadata: list[dict]) -> None:
+    if not granule_metadata:
+        raise CmrError(f'Cannot validate job(s) of type {job["job_type"]} because CMR query failed. Please try again later.')
 
 
 def check_dem_coverage(_, granule_metadata: list[dict]) -> None:
