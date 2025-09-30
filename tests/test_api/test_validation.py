@@ -220,6 +220,11 @@ def test_make_sure_granules_exist():
     validation._make_sure_granules_exist([], granule_metadata)
     validation._make_sure_granules_exist(['scene1'], granule_metadata)
     validation._make_sure_granules_exist(['scene1', 'scene2'], granule_metadata)
+    validation._make_sure_granules_exist([], [])
+    validation._make_sure_granules_exist(set(), [])
+
+    with pytest.raises(validation.ValidationError, match=r'.*scene1$'):
+        validation._make_sure_granules_exist(['scene1'], [])
 
     with pytest.raises(validation.ValidationError) as e:
         validation._make_sure_granules_exist(
@@ -250,6 +255,9 @@ def test_is_third_party_granule():
 
 @responses.activate
 def test_get_cmr_metadata():
+    assert validation._get_cmr_metadata([]) == []
+    assert validation._get_cmr_metadata(set()) == []
+
     response_payload = {
         'feed': {
             'entry': [
@@ -278,8 +286,7 @@ def test_get_cmr_metadata():
     ]
 
     responses.post(CMR_URL, status=500)
-
-    assert validation._get_cmr_metadata(['foo', 'bar', 'hello']) == []
+    assert validation._get_cmr_metadata(['foo', 'bar', 'hello']) is None
 
 
 @responses.activate

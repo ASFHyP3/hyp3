@@ -38,7 +38,10 @@ def _has_sufficient_coverage(granule: Polygon) -> bool:
     return granule.intersects(DEM_COVERAGE)
 
 
-def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
+def _get_cmr_metadata(granules: Iterable[str]) -> list[dict] | None:
+    if not granules:
+        return []
+
     cmr_parameters = {
         'granule_ur': [f'{granule}*' for granule in granules],
         'options[granule_ur][pattern]': 'true',
@@ -66,7 +69,7 @@ def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
         response.raise_for_status()
     except requests.HTTPError as e:
         print(f'CMR search failed: {e}')
-        return []
+        return None
 
     return [
         {
@@ -286,8 +289,8 @@ def check_opera_rtc_s1_date(job: dict, _) -> None:
 def validate_jobs(jobs: list[dict]) -> None:
     granules = get_granules(jobs)
 
-    if granules:
-        granule_metadata = _get_cmr_metadata(granules)
+    granule_metadata = _get_cmr_metadata(granules)
+    if granule_metadata is not None:
         _make_sure_granules_exist(granules, granule_metadata)
     else:
         granule_metadata = []
