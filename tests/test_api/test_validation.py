@@ -372,6 +372,8 @@ def test_validate_jobs():
     with pytest.raises(validation.ValidationError):
         validation.validate_jobs(jobs)
 
+    responses.post(CMR_URL, status=500)
+    validation.validate_jobs(jobs)
 
 def test_all_validators_have_correct_signature():
     validators = [getattr(validation, attr) for attr in dir(validation) if attr.startswith('check_')]
