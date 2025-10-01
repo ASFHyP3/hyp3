@@ -44,7 +44,7 @@ def _has_sufficient_coverage(granule: Polygon) -> bool:
     return granule.intersects(DEM_COVERAGE)
 
 
-def _get_granule_metadata_cmr(granules: Iterable[str]) -> list[dict] | None:
+def _get_cmr_metadata(granules: Iterable[str]) -> list[dict] | None:
     if not granules:
         return []
 
