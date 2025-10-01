@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.11.9]
 
 ### Fixed
-- CMR outages no longer block jobs from being submitted, except for the `OPERA_RTC_S1` and `OPERA_RTC_S1_SLC` job types.
+- CMR outages no longer block jobs from being submitted, except for the `OPERA_RTC_S1` and `OPERA_RTC_S1_SLC` job types. Fixes https://github.com/ASFHyP3/hyp3/issues/2761
 
 ## [10.11.8]
 
