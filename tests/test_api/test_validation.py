@@ -222,8 +222,6 @@ def test_make_sure_granules_exist():
     validation._make_sure_granules_exist([], granule_metadata)
     validation._make_sure_granules_exist(['scene1'], granule_metadata)
     validation._make_sure_granules_exist(['scene1', 'scene2'], granule_metadata)
-    validation._make_sure_granules_exist([], [])
-    validation._make_sure_granules_exist(set(), [])
 
     with pytest.raises(validation.ValidationError, match=r'.*scene1$'):
         validation._make_sure_granules_exist(['scene1'], [])
@@ -276,7 +274,7 @@ def test_get_cmr_metadata():
     }
     responses.post(CMR_URL, json=response_payload)
 
-    assert validation._get_cmr_metadata(['foo', 'bar', 'hello']) == [
+    assert validation._get_cmr_metadata(['foo', 'bar']) == [
         {
             'name': 'foo',
             'polygon': Polygon([[25.0, -31.4], [25.5, -29.7], [24.6, -29.5], [24.1, -31.2]]),
@@ -287,8 +285,11 @@ def test_get_cmr_metadata():
         },
     ]
 
+    with pytest.raises(validation.ValidationError, match=r'.*could not be found: hello$'):
+        validation._get_cmr_metadata(['foo', 'bar', 'hello'])
+
     responses.post(CMR_URL, status=500)
-    assert validation._get_cmr_metadata(['foo', 'bar', 'hello']) is None
+    assert validation._get_cmr_metadata(['foo', 'bar']) == []
 
 
 @responses.activate

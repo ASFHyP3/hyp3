@@ -44,7 +44,7 @@ def _has_sufficient_coverage(granule: Polygon) -> bool:
     return granule.intersects(DEM_COVERAGE)
 
 
-def _get_cmr_metadata(granules: Iterable[str]) -> list[dict] | None:
+def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
     if not granules:
         return []
 
@@ -75,15 +75,19 @@ def _get_cmr_metadata(granules: Iterable[str]) -> list[dict] | None:
         response.raise_for_status()
     except requests.HTTPError as e:
         print(f'CMR search failed: {e}')
-        return None
+        return []
 
-    return [
+    granule_metadata = [
         {
             'name': entry.get('producer_granule_id', entry.get('title')),
             'polygon': Polygon(_format_points(entry['polygons'][0][0])),
         }
         for entry in response.json()['feed']['entry']
     ]
+
+    _make_sure_granules_exist(granules, granule_metadata)
+
+    return granule_metadata
 
 
 def _is_third_party_granule(granule: str) -> bool:
@@ -301,12 +305,7 @@ def check_opera_rtc_s1_date(job: dict, _) -> None:
 
 def validate_jobs(jobs: list[dict]) -> None:
     granules = get_granules(jobs)
-
     granule_metadata = _get_cmr_metadata(granules)
-    if granule_metadata is not None:
-        _make_sure_granules_exist(granules, granule_metadata)
-    else:
-        granule_metadata = []
 
     for job in jobs:
         for validator_name in JOB_VALIDATION_MAP[job['job_type']]:
