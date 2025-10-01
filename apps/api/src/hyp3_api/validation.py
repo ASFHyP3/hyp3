@@ -305,7 +305,7 @@ def check_opera_rtc_s1_date(job: dict, _) -> None:
 
 def validate_jobs(jobs: list[dict]) -> None:
     granules = get_granules(jobs)
-    granule_metadata = _get_granule_metadata_cmr(granules)
+    granule_metadata = _get_cmr_metadata(granules)
 
     for job in jobs:
         for validator_name in JOB_VALIDATION_MAP[job['job_type']]:
