@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5.0.0
-      - uses: snyk/actions/setup@0.4.0
+      - uses: snyk/actions/setup@v1.0.0
       - uses: actions/setup-python@v6
         with:
           python-version: 3.13
