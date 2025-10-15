@@ -43,7 +43,7 @@ INSAR_ISCE_BURST:
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2
-      image_tag: 3.0.0
+      image_tag: 3.0.1
       command:
         - ++process
         - insar_tops_burst
