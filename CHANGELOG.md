@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.11.11]
 
+### Added
+- Added ARIA_S1_GUNW job type to the `plus-test` and `plus-prod` deployments.
+
+## [10.11.11]
+
 ### Changed
 - Reduced default/max vCPUs for hyp3-edc-prod deployment to 1500/3000, reverting the increase from v10.5.1.
 
