@@ -49,6 +49,7 @@ Resources:
           - Effect: Allow
             Action:
               - cloudformation:SetStackPolicy
+              - cloudformation:ListStacks
               - cloudformation:CreateStack
               - cloudformation:UpdateStack
               - cloudformation:DeleteStack
@@ -57,7 +58,7 @@ Resources:
               - cloudformation:ExecuteChangeSet
               - cloudformation:DeleteChangeSet
               - cloudformation:GetTemplateSummary
-            Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+            Resource: !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/*"
 
   ApiGatewayLoggingRole:
     Type: Custom::JplRole
