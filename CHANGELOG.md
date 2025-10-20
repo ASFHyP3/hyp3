@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.11.12]
 
-### Deprecated
-- The `INSAR_ISCE_BURST` job type has been pinned to [HyP3 ISCE2 v3.0.1](https://github.com/ASFHyP3/hyp3-isce2/releases/tag/v3.0.1) in preparation for removing this job type in a future HyP3 release. Please use the `INSAR_ISCE_MULTI_BURST` job type instead.
+### Changed
+- The `INSAR_ISCE_BURST` job type has been pinned to [HyP3 ISCE2 v3.0.1](https://github.com/ASFHyP3/hyp3-isce2/releases/tag/v3.0.1) in preparation for removing the `insar_tops_burst` entrypoint in the upcoming HyP3 ISCE2 v4.0.0 release.
 
 ## [10.11.11]
 
