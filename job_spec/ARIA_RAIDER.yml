@@ -44,8 +44,6 @@ ARIA_RAIDER:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD
         - RAIDER_ECMWF_ERA5_UID
         - RAIDER_ECMWF_ERA5_API_KEY
         - RAIDER_HRES_EMAIL
