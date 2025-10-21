@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added ARIA_S1_GUNW job type to the `plus-test` and `plus-prod` deployments.
 
+### Removed
+- ESA_USERNAME and ESA_PASSWORD environment variables removed in [RAiDER v0.5.5](https://github.com/dbekaert/RAiDER/releases/tag/v0.5.5)
+
 ## [10.11.13]
 
 ### Changed
