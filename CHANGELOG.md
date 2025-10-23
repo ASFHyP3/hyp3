@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - ESA_USERNAME and ESA_PASSWORD environment variables removed in [RAiDER v0.5.5](https://github.com/dbekaert/RAiDER/releases/tag/v0.5.5)
 
+### Changed
+- Increased hyp3-tibet-jpl and hyp3-tibet-jpl-test throughput to 6400 VCPUs.
+
 ## [10.11.13]
 
 ### Changed
