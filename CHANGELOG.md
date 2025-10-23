@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.11.12]
 
 ### Changed
-- Expanded the hyp3-ci stack permissions for JPL deployments to allow listing CloudFormation stacks and CloudFormation permissions were expended to any region to support deploying HyP3-based monitoring stacks.
+- The hyp3-ci stack permission for JPL deployments were expended to support deploying HyP3-based monitoring stacks:
+  - Listing CloudFormation stacks is now allowed.
+  - CloudFormation permissions were expended to any region from just us-west-2.
+  - ECR actions are now allowed.
 
 ## [10.11.11]
 
