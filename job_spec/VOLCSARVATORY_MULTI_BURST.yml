@@ -47,7 +47,6 @@ VOLCSARVATORY_MULTI_BURST:
     DEFAULT:
       cost: 1.0
   validators:
-    - check_multi_burst_max_length
     - check_multi_burst_pairs
     - check_dem_coverage
     - check_not_antimeridian
