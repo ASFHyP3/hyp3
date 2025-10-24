@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.11.15]
 
 ### Changed
-- Updated `INSAR_ISCE_MULTI_BURST` job spec to `hyp3-isce2:latest`, reverting the pin introduced in HyP3 v10.11.13. 
+- Removed temporary version pin for `INSAR_ISCE_MULTI_BURST` job spec introduced in HyP3 v10.11.13.
 - Changed `++process` in INSAR_ISCE_MULTI_BURST job spec to reflect changes in hyp3-isce2 v4.0.0.
 
 ## [10.11.14]
