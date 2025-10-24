@@ -28,8 +28,8 @@ jobs:
               job_spec/ARIA_S1_COSEIS.yml
               job_spec/INSAR_ISCE.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
+            default_max_vcpus: 6400
+            expanded_max_vcpus: 6400
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -118,7 +118,7 @@ jobs:
             cost_profile: DEFAULT
             job_files: >-
               job_spec/INSAR_GAMMA.yml
-              job_spec/INSAR_ISCE_BURST.yml
+              job_spec/VOLCSARVATORY_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
