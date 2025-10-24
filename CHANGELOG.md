@@ -4,15 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [10.11.15]
-
-### Added
-- Added `VOLCSARVATORY_MULTI_BURST` job type to run multiburst jobs for `hyp3-volcsarvatory` increasing the max length burst limit.
-
 ## [10.11.14]
 
 ### Added
 - Added ARIA_S1_GUNW job type to the `plus-test` and `plus-prod` deployments.
+- Added `VOLCSARVATORY_MULTI_BURST` job type to run multiburst jobs for `hyp3-volcsarvatory` increasing the max length burst limit.
 
 ### Removed
 - ESA_USERNAME and ESA_PASSWORD environment variables removed in [RAiDER v0.5.5](https://github.com/dbekaert/RAiDER/releases/tag/v0.5.5)
