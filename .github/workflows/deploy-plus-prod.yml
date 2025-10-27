@@ -21,7 +21,7 @@ jobs:
             product_lifetime_in_days: 30
             default_credits_per_user: 0
             default_application_status: APPROVED
-            cost_profile: EDC # TODO: update before going public
+            cost_profile: EDC
             job_files: >-
               job_spec/AUTORIFT.yml
               job_spec/INSAR_GAMMA.yml
