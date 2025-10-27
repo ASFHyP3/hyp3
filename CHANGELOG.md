@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.11.14]
 
 ### Added
-- Added ARIA_S1_GUNW job type to the `plus-test` and `plus-prod` deployments.
+- Added ARIA_S1_GUNW job type to the `plus-test` deployment.
 - Added `VOLCSARVATORY_MULTI_BURST` job type to run multiburst jobs for `hyp3-volcsarvatory` increasing the max length burst limit.
 
 ### Removed
