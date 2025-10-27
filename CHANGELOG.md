@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `VOLCSARVATORY_MULTI_BURST` job type to run multiburst jobs for `hyp3-volcsarvatory` increasing the max length burst limit.
 
 ### Changed
-- Increased hyp3-tibet-jpl and hyp3-tibet-jpl-test throughput to 6400 VCPUs.
+- Increased hyp3-tibet-jpl and hyp3-tibet-jpl-test throughput to 6400 VCPUs. (Fixed)
 - Removed temporary version pin for `INSAR_ISCE_MULTI_BURST` job spec introduced in HyP3 v10.11.13.
 - Changed `++process` in INSAR_ISCE_MULTI_BURST job spec to reflect changes in hyp3-isce2 v4.0.0.
 
