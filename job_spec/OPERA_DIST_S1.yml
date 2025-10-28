@@ -109,6 +109,8 @@ OPERA_DIST_S1:
           - transformer_anniversary_trained
           - transformer_anniversary_trained_optimized
           - transformer_anniversary_trained_optimized_fine
+          - transformer_v0_32
+          - transformer_v1_32
         default: transformer_optimized
         example: transformer_optimized
     stride_for_norm_param_estimation:
