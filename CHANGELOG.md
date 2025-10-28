@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.11.14]
 
 ### Added
-- Added more available models for `OPERA_DIST_S1` job specification.
+- Added more available models to the `OPERA_DIST_S1` job specification.
 
 ## [10.11.14]
 
