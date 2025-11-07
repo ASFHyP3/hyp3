@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added more available models to the `OPERA_DIST_S1` job specification.
 
+### Changed
+- Increased product lifecycle from 14 to 30 days in JPL Tibet accounts (test/prod).
+- Increased VPU throughput in JPL Prod Tibet account from 640 to 6400 (now both test/prod have same throughput).
+
 ## [10.11.14]
 
 ### Added
