@@ -38,7 +38,7 @@ jobs:
             domain: hyp3-tibet-jpl-test.asf.alaska.edu
             template_bucket: cf-templates-1or0efwqffkgd-us-west-2
             image_tag: test
-            product_lifetime_in_days: 14
+            product_lifetime_in_days: 30
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
