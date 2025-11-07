@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.17]
+
+### Changed
+- Increased product lifecycle from 14 to 30 days for hyp3-tibet-jpl-test to match hyp3-tibet-jpl.
+
 ## [10.11.16]
 
 ### Fixed
