@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added more available models to the `OPERA_DIST_S1` job specification.
 
+### Changed
+- Reduced default/max vcpus for DAAC test and prod to 1200/2400.
+
 ## [10.11.14]
 
 ### Added
