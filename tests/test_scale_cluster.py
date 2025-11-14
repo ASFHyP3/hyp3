@@ -126,8 +126,28 @@ def test_get_current_desired_vcpus(batch_stubber):
     batch_stubber.add_response(
         method='describe_compute_environments', expected_params=expected_params, service_response=service_response
     )
-
     assert scale_cluster.get_current_desired_vcpus('foo') == 5
+
+    expected_params = {'computeEnvironments': ['bar']}
+    service_response = {
+        'computeEnvironments': [
+            {
+                'computeEnvironmentName': 'environment name',
+                'computeEnvironmentArn': 'environment arn',
+                'ecsClusterArn': 'cluster arn',
+                'computeResources': {
+                    'type': 'MANAGED',
+                    'desiredvCpus': 8,
+                    'maxvCpus': 7,
+                    'subnets': ['subnet1', 'subnet2'],
+                },
+            },
+        ]
+    }
+    batch_stubber.add_response(
+        method='describe_compute_environments', expected_params=expected_params, service_response=service_response
+    )
+    assert scale_cluster.get_current_desired_vcpus('bar') == 7
 
 
 def test_set_max_vcpus(batch_stubber):
