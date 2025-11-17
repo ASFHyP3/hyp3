@@ -28,8 +28,8 @@ jobs:
               job_spec/ARIA_S1_COSEIS.yml
               job_spec/INSAR_ISCE.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
+            default_max_vcpus: 640  # Max: 13000
+            expanded_max_vcpus: 640  # Max: 13000
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -49,8 +49,8 @@ jobs:
               job_spec/INSAR_ISCE.yml
               job_spec/OPERA_DIST_S1.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
-            default_max_vcpus: 6400
-            expanded_max_vcpus: 6400
+            default_max_vcpus: 6400  # Max: 10316
+            expanded_max_vcpus: 6400  # Max: 10316
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -67,8 +67,8 @@ jobs:
               job_spec/ITS_LIVE_AUTORIFT.yml
               job_spec/ITS_LIVE_META.yml
             instance_types: r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
+            default_max_vcpus: 640  # Max: 10,406
+            expanded_max_vcpus: 640  # Max: 10,406
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/arm64/recommended/image_id
