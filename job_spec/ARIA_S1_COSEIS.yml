@@ -11,7 +11,7 @@ ARIA_S1_COSEIS:
         items:
           description: The name of the Sentinel-1 SLC granules to use as reference scenes for InSAR processing
           type: string
-          pattern: "^S1[AB]_IW_SLC__1S[SD]V"
+          pattern: "^S1[ABC]_IW_SLC__1S[SD]V"
           minLength: 67
           maxLength: 67
           example: S1B_IW_SLC__1SDV_20210723T014947_20210723T015014_027915_0354B4_B3A9
@@ -22,7 +22,7 @@ ARIA_S1_COSEIS:
         items:
           description: The name of the Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
           type: string
-          pattern: "^S1[AB]_IW_SLC__1S[SD]V"
+          pattern: "^S1[ABC]_IW_SLC__1S[SD]V"
           minLength: 67
           maxLength: 67
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
@@ -154,8 +154,6 @@ ARIA_S1_COSEIS:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD
         - RAIDER_ECMWF_ERA5_UID
         - RAIDER_ECMWF_ERA5_API_KEY
         - RAIDER_HRES_EMAIL

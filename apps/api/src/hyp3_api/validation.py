@@ -26,6 +26,12 @@ class ValidationError(Exception):
     pass
 
 
+class CmrError(Exception):
+    """Raised when the CMR query has failed and is required for the current job type."""
+
+    pass
+
+
 with (Path(__file__).parent / 'job_validation_map.yml').open() as job_validation_map_file:
     JOB_VALIDATION_MAP = yaml.safe_load(job_validation_map_file.read())
 
@@ -39,6 +45,9 @@ def _has_sufficient_coverage(granule: Polygon) -> bool:
 
 
 def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
+    if not granules:
+        return []
+
     cmr_parameters = {
         'granule_ur': [f'{granule}*' for granule in granules],
         'options[granule_ur][pattern]': 'true',
@@ -61,14 +70,24 @@ def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
         'page_size': 2000,
     }
     response = requests.post(CMR_URL, data=cmr_parameters)
-    response.raise_for_status()
-    return [
+
+    try:
+        response.raise_for_status()
+    except requests.HTTPError as e:
+        print(f'CMR search failed: {e}')
+        return []
+
+    granule_metadata = [
         {
             'name': entry.get('producer_granule_id', entry.get('title')),
             'polygon': Polygon(_format_points(entry['polygons'][0][0])),
         }
         for entry in response.json()['feed']['entry']
     ]
+
+    _make_sure_granules_exist(granules, granule_metadata)
+
+    return granule_metadata
 
 
 def _is_third_party_granule(granule: str) -> bool:
@@ -81,6 +100,13 @@ def _make_sure_granules_exist(granules: Iterable[str], granule_metadata: list[di
     not_found_granules = {granule for granule in not_found_granules if not _is_third_party_granule(granule)}
     if not_found_granules:
         raise ValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
+
+
+def check_cmr_query_succeeded(job: dict, granule_metadata: list[dict]) -> None:
+    if not granule_metadata:
+        raise CmrError(
+            f'Cannot validate job(s) of type {job["job_type"]} because CMR query failed. Please try again later.'
+        )
 
 
 def check_dem_coverage(_, granule_metadata: list[dict]) -> None:
@@ -279,12 +305,7 @@ def check_opera_rtc_s1_date(job: dict, _) -> None:
 
 def validate_jobs(jobs: list[dict]) -> None:
     granules = get_granules(jobs)
-
-    if granules:
-        granule_metadata = _get_cmr_metadata(granules)
-        _make_sure_granules_exist(granules, granule_metadata)
-    else:
-        granule_metadata = []
+    granule_metadata = _get_cmr_metadata(granules)
 
     for job in jobs:
         for validator_name in JOB_VALIDATION_MAP[job['job_type']]:

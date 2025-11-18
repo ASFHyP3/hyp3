@@ -4,14 +4,99 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.17]
+
+### Changed
+- Increased product lifecycle from 14 to 30 days for hyp3-tibet-jpl-test to match hyp3-tibet-jpl.
+
+## [10.11.16]
+
+### Fixed
+- ScaleCluster now only disables the compute environment when a scale-down is necessary. Fixes https://github.com/ASFHyP3/hyp3/issues/2965
+
+## [10.11.15]
+
+### Added
+- Added more available models to the `OPERA_DIST_S1` job specification.
+
+### Changed
+- Reduced default/max vcpus for DAAC test and prod to 1200/2400.
+
+## [10.11.14]
+
+### Added
+- Added ARIA_S1_GUNW job type to the `plus-test` deployment.
+- Added `VOLCSARVATORY_MULTI_BURST` job type to run multiburst jobs for `hyp3-volcsarvatory` increasing the max length burst limit.
+
+### Changed
+- Increased hyp3-tibet-jpl and hyp3-tibet-jpl-test throughput to 6400 VCPUs.
+- Removed temporary version pin for `INSAR_ISCE_MULTI_BURST` job spec introduced in HyP3 v10.11.13.
+- Changed `++process` in INSAR_ISCE_MULTI_BURST job spec to reflect changes in hyp3-isce2 v4.0.0.
+
+### Removed
+- ESA_USERNAME and ESA_PASSWORD environment variables removed in [RAiDER v0.5.5](https://github.com/dbekaert/RAiDER/releases/tag/v0.5.5)
+
+## [10.11.13]
+
+### Changed
+- The `INSAR_ISCE_MULTI_BURST` job type has been temporarily pinned to [HyP3 ISCE2 v3.0.1](https://github.com/ASFHyP3/hyp3-isce2/releases/tag/v3.0.1) in preparation for removing the `insar_tops_burst` entrypoint in the upcoming HyP3 ISCE2 v4.0.0 release.
+
+## [10.11.12]
+
+### Changed
+- The `INSAR_ISCE_BURST` job type has been pinned to [HyP3 ISCE2 v3.0.1](https://github.com/ASFHyP3/hyp3-isce2/releases/tag/v3.0.1) in preparation for removing the `insar_tops_burst` entrypoint in the upcoming HyP3 ISCE2 v4.0.0 release.
+
+## [10.11.11]
+
+### Changed
+- Reduced default/max vCPUs for hyp3-edc-prod deployment to 1500/3000, reverting the increase from v10.5.1.
+
+## [10.11.10]
+
+### Removed
+- Removed hyp3-opera-uat and hyp3-opera-prod deployments.
+- Removed OPERA_RTC_S1_SLC job spec and OperaRtcSlc compute environment.
+
+## [10.11.9]
+
+### Fixed
+- CMR outages no longer block jobs from being submitted, except for the `OPERA_RTC_S1` and `OPERA_RTC_S1_SLC` job types. Fixes https://github.com/ASFHyP3/hyp3/issues/2761
+
+## [10.11.8]
+
+### Changed
+- Increased disk and memory available to OPERA_RTC_S1_SLC jobs in hyp3-opera-prod and hyp3-opera-test.
+- Run OPERA_RTC_S1_SLC jobs using on-demand instances in hyp3-opera-prod and hyp3-opera-test.
+
+## [10.11.7]
+
+### Added
+- Optional OPERA `frame_id` parameter to the ITS_LIVE_AUTORIFT job specification.
+
+### Changed
+- The ITS_LIVE_METADATA job now includes a cropping step to ensure ITS_LIVE granules are chunk-aligned and have a time dimension before generating STAC and NSIDC ingest metadata files.
+- The default `publish_stac_prefix` has been changed to `stac-ingest` for ITS_LIVE_METADATA and ITS_LIVE_AUTORIFT jobs.
+- Lower A19 account back to 4000 VCPUs for nominal processing throughput.
+
+## [10.11.6]
+
+### Added
+- Sentinel-1C support for INSAR_ISCE and ARIA_S1_COSEIS job specifications.
+
+### Changed
+- Increase throughput in the `hyp3-a19-jpl` custom deployment by increasing max vCPUs from 4000 to 13000.
+- Remove 4xlarge instances from hyp3-opera deployments
+
 ## [10.11.5]
 
 ### Added
 - A `DistS1` compute environment with `m6id` On Demand instances for the `OEPERA_DIST_S1` job type to avoid spot interruptions.
 
 ### Changed
-- `OPERA_DIST_S1` jobs now time out after 1 hour instead of 3 hours. 
+- `OPERA_DIST_S1` jobs now time out after 1 hour instead of 3 hours.
 - `OPERA_DIST_S1` jobs utilize less workers for normal parameter estimation and despeckling due to RAM constraints.
+- Increased min/max vCPUs to 12,000 in the `hyp3-opera-prod` deployment
+- Change hyp3-enterprise over to hyp3-plus
 
 ## [10.11.4]
 
@@ -80,7 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added new deployment for AK-FIRE-SAFE.
 - The OpenAPI Specification version can now be specified in `render.py` via the `--openapi-spec` argument.
 - The `AUTORIFT_ITS_LIVE.yml` job spec has a new `use_static_files` parameter to specify whether to use Sentinel-1 static geometries for processing or not.
-  - This parameter has been hard-coded to `False` in the `AUTORIFT.yml` and `ARIA_AUTORIFT.yml` to ensure there is no change in the workflow for those job types. 
+  - This parameter has been hard-coded to `False` in the `AUTORIFT.yml` and `ARIA_AUTORIFT.yml` to ensure there is no change in the workflow for those job types.
 
 ### Fixed
 - The `openapi-spec.yml` and the `api-cf.yml` will now always specify the same OpenAPI Specification version.
@@ -92,7 +177,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - The credit cost in EDC/DAAC deployments has been halved accordingly
 
 ### Removed
-- Removed the deprecated `S1_CORRECTION_ITS_LIVE` job spec that's no longer supported by the hyp3-autorift plugin. 
+- Removed the deprecated `S1_CORRECTION_ITS_LIVE` job spec that's no longer supported by the hyp3-autorift plugin.
 
 ## [10.9.2]
 

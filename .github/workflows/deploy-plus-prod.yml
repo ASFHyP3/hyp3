@@ -1,9 +1,9 @@
-name: Deploy LAVAS test to AWS
+name: Deploy HyP3+ prod to AWS
 
 on:
   push:
-    branches:
-      - develop
+    tags:
+      - 'v*'
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -14,21 +14,23 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-lavas-test
-            domain: hyp3-lavas-test.asf.alaska.edu
-            template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
-            image_tag: test
-            product_lifetime_in_days: 14
+          - environment: hyp3-plus
+            domain: hyp3-plus.asf.alaska.edu
+            template_bucket: cf-templates-qgq5ahzym464-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 30
             default_credits_per_user: 0
             default_application_status: APPROVED
-            cost_profile: DEFAULT
+            cost_profile: EDC
             job_files: >-
+              job_spec/AUTORIFT.yml
+              job_spec/INSAR_GAMMA.yml
+              job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
-              job_spec/SRG_GSLC.yml
-              job_spec/SRG_TIME_SERIES.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
+            default_max_vcpus: 10000
+            expanded_max_vcpus: 10000
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -42,14 +44,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: 3.13
 
