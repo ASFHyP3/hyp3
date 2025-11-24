@@ -81,6 +81,12 @@ def patch_job_by_id(body: dict, job_id: str, user: str) -> dict:
     return job
 
 
+# TODO: need to return anything?
+def patch_jobs(body: dict, user: str) -> None:
+    # TODO: handle errors
+    dynamo.jobs.update_jobs_for_user(body['job_ids'], body['name'], user)
+
+
 def patch_user(body: dict, user: str, edl_access_token: str) -> dict:
     print(body)
     try:

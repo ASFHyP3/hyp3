@@ -236,6 +236,14 @@ def update_job(job: dict) -> None:
     )
 
 
+# TODO: need to return anything?
+def update_jobs_for_user(job_ids: list[str], name: str | None, user_id: str) -> None:
+    """Update the user's jobs at their request."""
+    # TODO
+    raise NotImplementedError()
+
+
+# TODO: delete in favor of update_jobs_for_user? (depending on return value and error handling)
 def update_job_for_user(job_id: str, name: str | None, user_id: str) -> dict:
     """Update the user's job at their request."""
     if name is not None:
