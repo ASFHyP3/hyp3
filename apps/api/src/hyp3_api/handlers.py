@@ -72,19 +72,24 @@ def get_job_by_id(job_id: str) -> dict:
 
 
 def patch_job_by_id(body: dict, job_id: str, user: str) -> dict:
+    return _patch_job(job_id, body['name'], user)
+
+
+# TODO: need to return anything?
+def patch_jobs(body: dict, user: str) -> None:
+    name = body['name']
+    for job_id in body['job_ids']:
+        _patch_job(job_id, name, user)
+
+
+def _patch_job(job_id: str, name: str, user: str) -> dict:
     try:
-        job = dynamo.jobs.update_job_for_user(job_id, body['name'], user)
+        job = dynamo.jobs.update_job_for_user(job_id, name, user)
     except UpdateJobForDifferentUserError as e:
         abort(problem_format(403, str(e)))
     except UpdateJobNotFoundError as e:
         abort(problem_format(404, str(e)))
     return job
-
-
-# TODO: need to return anything?
-def patch_jobs(body: dict, user: str) -> None:
-    # TODO: handle errors
-    dynamo.jobs.update_jobs_for_user(body['job_ids'], body['name'], user)
 
 
 def patch_user(body: dict, user: str, edl_access_token: str) -> dict:
