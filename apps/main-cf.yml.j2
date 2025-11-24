@@ -345,8 +345,6 @@ Resources:
           AttributeType: S
         - AttributeName: request_time
           AttributeType: S
-        - AttributeName: name
-          AttributeType: S
       KeySchema:
         - AttributeName: job_id
           KeyType: HASH
@@ -362,12 +360,6 @@ Resources:
         - IndexName: status_code
           KeySchema:
             - AttributeName: status_code
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
-        - IndexName: name
-          KeySchema:
-            - AttributeName: name
               KeyType: HASH
           Projection:
             ProjectionType: ALL
