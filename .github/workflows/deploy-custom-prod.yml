@@ -71,7 +71,7 @@ jobs:
             domain: hyp3-volcsarvatory.asf.alaska.edu
             template_bucket: cf-templates-1uzy61g1h6omf-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 365000
+            product_lifetime_in_days: 30
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
