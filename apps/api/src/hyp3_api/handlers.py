@@ -76,12 +76,19 @@ def patch_job_by_id(body: dict, job_id: str, user: str) -> dict:
 
 
 # TODO:
-#  - limit number of jobs
-#  - dedup job ids?
 #  - handle any exception type and warn user to re-try?
 def patch_jobs(body: dict, user: str) -> None:
+    job_ids = body['job_ids']
     name = body['name']
-    for job_id in body['job_ids']:
+
+    if len(job_ids) == 0:
+        abort(problem_format(400, 'Must provide at least one job ID'))
+
+    max_job_ids = 100
+    if len(job_ids) > max_job_ids:
+        abort(problem_format(400, f'Cannot update more than {max_job_ids} jobs'))
+
+    for job_id in job_ids:
         _patch_job(job_id, name, user)
 
 
