@@ -19,7 +19,7 @@ jobs:
             template_bucket: cf-templates-118ylv0o6jp2n-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
-            default_credits_per_user: 10000
+            default_credits_per_user: 8000
             default_application_status: APPROVED
             cost_profile: EDC
             opera_rtc_s1_end_date: 2026-01-01
