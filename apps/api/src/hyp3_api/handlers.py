@@ -76,7 +76,6 @@ def patch_job_by_id(body: dict, job_id: str, user: str) -> dict:
 
 
 # TODO:
-#  - need to return anything?
 #  - limit number of jobs
 #  - dedup job ids?
 #  - handle any exception type and warn user to re-try?

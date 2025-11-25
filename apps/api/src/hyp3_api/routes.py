@@ -148,8 +148,8 @@ def jobs_post() -> Response:
 @app.route('/jobs', methods=['PATCH'])
 @openapi
 def jobs_patch() -> Response:
-    # TODO: need to return anything?
-    return jsonify(handlers.patch_jobs(request.get_json(), g.user))
+    handlers.patch_jobs(request.get_json(), g.user)
+    return jsonify()
 
 
 @app.route('/jobs', methods=['GET'])
@@ -177,7 +177,7 @@ def jobs_get_by_job_id(job_id: str) -> Response:
     return jsonify(handlers.get_job_by_id(job_id))
 
 
-# TODO: deprecate
+# TODO: deprecate?
 @app.route('/jobs/<job_id>', methods=['PATCH'])
 @openapi
 def jobs_patch_by_job_id(job_id: str) -> Response:
