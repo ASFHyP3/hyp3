@@ -60,8 +60,7 @@ paths:
           content:
             application/json:
               schema:
-                # TODO: return jobs? (and create new response schema)
-                $ref: "#/components/schemas/jobs_response"
+                type: "null"
 
     get:
       description: Get list of previously run jobs.
