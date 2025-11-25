@@ -42,7 +42,7 @@ def test_patch_jobs(client, tables):
     )
 
     assert response.status_code == HTTPStatus.OK
-    assert response.json is None
+    assert response.json == {}
     assert tables.jobs_table.scan()['Items'] == [
         {
             'job_id': '33d85ea0-9342-4c21-ae59-5bec3f71612c',
@@ -76,7 +76,7 @@ def test_patch_jobs(client, tables):
     )
 
     assert response.status_code == HTTPStatus.OK
-    assert response.json is None
+    assert response.json == {}
     assert tables.jobs_table.scan()['Items'] == [
         {
             'job_id': '33d85ea0-9342-4c21-ae59-5bec3f71612c',
@@ -108,7 +108,7 @@ def test_patch_jobs(client, tables):
     )
 
     assert response.status_code == HTTPStatus.OK
-    assert response.json is None
+    assert response.json == {}
     assert tables.jobs_table.scan()['Items'] == [
         {
             'job_id': '33d85ea0-9342-4c21-ae59-5bec3f71612c',

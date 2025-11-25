@@ -149,7 +149,7 @@ def jobs_post() -> Response:
 @openapi
 def jobs_patch() -> Response:
     handlers.patch_jobs(request.get_json(), g.user)
-    return jsonify()
+    return jsonify({})
 
 
 @app.route('/jobs', methods=['GET'])
