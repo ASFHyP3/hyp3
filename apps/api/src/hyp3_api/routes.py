@@ -177,7 +177,6 @@ def jobs_get_by_job_id(job_id: str) -> Response:
     return jsonify(handlers.get_job_by_id(job_id))
 
 
-# TODO: deprecate?
 @app.route('/jobs/<job_id>', methods=['PATCH'])
 @openapi
 def jobs_patch_by_job_id(job_id: str) -> Response:

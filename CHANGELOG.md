@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.12.0]
+
+### Added
+- Added a new `PATCH /jobs` endpoint that accepts up to 100 job IDs and updates those jobs with the given `name` value. The update is not transactional, so it's possible that only some of the jobs will be updated if an error occurs.
+
 ## [10.11.18]
 
 ### Changed
