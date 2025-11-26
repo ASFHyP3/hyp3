@@ -6,7 +6,7 @@ PISM_TERRA_RUN:
       api_schema:
         description: Randolph Glacier Inventory 7.0 identifier the a glacier complex to simulate
         type: string
-        pattern: 'RGI2000-v7.0-C-*$'
+        pattern: 'RGI2000-v7.0-C-.*$'
         example: RGI2000-v7.0-C-01-09429
     rgi_gpkg:
       api_schema:
@@ -34,14 +34,14 @@ PISM_TERRA_RUN:
   steps:
     - name: ''
       image: ghcr.io/pism/pism-terra
-      image_tag: 0.0.3.dev40_g85d58a973
+      image_tag: 0.0.3.dev41_g81474b46d
       command:
         - ++process
         - pism-glacier-run
         - Ref::rgi_id
         - Ref::rgi_gpkg
         - Ref::pism_config
-        - REf::run_template
+        - Ref::run_template
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -49,4 +49,4 @@ PISM_TERRA_RUN:
       timeout: 10800
       compute_environment: Default
       vcpu: 1
-      memory: 7875
+      memory: 31500
