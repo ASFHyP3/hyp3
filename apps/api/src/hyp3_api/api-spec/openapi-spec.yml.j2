@@ -47,7 +47,9 @@ paths:
                 $ref: "#/components/schemas/jobs_response"
 
     patch:
-      description: Update a list of jobs.
+      description: |-
+        Update a list of up to 100 jobs. The update is not transactional,
+        so it's possible that only some of the jobs will be updated if an error occurs.
       requestBody:
         content:
           application/json:

@@ -75,8 +75,6 @@ def patch_job_by_id(body: dict, job_id: str, user: str) -> dict:
     return _patch_job(job_id, body['name'], user)
 
 
-# TODO:
-#  - handle any exception type and warn user to re-try?
 def patch_jobs(body: dict, user: str) -> None:
     job_ids = body['job_ids']
     name = body['name']
@@ -84,6 +82,7 @@ def patch_jobs(body: dict, user: str) -> None:
     if len(job_ids) == 0:
         abort(problem_format(400, 'Must provide at least one job ID'))
 
+    # Max job IDs value is also documented in OpenAPI spec
     max_job_ids = 100
     if len(job_ids) > max_job_ids:
         abort(problem_format(400, f'Cannot update more than {max_job_ids} jobs'))
