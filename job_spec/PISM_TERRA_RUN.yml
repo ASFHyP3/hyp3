@@ -11,7 +11,8 @@ PISM_TERRA_RUN:
     rgi_gpkg:
       api_schema:
         description: URI to a PISM-terra GeoPackage prepared from Randolph Glacier Inventory 7.0
-        type: uri
+        type: string
+        format: uri
         example: s3://pism-cloud-data/terra/rgi.gpkg
         default: s3://pism-cloud-data/terra/rgi.gpkg
     pism_config:
