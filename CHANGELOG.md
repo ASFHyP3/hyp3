@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.12.0]
 
 ### Added
-- Added a new `PATCH /jobs` endpoint that accepts up to 100 job IDs and updates those jobs with the given `name` value. The update is not transactional, so it's possible that only some of the jobs will be updated if an error occurs.
+- Added a new `PATCH /jobs` endpoint that accepts up to 100 job IDs and updates those jobs with the given `name` value. The update is not transactional, so it's possible that only some of the jobs will be updated if an error occurs. See https://github.com/ASFHyP3/hyp3/issues/2972
 
 ## [10.11.18]
 
