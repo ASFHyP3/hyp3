@@ -34,7 +34,7 @@ PISM_TERRA_RUN:
   steps:
     - name: ''
       image: ghcr.io/pism/pism-terra
-      image_tag: 0.0.3.dev41_g81474b46d
+      image_tag: 0.0.3.dev43_g6eb2b88cc
       command:
         - ++process
         - pism-glacier-run
@@ -50,3 +50,6 @@ PISM_TERRA_RUN:
       compute_environment: Default
       vcpu: 1
       memory: 31500
+      secrets:
+        - CDS_API_URL
+        - CDS_API_KEY
