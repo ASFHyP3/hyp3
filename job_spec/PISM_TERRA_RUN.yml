@@ -53,3 +53,15 @@ PISM_TERRA_RUN:
       secrets:
         - CDS_API_URL
         - CDS_API_KEY
+    - name: PISM_EXECUTE
+      image: ghcr.io/pism/pism-cloud
+      image_tag: fa4f891
+      command:
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+      timeout: 10800
+      compute_environment: Default
+      vcpu: 1
+      memory: 31500
