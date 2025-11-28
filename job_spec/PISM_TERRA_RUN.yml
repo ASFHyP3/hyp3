@@ -64,4 +64,4 @@ PISM_TERRA_RUN:
       timeout: 10800
       compute_environment: Default
       vcpu: 8
-      memory: 63500
+      memory: 127000
