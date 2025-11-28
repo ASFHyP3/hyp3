@@ -19,14 +19,14 @@ PISM_TERRA_RUN:
       api_schema:
         description: URI to a PISM Config file or the path to one bundled within the pism-terra package
         type: string
-        example: config/era5_chinook.toml
-        default: config/era5_chinook.toml
+        example: config/era5_ec2.toml
+        default: config/era5_ec2.toml
     run_template:
       api_schema:
         description: URI to a Jinja2 run template or the path to one bundled within the pism-terra package
         type: string
-        example: templates/chinook.j2
-        default: templates/chinook.j2
+        example: templates/ec2.j2
+        default: templates/ec2.j2
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -34,7 +34,7 @@ PISM_TERRA_RUN:
   steps:
     - name: ''
       image: ghcr.io/pism/pism-terra
-      image_tag: 0.0.3.dev44_g45936b42d
+      image_tag: 0.0.3.dev46_g6febe1e3a
       command:
         - ++process
         - pism-glacier-run
@@ -55,7 +55,7 @@ PISM_TERRA_RUN:
         - CDS_API_KEY
     - name: PISM_EXECUTE
       image: ghcr.io/pism/pism-cloud
-      image_tag: 1c8fc7b
+      image_tag: 477eb16535104808d632976ae3b76fda10a75e3c
       command:
         - --bucket
         - '!Ref Bucket'
