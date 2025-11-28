@@ -32,7 +32,7 @@ else:
     DEFAULT_PARAMS_BY_JOB_TYPE = {}
 
 
-def put_jobs(user_id: str, jobs: list[dict], dry_run: bool = False) -> list[dict]:
+def put_jobs(user_id: str, jobs: list[dict], url: str, dry_run: bool = False) -> list[dict]:
     table = DYNAMODB_RESOURCE.Table(environ['JOBS_TABLE_NAME'])
     request_time = current_utc_time()
 
@@ -48,6 +48,7 @@ def put_jobs(user_id: str, jobs: list[dict], dry_run: bool = False) -> list[dict
     for job in jobs:
         prepared_job = _prepare_job_for_database(
             job=job,
+            url=url,
             user_id=user_id,
             request_time=request_time,
             remaining_credits=remaining_credits,
@@ -86,6 +87,7 @@ def _raise_for_application_status(application_status: str, user_id: str) -> None
 
 def _prepare_job_for_database(
     job: dict,
+    url: str,
     user_id: str,
     request_time: str,
     remaining_credits: Decimal | None,
@@ -98,8 +100,12 @@ def _prepare_job_for_database(
         priority = 0
     else:
         priority = min(round(remaining_credits - running_cost), 9999)
+
+    job_id = str(uuid4())
     prepared_job = {
-        'job_id': str(uuid4()),
+        'job_id': job_id,
+        # FIXME: Should end up in a `"links" : [{"rel": "self", "href": f'{url}/{job_id}', "type: application/json"}],` (STAC style, or similar)
+        'self': f'{url}/{job_id}',
         'user_id': user_id,
         'status_code': 'PENDING',
         'execution_started': False,

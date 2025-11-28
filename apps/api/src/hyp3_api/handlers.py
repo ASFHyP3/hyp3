@@ -33,7 +33,7 @@ def post_jobs(body: dict, user: str) -> dict:
         abort(problem_format(400, str(e)))
 
     try:
-        body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], dry_run=bool(body.get('validate_only')))
+        body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], request.base_url, dry_run=bool(body.get('validate_only')))
     except UnexpectedApplicationStatusError as e:
         abort(problem_format(403, str(e)))
     except InsufficientCreditsError as e:
