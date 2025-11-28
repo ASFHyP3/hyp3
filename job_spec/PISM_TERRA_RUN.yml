@@ -48,7 +48,7 @@ PISM_TERRA_RUN:
         - Ref::job_id
       timeout: 10800
       compute_environment: Default
-      vcpu: 1
+      vcpu: 4
       memory: 31500
       secrets:
         - CDS_API_URL
@@ -63,5 +63,5 @@ PISM_TERRA_RUN:
         - Ref::job_id
       timeout: 10800
       compute_environment: Default
-      vcpu: 1
-      memory: 31500
+      vcpu: 8
+      memory: 63500
