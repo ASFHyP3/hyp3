@@ -87,7 +87,7 @@ def patch_jobs(body: dict, user: str) -> None:
     if len(job_ids) > max_job_ids:
         abort(problem_format(400, f'Cannot update more than {max_job_ids} jobs'))
 
-    for job_id in job_ids:
+    for job_id in set(job_ids):
         _patch_job(job_id, name, user)
 
 
