@@ -832,14 +832,10 @@ def test_update_job_for_different_user(tables):
     for item in table_items:
         tables.jobs_table.put_item(Item=item)
 
-    with pytest.raises(
-        UpdateJobForDifferentUserError, match=r'^You cannot modify job job2 because it belongs to a different user$'
-    ):
+    with pytest.raises(UpdateJobForDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
         dynamo.jobs.update_job_for_user('job2', 'newname', 'user1')
 
-    with pytest.raises(
-        UpdateJobForDifferentUserError, match=r'^You cannot modify job job2 because it belongs to a different user$'
-    ):
+    with pytest.raises(UpdateJobForDifferentUserError, match=r'^You cannot modify a different user\'s job$'):
         dynamo.jobs.update_job_for_user('job2', None, 'user1')
 
     assert tables.jobs_table.scan()['Items'] == [

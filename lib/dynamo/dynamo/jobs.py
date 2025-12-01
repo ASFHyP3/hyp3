@@ -262,9 +262,7 @@ def update_job_for_user(job_id: str, name: str | None, user_id: str) -> dict:
                 raise UpdateJobNotFoundError(f'Job {job_id} does not exist')
             else:
                 assert e.response['Item']['user_id']['S'] != user_id
-                raise UpdateJobForDifferentUserError(
-                    f'You cannot modify job {job_id} because it belongs to a different user'
-                )
+                raise UpdateJobForDifferentUserError("You cannot modify a different user's job")
         raise
 
     return job
