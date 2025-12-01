@@ -69,7 +69,7 @@ INSAR_ISCE_MULTI_BURST:
       image: ghcr.io/asfhyp3/hyp3-isce2
       command:
         - ++process
-        - insar_tops_burst
+        - insar_tops_multi_burst
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
