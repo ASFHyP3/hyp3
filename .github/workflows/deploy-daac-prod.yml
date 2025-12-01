@@ -19,7 +19,7 @@ jobs:
             template_bucket: cf-templates-118mtzosmrltk-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
-            default_credits_per_user: 10000
+            default_credits_per_user: 8000
             default_application_status: APPROVED
             cost_profile: EDC
             job_files: >-

@@ -33,6 +33,16 @@ INSAR_ISCE_MULTI_BURST:
           minLength: 43
           maxLength: 43
           example: S1_136231_IW2_20200616T022313_VV_5D11-BURST
+    publish_bucket:
+      api_schema:
+        description: Publish the resulting product to the VolcSARvatory S3 Bucket
+        type: string
+        nullable: true
+        enum:
+          - null
+          - "volcsarvatory-data"
+          - "volcsarvatory-data-test"
+        default: null
     apply_water_mask:
       api_schema:
         description: Sets pixels over coastal and large inland waterbodies as invalid for phase unwrapping.
@@ -57,7 +67,6 @@ INSAR_ISCE_MULTI_BURST:
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2
-      image_tag: 3.0.1
       command:
         - ++process
         - insar_tops_burst
@@ -73,6 +82,8 @@ INSAR_ISCE_MULTI_BURST:
         - Ref::reference
         - --secondary
         - Ref::secondary
+        - --publish-bucket
+        - Ref::publish_bucket
       timeout: 126000  # 35 hours
       compute_environment: Default
       vcpu: 1
@@ -80,3 +91,5 @@ INSAR_ISCE_MULTI_BURST:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
+        - PUBLISH_ACCESS_KEY_ID
+        - PUBLISH_SECRET_ACCESS_KEY

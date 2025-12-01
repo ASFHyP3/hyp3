@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.17]
+
+### Added
+- Added `--publish-bucket` parameter on `VOLCSARVATORY_MULTI_BURST` job spec.
+
+### Changed
+- Increased product lifecycle from 14 to 30 days for `hyp3-tibet-jpl-test` to match `hyp3-tibet-jpl`.
+- Reduced default credits per user to 8,000 from 10,000 for the `hyp3-edc-prod` and `hyp3-edc-uat` deployments.
+- Reduced product lifecycle from 365000 to 30 days for `hyp3-volcsarvatory`.
+
 ## [10.11.16]
 
 ### Fixed
