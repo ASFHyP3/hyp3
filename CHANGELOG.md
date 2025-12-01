@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.11.18]
+
+### Fixed
+- Changed `insar_tops_burst` for `insar_tops_multi_burst` in `VOLCSARVATORY_MULTI_BURST` job spec.
+
 ## [10.11.17]
 
 ### Added
