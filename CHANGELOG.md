@@ -9,11 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added a new `PATCH /jobs` endpoint that accepts up to 100 job IDs and updates those jobs with the given `name` value. The update is not transactional, so it's possible that only some of the jobs will be updated if an error occurs. See https://github.com/ASFHyP3/hyp3/issues/2972
 
-## [10.11.18]
-
-### Changed
-- Reduced default credits per user to 8,000 from 10,000 for the `hyp3-edc-prod` and `hyp3-edc-uat` deployments.
-
 ## [10.11.17]
 
 ### Added
