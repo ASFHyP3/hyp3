@@ -46,24 +46,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/jobs_response"
 
-    patch:
-      description: |-
-        Update a list of up to 100 jobs. The update is not transactional,
-        so it's possible that only some of the jobs will be updated if an error occurs.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/patch_jobs_body"
-        required: true
-      responses:
-        "200":
-          description: 200 response
-          content:
-            application/json:
-              schema:
-                type: object
-
     get:
       description: Get list of previously run jobs.
       parameters:
@@ -217,19 +199,6 @@ components:
         jobs:
           $ref: "#/components/schemas/list_of_new_jobs"
 
-    patch_jobs_body:
-      description: List of jobs to update with a new name.
-      type: object
-      required:
-        - job_ids
-        - name
-      additionalProperties: false
-      properties:
-        job_ids:
-          $ref: "#/components/schemas/job_ids_list"
-        name:
-          $ref: "#/components/schemas/name_patch"
-
     jobs_response:
       description: List of submitted jobs.
       type: object
@@ -293,11 +262,6 @@ components:
       description: Processing credits for running jobs.
       type: number
       minimum: 0
-
-    job_ids_list:
-      type: array
-      items:
-        $ref: "#/components/schemas/job_id"
 
     job_names_list:
       type: array

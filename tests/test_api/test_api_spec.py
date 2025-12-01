@@ -4,7 +4,7 @@ from test_api.conftest import AUTH_COOKIE, JOBS_URI, USER_URI, get_mock_jwt_cook
 
 
 ENDPOINTS = {
-    JOBS_URI: {'GET', 'HEAD', 'OPTIONS', 'POST', 'PATCH'},
+    JOBS_URI: {'GET', 'HEAD', 'OPTIONS', 'POST'},
     JOBS_URI + '/foo': {'GET', 'HEAD', 'OPTIONS', 'PATCH'},
     USER_URI: {'GET', 'HEAD', 'OPTIONS', 'PATCH'},
 }

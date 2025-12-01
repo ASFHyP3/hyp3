@@ -72,28 +72,8 @@ def get_job_by_id(job_id: str) -> dict:
 
 
 def patch_job_by_id(body: dict, job_id: str, user: str) -> dict:
-    return _patch_job(job_id, body['name'], user)
-
-
-def patch_jobs(body: dict, user: str) -> None:
-    job_ids = body['job_ids']
-    name = body['name']
-
-    if len(job_ids) == 0:
-        abort(problem_format(400, 'Must provide at least one job ID'))
-
-    # Max job IDs value is also documented in OpenAPI spec
-    max_job_ids = 100
-    if len(job_ids) > max_job_ids:
-        abort(problem_format(400, f'Cannot update more than {max_job_ids} jobs'))
-
-    for job_id in set(job_ids):
-        _patch_job(job_id, name, user)
-
-
-def _patch_job(job_id: str, name: str, user: str) -> dict:
     try:
-        job = dynamo.jobs.update_job_for_user(job_id, name, user)
+        job = dynamo.jobs.update_job_for_user(job_id, body['name'], user)
     except UpdateJobForDifferentUserError as e:
         abort(problem_format(403, str(e)))
     except UpdateJobNotFoundError as e:
