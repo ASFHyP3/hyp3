@@ -1,9 +1,9 @@
-name: Deploy HyP3 Sandbox to AWS
+name: Deploy HyP3 EDC Sandbox to AWS
 
 on:
   push:
     branches:
-      - hyp3-sandbox
+      - hyp3-edc-sandbox
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-sandbox
+          - environment: hyp3-edc-sandbox
             template_bucket: cf-templates-bywc0durdnqy-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
