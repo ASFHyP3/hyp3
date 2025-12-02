@@ -1,5 +1,8 @@
 name: Deploy HyP3 EDC Sandbox to AWS
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
