@@ -55,12 +55,14 @@ PISM_TERRA_RUN:
         - CDS_API_KEY
     - name: PISM_EXECUTE
       image: ghcr.io/pism/pism-cloud
-      image_tag: 00619f88494dabcfb55d9ee8d8c561b12606af31
+      image_tag: b280b0d280bef0e7b5a4c22a9cb4e58ffbb3719f
       command:
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
+        - --run-dir
+        - Ref::rgi_id
       timeout: 10800
       compute_environment: Default
       vcpu: 16
