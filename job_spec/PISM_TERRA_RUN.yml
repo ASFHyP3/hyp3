@@ -55,7 +55,7 @@ PISM_TERRA_RUN:
         - CDS_API_KEY
     - name: PISM_EXECUTE
       image: ghcr.io/pism/pism-cloud
-      image_tag: b280b0d280bef0e7b5a4c22a9cb4e58ffbb3719f
+      image_tag: 7771dd3
       command:
         - --bucket
         - '!Ref Bucket'
