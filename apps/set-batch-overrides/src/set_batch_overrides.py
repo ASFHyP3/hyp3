@@ -66,7 +66,7 @@ def get_insar_isce_burst_memory(job_parameters: dict) -> str:
         if bursts < 31:
             return INSAR_ISCE_BURST_MEMORY_32G
     if looks == '20x4':
-        if bursts < 16:
+        if bursts < 13:
             return INSAR_ISCE_BURST_MEMORY_8G
         if bursts < 31:
             return INSAR_ISCE_BURST_MEMORY_16G
