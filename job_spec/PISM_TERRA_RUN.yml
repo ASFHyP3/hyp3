@@ -34,7 +34,7 @@ PISM_TERRA_RUN:
   steps:
     - name: ''
       image: ghcr.io/pism/pism-terra
-      image_tag: 0.0.3.dev46_g6febe1e3a
+      image_tag: 0.0.3.dev47_g19551d032
       command:
         - ++process
         - pism-glacier-run
@@ -46,24 +46,21 @@ PISM_TERRA_RUN:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
-      timeout: 10800
-      compute_environment: Default
-      vcpu: 4
-      memory: 31500
-      secrets:
+        - --execute
+      Secrets:
         - CDS_API_URL
         - CDS_API_KEY
-    - name: PISM_EXECUTE
-      image: ghcr.io/pism/pism-cloud
-      image_tag: 7771dd3
-      command:
-        - --bucket
-        - '!Ref Bucket'
-        - --bucket-prefix
-        - Ref::job_id
-        - --run-dir
-        - Ref::rgi_id
-      timeout: 10800
-      compute_environment: Default
-      vcpu: 16
-      memory: 127000
+      timeout: 172800  # 48 hours
+      compute_environment: PismExecute
+      vcpu: 32
+      memory: 254000
+      linux_parameters:
+        SharedMemorySize: 15259
+      # TODO:
+      # Ulimits:
+      #   - Name: 'stack'
+      #     HardLimit: 1048576  # a very big number to mimic "unlimited" (-1 in docker)
+      #     SoftLimit: 1048576
+      #   - Name: 'memlock'
+      #     HardLimit: 1048576  # a very big number to mimic "unlimited" (-1 in docker)
+      #     SoftLimit: 1048576
