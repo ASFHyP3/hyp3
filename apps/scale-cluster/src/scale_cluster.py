@@ -5,6 +5,7 @@ from os import environ
 import boto3
 import dateutil.relativedelta
 
+
 BATCH = boto3.client('batch')
 COST_EXPLORER = boto3.client('ce')
 
