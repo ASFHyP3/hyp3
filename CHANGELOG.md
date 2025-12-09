@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.12.1]
+
+### Fixed
+- Doubled the memory requirement for `INSAR_ISCE_MULTI_BURST` jobs at 20x4 looks and >= 13 burst pairs. As a result, the credit cost for such jobs as also doubled from 5 to 10. Fixes https://github.com/ASFHyP3/hyp3/issues/2933
+
 ## [10.12.0]
 
 ### Added
