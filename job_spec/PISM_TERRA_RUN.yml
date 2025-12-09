@@ -47,7 +47,7 @@ PISM_TERRA_RUN:
         - --bucket-prefix
         - Ref::job_id
         - --execute
-      Secrets:
+      secrets:
         - CDS_API_URL
         - CDS_API_KEY
       timeout: 172800  # 48 hours
