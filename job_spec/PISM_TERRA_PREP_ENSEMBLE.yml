@@ -48,6 +48,7 @@ PISM_TERRA_PREP_ENSEMBLE:
         - Ref::rgi_gpkg
         - Ref::pism_config
         - Ref::run_template
+        - Ref::uq_config
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
