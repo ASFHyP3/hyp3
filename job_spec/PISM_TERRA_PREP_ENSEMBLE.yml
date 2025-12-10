@@ -1,4 +1,4 @@
-PISM_TERRA_RUN:
+PISM_TERRA_PREP_ENSEMBLE:
   required_parameters:
     - rgi_id
   parameters:
@@ -27,6 +27,12 @@ PISM_TERRA_RUN:
         type: string
         example: templates/ec2.j2
         default: templates/ec2.j2
+    uq_config:
+      api_schema:
+        description: URI to a PISM Config file or the path to one bundled within the pism-terra package
+        type: string
+        example: uq/era5_agu.toml
+        default: uq/era5_agu.toml
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -37,7 +43,7 @@ PISM_TERRA_RUN:
       image_tag: 0.0.3.dev67_g704f7571e
       command:
         - ++process
-        - pism-glacier-run
+        - pism-glacier-run-ensemble
         - Ref::rgi_id
         - Ref::rgi_gpkg
         - Ref::pism_config
@@ -46,11 +52,10 @@ PISM_TERRA_RUN:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
-        - --execute
       secrets:
         - CDS_API_URL
         - CDS_API_KEY
-      timeout: 259200  # 72 hours
+      timeout: 10800  # 3 hours
       compute_environment: PismExecute
       vcpu: 32
       memory: 254000
