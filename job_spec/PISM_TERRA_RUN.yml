@@ -34,7 +34,7 @@ PISM_TERRA_RUN:
   steps:
     - name: ''
       image: ghcr.io/pism/pism-terra
-      image_tag: 0.0.3.dev68_gfe5f799ad
+      image_tag: 0.0.3.dev69_g8c885895e
       command:
         - ++process
         - pism-glacier-run
