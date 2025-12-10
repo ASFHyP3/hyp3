@@ -1,6 +1,7 @@
 PISM_TERRA_EXECUTE:
   required_parameters:
-    - rgi_id
+    - ensemble_job_id
+    - run_script
   parameters:
     ensemble_job_id:
       api_schema:
@@ -8,11 +9,11 @@ PISM_TERRA_EXECUTE:
         type: string
         format: uuid
         example: 27836b79-e5b2-4d8f-932f-659724ea02c3
-      run_script:
-        api_schema:
-          description: Relative path to the run script under the ensemble_job_id prefix within the HyP3 content bucket
-          type: string
-          example: RGI2000-v7.0-C-01-09429/run_scripts/submit_g400m_RGI2000-v7.0-C-01-09429_id_0_1978-01-01_2025-01-01.sh
+    run_script:
+      api_schema:
+        description: Relative path to the run script under the ensemble_job_id prefix within the HyP3 content bucket
+        type: string
+        example: RGI2000-v7.0-C-01-09429/run_scripts/submit_g400m_RGI2000-v7.0-C-01-09429_id_0_1978-01-01_2025-01-01.sh
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -20,7 +21,7 @@ PISM_TERRA_EXECUTE:
   steps:
     - name: ''
       image: ghcr.io/pism/pism-terra
-      image_tag: 0.0.3.dev67_g704f7571e
+      image_tag: 0.0.3.dev68_gfe5f799ad
       command:
         - ++process
         - pism-glacier-execute
