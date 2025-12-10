@@ -50,7 +50,7 @@ PISM_TERRA_RUN:
       secrets:
         - CDS_API_URL
         - CDS_API_KEY
-      timeout: 259200  # 72 hours
+      timeout: 345600  # 96 hours
       compute_environment: PismExecute
       vcpu: 32
       memory: 254000
