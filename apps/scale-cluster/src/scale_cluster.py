@@ -26,8 +26,7 @@ def get_month_to_date_spending(today: date) -> float:
 
 def get_current_desired_vcpus(compute_environment_arn: str) -> int:
     response = BATCH.describe_compute_environments(computeEnvironments=[compute_environment_arn])
-    compute_resources = response['computeEnvironments'][0]['computeResources']
-    return min(compute_resources['desiredvCpus'], compute_resources['maxvCpus'])
+    return response['computeEnvironments'][0]['computeResources']['desiredvCpus']
 
 
 def set_max_vcpus(compute_environment_arn: str, target_max_vcpus: int, current_desired_vcpus: int) -> None:
@@ -39,7 +38,7 @@ def set_max_vcpus(compute_environment_arn: str, target_max_vcpus: int, current_d
             computeResources=compute_resources,
             state='ENABLED',
         )
-    else:
+    elif current_desired_vcpus > target_max_vcpus * 1.05:
         print(
             f'Disabling {compute_environment_arn}. Current desiredvCpus {current_desired_vcpus} is larger than '
             f'target maxvCpus {target_max_vcpus}'
@@ -47,6 +46,11 @@ def set_max_vcpus(compute_environment_arn: str, target_max_vcpus: int, current_d
         BATCH.update_compute_environment(
             computeEnvironment=compute_environment_arn,
             state='DISABLED',
+        )
+    else:
+        print(
+            f'Doing nothing with {compute_environment_arn}. Current desiredvCpus {current_desired_vcpus} only '
+            f'marginally exceeds target maxvCpus {target_max_vcpus}'
         )
 
 

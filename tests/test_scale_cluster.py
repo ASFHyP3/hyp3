@@ -128,40 +128,28 @@ def test_get_current_desired_vcpus(batch_stubber):
     )
     assert scale_cluster.get_current_desired_vcpus('foo') == 5
 
-    expected_params = {'computeEnvironments': ['bar']}
-    service_response = {
-        'computeEnvironments': [
-            {
-                'computeEnvironmentName': 'environment name',
-                'computeEnvironmentArn': 'environment arn',
-                'ecsClusterArn': 'cluster arn',
-                'computeResources': {
-                    'type': 'MANAGED',
-                    'desiredvCpus': 8,
-                    'maxvCpus': 7,
-                    'subnets': ['subnet1', 'subnet2'],
-                },
-            },
-        ]
-    }
-    batch_stubber.add_response(
-        method='describe_compute_environments', expected_params=expected_params, service_response=service_response
-    )
-    assert scale_cluster.get_current_desired_vcpus('bar') == 7
-
 
 def test_set_max_vcpus(batch_stubber):
     expected_params = {'computeEnvironment': 'foo', 'computeResources': {'maxvCpus': 10}, 'state': 'ENABLED'}
     batch_stubber.add_response(
         method='update_compute_environment', expected_params=expected_params, service_response={}
     )
-    scale_cluster.set_max_vcpus(compute_environment_arn='foo', target_max_vcpus=10, current_desired_vcpus=10)
+    scale_cluster.set_max_vcpus(compute_environment_arn='foo', target_max_vcpus=10, current_desired_vcpus=0)
+
+    expected_params = {'computeEnvironment': 'bar', 'computeResources': {'maxvCpus': 10}, 'state': 'ENABLED'}
+    batch_stubber.add_response(
+        method='update_compute_environment', expected_params=expected_params, service_response={}
+    )
+    scale_cluster.set_max_vcpus(compute_environment_arn='bar', target_max_vcpus=10, current_desired_vcpus=10)
 
     expected_params = {'computeEnvironment': 'foo', 'state': 'DISABLED'}
     batch_stubber.add_response(
         method='update_compute_environment', expected_params=expected_params, service_response={}
     )
-    scale_cluster.set_max_vcpus(compute_environment_arn='foo', target_max_vcpus=10, current_desired_vcpus=11)
+    scale_cluster.set_max_vcpus(compute_environment_arn='foo', target_max_vcpus=100, current_desired_vcpus=106)
+
+    scale_cluster.set_max_vcpus(compute_environment_arn='foo', target_max_vcpus=100, current_desired_vcpus=101)
+    scale_cluster.set_max_vcpus(compute_environment_arn='foo', target_max_vcpus=100, current_desired_vcpus=105)
 
 
 def test_get_month_to_date_spending(cost_explorer_stubber):
