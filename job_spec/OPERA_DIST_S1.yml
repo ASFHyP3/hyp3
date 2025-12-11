@@ -140,6 +140,12 @@ OPERA_DIST_S1:
         type: boolean
         default: false
         example: false
+    model_context_length:
+       api_schema:
+         description: Maximum number of baseline images to use. If -1, use largest allowable baseline.
+         type: int
+         default: -1
+         example: 10
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -186,6 +192,8 @@ OPERA_DIST_S1:
         - Ref::model_compilation
         - --use_date_encoding
         - Ref::use_date_encoding
+        - --model_context_length
+        - Ref::model_context_length
       timeout: 3600  # 1 hr
       compute_environment: DistS1
       vcpu: 1
