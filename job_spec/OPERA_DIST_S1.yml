@@ -143,7 +143,7 @@ OPERA_DIST_S1:
     model_context_length:
        api_schema:
          description: Maximum number of baseline images to use. If -1, use largest allowable baseline.
-         type: int
+         type: integer
          default: -1
          example: 10
   cost_profiles:
