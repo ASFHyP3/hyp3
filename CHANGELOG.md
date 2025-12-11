@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.12.1]
 
+### Added
+- `model_context_length` parameter for `OPERA_DIST_S1` job specification.
+
+## [10.12.1]
+
 ### Fixed
 - Doubled the memory requirement for `INSAR_ISCE_MULTI_BURST` jobs at 20x4 looks and >= 13 burst pairs. As a result, the credit cost for such jobs as also doubled from 5 to 10. Fixes https://github.com/ASFHyP3/hyp3/issues/2933
 - ScaleCluster now takes no action when desired vCPUs only marginally exceeds target vCPUs. Fixes https://github.com/ASFHyP3/hyp3/issues/2965
