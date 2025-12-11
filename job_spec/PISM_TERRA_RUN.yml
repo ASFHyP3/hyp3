@@ -13,20 +13,24 @@ PISM_TERRA_RUN:
         description: URI to a PISM-terra GeoPackage prepared from Randolph Glacier Inventory 7.0
         type: string
         format: uri
-        example: s3://pism-cloud-data/terra/rgi.gpkg
         default: s3://pism-cloud-data/terra/rgi.gpkg
     pism_config:
       api_schema:
         description: URI to a PISM Config file or the path to one bundled within the pism-terra package
         type: string
-        example: config/era5_ec2.toml
         default: config/era5_ec2.toml
     run_template:
       api_schema:
         description: URI to a Jinja2 run template or the path to one bundled within the pism-terra package
         type: string
-        example: templates/ec2.j2
         default: templates/ec2.j2
+    ntasks:
+      api_schema:
+        description: Number of MPI tasks to use when executing PISM simulations
+        type: integer
+        default: 32
+        minimum: 2
+        maximum: 32
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -46,6 +50,8 @@ PISM_TERRA_RUN:
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
+        - --ntasks
+        - Ref::ntasks
         - --execute
       secrets:
         - CDS_API_URL
