@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - `model_context_length` parameter for `OPERA_DIST_S1` job specification.
+- Update max stride for models with larger input size.
 
 ## [10.12.1]
 
