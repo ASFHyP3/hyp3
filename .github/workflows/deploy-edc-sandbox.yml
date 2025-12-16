@@ -39,7 +39,7 @@ jobs:
             required_surplus: 0
             security_environment: EDC
             ami_id: /ngap/amis/image_id_ecs_al2023_x86
-            distribution_url: '' # TODO
+            distribution_url: 'https://d3bvvghf83wjqc.cloudfront.net'
 
     environment:
       name: ${{ matrix.environment }}
