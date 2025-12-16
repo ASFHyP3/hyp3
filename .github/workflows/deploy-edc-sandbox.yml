@@ -23,7 +23,7 @@ jobs:
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             default_application_status: APPROVED
-            cost_profile: DEFAULT
+            cost_profile: EDC
             opera_rtc_s1_end_date: Default
             job_files: >-
               job_spec/AUTORIFT.yml
