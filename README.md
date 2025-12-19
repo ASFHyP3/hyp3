@@ -233,32 +233,7 @@ Go to AWS console -> Secrets Manager, then:
 
 #### Upload SSL cert
 
-TODO: finish updating this section; do we still reuse a master cert for all ASF-managed deployments?
-
-> [!WARNING]
-> This step must be done by an ASF employee.
-
 To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for its deployment domain name (URL).
-
-If HyP3 is being deployed to an ASF-managed AWS account, we can use the master certificate that covers all 
-`*.asf.alaska.edu` domains. Otherwise, we'll need a deployment specific certificate.
-
-<details>
-<summary>ASF-managed AWS account: Upload the ASF master SSL certificate</summary>
-<br />
-
-Upload the `*.asf.alaska.edu` SSL certificate to AWS Certificate Manager (ACM):
-
-1. AWS console -> Certificate Manager (ACM) -> import certificate
-1. Open https://gitlab.asf.alaska.edu/operations/puppet/-/tree/production/modules/certificates/files
-   1. The contents of the `asf.alaska.edu.cer` file go in "Certificate body"
-   1. The contents of the `asf.alaska.edu.key` file go in "Certificate private key"
-   1. The contents of the `intermediates.pem` file go in "Certificate chain"
-</details>
-
-<details>
-<summary>Externally-managed AWS account (e.g., JPL, EDC, CloudBank): Request and upload deployment specific SSL certificate</summary>
-<br />
 
 *Note: For EDC accounts, you should create the cert in the `us-east-1` region
 for use with the CloudFront distribution that you will create later,
@@ -271,8 +246,6 @@ AWS console -> AWS Certificate Manager -> Request a public certificate:
 Then add the validation record to
 https://gitlab.asf.alaska.edu/operations/puppet/-/edit/production/modules/legacy_dns/files/asf.alaska.edu.db
 (see previous records for examples).
-
-</details>
 
 ### Create the GitHub environment
 
