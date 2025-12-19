@@ -260,7 +260,9 @@ Upload the `*.asf.alaska.edu` SSL certificate to AWS Certificate Manager (ACM):
 <summary>Externally-managed AWS account (e.g., JPL, EDC, CloudBank): Request and upload deployment specific SSL certificate</summary>
 <br />
 
-*Note: For EDC accounts, you should be in the `us-east-1` region.*
+*Note: For EDC accounts, you should create the cert in the `us-east-1` region
+for use with the CloudFront distribution that you will create later,
+even if you're deploying HyP3 to `us-west-2`.*
 
 AWS console -> AWS Certificate Manager -> Request a public certificate:
 - The domain name should be something like `hyp3-foobar.asf.alaska.edu`
