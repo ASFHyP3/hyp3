@@ -1,9 +1,12 @@
-name: Deploy jth sandbox to AWS
+name: Deploy HyP3 EDC Sandbox to AWS
+
+permissions:
+  contents: read
 
 on:
   push:
     branches:
-      - hyp3-jth-sandbox
+      - hyp3-edc-sandbox
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -14,13 +17,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-jth-sandbox
+          - environment: hyp3-edc-sandbox
             template_bucket: cf-templates-bywc0durdnqy-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             default_application_status: APPROVED
-            cost_profile: DEFAULT
+            cost_profile: EDC
             opera_rtc_s1_end_date: Default
             job_files: >-
               job_spec/AUTORIFT.yml
@@ -36,7 +39,7 @@ jobs:
             required_surplus: 0
             security_environment: EDC
             ami_id: /ngap/amis/image_id_ecs_al2023_x86
-            distribution_url: ''
+            distribution_url: 'https://d3bvvghf83wjqc.cloudfront.net'
 
     environment:
       name: ${{ matrix.environment }}
