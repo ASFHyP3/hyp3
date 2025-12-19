@@ -231,7 +231,7 @@ Go to AWS console -> Secrets Manager, then:
 1. Click the orange "Next" button (we won't configure rotation)
 1. Click the orange "Store" button to save the Secret
 
-#### Upload SSL cert
+#### Request SSL cert
 
 To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for its deployment domain name (URL).
 
