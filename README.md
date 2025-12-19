@@ -233,7 +233,7 @@ Go to AWS console -> Secrets Manager, then:
 
 #### Upload SSL cert
 
-TODO: update this section
+TODO: finish updating this section; do we still reuse a master cert for all ASF-managed deployments?
 
 > [!WARNING]
 > This step must be done by an ASF employee.
@@ -260,21 +260,15 @@ Upload the `*.asf.alaska.edu` SSL certificate to AWS Certificate Manager (ACM):
 <summary>Externally-managed AWS account (e.g., JPL, EDC, CloudBank): Request and upload deployment specific SSL certificate</summary>
 <br />
 
-Submit a Platform request in ASF JIRA for a new certificate, including the domain name
-(e.g. `hyp3-foobar.asf.alaska.edu`).
+*Note: For EDC accounts, you should be in the `us-east-1` region.*
 
-Once you receive the certificate's private key and links to download the certificate in various formats,
-download these files:
-1. Certificate Body (the "as Certificate Only, PEM encoded" link from the email)
-2. Certificate Private Key (from the Platform team; typically in MatterMost)
-3. Certificate Chain (the "as Root/Intermediate(s) only, PEM encoded" link from the email)
+AWS console -> AWS Certificate Manager -> Request a public certificate:
+- The domain name should be something like `hyp3-foobar.asf.alaska.edu`
+- Choose "DNS validation"
 
-and then upload them to AWS Certificate Manager (ACM):
-
-1. AWS console -> Certificate Manager (ACM) -> import certificate
-   1. The contents of (1) above goes in Certificate body
-   1. The contents of (2) above goes in Certificate private key
-   1. The contents of (3) above goes in Certificate chain
+Then add the validation record to
+https://gitlab.asf.alaska.edu/operations/puppet/-/edit/production/modules/legacy_dns/files/asf.alaska.edu.db
+(see previous records for examples).
 
 </details>
 
