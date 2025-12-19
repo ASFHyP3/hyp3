@@ -288,9 +288,7 @@ https://gitlab.asf.alaska.edu/operations/puppet/-/edit/production/modules/legacy
      (This is typically `main` for prod deployments, `develop` for test deployments, or a feature branch name for sandbox deployments.)
 4. Add the following environment secrets:
     - `AWS_REGION` - e.g. `us-west-2`
-    - `BUCKET_READ_PRINCIPALS` (EDC only) - List of AWS IAM principals granted read access to data in S3 for Earthdata Cloud deployments.
-    - `CERTIFICATE_ARN` (ASF and JPL only) - ARN of the AWS Certificate Manager certificate that you imported manually (aws console -> certificate manager -> list certificates, e.g. `arn:aws:acm:us-west-2:xxxxxxxxxxxx:certificate/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`)
-      - TODO: update wording
+    - `CERTIFICATE_ARN` (ASF and JPL only) - ARN of the AWS Certificate Manager certificate
     - `CLOUDFORMATION_ROLE_ARN` (ASF only) - part of the `hyp3-ci` stack that you deployed, e.g. `arn:aws:iam::xxxxxxxxxxxx:role/hyp3-ci-CloudformationDeploymentRole-XXXXXXXXXXXXX`
     - `SECRET_ARN` - ARN for the AWS Secrets Manager Secret that you created manually
     - `V2_AWS_ACCESS_KEY_ID` - AWS access key ID:
