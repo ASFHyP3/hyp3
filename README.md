@@ -59,6 +59,10 @@ also referred to as "security environments" throughout our code and docs
 - JPL
 - JPL-public 
 
+For EDC, you will also need to refer to our
+[Deploy HyP3 to Earthdata Cloud](https://github.com/ASFHyP3/.github-private/blob/main/docs/Deploy-HyP3-to-Earthdata-Cloud.md)
+internal docs article (only accessible to members of ASF).
+
 > [!IMPORTANT]
 > JPL deployments _must_ start with the JPL security environment, but can be migrated to `JPL-public`
 > after they are fully deployed and approved to have a public bucket.
@@ -66,19 +70,6 @@ also referred to as "security environments" throughout our code and docs
 For JPL, these deployment docs assume that:
 - the JPL account was set up in the "default" manner by the JPL cloud team
 - the developer deploying the account is able to log in with the `power_user` role
-
-For a new EDC deployment, you need the following items (not necessarily a comprehensive list):
-- SSL certificate in AWS Certificate Manager for custom CloudFront domain name
-- ID of the CloudFront Origin Access Identity used to access data in S3
-
-EDC UAT/prod deployment steps are not fully documented here.
-When deploying HyP3 to a new EDC account for the first time, you should also refer to the
-[SOP for deploying HyP3 to EDC](https://asfdaac.atlassian.net/wiki/spaces/ST/pages/2290319361/SOP-ASF-DAAC-EDC-011).
-You should then be able to deploy additional copies of HyP3 to an EDC Sandbox account
-by following this README alone.
-
-After deploying HyP3 to an EDC Sandbox account, you'll need to follow our documentation on
-[Accessing Private API Gateways in Earthdata Cloud](https://github.com/ASFHyP3/.github-private/blob/main/docs/Accessing-Private-API-Gateways-in-Earthdata-Cloud.md).
 
 > [!TIP]
 > You can expand and collapse details specific to a security environment as you go through this README.
@@ -242,6 +233,8 @@ Go to AWS console -> Secrets Manager, then:
 
 #### Upload SSL cert
 
+TODO: update this section
+
 > [!WARNING]
 > This step must be done by an ASF employee.
 
@@ -249,8 +242,6 @@ To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for its 
 
 If HyP3 is being deployed to an ASF-managed AWS account, we can use the master certificate that covers all 
 `*.asf.alaska.edu` domains. Otherwise, we'll need a deployment specific certificate.
-
-*Important: Skip this step for EDC Sandbox deployments.*
 
 <details>
 <summary>ASF-managed AWS account: Upload the ASF master SSL certificate</summary>
@@ -301,8 +292,9 @@ and then upload them to AWS Certificate Manager (ACM):
      (This is typically `main` for prod deployments, `develop` for test deployments, or a feature branch name for sandbox deployments.)
 4. Add the following environment secrets:
     - `AWS_REGION` - e.g. `us-west-2`
-    - `BUCKET_READ_PRINCIPALS` (EDC only) - List of AWS IAM principals granted read access to data in S3 for Earthdata Cloud deployments. For EDC Sandbox deployments, if you don't know what to put here, you can simply set it to `arn:aws:iam::<edc-sandbox-account-id>:root`, where `<edc-sandbox-account-id>` is the AWS account ID for the EDC Sandbox account.
+    - `BUCKET_READ_PRINCIPALS` (EDC only) - List of AWS IAM principals granted read access to data in S3 for Earthdata Cloud deployments.
     - `CERTIFICATE_ARN` (ASF and JPL only) - ARN of the AWS Certificate Manager certificate that you imported manually (aws console -> certificate manager -> list certificates, e.g. `arn:aws:acm:us-west-2:xxxxxxxxxxxx:certificate/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`)
+      - TODO: update wording
     - `CLOUDFORMATION_ROLE_ARN` (ASF only) - part of the `hyp3-ci` stack that you deployed, e.g. `arn:aws:iam::xxxxxxxxxxxx:role/hyp3-ci-CloudformationDeploymentRole-XXXXXXXXXXXXX`
     - `SECRET_ARN` - ARN for the AWS Secrets Manager Secret that you created manually
     - `V2_AWS_ACCESS_KEY_ID` - AWS access key ID:
@@ -317,7 +309,7 @@ and then upload them to AWS Certificate Manager (ACM):
 
 You will need to add the deployment to the matrix in an existing GitHub Actions `deploy-*.yml` workflow or create
 a new one for the deployment. If you need to create a new one, we recommend copying one of the
-`deploy-*-sandbox.yml` workflows, and then updating all of the fields (`environment`, `domain`, `template_bucket`, etc.)
+existing workflows, and then updating all of the fields
 as appropriate for your deployment. Also make sure to update the top-level `name` of the workflow and the name
 of the branch to deploy from. (This is typically `main` for prod deployments, `develop` for test deployments, or a feature branch name for sandbox deployments.)
 
@@ -336,12 +328,10 @@ Once HyP3 is deployed, there are a few follow on tasks you may need to do for a 
 > [!WARNING]
 > This step must be done by an ASF employee.
 
-*Important: Skip this step for EDC Sandbox deployments.*
-
 Open a PR adding a line to https://gitlab.asf.alaska.edu/operations/puppet/-/blob/production/modules/legacy_dns/files/asf.alaska.edu.db
 for the new custom domain name (AWS console -> api gateway -> custom domain names -> "API Gateway domain name").
 
-Ask the Platform team in the `~development-support` channel in Mattermost to review/merge the PR.
+Ask someone from ASF support to review/merge the PR.
 
 Changes should take effect within 15-60 minutes after merging.
 Confirm that a Swagger UI is available at your chosen API URL.
