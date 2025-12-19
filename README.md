@@ -233,11 +233,11 @@ Go to AWS console -> Secrets Manager, then:
 
 #### Request SSL cert
 
-To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for its deployment domain name (URL).
-
 *Note: For EDC accounts, you should create the cert in the `us-east-1` region
 for use with the CloudFront distribution that you will create later,
 even if you're deploying HyP3 to `us-west-2`.*
+
+To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for its deployment domain name (URL):
 
 AWS console -> AWS Certificate Manager -> Request a public certificate:
 - The domain name should be something like `hyp3-foobar.asf.alaska.edu`
