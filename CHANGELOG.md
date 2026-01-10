@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added a `model_context_length` parameter to the `OPERA_DIST_S1` job specification.
-
+- Added a new `ITS_LIVE_META_BULK` job spec which generates STAC JSON and other metadata files for already published ITS_LIVE products.
+- Added the `ITS_LIVE_META_BULK` job spec to the ITS_LIVE deployments.
 ### Changed
 - Increased the maximum `stride_for_norm_param_estimation` to 32 from 16 for the `OPERA_DIST_S1` job specification to handle models with a larger input size.
 
