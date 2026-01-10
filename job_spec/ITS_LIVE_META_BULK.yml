@@ -37,6 +37,7 @@ ITS_LIVE_META:
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
+      image_tag: "0.26.2.dev10_gc799a46"
       command:
         - ++process
         - bulk_crop_netcdf_product
@@ -61,6 +62,7 @@ ITS_LIVE_META:
         - PUBLISH_SECRET_ACCESS_KEY
     - name: METADATA
       image: ghcr.io/asfhyp3/itslive-metadata
+      image_tag: "0.6.1.dev8_g305e5c531"
       command:
         - ++plugin
         - bulk_meta
