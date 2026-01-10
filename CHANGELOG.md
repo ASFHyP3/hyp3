@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added optional `chip_size` and `search_range` parameters to the `ARIA_AUTORIFT.yml` job specification to enable user-defined `chip-size` and `search-range`.
 - Added a `model_context_length` parameter to the `OPERA_DIST_S1` job specification.
-- Added the custom hyp3-slimsar-test deployment
-- Added the new `SLIMSAR_TDBP` job_spec for slimsar time-domain backprojection processing
-
+- Added a new custom hyp3-slimsar-test deployment.
+- Added the new `SLIMSAR_TDBP` job_spec for slimsar time-domain backprojection processing.
+- Added a new `ITS_LIVE_META_BULK` job spec which generates STAC JSON and other metadata files for already published ITS_LIVE products.
+- Added the `ITS_LIVE_META_BULK` job spec to the ITS_LIVE deployments.
 ### Changed
 - Increased the maximum `stride_for_norm_param_estimation` to 32 from 16 for the `OPERA_DIST_S1` job specification to handle models with a larger input size.
 - The hyp3-ci stack permission for JPL deployments were expanded to support deploying HyP3-based monitoring stacks:

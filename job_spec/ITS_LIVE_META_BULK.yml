@@ -1,12 +1,25 @@
 ITS_LIVE_META:
   required_parameters:
-    - granule_uri
+    - granules_parquet
   parameters:
-    granule_uri:
+    granules_parquet:
       api_schema:
         description: S3 URI for an ITS_LIVE velocity granule to generate metadata for
         type: string
         pattern: '^s3:\/\/.*\.nc$'
+    start_idx:
+      api_schema:
+        description:  Start index (inclusive) of the contiguous subset of granules in granules_parquet to generate metadata for
+        type: integer
+        minimum: 0
+        default: 0
+    stop_idx:
+      api_schema:
+        description: Stop index (exclusive) of the contiguous subset of granules in granules_parquet to generate metadata for
+        type: integer
+        nullable: true
+        minimum: 1
+        default: null
     publish_bucket:
       api_schema:
         description: Publish the resulting metadata files to the ITS_LIVE AWS Open Data (or test) S3 Bucket
@@ -26,8 +39,13 @@ ITS_LIVE_META:
       image: ghcr.io/asfhyp3/hyp3-autorift
       command:
         - ++process
-        - crop_netcdf_product
-        - Ref::granule_uri
+        - bulk_crop_netcdf_product
+        - --granules-parquet
+        - Ref::granules_parquet
+        - --start-idx
+        - Ref::start_idx
+        - --stop-idx
+        - Ref::stop_idx
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -45,9 +63,13 @@ ITS_LIVE_META:
       image: ghcr.io/asfhyp3/itslive-metadata
       command:
         - ++plugin
-        - meta
-        - --granule-uri
-        - Ref::granule_uri
+        - bulk_meta
+        - --granules-parquet
+        - Ref::granules_parquet
+        - --start-idx
+        - Ref::start_idx
+        - --stop-idx
+        - Ref::stop_idx
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
