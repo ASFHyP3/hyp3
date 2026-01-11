@@ -37,7 +37,7 @@ ITS_LIVE_META:
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
-      image_tag: "0.26.2.dev10_gc799a46"
+      image_tag: "0.26.2.dev12_g202d2aa"
       command:
         - ++process
         - bulk_crop_netcdf_product
@@ -53,8 +53,8 @@ ITS_LIVE_META:
         - Ref::job_id
         - --publish-bucket
         - Ref::publish_bucket
-      timeout: 10800
-      compute_environment: Default
+      timeout: 21600
+      compute_environment: ItsLiveAutoRIFT
       vcpu: 1
       memory: 7875
       secrets:
@@ -62,7 +62,7 @@ ITS_LIVE_META:
         - PUBLISH_SECRET_ACCESS_KEY
     - name: METADATA
       image: ghcr.io/asfhyp3/itslive-metadata
-      image_tag: "0.6.1.dev8_g305e5c531"
+      image_tag: "0.6.1.dev11_ga449bc"
       command:
         - ++plugin
         - bulk_meta
@@ -78,7 +78,7 @@ ITS_LIVE_META:
         - Ref::job_id
         - --publish-bucket
         - Ref::publish_bucket
-      timeout: 10800
+      timeout: 21600
       compute_environment: ItsLiveMeta
       vcpu: 1
       memory: 7875
