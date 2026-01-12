@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.12.2]
 
 ### Added
+- Added the custom hyp3-slimsar-test deployment
+
+### Added
 - Added a `model_context_length` parameter to the `OPERA_DIST_S1` job specification.
 
 ### Changed
