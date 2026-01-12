@@ -62,7 +62,7 @@ ITS_LIVE_META_BULK:
         - PUBLISH_SECRET_ACCESS_KEY
     - name: METADATA
       image: ghcr.io/asfhyp3/itslive-metadata
-      image_tag: "0.6.1.dev11_ga449bc"
+      image_tag: "0.6.1.dev11_ga449bc0a4"
       command:
         - ++plugin
         - bulk_meta
