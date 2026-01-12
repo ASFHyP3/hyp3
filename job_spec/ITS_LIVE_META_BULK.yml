@@ -37,7 +37,7 @@ ITS_LIVE_META_BULK:
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
-      image_tag: "0.26.2.dev12_g202d2aa"
+      image_tag: "0.26.2.dev14_g4b1425d"
       command:
         - ++process
         - bulk_crop_netcdf_product
