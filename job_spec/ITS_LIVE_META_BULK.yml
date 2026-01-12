@@ -1,4 +1,4 @@
-ITS_LIVE_META:
+ITS_LIVE_META_BULK:
   required_parameters:
     - granules_parquet
   parameters:
