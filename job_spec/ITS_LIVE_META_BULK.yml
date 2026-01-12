@@ -6,7 +6,7 @@ ITS_LIVE_META_BULK:
       api_schema:
         description: S3 URI for an ITS_LIVE velocity granule to generate metadata for
         type: string
-        pattern: '^s3:\/\/.*\.nc$'
+        pattern: '^s3:\/\/.*\.parquet$'
     start_idx:
       api_schema:
         description:  Start index (inclusive) of the contiguous subset of granules in granules_parquet to generate metadata for
