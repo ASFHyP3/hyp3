@@ -55,10 +55,6 @@ SLIMSAR_TDBP:
         - Ref::nav_fp
         - --dem_fp
         - Ref::dem_fp
-        - --s3_bucket
-        - asf-frostbyte
-        - --s3_prefix
-        - Ref::job_id
       timeout: 126000  # 35 hours
       compute_environment: SlimSAR
       vcpu: 1
@@ -67,6 +63,6 @@ SLIMSAR_TDBP:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - PUBLISH_ACCESS_KEY_ID
-        - PUBLISH_SECRET_ACCESS_KEY
-        - PUBLISH_BUCKET
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
+        - S3_PUBLISH_BUCKET
