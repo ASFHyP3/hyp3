@@ -1,0 +1,67 @@
+SLIMSAR_TDBP:
+  required_parameters:
+    - data_fps
+    - nav_fps
+    - dem_fp
+  parameters:
+    data_fps:
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 6
+        example:
+          - s3://asf-frostbyte/slimsar/SAR_11072025_110035.sar
+        items:
+          description: Path to uncompressed slimsar echoes file on s3 bucket
+          type: string
+          pattern: "^s3://[a-z0-9.-]+(/[^/]+)*/[^/]+\\.sar$"
+          example: s3://asf-frostbyte/slimsar/SAR_11072025_110035.sar
+    nav_fp:
+      api_schema:
+        type: string
+        example: s3://asf-frostbyte/slimsar/NMZT23520001E_100_proj.dat
+        pattern:  "^s3://[a-z0-9.-]+(/[^/]+)*/[^/]+\\.dat$"
+        description: Path to post-processed nav .dat file on s3 bucket
+    dem_fp:
+      api_schema:
+        type: string
+        example: s3://asf-frostbyte/slimsar/repeat_sub.tif
+        description: Path to DEM file on S3 bucket
+  validators: []
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  steps:
+    - name: ''
+      image: 242399506617.dkr.ecr.us-west-2.amazonaws.com/slimsar-test:latest
+      command:
+        - docker
+        - run
+        - --rm
+        - --gpus
+        - all
+        - -v
+        - /mnt/ephemeral:/work
+        - -e
+        - AWS_DEFAULT_REGION=us-west-2
+        - 123456789012.dkr.ecr.us-west-2.amazonaws.com/slimsar-test:latest
+        - --data_fps
+        - Ref::data_fps
+        - --nav_fps
+        - Ref::nav_fps
+        - --dem_fp
+        - Ref::dem_fp
+        - --s3_bucket
+        - asf-frostbyte
+        - --s3_prefix
+        - Ref::job_id
+      timeout: 126000  # 35 hours
+      compute_environment: Default
+      vcpu: 1
+      gpu: 1
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
+        - PUBLISH_ACCESS_KEY_ID
+        - PUBLISH_SECRET_ACCESS_KEY
+        - PUBLISH_BUCKET

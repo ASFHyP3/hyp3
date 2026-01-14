@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added a `model_context_length` parameter to the `OPERA_DIST_S1` job specification.
 - Added the custom hyp3-slimsar-test deployment
+- Added new job_spec for slimsar time-domain backprojection processing
 
 ### Changed
 - Increased the maximum `stride_for_norm_param_estimation` to 32 from 16 for the `OPERA_DIST_S1` job specification to handle models with a larger input size.
