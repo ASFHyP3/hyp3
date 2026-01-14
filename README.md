@@ -146,7 +146,9 @@ Once the `github-actions` IAM user has been created, you can create an AWS acces
 which we will use to deploy HyP3 via CI/CD tooling:
 
 1. Go to AWS console -> IAM -> Users -> github-actions -> security credentials tab -> "create access key".
-2. Store the access key ID and secret access key using your team's password manager.
+2. Select "Other" for key usage
+3. Add tag value to describe the key such as `hyp3-foobar-access`
+4. Store the access key ID and secret access key using your team's password manager. You will use them below in "Create the GitHub environment"
 </details>
 
 <details>
@@ -223,13 +225,13 @@ you will need to create an Earthdata Login user for your deployment if you do no
 Go to AWS console -> Secrets Manager, then:
 
 1. Click the orange "Store a new secret" button
-1. For "Secret Type" select "Other type of secret"
-1. Enter all required secret key-value pairs. Notably, the keys should be the secret names as listed (case-sensitive) in the [job specs](./job_spec/) that will be deployed
-1. Click the orange "Next" button
-1. Give the secret the same name that you plan to give to the HyP3 CloudFormation stack when you deploy it (below)
-1. Click the orange "Next" button
-1. Click the orange "Next" button (we won't configure rotation)
-1. Click the orange "Store" button to save the Secret
+2. For "Secret Type" select "Other type of secret"
+3. Enter all required secret key-value pairs. Notably, the keys should be the secret names as listed (case-sensitive) in the [job specs](./job_spec/) that will be deployed
+4. Click the orange "Next" button
+5. Give the secret the same name that you plan to give to the HyP3 CloudFormation stack when you deploy it (below)
+6. Click the orange "Next" button
+7. Click the orange "Next" button (we won't configure rotation)
+8. Click the orange "Store" button to save the Secret
 
 #### Request SSL cert
 
@@ -239,13 +241,16 @@ even if you're deploying HyP3 to `us-west-2`.*
 
 To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for its deployment domain name (URL):
 
-AWS console -> AWS Certificate Manager -> Request a public certificate:
-- The domain name should be something like `hyp3-foobar.asf.alaska.edu`
-- Choose "DNS validation"
+AWS console -> AWS Certificate Manager -> Request certificate:\
+1. Select "Request a public certificate"
+2. Click the orange "Next" button
+3. Choose a "Fully qualified domain name". Domain name should be something like `hyp3-foobar.asf.alaska.edu` or for a test deployment `hyp3-foobar-test.asf.alaska.edu`.
+3. Choose "DNS validation"
+4. Copy the "CNAME name" and "CNAME value"
 
-Then add the validation record to
+Then copy past the add the validation record to a row of
 https://gitlab.asf.alaska.edu/operations/puppet/-/edit/production/modules/legacy_dns/files/asf.alaska.edu.db
-(see previous records for examples).
+in the format `<CNAME_name> in CNAME <CNAME_value>.`  (see previous records for examples).
 
 ### Create the GitHub environment
 
@@ -254,35 +259,39 @@ https://gitlab.asf.alaska.edu/operations/puppet/-/edit/production/modules/legacy
 > repository, which is generally only possible for ASF employees on HyP3 development teams.
 
 1. Go to https://github.com/ASFHyP3/hyp3/settings/environments -> New Environment
-2. Check "required reviewers" and add the appropriate team(s) or user(s)
-3. Change "Deployment branches and tags" to "Selected branches and tags" and
+2. Name the environment like your chosen domain name i.e. `hyp3-foobar` or `hyp3-foobar-test`
+3. Check "required reviewers" and add the appropriate team(s) or user(s)
+4. Change "Deployment branches and tags" to "Selected branches and tags" and
    - add a deployment branch or tag rule
    - use "Ref Type: Branch" and write the name of the branch it will be deploying out of.
      (This is typically `main` for prod deployments, `develop` for test deployments, or a feature branch name for sandbox deployments.)
-4. Add the following environment secrets:
+5. Add the following environment secrets:
     - `AWS_REGION` - e.g. `us-west-2`
-    - `CERTIFICATE_ARN` (ASF and JPL only) - ARN of the AWS Certificate Manager certificate that you created manually
+    - `CERTIFICATE_ARN` (ASF and JPL only) - ARN of the AWS Certificate Manager certificate that you created manually, e.g. `arn:aws:acm:us-west-2:XXXXXXXXXXXX:certificate/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX`
     - `CLOUDFORMATION_ROLE_ARN` (ASF only) - part of the `hyp3-ci` stack that you deployed, e.g. `arn:aws:iam::xxxxxxxxxxxx:role/hyp3-ci-CloudformationDeploymentRole-XXXXXXXXXXXXX`
-    - `SECRET_ARN` - ARN for the AWS Secrets Manager Secret that you created manually
+    - `SECRET_ARN` - ARN for the AWS Secrets Manager Secret that you created manually, e.g. `arn:aws:secretsmanager:us-west-X:XXXXXXXXXXXX:secret:hyp3-foobar-XXXXXX`
     - `V2_AWS_ACCESS_KEY_ID` - AWS access key ID:
-      - ASF: for the `github-actions` user
+      - ASF: for the `github-actions` user (created in step "Enable CI/CD above")
       - JPL: for the service user
       - EDC: created by an ASF developer via Kion
     - `V2_AWS_SECRET_ACCESS_KEY` - The corresponding secret access key
-    - `VPC_ID` - ID of the default VPC for this AWS account and region (aws console -> vpc -> your VPCs, e.g. `vpc-xxxxxxxxxxxxxxxxx`)
-    - `SUBNET_IDS` - Comma delimited list (no spaces) of the default subnets for the VPC specified in `VPC_ID` (aws console -> vpc -> subnets, e.g. `subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx`)
+    - `VPC_ID` - ID of the default VPC for this AWS account and region (aws console -> VPC -> Your VPCs, e.g. `vpc-xxxxxxxxxxxxxxxxx`)
+    - `SUBNET_IDS` - Comma delimited list (no spaces) of the default subnets for the VPC specified in `VPC_ID` (aws console -> VPC -> Subnets, e.g. `subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx`)
 
 ### Create the HyP3 deployment
 
-You will need to add the deployment to the matrix in an existing GitHub Actions `deploy-*.yml` workflow or create
+You will need to add the deployment to the matrix in an existing GitHub Actions `deploy-*.yml` workflow (.github/workflows/) or create
 a new one for the deployment. If you need to create a new one, we recommend copying one of the
-existing workflows, and then updating all of the fields
+existing workflows, and then updating all of the fields.
 as appropriate for your deployment. Also make sure to update the top-level `name` of the workflow and the name
 of the branch to deploy from. (This is typically `main` for prod deployments, `develop` for test deployments, or a feature branch name for sandbox deployments.)
 
 > [!TIP]
 > If you're deploying from a feature branch, make sure to [protect](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
 > it from accidental deletion.
+
+> [!TIP]
+> If your CI/CD workflow fails. Delete the "Rolled Back" stack (AWS Manager -> CloudFormation -> Stacks) before re-running the failed job.
 
 The deployment workflow will run as soon as you merge your changes into the branch specified in the workflow file.
 
@@ -296,7 +305,8 @@ Once HyP3 is deployed, there are a few follow on tasks you may need to do for a 
 > This step must be done by an ASF employee.
 
 Open a PR adding a line to https://gitlab.asf.alaska.edu/operations/puppet/-/blob/production/modules/legacy_dns/files/asf.alaska.edu.db
-for the new custom domain name (AWS console -> api gateway -> custom domain names -> "API Gateway domain name").
+for the new custom domain name (AWS console -> api gateway -> custom domain names -> "API Gateway domain name") of the format
+`hyp3-foobar in CNAME <API Gateway domain name>.`. Follow similar examples.
 
 Ask someone from ASF support to review/merge the PR.
 
@@ -314,6 +324,19 @@ Update the [AWS Accounts and HyP3 Deployments](https://docs.google.com/spreadshe
 >    XX.XX.XXX.XXX   <deployment-name>.asf.alaska.edu
 >    ```
 > Remember to remove this after the DNS PR is merged!
+
+#### Testing and adding user credits to your hyp3 deployment
+
+After successful deployment and DNS record merging you can test you deployment by accessing the Swagger UI and using the POST /user tab to 
+check if your user is approved and has credits for running jobs on the deployment. This should automatically add your user to the DynamoDB 
+table. 
+
+AWS console -> DynamoDB -> Explore items
+1. Find the table with format like `hyp3-foobar-UsersTable-XXXXXXXXXXXXX`
+2. Edit your user (only present after using the Swagger UI in some way)
+3. Add credits if neccessary
+
+You can then return the Swagger UI and use the POST /jobs to run a test job and confirm it completes.
 
 #### Optional
 
