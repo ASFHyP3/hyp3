@@ -43,6 +43,10 @@ A processing environment for HyP3 Plugins in AWS.
 
 ## Deployment
 
+### Why would you set up a hyp3 deployment?
+
+A HyP3 deployment stack provides a reproducible cloud processing environment that bundles AWS infrastructure, execution logic, and cost controls, enabling scalable, on-demand computation with clear operational costs.
+
 > [!IMPORTANT]
 > It's not currently possible to deploy HyP3 fully independent of ASF due to our integration with 
 > [ASF Vertex](https://search.alaska.edu). If you'd like your own deployment of HyP3, please open an issue here or
@@ -126,7 +130,7 @@ In order to integrate an ASF deployment we'll need:
 
 These can be done by deploying the [ASF CI stack](cicd-stacks/ASF-deployment-ci-cf.yml).
 
-*Warning: This stack should only be deployed once per AWS account. This stack also
+*Warning: This stack only needs to be deployed once per AWS account. This stack also
 assumes you are only deploying into a single AWS Region. If you are deploying into
 multiple regions in the same AWS account, you'll need to adjust the IAM permissions
 that are limited to a single region.*
@@ -149,6 +153,7 @@ which we will use to deploy HyP3 via CI/CD tooling:
 2. Select "Other" for key usage
 3. Add tag value to describe the key such as `hyp3-foobar-access`
 4. Store the access key ID and secret access key using your team's password manager. You will use them below in "Create the GitHub environment"
+   as `V2_AWS_ACCESS_KEY_ID` and `V2_AWS_SECRET_ACCESS_KEY`.
 </details>
 
 <details>
