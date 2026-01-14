@@ -1,7 +1,7 @@
 SLIMSAR_TDBP:
   required_parameters:
     - data_fps
-    - nav_fps
+    - nav_fp
     - dem_fp
   parameters:
     data_fps:
@@ -9,7 +9,6 @@ SLIMSAR_TDBP:
         type: array
         minItems: 1
         maxItems: 10
-        default: [s3://asf-bucket/slimsar/SAR_11072025_110035.sar]
         example:
           - s3://asf-bucket/slimsar/SAR_11072025_110035.sar
         items:
@@ -22,12 +21,10 @@ SLIMSAR_TDBP:
         type: string
         example: s3://asf-bucket/slimsar/NMZT23520001E_100_proj.dat
         pattern:  "^s3://[a-z0-9.-]+(/[^/]+)*/[^/]+\\.dat$"
-        default: s3://asf-bucket/slimsar/NMZT23520001E_100_proj.dat
         description: Path to post-processed nav .dat file on s3 bucket
     dem_fp:
       api_schema:
         type: string
-        default: s3://asf-bucket/slimsar/repeat_sub.tif
         example: s3://asf-bucket/slimsar/repeat_sub.tif
         pattern:  "^s3://[a-z0-9.-]+(/[^/]+)*/[^/]+\\.tif$"
         description: Path to DEM file on S3 bucket
