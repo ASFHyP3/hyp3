@@ -51,10 +51,6 @@ SLIMSAR_TDBP:
     - name: ''
       image: 242399506617.dkr.ecr.us-west-2.amazonaws.com/slimsar-test
       command:
-        - -v
-        - ${PWD}:/work
-        - --gpus 
-        - all
         - --data_fps
         - Ref::data_fps
         - --nav_fp
