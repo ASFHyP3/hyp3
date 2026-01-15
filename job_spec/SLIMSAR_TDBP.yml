@@ -34,24 +34,18 @@ SLIMSAR_TDBP:
       cost: 1.0
   steps:
     - name: ''
-      image: 123456789.dkr.ecr.us-west-2.amazonaws.com/slimsar-test:latest
+      image: 242399506617.dkr.ecr.us-west-2.amazonaws.com/slimsar-test
       command:
-        - docker
-        - run
-        - --rm
-        - --gpus
-        - all
-        - -v
-        - /mnt/ephemeral:/work
-        - -e
-        - AWS_DEFAULT_REGION=us-west-2
-        - 123456789.dkr.ecr.us-west-2.amazonaws.com/slimsar-test:latest
         - --data_fps
         - Ref::data_fps
-        - --nav_fps
+        - --nav_fp
         - Ref::nav_fp
         - --dem_fp
         - Ref::dem_fp
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket_prefix
+        - Ref::job_id
       timeout: 126000  # 35 hours
       compute_environment: SlimSAR
       vcpu: 1
