@@ -28,6 +28,21 @@ SLIMSAR_TDBP:
         example: s3://asf-bucket/slimsar/repeat_sub.tif
         pattern:  "^s3://[a-z0-9.-]+(/[^/]+)*/[^/]+\\.tif$"
         description: Path to DEM file on S3 bucket
+    pols:
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 4
+        example:
+          - VV
+          - VH
+          - HV
+          - HH
+        default: [VV, VH, HV, HH]
+        items:
+          description: Polarization to process
+          maxLength: 2
+          minLength: 2
   validators: []
   cost_profiles:
     DEFAULT:
@@ -42,6 +57,8 @@ SLIMSAR_TDBP:
         - Ref::nav_fp
         - --dem_fp
         - Ref::dem_fp
+        - --pols
+        - Ref:pols
         - --bucket
         - '!Ref Bucket'
         - --bucket_prefix
@@ -54,6 +71,3 @@ SLIMSAR_TDBP:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - AWS_ACCESS_KEY_ID
-        - AWS_SECRET_ACCESS_KEY
-        - S3_PUBLISH_BUCKET
