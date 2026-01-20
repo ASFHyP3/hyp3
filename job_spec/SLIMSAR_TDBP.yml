@@ -4,18 +4,14 @@ SLIMSAR_TDBP:
     - nav_fp
     - dem_fp
   parameters:
-    data_fps:
+    data_fp:
       api_schema:
-        type: array
-        minItems: 1
-        maxItems: 10
-        example:
-          - s3://asf-bucket/slimsar/SAR_11072025_110035.sar
-        items:
-          description: Path to uncompressed slimsar echoes file on s3 bucket
-          type: string
-          pattern: "^s3://[a-z0-9.-]+(/[^/]+)*/[^/]+\\.sar$"
-          example: s3://asf-frostbyte/slimsar/SAR_11072025_110035.sar
+        type: string
+        example: s3://asf-bucket/slimsar/SAR_11072025_110035.sar
+        description: Path to uncompressed slimsar echo/raw file on s3 bucket
+        type: string
+        pattern: "^s3://[a-z0-9.-]+(/[^/]+)*/[^/]+\\.sar$"
+        example: s3://asf-frostbyte/slimsar/SAR_11072025_110035.sar
     nav_fp:
       api_schema:
         type: string
@@ -43,16 +39,17 @@ SLIMSAR_TDBP:
           description: Polarization to process
           maxLength: 2
           minLength: 2
+          pattern: "^(VV|VH|HV|HH)$"
   validators: []
   cost_profiles:
     DEFAULT:
       cost: 1.0
   steps:
     - name: ''
-      image: 242399506617.dkr.ecr.us-west-2.amazonaws.com/slimsar-test
+      image: 242399506617.dkr.ecr.us-west-2.amazonaws.com/hyp3-slimsar
       command:
-        - --data_fps
-        - Ref::data_fps
+        - --data_fp
+        - Ref::data_fp
         - --nav_fp
         - Ref::nav_fp
         - --dem_fp
