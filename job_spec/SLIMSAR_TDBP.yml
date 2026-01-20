@@ -1,6 +1,6 @@
 SLIMSAR_TDBP:
   required_parameters:
-    - data_fps
+    - data_fp
     - nav_fp
     - dem_fp
   parameters:
