@@ -3,7 +3,13 @@ name: Static code analysis
 permissions:
   contents: read
 
-on: push
+on: 
+  push:
+  pull_request:
+    branches:
+      - main
+      - develop
+
 
 env:
   SETUPTOOLS_SCM_PRETEND_VERSION_FOR_HYP3: v0.0.0
