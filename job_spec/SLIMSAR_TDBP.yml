@@ -39,7 +39,12 @@ SLIMSAR_TDBP:
           description: Polarization to process
           maxLength: 2
           minLength: 2
-          pattern: "^(VV|VH|HV|HH)$"
+          type: string
+          enum:
+            - VV
+            - VH
+            - HV
+            - HH
   validators: []
   cost_profiles:
     DEFAULT:
