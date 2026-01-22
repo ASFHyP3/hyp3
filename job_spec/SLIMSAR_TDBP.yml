@@ -16,7 +16,7 @@ SLIMSAR_TDBP:
       api_schema:
         type: string
         example: s3://asf-bucket/slimsar/NMZT23520001E_100_proj.dat
-        pattern:  "^s3://[a-z0-9.-]+(/[^/]+)*/[^/]+\\.dat$"
+        pattern:  "^s3:\/\/[a-z0-9.-]+(\/[^/]+)*\/[^/]+\.dat$"
         description: Path to post-processed nav .dat file on s3 bucket
     dem_fp:
       api_schema:
