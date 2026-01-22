@@ -22,7 +22,7 @@ SLIMSAR_TDBP:
       api_schema:
         type: string
         example: s3://asf-bucket/slimsar/repeat_sub.tif
-        pattern:  "^s3://[a-z0-9.-]+(/[^/]+)*/[^/]+\\.tif$"
+        pattern:  "^s3:\/\/[a-z0-9.-]+(\/[^/]+)*\/[^/]+\.tif$"
         description: Path to DEM file on S3 bucket
     pols:
       api_schema:
