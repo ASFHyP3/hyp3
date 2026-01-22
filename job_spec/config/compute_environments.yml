@@ -30,4 +30,4 @@ compute_environments:
   SlimSAR:
     instance_types: g4dn.2xlarge,g4dn.4xlarge,g4dn.6xlarge,
     allocation_type: EC2
-    ami_id: ami-03aa99ddf5498ceb91  # /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
+    ami_id: ami-03aa99ddf5498ceb9  # /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
