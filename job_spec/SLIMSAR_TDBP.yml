@@ -10,19 +10,19 @@ SLIMSAR_TDBP:
         example: s3://asf-bucket/slimsar/SAR_11072025_110035.sar
         description: Path to uncompressed slimsar echo/raw file on s3 bucket
         type: string
-        pattern: "^s3:\/\/[a-z0-9.-]+(\/[^/]+)*\/[^/]+\.sar$"
+        pattern: '^s3:\/\/[a-z0-9.-]+(\/[^/]+)*\/[^/]+\.sar$'
         example: s3://asf-frostbyte/slimsar/SAR_11072025_110035.sar
     nav_fp:
       api_schema:
         type: string
         example: s3://asf-bucket/slimsar/NMZT23520001E_100_proj.dat
-        pattern:  "^s3:\/\/[a-z0-9.-]+(\/[^/]+)*\/[^/]+\.dat$"
+        pattern:  '^s3:\/\/[a-z0-9.-]+(\/[^/]+)*\/[^/]+\.dat$'
         description: Path to post-processed nav .dat file on s3 bucket
     dem_fp:
       api_schema:
         type: string
         example: s3://asf-bucket/slimsar/repeat_sub.tif
-        pattern:  "^s3:\/\/[a-z0-9.-]+(\/[^/]+)*\/[^/]+\.tif$"
+        pattern:  '^s3:\/\/[a-z0-9.-]+(\/[^/]+)*\/[^/]+\.tif$'
         description: Path to DEM file on S3 bucket
     pols:
       api_schema:
