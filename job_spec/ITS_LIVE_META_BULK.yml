@@ -36,33 +36,7 @@ ITS_LIVE_META_BULK:
   validators: []
   steps:
     - name: ''
-      image: ghcr.io/asfhyp3/hyp3-autorift
-      image_tag: "0.26.2.dev14_g4b1425d"
-      command:
-        - ++process
-        - bulk_crop_netcdf_product
-        - --granules-parquet
-        - Ref::granules_parquet
-        - --start-idx
-        - Ref::start_idx
-        - --stop-idx
-        - Ref::stop_idx
-        - --bucket
-        - '!Ref Bucket'
-        - --bucket-prefix
-        - Ref::job_id
-        - --publish-bucket
-        - Ref::publish_bucket
-      timeout: 21600
-      compute_environment: ItsLiveAutoRIFT
-      vcpu: 1
-      memory: 31500
-      secrets:
-        - PUBLISH_ACCESS_KEY_ID
-        - PUBLISH_SECRET_ACCESS_KEY
-    - name: METADATA
       image: ghcr.io/asfhyp3/itslive-metadata
-      image_tag: "0.6.1.dev12_gb8283ca3f"
       command:
         - ++plugin
         - bulk_meta
@@ -79,7 +53,7 @@ ITS_LIVE_META_BULK:
         - --publish-bucket
         - Ref::publish_bucket
       timeout: 21600
-      compute_environment: ItsLiveMeta
+      compute_environment: ItsLiveMetaOnDemand
       vcpu: 1
       memory: 31500
       secrets:

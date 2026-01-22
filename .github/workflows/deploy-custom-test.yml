@@ -65,7 +65,8 @@ jobs:
             cost_profile: DEFAULT
             job_files: >-
               job_spec/ITS_LIVE_AUTORIFT.yml
-              job_spec/ITS_LIVE_META.yml
+              job_spec/ITS_LIVE_CROP.yml
+              job_spec/ITS_LIVE_CROP_BULK.yml
               job_spec/ITS_LIVE_META_BULK.yml
             instance_types: r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
             default_max_vcpus: 640  # Max: 10,406

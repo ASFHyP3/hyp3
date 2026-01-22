@@ -1,25 +1,12 @@
-ITS_LIVE_STAC_BULK:
+ITS_LIVE_CROP:
   required_parameters:
-    - granules_parquet
+    - granule_uri
   parameters:
-    granules_parquet:
+    granule_uri:
       api_schema:
         description: S3 URI for an ITS_LIVE velocity granule to generate metadata for
         type: string
-        pattern: '^s3:\/\/.*\.parquet$'
-    start_idx:
-      api_schema:
-        description:  Start index (inclusive) of the contiguous subset of granules in granules_parquet to generate metadata for
-        type: integer
-        minimum: 0
-        default: 0
-    stop_idx:
-      api_schema:
-        description: Stop index (exclusive) of the contiguous subset of granules in granules_parquet to generate metadata for
-        type: integer
-        nullable: true
-        minimum: 1
-        default: null
+        pattern: '^s3:\/\/.*\.nc$'
     publish_bucket:
       api_schema:
         description: Publish the resulting metadata files to the ITS_LIVE AWS Open Data (or test) S3 Bucket
@@ -36,27 +23,41 @@ ITS_LIVE_STAC_BULK:
   validators: []
   steps:
     - name: ''
-      image: ghcr.io/asfhyp3/itslive-metadata
-      image_tag: "0.6.1.dev12_gb8283ca3f"
+      image: ghcr.io/asfhyp3/hyp3-autorift
       command:
-        - ++plugin
-        - bulk_meta
-        - --granules-parquet
-        - Ref::granules_parquet
-        - --start-idx
-        - Ref::start_idx
-        - --stop-idx
-        - Ref::stop_idx
+        - ++process
+        - crop_netcdf_product
+        - Ref::granule_uri
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
         - --publish-bucket
         - Ref::publish_bucket
-      timeout: 21600
+      timeout: 10800
+      compute_environment: Default
+      vcpu: 1
+      memory: 7875
+      secrets:
+        - PUBLISH_ACCESS_KEY_ID
+        - PUBLISH_SECRET_ACCESS_KEY
+    - name: METADATA
+      image: ghcr.io/asfhyp3/itslive-metadata
+      command:
+        - ++plugin
+        - meta
+        - --granule-uri
+        - Ref::granule_uri
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --publish-bucket
+        - Ref::publish_bucket
+      timeout: 10800
       compute_environment: ItsLiveMeta
       vcpu: 1
-      memory: 31500
+      memory: 7875
       secrets:
         - PUBLISH_ACCESS_KEY_ID
         - PUBLISH_SECRET_ACCESS_KEY
