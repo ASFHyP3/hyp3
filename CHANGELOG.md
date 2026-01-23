@@ -13,9 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Increased the maximum `stride_for_norm_param_estimation` to 32 from 16 for the `OPERA_DIST_S1` job specification to handle models with a larger input size.
-- The hyp3-ci stack permission for JPL deployments were expended to support deploying HyP3-based monitoring stacks:
+- The hyp3-ci stack permission for JPL deployments were expanded to support deploying HyP3-based monitoring stacks:
   - Listing CloudFormation stacks is now allowed.
-  - CloudFormation permissions were expended to any region from just us-west-2.
+  - CloudFormation permissions were expanded to any region from just us-west-2.
   - ECR actions are now allowed.
 
 ## [10.12.1]
