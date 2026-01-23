@@ -106,6 +106,20 @@ AUTORIFT:
         description: Shapefile for determining the correct search parameters by geographic location. Path to shapefile must be understood by GDAL.
         type: string
         default: '/vsicurl/https://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_solidearth_0120m.shp'
+    chip_size:
+      api_schema:
+        description: Custom chip size in pixels for AutoRIFT (overrides parameter_file if provided)
+        type: integer
+        nullable: true
+        default: null
+        example: 32
+    search_range:
+      api_schema:
+        description: Custom search range in pixels for AutoRIFT (overrides parameter_file if provided)
+        type: integer
+        nullable: true
+        default: null
+        example: 64
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -129,6 +143,10 @@ AUTORIFT:
         - Ref::reference
         - --secondary
         - Ref::secondary
+        - --chip-size
+        - Ref::chip_size
+        - --search-range
+        - Ref::search_range
       timeout: 10800
       compute_environment: AriaAutorift
       vcpu: 1
