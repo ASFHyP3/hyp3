@@ -75,6 +75,7 @@ jobs:
 
   snyk:
     runs-on: ubuntu-latest
+    if: ${{ ! github.event.pull_request.head.repo.fork }}
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: snyk/actions/setup@v1.0.0
