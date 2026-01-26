@@ -333,13 +333,11 @@ Update the [AWS Accounts and HyP3 Deployments](https://docs.google.com/spreadshe
 #### Testing and adding user credits to your hyp3 deployment
 
 After successfully deploying HyP3 and your new DNS record has taken effect (or you've edited your local DNS name resolution), you can test your deployment by accessing the Swagger UI and using the POST `/user` tab to 
-check if your user is approved and has credits for running jobs on the deployment. This should automatically add your user to the DynamoDB 
-table. 
+check if your user is approved and has credits for running jobs on the deployment. You will need to be authenticated by either providing an Earthdata Login Bearer Token using the "Authorize" button, or by having a valid `asf-urs` cookie, typically logging into [Vertex](https://search.asf.alaska.edu). Interacting with HyP3 should automatically add your user to the DynamoDB table with the default number of credits (typically 0).
 
-AWS console -> DynamoDB -> Explore items
-1. Find the table with format like `hyp3-foobar-UsersTable-XXXXXXXXXXXXX`
-2. Edit your user (only present after using the Swagger UI in some way)
-3. Add credits if neccessary
+To add credits to your (or any) user, log in to the AWS console and navigate to  DynamoDB -> Explore items, then:
+1. Find the table with a format like `hyp3-foobar-UsersTable-XXXXXXXXXXXXX`
+2. Edit your user record (only present after using the Swagger UI in some way)
 
 You can then return the Swagger UI and use the POST `/jobs` to run a test job and confirm it completes.
 
