@@ -341,7 +341,7 @@ AWS console -> DynamoDB -> Explore items
 2. Edit your user (only present after using the Swagger UI in some way)
 3. Add credits if neccessary
 
-You can then return the Swagger UI and use the POST /jobs to run a test job and confirm it completes.
+You can then return the Swagger UI and use the POST `/jobs` to run a test job and confirm it completes.
 
 #### Optional
 
