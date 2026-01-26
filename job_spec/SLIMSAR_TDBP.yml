@@ -1,0 +1,75 @@
+SLIMSAR_TDBP:
+  required_parameters:
+    - data_fp
+    - nav_fp
+    - dem_fp
+  parameters:
+    data_fp:
+      api_schema:
+        type: string
+        example: s3://asf-bucket/slimsar/SAR_11072025_110035.sar
+        description: Path to uncompressed slimsar echo/raw file on s3 bucket
+        type: string
+        pattern: '^s3:\/\/[a-z0-9.-]+(\/[^/]+)*\/[^/]+\.sar$'
+        example: s3://asf-frostbyte/slimsar/SAR_11072025_110035.sar
+    nav_fp:
+      api_schema:
+        type: string
+        example: s3://asf-bucket/slimsar/NMZT23520001E_100_proj.dat
+        pattern:  '^s3:\/\/[a-z0-9.-]+(\/[^/]+)*\/[^/]+\.dat$'
+        description: Path to post-processed nav .dat file on s3 bucket
+    dem_fp:
+      api_schema:
+        type: string
+        example: s3://asf-bucket/slimsar/repeat_sub.tif
+        pattern:  '^s3:\/\/[a-z0-9.-]+(\/[^/]+)*\/[^/]+\.tif$'
+        description: Path to DEM file on S3 bucket
+    pols:
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 4
+        example:
+          - VV
+          - VH
+          - HV
+          - HH
+        default: [VV, VH, HV, HH]
+        items:
+          description: Polarization to process
+          maxLength: 2
+          minLength: 2
+          type: string
+          enum:
+            - VV
+            - VH
+            - HV
+            - HH
+  validators: []
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  steps:
+    - name: ''
+      image: 242399506617.dkr.ecr.us-west-2.amazonaws.com/hyp3-slimsar
+      command:
+        - --data_fp
+        - Ref::data_fp
+        - --nav_fp
+        - Ref::nav_fp
+        - --dem_fp
+        - Ref::dem_fp
+        - --pols
+        - Ref:pols
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket_prefix
+        - Ref::job_id
+      timeout: 126000  # 35 hours
+      compute_environment: SlimSAR
+      vcpu: 1
+      gpu: 1
+      memory: 30500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD

@@ -138,6 +138,7 @@ jobs:
             cost_profile: DEFAULT
             job_files: >-
               job_spec/INSAR_ISCE_BURST.yml
+              job_spec/SLIMSAR_TDBP.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -150,7 +151,7 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v6.0.0
+      - uses: actions/checkout@v6.0.1
         with:
           fetch-depth: 0
 
