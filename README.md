@@ -253,9 +253,9 @@ AWS console -> AWS Certificate Manager -> Request certificate:\
 3. Choose "DNS validation"
 4. Copy the "CNAME name" and "CNAME value"
 
-Then copy past the add the validation record to a row of
+Then create a validation record in
 https://gitlab.asf.alaska.edu/operations/puppet/-/edit/production/modules/legacy_dns/files/asf.alaska.edu.db
-in the format `<CNAME_name> in CNAME <CNAME_value>.`  (see previous records for examples).
+of the form `<CNAME_name> in CNAME <CNAME_value>`, stripping the `.asf.alaska.edu` from the CNAME name  (see previous records for examples).
 
 ### Create the GitHub environment
 
