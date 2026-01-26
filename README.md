@@ -332,7 +332,7 @@ Update the [AWS Accounts and HyP3 Deployments](https://docs.google.com/spreadshe
 
 #### Testing and adding user credits to your hyp3 deployment
 
-After successful deployment and DNS record merging you can test you deployment by accessing the Swagger UI and using the POST /user tab to 
+After successfully deploying HyP3 and your new DNS record has taken effect (or you've edited your local DNS name resolution), you can test your deployment by accessing the Swagger UI and using the POST `/user` tab to 
 check if your user is approved and has credits for running jobs on the deployment. This should automatically add your user to the DynamoDB 
 table. 
 
