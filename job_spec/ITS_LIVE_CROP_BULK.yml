@@ -1,12 +1,25 @@
-ITS_LIVE_META:
+ITS_LIVE_CROP_BULK:
   required_parameters:
-    - granule_uri
+    - granules_parquet
   parameters:
-    granule_uri:
+    granules_parquet:
       api_schema:
         description: S3 URI for an ITS_LIVE velocity granule to generate metadata for
         type: string
-        pattern: '^s3:\/\/.*\.nc$'
+        pattern: '^s3:\/\/.*\.parquet$'
+    start_idx:
+      api_schema:
+        description:  Start index (inclusive) of the contiguous subset of granules in granules_parquet to generate metadata for
+        type: integer
+        minimum: 0
+        default: 0
+    stop_idx:
+      api_schema:
+        description: Stop index (exclusive) of the contiguous subset of granules in granules_parquet to generate metadata for
+        type: integer
+        nullable: true
+        minimum: 1
+        default: null
     publish_bucket:
       api_schema:
         description: Publish the resulting metadata files to the ITS_LIVE AWS Open Data (or test) S3 Bucket
@@ -17,11 +30,6 @@ ITS_LIVE_META:
           - "its-live-data"
           - "its-live-data-test"
         default: null
-    publish_stac_prefix:
-      api_schema:
-        description: Publish the resulting STAC JSON item under this prefix in the ITS_LIVE AWS Open Data (or test) S3 Bucket
-        type: string
-        default: stac-ingest
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -31,38 +39,47 @@ ITS_LIVE_META:
       image: ghcr.io/asfhyp3/hyp3-autorift
       command:
         - ++process
-        - crop_netcdf_product
-        - Ref::granule_uri
+        - bulk_crop_netcdf_product
+        - --granules-parquet
+        - Ref::granules_parquet
+        - --start-idx
+        - Ref::start_idx
+        - --stop-idx
+        - Ref::stop_idx
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
         - --publish-bucket
         - Ref::publish_bucket
-      timeout: 10800
-      compute_environment: Default
+      timeout: 21600
+      compute_environment: ItsLiveCropBulk
       vcpu: 1
-      memory: 7875
+      memory: 31500
       secrets:
         - PUBLISH_ACCESS_KEY_ID
         - PUBLISH_SECRET_ACCESS_KEY
     - name: METADATA
       image: ghcr.io/asfhyp3/itslive-metadata
       command:
-        - --granule-uri
-        - Ref::granule_uri
+        - ++plugin
+        - bulk_meta
+        - --granules-parquet
+        - Ref::granules_parquet
+        - --start-idx
+        - Ref::start_idx
+        - --stop-idx
+        - Ref::stop_idx
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
         - --publish-bucket
         - Ref::publish_bucket
-        - --publish-prefix
-        - Ref::publish_stac_prefix
-      timeout: 10800
-      compute_environment: ItsLiveMeta
+      timeout: 21600
+      compute_environment: ItsLiveMetaBulk
       vcpu: 1
-      memory: 7875
+      memory: 31500
       secrets:
         - PUBLISH_ACCESS_KEY_ID
         - PUBLISH_SECRET_ACCESS_KEY
