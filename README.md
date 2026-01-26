@@ -151,7 +151,7 @@ which we will use to deploy HyP3 via CI/CD tooling:
 
 1. Go to AWS console -> IAM -> Users -> github-actions -> security credentials tab -> "create access key".
 2. Select "Other" for key usage
-3. Add tag value to describe the key such as `hyp3-foobar-access`
+3. (Optional)Add tag value to describe the key, such as "For GitHub Actions CI/CD pipelines"
 4. Store the access key ID and secret access key using your team's password manager. You will use them below in "Create the GitHub environment"
    as `V2_AWS_ACCESS_KEY_ID` and `V2_AWS_SECRET_ACCESS_KEY`.
 </details>
