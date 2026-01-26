@@ -285,7 +285,7 @@ in the format `<CNAME_name> in CNAME <CNAME_value>.`  (see previous records for 
 
 ### Create the HyP3 deployment
 
-You will need to add the deployment to the matrix in an existing GitHub Actions `deploy-*.yml` workflow (.github/workflows/) or create
+You will need to add the deployment to the matrix in an existing GitHub Actions `deploy-*.yml` workflow located in the `.github/workflows/` directory, or create
 a new one for the deployment. If you need to create a new one, we recommend copying one of the
 existing workflows, and then updating all of the fields.
 as appropriate for your deployment. Also make sure to update the top-level `name` of the workflow and the name
