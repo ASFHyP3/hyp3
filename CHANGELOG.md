@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added optional `chip_size` and `search_range` parameters to the `ARIA_AUTORIFT.yml` job specification to enable user-defined `chip-size` and `search-range`.
-- Updated `ARIA_AUTORIFT.yml` validation schema to support processing of Sentinel-1D and Sentinel-2C/D granules.
+- Updated `AUTORIFT.yml`, `ARIA_AUTORIFT.yml`, and `ITS_LIVE_AUTORIFT.yml` validation schema to support processing of Sentinel-1D and Sentinel-2C/D granules.
 - Added a `model_context_length` parameter to the `OPERA_DIST_S1` job specification.
 - Added a new custom hyp3-slimsar-test deployment.
 - Added a new `SLIMSAR_TDBP` job_spec for slimsar time-domain backprojection processing.
