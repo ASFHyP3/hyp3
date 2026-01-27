@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a `model_context_length` parameter to the `OPERA_DIST_S1` job specification.
 - Added a new custom hyp3-slimsar-test deployment.
 - Added a new `SLIMSAR_TDBP` job_spec for slimsar time-domain backprojection processing.
+- Added a new `SlimSAR` compute environment for slimsar processing.
 - Added a new `ITS_LIVE_CROP_BULK` job spec which re-crops existing ITS_LIVE products which are specified in a parquet file to ensure they are chunk-aligned and have a time dimension, and then it generates STAC JSON and other metadata files.
 - Added a new `ITS_LIVE_META_BULK` job spec which generates STAC JSON and other metadata files for existing ITS_LIVE products which are specified in a parquet file.
 - Added the `ITS_LIVE_CROP_BULK` and `ITS_LIVE_META_BULK` job spec to the ITS_LIVE deployments.

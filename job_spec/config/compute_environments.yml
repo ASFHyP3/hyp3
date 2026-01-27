@@ -39,5 +39,6 @@ compute_environments:
     allocation_strategy: BEST_FIT_PROGRESSIVE
   SlimSAR:
     instance_types: g4dn.2xlarge,g4dn.4xlarge,g4dn.6xlarge,
-    allocation_type: EC2
     ami_id: ami-03aa99ddf5498ceb9  # /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
+    allocation_type: EC2
+    allocation_strategy: BEST_FIT_PROGRESSIVE
