@@ -191,10 +191,7 @@ aws cloudformation deploy \
     --template-file cicd-stacks/JPL-deployment-policy-cf.yml
 ```
 
-*Warning: This stack should only be deployed once per AWS account. This stack also
-assumes you are only deploying into a single AWS Region. If you are deploying into
-multiple regions in the same AWS account, you'll need to adjust the IAM permissions
-that are limited to a single region.*
+*Warning: This stack should only be deployed once per AWS account.*
 
 Then open a [Cloud Team Service Desk](https://itsd-jira.jpl.nasa.gov/servicedesk/customer/portal/13)
 request for a service user account here:
