@@ -108,7 +108,7 @@ AUTORIFT:
         default: '/vsicurl/https://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
     publish_bucket:
       api_schema:
-        description: Publish the resulting product to the ITS_LIVE AWS Open Data (or test) S3 Bucket
+        description: Publish the resulting product files to the ITS_LIVE AWS Open Data (or test) S3 Bucket
         type: string
         nullable: true
         enum:
@@ -127,6 +127,17 @@ AUTORIFT:
         default: null
         nullable: true
         type: string
+    stac_items_endpoint:
+      api_schema:
+        description: STAC items endpoint URL for the collection you want to add items to
+        type: string
+        format: uri
+        default: 'https://stac.itslive.cloud/collections/itslive-granules/items'
+    stac_exists_ok:
+      api_schema:
+        description: Allows updating existing STAC items
+        type: boolean
+        default: false
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -166,16 +177,23 @@ AUTORIFT:
     - name: METADATA
       image: ghcr.io/asfhyp3/itslive-metadata
       command:
+        - ++plugin
+        - meta
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
         - Ref::job_id
         - --publish-bucket
         - Ref::publish_bucket
+        - --stac-items-endpoint
+        - Ref::stac_items_endpoint
+        - --stac-exists-ok
+        - Ref::stac_exists_ok
       timeout: 10800
       compute_environment: ItsLiveMeta
       vcpu: 1
       memory: 7875
       secrets:
+        - STAC_API_TOKEN
         - PUBLISH_ACCESS_KEY_ID
         - PUBLISH_SECRET_ACCESS_KEY
