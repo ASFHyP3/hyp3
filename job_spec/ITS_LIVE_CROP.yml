@@ -21,8 +21,9 @@ ITS_LIVE_CROP:
       api_schema:
         description: STAC items endpoint URL for the collection you want to add items to
         type: string
+        nullable: true
         format: uri
-        default: 'https://stac.itslive.cloud/collections/itslive-granules/items'
+        default: null
     stac_exists_ok:
       api_schema:
         description: Allows updating existing STAC items
