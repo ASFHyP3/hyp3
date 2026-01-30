@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Increased the maximum `stride_for_norm_param_estimation` to 32 from 16 for the `OPERA_DIST_S1` job specification to handle models with a larger input size.
+- Changed readme to reflect current state of AWS, motivation for deploying a hyp3 stack, and clarify naming and formatting.
 - The `ITS_LIVE_META` job spec has been renamed `ITS_LIVE_CROP` as it re-crops an existing ITS_LIVE product to ensure it is chunk-aligned and has a time dimension, and then it generates STAC JSON and other metadata files.
 - The hyp3-ci stack permission for JPL deployments were expanded to support deploying HyP3-based monitoring stacks:
   - Listing CloudFormation stacks is now allowed.
