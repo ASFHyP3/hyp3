@@ -148,6 +148,23 @@ jobs:
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
+          - environment: hyp3-sentinel1-opendata-test
+            domain: hyp3-sentinel1-opendata-test.asf.alaska.edu
+            template_bucket: cf-templates-1ka34hga9d22u-us-west-2
+            image_tag: test
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/INSAR_ISCE_BURST.yml
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
     environment:
       name: ${{ matrix.environment }}
       url: https://${{ matrix.domain }}
