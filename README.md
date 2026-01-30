@@ -151,7 +151,7 @@ which we will use to deploy HyP3 via CI/CD tooling:
 
 1. Go to AWS console -> IAM -> Users -> github-actions -> security credentials tab -> "create access key".
 2. Select "Other" for key usage
-3. (Optional)Add tag value to describe the key, such as "For GitHub Actions CI/CD pipelines"
+3. (Optional) Add tag value to describe the key, such as "For GitHub Actions CI/CD pipelines"
 4. Store the access key ID and secret access key using your team's password manager. You will use them below in "Create the GitHub environment"
    as `V2_AWS_ACCESS_KEY_ID` and `V2_AWS_SECRET_ACCESS_KEY`.
 </details>
@@ -237,13 +237,14 @@ Go to AWS console -> Secrets Manager, then:
 
 #### Request SSL cert
 
-*Note: For EDC accounts, you should create the cert in the `us-east-1` region
-for use with the CloudFront distribution that you will create later,
-even if you're deploying HyP3 to `us-west-2`.*
+To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for its deployment domain name (URL), which we can request from AWS.
 
-To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for its deployment domain name (URL):
+[!NOTE]
+> For EDC accounts, you should create the cert in the `us-east-1` region
+> for use with the CloudFront distribution that you will create later,
+> even if you're deploying HyP3 to `us-west-2`.*
 
-AWS console -> AWS Certificate Manager -> Request certificate:\
+Go to the AWS console -> AWS Certificate Manager -> Request certificate and then:
 1. Select "Request a public certificate"
 2. Click the orange "Next" button
 3. Choose a "Fully qualified domain name". Domain name should be something like `hyp3-foobar.asf.alaska.edu` or for a test deployment `hyp3-foobar-test.asf.alaska.edu`.
@@ -252,7 +253,7 @@ AWS console -> AWS Certificate Manager -> Request certificate:\
 
 Then create a validation record in
 https://gitlab.asf.alaska.edu/operations/puppet/-/edit/production/modules/legacy_dns/files/asf.alaska.edu.db
-of the form `<CNAME_name> in CNAME <CNAME_value>`, stripping the `.asf.alaska.edu` from the CNAME name  (see previous records for examples).
+of the form `<CNAME_name> in CNAME <CNAME_value>`, stripping `.asf.alaska.edu` from the `CNAME_name`  (see previous records for examples).
 
 ### Create the GitHub environment
 
@@ -329,12 +330,15 @@ Update the [AWS Accounts and HyP3 Deployments](https://docs.google.com/spreadshe
 
 #### Testing and adding user credits to your hyp3 deployment
 
-After successfully deploying HyP3 and your new DNS record has taken effect (or you've edited your local DNS name resolution), you can test your deployment by accessing the Swagger UI and using the POST `/user` tab to 
-check if your user is approved and has credits for running jobs on the deployment. You will need to be authenticated by either providing an Earthdata Login Bearer Token using the "Authorize" button, or by having a valid `asf-urs` cookie, typically logging into [Vertex](https://search.asf.alaska.edu). Interacting with HyP3 should automatically add your user to the DynamoDB table with the default number of credits (typically 0).
+After successfully deploying HyP3 and your new DNS record has taken effect (or you've edited your local DNS name resolution), you can test your
+deployment by accessing the Swagger UI and using the POST `/user` tab to check if your user is approved and has credits for running jobs on the
+deployment. You will need to be authenticated by either providing an Earthdata Login Bearer Token using the "Authorize" button, or by having a
+valid `asf-urs` browser cookie, typically obtained by logging into [Vertex](https://search.asf.alaska.edu). Interacting with HyP3 should
+automatically add your user to the DynamoDB table with the default number of credits (typically 0).
 
 To add credits to your (or any) user, log in to the AWS console and navigate to  DynamoDB -> Explore items, then:
 1. Find the table with a format like `hyp3-foobar-UsersTable-XXXXXXXXXXXXX`
-2. Edit your user record (only present after using the Swagger UI in some way)
+2. Edit your user record if present (after using the Swagger UI in some way) or duplicate an existing reccord updaing the `user_id`.
 
 You can then return the Swagger UI and use the POST `/jobs` to run a test job and confirm it completes.
 
