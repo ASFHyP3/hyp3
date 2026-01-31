@@ -69,6 +69,12 @@ Resources:
           - Type: GPU
             Value: "{{ step['gpu'] }}"
           {% endif %}
+        {% if 'linux_parameters' in step %}
+        LinuxParameters:
+          {% for key, value in step['linux_parameters'].items() %}
+          {{ key }}: {{ value }}
+          {% endfor %}
+        {% endif %}
         Command:
           {% for command in step['command'] %}
           - {{ command }}
