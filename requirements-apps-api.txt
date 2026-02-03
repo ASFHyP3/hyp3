@@ -1,9 +1,9 @@
 flask==3.1.2
-Flask-Cors==6.0.1
-jsonschema==4.25.1
-openapi-core==0.19.5
+Flask-Cors==6.0.2
+jsonschema==4.26.0
+openapi-core==0.22.0
 prance==25.4.8.0
-PyJWT==2.10.1
+PyJWT==2.11.0
 requests==2.32.5
 serverless_wsgi==3.1.0
 shapely==2.1.2
