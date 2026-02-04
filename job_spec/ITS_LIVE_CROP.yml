@@ -9,7 +9,7 @@ ITS_LIVE_CROP:
         pattern: '^s3:\/\/.*\.nc$'
     publish_bucket:
       api_schema:
-        description: Publish the resulting metadata files to the ITS_LIVE AWS Open Data (or test) S3 Bucket
+        description: Publish the resulting product files to the ITS_LIVE AWS Open Data (or test) S3 Bucket
         type: string
         nullable: true
         enum:
@@ -17,6 +17,18 @@ ITS_LIVE_CROP:
           - "its-live-data"
           - "its-live-data-test"
         default: null
+    stac_items_endpoint:
+      api_schema:
+        description: STAC items endpoint URL for the collection you want to add items to
+        type: string
+        nullable: true
+        format: uri
+        default: null
+    stac_exists_ok:
+      api_schema:
+        description: Allows updating existing STAC items
+        type: boolean
+        default: true
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -54,10 +66,15 @@ ITS_LIVE_CROP:
         - Ref::job_id
         - --publish-bucket
         - Ref::publish_bucket
+        - --stac-items-endpoint
+        - Ref::stac_items_endpoint
+        - --stac-exists-ok
+        - Ref::stac_exists_ok
       timeout: 10800
       compute_environment: ItsLiveMeta
       vcpu: 1
       memory: 7875
       secrets:
+        - STAC_API_TOKEN
         - PUBLISH_ACCESS_KEY_ID
         - PUBLISH_SECRET_ACCESS_KEY

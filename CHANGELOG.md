@@ -16,9 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a new `ITS_LIVE_CROP_BULK` job spec which re-crops existing ITS_LIVE products which are specified in a parquet file to ensure they are chunk-aligned and have a time dimension, and then it generates STAC JSON and other metadata files.
 - Added a new `ITS_LIVE_META_BULK` job spec which generates STAC JSON and other metadata files for existing ITS_LIVE products which are specified in a parquet file.
 - Added the `ITS_LIVE_CROP_BULK` and `ITS_LIVE_META_BULK` job spec to the ITS_LIVE deployments.
+- Added the `stac_items_endpoint` and `stac_exists_okay` job parameters to the `ITS_LIVE_AUTORIFT` and `ITS_LIVE_CROP` job specs to allow directly publishing STAC items to the ITS_LIVE STAC catalog.
 
 ### Changed
 - Increased the maximum `stride_for_norm_param_estimation` to 32 from 16 for the `OPERA_DIST_S1` job specification to handle models with a larger input size.
+- Changed readme to reflect current state of AWS, motivation for deploying a hyp3 stack, and clarify naming and formatting.
 - The `ITS_LIVE_META` job spec has been renamed `ITS_LIVE_CROP` as it re-crops an existing ITS_LIVE product to ensure it is chunk-aligned and has a time dimension, and then it generates STAC JSON and other metadata files.
 - The hyp3-ci stack permission for JPL deployments were expanded to support deploying HyP3-based monitoring stacks:
   - Listing CloudFormation stacks is now allowed.
