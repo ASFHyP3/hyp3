@@ -32,8 +32,8 @@ OPENDATA_TRANSFER:
       cost: 1.0
   validators: []
   steps:
-    - name: 'Open Data Transfer'
-      image: # TBD
+    - name: 'AWS OpenData Transfer'
+      image: ghcr.io/asfhyp3/hyp3-sentinel1-opendata
       command:
         - Ref::granule
         - --bucket
