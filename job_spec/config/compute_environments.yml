@@ -24,6 +24,21 @@ compute_environments:
     instance_types: m6id.2xlarge,m6id.4xlarge,m6id.8xlarge
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
+  ItsLiveCropBulk:
+    instance_types: r7gd.medium,r7gd.large,r7gd.xlarge,r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
+    ami_id: ami-0692356050549192d  # /aws/service/ecs/optimized-ami/amazon-linux-2023/arm64/recommended/image_id
+    allocation_type: EC2
+    allocation_strategy: BEST_FIT_PROGRESSIVE
   ItsLiveMeta:
     instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
     ami_id: ami-0aece254fc7c27a77  # /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+  ItsLiveMetaBulk:
+    instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+    ami_id: ami-0aece254fc7c27a77  # /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+    allocation_type: EC2
+    allocation_strategy: BEST_FIT_PROGRESSIVE
+  SlimSAR:
+    instance_types: g4dn.2xlarge,g4dn.4xlarge,g4dn.8xlarge,g4dn.16xlarge
+    ami_id: ami-03aa99ddf5498ceb9  # /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
+    allocation_type: EC2
+    allocation_strategy: BEST_FIT_PROGRESSIVE

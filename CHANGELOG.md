@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.13.0]
+
+### Added
+- Added optional `chip_size` and `search_range` parameters to the `ARIA_AUTORIFT.yml` job specification to enable user-defined `chip-size` and `search-range`.
+- Updated `AUTORIFT.yml`, `ARIA_AUTORIFT.yml`, and `ITS_LIVE_AUTORIFT.yml` validation schema to support processing of Sentinel-1D and Sentinel-2C/D granules.
+- Added a `model_context_length` parameter to the `OPERA_DIST_S1` job specification.
+- Added a new custom hyp3-slimsar-test deployment.
+- Added a new `SLIMSAR_TDBP` job_spec for slimsar time-domain backprojection processing.
+- Added a new `SlimSAR` compute environment for slimsar processing with correct EC2 instances.
+- Added a new `ITS_LIVE_CROP_BULK` job spec which re-crops existing ITS_LIVE products which are specified in a parquet file to ensure they are chunk-aligned and have a time dimension, and then it generates STAC JSON and other metadata files.
+- Added a new `ITS_LIVE_META_BULK` job spec which generates STAC JSON and other metadata files for existing ITS_LIVE products which are specified in a parquet file.
+- Added the `ITS_LIVE_CROP_BULK` and `ITS_LIVE_META_BULK` job spec to the ITS_LIVE deployments.
+- Added the `stac_items_endpoint` and `stac_exists_okay` job parameters to the `ITS_LIVE_AUTORIFT` and `ITS_LIVE_CROP` job specs to allow directly publishing STAC items to the ITS_LIVE STAC catalog.
+
+### Changed
+- Increased the maximum `stride_for_norm_param_estimation` to 32 from 16 for the `OPERA_DIST_S1` job specification to handle models with a larger input size.
+- Changed readme to reflect current state of AWS, motivation for deploying a hyp3 stack, and clarify naming and formatting.
+- The `ITS_LIVE_META` job spec has been renamed `ITS_LIVE_CROP` as it re-crops an existing ITS_LIVE product to ensure it is chunk-aligned and has a time dimension, and then it generates STAC JSON and other metadata files.
+- The hyp3-ci stack permission for JPL deployments were expanded to support deploying HyP3-based monitoring stacks:
+  - Listing CloudFormation stacks is now allowed.
+  - CloudFormation permissions were expanded to any region from just us-west-2.
+  - ECR actions are now allowed.
+
+### Removed
+- Removed the `publish_stac_prefix` job parameter from the `ITS_LIVE_AUTORIFT` and `ITS_LIVE_CROP` (previously `ITS_LIVE_META`) job specs as it's no longer used by the ITS_LIVE plugins.
+
 ## [10.12.1]
 
 ### Fixed

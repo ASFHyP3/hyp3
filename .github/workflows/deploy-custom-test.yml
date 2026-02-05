@@ -65,7 +65,9 @@ jobs:
             cost_profile: DEFAULT
             job_files: >-
               job_spec/ITS_LIVE_AUTORIFT.yml
-              job_spec/ITS_LIVE_META.yml
+              job_spec/ITS_LIVE_CROP.yml
+              job_spec/ITS_LIVE_CROP_BULK.yml
+              job_spec/ITS_LIVE_META_BULK.yml
             instance_types: r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
             default_max_vcpus: 640  # Max: 10,406
             expanded_max_vcpus: 640  # Max: 10,406
@@ -127,13 +129,31 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+          
+          - environment: hyp3-slimsar-test
+            domain: hyp3-slimsar-test.asf.alaska.edu
+            template_bucket: cf-templates-1ce4dbsaugtx1-us-west-2
+            image_tag: test
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/INSAR_ISCE_BURST.yml
+              job_spec/SLIMSAR_TDBP.yml
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
     environment:
       name: ${{ matrix.environment }}
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v6.0.0
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 

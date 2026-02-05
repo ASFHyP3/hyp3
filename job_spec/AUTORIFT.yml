@@ -14,13 +14,13 @@ AUTORIFT:
           anyOf:
             - description: The name of the Sentinel-1 SLC granule to process
               type: string
-              pattern: "^S1[ABC]_IW_SLC__1S[SD][VH]"
+              pattern: "^S1[ABCD]_IW_SLC__1S[SD][VH]"
               minLength: 67
               maxLength: 67
               example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
             - description: The name of the Sentinel-2 granule to process (ESA naming convention)
               type: string
-              pattern: "^S2[AB]_MSIL1C_"
+              pattern: "^S2[ABCD]_MSIL1C_"
               minLength: 60
               maxLength: 60
               example: S2A_MSIL1C_20200627T150921_N0209_R025_T22WEB_20200627T170912
