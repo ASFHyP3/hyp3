@@ -26,8 +26,7 @@ OPENDATA_TRANSFER:
         nullable: true
         enum:
           - null
-          - "" # FIXME:
-          - "" # FIXME:
+          - "sentinel1-opendata-testing"
         default: null
   cost_profiles:
     DEFAULT:
