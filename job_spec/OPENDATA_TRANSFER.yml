@@ -1,8 +1,9 @@
 OPENDATA_TRANSFER:
   required_parameters:
     - granule
+    - bucket
   parameters:
-    granules:
+    granule:
       api_schema:
         type: array
         minItems: 1
@@ -17,6 +18,7 @@ OPENDATA_TRANSFER:
               minLength: 67
               maxLength: 67
               example: S1A_IW_SLC__1SSV_20150621T120220_20150621T120232_006471_008934_72D8
+        default: ""
     bucket:
       api_schema:
         description: Publish the resulting product to the AWS Open Data (or test) S3 Bucket
