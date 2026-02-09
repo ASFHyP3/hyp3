@@ -60,7 +60,7 @@ SLIMSAR_TDBP:
         - --dem_fp
         - Ref::dem_fp
         - --pols
-        - Ref:pols
+        - Ref::pols
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
