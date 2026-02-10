@@ -1,9 +1,9 @@
 from math import ceil
 
 
-AUTORIFT_S2_MEMORY = '7875'
-AUTORIFT_LANDSAT_MEMORY = '15750'
-AUTORIFT_S1_MEMORY = '31500'
+AUTORIFT_MEMORY_8GB = '7875'
+AUTORIFT_MEMORY_16GB = '15750'
+AUTORIFT_MEMORY_32GB = '31500'
 
 RTC_GAMMA_10M_MEMORY = '63200'
 WATER_MAP_10M_MEMORY = '126000'
@@ -36,12 +36,18 @@ def get_granules(job_parameters: dict) -> list[str]:
 def get_autorift_memory(job_parameters: dict) -> str:
     granules = get_granules(job_parameters)
 
-    if granules[0].startswith('S2'):
-        return AUTORIFT_S2_MEMORY
-    elif granules[0].startswith('L'):
-        return AUTORIFT_LANDSAT_MEMORY
+    frame_counts = [len(job_parameters.get(k) or []) for k in ['granules', 'reference', 'secondary']]
+    num_frames = max(frame_counts)
 
-    return AUTORIFT_S1_MEMORY
+    if granules[0].startswith('S2'):
+        if num_frames > 4:
+            return AUTORIFT_MEMORY_16GB
+        return AUTORIFT_MEMORY_8GB
+
+    elif granules[0].startswith('L'):
+        return AUTORIFT_MEMORY_16GB
+
+    return AUTORIFT_MEMORY_32GB
 
 
 def get_insar_isce_burst_memory(job_parameters: dict) -> str:
