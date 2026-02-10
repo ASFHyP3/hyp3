@@ -1,9 +1,9 @@
 import pytest
 
 from set_batch_overrides import (
-    AUTORIFT_LANDSAT_MEMORY,
-    AUTORIFT_S1_MEMORY,
-    AUTORIFT_S2_MEMORY,
+    AUTORIFT_MEMORY_8GB,
+    AUTORIFT_MEMORY_16GB,
+    AUTORIFT_MEMORY_32GB,
     INSAR_ISCE_BURST_MEMORY_8G,
     INSAR_ISCE_BURST_MEMORY_16G,
     INSAR_ISCE_BURST_MEMORY_32G,
@@ -167,7 +167,7 @@ def test_set_batch_overrides_autorift_s1():
         'ResourceRequirements': [
             {
                 'Type': 'MEMORY',
-                'Value': AUTORIFT_S1_MEMORY,
+                'Value': AUTORIFT_MEMORY_32GB,
             }
         ],
         'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '4'}],
@@ -185,10 +185,30 @@ def test_set_batch_overrides_autorift_s2():
         'ResourceRequirements': [
             {
                 'Type': 'MEMORY',
-                'Value': AUTORIFT_S2_MEMORY,
+                'Value': AUTORIFT_MEMORY_8GB,
             }
         ],
         'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '1'}],
+    }
+
+    assert lambda_handler(
+        {
+            'job_type': 'AUTORIFT',
+            'job_parameters': {
+                'granules': ['S2_stub'],  # Used for sensor detection
+                'reference': ['S2A_1', 'S2A_2', 'S2A_3', 'S2A_4', 'S2A_5'],
+                'secondary': ['S2B_1'],
+            },
+        },
+        None,
+    ) == {
+        'ResourceRequirements': [
+            {
+                'Type': 'MEMORY',
+                'Value': AUTORIFT_MEMORY_16GB,
+            }
+        ],
+        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '2'}],
     }
 
 
@@ -203,7 +223,7 @@ def test_set_batch_overrides_autorift_landsat():
         'ResourceRequirements': [
             {
                 'Type': 'MEMORY',
-                'Value': AUTORIFT_LANDSAT_MEMORY,
+                'Value': AUTORIFT_MEMORY_16GB,
             }
         ],
         'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '2'}],
