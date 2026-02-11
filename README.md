@@ -15,11 +15,13 @@ A processing environment for HyP3 Plugins in AWS.
    git clone git@github.com:ASFHyP3/hyp3.git
    cd hyp3
    ```
+
 2. Create and activate a conda environment
    ```
    conda env create -f environment.yml
    conda activate hyp3
    ```
+
 3. Run the tests:
    ```
    make tests
@@ -40,6 +42,15 @@ A processing environment for HyP3 Plugins in AWS.
    When writing new tests, decorate such tests with `@pytest.mark.network`.
 
    Also, remember to re-run `make render` after making changes to rendered files.
+
+4. Additionally, if you just want to set up `PYTHONPATH`
+   without setting up all of the environment variables needed for testing, you can run:
+   ```
+   eval $(make pythonpath)
+   ```
+   This is useful when `eval $(make env)` would overwrite important environment variables.
+   For example, you probably want to `export AWS_PROFILE` before attempting to call `dynamo` functions
+   via the interactive interpreter, but `make env` would overwrite your AWS credentials with dummy values.
 
 ## Deployment
 
