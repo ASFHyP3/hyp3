@@ -4,11 +4,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [10.13.2]
-
-### Fixed
-- Update `tests/test_dynamo/test_user.py::test_decrement_credits_infinite_credits` to assert the correct exception type after upgrading `moto` from `5.1.18` to `5.1.21.` Fixes https://github.com/ASFHyP3/hyp3/issues/3023
-
 ## [10.13.1]
 
 ### Fixed
