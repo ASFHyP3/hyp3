@@ -1,0 +1,61 @@
+INSAR_ISCE_BURST:
+  required_parameters:
+    - granule
+  parameters:
+    granule:
+      api_schema:
+        type: array
+        minItems: 1
+        maxItems: 1
+        example:
+          - CAPELLA_C17_SM_SICD_HH_20251128093004_20251128093008.ntf
+        items:
+          description: Name of Capella granule
+          type: string
+          pattern: "^CAPELLA_.*.ntf"
+          minLength: 56
+          maxLength: 56
+          example: CAPELLA_C17_SM_SICD_HH_20251128093004_20251128093008.ntf
+    demtype:
+      api_schema:
+        description: Type of DEM used.
+        type: string
+        default: Geodata 3m
+        enum:
+          - Geodata 3m
+          - Copernicus 30m
+          - Geodata 3m
+          - ArcticDEM 2m
+          - Lidar 0.5m
+    greeting:
+      api_schema:
+        description: Just a little greeting to play with the one that came with the cookiecutter'd plugin.
+        type: string
+        default: 'Ohai'
+  cost_profiles:
+    EDC:
+      cost: 1.0
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/ua-asf/hyp3-artraff-rtc
+      image_tag: 0.0.1.dev2_g75d0c690d
+      command:
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --greeting
+        - Ref::greeting
+        - --demtype
+        - Ref::demtype
+        - Ref::granule
+      timeout: 30
+      compute_environment: Default
+      vcpu: 1
+      memory: 256
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
