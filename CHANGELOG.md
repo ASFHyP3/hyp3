@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.13.0]
 
 ### Added
+- Implemented dynamic memory allocation for multi-frame `AUTORIFT` jobs in `set_batch_overrides.py`. Sentinel-2 jobs with more than 4 frames now use 16 GB of memory instead of 8 GB. Single-frame Sentinel-2/Landsat and Sentinel-1 memory allcocation is unchanged.
 - Added optional `chip_size` and `search_range` parameters to the `ARIA_AUTORIFT.yml` job specification to enable user-defined `chip-size` and `search-range`.
 - Updated `AUTORIFT.yml`, `ARIA_AUTORIFT.yml`, and `ITS_LIVE_AUTORIFT.yml` validation schema to support processing of Sentinel-1D and Sentinel-2C/D granules.
 - Added a `model_context_length` parameter to the `OPERA_DIST_S1` job specification.
