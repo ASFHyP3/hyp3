@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.13.2]
+
+### Changed
+* Updated `OPERA_DIST_S1` job spec to allow for entrypoint change (now need to specify `run` at beginning of command)
+* Added `OPERA_DIST_S1_CONFIRMATION` for confirming products OPERA DIST-S1 Products.
+
+
 ## [10.13.1]
 
 ### Fixed
