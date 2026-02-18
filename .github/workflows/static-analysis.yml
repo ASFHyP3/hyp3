@@ -3,7 +3,13 @@ name: Static code analysis
 permissions:
   contents: read
 
-on: push
+on: 
+  push:
+  pull_request:
+    branches:
+      - main
+      - develop
+
 
 env:
   SETUPTOOLS_SCM_PRETEND_VERSION_FOR_HYP3: v0.0.0
@@ -11,10 +17,10 @@ env:
 jobs:
   call-ruff-workflow:
     # Docs: https://github.com/ASFHyP3/actions
-    uses: ASFHyP3/actions/.github/workflows/reusable-ruff.yml@v0.20.0
+    uses: ASFHyP3/actions/.github/workflows/reusable-ruff.yml@v0.21.0
 
   call-mypy-workflow:
-    uses: ASFHyP3/actions/.github/workflows/reusable-mypy.yml@v0.20.0
+    uses: ASFHyP3/actions/.github/workflows/reusable-mypy.yml@v0.21.0
 
   cfn-lint:
     runs-on: ubuntu-latest
@@ -23,7 +29,7 @@ jobs:
       matrix:
         security_environment: [ASF, EDC, JPL, JPL-public]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.2
       - uses: actions/setup-python@v6
         with:
           python-version: 3.13
@@ -37,7 +43,7 @@ jobs:
   openapi-spec-validator:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.2
       - uses: actions/setup-python@v6
         with:
           python-version: 3.13
@@ -50,7 +56,7 @@ jobs:
   statelint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.2
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
@@ -69,9 +75,10 @@ jobs:
 
   snyk:
     runs-on: ubuntu-latest
+    if: ${{ ! github.event.pull_request.head.repo.fork }}
     steps:
-      - uses: actions/checkout@v5.0.0
-      - uses: snyk/actions/setup@0.4.0
+      - uses: actions/checkout@v6.0.2
+      - uses: snyk/actions/setup@v1.0.0
       - uses: actions/setup-python@v6
         with:
           python-version: 3.13
@@ -88,4 +95,4 @@ jobs:
           snyk iac test --severity-threshold=high
 
   call-secrets-analysis-workflow:
-    uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@v0.20.0
+    uses: ASFHyP3/actions/.github/workflows/reusable-secrets-analysis.yml@v0.21.0

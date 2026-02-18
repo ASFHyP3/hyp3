@@ -1,10 +1,12 @@
-name: Deploy LAVAS prod to AWS
+name: Deploy HyP3 EDC Sandbox to AWS
+
+permissions:
+  contents: read
 
 on:
   push:
-    tags:
-      - 'v*'
-
+    branches:
+      - hyp3-edc-sandbox
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -15,35 +17,39 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - environment: hyp3-lavas
-            domain: hyp3-lavas.asf.alaska.edu
-            template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
-            image_tag: latest
+          - environment: hyp3-edc-sandbox
+            template_bucket: cf-templates-bywc0durdnqy-us-west-2
+            image_tag: test
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             default_application_status: APPROVED
-            cost_profile: DEFAULT
+            cost_profile: EDC
+            opera_rtc_s1_end_date: Default
             job_files: >-
+              job_spec/AUTORIFT.yml
+              job_spec/INSAR_GAMMA.yml
+              job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
-              job_spec/SRG_GSLC.yml
-              job_spec/SRG_TIME_SERIES.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
+              job_spec/ARIA_S1_GUNW.yml
+              job_spec/OPERA_RTC_S1.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
-            security_environment: ASF
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+            security_environment: EDC
+            ami_id: /ngap/amis/image_id_ecs_al2023_x86
+            distribution_url: 'https://d3bvvghf83wjqc.cloudfront.net'
 
     environment:
       name: ${{ matrix.environment }}
-      url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
-      - uses: aws-actions/configure-aws-credentials@v5
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
@@ -64,16 +70,16 @@ jobs:
             --arg AuthPublicKey '${{ secrets.AUTH_PUBLIC_KEY }}' \
             --arg DefaultCreditsPerUser '${{ matrix.default_credits_per_user }}' \
             --arg DefaultApplicationStatus '${{ matrix.default_application_status }}' \
+            --arg OperaRtcS1EndDate '${{ matrix.opera_rtc_s1_end_date }}' \
             --arg AmiId '${{ matrix.ami_id }}' \
             --arg DefaultMaxvCpus '${{ matrix.default_max_vcpus }}' \
             --arg ExpandedMaxvCpus '${{ matrix.expanded_max_vcpus }}' \
             --arg MonthlyBudget '${{ secrets.MONTHLY_BUDGET }}' \
             --arg RequiredSurplus '${{ matrix.required_surplus }}' \
             --arg InstanceTypes '${{ matrix.instance_types }}' \
-            --arg DomainName '${{ matrix.domain }}' \
-            --arg CertificateArn '${{ secrets.CERTIFICATE_ARN }}' \
+            --arg BucketReadPrincipals '${{ secrets.BUCKET_READ_PRINCIPALS }}' \
+            --arg DistributionUrl '${{ matrix.distribution_url }}' \
             > parameters.json
-
       - uses: ./.github/actions/deploy-hyp3
         with:
           TEMPLATE_BUCKET:  ${{ matrix.template_bucket }}

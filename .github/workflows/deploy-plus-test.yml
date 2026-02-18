@@ -21,13 +21,14 @@ jobs:
             product_lifetime_in_days: 30
             default_credits_per_user: 0
             default_application_status: APPROVED
-            cost_profile: EDC # TODO: update before going public
+            cost_profile: EDC
             job_files: >-
               job_spec/AUTORIFT.yml
               job_spec/INSAR_GAMMA.yml
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
+              job_spec/ARIA_S1_GUNW.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 10000
             expanded_max_vcpus: 10000
@@ -40,11 +41,11 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
-      - uses: aws-actions/configure-aws-credentials@v5
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}

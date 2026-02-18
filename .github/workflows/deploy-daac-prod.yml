@@ -19,7 +19,7 @@ jobs:
             template_bucket: cf-templates-118mtzosmrltk-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
-            default_credits_per_user: 10000
+            default_credits_per_user: 8000
             default_application_status: APPROVED
             cost_profile: EDC
             job_files: >-
@@ -31,40 +31,22 @@ jobs:
               job_spec/ARIA_S1_GUNW.yml
               job_spec/OPERA_DISP_TMS.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 3000
-            expanded_max_vcpus: 5600
-            required_surplus: 3500
+            default_max_vcpus: 1200
+            expanded_max_vcpus: 2400
+            required_surplus: 2000
             security_environment: EDC
             ami_id: /ngap/amis/image_id_ecs_al2023_x86
             distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
-
-          - environment: hyp3-opera-prod
-            api_name: hyp3-opera-prod
-            template_bucket: cf-templates-118mtzosmrltk-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 14
-            default_credits_per_user: 0
-            default_application_status: APPROVED
-            cost_profile: EDC
-            job_files: >-
-              job_spec/OPERA_RTC_S1_SLC.yml
-            instance_types: c6i.2xlarge,c6id.2xlarge,c7i.2xlarge
-            default_max_vcpus: 12000
-            expanded_max_vcpus: 12000
-            required_surplus: 0
-            security_environment: EDC
-            ami_id: /ngap/amis/image_id_ecs_al2023_x86
-            distribution_url: ''
 
     environment:
       name: ${{ matrix.environment }}
 
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
-      - uses: aws-actions/configure-aws-credentials@v5
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}

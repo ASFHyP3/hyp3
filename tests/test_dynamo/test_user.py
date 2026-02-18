@@ -710,9 +710,8 @@ def test_decrement_credits_infinite_credits(tables):
     tables.users_table.put_item(Item={'user_id': 'foo', 'remaining_credits': None})
 
     with pytest.raises(
-        botocore.exceptions.ClientError,
-        match=r'^An error occurred \(ValidationException\) when calling the UpdateItem operation:'
-        r' An operand in the update expression has an incorrect data type$',
+        DatabaseConditionException,
+        match=r'^Failed to decrement credits for user foo$',
     ):
         dynamo.user.decrement_credits('foo', Decimal(1))
 

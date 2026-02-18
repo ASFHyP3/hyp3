@@ -109,6 +109,8 @@ OPERA_DIST_S1:
           - transformer_anniversary_trained
           - transformer_anniversary_trained_optimized
           - transformer_anniversary_trained_optimized_fine
+          - transformer_v0_32
+          - transformer_v1_32
         default: transformer_optimized
         example: transformer_optimized
     stride_for_norm_param_estimation:
@@ -117,7 +119,7 @@ OPERA_DIST_S1:
         type: integer
         default: 7
         minimum: 1
-        maximum: 16
+        maximum: 32
         example: 7
     batch_size_for_norm_param_estimation:
       api_schema:
@@ -138,6 +140,12 @@ OPERA_DIST_S1:
         type: boolean
         default: false
         example: false
+    model_context_length:
+       api_schema:
+         description: Maximum number of baseline images to use. If -1, use largest allowable baseline.
+         type: integer
+         default: -1
+         example: 10
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -184,6 +192,8 @@ OPERA_DIST_S1:
         - Ref::model_compilation
         - --use_date_encoding
         - Ref::use_date_encoding
+        - --model_context_length
+        - Ref::model_context_length
       timeout: 3600  # 1 hr
       compute_environment: DistS1
       vcpu: 1

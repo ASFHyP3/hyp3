@@ -4,6 +4,122 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.13.1]
+
+### Fixed
+- Upgraded to cryptography v46.0.5 from v46.0.3. Resolves [CVE-2026-27006](https://github.com/advisories/GHSA-r6ph-v2qm-q3c2).
+
+## [10.13.0]
+
+### Added
+- Added optional `chip_size` and `search_range` parameters to the `ARIA_AUTORIFT.yml` job specification to enable user-defined `chip-size` and `search-range`.
+- Updated `AUTORIFT.yml`, `ARIA_AUTORIFT.yml`, and `ITS_LIVE_AUTORIFT.yml` validation schema to support processing of Sentinel-1D and Sentinel-2C/D granules.
+- Added a `model_context_length` parameter to the `OPERA_DIST_S1` job specification.
+- Added a new custom hyp3-slimsar-test deployment.
+- Added a new `SLIMSAR_TDBP` job_spec for slimsar time-domain backprojection processing.
+- Added a new `SlimSAR` compute environment for slimsar processing with correct EC2 instances.
+- Added a new `ITS_LIVE_CROP_BULK` job spec which re-crops existing ITS_LIVE products which are specified in a parquet file to ensure they are chunk-aligned and have a time dimension, and then it generates STAC JSON and other metadata files.
+- Added a new `ITS_LIVE_META_BULK` job spec which generates STAC JSON and other metadata files for existing ITS_LIVE products which are specified in a parquet file.
+- Added the `ITS_LIVE_CROP_BULK` and `ITS_LIVE_META_BULK` job spec to the ITS_LIVE deployments.
+- Added the `stac_items_endpoint` and `stac_exists_okay` job parameters to the `ITS_LIVE_AUTORIFT` and `ITS_LIVE_CROP` job specs to allow directly publishing STAC items to the ITS_LIVE STAC catalog.
+
+### Changed
+- Increased the maximum `stride_for_norm_param_estimation` to 32 from 16 for the `OPERA_DIST_S1` job specification to handle models with a larger input size.
+- Changed readme to reflect current state of AWS, motivation for deploying a hyp3 stack, and clarify naming and formatting.
+- The `ITS_LIVE_META` job spec has been renamed `ITS_LIVE_CROP` as it re-crops an existing ITS_LIVE product to ensure it is chunk-aligned and has a time dimension, and then it generates STAC JSON and other metadata files.
+- The hyp3-ci stack permission for JPL deployments were expanded to support deploying HyP3-based monitoring stacks:
+  - Listing CloudFormation stacks is now allowed.
+  - CloudFormation permissions were expanded to any region from just us-west-2.
+  - ECR actions are now allowed.
+
+### Removed
+- Removed the `publish_stac_prefix` job parameter from the `ITS_LIVE_AUTORIFT` and `ITS_LIVE_CROP` (previously `ITS_LIVE_META`) job specs as it's no longer used by the ITS_LIVE plugins.
+
+## [10.12.1]
+
+### Fixed
+- Doubled the memory requirement for `INSAR_ISCE_MULTI_BURST` jobs at 20x4 looks and >= 13 burst pairs. As a result, the credit cost for such jobs as also doubled from 5 to 10. Fixes https://github.com/ASFHyP3/hyp3/issues/2933
+- ScaleCluster now takes no action when desired vCPUs only marginally exceeds target vCPUs. Fixes https://github.com/ASFHyP3/hyp3/issues/2965
+
+## [10.12.0]
+
+### Added
+- Added a new `PATCH /jobs` endpoint that accepts up to 100 job IDs and updates those jobs with the given `name` value. The update is not transactional, so it's possible that only some of the jobs will be updated if an error occurs. See https://github.com/ASFHyP3/hyp3/issues/2972
+
+## [10.11.18]
+
+### Fixed
+- Changed `insar_tops_burst` for `insar_tops_multi_burst` in `VOLCSARVATORY_MULTI_BURST` job spec.
+
+## [10.11.17]
+
+### Added
+- Added `--publish-bucket` parameter on `VOLCSARVATORY_MULTI_BURST` job spec.
+
+### Changed
+- Increased product lifecycle from 14 to 30 days for `hyp3-tibet-jpl-test` to match `hyp3-tibet-jpl`.
+- Reduced default credits per user to 8,000 from 10,000 for the `hyp3-edc-prod` and `hyp3-edc-uat` deployments.
+- Reduced product lifecycle from 365000 to 30 days for `hyp3-volcsarvatory`.
+
+## [10.11.16]
+
+### Fixed
+- ScaleCluster now only disables the compute environment when a scale-down is necessary. Fixes https://github.com/ASFHyP3/hyp3/issues/2965
+
+## [10.11.15]
+
+### Added
+- Added more available models to the `OPERA_DIST_S1` job specification.
+
+### Changed
+- Reduced default/max vcpus for DAAC test and prod to 1200/2400.
+
+## [10.11.14]
+
+### Added
+- Added ARIA_S1_GUNW job type to the `plus-test` deployment.
+- Added `VOLCSARVATORY_MULTI_BURST` job type to run multiburst jobs for `hyp3-volcsarvatory` increasing the max length burst limit.
+
+### Changed
+- Increased hyp3-tibet-jpl and hyp3-tibet-jpl-test throughput to 6400 VCPUs.
+- Removed temporary version pin for `INSAR_ISCE_MULTI_BURST` job spec introduced in HyP3 v10.11.13.
+- Changed `++process` in INSAR_ISCE_MULTI_BURST job spec to reflect changes in hyp3-isce2 v4.0.0.
+
+### Removed
+- ESA_USERNAME and ESA_PASSWORD environment variables removed in [RAiDER v0.5.5](https://github.com/dbekaert/RAiDER/releases/tag/v0.5.5)
+
+## [10.11.13]
+
+### Changed
+- The `INSAR_ISCE_MULTI_BURST` job type has been temporarily pinned to [HyP3 ISCE2 v3.0.1](https://github.com/ASFHyP3/hyp3-isce2/releases/tag/v3.0.1) in preparation for removing the `insar_tops_burst` entrypoint in the upcoming HyP3 ISCE2 v4.0.0 release.
+
+## [10.11.12]
+
+### Changed
+- The `INSAR_ISCE_BURST` job type has been pinned to [HyP3 ISCE2 v3.0.1](https://github.com/ASFHyP3/hyp3-isce2/releases/tag/v3.0.1) in preparation for removing the `insar_tops_burst` entrypoint in the upcoming HyP3 ISCE2 v4.0.0 release.
+
+## [10.11.11]
+
+### Changed
+- Reduced default/max vCPUs for hyp3-edc-prod deployment to 1500/3000, reverting the increase from v10.5.1.
+
+## [10.11.10]
+
+### Removed
+- Removed hyp3-opera-uat and hyp3-opera-prod deployments.
+- Removed OPERA_RTC_S1_SLC job spec and OperaRtcSlc compute environment.
+
+## [10.11.9]
+
+### Fixed
+- CMR outages no longer block jobs from being submitted, except for the `OPERA_RTC_S1` and `OPERA_RTC_S1_SLC` job types. Fixes https://github.com/ASFHyP3/hyp3/issues/2761
+
+## [10.11.8]
+
+### Changed
+- Increased disk and memory available to OPERA_RTC_S1_SLC jobs in hyp3-opera-prod and hyp3-opera-test.
+- Run OPERA_RTC_S1_SLC jobs using on-demand instances in hyp3-opera-prod and hyp3-opera-test.
+
 ## [10.11.7]
 
 ### Added
@@ -12,6 +128,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - The ITS_LIVE_METADATA job now includes a cropping step to ensure ITS_LIVE granules are chunk-aligned and have a time dimension before generating STAC and NSIDC ingest metadata files.
 - The default `publish_stac_prefix` has been changed to `stac-ingest` for ITS_LIVE_METADATA and ITS_LIVE_AUTORIFT jobs.
+- Lower A19 account back to 4000 VCPUs for nominal processing throughput.
 
 ## [10.11.6]
 

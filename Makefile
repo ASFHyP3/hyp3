@@ -26,6 +26,9 @@ build: render
 	python -m pip install --upgrade -r requirements-apps-update-db.txt -t ${UPDATE_DB}; \
 	python -m pip install --upgrade -r requirements-apps-get-files.txt -t ${GET_FILES}
 
+pythonpath:
+	@echo "export PYTHONPATH=$$PYTHONPATH"
+
 env:
 	@echo "export PYTHONPATH=$$PYTHONPATH $$(xargs < tests/cfg.env)"
 

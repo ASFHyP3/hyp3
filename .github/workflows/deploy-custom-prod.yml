@@ -24,7 +24,9 @@ jobs:
             cost_profile: DEFAULT
             job_files: >-
               job_spec/ITS_LIVE_AUTORIFT.yml
-              job_spec/ITS_LIVE_META.yml
+              job_spec/ITS_LIVE_CROP.yml
+              job_spec/ITS_LIVE_CROP_BULK.yml
+              job_spec/ITS_LIVE_META_BULK.yml
             instance_types: r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
             default_max_vcpus: 2000  # Max: 10,406
             expanded_max_vcpus: 2000  # Max: 10,406
@@ -44,8 +46,8 @@ jobs:
               job_spec/AK_FIRE_SAFE.yml
               job_spec/INSAR_ISCE_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 640  # Max: 10,406
-            expanded_max_vcpus: 640  # Max: 10,406
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -61,8 +63,8 @@ jobs:
             job_files: >-
               job_spec/INSAR_ISCE_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 640  # Max: 10,406
-            expanded_max_vcpus: 640  # Max: 10,406
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -71,13 +73,13 @@ jobs:
             domain: hyp3-volcsarvatory.asf.alaska.edu
             template_bucket: cf-templates-1uzy61g1h6omf-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 365000
+            product_lifetime_in_days: 30
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
             job_files: >-
               job_spec/INSAR_GAMMA.yml
-              job_spec/INSAR_ISCE_BURST.yml
+              job_spec/VOLCSARVATORY_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
@@ -99,8 +101,8 @@ jobs:
               job_spec/ARIA_S1_COSEIS.yml
               job_spec/INSAR_ISCE.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
-            default_max_vcpus: 13000  # Max: 13000
-            expanded_max_vcpus: 13000  # Max: 13000
+            default_max_vcpus: 4000  # Max: 13000
+            expanded_max_vcpus: 4000  # Max: 13000
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -120,8 +122,8 @@ jobs:
               job_spec/INSAR_ISCE.yml
               job_spec/OPERA_DIST_S1.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
-            default_max_vcpus: 1000  # Max: 10316
-            expanded_max_vcpus: 1000  # Max: 10316
+            default_max_vcpus: 6400  # Max: 10316
+            expanded_max_vcpus: 6400  # Max: 10316
             required_surplus: 0
             security_environment: JPL-public
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
@@ -286,16 +288,35 @@ jobs:
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
+          - environment: hyp3-lavas
+            domain: hyp3-lavas.asf.alaska.edu
+            template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/INSAR_ISCE_BURST.yml
+              job_spec/SRG_GSLC.yml
+              job_spec/SRG_TIME_SERIES.yml
+            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
     environment:
       name: ${{ matrix.environment }}
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
-      - uses: aws-actions/configure-aws-credentials@v5
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
