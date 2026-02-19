@@ -4,18 +4,12 @@ ARTRAFF_RTC:
   parameters:
     granule:
       api_schema:
-        type: array
-        minItems: 1
-        maxItems: 1
-        example:
-          - CAPELLA_C17_SM_SICD_HH_20251128093004_20251128093008.ntf
-        items:
-          description: Name of Capella granule
-          type: string
-          pattern: "^CAPELLA_.*.ntf"
-          minLength: 56
-          maxLength: 56
-          example: CAPELLA_C17_SM_SICD_HH_20251128093004_20251128093008.ntf
+        description: Name of Capella granule
+        type: string
+        pattern: "^CAPELLA_.*.ntf"
+        minLength: 56
+        maxLength: 56
+        example: CAPELLA_C17_SM_SICD_HH_20251128093004_20251128093008.ntf
     demtype:
       api_schema:
         description: Type of DEM used.
