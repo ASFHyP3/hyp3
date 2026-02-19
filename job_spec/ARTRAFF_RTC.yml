@@ -33,7 +33,7 @@ ARTRAFF_RTC:
   steps:
     - name: ''
       image: ghcr.io/ua-asf/hyp3-artraff-rtc
-      image_tag: 0.0.1.dev2_g75d0c690d
+      image_tag: test
       command:
         - --bucket
         - '!Ref Bucket'
