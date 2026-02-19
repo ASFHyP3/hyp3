@@ -1,4 +1,4 @@
-INSAR_ISCE_BURST:
+ARTRAFF_RTC:
   required_parameters:
     - granule
   parameters:
