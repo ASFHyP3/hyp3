@@ -33,8 +33,6 @@ ARTRAFF_RTC:
         type: string
         default: 'Ohai'
   cost_profiles:
-    EDC:
-      cost: 1.0
     DEFAULT:
       cost: 1.0
   validators: []
@@ -52,7 +50,7 @@ ARTRAFF_RTC:
         - --demtype
         - Ref::demtype
         - Ref::granule
-      timeout: 30
+      timeout: 300
       compute_environment: Default
       vcpu: 1
       memory: 256
