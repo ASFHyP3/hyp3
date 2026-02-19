@@ -48,6 +48,7 @@ jobs:
               job_spec/ARIA_S1_COSEIS.yml
               job_spec/INSAR_ISCE.yml
               job_spec/OPERA_DIST_S1.yml
+              job_spec/OPERA_DIST_S1_CONFIRMATION.yml
             instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
             default_max_vcpus: 6400  # Max: 10316
             expanded_max_vcpus: 6400  # Max: 10316

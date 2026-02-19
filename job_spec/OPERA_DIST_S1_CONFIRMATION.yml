@@ -1,15 +1,15 @@
-OPERA_DIST_S1:
+OPERA_DIST_S1_CONFIRMATION:
   required_parameters:
     - dist_s1_data 
   parameters:
     dist_s1_data:
       api_schema:
         type: array
-        minItems: 1
+        minItems: 2
         items:
           description: paths to an unconfirmed dist-s1 product
           type: string
-          example: "s3://hyp3-bucket/<job_id>/<dist_s1_product>"
+          example: "s3://hyp3-bucket/<job_id>/<dist_s1_product_directory>"
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -28,4 +28,4 @@ OPERA_DIST_S1:
       timeout: 3600  # 1 hr
       compute_environment: DistS1
       vcpu: 1
-      memory: 31500
+      memory: 7500
