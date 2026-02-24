@@ -6,6 +6,7 @@ VOLCSARVATORY_MINTPY:
         description: Project name with the multiburst jobs.
         type: string
         nullable: true
+        default: null
     input_bucket:
       api_schema:
         description: Bucket name with the multiburst products.
