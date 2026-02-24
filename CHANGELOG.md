@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.13.1]
 
+### Added
+- Added a new `VOLCSARVATORY_MINTPY` job spec which pulls multiburst products and generates time series files using MintPy.
+
+## [10.13.1]
+
 ### Fixed
 - Upgraded to cryptography v46.0.5 from v46.0.3. Resolves [CVE-2026-27006](https://github.com/advisories/GHSA-r6ph-v2qm-q3c2).
 
