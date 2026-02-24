@@ -1,4 +1,5 @@
 VOLCSARVATORY_MINTPY:
+  required_parameters: []
   parameters:
     job_name:
       api_schema:
@@ -45,6 +46,7 @@ VOLCSARVATORY_MINTPY:
   cost_profiles:
     DEFAULT:
       cost: 1.0
+  validators: []
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-mintpy
