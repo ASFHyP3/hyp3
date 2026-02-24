@@ -63,7 +63,7 @@ VOLCSARVATORY_MINTPY:
         - --input-prefix
         - Ref::input_prefix
         - --min-coherence
-        - Ref::min_cohrence
+        - Ref::min_coherence
         - --publish-bucket
         - Ref::publish_bucket
         - --publish-prefix
