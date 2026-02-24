@@ -26,7 +26,7 @@ VOLCSARVATORY_MINTPY:
     min_coherence:
       api_schema:
         description: Minimum coherence for MintPy.
-        type: float
+        type: number
         default: 0.01
     publish_bucket:
       api_schema:
