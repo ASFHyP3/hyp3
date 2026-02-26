@@ -195,7 +195,6 @@ def test_set_batch_overrides_autorift_s2():
         {
             'job_type': 'AUTORIFT',
             'job_parameters': {
-                'granules': ['S2_stub'],  # Used for sensor detection
                 'reference': ['S2A_1', 'S2A_2', 'S2A_3', 'S2A_4', 'S2A_5'],
                 'secondary': ['S2B_1'],
             },

@@ -36,7 +36,7 @@ def get_granules(job_parameters: dict) -> list[str]:
 def get_autorift_memory(job_parameters: dict) -> str:
     granules = get_granules(job_parameters)
 
-    frame_counts = [len(job_parameters.get(k) or []) for k in ['granules', 'reference', 'secondary']]
+    frame_counts = [len(job_parameters.get(k) or []) for k in ['reference', 'secondary']]
     num_frames = max(frame_counts)
 
     if granules[0].startswith('S2'):
