@@ -1,6 +1,6 @@
 ARTRAFF_RTC:
   required_parameters:
-    - platform
+    - dem
     - granule
   parameters:
     platform:
