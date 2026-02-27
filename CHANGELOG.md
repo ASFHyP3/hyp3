@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added the `PISM_TERRA_RUN_FORWARD` and `PISM_TERRA_RUN_INERVERSE` jobs for preparing both forward and inverse model runs.
+- `ARTRAFF_RTC` job spec for RTCing commercial SAR data on a dev basis.
 
 ### Removed
 - Removed the `PISM_TERRA_PREP_ENSEMBLE` job in favor of `PISM_TERRA_RUN_FORWARD` and `PISM_TERRA_RUN_INERVERSE`.
