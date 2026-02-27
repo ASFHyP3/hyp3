@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `ARTRAFF_RTC` job spec for RTCing commercial SAR data on a dev basis.
 
+## [10.13.2]
+
+### Changed
+* Updated `OPERA_DIST_S1` job spec to allow for entrypoint change (now need to specify `run` at beginning of command)
+* Added `OPERA_DIST_S1_CONFIRMATION` for confirming products OPERA DIST-S1 Products.
+
 ## [10.13.1]
 
 ### Fixed
