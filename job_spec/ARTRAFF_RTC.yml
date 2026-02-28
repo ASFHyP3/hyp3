@@ -17,11 +17,8 @@ ARTRAFF_RTC:
       api_schema:
         description: Data granule to create an RTC for.
         type: string
-        pattern: "^CAPELLA_.*.ntf"
-        minLength: 56
-        maxLength: 56
-        example: CAPELLA_C17_SM_SICD_HH_20251128093004_20251128093008.ntf
-
+        pattern: "^s3://.*"
+        example: s3://artraff-staging/hyp3/CAPELLA_C17_SM_SICD_HH_20251128093004_20251128093008.ntf
     resolution:
       api_schema:
         description: Resolution of the output RTC in meters.
@@ -33,7 +30,8 @@ ARTRAFF_RTC:
       api_schema:
         description: DEM file. If you use `lidar_local_dem_file`, you must choose demtype=`Lidar 0.5m`
         type: string
-
+        pattern: "^s3://.*"
+        example: s3://artraff-staging/hyp3/dem.tif
     work-dir:
       api_schema:
         description: Working directory for processing
@@ -52,6 +50,8 @@ ARTRAFF_RTC:
         - rtc
         - Ref::platform
         - Ref::granule
+        - --dem
+        - Ref::dem
         - --hyp3
         - "yes"
         - --resolution
