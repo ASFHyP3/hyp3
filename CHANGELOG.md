@@ -6,14 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.13.2]
 
+### Added
+- Added a new `VOLCSARVATORY_MINTPY` job spec which pulls multiburst products and generates time series files using MintPy.
+
 ### Changed
 * Updated `OPERA_DIST_S1` job spec to allow for entrypoint change (now need to specify `run` at beginning of command)
 * Added `OPERA_DIST_S1_CONFIRMATION` for confirming products OPERA DIST-S1 Products.
-
-## [10.13.1]
-
-### Added
-- Added a new `VOLCSARVATORY_MINTPY` job spec which pulls multiburst products and generates time series files using MintPy.
 
 ## [10.13.1]
 
