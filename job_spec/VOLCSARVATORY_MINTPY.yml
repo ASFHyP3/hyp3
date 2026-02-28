@@ -1,0 +1,95 @@
+VOLCSARVATORY_MINTPY:
+  required_parameters: []
+  parameters:
+    start_date:
+      api_schema:
+        description: Filter start date for multiburst products.
+        type: string
+        nullable: true
+        default: null
+    end_date:
+      api_schema:
+        description: Filter end date for multiburst products.
+        type: string
+        nullable: true
+        default: null
+    min_coherence:
+      api_schema:
+        description: Minimum coherence for MintPy.
+        type: number
+        default: 0.01
+    project_name:
+      api_schema:
+        description: Project name with multiburst jobs.
+        type: string
+        nullable: true
+        default: null
+    input_bucket:
+      api_schema:
+        description: Bucket that contains multiburst products.
+        type: string
+        nullable: true
+        enum:
+          - null
+          - "volcsarvatory-data"
+          - "volcsarvatory-data-test"
+        default: null
+    input_prefix:
+      api_schema:
+        description: Prefix to pull the multiburst products.
+        type: string
+        nullable: true
+        default: null
+    publish_bucket:
+      api_schema:
+        description: Publish the resulting product to the VolcSARvatory S3 Bucket
+        type: string
+        nullable: true
+        enum:
+          - null
+          - "volcsarvatory-data"
+          - "volcsarvatory-data-test"
+        default: null
+    publish_prefix:
+      api_schema:
+        description: Prefix to store the resulting product.
+        type: string
+        nullable: true
+        default: null
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-mintpy
+      command:
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --start-date
+        - Ref::start_date
+        - --end-date
+        - Ref::end_date
+        - --min-coherence
+        - Ref::min_coherence
+        - --project-name
+        - Ref::project_name
+        - --input-bucket
+        - Ref::input_bucket
+        - --input-prefix
+        - Ref::input_prefix
+        - --publish-bucket
+        - Ref::publish_bucket
+        - --publish-prefix
+        - Ref::publish_prefix
+      timeout: 126000  # 35 hours
+      compute_environment: Default
+      vcpu: 1
+      memory: 30500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
+        - PUBLISH_ACCESS_KEY_ID
+        - PUBLISH_SECRET_ACCESS_KEY
