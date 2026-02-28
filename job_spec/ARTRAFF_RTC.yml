@@ -1,0 +1,71 @@
+ARTRAFF_RTC:
+  required_parameters:
+    - dem
+    - granule
+  parameters:
+    platform:
+      api_schema:
+        description: Platform of the granule.
+        type: string
+        default: CAPELLA
+        enum:
+          - CAPELLA
+#          - ICEYE
+#          - S1
+#          - UMBRA # someday
+    granule:
+      api_schema:
+        description: Data granule to create an RTC for.
+        type: string
+        pattern: "^s3://.*"
+        example: s3://artraff-staging/hyp3/CAPELLA_C17_SM_SICD_HH_20251128093004_20251128093008.ntf
+    resolution:
+      api_schema:
+        description: Resolution of the output RTC in meters.
+        type: integer
+        default: 30
+        minimum: 0
+        example: 30
+    dem:
+      api_schema:
+        description: DEM file. If you use `lidar_local_dem_file`, you must choose demtype=`Lidar 0.5m`
+        type: string
+        pattern: "^s3://.*"
+        example: s3://artraff-staging/hyp3/dem.tif
+    work-dir:
+      api_schema:
+        description: Working directory for processing
+        type: string
+        default: /tmp/workdir
+
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/ua-asf/hyp3-artraff-rtc
+      image_tag: test
+      command:
+        - rtc
+        - Ref::platform
+        - Ref::granule
+        - --dem
+        - Ref::dem
+        - --hyp3
+        - "yes"
+        - --resolution
+        - Ref::resolution
+        - --work-dir
+        - Ref::work-dir
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+      timeout: 7200
+      compute_environment: Default
+      vcpu: 1
+      memory: 31500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
