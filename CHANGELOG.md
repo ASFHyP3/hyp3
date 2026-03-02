@@ -10,8 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a new `VOLCSARVATORY_MINTPY` job spec which pulls multiburst products and generates time series files using MintPy.
 
 ### Changed
-* Updated `OPERA_DIST_S1` job spec to allow for entrypoint change (now need to specify `run` at beginning of command)
-* Added `OPERA_DIST_S1_CONFIRMATION` for confirming products OPERA DIST-S1 Products.
+- Implemented dynamic memory allocation for multi-frame `AUTORIFT` jobs in `set_batch_overrides.py`. Sentinel-2 jobs with more than 4 frames now use 16 GB of memory instead of 8 GB. Single-frame Sentinel-2/Landsat and Sentinel-1 memory allocation is unchanged.
+- Updated `OPERA_DIST_S1` job spec to allow for entrypoint change (now need to specify `run` at beginning of command)
+- Added `OPERA_DIST_S1_CONFIRMATION` for confirming products OPERA DIST-S1 Products.
 
 ## [10.13.1]
 
