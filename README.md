@@ -264,7 +264,7 @@ Go to the AWS console -> AWS Certificate Manager -> Request certificate and then
 
 Then create a validation record in
 https://gitlab.asf.alaska.edu/operations/puppet/-/edit/production/modules/legacy_dns/files/asf.alaska.edu.db
-of the form `<CNAME_name> in CNAME <CNAME_value>`, stripping `.asf.alaska.edu` from the `CNAME_name`  (see previous records for examples).
+of the form `<CNAME_name> IN CNAME <CNAME_value>`, stripping `.asf.alaska.edu` from the `CNAME_name`  (see previous records for examples).
 
 ### Create the GitHub environment
 
@@ -320,7 +320,7 @@ Once HyP3 is deployed, there are a few follow on tasks you may need to do for a 
 
 Open a PR adding a line to https://gitlab.asf.alaska.edu/operations/puppet/-/blob/production/modules/legacy_dns/files/asf.alaska.edu.db
 for the new custom domain name (AWS console -> api gateway -> custom domain names -> "API Gateway domain name") of the format
-`hyp3-foobar in CNAME <API Gateway domain name>.`. Follow similar examples.
+`hyp3-foobar IN CNAME <API Gateway domain name>.`. Follow similar examples.
 
 Ask someone from ASF support to review/merge the PR.
 
