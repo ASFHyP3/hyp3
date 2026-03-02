@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.13.2]
 
 ### Added
+- Job specs may now specify any [LinuxParameters](https://docs.aws.amazon.com/batch/latest/APIReference/API_LinuxParameters.html) using the `linux_parameters` key on a per-step basis.
+- Added three new PISM job specs to prepare and run ensemble simulations of any [RGI v7.0](https://www.glims.org/RGI/) glacier complex to the PISM-Cloud deployments.
 - Added a new `VOLCSARVATORY_MINTPY` job spec which pulls multiburst products and generates time series files using MintPy.
 
 ### Changed
