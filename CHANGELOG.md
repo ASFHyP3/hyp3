@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Job specs may now specify any [LinuxParameters](https://docs.aws.amazon.com/batch/latest/APIReference/API_LinuxParameters.html) using the `linux_parameters` key on a per-step basis.
 - Added three new PISM job specs to prepare and run ensemble simulations of any [RGI v7.0](https://www.glims.org/RGI/) glacier complex to the PISM-Cloud deployments.
 - Added a new `VOLCSARVATORY_MINTPY` job spec which pulls multiburst products and generates time series files using MintPy.
+- Added support for NISAR RSLC and GSLC scenes to the `ITS_LIVE_AUTORIFT` and `ARIA_AUTORIFT` job specs. 
 
 ### Changed
 - Implemented dynamic memory allocation for multi-frame `AUTORIFT` jobs in `set_batch_overrides.py`. Sentinel-2 jobs with more than 4 frames now use 16 GB of memory instead of 8 GB. Single-frame Sentinel-2/Landsat and Sentinel-1 memory allocation is unchanged.

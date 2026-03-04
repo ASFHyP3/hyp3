@@ -12,6 +12,12 @@ AUTORIFT:
         default: null
         items:
           anyOf:
+            - description: The name of a NISAR L-band RSLC or GSLC granule to process
+              type: string
+              pattern: "^NISAR_L[12]_.._[RG]SLC_"
+              minLength: 91
+              maxLength: 91
+              example: NISAR_L1_PR_RSLC_010_160_A_036_7700_SHNA_A_20260120T070339_20260120T070415_X05010_N_P_J_001
             - description: The name of the Sentinel-1 IW SLC granule to process
               type: string
               pattern: "^S1[ABCD]_IW_SLC__1S[SD][VH]"
@@ -47,6 +53,12 @@ AUTORIFT:
         default: null
         items:
           anyOf:
+            - description: The name of a NISAR L-band RSLC or GSLC granule to process
+              type: string
+              pattern: "^NISAR_L[12]_.._[RG]SLC_"
+              minLength: 91
+              maxLength: 91
+              example: NISAR_L1_PR_RSLC_010_160_A_036_7700_SHNA_A_20260120T070339_20260120T070415_X05010_N_P_J_001
             - description: The name of the Sentinel-1 IW SLC granule to process
               type: string
               pattern: "^S1[ABCD]_IW_SLC__1S[SD][VH]"
@@ -83,6 +95,12 @@ AUTORIFT:
         default: null
         items:
           anyOf:
+            - description: The name of a NISAR L-band RSLC or GSLC granule to process
+              type: string
+              pattern: "^NISAR_L[12]_.._[RG]SLC_"
+              minLength: 91
+              maxLength: 91
+              example: NISAR_L1_PR_RSLC_010_160_A_036_7700_SHNA_A_20260120T070339_20260120T070415_X05010_N_P_J_001
             - description: The name of the Sentinel-1 SLC granule to process
               type: string
               pattern: "^S1[ABCD]_IW_SLC__1S[SD][VH]"
