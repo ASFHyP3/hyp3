@@ -4,6 +4,7 @@ from math import ceil
 AUTORIFT_MEMORY_8GB = '7875'
 AUTORIFT_MEMORY_16GB = '15750'
 AUTORIFT_MEMORY_32GB = '31500'
+AUTORIFT_MEMORY_64GB = '63500'
 
 RTC_GAMMA_10M_MEMORY = '63200'
 WATER_MAP_10M_MEMORY = '126000'
@@ -46,6 +47,9 @@ def get_autorift_memory(job_parameters: dict) -> str:
 
     elif granules[0].startswith('L'):
         return AUTORIFT_MEMORY_16GB
+
+    elif granules[0].startswith('N'):
+        return AUTORIFT_MEMORY_64GB
 
     return AUTORIFT_MEMORY_32GB
 
