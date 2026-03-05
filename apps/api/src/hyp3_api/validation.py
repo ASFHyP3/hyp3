@@ -91,7 +91,7 @@ def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
 
 
 def _is_third_party_granule(granule: str) -> bool:
-    return granule.startswith('S2') or granule.startswith('L')
+    return granule.startswith('S2') or granule.startswith('L') or granule.startswith('NISAR')
 
 
 def _make_sure_granules_exist(granules: Iterable[str], granule_metadata: list[dict]) -> None:
