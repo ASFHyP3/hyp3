@@ -1,0 +1,31 @@
+OPERA_DIST_S1_CONFIRMATION:
+  required_parameters:
+    - dist_s1_data 
+  parameters:
+    dist_s1_data:
+      api_schema:
+        type: array
+        minItems: 2
+        items:
+          description: paths to an unconfirmed dist-s1 product
+          type: string
+          example: "s3://hyp3-bucket/<job_id>/<dist_s1_product_directory>"
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/opera-adt/dist-s1
+      command:
+        - run_sequential_confirmation
+        - --dist_s1_data
+        - Ref::dist_s1_data
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket_prefix
+        - Ref::job_id
+      timeout: 3600  # 1 hr
+      compute_environment: DistS1
+      vcpu: 1
+      memory: 7500

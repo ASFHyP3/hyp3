@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.14.0]
+
+### Added
+- Job specs may now specify any [LinuxParameters](https://docs.aws.amazon.com/batch/latest/APIReference/API_LinuxParameters.html) using the `linux_parameters` key on a per-step basis.
+- Added three new PISM job specs to prepare and run ensemble simulations of any [RGI v7.0](https://www.glims.org/RGI/) glacier complex to the PISM-Cloud deployments.
+- Added a new `VOLCSARVATORY_MINTPY` job spec which pulls multiburst products and generates time series files using MintPy.
+- Added support for NISAR RSLC and GSLC scenes to the `ITS_LIVE_AUTORIFT` and `ARIA_AUTORIFT` job specs. 
+
+### Changed
+- Implemented dynamic memory allocation for multi-frame `AUTORIFT` jobs in `set_batch_overrides.py`. Sentinel-2 jobs with more than 4 frames now use 16 GB of memory instead of 8 GB. Single-frame Sentinel-2/Landsat and Sentinel-1 memory allocation is unchanged.
+- Updated `OPERA_DIST_S1` job spec to allow for entrypoint change (now need to specify `run` at beginning of command)
+- Added `OPERA_DIST_S1_CONFIRMATION` for confirming products OPERA DIST-S1 Products.
+- The `SRG_GSLC` and `SRG_TIME_SERIES` now allow processing Sentinel-1 C and D scenes.
+
 ## [10.13.1]
 
 ### Fixed
