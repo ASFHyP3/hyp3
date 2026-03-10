@@ -1,6 +1,7 @@
 OPERA_DIST_S1_CONFIRMATION:
   required_parameters:
-    - dist_s1_data 
+    - dist_s1_data_bucket
+    - dist_s1_data_job_ids
   parameters:
     dist_s1_data_bucket:
       api_schema:
