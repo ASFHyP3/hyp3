@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `OPERA_DIST_S1_CONFIRMATION` for confirming products OPERA DIST-S1 Products.
 - The `SRG_GSLC` and `SRG_TIME_SERIES` now allow processing Sentinel-1 C and D scenes.
 
+### Fixed
+- Resolves DIST_S1_CONFIRMATION issue related to length of inputs; see https://github.com/ASFHyP3/hyp3/issues/3041
+
 ## [10.13.1]
 
 ### Fixed
