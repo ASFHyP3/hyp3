@@ -4,6 +4,7 @@ from base64 import b64decode, b64encode
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
+import boto3
 
 class TokenDeserializeError(Exception):
     """Raised when paging results and `start_token` fails to deserialize."""
@@ -46,3 +47,9 @@ def build_next_url(url: str, start_token: str, x_forwarded_host: str | None = No
     url_parts[4] = urlencode(query)
 
     return urlunparse(url_parts)
+
+
+def get_current_account_arn():
+    sts = boto3.client('sts')
+    account = sts.get_caller_identity().split(':user')[0]
+    return account

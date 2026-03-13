@@ -132,3 +132,31 @@ def _get_names_for_user(user: str) -> list[str]:
         jobs.extend(new_jobs)
     names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))
+
+
+def get_bucket_policy(bucket_name: str):
+    account_arn = util.get_account_arn()
+ 
+    policy = f'''
+    {{
+        "Version": "2012-10-17",
+        "Statement": [
+            {{
+                "Sid": "write permission",
+                "Effect": "Allow",
+                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Action": "s3:PutObject",
+                "Resource": "arn:aws:s3:::{bucket_name}/*"
+            }},
+            {{
+                "Sid": "get bucket location permission",
+                "Effect": "Allow",
+                "Principal": {{ "AWS": "arn:aws:iam::{account_arn}:root" }},
+                "Action": "s3:GetBucketLocation",
+                "Resource": "arn:aws:s3:::{bucket_name}"
+            }}
+        ]
+    }}
+    '''
+
+    return policy
