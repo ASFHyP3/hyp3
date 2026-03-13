@@ -136,7 +136,6 @@ def _get_names_for_user(user: str) -> list[str]:
 
 def get_bucket_policy(bucket_name: str):
     account_arn = util.get_account_arn()
- 
     policy = f'''
     {{
         "Version": "2012-10-17",
@@ -158,5 +157,4 @@ def get_bucket_policy(bucket_name: str):
         ]
     }}
     '''
-
     return policy
