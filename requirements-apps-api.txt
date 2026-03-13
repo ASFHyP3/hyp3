@@ -1,3 +1,4 @@
+boto3==1.42.46
 flask==3.1.2
 Flask-Cors==6.0.2
 jsonschema==4.26.0
