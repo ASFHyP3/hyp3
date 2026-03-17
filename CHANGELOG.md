@@ -14,7 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Implemented dynamic memory allocation for multi-frame `AUTORIFT` jobs in `set_batch_overrides.py`. Sentinel-2 jobs with more than 4 frames now use 16 GB of memory instead of 8 GB. Single-frame Sentinel-2/Landsat and Sentinel-1 memory allocation is unchanged, while NISAR memory allocation is 64 GB.
-- Updated `OPERA_DIST_S1` job spec to allow for entrypoint change (now need to specify `run` at beginning of command)
+- Increased the timeout from 3 hours to 6 hours on the hyp3-autorift step in the `ITS_LIVE_AUTORIFT` and `ARIA_AUTORIFT` job specs to account for NISAR runtimes.
+- Updated `OPERA_DIST_S1` job spec to allow for entrypoint change (now need to specify `run` at beginning of command).
 - Added `OPERA_DIST_S1_CONFIRMATION` for confirming products OPERA DIST-S1 Products.
 - The `SRG_GSLC` and `SRG_TIME_SERIES` now allow processing Sentinel-1 C and D scenes.
 
