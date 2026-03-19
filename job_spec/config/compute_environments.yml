@@ -42,3 +42,7 @@ compute_environments:
     ami_id: ami-05b39c03a4e57a02d  # /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
     allocation_type: EC2
     allocation_strategy: BEST_FIT_PROGRESSIVE
+  PismExecute:
+    instance_types: r6id.8xlarge,r6id.12xlarge,r6id.16xlarge,r6id.24xlarge,r6id.32xlarge,r6idn.8xlarge,r6idn.12xlarge,r6idn.16xlarge,r6idn.24xlarge,r6idn.32xlarge
+    allocation_type: EC2
+    allocation_strategy: BEST_FIT_PROGRESSIVE

@@ -1,0 +1,68 @@
+PISM_TERRA_PREP_ENSEMBLE:
+  required_parameters:
+    - rgi_id
+  parameters:
+    rgi_id:
+      api_schema:
+        description: Randolph Glacier Inventory 7.0 identifier the a glacier complex to simulate
+        type: string
+        pattern: 'RGI2000-v7.0-C-.*$'
+        example: RGI2000-v7.0-C-01-09429
+    rgi_gpkg:
+      api_schema:
+        description: URI to a PISM-terra GeoPackage prepared from Randolph Glacier Inventory 7.0
+        type: string
+        format: uri
+        default: s3://pism-cloud-data/terra/rgi.gpkg
+    pism_config:
+      api_schema:
+        description: URI to a PISM Config file or the path to one bundled within the pism-terra package
+        type: string
+        default: config/era5_ec2.toml
+    run_template:
+      api_schema:
+        description: URI to a Jinja2 run template or the path to one bundled within the pism-terra package
+        type: string
+        default: templates/ec2.j2
+    uq_config:
+      api_schema:
+        description: URI to a PISM Config file or the path to one bundled within the pism-terra package
+        type: string
+        default: uq/era5_agu.toml
+    ntasks:
+      api_schema:
+        description: Number of MPI tasks to use when executing PISM simulations
+        type: integer
+        default: 32
+        minimum: 2
+        maximum: 32
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/pism/pism-terra
+      command:
+        - ++process
+        - pism-glacier-run-ensemble
+        - Ref::rgi_id
+        - Ref::rgi_gpkg
+        - Ref::pism_config
+        - Ref::run_template
+        - Ref::uq_config
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --ntasks
+        - Ref::ntasks
+      secrets:
+        - CDS_API_URL
+        - CDS_API_KEY
+      timeout: 10800  # 3 hours
+      compute_environment: PismExecute
+      vcpu: 32
+      memory: 254000
+      linux_parameters:
+        SharedMemorySize: 15259

@@ -1,0 +1,40 @@
+OPERA_DIST_S1_CONFIRMATION:
+  required_parameters:
+    - dist_s1_data_bucket
+    - dist_s1_data_job_ids
+  parameters:
+    dist_s1_data_bucket:
+      api_schema:
+        description: Bucket used for dist product. The s3 uri for the product would be `s3://<dist_s1_data_bucket>/<job_id>/<opera_product_dir>`. We assume each job_id is unique and corresponds to a dist-s1-data product.
+        type: string
+        example: "dist_data_bucket"
+    dist_s1_data_job_ids:
+      api_schema:
+        description: Job IDs used in prefix of dist-s1-product; the s3 uri for the product would be `s3://<dist_s1_data_bucket>/<job_id>/<opera_product_dir>`
+        type: array
+        minItems: 2
+        items:
+          description: Job ID used in prefix of dist-s1-product
+          type: string
+          example: "de285aed-9f40-4d40-a6e7-5efa8e46e53f"
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/opera-adt/dist-s1
+      command:
+        - run_sequential_confirmation
+        - --dist_s1_data_job_ids
+        - Ref::dist_s1_data_job_ids
+        - --dist_s1_data_bucket
+        - Ref::dist_s1_data_bucket
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket_prefix
+        - Ref::job_id
+      timeout: 3600  # 1 hr
+      compute_environment: DistS1
+      vcpu: 1
+      memory: 7500

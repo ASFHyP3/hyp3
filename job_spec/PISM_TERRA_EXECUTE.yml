@@ -1,0 +1,42 @@
+PISM_TERRA_EXECUTE:
+  required_parameters:
+    - ensemble_job_id
+    - run_script
+  parameters:
+    ensemble_job_id:
+      api_schema:
+        description: HyP3 job ID for an PISM_TERRA_PREP_ENSEMBLE job that has successfully completed
+        type: string
+        format: uuid
+        example: 27836b79-e5b2-4d8f-932f-659724ea02c3
+    run_script:
+      api_schema:
+        description: Relative path to the run script under the ensemble_job_id prefix within the HyP3 content bucket
+        type: string
+        example: RGI2000-v7.0-C-01-09429/run_scripts/submit_g400m_RGI2000-v7.0-C-01-09429_id_0_1978-01-01_2025-01-01.sh
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/pism/pism-terra
+      command:
+        - ++process
+        - pism-glacier-execute
+        - Ref::run_script
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --job-id
+        - Ref::ensemble_job_id
+      secrets:
+        - CDS_API_URL
+        - CDS_API_KEY
+      timeout: 345600  # 96 hours
+      compute_environment: PismExecute
+      vcpu: 32
+      memory: 254000
+      linux_parameters:
+        SharedMemorySize: 15259

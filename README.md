@@ -15,11 +15,13 @@ A processing environment for HyP3 Plugins in AWS.
    git clone git@github.com:ASFHyP3/hyp3.git
    cd hyp3
    ```
+
 2. Create and activate a conda environment
    ```
    conda env create -f environment.yml
    conda activate hyp3
    ```
+
 3. Run the tests:
    ```
    make tests
@@ -40,6 +42,15 @@ A processing environment for HyP3 Plugins in AWS.
    When writing new tests, decorate such tests with `@pytest.mark.network`.
 
    Also, remember to re-run `make render` after making changes to rendered files.
+
+4. Additionally, if you just want to set up `PYTHONPATH`
+   without setting up all of the environment variables needed for testing, you can run:
+   ```
+   eval $(make pythonpath)
+   ```
+   This is useful when `eval $(make env)` would overwrite important environment variables.
+   For example, you probably want to `export AWS_PROFILE` before attempting to call `dynamo` functions
+   via the interactive interpreter, but `make env` would overwrite your AWS credentials with dummy values.
 
 ## Deployment
 
@@ -253,7 +264,7 @@ Go to the AWS console -> AWS Certificate Manager -> Request certificate and then
 
 Then create a validation record in
 https://gitlab.asf.alaska.edu/operations/puppet/-/edit/production/modules/legacy_dns/files/asf.alaska.edu.db
-of the form `<CNAME_name> in CNAME <CNAME_value>`, stripping `.asf.alaska.edu` from the `CNAME_name`  (see previous records for examples).
+of the form `<CNAME_name> IN CNAME <CNAME_value>`, stripping `.asf.alaska.edu` from the `CNAME_name`  (see previous records for examples).
 
 ### Create the GitHub environment
 
@@ -309,7 +320,7 @@ Once HyP3 is deployed, there are a few follow on tasks you may need to do for a 
 
 Open a PR adding a line to https://gitlab.asf.alaska.edu/operations/puppet/-/blob/production/modules/legacy_dns/files/asf.alaska.edu.db
 for the new custom domain name (AWS console -> api gateway -> custom domain names -> "API Gateway domain name") of the format
-`hyp3-foobar in CNAME <API Gateway domain name>.`. Follow similar examples.
+`hyp3-foobar IN CNAME <API Gateway domain name>.`. Follow similar examples.
 
 Ask someone from ASF support to review/merge the PR.
 
