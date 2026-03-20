@@ -22,7 +22,7 @@ PISM_TERRA_PREP_ENSEMBLE:
       api_schema:
         description: URI to a PISM Config file or the path to one bundled within the pism-terra package
         type: string
-        default: uq/era5_agu.toml
+        default: uq/era5_pdd.toml
     ntasks:
       api_schema:
         description: Number of MPI tasks to use when executing PISM simulations
