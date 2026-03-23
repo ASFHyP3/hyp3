@@ -8,12 +8,6 @@ PISM_TERRA_RUN:
         type: string
         pattern: 'RGI2000-v7.0-C-.*$'
         example: RGI2000-v7.0-C-01-09429
-    rgi_gpkg:
-      api_schema:
-        description: URI to a PISM-terra GeoPackage prepared from Randolph Glacier Inventory 7.0
-        type: string
-        format: uri
-        default: s3://pism-cloud-data/terra/rgi.gpkg
     pism_config:
       api_schema:
         description: URI to a PISM Config file or the path to one bundled within the pism-terra package
@@ -42,7 +36,6 @@ PISM_TERRA_RUN:
         - ++process
         - pism-glacier-run
         - Ref::rgi_id
-        - Ref::rgi_gpkg
         - Ref::pism_config
         - Ref::run_template
         - --bucket
