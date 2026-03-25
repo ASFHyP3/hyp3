@@ -12,7 +12,7 @@ ARTRAFF_RTC:
           - CAPELLA
 #          - ICEYE
 #          - S1
-#          - UMBRA # someday
+          - UMBRA
     granule:
       api_schema:
         description: Data granule to create an RTC for.
@@ -23,7 +23,7 @@ ARTRAFF_RTC:
       api_schema:
         description: Resolution of the output RTC in meters.
         type: integer
-        default: 30
+        default: 3
         minimum: 0
         example: 30
     dem:
