@@ -90,9 +90,16 @@ def organize_files(s3_objects: list[dict], bucket: str) -> dict:
     }
 
 
+# FIXME: 
 def lambda_handler(event: dict, context: object) -> None:
     bucket = environ['BUCKET']
+    job_id = event['job_id']
+    job = dynamo.jobs.get_job(job_id=job_id)
 
-    response = S3_CLIENT.list_objects_v2(Bucket=bucket, Prefix=event['job_id'])
+    if job['bucket'] is not bucket and bucket is not "":
+        bucket = job['bucket']
+        prefix = job['bucket_prefix']
+
+    response = S3_CLIENT.list_objects_v2(Bucket=bucket, Prefix=prefix)
     files = organize_files(response['Contents'], bucket)
     dynamo.jobs.update_job({'job_id': event['job_id'], **files})

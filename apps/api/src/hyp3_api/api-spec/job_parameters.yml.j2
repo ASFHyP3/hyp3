@@ -54,6 +54,10 @@ components:
             - {{ job_type }}
         name:
           $ref: "./openapi-spec.yml#/components/schemas/name"
+        bucket:
+          $ref: "./openapi-spec.yml#/components/schemas/bucket"
+        bucket_prefix: 
+          $ref: "./openapi-spec.yml#/components/schemas/bucket_prefix"
         job_parameters:
           $ref: "#/components/schemas/{{ job_type }}Parameters"
 
