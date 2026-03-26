@@ -51,9 +51,9 @@ SRG_GSLC:
         - Ref::bounds
         - --gpu
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - Ref::granules
       timeout: 10800
       compute_environment: SrgGslc

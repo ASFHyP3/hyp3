@@ -42,9 +42,9 @@ AUTORIFT:
       command:
         - Ref::granules
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --parameter-file
         - '/vsicurl/https://its-live-data.s3.amazonaws.com/autorift_parameters/v001/autorift_landice_0120m.shp'
         - --naming-scheme

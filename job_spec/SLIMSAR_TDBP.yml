@@ -62,9 +62,9 @@ SLIMSAR_TDBP:
         - --pols
         - Ref::pols
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
       timeout: 126000  # 35 hours
       compute_environment: SlimSAR
       vcpu: 1

@@ -74,9 +74,9 @@ SRG_TIME_SERIES:
         - --bounds
         - Ref::bounds
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --use-gslc-prefix
       timeout: 86400 # 24 hr
       compute_environment: SrgTimeSeries

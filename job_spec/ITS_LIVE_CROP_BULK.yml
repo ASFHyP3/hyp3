@@ -47,9 +47,10 @@ ITS_LIVE_CROP_BULK:
         - --stop-idx
         - Ref::stop_idx
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
+        # FIXME:
         - --publish-bucket
         - Ref::publish_bucket
       timeout: 21600
@@ -71,9 +72,10 @@ ITS_LIVE_CROP_BULK:
         - --stop-idx
         - Ref::stop_idx
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
+        # FIXME:
         - --publish-bucket
         - Ref::publish_bucket
       timeout: 21600

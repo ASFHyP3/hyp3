@@ -148,9 +148,9 @@ AUTORIFT:
       command:
         - Ref::granules
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --parameter-file
         - Ref::parameter_file
         - --naming-scheme

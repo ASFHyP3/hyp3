@@ -61,9 +61,9 @@ ARIA_S1_GUNW:
         - ++process
         - calcDelaysGUNW
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --weather-model
         - HRRR
       timeout: 10800  # 3 hr
