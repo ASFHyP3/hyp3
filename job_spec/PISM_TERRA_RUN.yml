@@ -46,9 +46,9 @@ PISM_TERRA_RUN:
         - Ref::pism_config
         - Ref::run_template
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --ntasks
         - Ref::ntasks
         - --execute

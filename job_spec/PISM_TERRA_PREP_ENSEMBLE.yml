@@ -52,9 +52,9 @@ PISM_TERRA_PREP_ENSEMBLE:
         - Ref::run_template
         - Ref::uq_config
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --ntasks
         - Ref::ntasks
       secrets:

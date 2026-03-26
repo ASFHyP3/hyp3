@@ -32,9 +32,9 @@ OPERA_RTC_S1:
       command:
         - Ref::granules
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
       timeout: 3600 # 1 hr
       compute_environment: Default
       vcpu: 1

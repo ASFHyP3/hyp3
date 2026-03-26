@@ -199,9 +199,9 @@ AUTORIFT:
         - ++plugin
         - meta
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --publish-bucket
         - Ref::publish_bucket
         - --stac-items-endpoint

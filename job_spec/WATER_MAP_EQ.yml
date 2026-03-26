@@ -64,9 +64,9 @@ WATER_MAP_EQ:
         - ++omp-num-threads
         - '4'
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --resolution
         - Ref::resolution
         - --speckle-filter
@@ -99,9 +99,9 @@ WATER_MAP_EQ:
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/water-map-equal-percent-solution
       command:
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --max-vv-threshold
         - Ref::max_vv_threshold
         - --hand-threshold

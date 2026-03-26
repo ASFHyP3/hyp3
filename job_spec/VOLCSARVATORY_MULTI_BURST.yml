@@ -71,9 +71,9 @@ INSAR_ISCE_MULTI_BURST:
         - ++process
         - insar_tops_multi_burst
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --apply-water-mask
         - Ref::apply_water_mask
         - --looks
@@ -82,6 +82,7 @@ INSAR_ISCE_MULTI_BURST:
         - Ref::reference
         - --secondary
         - Ref::secondary
+        # FIXME:
         - --publish-bucket
         - Ref::publish_bucket
       timeout: 126000  # 35 hours

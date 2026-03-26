@@ -26,9 +26,9 @@ PISM_TERRA_EXECUTE:
         - pism-glacier-execute
         - Ref::run_script
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --job-id
         - Ref::ensemble_job_id
       secrets:
