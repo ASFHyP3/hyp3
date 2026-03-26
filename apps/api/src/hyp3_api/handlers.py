@@ -1,4 +1,5 @@
 from http.client import responses
+from os import environ
 
 from flask import Response, abort, jsonify, request
 
@@ -22,6 +23,30 @@ def problem_format(status: int, message: str) -> Response:
     return response
 
 
+def _handle_content_bucket(jobs: list):
+    content_bucket = environ['CONTENT_BUCKET']
+    example_bucket = 'my-s3-bucket'
+    example_bucket_prefix = 'job-id'
+
+    for i in range(len(jobs)):
+        job_id = jobs[i]['job_id']
+        user_bucket = jobs[i]['bucket']
+        # TODO: What kind of input sanitization is needed? 
+        # TODO: Should we check for write permissions here, or in validate_jobs?
+        if user_bucket and user_bucket not in [content_bucket, example_bucket]:
+            if prefix := jobs[i]['bucket_prefix']:
+                # TODO: Do we want this to be madnatory?
+                if prefix is not example_bucket_prefix:
+                    jobs[i]['bucket_prefix'] = prefix.format(job_id=job_id, name=jobs[i]['name'])  # FIXME:
+                else:
+                    jobs[i]['bucket_prefix'] = job_id
+        else:
+            jobs[i]['bucket'] = content_bucket
+            jobs[i]['bucket_prefix'] = job_id
+
+    return jobs
+
+
 def post_jobs(body: dict, user: str) -> dict:
     print(body)
 
@@ -31,6 +56,8 @@ def post_jobs(body: dict, user: str) -> dict:
         abort(problem_format(503, str(e)))
     except (ValidationError, MultiBurstValidationError) as e:
         abort(problem_format(400, str(e)))
+
+    body['jobs'] = _handle_content_bucket(jobs=body['jobs'])
 
     try:
         body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], dry_run=bool(body.get('validate_only')))
