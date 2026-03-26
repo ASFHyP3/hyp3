@@ -161,6 +161,7 @@ def _get_names_for_user(user: str) -> list[str]:
     return sorted(list(names))
 
 
+# TODO: Are these permissions going to allow all elements of the stack bucket access?
 def get_bucket_policy(bucket_name: str):
     account_arn = util.get_account_arn()
     policy = f'''
@@ -172,6 +173,27 @@ def get_bucket_policy(bucket_name: str):
                 "Effect": "Allow",
                 "Principal": {{ "AWS": "{account_arn}:root" }},
                 "Action": "s3:PutObject",
+                "Resource": "arn:aws:s3:::{bucket_name}/*"
+            }},
+            {{
+                "Sid": "write tagging permission",
+                "Effect": "Allow",
+                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Action": "s3:PutObjectTagging",
+                "Resource": "arn:aws:s3:::{bucket_name}/*"
+            }},
+            {{
+                "Sid": "read permission",
+                "Effect": "Allow",
+                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Action": "s3:GetObject",
+                "Resource": "arn:aws:s3:::{bucket_name}/*"
+            }},
+            {{
+                "Sid": "read tagging permission",
+                "Effect": "Allow",
+                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Action": "s3:GetObjectTagging",
                 "Resource": "arn:aws:s3:::{bucket_name}/*"
             }},
             {{
