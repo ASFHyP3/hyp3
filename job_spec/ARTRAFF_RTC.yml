@@ -32,7 +32,7 @@ ARTRAFF_RTC:
         type: string
         pattern: "^s3://.*"
         example: s3://artraff-staging/hyp3/dem.tif
-    work-dir:
+    work_dir:
       api_schema:
         description: Working directory for processing
         type: string
@@ -57,7 +57,7 @@ ARTRAFF_RTC:
         - --resolution
         - Ref::resolution
         - --work-dir
-        - Ref::work-dir
+        - Ref::work_dir
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
