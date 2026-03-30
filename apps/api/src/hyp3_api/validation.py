@@ -1,13 +1,12 @@
 import json
-import os
 import sys
 from collections.abc import Iterable
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 
 import requests
 import yaml
-from shapely.geometry import MultiPolygon, Polygon, box, shape
+from shapely.geometry import MultiPolygon, Polygon, shape
 
 from hyp3_api import CMR_URL, multi_burst_validation
 from hyp3_api.util import get_granules
@@ -239,16 +238,6 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
         )
 
 
-def check_opera_rtc_s1_bounds(_, granule_metadata: list[dict]) -> None:
-    opera_rtc_s1_bounds = box(-180, -60, 180, 90)
-    for granule in granule_metadata:
-        if not granule['polygon'].intersects(opera_rtc_s1_bounds):
-            raise ValidationError(
-                f'Granule {granule["name"]} is south of -60 degrees latitude and outside the valid processing extent '
-                f'for OPERA RTC-S1 products.'
-            )
-
-
 def check_aria_s1_gunw_dates(job: dict, _) -> None:
     def format_date(key: str) -> date:
         return date.fromisoformat(job['job_parameters'][key])
@@ -271,35 +260,6 @@ def _validate_date_during_s1(date_name: str, date_value: date) -> None:
     if date_value < s1_start_date:
         raise ValidationError(
             f'"{date_name}" is {date_value} which is before the start of the sentinel 1 mission ({s1_start_date}).'
-        )
-
-
-def check_opera_rtc_s1_date(job: dict, _) -> None:
-    granules = job['job_parameters']['granules']
-    if len(granules) != 1:
-        raise InternalValidationError(f'Expected 1 granule, got {granules}')
-
-    granule = granules[0]
-    granule_date = datetime.strptime(granule.split('_')[3][:8], '%Y%m%d').date()
-
-    # Disallow IPF version < 002.70 according to the dates given at https://sar-mpc.eu/processor/ipf/
-    # Also see https://github.com/ASFHyP3/hyp3/issues/2739
-    if granule_date < date(2016, 4, 14):
-        raise ValidationError(
-            f'Granule {granule} was acquired before 2016-04-14 '
-            'and is not available for On-Demand OPERA RTC-S1 processing.'
-        )
-
-    end_date_str = os.environ['OPERA_RTC_S1_END_DATE']
-    if end_date_str == 'Default':
-        end_date_str = '2022-01-01'
-
-    end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-    if granule_date >= end_date:
-        raise ValidationError(
-            f'Granule {granule} was acquired on or after {end_date_str} '
-            'and is not available for On-Demand OPERA RTC-S1 processing. '
-            'You can download the product from the ASF DAAC archive.'
         )
 
 
