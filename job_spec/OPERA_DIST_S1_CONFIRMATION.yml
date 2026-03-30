@@ -35,6 +35,6 @@ OPERA_DIST_S1_CONFIRMATION:
         - --bucket_prefix
         - Ref::job_id
       timeout: 3600  # 1 hr
-      compute_environment: DistS1
+      compute_environment: Default
       vcpu: 1
       memory: 7500

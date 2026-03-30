@@ -9,12 +9,6 @@ compute_environments:
     ami_id: ami-0729c079aae647cb3  # /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
   SrgTimeSeries:
     instance_types: c6id.16xlarge
-  AriaAutorift:
-    instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-  AriaS1Gunw:
-    instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge
-  DistS1:
-    instance_types: m6id.2xlarge,m6id.4xlarge,m6id.8xlarge
   ItsLiveSpotGraviton:
     instance_types: r7gd.medium,r7gd.large,r7gd.xlarge,r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
     ami_id: ami-0692356050549192d  # /aws/service/ecs/optimized-ami/amazon-linux-2023/arm64/recommended/image_id
@@ -28,14 +22,9 @@ compute_environments:
     ami_id: ami-0aece254fc7c27a77  # /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
     allocation_type: SPOT
     allocation_strategy: SPOT_PRICE_CAPACITY_OPTIMIZED
-  ItsLiveMetaBulk:
-    instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-    ami_id: ami-0aece254fc7c27a77  # /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
   SlimSAR:
     instance_types: g4dn.2xlarge,g4dn.4xlarge,g4dn.8xlarge,g4dn.16xlarge
     ami_id: ami-05b39c03a4e57a02d  # /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
-  PismExecute:
-    instance_types: r6id.8xlarge,r6id.12xlarge,r6id.16xlarge,r6id.24xlarge,r6id.32xlarge,r6idn.8xlarge,r6idn.12xlarge,r6idn.16xlarge,r6idn.24xlarge,r6idn.32xlarge
   DefaultSpot:
     allocation_type: SPOT
     allocation_strategy: SPOT_PRICE_CAPACITY_OPTIMIZED
