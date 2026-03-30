@@ -54,7 +54,7 @@ PISM_TERRA_PREP_ENSEMBLE:
         - CDS_API_URL
         - CDS_API_KEY
       timeout: 10800  # 3 hours
-      compute_environment: PismExecute
+      compute_environment: Default
       vcpu: 32
       memory: 254000
       linux_parameters:

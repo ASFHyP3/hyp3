@@ -185,7 +185,7 @@ AUTORIFT:
         - --frame-id
         - Ref::frame_id
       timeout: 21600
-      compute_environment: Default
+      compute_environment: ItsLiveSpotGraviton
       vcpu: 1
       memory: 8  # Memory is always overridden in the step function by set-batch-overrides
       secrets:
