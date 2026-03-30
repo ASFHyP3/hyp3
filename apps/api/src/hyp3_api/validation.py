@@ -1,13 +1,12 @@
 import json
-import os
 import sys
 from collections.abc import Iterable
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 
 import requests
 import yaml
-from shapely.geometry import MultiPolygon, Polygon, box, shape
+from shapely.geometry import MultiPolygon, Polygon, shape
 
 from hyp3_api import CMR_URL, multi_burst_validation
 from hyp3_api.util import get_granules
