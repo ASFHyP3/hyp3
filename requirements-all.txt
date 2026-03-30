@@ -15,5 +15,6 @@ ruff==0.15.8
 mypy==1.19.1
 setuptools==82.0.1
 setuptools_scm==10.0.5
+jsonschema==4.24.0
 openapi-spec-validator==0.8.4
 cfn-lint==1.47.1
