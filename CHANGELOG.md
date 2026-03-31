@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.14.2]
+
+### Changed
+- Updated all job specs in all deployments to use On Demand instances except for:
+    - `AUTORIFT` jobs in hyp3-its-live and hyp3-its-live-test
+    - `INSAR_ISCE_BURST` jobs in hyp3-cargill
+
+### Removed
+- Removed support for `OPERA_RTC_S1` jobs:
+  - `OPERA_RTC_S1` job type from edc-uat and edc-sandbox environments
+  - `OperaRtcS1EndDate` stack parameter
+  - `check_opera_rtc_s1_bounds` and `check_opera_rtc_s1_date` validators and associated tests
+
 ## [10.14.1]
 
 ### Changed
