@@ -448,8 +448,7 @@ components:
       nullable: true
       minLength: 3
       maxLength: 63
-      example: my-s3-bucket
-      # TODO: Do we use S3 Transfer Acceleration - https://stackoverflow.com/questions/50480924/regex-for-s3-bucket-name 
+      example: "default-s3-bucket"
       pattern: "(?!(^((2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})\.){3}(2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})$|^xn--|.+-s3alias$))^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$""
 
     bucket_prefix:
@@ -458,7 +457,7 @@ components:
       nullable: true
       minLength: 1
       maxLength: 100
-      example: job-id # TODO:
+      example: "{job_id}"
       pattern: "^(?!/)(?!.*//)[A-Za-z0-9._/-]{1,1024}$"
 
     start_token:
