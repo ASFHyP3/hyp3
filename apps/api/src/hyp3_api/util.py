@@ -6,6 +6,7 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 import boto3
 
+
 class TokenDeserializeError(Exception):
     """Raised when paging results and `start_token` fails to deserialize."""
 
