@@ -1,5 +1,6 @@
 from http.client import responses
 from os import environ
+from pathlib import Path
 
 from flask import Response, abort, jsonify, request
 
@@ -24,22 +25,17 @@ def problem_format(status: int, message: str) -> Response:
 
 
 def _handle_content_bucket(jobs: list):
-    content_bucket = environ['CONTENT_BUCKET']
-    example_bucket = 'my-s3-bucket'
-    example_bucket_prefix = 'job-id'
+    content_bucket = environ.get('CONTENT_BUCKET', '')
+    example_bucket = 'default-s3-bucket'
 
     for i in range(len(jobs)):
         job_id = jobs[i]['job_id']
         user_bucket = jobs[i]['bucket']
-        # TODO: What kind of input sanitization is needed? 
-        # TODO: Should we check for write permissions here, or in validate_jobs?
         if user_bucket and user_bucket not in [content_bucket, example_bucket]:
             if prefix := jobs[i]['bucket_prefix']:
-                # TODO: Do we want this to be madnatory?
-                if prefix is not example_bucket_prefix:
-                    jobs[i]['bucket_prefix'] = prefix.format(job_id=job_id, name=jobs[i]['name'])  # FIXME:
-                else:
-                    jobs[i]['bucket_prefix'] = job_id
+                jobs[i]['bucket_prefix'] = prefix.format(job_id=job_id, name=jobs[i]['name'])
+            else:
+                jobs[i]['bucket_prefix'] = job_id
         else:
             jobs[i]['bucket'] = content_bucket
             jobs[i]['bucket_prefix'] = job_id
