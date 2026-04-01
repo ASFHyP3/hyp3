@@ -23,7 +23,7 @@ def problem_format(status: int, message: str) -> Response:
     return response
 
 
-def _handle_content_bucket(jobs: list) -> dict:
+def _handle_content_bucket(jobs: list) -> list:
     content_bucket = environ.get('CONTENT_BUCKET', '')
     example_bucket = 'default-s3-bucket'
 
@@ -157,7 +157,7 @@ def _get_names_for_user(user: str) -> list[str]:
 
 
 def get_bucket_policy(bucket_name: str) -> str:
-    account_arn = util.get_account_arn()
+    account_arn = util.get_current_account_arn()
     policy = f'''
     {{
         "Version": "2012-10-17",
