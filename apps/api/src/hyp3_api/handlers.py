@@ -1,6 +1,5 @@
 from http.client import responses
 from os import environ
-from pathlib import Path
 
 from flask import Response, abort, jsonify, request
 
@@ -157,8 +156,7 @@ def _get_names_for_user(user: str) -> list[str]:
     return sorted(list(names))
 
 
-# TODO: Are these permissions going to allow all elements of the stack bucket access?
-def get_bucket_policy(bucket_name: str):
+def get_bucket_policy(bucket_name: str) -> str:
     account_arn = util.get_account_arn()
     policy = f'''
     {{
