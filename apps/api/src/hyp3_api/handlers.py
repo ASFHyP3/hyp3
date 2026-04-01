@@ -23,7 +23,7 @@ def problem_format(status: int, message: str) -> Response:
     return response
 
 
-def _handle_content_bucket(jobs: list):
+def _handle_content_bucket(jobs: list) -> dict:
     content_bucket = environ.get('CONTENT_BUCKET', '')
     example_bucket = 'default-s3-bucket'
 
