@@ -449,7 +449,7 @@ components:
       minLength: 3
       maxLength: 63
       example: "default-s3-bucket"
-      pattern: "(?!(^((2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})\.){3}(2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})$|^xn--|.+-s3alias$))^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
+      pattern: "(?!(^((2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2}).){3}(2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})$|^xn--|.+-s3alias$))^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
 
     bucket_prefix:
       description: User provided text to define the bucket prefix to place the product in
@@ -458,7 +458,7 @@ components:
       minLength: 1
       maxLength: 100
       example: "{job_id}"
-      pattern: "^(?!\/)(?!.*\/\/)(?:[A-Za-z0-9._\/-]|\{job_id\}|\{name\}){1,1024}$"
+      pattern: "^(?!\/)(?!.*\/\/)(?:[A-Za-z0-9._\/-]|{job_id}|{name}){1,1024}$"
 
     start_token:
       description: Token used for fetching subsequent results for large queries
