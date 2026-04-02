@@ -47,7 +47,7 @@ ITS_LIVE_CROP:
         - --publish-bucket
         - Ref::publish_bucket
       timeout: 10800
-      compute_environment: ItsLiveSpotGraviton
+      compute_environment: DefaultSpot
       vcpu: 1
       memory: 7875
       secrets:
@@ -71,7 +71,7 @@ ITS_LIVE_CROP:
         - --stac-exists-ok
         - Ref::stac_exists_ok
       timeout: 10800
-      compute_environment: ItsLiveMeta
+      compute_environment: ItsLiveSpotIntel
       vcpu: 1
       memory: 7875
       secrets:
