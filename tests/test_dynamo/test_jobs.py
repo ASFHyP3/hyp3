@@ -314,7 +314,13 @@ def test_get_credit_cost_validate_keys():
 
 def test_put_jobs(tables, monkeypatch, approved_user):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '10')
-    payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
+    payload = [
+        {'name': 'name1'},
+        {'name': 'name1'},
+        {'name': 'name2'},
+        {'name': 'name3', 'bucket': 'test-bucket-1', 'bucket_prefix': 'prefix/{name}/{job_id}'},
+        {'name': 'name4', 'bucket': '', 'bucket_prefix': 'example/prefix/'},
+    ]
 
     with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
         mock_get_current_month.return_value = '2024-02'
@@ -334,12 +340,24 @@ def test_put_jobs(tables, monkeypatch, approved_user):
             'request_time',
             'priority',
             'credit_cost',
+            'bucket',
+            'bucket_prefix',
         }
         assert job['request_time'] <= current_utc_time()
         assert job['user_id'] == approved_user
         assert job['status_code'] == 'PENDING'
         assert job['execution_started'] is False
         assert job['credit_cost'] == 1
+        assert job['bucket'] == 'test-bucket'
+        assert job['bucket_prefix'] == job['job_id']
+
+        if job['name'] == 'name3':
+            assert job['bucket'] == 'test-bucket-1'
+            assert job['bucket_prefix'] == f'prefix/{job["name"]}/{job["job_id"]}'
+
+        if job['name'] == 'name4':
+            assert job['bucket'] == 'test-bucket'
+            assert job['bucket_prefix'] == job['job_id']
 
     assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
 
