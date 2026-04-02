@@ -348,14 +348,14 @@ def test_put_jobs(tables, monkeypatch, approved_user):
         assert job['status_code'] == 'PENDING'
         assert job['execution_started'] is False
         assert job['credit_cost'] == 1
-        assert job['bucket'] == 'test-bucket'
-        assert job['bucket_prefix'] == job['job_id']
 
         if job['name'] == 'name3':
             assert job['bucket'] == 'test-bucket-1'
             assert job['bucket_prefix'] == f'prefix/{job["name"]}/{job["job_id"]}'
-
-        if job['name'] == 'name4':
+        elif job['name'] == 'name4':
+            assert job['bucket'] == 'test-bucket'
+            assert job['bucket_prefix'] == job['job_id']
+        else:
             assert job['bucket'] == 'test-bucket'
             assert job['bucket_prefix'] == job['job_id']
 

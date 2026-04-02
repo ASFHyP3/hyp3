@@ -90,11 +90,10 @@ def _handle_content_bucket(job: dict) -> dict:
 
     job_id = job['job_id']
     user_bucket = job.get('bucket', '')
+    prefix = job.get('bucket_prefix', '')
+
     if user_bucket and user_bucket not in [content_bucket, example_bucket]:
-        if prefix := job.get('bucket_prefix', ''):
-            job['bucket_prefix'] = prefix.format(job_id=job_id, name=job['name'])
-        else:
-            job['bucket_prefix'] = job_id
+        job['bucket_prefix'] = prefix.format(job_id=job_id, name=job['name']) if prefix else job_id
     else:
         job['bucket'] = content_bucket
         job['bucket_prefix'] = job_id
