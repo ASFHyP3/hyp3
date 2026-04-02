@@ -9,6 +9,7 @@ from boto3.dynamodb.conditions import Attr, Key
 
 import dynamo.user
 from dynamo.exceptions import (
+    CustomPrefixForDefaultBucketError,
     InsufficientCreditsError,
     InvalidApplicationStatusError,
     NotStartedApplicationError,
@@ -95,6 +96,10 @@ def _handle_content_bucket(job: dict) -> dict:
     if user_bucket and user_bucket not in [content_bucket, example_bucket]:
         job['bucket_prefix'] = prefix.format(job_id=job_id, name=job['name']) if prefix else job_id
     else:
+        if prefix and prefix != '{job_id}':
+            raise CustomPrefixForDefaultBucketError(
+                'A custom bucket prefix can not be used with the default content bucket.'
+            )
         job['bucket'] = content_bucket
         job['bucket_prefix'] = job_id
 

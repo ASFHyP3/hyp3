@@ -5,6 +5,7 @@ from flask import Response, abort, jsonify, request
 import dynamo
 from dynamo.exceptions import (
     AccessCodeError,
+    CustomPrefixForDefaultBucketError,
     InsufficientCreditsError,
     UnexpectedApplicationStatusError,
     UpdateJobForDifferentUserError,
@@ -35,6 +36,8 @@ def post_jobs(body: dict, user: str) -> dict:
     except UnexpectedApplicationStatusError as e:
         abort(problem_format(403, str(e)))
     except InsufficientCreditsError as e:
+        abort(problem_format(400, str(e)))
+    except CustomPrefixForDefaultBucketError as e:
         abort(problem_format(400, str(e)))
     return body
 
