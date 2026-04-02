@@ -1,5 +1,4 @@
 from http.client import responses
-from os import environ
 
 from flask import Response, abort, jsonify, request
 
@@ -23,37 +22,14 @@ def problem_format(status: int, message: str) -> Response:
     return response
 
 
-def _handle_content_bucket(jobs: list) -> list:
-    content_bucket = environ.get('CONTENT_BUCKET', '')
-    example_bucket = 'default-s3-bucket'
-
-    for idx, job in enumerate(jobs):
-        job_id = job['job_id']
-        user_bucket = job['bucket']
-        if user_bucket and user_bucket not in [content_bucket, example_bucket]:
-            if prefix := job['bucket_prefix']:
-                jobs[idx]['bucket_prefix'] = prefix.format(job_id=job_id, name=job['name'])
-            else:
-                jobs[idx]['bucket_prefix'] = job_id
-        else:
-            jobs[idx]['bucket'] = content_bucket
-            jobs[idx]['bucket_prefix'] = job_id
-
-    return jobs
-
-
 def post_jobs(body: dict, user: str) -> dict:
     print(body)
-
     try:
         validate_jobs(body['jobs'])
     except CmrError as e:
         abort(problem_format(503, str(e)))
     except (ValidationError, MultiBurstValidationError) as e:
         abort(problem_format(400, str(e)))
-
-    body['jobs'] = _handle_content_bucket(jobs=body['jobs'])
-
     try:
         body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], dry_run=bool(body.get('validate_only')))
     except UnexpectedApplicationStatusError as e:
@@ -158,7 +134,7 @@ def _get_names_for_user(user: str) -> list[str]:
 
 def get_bucket_policy(bucket_name: str) -> str:
     account_arn = util.get_current_account_arn()
-    policy = f'''
+    policy = f"""
     {{
         "Version": "2012-10-17",
         "Statement": [
@@ -199,5 +175,5 @@ def get_bucket_policy(bucket_name: str) -> str:
             }}
         ]
     }}
-    '''
+    """
     return policy

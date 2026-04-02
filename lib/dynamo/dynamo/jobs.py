@@ -84,6 +84,25 @@ def _raise_for_application_status(application_status: str, user_id: str) -> None
         raise InvalidApplicationStatusError(user_id, application_status)
 
 
+def _handle_content_bucket(job: dict) -> dict:
+    content_bucket = environ['CONTENT_BUCKET']
+    example_bucket = 'default-s3-bucket'
+
+    job_id = job['job_id']
+    user_bucket = job.get('bucket', '')
+    if user_bucket and user_bucket not in [content_bucket, example_bucket]:
+        if prefix := job.get('bucket_prefix', ''):
+            job['bucket_prefix'] = prefix.format(job_id=job_id, name=job['name'])
+        else:
+            job['bucket_prefix'] = job_id
+    else:
+        job['bucket'] = content_bucket
+        job['bucket_prefix'] = job_id
+
+    return job
+
+
+# TODO: Is anything needed for user provided bucket here?
 def _prepare_job_for_database(
     job: dict,
     user_id: str,
@@ -107,6 +126,7 @@ def _prepare_job_for_database(
         'priority': priority,
         **job,
     }
+    prepared_job = _handle_content_bucket(prepared_job)
     if 'job_type' in prepared_job:
         prepared_job['job_parameters'] = {
             **DEFAULT_PARAMS_BY_JOB_TYPE[prepared_job['job_type']],
