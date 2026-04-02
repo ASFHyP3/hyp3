@@ -364,7 +364,7 @@ def test_put_jobs(tables, monkeypatch, approved_user):
     assert tables.users_table.scan()['Items'] == [
         {
             'user_id': approved_user,
-            'remaining_credits': Decimal(7),
+            'remaining_credits': Decimal(5),
             '_month_of_last_credit_reset': '2024-02',
             'application_status': APPLICATION_APPROVED,
         }
