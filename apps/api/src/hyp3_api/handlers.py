@@ -27,17 +27,17 @@ def _handle_content_bucket(jobs: list) -> list:
     content_bucket = environ.get('CONTENT_BUCKET', '')
     example_bucket = 'default-s3-bucket'
 
-    for i in range(len(jobs)):
-        job_id = jobs[i]['job_id']
-        user_bucket = jobs[i]['bucket']
+    for idx, job in enumerate(jobs):
+        job_id = job['job_id']
+        user_bucket = job['bucket']
         if user_bucket and user_bucket not in [content_bucket, example_bucket]:
-            if prefix := jobs[i]['bucket_prefix']:
-                jobs[i]['bucket_prefix'] = prefix.format(job_id=job_id, name=jobs[i]['name'])
+            if prefix := job['bucket_prefix']:
+                jobs[idx]['bucket_prefix'] = prefix.format(job_id=job_id, name=job['name'])
             else:
-                jobs[i]['bucket_prefix'] = job_id
+                jobs[idx]['bucket_prefix'] = job_id
         else:
-            jobs[i]['bucket'] = content_bucket
-            jobs[i]['bucket_prefix'] = job_id
+            jobs[idx]['bucket'] = content_bucket
+            jobs[idx]['bucket_prefix'] = job_id
 
     return jobs
 
