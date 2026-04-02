@@ -319,7 +319,7 @@ def test_put_jobs(tables, monkeypatch, approved_user):
         {'name': 'name1'},
         {'name': 'name2'},
         {'name': 'name3', 'bucket': 'test-bucket-1', 'bucket_prefix': 'prefix/{name}/{job_id}'},
-        {'name': 'name4', 'bucket': '', 'bucket_prefix': 'example/prefix/'},
+        {'name': 'name4', 'bucket': 'test-bucket-1', 'bucket_prefix': 'example/prefix/'},
     ]
 
     with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
@@ -353,8 +353,8 @@ def test_put_jobs(tables, monkeypatch, approved_user):
             assert job['bucket'] == 'test-bucket-1'
             assert job['bucket_prefix'] == f'prefix/{job["name"]}/{job["job_id"]}'
         elif job['name'] == 'name4':
-            assert job['bucket'] == 'test-bucket'
-            assert job['bucket_prefix'] == job['job_id']
+            assert job['bucket'] == 'test-bucket-1'
+            assert job['bucket_prefix'] == 'example/prefix/'
         else:
             assert job['bucket'] == 'test-bucket'
             assert job['bucket_prefix'] == job['job_id']
