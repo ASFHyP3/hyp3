@@ -27,7 +27,7 @@ jobs:
               job_spec/ARIA_RAIDER.yml
               job_spec/ARIA_S1_COSEIS.yml
               job_spec/INSAR_ISCE.yml
-            instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
+            instance_types: m8id.xlarge,m8id.2xlarge,m8id.4xlarge,m8id.8xlarge,m8id.12xlarge,m8id.16xlarge
             default_max_vcpus: 640  # Max: 13000
             expanded_max_vcpus: 640  # Max: 13000
             required_surplus: 0
@@ -49,7 +49,7 @@ jobs:
               job_spec/INSAR_ISCE.yml
               job_spec/OPERA_DIST_S1.yml
               job_spec/OPERA_DIST_S1_CONFIRMATION.yml
-            instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
+            instance_types: m8id.xlarge,m8id.2xlarge,m8id.4xlarge,m8id.8xlarge,m8id.12xlarge,m8id.16xlarge
             default_max_vcpus: 6400  # Max: 10316
             expanded_max_vcpus: 6400  # Max: 10316
             required_surplus: 0
@@ -69,7 +69,7 @@ jobs:
               job_spec/ITS_LIVE_CROP.yml
               job_spec/ITS_LIVE_CROP_BULK.yml
               job_spec/ITS_LIVE_META_BULK.yml
-            instance_types: r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
+            instance_types: r7gd.medium,r7gd.large,r7gd.xlarge,r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
             default_max_vcpus: 640  # Max: 10,406
             expanded_max_vcpus: 640  # Max: 10,406
             required_surplus: 0
@@ -87,7 +87,7 @@ jobs:
             job_files: >-
               job_spec/AK_FIRE_SAFE.yml
               job_spec/INSAR_ISCE_BURST.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -106,7 +106,7 @@ jobs:
               job_spec/PISM_TERRA_RUN.yml
               job_spec/PISM_TERRA_PREP_ENSEMBLE.yml
               job_spec/PISM_TERRA_EXECUTE.yml
-            instance_types: r6id.8xlarge,r6id.12xlarge,r6id.16xlarge,r6id.24xlarge,r6id.32xlarge,r6idn.8xlarge,r6idn.12xlarge,r6idn.16xlarge,r6idn.24xlarge,r6idn.32xlarge
+            instance_types: r8id.8xlarge,r8id.12xlarge,r8id.16xlarge,r8id.24xlarge,r8id.32xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -125,7 +125,7 @@ jobs:
               job_spec/INSAR_GAMMA.yml
               job_spec/VOLCSARVATORY_MULTI_BURST.yml
               job_spec/VOLCSARVATORY_MINTPY.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
@@ -144,13 +144,13 @@ jobs:
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/SRG_GSLC.yml
               job_spec/SRG_TIME_SERIES.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-          
+
           - environment: hyp3-slimsar-test
             domain: hyp3-slimsar-test.asf.alaska.edu
             template_bucket: cf-templates-1ce4dbsaugtx1-us-west-2
@@ -162,7 +162,7 @@ jobs:
             job_files: >-
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/SLIMSAR_TDBP.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
