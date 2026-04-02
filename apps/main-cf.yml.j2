@@ -134,6 +134,7 @@ Resources:
         DefaultApplicationStatus: !Ref DefaultApplicationStatus
         OperaRtcS1EndDate: !Ref OperaRtcS1EndDate
         SystemAvailable: !Ref SystemAvailable
+        ContentBucket: !Ref ContentBucket
         {% if security_environment == 'EDC' %}
         VpcId: !Ref VpcId
         SecurityGroupId: !GetAtt Cluster.Outputs.SecurityGroupId
