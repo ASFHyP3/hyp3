@@ -329,7 +329,7 @@ def test_put_jobs(tables, monkeypatch, approved_user):
 
         mock_get_current_month.assert_called_once_with()
 
-    assert len(jobs) == 3
+    assert len(jobs) == 5
     for job in jobs:
         assert set(job.keys()) == {
             'name',
