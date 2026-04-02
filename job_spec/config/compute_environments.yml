@@ -9,19 +9,14 @@ compute_environments:
     ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id}}'"
   SrgTimeSeries:
     instance_types: c6id.16xlarge
-  ItsLiveSpotGraviton:
-    instance_types: r7gd.medium,r7gd.large,r7gd.xlarge,r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
-    ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/arm64/recommended/image_id}}'"
-    allocation_type: SPOT
-    allocation_strategy: SPOT_PRICE_CAPACITY_OPTIMIZED
-  ItsLiveCropBulk:
-    instance_types: r7gd.medium,r7gd.large,r7gd.xlarge,r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
-    ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/arm64/recommended/image_id}}'"
-  ItsLiveMeta:
+  ItsLiveSpotIntel:
     instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
     ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id}}'"
     allocation_type: SPOT
     allocation_strategy: SPOT_PRICE_CAPACITY_OPTIMIZED
+  ItsLiveIntel:
+    instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+    ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id}}'"
   SlimSAR:
     instance_types: g4dn.2xlarge,g4dn.4xlarge,g4dn.8xlarge,g4dn.16xlarge
     ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id}}'"
