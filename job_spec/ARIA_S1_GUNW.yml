@@ -49,7 +49,7 @@ ARIA_S1_GUNW:
         - --min-frame-coverage
         - '0.9'
       timeout: 21600  # 6 hr
-      compute_environment: AriaS1Gunw
+      compute_environment: Default
       vcpu: 1
       memory: 15500
       secrets:
@@ -67,7 +67,7 @@ ARIA_S1_GUNW:
         - --weather-model
         - HRRR
       timeout: 10800  # 3 hr
-      compute_environment: AriaS1Gunw
+      compute_environment: Default
       vcpu: 1
       memory: 7500
       secrets:
@@ -78,7 +78,7 @@ ARIA_S1_GUNW:
       command:
         - Ref::job_id
       timeout: 600
-      compute_environment: AriaS1Gunw
+      compute_environment: Default
       vcpu: 1
       memory: 512
       secrets:

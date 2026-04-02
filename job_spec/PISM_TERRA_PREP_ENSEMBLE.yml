@@ -8,12 +8,6 @@ PISM_TERRA_PREP_ENSEMBLE:
         type: string
         pattern: 'RGI2000-v7.0-C-.*$'
         example: RGI2000-v7.0-C-01-09429
-    rgi_gpkg:
-      api_schema:
-        description: URI to a PISM-terra GeoPackage prepared from Randolph Glacier Inventory 7.0
-        type: string
-        format: uri
-        default: s3://pism-cloud-data/terra/rgi.gpkg
     pism_config:
       api_schema:
         description: URI to a PISM Config file or the path to one bundled within the pism-terra package
@@ -28,7 +22,7 @@ PISM_TERRA_PREP_ENSEMBLE:
       api_schema:
         description: URI to a PISM Config file or the path to one bundled within the pism-terra package
         type: string
-        default: uq/era5_agu.toml
+        default: uq/era5_pdd.toml
     ntasks:
       api_schema:
         description: Number of MPI tasks to use when executing PISM simulations
@@ -47,7 +41,6 @@ PISM_TERRA_PREP_ENSEMBLE:
         - ++process
         - pism-glacier-run-ensemble
         - Ref::rgi_id
-        - Ref::rgi_gpkg
         - Ref::pism_config
         - Ref::run_template
         - Ref::uq_config
@@ -61,7 +54,7 @@ PISM_TERRA_PREP_ENSEMBLE:
         - CDS_API_URL
         - CDS_API_KEY
       timeout: 10800  # 3 hours
-      compute_environment: PismExecute
+      compute_environment: Default
       vcpu: 32
       memory: 254000
       linux_parameters:

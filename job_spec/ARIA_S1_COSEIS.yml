@@ -130,7 +130,7 @@ ARIA_S1_COSEIS:
         - --unfiltered-coherence
         - Ref::unfiltered_coherence
       timeout: 43200
-      compute_environment: InsarIsceAria
+      compute_environment: Default
       vcpu: 1
       memory: 63500
       secrets:
@@ -148,7 +148,7 @@ ARIA_S1_COSEIS:
         - --weather-model
         - Ref::weather_model
       timeout: 21600
-      compute_environment: InsarIsceAria
+      compute_environment: Default
       vcpu: 1
       memory: 15500
       secrets:

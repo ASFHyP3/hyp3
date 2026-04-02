@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.14.3]
+
+### Changed
+- Upgraded DAAC and Plus deployments from the `r6id`/`r6idn` instance families to the `r8id` family.
+
+## [10.14.2]
+
+### Changed
+- Updated all job specs in all deployments to use On Demand instances except for:
+    - `AUTORIFT` jobs in hyp3-its-live and hyp3-its-live-test
+    - `INSAR_ISCE_BURST` jobs in hyp3-cargill
+
+### Removed
+- Removed support for `OPERA_RTC_S1` jobs:
+  - `OPERA_RTC_S1` job type from edc-uat and edc-sandbox environments
+  - `OperaRtcS1EndDate` stack parameter
+  - `check_opera_rtc_s1_bounds` and `check_opera_rtc_s1_date` validators and associated tests
+
+## [10.14.1]
+
+### Changed
+- PISM job specs no longer need to provide an RGI geopackage. 
+
 ## [10.14.0]
 
 ### Added
@@ -13,8 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for NISAR RSLC and GSLC scenes to the `ITS_LIVE_AUTORIFT` and `ARIA_AUTORIFT` job specs. 
 
 ### Changed
-- Implemented dynamic memory allocation for multi-frame `AUTORIFT` jobs in `set_batch_overrides.py`. Sentinel-2 jobs with more than 4 frames now use 16 GB of memory instead of 8 GB. Single-frame Sentinel-2/Landsat and Sentinel-1 memory allocation is unchanged.
-- Updated `OPERA_DIST_S1` job spec to allow for entrypoint change (now need to specify `run` at beginning of command)
+- Implemented dynamic memory allocation for multi-frame `AUTORIFT` jobs in `set_batch_overrides.py`. Sentinel-2 jobs with more than 4 frames now use 16 GB of memory instead of 8 GB. Single-frame Sentinel-2/Landsat and Sentinel-1 memory allocation is unchanged, while NISAR memory allocation is 64 GB.
+- Increased the timeout from 3 hours to 6 hours on the hyp3-autorift step in the `ITS_LIVE_AUTORIFT` and `ARIA_AUTORIFT` job specs to account for NISAR runtimes.
+- Updated `OPERA_DIST_S1` job spec to allow for entrypoint change (now need to specify `run` at beginning of command).
 - Added `OPERA_DIST_S1_CONFIRMATION` for confirming products OPERA DIST-S1 Products.
 - The `SRG_GSLC` and `SRG_TIME_SERIES` now allow processing Sentinel-1 C and D scenes.
 

@@ -128,7 +128,7 @@ INSAR_ISCE:
         - --unfiltered-coherence
         - Ref::unfiltered_coherence
       timeout: 21600
-      compute_environment: InsarIsceAria
+      compute_environment: Default
       vcpu: 1
       memory: 15500
       secrets:
@@ -146,7 +146,7 @@ INSAR_ISCE:
         - --weather-model
         - Ref::weather_model
       timeout: 10800
-      compute_environment: InsarIsceAria
+      compute_environment: Default
       vcpu: 1
       memory: 7500
       secrets:
@@ -162,7 +162,7 @@ INSAR_ISCE:
       command:
         - Ref::job_id
       timeout: 600
-      compute_environment: InsarIsceAria
+      compute_environment: Default
       vcpu: 1
       memory: 512
       secrets:

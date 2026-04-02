@@ -196,7 +196,7 @@ OPERA_DIST_S1:
         - --model_context_length
         - Ref::model_context_length
       timeout: 3600  # 1 hr
-      compute_environment: DistS1
+      compute_environment: Default
       vcpu: 1
       memory: 31500
       secrets:
