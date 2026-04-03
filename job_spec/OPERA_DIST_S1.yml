@@ -165,7 +165,7 @@ OPERA_DIST_S1:
         - Ref::post_date_buffer_days
         - --bucket
         - Ref::bucket
-        - --bucket-prefix
+        - --bucket_prefix
         - Ref::bucket_prefix
         - --memory_strategy
         - Ref::memory_strategy

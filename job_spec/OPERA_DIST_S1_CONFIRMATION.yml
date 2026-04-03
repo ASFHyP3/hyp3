@@ -32,7 +32,7 @@ OPERA_DIST_S1_CONFIRMATION:
         - Ref::dist_s1_data_bucket
         - --bucket
         - Ref::bucket
-        - --bucket-prefix
+        - --bucket_prefix
         - Ref::bucket_prefix
       timeout: 3600  # 1 hr
       compute_environment: Default
