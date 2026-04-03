@@ -93,7 +93,6 @@ def organize_files(s3_objects: list[dict], bucket: str) -> dict:
 def lambda_handler(event: dict, context: object) -> None:
     job = dynamo.jobs.get_job(job_id=event['job_id'])
 
-    # `bucket` and `bucket_prefix` are set in the `api.handlers.post_jobs`
     bucket = job['bucket']
     prefix = job['bucket_prefix']
 
