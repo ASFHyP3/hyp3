@@ -106,7 +106,6 @@ def _handle_content_bucket(job: dict) -> dict:
     return job
 
 
-# TODO: Is anything needed for user provided bucket here?
 def _prepare_job_for_database(
     job: dict,
     user_id: str,
