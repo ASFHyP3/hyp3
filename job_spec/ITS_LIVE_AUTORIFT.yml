@@ -185,7 +185,7 @@ AUTORIFT:
         - --frame-id
         - Ref::frame_id
       timeout: 21600
-      compute_environment: ItsLiveSpotGraviton
+      compute_environment: DefaultSpot
       vcpu: 1
       memory: 8  # Memory is always overridden in the step function by set-batch-overrides
       secrets:
@@ -209,7 +209,7 @@ AUTORIFT:
         - --stac-exists-ok
         - Ref::stac_exists_ok
       timeout: 10800
-      compute_environment: ItsLiveMeta
+      compute_environment: ItsLiveSpotIntel
       vcpu: 1
       memory: 7875
       secrets:
