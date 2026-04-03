@@ -54,7 +54,7 @@ ITS_LIVE_META_BULK:
         - --publish-bucket
         - Ref::publish_bucket
       timeout: 21600
-      compute_environment: Default
+      compute_environment: ItsLiveIntel
       vcpu: 1
       memory: 31500
       secrets:

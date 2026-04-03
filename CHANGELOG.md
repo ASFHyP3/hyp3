@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - allows for inserting the job's ID and name by including `{job_id}` or `{name}`. 
 - `/bucket-policy/<bucket_name>` route for retrieving AWS policy to allow HyP3 to write to a custom bucket
 
+## [10.14.4]
+
+### Changed
+- Upgraded custom deployments from the `r6id`/`r6idn` and `m6id`/`m6idn` instance families to the `r8id` and `m8id` family.
+- The AMI IDs specified in `compute_environments.yml` are now resolved by CloudFormation instead of hard-coded.
+- Simplified the ITS_LIVE custom compute environments.
+
 ## [10.14.3]
 
 ### Changed

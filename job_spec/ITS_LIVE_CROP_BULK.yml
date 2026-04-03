@@ -54,7 +54,7 @@ ITS_LIVE_CROP_BULK:
         - --publish-bucket
         - Ref::publish_bucket
       timeout: 21600
-      compute_environment: ItsLiveCropBulk
+      compute_environment: Default
       vcpu: 1
       memory: 31500
       secrets:
@@ -79,7 +79,7 @@ ITS_LIVE_CROP_BULK:
         - --publish-bucket
         - Ref::publish_bucket
       timeout: 21600
-      compute_environment: Default
+      compute_environment: ItsLiveIntel
       vcpu: 1
       memory: 31500
       secrets:
