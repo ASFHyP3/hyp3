@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.15.0]
+
+### Added
+- Compute environments can now specify maximum vCPU, otherwise the default will be used.
+
+### Changed
+- The `ItsLiveSpotIntel` compute environment now has a maximum vCPUs of 1000 to prevent ITS_LIVE production from overwhelming the STAC catalog.
+
 ## [10.14.5]
 
 ### Changed
