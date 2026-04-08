@@ -131,7 +131,7 @@ RTC_GAMMA:
         - Ref::include_rgb
         - Ref::granules
       timeout: 36000
-      compute_environment: Default
+      compute_environment: DefaultSpot
       vcpu: 1
       memory: 31500
       secrets:
