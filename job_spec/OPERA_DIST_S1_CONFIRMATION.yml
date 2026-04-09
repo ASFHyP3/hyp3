@@ -31,9 +31,9 @@ OPERA_DIST_S1_CONFIRMATION:
         - --dist_s1_data_bucket
         - Ref::dist_s1_data_bucket
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket_prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
       timeout: 3600  # 1 hr
       compute_environment: Default
       vcpu: 1

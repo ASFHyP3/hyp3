@@ -193,3 +193,9 @@ def user_patch() -> Response:
 @openapi
 def user_get() -> Response:
     return jsonify(handlers.get_user(g.user))
+
+
+@app.route('/bucket-policy/<bucket_name>', methods=['GET'])
+@openapi
+def bucket_policy_get(bucket_name: str) -> Response:
+    return jsonify(handlers.get_bucket_policy(bucket_name))

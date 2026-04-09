@@ -164,9 +164,9 @@ OPERA_DIST_S1:
         - --post_date_buffer_days
         - Ref::post_date_buffer_days
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket_prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --memory_strategy
         - Ref::memory_strategy
         - --low_confidence_alert_threshold

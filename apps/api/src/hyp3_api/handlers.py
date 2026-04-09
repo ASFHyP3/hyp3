@@ -5,6 +5,7 @@ from flask import Response, abort, jsonify, request
 import dynamo
 from dynamo.exceptions import (
     AccessCodeError,
+    CustomPrefixForDefaultBucketError,
     InsufficientCreditsError,
     UnexpectedApplicationStatusError,
     UpdateJobForDifferentUserError,
@@ -24,19 +25,19 @@ def problem_format(status: int, message: str) -> Response:
 
 def post_jobs(body: dict, user: str) -> dict:
     print(body)
-
     try:
         validate_jobs(body['jobs'])
     except CmrError as e:
         abort(problem_format(503, str(e)))
     except (ValidationError, MultiBurstValidationError) as e:
         abort(problem_format(400, str(e)))
-
     try:
         body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], dry_run=bool(body.get('validate_only')))
     except UnexpectedApplicationStatusError as e:
         abort(problem_format(403, str(e)))
     except InsufficientCreditsError as e:
+        abort(problem_format(400, str(e)))
+    except CustomPrefixForDefaultBucketError as e:
         abort(problem_format(400, str(e)))
     return body
 
@@ -132,3 +133,50 @@ def _get_names_for_user(user: str) -> list[str]:
         jobs.extend(new_jobs)
     names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))
+
+
+def get_bucket_policy(bucket_name: str) -> str:
+    account_arn = util.get_current_account_arn()
+    policy = f"""
+    {{
+        "Version": "2012-10-17",
+        "Statement": [
+            {{
+                "Sid": "write permission",
+                "Effect": "Allow",
+                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Action": "s3:PutObject",
+                "Resource": "arn:aws:s3:::{bucket_name}/*"
+            }},
+            {{
+                "Sid": "write tagging permission",
+                "Effect": "Allow",
+                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Action": "s3:PutObjectTagging",
+                "Resource": "arn:aws:s3:::{bucket_name}/*"
+            }},
+            {{
+                "Sid": "read permission",
+                "Effect": "Allow",
+                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Action": "s3:GetObject",
+                "Resource": "arn:aws:s3:::{bucket_name}/*"
+            }},
+            {{
+                "Sid": "read tagging permission",
+                "Effect": "Allow",
+                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Action": "s3:GetObjectTagging",
+                "Resource": "arn:aws:s3:::{bucket_name}/*"
+            }},
+            {{
+                "Sid": "get bucket location permission",
+                "Effect": "Allow",
+                "Principal": {{ "AWS": "arn:aws:iam::{account_arn}:root" }},
+                "Action": "s3:GetBucketLocation",
+                "Resource": "arn:aws:s3:::{bucket_name}"
+            }}
+        ]
+    }}
+    """
+    return policy

@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.15.0]
+
+### Added
+- `bucket` and `bucket_prefix` top level parameters for all job types.
+  - The `bucket` parameter allows for overwriting the content bucket that a job's products will be placed into.
+  - The `bucket_prefix` parameter:
+    - allows for overwriting the default prefix (the job ID) for the S3 bucket.
+    - can only be used if also using a custom bucket.
+    - allows for inserting the job's ID and name by including `{job_id}` or `{name}`. 
+- `/bucket-policy/<bucket_name>` route for retrieving AWS policy to allow HyP3 to write to a custom bucket
+
 ## [10.14.4]
 
 ### Changed
