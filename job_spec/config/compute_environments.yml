@@ -4,6 +4,7 @@ compute_environments:
   #   ami_id
   #   allocation_type
   #   allocation_strategy
+  #   max_vcpus
   SrgGslc:
     instance_types: g6.2xlarge
     ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id}}'"
@@ -14,6 +15,7 @@ compute_environments:
     ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id}}'"
     allocation_type: SPOT
     allocation_strategy: SPOT_PRICE_CAPACITY_OPTIMIZED
+    max_vcpus: 1000
   ItsLiveIntel:
     instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
     ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id}}'"
