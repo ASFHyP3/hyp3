@@ -6,7 +6,7 @@ permissions:
 on:
   push:
     branches:
-      - insar-patches
+      - hyp3-edc-sandbox
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -25,7 +25,12 @@ jobs:
             default_application_status: APPROVED
             cost_profile: EDC
             job_files: >-
+              job_spec/AUTORIFT.yml
               job_spec/INSAR_GAMMA.yml
+              job_spec/RTC_GAMMA.yml
+              job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
+              job_spec/ARIA_S1_GUNW.yml
             instance_types: r8id.xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
