@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - The `ItsLiveSpotIntel` compute environment now has a maximum vCPUs of 1000 to prevent ITS_LIVE production from overwhelming the STAC catalog.
 
+### Fixed
+- Reverted the `r6id[n]` upgrade to `r8id` instances for spot compute environments due to lack of spot capacity. This includes the `Default` and `DefaultSpot` environments for `hyp3-cargill` and the `ItsLiveIntel` and `ItsLiveSpotIntel` compute environments.
+
 ## [10.14.5]
 
 ### Changed
