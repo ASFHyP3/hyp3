@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - The `ItsLiveSpotIntel` compute environment now has a maximum vCPUs of 1000 to prevent ITS_LIVE production from overwhelming the STAC catalog.
 
+### Added
+- Added an `INSAR_ISCE_BURST_EC2` job type, that will use the `Default` on-demand compute environment. This is intended to be paired with the `INSAR_ISCE_BURST` job type defined in the `INSAR_ISCE_BUSRT_SPOT.yml` job spec which uses the `DefaultSpot` compute environment and allows end-users to submit either spot or on-demand jobs.
+- Added the `INSAR_ISCE_BURST_EC2` job type to the Cargill custom HyP3 deployment.
+
 ### Fixed
 - Reverted the `r6id[n]` upgrade to `r8id` instances for spot compute environments due to lack of spot capacity. This includes the `Default` and `DefaultSpot` environments for `hyp3-cargill` and the `ItsLiveIntel` and `ItsLiveSpotIntel` compute environments.
 
