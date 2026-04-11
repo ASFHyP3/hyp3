@@ -31,7 +31,7 @@ jobs:
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
               job_spec/ARIA_S1_GUNW.yml
-            instance_types: r8id.xlarge
+            instance_types: r8id.large
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
