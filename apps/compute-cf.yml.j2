@@ -110,6 +110,7 @@ Resources:
   {% set ami_id = env['ami_id'] if 'ami_id' in env else '!Ref AmiId' %}
   {% set type = env['allocation_type'] if 'allocation_type' in env else 'EC2' %}
   {% set strategy = env['allocation_strategy'] if 'allocation_strategy' in env else 'BEST_FIT_PROGRESSIVE' %}
+  {% set max_vcpus = env['max_vcpus'] if 'max_vcpus' in env else '!Ref MaxvCpus' %}
   {{ name }}ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
@@ -119,7 +120,7 @@ Resources:
         Type: {{ type }}
         AllocationStrategy: {{ strategy }}
         MinvCpus: 0
-        MaxvCpus: !Ref MaxvCpus
+        MaxvCpus: {{ max_vcpus }}
         InstanceTypes: {{ instance_types }}
         ImageId: {{ ami_id }}
         Subnets: !Ref SubnetIds
