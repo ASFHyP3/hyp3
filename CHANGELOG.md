@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.15.1]
+
+### Changed
+- Reduced memory requirement for INSAR_GAMMA jobs to 15,500 MB in to reflect reduced usage in hyp3-gamma v9.0.9.
+
 ## [10.15.0]
 
 ### Added
