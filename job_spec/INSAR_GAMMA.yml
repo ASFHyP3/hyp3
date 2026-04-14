@@ -84,7 +84,7 @@ INSAR_GAMMA:
         - ++process
         - insar
         - ++omp-num-threads
-        - '4'
+        - '2'
         - --bucket
         - '!Ref Bucket'
         - --bucket-prefix
@@ -111,7 +111,7 @@ INSAR_GAMMA:
       timeout: 10800
       compute_environment: Default
       vcpu: 1
-      memory: 31500
+      memory: 15500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
