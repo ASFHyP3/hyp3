@@ -55,16 +55,20 @@ def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
             'SENTINEL-1A_SLC',
             'SENTINEL-1B_SLC',
             'SENTINEL-1C_SLC',
+            'SENTINEL-1D_SLC',
             'SENTINEL-1A_SP_GRD_HIGH',
             'SENTINEL-1B_SP_GRD_HIGH',
             'SENTINEL-1C_SP_GRD_HIGH',
+            'SENTINEL-1D_SP_GRD_HIGH',
             'SENTINEL-1A_DP_GRD_HIGH',
             'SENTINEL-1B_DP_GRD_HIGH',
             'SENTINEL-1C_DP_GRD_HIGH',
+            'SENTINEL-1D_DP_GRD_HIGH',
             'SENTINEL-1_BURSTS',
             'SENTINEL-1A_RAW',
             'SENTINEL-1B_RAW',
             'SENTINEL-1C_RAW',
+            'SENTINEL-1D_RAW',
         ],
         'page_size': 2000,
     }
@@ -216,6 +220,8 @@ def check_same_relative_orbits(_, granule_metadata: list[dict]) -> None:
         name_split = granule['name'].split('_')
         absolute_orbit = name_split[7]
         # "Relationship between relative and absolute orbit numbers": https://sentiwiki.copernicus.eu/web/s1-products
+        # TODO: "The formula for S1-D will be defined during S1-D commissioning phase" (S1D formula not yet available)
+        # TODO: verify name is S1A or S1C? why isn't S1B implemented here?
         offset = 73 if name_split[0] == 'S1A' else 27
         relative_orbit = ((int(absolute_orbit) - offset) % 175) + 1
         if not previous_relative_orbit:
