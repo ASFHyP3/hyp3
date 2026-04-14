@@ -80,7 +80,7 @@ INSAR_GAMMA:
   steps:
     - name: ''
       image: 845172464411.dkr.ecr.us-west-2.amazonaws.com/hyp3-gamma
-      image_tag: 9.0.9.dev6_gf2ce2cbbe
+      image_tag: 9.0.9.dev8_g77f55018d
       command:
         - ++process
         - insar
