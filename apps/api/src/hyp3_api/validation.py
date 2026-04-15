@@ -48,23 +48,16 @@ def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
         return []
 
     cmr_parameters = {
-        'granule_ur': [f'{granule}*' for granule in granules],
-        'options[granule_ur][pattern]': 'true',
         'provider': 'ASF',
+        'options[granule_ur][pattern]': 'true',
+        'options[short_name][pattern]': 'true',
+        'granule_ur': [f'{granule}*' for granule in granules],
         'short_name': [
-            'SENTINEL-1A_SLC',
-            'SENTINEL-1B_SLC',
-            'SENTINEL-1C_SLC',
-            'SENTINEL-1A_SP_GRD_HIGH',
-            'SENTINEL-1B_SP_GRD_HIGH',
-            'SENTINEL-1C_SP_GRD_HIGH',
-            'SENTINEL-1A_DP_GRD_HIGH',
-            'SENTINEL-1B_DP_GRD_HIGH',
-            'SENTINEL-1C_DP_GRD_HIGH',
+            'SENTINEL-1?_SLC',
+            'SENTINEL-1?_SP_GRD_HIGH',
+            'SENTINEL-1?_DP_GRD_HIGH',
+            'SENTINEL-1?_RAW',
             'SENTINEL-1_BURSTS',
-            'SENTINEL-1A_RAW',
-            'SENTINEL-1B_RAW',
-            'SENTINEL-1C_RAW',
         ],
         'page_size': 2000,
     }
