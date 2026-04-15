@@ -114,7 +114,8 @@ def lambda_handler(event: dict, _) -> dict:
         return get_container_overrides(RTC_GAMMA_10M_MEMORY)
 
     if job_type == 'INSAR_GAMMA' and job_parameters['looks'] == '10x2':
-        return get_container_overrides(INSAR_GAMMA_10X2_MEMORY)
+        omp_num_threads = get_vcpus_from_memory(INSAR_GAMMA_10X2_MEMORY)
+        return get_container_overrides(INSAR_GAMMA_10X2_MEMORY, omp_num_threads)
 
     if job_type in ['WATER_MAP', 'WATER_MAP_EQ'] and job_parameters['resolution'] in [10, 20]:
         return get_container_overrides(WATER_MAP_10M_MEMORY)
