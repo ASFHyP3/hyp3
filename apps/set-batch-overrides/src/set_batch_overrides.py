@@ -7,6 +7,7 @@ AUTORIFT_MEMORY_32GB = '31500'
 AUTORIFT_MEMORY_64GB = '63200'
 
 RTC_GAMMA_10M_MEMORY = '63200'
+INSAR_GAMMA_10X2_MEMORY = '31500'
 WATER_MAP_10M_MEMORY = '126000'
 
 INSAR_ISCE_BURST_MEMORY_8G = '7500'
@@ -111,6 +112,9 @@ def lambda_handler(event: dict, _) -> dict:
 
     if job_type == 'RTC_GAMMA' and job_parameters['resolution'] in [10, 20]:
         return get_container_overrides(RTC_GAMMA_10M_MEMORY)
+
+    if job_type == 'INSAR_GAMMA' and job_parameters['looks'] == '10x2':
+        return get_container_overrides(INSAR_GAMMA_10X2_MEMORY)
 
     if job_type in ['WATER_MAP', 'WATER_MAP_EQ'] and job_parameters['resolution'] in [10, 20]:
         return get_container_overrides(WATER_MAP_10M_MEMORY)
