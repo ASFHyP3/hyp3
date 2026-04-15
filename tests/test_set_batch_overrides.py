@@ -10,7 +10,6 @@ from set_batch_overrides import (
     INSAR_ISCE_BURST_MEMORY_64G,
     INSAR_ISCE_BURST_MEMORY_128G,
     RTC_GAMMA_10M_MEMORY,
-    INSAR_GAMMA_10X2_MEMORY,
     WATER_MAP_10M_MEMORY,
     get_granules,
     get_vcpus_from_memory,
@@ -272,7 +271,7 @@ def test_set_batch_overrides_insar_gamma():
         'ResourceRequirements': [
             {
                 'Type': 'MEMORY',
-                'Value': INSAR_GAMMA_10X2_MEMORY,
+                'Value': '31500',
             }
         ],
         'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '4'}],
@@ -285,7 +284,15 @@ def test_set_batch_overrides_insar_gamma():
             'job_parameters': {'looks': '20x4'},
         },
         None,
-    ) == {}
+    ) == {
+        'ResourceRequirements': [
+            {
+                'Type': 'MEMORY',
+                'Value': '15500',
+            }
+        ],
+        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '2'}],
+    }
 
 
 def test_set_batch_overrides_water_map_10m():
