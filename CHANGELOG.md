@@ -9,8 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added Sentinel-1D support for the CMR query and the `INSAR_GAMMA` and `RTC_GAMMA` job types.
 
-## [10.15.1]
-
 ### Changed
 - Reduced memory requirement for INSAR_GAMMA jobs to 15,500 MB in to reflect reduced usage in hyp3-gamma v9.0.9.
 
