@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.16.1]
 
 ### Fixed
-- Resolved SRG_GSLC and SRG_TIME_SERIES issue related to Sentinel-1C validation.
+- Allow SRG_GSLC and SRG_TIME_SERIES jobs to process Sentinel-1 C and D granules.
 
 ## [10.16.0]
 
