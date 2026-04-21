@@ -21,7 +21,7 @@ jobs:
             template_bucket: cf-templates-bywc0durdnqy-us-west-2
             image_tag: test
             product_lifetime_in_days: 14
-            default_credits_per_user: 0
+            default_credits_per_user: 50
             default_application_status: NOT_STARTED
             cost_profile: EDC
             job_files: >-
