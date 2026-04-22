@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.16.1]
 
+### Changed
+- Reduced default credits per user to 4,000 from 8,000 for the `hyp3-edc-prod` and `hyp3-edc-uat` deployments.
+
 ### Fixed
 - Allow SRG_GSLC and SRG_TIME_SERIES jobs to process Sentinel-1 C and D granules.
 
