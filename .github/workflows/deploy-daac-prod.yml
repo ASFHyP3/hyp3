@@ -31,9 +31,9 @@ jobs:
               job_spec/ARIA_S1_GUNW.yml
               job_spec/OPERA_DISP_TMS.yml
             instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
-            default_max_vcpus: 600
-            expanded_max_vcpus: 1200
-            required_surplus: 2000
+            default_max_vcpus: 900
+            expanded_max_vcpus: 1800
+            required_surplus: 2500
             security_environment: EDC
             ami_id: /ngap/amis/image_id_ecs_al2023_x86
             distribution_url: 'https://d3gm2hf49xd6jj.cloudfront.net'
