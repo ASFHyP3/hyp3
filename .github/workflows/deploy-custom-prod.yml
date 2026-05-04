@@ -210,6 +210,25 @@ jobs:
             security_environment: ASF
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
+          - environment: hyp3-riverwidth
+            domain: hyp3-riverwidth.asf.alaska.edu
+            template_bucket: cf-templates-15gmiot9prm67-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 90
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/RTC_GAMMA.yml
+              job_spec/WATER_MAP.yml
+              job_spec/WATER_MAP_EQ.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
+            required_surplus: 0
+            security_environment: ASF
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
           - environment: azdwr-hyp3
             domain: azdwr-hyp3.asf.alaska.edu
             template_bucket: cf-templates-xlga17noink6-us-west-2
