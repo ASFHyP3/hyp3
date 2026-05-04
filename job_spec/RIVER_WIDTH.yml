@@ -5,18 +5,15 @@ RIVER_WIDTH:
   parameters:
     ERW_type:
       api_schema:
-        description: ERW_type ("node" or "reach")
+        description: 'ERW_type ("node" or "reach")'
         type: string
-        format: "node" or "reach"
         example: "node"
-		example: "reach"
     id_number:
       api_schema:
-        description: id_number (node_id or reach_id)
-        type: integer
-        format: integer (usually 11 or 14 digits)
-        example: 74270500050291	(a node_id)
-		example: 74270500051 (a reach_id)
+        description: 'id_number (node_id or reach_id)'
+        type: number
+        format: integer
+        example: 74270500050291
   cost_profiles:
     DEFAULT:
       cost: 1.0
