@@ -1,0 +1,42 @@
+RIVER_WIDTH:
+  required_parameters:
+    - ERW_type
+    - id_number
+  parameters:
+    ERW_type:
+      api_schema:
+        description: ERW_type ("node" or "reach")
+        type: string
+        format: "node" or "reach"
+        example: "node"
+		example: "reach"
+    id_number:
+      api_schema:
+        description: id_number (node_id or reach_id)
+        type: integer
+        format: integer (usually 11 or 14 digits)
+        example: 74270500050291	(a node_id)
+		example: 74270500051 (a reach_id)
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-riverwidth
+      command:
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --ERW_type
+        - Ref::ERW_type
+        - --id_number
+        - Ref::id_number
+      timeout: 5400
+      compute_environment: Default
+      vcpu: 1
+      memory: 7600
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
