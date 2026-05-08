@@ -1,0 +1,39 @@
+STREAM_FLOW:
+  required_parameters:
+    - ERW_type
+    - id_number
+  parameters:
+    ERW_type:
+      api_schema:
+        description: 'ERW_type ("node" or "reach")'
+        type: string
+        example: "node"
+    id_number:
+      api_schema:
+        description: 'id_number (node_id or reach_id)'
+        type: number
+        format: integer
+        example: 74270500050291
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-streamflow
+      command:
+        - --bucket
+        - '!Ref Bucket'
+        - --bucket-prefix
+        - Ref::job_id
+        - --ERW_type
+        - Ref::ERW_type
+        - --id_number
+        - Ref::id_number
+      timeout: 5400
+      compute_environment: Default
+      vcpu: 1
+      memory: 7600
+      secrets:
+        - EARTHDATA_PASSWORD
+        - EARTHDATA_USERNAME
