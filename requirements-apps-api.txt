@@ -4,7 +4,7 @@ jsonschema==4.26.0
 openapi-core==0.23.1
 prance==25.4.8.0
 PyJWT==2.12.1
-requests==2.33.1
+requests==2.34.0
 serverless_wsgi==3.1.0
 shapely==2.1.2
 strict-rfc3339==0.7
