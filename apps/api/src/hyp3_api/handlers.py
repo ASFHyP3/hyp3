@@ -142,17 +142,10 @@ def get_bucket_policy(bucket_name: str) -> str:
         "Version": "2012-10-17",
         "Statement": [
             {{
-                "Sid": "write permission",
+                "Sid": "list permission",
                 "Effect": "Allow",
                 "Principal": {{ "AWS": "{account_arn}:root" }},
-                "Action": "s3:PutObject",
-                "Resource": "arn:aws:s3:::{bucket_name}/*"
-            }},
-            {{
-                "Sid": "write tagging permission",
-                "Effect": "Allow",
-                "Principal": {{ "AWS": "{account_arn}:root" }},
-                "Action": "s3:PutObjectTagging",
+                "Action": "s3:ListBucket",
                 "Resource": "arn:aws:s3:::{bucket_name}/*"
             }},
             {{
@@ -167,6 +160,20 @@ def get_bucket_policy(bucket_name: str) -> str:
                 "Effect": "Allow",
                 "Principal": {{ "AWS": "{account_arn}:root" }},
                 "Action": "s3:GetObjectTagging",
+                "Resource": "arn:aws:s3:::{bucket_name}/*"
+            }},
+            {{
+                "Sid": "write permission",
+                "Effect": "Allow",
+                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Action": "s3:PutObject",
+                "Resource": "arn:aws:s3:::{bucket_name}/*"
+            }},
+            {{
+                "Sid": "write tagging permission",
+                "Effect": "Allow",
+                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Action": "s3:PutObjectTagging",
                 "Resource": "arn:aws:s3:::{bucket_name}/*"
             }},
             {{

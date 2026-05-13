@@ -76,6 +76,15 @@ Resources:
               - s3:GetObjectTagging
             Resource: !Sub "arn:aws:s3:::${Bucket}/*"
           - Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetObject
+              - s3:GetObjectTagging
+            Resource: "*"
+            Condition:
+              StringNotEquals:
+                s3:ResourceAccount: !Ref "AWS::AccountId"
+          - Effect: Allow
             Action: dynamodb:UpdateItem
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
 
