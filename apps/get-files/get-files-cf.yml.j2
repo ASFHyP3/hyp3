@@ -85,9 +85,7 @@ Resources:
               StringNotEquals:
                 s3:ResourceAccount: !Ref "AWS::AccountId"
           - Effect: Allow
-            Action:
-              - dynamodb:GetItem
-              - dynamodb:UpdateItem
+            Action: dynamodb:UpdateItem
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
 
   Lambda:
