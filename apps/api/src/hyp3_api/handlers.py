@@ -144,7 +144,7 @@ def get_bucket_policy(bucket_name: str) -> dict:
                 "Sid": "HyP3 bucket-level publish permissions",
                 "Effect": "Allow",
                 "Principal": {
-                    "AWS": f"{account_arn}:root",
+                    "AWS": f"{account_arn}",
                 },
                 "Action": [
                     "s3:ListBucket",
@@ -156,7 +156,7 @@ def get_bucket_policy(bucket_name: str) -> dict:
                 "Sid": "HyP3 object-level publish permissions",
                 "Effect": "Allow",
                 "Principal": {
-                    "AWS": f"{account_arn}:root",
+                    "AWS": f"{account_arn}",
                 },
                 "Action": [
                     "s3:GetObject",
