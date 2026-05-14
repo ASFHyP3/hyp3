@@ -76,4 +76,4 @@ def lambda_handler(event: dict, context: object) -> None:
         assert 'Error' in result
         log_content = get_log_content_from_failed_attempts(json.loads(result['Cause']))
 
-    write_log_to_s3(environ['BUCKET'], event['prefix'], log_content)
+    write_log_to_s3(event['bucket'], event['bucket_prefix'], log_content)
