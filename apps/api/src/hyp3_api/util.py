@@ -52,5 +52,4 @@ def build_next_url(url: str, start_token: str, x_forwarded_host: str | None = No
 
 def get_current_account_arn() -> str:
     sts = boto3.client('sts')
-    account = sts.get_caller_identity().split(':user')[0]
-    return account
+    return sts.get_caller_identity()['Account']
