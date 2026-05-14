@@ -135,55 +135,65 @@ def _get_names_for_user(user: str) -> list[str]:
     return sorted(list(names))
 
 
-def get_bucket_policy(bucket_name: str) -> str:
+def get_bucket_policy(bucket_name: str) -> dict:
     account_arn = util.get_current_account_arn()
-    policy = f"""
-    {{
+    policy = {
         "Version": "2012-10-17",
         "Statement": [
-            {{
+            {
                 "Sid": "list permission",
                 "Effect": "Allow",
-                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Principal": {
+                    "AWS": f"{account_arn}:root"
+                },
                 "Action": "s3:ListBucket",
-                "Resource": "arn:aws:s3:::{bucket_name}/*"
-            }},
-            {{
+                "Resource": f"arn:aws:s3:::{bucket_name}/*"
+            },
+            {
                 "Sid": "read permission",
                 "Effect": "Allow",
-                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Principal": {
+                    "AWS": f"{account_arn}:root"
+                },
                 "Action": "s3:GetObject",
-                "Resource": "arn:aws:s3:::{bucket_name}/*"
-            }},
-            {{
+                "Resource": f"arn:aws:s3:::{bucket_name}/*"
+            },
+            {
                 "Sid": "read tagging permission",
                 "Effect": "Allow",
-                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Principal": {
+                    "AWS": f"{account_arn}:root"
+                },
                 "Action": "s3:GetObjectTagging",
-                "Resource": "arn:aws:s3:::{bucket_name}/*"
-            }},
-            {{
+                "Resource": f"arn:aws:s3:::{bucket_name}/*"
+            },
+            {
                 "Sid": "write permission",
                 "Effect": "Allow",
-                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Principal": {
+                    "AWS": f"{account_arn}:root"
+                },
                 "Action": "s3:PutObject",
-                "Resource": "arn:aws:s3:::{bucket_name}/*"
-            }},
-            {{
+                "Resource": f"arn:aws:s3:::{bucket_name}/*"
+            },
+            {
                 "Sid": "write tagging permission",
                 "Effect": "Allow",
-                "Principal": {{ "AWS": "{account_arn}:root" }},
+                "Principal": {
+                    "AWS": f"{account_arn}:root"
+                },
                 "Action": "s3:PutObjectTagging",
-                "Resource": "arn:aws:s3:::{bucket_name}/*"
-            }},
-            {{
+                "Resource": f"arn:aws:s3:::{bucket_name}/*"
+            },
+            {
                 "Sid": "get bucket location permission",
                 "Effect": "Allow",
-                "Principal": {{ "AWS": "arn:aws:iam::{account_arn}:root" }},
+                "Principal": {
+                    "AWS": f"arn:aws:iam::{account_arn}:root"
+                },
                 "Action": "s3:GetBucketLocation",
-                "Resource": "arn:aws:s3:::{bucket_name}"
-            }}
+                "Resource": f"arn:aws:s3:::{bucket_name}"
+            }
         ]
-    }}
-    """
+    }
     return policy
