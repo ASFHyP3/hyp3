@@ -113,7 +113,8 @@ def test_upload_log_to_s3(s3_stubber):
 def test_lambda_handler(mock_get_log_content: MagicMock, mock_write_log_to_s3: MagicMock):
     mock_get_log_content.return_value = 'here is some test log content'
     event = {
-        'prefix': 'test-prefix',
+        'bucket': 'test-bucket',
+        'bucket_prefix': 'test-prefix',
         'log_group': 'test-log-group',
         'processing_results': {'step_0': {'Container': {'LogStreamName': 'test-log-stream'}}},
     }
@@ -128,7 +129,8 @@ def test_lambda_handler(mock_get_log_content: MagicMock, mock_write_log_to_s3: M
 @patch.dict(os.environ, {'BUCKET': 'test-bucket'}, clear=True)
 def test_lambda_handler_no_log_stream(mock_write_log_to_s3: MagicMock):
     event = {
-        'prefix': 'test-prefix',
+        'bucket': 'test-bucket',
+        'bucket_prefix': 'test-prefix',
         'log_group': 'test-log-group',
         'processing_results': {
             'step_0': {
@@ -152,7 +154,8 @@ def test_lambda_handler_log_stream_does_not_exist():
         )
 
     event = {
-        'prefix': 'test-prefix',
+        'bucket': 'test-bucket',
+        'bucket_prefix': 'test-prefix',
         'log_group': 'test-log-group',
         'processing_results': {
             'step_0': {

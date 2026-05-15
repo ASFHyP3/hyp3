@@ -21,11 +21,19 @@ def s3_stubber():
         stubber.assert_no_pending_responses()
 
 
-def test_get_download_url(monkeypatch):
+def stub_bucket_head(s3_stubber: Stubber, bucket, region):
+    params = {'Bucket': bucket}
+    s3_response = {'BucketRegion': region}
+    s3_stubber.add_response(method='head_bucket', expected_params=params, service_response=s3_response)
+
+
+def test_get_download_url(monkeypatch, s3_stubber: Stubber):
     assert os.getenv('DISTRIBUTION_URL') is None
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
     assert get_files.get_download_url('myBucket', 'myKey') == 'https://myBucket.s3.myRegion.amazonaws.com/myKey'
 
     monkeypatch.setenv('DISTRIBUTION_URL', '')
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
     assert get_files.get_download_url('myBucket', 'myKey') == 'https://myBucket.s3.myRegion.amazonaws.com/myKey'
 
     monkeypatch.setenv('DISTRIBUTION_URL', 'https://foo.com/')
@@ -34,20 +42,33 @@ def test_get_download_url(monkeypatch):
     monkeypatch.setenv('DISTRIBUTION_URL', 'https://foo.com')
     assert get_files.get_download_url('myBucket', 'myKey') == 'https://foo.com/myKey'
 
+    stub_bucket_head(s3_stubber, 'userBucket', 'userRegion')
+    assert get_files.get_download_url('userBucket', 'myKey') == 'https://userBucket.s3.userRegion.amazonaws.com/myKey'
 
-def stub_expiration(s3_stubber: Stubber, bucket, key):
+    monkeypatch.delenv('DISTRIBUTION_URL')
+    stub_bucket_head(s3_stubber, 'userBucket', 'userRegion')
+    assert get_files.get_download_url('userBucket', 'myKey') == 'https://userBucket.s3.userRegion.amazonaws.com/myKey'
+
+
+def stub_expiration(s3_stubber: Stubber, bucket, key, expires=True):
     params = {'Bucket': bucket, 'Key': key}
-    s3_response = {
-        'Expiration': 'expiry-date="Wed, 01 Jan 2020 00:00:00 UTC", '
-        'rule-id="MDQxMzRmZTgtNDFlMi00Y2UwLWIyZjEtMTEzYTllNDNjYjJk"'
-    }
+    s3_response = {}
+    if expires:
+        s3_response['Expiration'] = (
+            'expiry-date="Wed, 01 Jan 2020 00:00:00 UTC", rule-id="MDQxMzRmZTgtNDFlMi00Y2UwLWIyZjEtMTEzYTllNDNjYjJk"'
+        )
+
     s3_stubber.add_response(method='get_object', expected_params=params, service_response=s3_response)
 
 
 def test_get_expiration(s3_stubber: Stubber):
-    stub_expiration(s3_stubber, 'myBucket', 'myKey')
+    stub_expiration(s3_stubber, 'myBucket', 'myKey', expires=True)
     response = get_files.get_expiration_time('myBucket', 'myKey')
     assert response == '2020-01-01T00:00:00+00:00'
+
+    stub_expiration(s3_stubber, 'userBucket', 'userKey', expires=False)
+    response = get_files.get_expiration_time('userBucket', 'userKey')
+    assert response == '2120-10-21T00:00:00+00:00'
 
 
 def stub_get_object_tagging(s3_stubber: Stubber, bucket, key, file_type):
@@ -111,14 +132,19 @@ def test_get_files_zipped_product(s3_stubber: Stubber):
         },
     ]
     stub_list_files(s3_stubber, 'myJobId', 'myBucket', files)
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myProduct.zip', 'product')
     stub_expiration(s3_stubber, 'myBucket', 'myJobId/myProduct.zip')
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myProduct.tif', 'product')
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myThumbnail.png', 'amp_thumbnail')
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'amp_browse')
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse_rgb.png', 'rgb_browse')
 
-    event = {'job_id': 'myJobId'}
+    event = {'job_id': 'myJobId', 'bucket': 'myBucket', 'bucket_prefix': 'myJobId'}
     with patch('dynamo.jobs.get_job') as mock_get_job:
         with patch('dynamo.jobs.update_job') as mock_update_job:
             mock_get_job.return_value = {
@@ -168,12 +194,15 @@ def test_get_files_netcdf_product(s3_stubber: Stubber):
         },
     ]
     stub_list_files(s3_stubber, 'myJobId', 'myBucket', files)
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myProduct.nc', 'product')
     stub_expiration(s3_stubber, 'myBucket', 'myJobId/myProduct.nc')
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myThumbnail.png', 'amp_thumbnail')
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'amp_browse')
 
-    event = {'job_id': 'myJobId'}
+    event = {'job_id': 'myJobId', 'bucket': 'myBucket', 'bucket_prefix': 'myJobId'}
     with patch('dynamo.jobs.get_job') as mock_get_job:
         with patch('dynamo.jobs.update_job') as mock_update_job:
             mock_get_job.return_value = {
@@ -214,10 +243,11 @@ def test_get_files_failed_job(s3_stubber: Stubber):
         },
     ]
     stub_list_files(s3_stubber, 'myJobId', 'myBucket', files)
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
     stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myJobId.log', 'log')
     stub_expiration(s3_stubber, 'myBucket', 'myJobId/myJobId.log')
 
-    event = {'job_id': 'myJobId'}
+    event = {'job_id': 'myJobId', 'bucket': 'myBucket', 'bucket_prefix': 'myJobId'}
     with patch('dynamo.jobs.get_job') as mock_get_job:
         with patch('dynamo.jobs.update_job') as mock_update_job:
             mock_get_job.return_value = {
