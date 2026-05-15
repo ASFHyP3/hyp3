@@ -104,7 +104,7 @@ def test_upload_log_to_s3(s3_stubber):
     s3_stubber.add_response(method='put_object', expected_params=expected_params, service_response={})
     s3_stubber.add_response(method='put_object_tagging', expected_params=tag_params, service_response={})
 
-    upload_log.write_log_to_s3('myBucket', 'myJobId', 'myContent')
+    upload_log.write_log_to_s3('myJobId', 'myBucket', 'myJobId', 'myContent')
 
 
 @patch('upload_log.write_log_to_s3')
@@ -113,6 +113,7 @@ def test_upload_log_to_s3(s3_stubber):
 def test_lambda_handler(mock_get_log_content: MagicMock, mock_write_log_to_s3: MagicMock):
     mock_get_log_content.return_value = 'here is some test log content'
     event = {
+        'job_id': 'job-id',
         'bucket': 'test-bucket',
         'bucket_prefix': 'test-prefix',
         'log_group': 'test-log-group',
@@ -122,13 +123,16 @@ def test_lambda_handler(mock_get_log_content: MagicMock, mock_write_log_to_s3: M
     upload_log.lambda_handler(event, None)
 
     mock_get_log_content.assert_called_once_with('test-log-group', 'test-log-stream')
-    mock_write_log_to_s3.assert_called_once_with('test-bucket', 'test-prefix', mock_get_log_content.return_value)
+    mock_write_log_to_s3.assert_called_once_with(
+        'job-id', 'test-bucket', 'test-prefix', mock_get_log_content.return_value
+    )
 
 
 @patch('upload_log.write_log_to_s3')
 @patch.dict(os.environ, {'BUCKET': 'test-bucket'}, clear=True)
 def test_lambda_handler_no_log_stream(mock_write_log_to_s3: MagicMock):
     event = {
+        'job_id': 'job-id',
         'bucket': 'test-bucket',
         'bucket_prefix': 'test-prefix',
         'log_group': 'test-log-group',
@@ -142,7 +146,7 @@ def test_lambda_handler_no_log_stream(mock_write_log_to_s3: MagicMock):
 
     upload_log.lambda_handler(event, None)
 
-    mock_write_log_to_s3.assert_called_once_with('test-bucket', 'test-prefix', 'foo reason')
+    mock_write_log_to_s3.assert_called_once_with('job-id', 'test-bucket', 'test-prefix', 'foo reason')
 
 
 def test_lambda_handler_log_stream_does_not_exist():
@@ -154,6 +158,7 @@ def test_lambda_handler_log_stream_does_not_exist():
         )
 
     event = {
+        'job_id': 'job-id',
         'bucket': 'test-bucket',
         'bucket_prefix': 'test-prefix',
         'log_group': 'test-log-group',
@@ -179,7 +184,7 @@ def test_lambda_handler_log_stream_does_not_exist():
         upload_log.lambda_handler(event, None)
 
         mock_write_log_to_s3.assert_called_once_with(
-            'test-bucket', 'test-prefix', 'error message 1\nerror message 2\nerror message 3'
+            'job-id', 'test-bucket', 'test-prefix', 'error message 1\nerror message 2\nerror message 3'
         )
 
 
@@ -192,7 +197,9 @@ def test_lambda_handler_resource_not_found():
         )
 
     event = {
-        'prefix': 'test-prefix',
+        'job_id': 'job-id',
+        'bucket': 'test-bucket',
+        'bucket_prefix': 'test-prefix',
         'log_group': 'test-log-group',
         'processing_results': {
             'step_0': {

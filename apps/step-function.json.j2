@@ -132,6 +132,7 @@
       "Type": "Task",
       "Resource": "${UploadLogLambdaArn}",
       "Parameters": {
+        "job_id.$": "$.job_id",
         "bucket.$": "$.bucket",
         "bucket_prefix.$": "$.bucket_prefix",
         "log_group": "/aws/batch/job",
