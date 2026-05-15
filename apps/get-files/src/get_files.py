@@ -14,7 +14,7 @@ S3_CLIENT = boto3.client('s3')
 
 def get_download_url(bucket: str, key: str) -> str:
     if (bucket == environ['BUCKET']) and (distribution_url := os.getenv('DISTRIBUTION_URL')):
-         return urllib.parse.urljoin(distribution_url, key)
+        return urllib.parse.urljoin(distribution_url, key)
 
     region = S3_CLIENT.head_bucket(Bucket=bucket)['BucketRegion']
     return f'https://{bucket}.s3.{region}.amazonaws.com/{key}'

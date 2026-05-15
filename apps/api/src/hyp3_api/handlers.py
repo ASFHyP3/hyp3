@@ -138,34 +138,34 @@ def _get_names_for_user(user: str) -> list[str]:
 def get_bucket_policy(bucket_name: str) -> dict:
     account_arn = util.get_current_account_arn()
     policy = {
-        "Version": "2012-10-17",
-        "Statement": [
+        'Version': '2012-10-17',
+        'Statement': [
             {
-                "Sid": "HyP3 bucket-level publish permissions",
-                "Effect": "Allow",
-                "Principal": {
-                    "AWS": f"{account_arn}",
+                'Sid': 'HyP3 bucket-level publish permissions',
+                'Effect': 'Allow',
+                'Principal': {
+                    'AWS': f'{account_arn}',
                 },
-                "Action": [
-                    "s3:ListBucket",
-                    "s3:getBucketLocation",
+                'Action': [
+                    's3:ListBucket',
+                    's3:getBucketLocation',
                 ],
-                "Resource": f"arn:aws:s3:::{bucket_name}",
+                'Resource': f'arn:aws:s3:::{bucket_name}',
             },
             {
-                "Sid": "HyP3 object-level publish permissions",
-                "Effect": "Allow",
-                "Principal": {
-                    "AWS": f"{account_arn}",
+                'Sid': 'HyP3 object-level publish permissions',
+                'Effect': 'Allow',
+                'Principal': {
+                    'AWS': f'{account_arn}',
                 },
-                "Action": [
-                    "s3:GetObject",
-                    "s3:GetObjectTagging",
-                    "s3:PutObject",
-                    "s3:PutObjectTagging",
+                'Action': [
+                    's3:GetObject',
+                    's3:GetObjectTagging',
+                    's3:PutObject',
+                    's3:PutObjectTagging',
                 ],
-                "Resource": f"arn:aws:s3:::{bucket_name}/*",
-            }
-        ]
+                'Resource': f'arn:aws:s3:::{bucket_name}/*',
+            },
+        ],
     }
     return policy

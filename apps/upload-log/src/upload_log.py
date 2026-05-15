@@ -1,5 +1,4 @@
 import json
-from os import environ
 
 import boto3
 from botocore.config import Config
