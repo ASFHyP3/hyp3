@@ -463,7 +463,7 @@ components:
       nullable: true
       minLength: 3
       maxLength: 63
-      example: "default-s3-bucket"
+      example: "my-example-bucket"
       pattern: "(?!(^((2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2}).){3}(2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})$|^xn--|.+-s3alias$))^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
 
     bucket_prefix:
@@ -476,7 +476,7 @@ components:
       pattern: "^(?!\/)(?!.*\/\/)(?:[A-Za-z0-9._\/-]|{job_id}|{name}){1,1024}$"
 
     bucket_policy:
-      description: An AWS S3 Bucket Policy for a bucket that will allow HyP3 to write to the bucket.
+      description: An AWS S3 Bucket Policy that, when applied, will allow HyP3 to write to the bucket.
       type: object
       required:
         - Version
@@ -485,10 +485,41 @@ components:
       properties:
         Version:
           type: string
+          format: date
+          example: "2012-10-17"
         Statement:
           type: array
           items:
             type: object
+          example: >-
+            [
+              {
+                "Sid": "HyP3 bucket-level publish permissions",
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": "123456789012"
+                },
+                  "Action": [
+                  "s3:ListBucket",
+                  "s3:getBucketLocation"
+                ],
+                "Resource": "arn:aws:s3:::my-example-bucket"
+              },
+              {
+                "Sid": "HyP3 object-level publish permissions",
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": "123456789012"
+                },
+                "Action": [
+                  "s3:GetObject",
+                  "s3:GetObjectTagging",
+                  "s3:PutObject",
+                  "s3:PutObjectTagging"
+                ],
+                "Resource": "arn:aws:s3:::my-example-bucket/*"
+              }
+            ]
 
 
     start_token:

@@ -87,7 +87,7 @@ def _raise_for_application_status(application_status: str, user_id: str) -> None
 
 def _handle_content_bucket(job: dict) -> dict:
     content_bucket = environ['CONTENT_BUCKET']
-    example_bucket = 'default-s3-bucket'
+    example_bucket = 'my-example-bucket'
 
     job_id = job['job_id']
     user_bucket = job.get('bucket', '')
