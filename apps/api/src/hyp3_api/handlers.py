@@ -137,6 +137,7 @@ def _get_names_for_user(user: str) -> list[str]:
 
 def get_bucket_policy(bucket_name: str) -> dict:
     account_arn = util.get_current_account_arn()
+    # NOTE: Reflect any edits here in api-spec/openapi-spec.yml.j2 as well
     policy = {
         'Version': '2012-10-17',
         'Statement': [
