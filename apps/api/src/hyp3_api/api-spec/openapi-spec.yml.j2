@@ -95,7 +95,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/start_token"
-
       responses:
         "200":
           description: 200 response
@@ -136,7 +135,6 @@ paths:
           schema:
             $ref: "#/components/schemas/job_id"
           required: true
-
       responses:
         "200":
           description: 200 response
@@ -171,6 +169,23 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/user"
+
+  /bucket-policy/{bucket_name}:
+    get:
+      description: Get a bucket policy for `bucket_name` which allows HyP3 to write to that bucket.
+      parameters:
+        - name: bucket_name
+          in: path
+          schema:
+            $ref: "#/components/schemas/bucket"
+          required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/bucket_policy"
 
 components:
   schemas:
@@ -459,6 +474,22 @@ components:
       maxLength: 100
       example: "{job_id}"
       pattern: "^(?!\/)(?!.*\/\/)(?:[A-Za-z0-9._\/-]|{job_id}|{name}){1,1024}$"
+
+    bucket_policy:
+      description: An AWS S3 Bucket Policy for a bucket that will allow HyP3 to write to the bucket.
+      type: object
+      required:
+        - Version
+        - Statement
+      additionalProperties: false
+      properties:
+        Version:
+          type: string
+        Statement:
+          type: array
+          items:
+            type: object
+
 
     start_token:
       description: Token used for fetching subsequent results for large queries
