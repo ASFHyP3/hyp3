@@ -160,6 +160,14 @@ def test_get_month_to_date_spending(cost_explorer_stubber):
             'Start': '2022-07-01',
             'End': '2022-08-01',
         },
+        'Filter': {
+            'Not': {
+                'Dimensions': {
+                    'Key': 'RECORD_TYPE',
+                    'Values': ['SavingsPlanNegotiation'],
+                },
+            },
+        },
     }
     mock_service_response = {
         'ResultsByTime': [
