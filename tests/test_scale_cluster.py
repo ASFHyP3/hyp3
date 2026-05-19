@@ -164,7 +164,7 @@ def test_get_month_to_date_spending(cost_explorer_stubber):
             'Not': {
                 'Dimensions': {
                     'Key': 'RECORD_TYPE',
-                    'Values': ['SavingsPlanNegotiation'],
+                    'Values': ['SavingsPlanNegation'],
                 },
             },
         },

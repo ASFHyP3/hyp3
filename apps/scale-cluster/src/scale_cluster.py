@@ -21,7 +21,7 @@ def get_month_to_date_spending(today: date) -> float:
         TimePeriod=get_time_period(today),
         Granularity='MONTHLY',
         Metrics=['UnblendedCost'],
-        Filter={'Not': {'Dimensions': {'Key': 'RECORD_TYPE', 'Values': ['SavingsPlanNegotiation']}}},
+        Filter={'Not': {'Dimensions': {'Key': 'RECORD_TYPE', 'Values': ['SavingsPlanNegation']}}},
     )
     return float(response['ResultsByTime'][0]['Total']['UnblendedCost']['Amount'])
 
