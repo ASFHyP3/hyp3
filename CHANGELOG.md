@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added support for Element84 Sentinel-2 L2A STAC IDs to the `ARIA_AUTORIFT` job spec.
 
+### Changed
+- Do not include cost offsets from EC2 Savings Plans when computing month-to-date spending in scale-cluster lambda.
+
 ## [10.16.4]
 
 ### Added
