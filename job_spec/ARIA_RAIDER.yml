@@ -30,9 +30,9 @@ ARIA_RAIDER:
         - ++process
         - calcDelaysGUNW
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --weather-model
         - Ref::weather_model
         - --input-bucket-prefix

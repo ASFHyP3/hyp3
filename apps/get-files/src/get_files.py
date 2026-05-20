@@ -13,16 +13,21 @@ S3_CLIENT = boto3.client('s3')
 
 
 def get_download_url(bucket: str, key: str) -> str:
-    if distribution_url := os.getenv('DISTRIBUTION_URL'):
-        download_url = urllib.parse.urljoin(distribution_url, key)
-    else:
-        region = environ['AWS_REGION']
-        download_url = f'https://{bucket}.s3.{region}.amazonaws.com/{key}'
-    return download_url
+    if (bucket == environ['BUCKET']) and (distribution_url := os.getenv('DISTRIBUTION_URL')):
+        return urllib.parse.urljoin(distribution_url, key)
+
+    region = S3_CLIENT.head_bucket(Bucket=bucket)['BucketRegion']
+    return f'https://{bucket}.s3.{region}.amazonaws.com/{key}'
 
 
 def get_expiration_time(bucket: str, key: str) -> str:
     s3_object = S3_CLIENT.get_object(Bucket=bucket, Key=key)
+    expiration = s3_object.get('Expiration')
+    if expiration is None:
+        # HyP3's 100th birthday; 100 years since first non-ASF job
+        # https://hyp3-api.asf.alaska.edu/jobs/969ab836-aa95-4613-8673-2a0415949afa
+        return '2120-10-21T00:00:00+00:00'
+
     expiration_string = s3_object['Expiration'].split('"')[1]
     expiration_datetime = datetime.strptime(expiration_string, '%a, %d %b %Y %H:%M:%S %Z')
     return expiration_datetime.isoformat(timespec='seconds') + '+00:00'
@@ -91,8 +96,6 @@ def organize_files(s3_objects: list[dict], bucket: str) -> dict:
 
 
 def lambda_handler(event: dict, context: object) -> None:
-    bucket = environ['BUCKET']
-
-    response = S3_CLIENT.list_objects_v2(Bucket=bucket, Prefix=event['job_id'])
-    files = organize_files(response['Contents'], bucket)
+    response = S3_CLIENT.list_objects_v2(Bucket=event['bucket'], Prefix=event['bucket_prefix'])
+    files = organize_files(response['Contents'], event['bucket'])
     dynamo.jobs.update_job({'job_id': event['job_id'], **files})

@@ -314,7 +314,13 @@ def test_get_credit_cost_validate_keys():
 
 def test_put_jobs(tables, monkeypatch, approved_user):
     monkeypatch.setenv('DEFAULT_CREDITS_PER_USER', '10')
-    payload = [{'name': 'name1'}, {'name': 'name1'}, {'name': 'name2'}]
+    payload = [
+        {'name': 'name1'},
+        {'name': 'name1'},
+        {'name': 'name2'},
+        {'name': 'name3', 'bucket': 'test-bucket-1', 'bucket_prefix': 'prefix/{name}/{job_id}'},
+        {'name': 'name4', 'bucket': 'test-bucket-1', 'bucket_prefix': 'example/prefix/'},
+    ]
 
     with unittest.mock.patch('dynamo.user._get_current_month') as mock_get_current_month:
         mock_get_current_month.return_value = '2024-02'
@@ -323,7 +329,7 @@ def test_put_jobs(tables, monkeypatch, approved_user):
 
         mock_get_current_month.assert_called_once_with()
 
-    assert len(jobs) == 3
+    assert len(jobs) == 5
     for job in jobs:
         assert set(job.keys()) == {
             'name',
@@ -334,6 +340,8 @@ def test_put_jobs(tables, monkeypatch, approved_user):
             'request_time',
             'priority',
             'credit_cost',
+            'bucket',
+            'bucket_prefix',
         }
         assert job['request_time'] <= current_utc_time()
         assert job['user_id'] == approved_user
@@ -341,12 +349,22 @@ def test_put_jobs(tables, monkeypatch, approved_user):
         assert job['execution_started'] is False
         assert job['credit_cost'] == 1
 
+        if job['name'] == 'name3':
+            assert job['bucket'] == 'test-bucket-1'
+            assert job['bucket_prefix'] == f'prefix/{job["name"]}/{job["job_id"]}'
+        elif job['name'] == 'name4':
+            assert job['bucket'] == 'test-bucket-1'
+            assert job['bucket_prefix'] == 'example/prefix/'
+        else:
+            assert job['bucket'] == 'test-bucket'
+            assert job['bucket_prefix'] == job['job_id']
+
     assert tables.jobs_table.scan()['Items'] == sorted(jobs, key=lambda item: item['job_id'])
 
     assert tables.users_table.scan()['Items'] == [
         {
             'user_id': approved_user,
-            'remaining_credits': Decimal(7),
+            'remaining_credits': Decimal(5),
             '_month_of_last_credit_reset': '2024-02',
             'application_status': APPLICATION_APPROVED,
         }

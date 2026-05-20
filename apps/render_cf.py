@@ -130,6 +130,10 @@ def get_batch_job_parameters(job_spec: dict, step: dict, map_item: str | None = 
     for param in step_params:
         if param == 'job_id':
             batch_params['job_id.$'] = '$.job_id'
+        elif param == 'bucket':
+            batch_params['bucket.$'] = '$.bucket'
+        elif param == 'bucket_prefix':
+            batch_params['bucket_prefix.$'] = '$.bucket_prefix'
         elif param == map_item:
             batch_params[f'{map_item}.$'] = "States.Format('{}', $$.Map.Item.Value)"
         else:

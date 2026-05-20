@@ -104,9 +104,9 @@ ARIA_S1_COSEIS:
         - ++omp-num-threads
         - '4'  # 8 vCPUs per 16 GB RAM for the C instance family; 4 for M; 2 for R
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --reference-scenes
         - Ref::granules
         - --secondary-scenes
@@ -142,9 +142,9 @@ ARIA_S1_COSEIS:
         - ++process
         - calcDelaysGUNW
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --weather-model
         - Ref::weather_model
       timeout: 21600

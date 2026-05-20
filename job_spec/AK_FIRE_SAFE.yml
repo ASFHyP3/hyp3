@@ -39,9 +39,9 @@ AK_FIRE_SAFE:
       image: ghcr.io/asfhyp3/hyp3-gather-landsat
       command:
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --start-date
         - Ref::start_date
         - --end-date
