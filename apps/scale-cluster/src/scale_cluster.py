@@ -17,10 +17,12 @@ def get_time_period(today: date) -> dict:
 
 
 def get_month_to_date_spending(today: date) -> float:
-    time_period = get_time_period(today)
-    granularity = 'MONTHLY'
-    metrics = ['UnblendedCost']
-    response = COST_EXPLORER.get_cost_and_usage(TimePeriod=time_period, Granularity=granularity, Metrics=metrics)
+    response = COST_EXPLORER.get_cost_and_usage(
+        TimePeriod=get_time_period(today),
+        Granularity='MONTHLY',
+        Metrics=['UnblendedCost'],
+        Filter={'Not': {'Dimensions': {'Key': 'RECORD_TYPE', 'Values': ['SavingsPlanNegation']}}},
+    )
     return float(response['ResultsByTime'][0]['Total']['UnblendedCost']['Amount'])
 
 

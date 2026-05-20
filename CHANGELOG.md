@@ -12,8 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The `bucket_prefix` parameter:
     - allows for overwriting the default prefix (the job ID) for the S3 bucket.
     - can only be used if also using a custom bucket.
-    - allows for inserting the job's ID and name by including `{job_id}` or `{name}`. 
-- `/bucket-policy/<bucket_name>` route for retrieving AWS policy to allow HyP3 to write to a custom bucket
+    - allows for inserting the job's ID and name by including `{job_id}` or `{name}` in the prefix string. 
+- `/bucket-policy/<bucket_name>` route for retrieving an AWS policy that will allow HyP3 to write to a the `<bucket_name>` S3 Bucket.
+
+## [10.16.5]
+
+### Added
+- Added support for Element84 Sentinel-2 L2A STAC IDs to the `ARIA_AUTORIFT` job spec.
+
+### Changed
+- Do not include cost offsets from EC2 Savings Plans when computing month-to-date spending in scale-cluster lambda.
 
 ## [10.16.4]
 
