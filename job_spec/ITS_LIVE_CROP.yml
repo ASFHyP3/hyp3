@@ -44,7 +44,6 @@ ITS_LIVE_CROP:
         - Ref::bucket
         - --bucket-prefix
         - Ref::bucket_prefix
-        # FIXME:
         - --publish-bucket
         - Ref::publish_bucket
       timeout: 10800
@@ -65,7 +64,6 @@ ITS_LIVE_CROP:
         - Ref::bucket
         - --bucket-prefix
         - Ref::bucket_prefix
-        # FIXME:
         - --publish-bucket
         - Ref::publish_bucket
         - --stac-items-endpoint

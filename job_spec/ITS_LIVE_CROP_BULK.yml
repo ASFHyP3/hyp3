@@ -50,7 +50,6 @@ ITS_LIVE_CROP_BULK:
         - Ref::bucket
         - --bucket-prefix
         - Ref::bucket_prefix
-        # FIXME:
         - --publish-bucket
         - Ref::publish_bucket
       timeout: 21600
@@ -75,7 +74,6 @@ ITS_LIVE_CROP_BULK:
         - Ref::bucket
         - --bucket-prefix
         - Ref::bucket_prefix
-        # FIXME:
         - --publish-bucket
         - Ref::publish_bucket
       timeout: 21600

@@ -80,7 +80,6 @@ VOLCSARVATORY_MINTPY:
         - Ref::input_bucket
         - --input-prefix
         - Ref::input_prefix
-        # FIXME:
         - --publish-bucket
         - Ref::publish_bucket
         - --publish-prefix

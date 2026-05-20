@@ -88,7 +88,6 @@ INSAR_ISCE_MULTI_BURST:
         - Ref::reference
         - --secondary
         - Ref::secondary
-        # FIXME:
         - --publish-bucket
         - Ref::publish_bucket
         - --publish-prefix
