@@ -67,6 +67,14 @@ Resources:
               - s3:PutObjectTagging
             Resource: !Sub "arn:aws:s3:::${Bucket}/*"
           - Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:PutObjectTagging
+            Resource: "*"
+            Condition:
+              StringNotEquals:
+                s3:ResourceAccount: !Ref "AWS::AccountId"
+          - Effect: Allow
             Action: logs:GetLogEvents
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/batch/job*"
 

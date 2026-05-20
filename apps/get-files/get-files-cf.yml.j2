@@ -68,13 +68,25 @@ Resources:
               - logs:PutLogEvents
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
           - Effect: Allow
-            Action: s3:ListBucket
+            Action:
+             - s3:ListBucket
+             - s3:getBucketLocation
             Resource: !Sub "arn:aws:s3:::${Bucket}"
           - Effect: Allow
             Action:
               - s3:GetObject
               - s3:GetObjectTagging
             Resource: !Sub "arn:aws:s3:::${Bucket}/*"
+          - Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:getBucketLocation
+              - s3:GetObject
+              - s3:GetObjectTagging
+            Resource: "*"
+            Condition:
+              StringNotEquals:
+                s3:ResourceAccount: !Ref "AWS::AccountId"
           - Effect: Allow
             Action: dynamodb:UpdateItem
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"

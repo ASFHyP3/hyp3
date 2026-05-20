@@ -142,9 +142,9 @@ ARIA_S1_COSEIS:
         - ++process
         - calcDelaysGUNW
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --weather-model
         - Ref::weather_model
       timeout: 21600

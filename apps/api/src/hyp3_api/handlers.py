@@ -135,48 +135,38 @@ def _get_names_for_user(user: str) -> list[str]:
     return sorted(list(names))
 
 
-def get_bucket_policy(bucket_name: str) -> str:
+def get_bucket_policy(bucket_name: str) -> dict:
     account_arn = util.get_current_account_arn()
-    policy = f"""
-    {{
-        "Version": "2012-10-17",
-        "Statement": [
-            {{
-                "Sid": "write permission",
-                "Effect": "Allow",
-                "Principal": {{ "AWS": "{account_arn}:root" }},
-                "Action": "s3:PutObject",
-                "Resource": "arn:aws:s3:::{bucket_name}/*"
-            }},
-            {{
-                "Sid": "write tagging permission",
-                "Effect": "Allow",
-                "Principal": {{ "AWS": "{account_arn}:root" }},
-                "Action": "s3:PutObjectTagging",
-                "Resource": "arn:aws:s3:::{bucket_name}/*"
-            }},
-            {{
-                "Sid": "read permission",
-                "Effect": "Allow",
-                "Principal": {{ "AWS": "{account_arn}:root" }},
-                "Action": "s3:GetObject",
-                "Resource": "arn:aws:s3:::{bucket_name}/*"
-            }},
-            {{
-                "Sid": "read tagging permission",
-                "Effect": "Allow",
-                "Principal": {{ "AWS": "{account_arn}:root" }},
-                "Action": "s3:GetObjectTagging",
-                "Resource": "arn:aws:s3:::{bucket_name}/*"
-            }},
-            {{
-                "Sid": "get bucket location permission",
-                "Effect": "Allow",
-                "Principal": {{ "AWS": "arn:aws:iam::{account_arn}:root" }},
-                "Action": "s3:GetBucketLocation",
-                "Resource": "arn:aws:s3:::{bucket_name}"
-            }}
-        ]
-    }}
-    """
+    # NOTE: Reflect any edits here in api-spec/openapi-spec.yml.j2 as well
+    policy = {
+        'Version': '2012-10-17',
+        'Statement': [
+            {
+                'Sid': 'HyP3 bucket-level publish permissions',
+                'Effect': 'Allow',
+                'Principal': {
+                    'AWS': f'{account_arn}',
+                },
+                'Action': [
+                    's3:ListBucket',
+                    's3:getBucketLocation',
+                ],
+                'Resource': f'arn:aws:s3:::{bucket_name}',
+            },
+            {
+                'Sid': 'HyP3 object-level publish permissions',
+                'Effect': 'Allow',
+                'Principal': {
+                    'AWS': f'{account_arn}',
+                },
+                'Action': [
+                    's3:GetObject',
+                    's3:GetObjectTagging',
+                    's3:PutObject',
+                    's3:PutObjectTagging',
+                ],
+                'Resource': f'arn:aws:s3:::{bucket_name}/*',
+            },
+        ],
+    }
     return policy

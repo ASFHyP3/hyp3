@@ -53,9 +53,9 @@ SRG_TIME_SERIES:
         - Ref::bounds
         - --gpu
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --use-gslc-prefix
         - Ref::granule
       timeout: 10800
