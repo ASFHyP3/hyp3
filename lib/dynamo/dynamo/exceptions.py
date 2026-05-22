@@ -25,6 +25,10 @@ class UpdateJobForDifferentUserError(Exception):
     """Raised when a user attempts to update a different user's job."""
 
 
+class CustomPrefixForDefaultBucketError(Exception):
+    """Raised when a user attempts to use a custom bucket prefix with the default hyp3 content bucket."""
+
+
 class InvalidApplicationStatusError(Exception):
     """Raised for an invalid user application status."""
 

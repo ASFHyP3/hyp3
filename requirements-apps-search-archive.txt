@@ -2,3 +2,4 @@
 ./lib/lambda_logging/
 asf_enumeration==0.4.0
 asf_search==12.0.7
+pydantic==2.12.5

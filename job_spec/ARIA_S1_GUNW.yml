@@ -37,9 +37,9 @@ ARIA_S1_GUNW:
         - ++omp-num-threads
         - '4'  # 8 vCPUs per 16 GB RAM for the C instance family; 4 for M; 2 for R
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --reference-date
         - Ref::reference_date
         - --secondary-date
@@ -61,9 +61,9 @@ ARIA_S1_GUNW:
         - ++process
         - calcDelaysGUNW
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --weather-model
         - HRRR
       timeout: 10800  # 3 hr

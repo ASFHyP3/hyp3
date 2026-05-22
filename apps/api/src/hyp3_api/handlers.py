@@ -5,6 +5,7 @@ from flask import Response, abort, jsonify, request
 import dynamo
 from dynamo.exceptions import (
     AccessCodeError,
+    CustomPrefixForDefaultBucketError,
     InsufficientCreditsError,
     UnexpectedApplicationStatusError,
     UpdateJobForDifferentUserError,
@@ -24,19 +25,19 @@ def problem_format(status: int, message: str) -> Response:
 
 def post_jobs(body: dict, user: str) -> dict:
     print(body)
-
     try:
         validate_jobs(body['jobs'])
     except CmrError as e:
         abort(problem_format(503, str(e)))
     except (ValidationError, MultiBurstValidationError) as e:
         abort(problem_format(400, str(e)))
-
     try:
         body['jobs'] = dynamo.jobs.put_jobs(user, body['jobs'], dry_run=bool(body.get('validate_only')))
     except UnexpectedApplicationStatusError as e:
         abort(problem_format(403, str(e)))
     except InsufficientCreditsError as e:
+        abort(problem_format(400, str(e)))
+    except CustomPrefixForDefaultBucketError as e:
         abort(problem_format(400, str(e)))
     return body
 
@@ -132,3 +133,40 @@ def _get_names_for_user(user: str) -> list[str]:
         jobs.extend(new_jobs)
     names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))
+
+
+def get_bucket_policy(bucket_name: str) -> dict:
+    account_arn = util.get_current_account_arn()
+    # NOTE: Reflect any edits here in api-spec/openapi-spec.yml.j2 as well
+    policy = {
+        'Version': '2012-10-17',
+        'Statement': [
+            {
+                'Sid': 'HyP3 bucket-level publish permissions',
+                'Effect': 'Allow',
+                'Principal': {
+                    'AWS': f'{account_arn}',
+                },
+                'Action': [
+                    's3:ListBucket',
+                    's3:getBucketLocation',
+                ],
+                'Resource': f'arn:aws:s3:::{bucket_name}',
+            },
+            {
+                'Sid': 'HyP3 object-level publish permissions',
+                'Effect': 'Allow',
+                'Principal': {
+                    'AWS': f'{account_arn}',
+                },
+                'Action': [
+                    's3:GetObject',
+                    's3:GetObjectTagging',
+                    's3:PutObject',
+                    's3:PutObjectTagging',
+                ],
+                'Resource': f'arn:aws:s3:::{bucket_name}/*',
+            },
+        ],
+    }
+    return policy
