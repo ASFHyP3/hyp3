@@ -13,3 +13,5 @@ jobs:
       JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
       JIRA_PROJECT: ${{ secrets.JIRA_PROJECT }}
       JIRA_FIELDS: ${{ secrets.JIRA_FIELDS }}
+    permissions:
+      issues: write
