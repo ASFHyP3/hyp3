@@ -6,10 +6,12 @@ on:
 
 jobs:
   call-create-jira-issue-workflow:
-    uses: ASFHyP3/actions/.github/workflows/reusable-create-jira-issue.yml@v0.21.0
+    uses: ASFHyP3/actions/.github/workflows/reusable-create-jira-issue.yml@v0.21.1
     secrets:
       JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
       JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
       JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
       JIRA_PROJECT: ${{ secrets.JIRA_PROJECT }}
       JIRA_FIELDS: ${{ secrets.JIRA_FIELDS }}
+    permissions:
+      issues: write
