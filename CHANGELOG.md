@@ -97,6 +97,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `OperaRtcS1EndDate` stack parameter
   - `check_opera_rtc_s1_bounds` and `check_opera_rtc_s1_date` validators and associated tests
 
+## [10.14.2]
+
+### Changed
+- Upgraded PyJWT to 2.13.0; resolves CVE-2026-48526.
+
 ## [10.14.1]
 
 ### Changed
