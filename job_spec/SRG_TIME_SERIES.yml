@@ -33,6 +33,21 @@ SRG_TIME_SERIES:
         items:
           type: number
           example: -122.53
+    process:
+      api_schema:
+        description: SBAS or PS processing.
+        type: string
+        default: 'sbas'
+    tbaseline:
+      api_schema:
+        description: Temporal baseline.
+        type: integer
+        default: 60
+    pbaseline:
+      api_schema:
+        description: Perpendicular baseline.
+        type: integer
+        default: 1000
   validators: [
     check_bounds_formatting,
     check_granules_intersecting_bounds,
@@ -73,6 +88,12 @@ SRG_TIME_SERIES:
         - time_series
         - --bounds
         - Ref::bounds
+        - --process
+        - Ref::process
+        - --tbaseline
+        - Ref::tbaseline
+        - --pbaseline
+        - Ref::pbaseline
         - --bucket
         - Ref::bucket
         - --bucket-prefix
