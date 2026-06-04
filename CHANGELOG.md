@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added PS processing for `SRG_TIME_SERIES`, and new argument `process` to choose between `ps` and `sbas`.
 - Added new parameters `tbaseline` and `pbaseline` to customize temporal and perpendicular baselines.
+- Added a deployment parameter which will allow publishing products to any bucket within the containing AWS account, not just the HyP3 content bucket. This should only be allowed for projects that have a separate log-term archive bucket in the same account and have set the default user credits to 0. 
 
 ## [10.17.1]
 
