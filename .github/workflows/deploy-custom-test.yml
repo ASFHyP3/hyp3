@@ -32,6 +32,7 @@ jobs:
             expanded_max_vcpus: 640  # Max: 13000
             required_surplus: 0
             security_environment: JPL-public
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-tibet-jpl-test
@@ -54,6 +55,7 @@ jobs:
             expanded_max_vcpus: 6400  # Max: 10316
             required_surplus: 0
             security_environment: JPL-public
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-its-live-test
@@ -74,6 +76,7 @@ jobs:
             expanded_max_vcpus: 640  # Max: 10,406
             required_surplus: 0
             security_environment: JPL-public
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/arm64/recommended/image_id
 
           - environment: hyp3-ak-fire-safe-test
@@ -92,6 +95,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-pism-cloud-test
@@ -111,6 +115,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-volcsarvatory-test
@@ -130,6 +135,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-lavas-test
@@ -149,6 +155,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-slimsar-test
@@ -167,6 +174,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
     environment:
@@ -218,4 +226,5 @@ jobs:
           COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
+          SAME_ACCOUNT_PUBLISHING: ${{ matrix.same_account_publishing }}
           PARAMETER_FILE: parameters.json
