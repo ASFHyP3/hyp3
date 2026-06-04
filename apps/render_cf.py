@@ -327,7 +327,15 @@ def main() -> None:
     render_batch_params_by_job_type(job_types)
     render_default_params_by_job_type(job_types)
     render_costs(job_types, args.cost_profile)
-    render_templates(job_types, compute_envs, args.security_environment, args.api_name, api_version, args.openapi_spec, args.same_account_publishing)
+    render_templates(
+        job_types,
+        compute_envs,
+        args.security_environment,
+        args.api_name,
+        api_version,
+        args.openapi_spec,
+        args.same_account_publishing,
+    )
 
 
 if __name__ == '__main__':
