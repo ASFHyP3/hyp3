@@ -84,9 +84,11 @@ Resources:
               - s3:GetObject
               - s3:GetObjectTagging
             Resource: "*"
+            {% if not same_account_publishing %}
             Condition:
               StringNotEquals:
                 s3:ResourceAccount: !Ref "AWS::AccountId"
+            {% endif %}
           - Effect: Allow
             Action: dynamodb:UpdateItem
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JobsTable}*"
