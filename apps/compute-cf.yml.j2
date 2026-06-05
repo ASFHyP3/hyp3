@@ -180,9 +180,11 @@ Resources:
               - s3:PutObject
               - s3:PutObjectTagging
             Resource: "*"
+            {% if not same_account_publishing %}
             Condition:
               StringNotEquals:
                 s3:ResourceAccount: !Ref "AWS::AccountId"
+            {% endif %}
           - Effect: Allow
             Action:
               - s3:PutObject

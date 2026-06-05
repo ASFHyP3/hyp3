@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.17.2]
+
+### Added
+- Added PS processing for `SRG_TIME_SERIES`, and new argument `process` to choose between `ps` and `sbas`.
+- Added new parameters `tbaseline` and `pbaseline` to customize temporal and perpendicular baselines.
+- Added a deployment parameter which will allow publishing products to any bucket within the containing AWS account, not just the HyP3 content bucket. This should only be allowed for projects that have a separate log-term archive bucket in the same account and have set the default user credits to 0. 
+
+## [10.17.1]
+
+### Changed
+- Upgraded PyJWT to 2.13.0; resolves CVE-2026-48526.
+
 ## [10.17.0]
 
 ### Added
@@ -96,11 +108,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `OPERA_RTC_S1` job type from edc-uat and edc-sandbox environments
   - `OperaRtcS1EndDate` stack parameter
   - `check_opera_rtc_s1_bounds` and `check_opera_rtc_s1_date` validators and associated tests
-
-## [10.14.2]
-
-### Changed
-- Upgraded PyJWT to 2.13.0; resolves CVE-2026-48526.
 
 ## [10.14.1]
 

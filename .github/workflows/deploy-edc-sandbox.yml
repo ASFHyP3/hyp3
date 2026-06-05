@@ -36,6 +36,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: EDC
+            same_account_publishing: false
             ami_id: /ngap/amis/image_id_ecs_al2023_x86
             distribution_url: 'https://d3bvvghf83wjqc.cloudfront.net'
 
@@ -43,7 +44,7 @@ jobs:
       name: ${{ matrix.environment }}
 
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
         with:
           fetch-depth: 0
 
@@ -86,4 +87,5 @@ jobs:
           COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
+          SAME_ACCOUNT_PUBLISHING: ${{ matrix.same_account_publishing }}
           PARAMETER_FILE: parameters.json

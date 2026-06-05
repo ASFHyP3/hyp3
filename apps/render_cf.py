@@ -155,6 +155,7 @@ def render_templates(
     api_name: str,
     api_version: str,
     openapi_spec: str,
+    same_account_publishing: bool,
 ) -> None:
     job_states = get_states_for_jobs(job_types)
 
@@ -177,6 +178,7 @@ def render_templates(
             api_name=api_name,
             api_version=api_version,
             openapi_spec=openapi_spec,
+            same_account_publishing=same_account_publishing,
             json=json,
             snake_to_pascal_case=snake_to_pascal_case,
             job_states=job_states,
@@ -292,6 +294,10 @@ def validate_cost_table(cost_table: dict | float, job_type: str) -> None:
         )
 
 
+def _string_is_true(s: str) -> bool:
+    return s.lower() == 'true'
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('-j', '--job-spec-files', required=True, nargs='+', type=Path)
@@ -300,6 +306,7 @@ def main() -> None:
     parser.add_argument('-n', '--api-name', required=True)
     parser.add_argument('-c', '--cost-profile', default='DEFAULT', choices=['DEFAULT', 'EDC'])
     parser.add_argument('--openapi-spec', default='3.0.4')
+    parser.add_argument('--same-account-publishing', type=_string_is_true, default=False)
     args = parser.parse_args()
 
     api_version = get_version(root='..', relative_to=__file__)
@@ -320,7 +327,15 @@ def main() -> None:
     render_batch_params_by_job_type(job_types)
     render_default_params_by_job_type(job_types)
     render_costs(job_types, args.cost_profile)
-    render_templates(job_types, compute_envs, args.security_environment, args.api_name, api_version, args.openapi_spec)
+    render_templates(
+        job_types,
+        compute_envs,
+        args.security_environment,
+        args.api_name,
+        api_version,
+        args.openapi_spec,
+        args.same_account_publishing,
+    )
 
 
 if __name__ == '__main__':
