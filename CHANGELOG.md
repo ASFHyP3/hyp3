@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.17.3]
+
+### Added
+- Added the `PISM_TERRA_RUN_FORWARD` and `PISM_TERRA_RUN_INERVERSE` jobs for preparing both forward and inverse model runs.
+
+### Removed
+- Removed the `PISM_TERRA_PREP_ENSEMBLE` job in favor of `PISM_TERRA_RUN_FORWARD` and `PISM_TERRA_RUN_INERVERSE`.
+- Removed the `PISM_TERRA_RUN` job.
+
 ## [10.17.2]
 
 ### Added
