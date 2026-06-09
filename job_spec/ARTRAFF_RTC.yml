@@ -59,9 +59,9 @@ ARTRAFF_RTC:
         - --work-dir
         - Ref::work_dir
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
       timeout: 7200
       compute_environment: Default
       vcpu: 1
