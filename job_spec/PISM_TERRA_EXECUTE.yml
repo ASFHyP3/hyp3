@@ -4,7 +4,7 @@ PISM_TERRA_EXECUTE:
   parameters:
     run_script:
       api_schema:
-        description: S3 URI to a run run script with a structure like `s3://.*/RGI*/runs_scripts/*.sh`
+        description: S3 URI to a run script
         type: string
         pattern: "^s3://.*/RGI.*/run_scripts/.*.sh"
         example: s3://pism-cloud-data/summer_school/inverse_test/224e6d60-95de-48fe-8f56-70e697a8ec15/RGI2000-v7.0-C-01-04374/run_scripts/submit_g500m_RGI2000-v7.0-C-01-04374_id_0_0001-01-01_0021-02-01.sh
