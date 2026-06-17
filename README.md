@@ -160,6 +160,7 @@ aws --profile <profile> cloudformation deploy \
 Once the `github-actions` IAM user has been created, you can create an AWS access key for that user,
 which we will use to deploy HyP3 via CI/CD tooling:
 
+## TODO UPDATE WITH OIDC STEPS
 1. Go to AWS console -> IAM -> Users -> github-actions -> security credentials tab -> "create access key".
 2. Select "Other" for key usage
 3. (Optional) Add tag value to describe the key, such as "For GitHub Actions CI/CD pipelines"
