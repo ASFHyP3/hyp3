@@ -188,10 +188,8 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v6
         with:
-          aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
+          aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
 
       - uses: actions/setup-python@v6
         with:
