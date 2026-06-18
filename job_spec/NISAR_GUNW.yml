@@ -16,6 +16,8 @@ NISAR_GUNW:
     subset:
       api_schema:
         type: array
+        nullable: true
+        default: null
         description: Bounds for extent of processing, formatted like [min lon, min lat, max lon, max lat] in EPSG:4326.
         minItems: 4
         maxItems: 4
