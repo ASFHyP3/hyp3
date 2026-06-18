@@ -1,0 +1,34 @@
+NISAR_GUNW:
+  required_parameters:
+    - reference
+    - secondary
+  parameters:
+    reference:
+      api_schema:
+        description: Name of the NISAR RSLC to use as reference.
+        type: string
+        example: "NISAR_L1_PR_RSLC_005_172_A_008_2005_DHDH_A_20251122T024618_20251122T024652_X05007_N_F_J_001"
+    secondary:
+      api_schema:
+        description: Name of the NISAR RSLC to use as secondary.
+        type: string
+        example: "NISAR_L1_PR_RSLC_006_172_A_008_2005_DHDH_A_20251204T024618_20251204T024653_X05007_N_F_J_001"
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-isce3
+      command:
+        - --bucket
+        - Ref::bucket
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --reference
+        - Ref::reference
+        - --secondary
+        - Ref::secondary
+      timeout: 126000  # 35 hours
+      compute_environment: Default
+      vcpu: 1
+      memory: 30500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
