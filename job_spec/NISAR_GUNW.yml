@@ -13,6 +13,10 @@ NISAR_GUNW:
         description: Name of the NISAR RSLC to use as secondary.
         type: string
         example: "NISAR_L1_PR_RSLC_006_172_A_008_2005_DHDH_A_20251204T024618_20251204T024653_X05007_N_F_J_001"
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce3
