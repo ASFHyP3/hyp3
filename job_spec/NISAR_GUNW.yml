@@ -43,13 +43,13 @@ NISAR_GUNW:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce3
       command:
+        - Ref::granules
         - --bucket
         - Ref::bucket
         - --bucket-prefix
         - Ref::bucket_prefix
         - --subset
         - Ref::subset
-        - Ref::granules
       timeout: 126000  # 35 hours
       compute_environment: Default
       vcpu: 1
