@@ -40,6 +40,7 @@ AK_FIRE_SAFE:
       api_schema:
         description: Bucket that contains fire detection products.
         type: string
+        example: "ak-fire-safe-data-test"
         enum:
           - "ak-fire-safe-data"
           - "ak-fire-safe-data-test"
@@ -47,6 +48,7 @@ AK_FIRE_SAFE:
       api_schema:
         description: Prefix to pull the fire detection products.
         type: string
+        example: "txt"
   cost_profiles:
     DEFAULT:
       cost: 1.0
