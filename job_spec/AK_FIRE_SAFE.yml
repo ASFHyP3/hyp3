@@ -1,43 +1,64 @@
 AK_FIRE_SAFE:
   required_parameters:
-    - location
-    - start_date
-    - end_date
+    - extent
+    - input_bucket
+    - input_prefix
   parameters:
-    location:
+    extent:
       api_schema:
         type: array
-        minItems: 2
-        maxItems: 2
+        minItems: 4
+        maxItems: 4
         example:
-          - -163.97
-          - 54.756
+          - -169.01
+          - 52.37
+          - -130.16
+          - 71.66
         items:
           description: Longitude and Latitude for location point
           type: number
           minimum: -180.0
           maximum: 180.0
-          example: -163.97
+          example: -169.01
     start_date:
       api_schema:
         description: Start date of the images (YYYY-MM-DD)
         type: string
+        nullable: true
+        default: null
         format: date
         example: "2025-05-01"
     end_date:
       api_schema:
         description: End date of the images (YYYY-MM-DD)
         type: string
+        nullable: true
+        default: null
         format: date
         example: "2025-06-01"
+    input_bucket:
+      api_schema:
+        description: Bucket that contains fire detection products.
+        type: string
+        example: "ak-fire-safe-data-test"
+        enum:
+          - "ak-fire-safe-data"
+          - "ak-fire-safe-data-test"
+    input_prefix:
+      api_schema:
+        description: Prefix to pull the fire detection products.
+        type: string
+        example: "txt"
   cost_profiles:
     DEFAULT:
       cost: 1.0
   validators: []
   steps:
     - name: ''
-      image: ghcr.io/asfhyp3/hyp3-gather-landsat
+      image: ghcr.io/asfhyp3/hyp3-akfire-safe
       command:
+        - ++process
+        - feds
         - --bucket
         - Ref::bucket
         - --bucket-prefix
@@ -46,8 +67,12 @@ AK_FIRE_SAFE:
         - Ref::start_date
         - --end-date
         - Ref::end_date
-        - --location
-        - Ref::location
+        - --extent
+        - Ref::extent
+        - --input-bucket
+        - Ref::input_bucket
+        - --input-prefix
+        - Ref::input_prefix
       timeout: 5400
       compute_environment: Default
       vcpu: 1
