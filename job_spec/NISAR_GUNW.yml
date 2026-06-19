@@ -1,18 +1,24 @@
 NISAR_GUNW:
   required_parameters:
-    - reference
-    - secondary
+    - granules
   parameters:
-    reference:
+    granules:
       api_schema:
-        description: Name of the NISAR RSLC to use as reference.
-        type: string
-        example: "NISAR_L1_PR_RSLC_005_172_A_008_2005_DHDH_A_20251122T024618_20251122T024652_X05007_N_F_J_001"
-    secondary:
-      api_schema:
-        description: Name of the NISAR RSLC to use as secondary.
-        type: string
-        example: "NISAR_L1_PR_RSLC_006_172_A_008_2005_DHDH_A_20251204T024618_20251204T024653_X05007_N_F_J_001"
+        description: Name of the NISAR RSLC granules.
+        type: array
+        minItems: 2
+        maxItems: 2
+        example:
+          - NISAR_L1_PR_RSLC_005_172_A_008_2005_DHDH_A_20251122T024618_20251122T024652_X05007_N_F_J_001
+          - NISAR_L1_PR_RSLC_006_172_A_008_2005_DHDH_A_20251204T024618_20251204T024653_X05007_N_F_J_001
+        items:
+          anyOf:
+            - description: The name of a NISAR L-band RSLC granule to process
+              type: string
+              pattern: "^NISAR_L1_.._RSLC_"
+              minLength: 91
+              maxLength: 91
+              example: NISAR_L1_PR_RSLC_005_172_A_008_2005_DHDH_A_20251122T024618_20251122T024652_X05007_N_F_J_001
     subset:
       api_schema:
         type: array
@@ -41,12 +47,9 @@ NISAR_GUNW:
         - Ref::bucket
         - --bucket-prefix
         - Ref::bucket_prefix
-        - --reference
-        - Ref::reference
-        - --secondary
-        - Ref::secondary
         - --subset
         - Ref::subset
+        - Ref::granules
       timeout: 126000  # 35 hours
       compute_environment: Default
       vcpu: 1
