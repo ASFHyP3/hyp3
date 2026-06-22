@@ -1,5 +1,9 @@
 name: Deploy DAAC prod to AWS
 
+permissions:
+  contents: read
+  id-token: write
+
 on:
   push:
     tags:
