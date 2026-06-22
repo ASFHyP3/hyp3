@@ -142,7 +142,7 @@ AUTORIFT:
     regenerate_static_files:
       api_schema:
         description:  Force the creation of new static topographic correction files (Sentinel-1 only).
-        default: true
+        default: false
         type: boolean
     frame_id:
       api_schema:
