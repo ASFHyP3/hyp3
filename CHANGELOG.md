@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - The `PISM_TERRA_EXECUTE` jobs no longer requires or accepts an `ensemble_job_id` parameter, which was used to determine the S3 location to stage files from, and instead takes a full S3 URI for run_script.
+- Increased default/expanded vCPUs to 1500/3000 in hyp3-edc-uat and hyp3-edc-prod.
+- Updated `AK_FIRE_SAFE` job spec to use `feds` workflow.
 
 ### Removed
 - Removed the `PISM_TERRA_PREP_ENSEMBLE` job in favor of `PISM_TERRA_RUN_FORWARD` and `PISM_TERRA_RUN_INERVERSE`.
