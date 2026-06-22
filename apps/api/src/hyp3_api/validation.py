@@ -209,7 +209,17 @@ def check_same_relative_orbits(_, granule_metadata: list[dict]) -> None:
         name_split = granule['name'].split('_')
         absolute_orbit = name_split[7]
         # "Relationship between relative and absolute orbit numbers": https://sentiwiki.copernicus.eu/web/s1-products
-        offset = 73 if name_split[0] == 'S1A' else 27
+        mission = name_split[0]
+        if mission == 'S1A':
+            offset = 73
+        elif mission == 'S1B':
+            offset = 27
+        elif mission == 'S1C':
+            offset = 172
+        elif mission == 'S1D':
+            offset = 42
+        else:
+            raise ValueError(f'Encountered unknown Sentinel-1 mission: {mission}')
         relative_orbit = ((int(absolute_orbit) - offset) % 175) + 1
         if not previous_relative_orbit:
             previous_relative_orbit = relative_orbit

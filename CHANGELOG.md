@@ -4,6 +4,82 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.17.4]
+
+### Changed
+- Deploy EDC deployments using OpenID Connect (OIDC) with Amazon Web Services.
+
+## [10.17.3]
+
+### Added
+- Added the `PISM_TERRA_RUN_FORWARD` and `PISM_TERRA_RUN_INERVERSE` jobs for preparing both forward and inverse model runs.
+- `ARTRAFF_RTC` job spec for RTCing commercial SAR data on a dev basis.
+- Added `NISAR_GUNW` job spec for VolcSARvatory
+
+### Changed
+- The `PISM_TERRA_EXECUTE` jobs no longer requires or accepts an `ensemble_job_id` parameter, which was used to determine the S3 location to stage files from, and instead takes a full S3 URI for run_script.
+- Increased default/expanded vCPUs to 1500/3000 in hyp3-edc-uat and hyp3-edc-prod.
+- Updated `AK_FIRE_SAFE` job spec to use `feds` workflow.
+
+### Removed
+- Removed the `PISM_TERRA_PREP_ENSEMBLE` job in favor of `PISM_TERRA_RUN_FORWARD` and `PISM_TERRA_RUN_INERVERSE`.
+- Removed the `PISM_TERRA_RUN` job.
+
+## [10.17.2]
+
+### Added
+- Added PS processing for `SRG_TIME_SERIES`, and new argument `process` to choose between `ps` and `sbas`.
+- Added new parameters `tbaseline` and `pbaseline` to customize temporal and perpendicular baselines.
+- Added a deployment parameter which will allow publishing products to any bucket within the containing AWS account, not just the HyP3 content bucket. This should only be allowed for projects that have a separate log-term archive bucket in the same account and have set the default user credits to 0. 
+
+## [10.17.1]
+
+### Changed
+- Upgraded PyJWT to 2.13.0; resolves CVE-2026-48526.
+
+## [10.17.0]
+
+### Added
+- `bucket` and `bucket_prefix` top level parameters for all job types.
+  - The `bucket` parameter allows for overwriting the content bucket that a job's products will be placed into.
+  - The `bucket_prefix` parameter:
+    - allows for overwriting the default prefix (the job ID) for the S3 bucket.
+    - can only be used if also using a custom bucket.
+    - allows for inserting the job's ID and name by including `{job_id}` or `{name}` in the prefix string. 
+- `/bucket-policy/<bucket_name>` route for retrieving an AWS policy that will allow HyP3 to write to a the `<bucket_name>` S3 Bucket.
+
+## [10.16.5]
+
+### Added
+- Added support for Element84 Sentinel-2 L2A STAC IDs to the `ARIA_AUTORIFT` job spec.
+
+### Changed
+- Do not include cost offsets from EC2 Savings Plans when computing month-to-date spending in scale-cluster lambda.
+
+## [10.16.4]
+
+### Added
+- Bucket prefix for multiburst jobs in `VOLCSARVATORY_MULTI_BURST.yml`.
+
+## [10.16.3]
+
+### Changed
+- Increased default credits per user to 8,000 from 4,000 for the `hyp3-edc-prod` and `hyp3-edc-uat` deployments,
+  reverting the reduction in 10.16.1.
+
+## [10.16.2]
+
+### Changed
+- Increased default/expanded vCPUs to 900/1800 in hyp3-edc-uat and hyp3-edc-prod
+
+## [10.16.1]
+
+### Changed
+- Reduced default credits per user to 4,000 from 8,000 for the `hyp3-edc-prod` and `hyp3-edc-uat` deployments.
+
+### Fixed
+- Allow SRG_GSLC and SRG_TIME_SERIES jobs to process Sentinel-1 C and D granules.
+
 ## [10.16.0]
 
 ### Added

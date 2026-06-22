@@ -1,5 +1,4 @@
 import json
-from os import environ
 
 import boto3
 from botocore.config import Config
@@ -44,8 +43,8 @@ def get_log_content_from_failed_attempts(cause: dict) -> str:
     return content
 
 
-def write_log_to_s3(bucket: str, prefix: str, content: str) -> None:
-    key = f'{prefix}/{prefix}.log'
+def write_log_to_s3(job_id: str, bucket: str, prefix: str, content: str) -> None:
+    key = f'{prefix}/{job_id}.log'
     S3.put_object(Bucket=bucket, Key=key, Body=content, ContentType='text/plain')
     tag_set = {
         'TagSet': [
@@ -76,4 +75,4 @@ def lambda_handler(event: dict, context: object) -> None:
         assert 'Error' in result
         log_content = get_log_content_from_failed_attempts(json.loads(result['Cause']))
 
-    write_log_to_s3(environ['BUCKET'], event['prefix'], log_content)
+    write_log_to_s3(event['job_id'], event['bucket'], event['bucket_prefix'], log_content)

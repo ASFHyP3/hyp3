@@ -85,9 +85,9 @@ INSAR_GAMMA:
         - ++process
         - insar
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --include-look-vectors
         - Ref::include_look_vectors
         - --include-los-displacement

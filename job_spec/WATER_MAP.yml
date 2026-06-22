@@ -122,9 +122,9 @@ WATER_MAP:
         - ++omp-num-threads
         - '4'
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --resolution
         - Ref::resolution
         - --speckle-filter
@@ -159,9 +159,9 @@ WATER_MAP:
         - ++process
         - HYDRO30
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --max-vv-threshold
         - Ref::max_vv_threshold
         - --max-vh-threshold
@@ -182,9 +182,9 @@ WATER_MAP:
         - ++process
         - FD30
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --estimator
         - Ref::flood_depth_estimator
         - --water-level-sigma

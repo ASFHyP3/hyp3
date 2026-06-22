@@ -10,16 +10,21 @@ Parameters:
     Default: repo:ASFHyP3/*
 
 Resources:
+  GitHubActionsOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      ClientIdList:
+        - sts.amazonaws.com
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+      Url: https://token.actions.githubusercontent.com
+
   CloudformationDeploymentRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Effect: Allow
-            Principal:
-              Service: cloudformation.amazonaws.com
-            Action: sts:AssumeRole
           - Effect: Allow
             Principal:
               Federated: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
@@ -56,27 +61,9 @@ Resources:
                 Resource: "*"
 
               - Effect: Allow
-                Action:
-                  - cloudformation:SetStackPolicy
-                  - cloudformation:CreateStack
-                  - cloudformation:UpdateStack
-                  - cloudformation:DeleteStack
-                  - cloudformation:CreateChangeSet
-                  - cloudformation:DescribeChangeSet
-                  - cloudformation:ExecuteChangeSet
-                  - cloudformation:DeleteChangeSet
-                  - cloudformation:GetTemplateSummary
-                Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+                Action: s3:PutObject
+                Resource: !Sub "arn:aws:s3:::${TemplateBucketName}/*"
 
-  GithubActionsUser:
-    Type: AWS::IAM::User
-    Properties:
-      UserName: github-actions
-      Policies:
-        - PolicyName: github-actions-user-policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
               - Effect: Allow
                 Action:
                   - cloudformation:ValidateTemplate
@@ -85,21 +72,11 @@ Resources:
                 Resource: "*"
 
               - Effect: Allow
-                Action: iam:PassRole
-                Resource: !GetAtt CloudformationDeploymentRole.Arn
-                Condition:
-                  StringLike:
-                    iam:AssociatedResourceArn: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
-
-              - Effect: Allow
-                Action: s3:PutObject
-                Resource: !Sub "arn:aws:s3:::${TemplateBucketName}/*"
-
-              - Effect: Allow
                 Action:
                   - cloudformation:SetStackPolicy
                   - cloudformation:CreateStack
                   - cloudformation:UpdateStack
+                  - cloudformation:DeleteStack
                   - cloudformation:CreateChangeSet
                   - cloudformation:DescribeChangeSet
                   - cloudformation:ExecuteChangeSet
@@ -124,12 +101,3 @@ Resources:
     Type: AWS::ApiGateway::Account
     Properties:
       CloudWatchRoleArn: !GetAtt ApiGatewayLoggingRole.Arn
-
-  GitHubActionsOidcProvider:
-    Type: AWS::IAM::OIDCProvider
-    Properties:
-      ClientIdList:
-        - sts.amazonaws.com
-      ThumbprintList:
-        - 6938fd4d98bab03faadb97b34396831e3780aea1
-      Url: https://token.actions.githubusercontent.com

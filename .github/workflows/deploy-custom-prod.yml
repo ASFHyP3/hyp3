@@ -32,6 +32,7 @@ jobs:
             expanded_max_vcpus: 2000  # Max: 10,406
             required_surplus: 0
             security_environment: JPL-public
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/arm64/recommended/image_id
 
           - environment: hyp3-ak-fire-safe
@@ -50,6 +51,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-pism-cloud
@@ -61,14 +63,15 @@ jobs:
             default_application_status: APPROVED
             cost_profile: DEFAULT
             job_files: >-
-              job_spec/PISM_TERRA_RUN.yml
-              job_spec/PISM_TERRA_PREP_ENSEMBLE.yml
+              job_spec/PISM_TERRA_RUN_FORWARD.yml
+              job_spec/PISM_TERRA_RUN_INVERSE.yml
               job_spec/PISM_TERRA_EXECUTE.yml
             instance_types: r8id.8xlarge,r8id.12xlarge,r8id.16xlarge,r8id.24xlarge,r8id.32xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-volcsarvatory
@@ -81,6 +84,7 @@ jobs:
             cost_profile: DEFAULT
             job_files: >-
               job_spec/INSAR_GAMMA.yml
+              job_spec/NISAR_GUNW.yml
               job_spec/VOLCSARVATORY_MULTI_BURST.yml
               job_spec/VOLCSARVATORY_MINTPY.yml
             instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
@@ -88,6 +92,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-a19-jpl
@@ -108,6 +113,7 @@ jobs:
             expanded_max_vcpus: 4000  # Max: 13000
             required_surplus: 0
             security_environment: JPL-public
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-tibet-jpl
@@ -130,6 +136,7 @@ jobs:
             expanded_max_vcpus: 6400  # Max: 10316
             required_surplus: 0
             security_environment: JPL-public
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-nisar-jpl
@@ -151,6 +158,7 @@ jobs:
             expanded_max_vcpus: 1600  # Max: 1652
             required_surplus: 0
             security_environment: JPL-public
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-avo
@@ -170,6 +178,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-watermap
@@ -189,6 +198,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-streamflow
@@ -208,6 +218,7 @@ jobs:
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: azdwr-hyp3
@@ -227,6 +238,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-cargill
@@ -249,6 +261,7 @@ jobs:
             expanded_max_vcpus: 6000  # Max: 6000
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-bgc-engineering
@@ -270,6 +283,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-carter
@@ -291,6 +305,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-lavas
@@ -310,6 +325,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
     environment:
@@ -317,7 +333,7 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
         with:
           fetch-depth: 0
 
@@ -361,4 +377,5 @@ jobs:
           COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
+          SAME_ACCOUNT_PUBLISHING: ${{ matrix.same_account_publishing }}
           PARAMETER_FILE: parameters.json
