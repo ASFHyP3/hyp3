@@ -28,10 +28,10 @@ Resources:
               Federated: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
             Action: sts:AssumeRoleWithWebIdentity
             Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
               StringLike:
-                'token.actions.githubusercontent.com:sub': !Ref SourceRepositories
-              StringEqualsIgnoreCase:
-                'token.actions.githubusercontent.com:aud': sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Ref SourceRepositories
       Policies:
         - PolicyName: cloud-formation-deployment-policy
           PolicyDocument:

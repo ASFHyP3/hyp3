@@ -5,10 +5,6 @@ Parameters:
     Description: AWS S3 bucket name for uploading CloudFormation templates
     Type: String
 
-  SourceRepositories:
-    Type: CommaDelimitedList
-    Default: repo:ASFHyP3/*
-
 Resources:
   CloudformationDeploymentRole:
     Type: AWS::IAM::Role
@@ -16,19 +12,10 @@ Resources:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Effect: Allow
-            Principal:
-              Service: cloudformation.amazonaws.com
-            Action: sts:AssumeRole
-          - Effect: Allow
-            Principal:
-              Federated: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
-            Action: sts:AssumeRoleWithWebIdentity
-            Condition:
-              StringLike:
-                'token.actions.githubusercontent.com:sub': !Ref SourceRepositories
-              StringEqualsIgnoreCase:
-                'token.actions.githubusercontent.com:aud': sts.amazonaws.com
+          Action: sts:AssumeRole
+          Principal:
+            Service: cloudformation.amazonaws.com
+          Effect: Allow
       Policies:
         - PolicyName: cloud-formation-deployment-policy
           PolicyDocument:
@@ -124,12 +111,3 @@ Resources:
     Type: AWS::ApiGateway::Account
     Properties:
       CloudWatchRoleArn: !GetAtt ApiGatewayLoggingRole.Arn
-
-  GitHubActionsOidcProvider:
-    Type: AWS::IAM::OIDCProvider
-    Properties:
-      ClientIdList:
-        - sts.amazonaws.com
-      ThumbprintList:
-        - 6938fd4d98bab03faadb97b34396831e3780aea1
-      Url: https://token.actions.githubusercontent.com
