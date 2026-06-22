@@ -2,6 +2,7 @@ name: Deploy HyP3 EDC Sandbox to AWS
 
 permissions:
   contents: read
+  id-token: write
 
 on:
   push:
