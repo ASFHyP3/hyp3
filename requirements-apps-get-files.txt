@@ -1,3 +1,3 @@
-boto3==1.43.18
+boto3==1.43.33
 pydantic==2.13.4
 ./lib/dynamo/
