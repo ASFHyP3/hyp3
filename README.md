@@ -153,9 +153,12 @@ aws --profile <profile> cloudformation deploy \
     --stack-name hyp3-ci \
     --template-file cicd-stacks/ASF-deployment-ci-cf.yml \
     --capabilities CAPABILITY_NAMED_IAM \
-    --parameter-overrides TemplateBucketName=<template-bucket>
+    --parameter-overrides TemplateBucketName=<template-bucket> SourceRepositories=<source-repositores>
 ```
 </details>
+
+where `SourceRepositories` is a comma-delimited list of repository name patterns from which you will be deploying, e.g. `repo:ASFHyP3/*`.
+See https://github.com/aws-actions/configure-aws-credentials#quick-start-oidc-recommended for more details.
 
 <details>
 <summary>JPL: Set up roles-as-code and request a service user</summary>
