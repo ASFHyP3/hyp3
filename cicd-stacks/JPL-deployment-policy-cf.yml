@@ -1,10 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
-  TemplateBucketName:
-    Description: AWS S3 bucket name for uploading CloudFormation templates
-    Type: String
-
   SourceRepositories:
     Type: CommaDelimitedList
     Default: repo:ASFHyP3/*
@@ -65,6 +61,7 @@ Resources:
               - kms:*
               - lambda:*
               - logs:*
+              - rds:*
               - s3:*
               - secretsmanager:*
               - sns:*
@@ -83,11 +80,6 @@ Resources:
               - iam:TagInstanceProfile
               - iam:UntagInstanceProfile
             Resource: !Sub "arn:aws:iam::${AWS::AccountId}:instance-profile/account-managed/*"
-
-
-          - Effect: Allow
-            Action: s3:PutObject
-            Resource: !Sub "arn:aws:s3:::${TemplateBucketName}/*"
 
           - Effect: Allow
             Action:
