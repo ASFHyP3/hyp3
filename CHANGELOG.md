@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added an option to force static file regeneration for the `ITS_LIVE_AUTORIFT` job type.
 
+### Changed
+- ASF-deployment-ci-cf.yml now deploys a role to be assumed via OIDC by Github Actions, rather than a service user
+- `plus-test` and `plus-prod` environments are now deployed via OIDC
+
 ## [10.17.4]
 
 ### Changed
