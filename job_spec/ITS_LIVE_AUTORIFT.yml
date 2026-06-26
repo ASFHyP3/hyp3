@@ -139,6 +139,11 @@ AUTORIFT:
         description:  Use static topographic correction files for ISCE3 processing if available (Sentinel-1 only)
         default: true
         type: boolean
+    regenerate_static_files:
+      api_schema:
+        description:  Force the creation of new static topographic correction files (Sentinel-1 only).
+        default: false
+        type: boolean
     frame_id:
       api_schema:
         description:  Sentinel-1 OPERA Frame ID to be placed in product metadata after processing
@@ -178,6 +183,8 @@ AUTORIFT:
         - ITS_LIVE_PROD
         - --use-static-files
         - Ref::use_static_files
+        - --regenerate-static-files
+        - Ref::regenerate_static_files
         - --reference
         - Ref::reference
         - --secondary
