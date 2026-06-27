@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Parquet file products are now visible.
+- `JPL-deployment-ci-cf.yml` now deploys a role to be assumed via OIDC by GitHub Actions, rather than a service user
+- HyP3 deployments in the `delpoy-custom-test.yml` and `deploy-custom-prod.yml` workflows are now deployed via OIDC
 
 ### Fixed
 - The SrgGslc and SlimSAR compute environments have been upgraded to AL2023-based AMIs from AL2 AMIs due to the pending end-of-life of AL2.
@@ -24,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added an option to force static file regeneration for the `ITS_LIVE_AUTORIFT` job type.
 
 ### Changed
-- ASF-deployment-ci-cf.yml now deploys a role to be assumed via OIDC by Github Actions, rather than a service user
+- `ASF-deployment-ci-cf.yml` now deploys a role to be assumed via OIDC by GitHub Actions, rather than a service user
 - `plus-test` and `plus-prod` environments are now deployed via OIDC
 
 ## [10.17.4]
