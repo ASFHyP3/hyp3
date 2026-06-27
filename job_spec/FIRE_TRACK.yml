@@ -1,0 +1,41 @@
+FIRE_TRACK:
+  required_parameters:
+    - input_bucket
+    - input_prefix
+  parameters:
+    input_bucket:
+      api_schema:
+        description: Bucket that contains fire detection products.
+        type: string
+        example: "ak-fire-safe-data-test"
+        enum:
+          - "ak-fire-safe-data"
+          - "ak-fire-safe-data-test"
+    input_prefix:
+      api_schema:
+        description: Prefix to pull the fire detection products.
+        type: string
+        example: "txt"
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: 761639967505.dkr.ecr.us-west-2.amazonaws.com/hyp3-fire-tracking
+      command:
+        - --bucket
+        - Ref::bucket
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --input-bucket
+        - Ref::input_bucket
+        - --input-prefix
+        - Ref::input_prefix
+      timeout: 5400
+      compute_environment: Default
+      vcpu: 1
+      memory: 7600
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
