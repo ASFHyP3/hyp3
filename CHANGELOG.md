@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `FIRE_TRACK` job spec to `hyp3-ak-fire-safe`.
 - Added parameter `upload_to_db` to `AK_FIRE_SAFE` job spec.
 - Added environment variable `DB_HOST` to `AK_FIRE_SAFE` job spec.
+- Added SQS and ECR permissions to `ASF-deployment-ci-cf.yml` for deploying HyP3-based monitoring stacks.
 
 ### Changed
 - Parquet file products are now visible.
