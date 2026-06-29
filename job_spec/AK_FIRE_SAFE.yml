@@ -87,3 +87,4 @@ AK_FIRE_SAFE:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
+        - DB_HOST
