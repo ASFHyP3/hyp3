@@ -33,6 +33,7 @@ jobs:
             required_surplus: 0
             security_environment: JPL-public
             same_account_publishing: false
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/arm64/recommended/image_id
 
           - environment: hyp3-ak-fire-safe
@@ -53,6 +54,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: true
+            allow_rds_connections: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-pism-cloud
@@ -73,6 +75,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: true
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-volcsarvatory
@@ -94,6 +97,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: true
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-a19-jpl
@@ -115,6 +119,7 @@ jobs:
             required_surplus: 0
             security_environment: JPL-public
             same_account_publishing: false
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-tibet-jpl
@@ -138,6 +143,7 @@ jobs:
             required_surplus: 0
             security_environment: JPL-public
             same_account_publishing: false
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-nisar-jpl
@@ -160,6 +166,7 @@ jobs:
             required_surplus: 0
             security_environment: JPL-public
             same_account_publishing: false
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-avo
@@ -180,6 +187,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: false
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-watermap
@@ -200,6 +208,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: false
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-streamflow
@@ -220,6 +229,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: true
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: azdwr-hyp3
@@ -240,6 +250,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: false
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-cargill
@@ -263,6 +274,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: false
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-bgc-engineering
@@ -285,6 +297,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: false
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-carter
@@ -307,6 +320,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: false
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-lavas
@@ -327,6 +341,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: true
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
     environment:

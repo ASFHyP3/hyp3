@@ -50,8 +50,9 @@ security_environment ?= ASF
 api_name ?= local
 cost_profile ?= DEFAULT
 same_account_publishing ?= False
+allow_rds_connections ?= False
 render:
-	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -e $(compute_env_file) -s $(security_environment) -n $(api_name) -c $(cost_profile) --same-account-publishing $(same_account_publishing)
+	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -e $(compute_env_file) -s $(security_environment) -n $(api_name) -c $(cost_profile) --same-account-publishing $(same_account_publishing) --allow-rds-connection $(allow_rds_connections)
 
 static: ruff mypy openapi-validate cfn-lint
 

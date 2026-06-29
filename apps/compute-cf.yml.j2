@@ -193,6 +193,11 @@ Resources:
           - Effect: Allow
             Action: sns:Publish
             Resource: arn:aws:sns:*
+          {% if allow_rds_connections %}
+          - Effect: Allow
+            Action: rds-db:connect
+            Resource: arn:aws:rds-db:*"
+          {% endif %}
 
   BatchServiceRole:
     Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}

@@ -38,6 +38,7 @@ jobs:
             required_surplus: 0
             security_environment: EDC
             same_account_publishing: false
+            allow_rds_connections: false
             ami_id: /ngap/amis/image_id_ecs_al2023_x86
             distribution_url: 'https://d3bvvghf83wjqc.cloudfront.net'
 

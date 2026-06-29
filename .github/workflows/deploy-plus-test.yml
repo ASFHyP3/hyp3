@@ -39,6 +39,7 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: false
+            allow_rds_connections: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
     environment:

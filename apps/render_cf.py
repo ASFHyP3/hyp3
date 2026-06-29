@@ -156,6 +156,7 @@ def render_templates(
     api_version: str,
     openapi_spec: str,
     same_account_publishing: bool,
+    allow_rds_connections: bool,
 ) -> None:
     job_states = get_states_for_jobs(job_types)
 
@@ -179,6 +180,7 @@ def render_templates(
             api_version=api_version,
             openapi_spec=openapi_spec,
             same_account_publishing=same_account_publishing,
+            allow_rds_connections=allow_rds_connections,
             json=json,
             snake_to_pascal_case=snake_to_pascal_case,
             job_states=job_states,
@@ -307,6 +309,7 @@ def main() -> None:
     parser.add_argument('-c', '--cost-profile', default='DEFAULT', choices=['DEFAULT', 'EDC'])
     parser.add_argument('--openapi-spec', default='3.0.4')
     parser.add_argument('--same-account-publishing', type=_string_is_true, default=False)
+    parser.add_argument('--allow-rds-connections', type=_string_is_true, default=False)
     args = parser.parse_args()
 
     api_version = get_version(root='..', relative_to=__file__)
@@ -335,6 +338,7 @@ def main() -> None:
         api_version,
         args.openapi_spec,
         args.same_account_publishing,
+        args.allow_rds_connections,
     )
 
 
