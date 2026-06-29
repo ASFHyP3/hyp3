@@ -28,8 +28,25 @@ paths:
               schema:
                 $ref: "#/components/schemas/costs_response"
 
-  /jobs:
+  # TODO:
+  /upload-job:
+    post:
+      description: Submits a list of jobs for processing.
+      requestBody:
+        content:
+          multipart/form-data:  # TODO: Can this be multipart/form-data?
+            schema:
+              $ref: "#/components/schemas/post_job_body" # TODO:
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/jobs_response" # TODO:
 
+  /jobs:
     post:
       description: Submits a list of jobs for processing.
       requestBody:
@@ -229,8 +246,8 @@ components:
       properties:
         validate_only:
           $ref: "#/components/schemas/validate_only"
-        jobs:
-          $ref: "#/components/schemas/list_of_new_jobs"
+        jobs:  # TODO: `multipart/form-data` this is an array of jobs, not a singular job.
+          $ref: "#/components/schemas/list_of_new_jobs"  # job_parameters.yml
 
     patch_jobs_body:
       description: List of jobs to update with a new name.
