@@ -196,7 +196,7 @@ Resources:
           {% if allow_rds_connections %}
           - Effect: Allow
             Action: rds-db:connect
-            Resource: arn:aws:rds-db:*"
+            Resource: !Sub "arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*/*"
           {% endif %}
 
   BatchServiceRole:
