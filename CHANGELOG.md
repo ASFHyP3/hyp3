@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - The SrgGslc and SlimSAR compute environments have been upgraded to AL2023-based AMIs from AL2 AMIs due to the pending end-of-life of AL2.
+- The `check_same_relative_orbits` validator has been updated to account for the repositioning of Sentinel-1C in June, 2026.
 
 ## [10.17.5]
 
