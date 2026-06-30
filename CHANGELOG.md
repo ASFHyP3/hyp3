@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.17.6]
 
 ### Added
+- Added RDS Connection Permission to the TaskRole.
 - Added `FIRE_TRACK` job spec to `hyp3-ak-fire-safe`.
 - Added parameter `upload_to_db` to `AK_FIRE_SAFE` job spec.
 - Added environment variable `DB_HOST` to `AK_FIRE_SAFE` job spec.
