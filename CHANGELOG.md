@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Parquet file products are now visible.
+- Sentinel-1D scenes are now accepted by `ARIA_S1_COSEIS`, `INSAR_ISCE`, `WATER_MAP` and `WATERMAP_EQ` jobs. 
 
 ### Fixed
 - The SrgGslc and SlimSAR compute environments have been upgraded to AL2023-based AMIs from AL2 AMIs due to the pending end-of-life of AL2.
