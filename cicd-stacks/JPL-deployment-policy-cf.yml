@@ -1,10 +1,43 @@
 AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  SourceRepositories:
+    Type: CommaDelimitedList
+    Default: repo:ASFHyP3/*
+
 Resources:
+  GitHubActionsOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      ClientIdList:
+        - sts.amazonaws.com
+      Url: https://token.actions.githubusercontent.com
+
+  CloudformationDeploymentRole:
+    Type: Custom::JplRole
+    Properties:
+      ServiceToken: !ImportValue Custom::JplRole::ServiceToken
+      Path: /account-managed/hyp3/
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Ref SourceRepositories
+
   DeployPolicy:
     Type: Custom::JplPolicy
     Properties:
       ServiceToken: !ImportValue Custom::JplPolicy::ServiceToken
       Path: /account-managed/hyp3/
+      Roles:
+        - !Ref CloudformationDeploymentRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -28,6 +61,7 @@ Resources:
               - kms:*
               - lambda:*
               - logs:*
+              - rds:*
               - s3:*
               - secretsmanager:*
               - sns:*
