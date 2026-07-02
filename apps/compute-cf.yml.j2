@@ -193,6 +193,9 @@ Resources:
           - Effect: Allow
             Action: sns:Publish
             Resource: arn:aws:sns:*
+          - Effect: Allow
+            Action: rds-db:connect
+            Resource: !Sub "arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*/*"
 
   BatchServiceRole:
     Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}
