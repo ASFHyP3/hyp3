@@ -89,6 +89,7 @@ jobs:
             cost_profile: DEFAULT
             job_files: >-
               job_spec/AK_FIRE_SAFE.yml
+              job_spec/FIRE_TRACK.yml
               job_spec/INSAR_ISCE_BURST.yml
             instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
@@ -183,7 +184,7 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@v7.0.0
         with:
           fetch-depth: 0
 

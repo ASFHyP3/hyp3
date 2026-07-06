@@ -36,6 +36,11 @@ AK_FIRE_SAFE:
         default: null
         format: date
         example: "2025-06-01"
+    upload_to_db:
+      api_schema:
+        default: false
+        type: boolean
+        description: Add the data to the AWS Aurora database.
     input_bucket:
       api_schema:
         description: Bucket that contains fire detection products.
@@ -69,6 +74,8 @@ AK_FIRE_SAFE:
         - Ref::end_date
         - --extent
         - Ref::extent
+        - --upload-to-db
+        - Ref::upload_to_db
         - --input-bucket
         - Ref::input_bucket
         - --input-prefix
@@ -80,3 +87,4 @@ AK_FIRE_SAFE:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
+        - DB_HOST

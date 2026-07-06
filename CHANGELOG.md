@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.17.6]
+
+### Added
+- Added RDS Connection Permission to the TaskRole.
+- Added `FIRE_TRACK` job spec to `hyp3-ak-fire-safe`.
+- Added parameter `upload_to_db` to `AK_FIRE_SAFE` job spec.
+- Added environment variable `DB_HOST` to `AK_FIRE_SAFE` job spec.
+
+### Changed
+- Parquet file products are now visible.
+- Sentinel-1D scenes are now accepted by `ARIA_S1_COSEIS`, `INSAR_ISCE`, `WATER_MAP` and `WATERMAP_EQ` jobs.
+- Updated the pinned version of hyp3-isce2 from v3.0.1 to v3.0.2 in `INSAR_ISCE_BURST`, `INSAR_ISCE_BURST`, and `INSAR_ISCE_BURST` job specs to support Sentinel-1D processing in single burst jobs. 
+
+### Fixed
+- The SrgGslc and SlimSAR compute environments have been upgraded to AL2023-based AMIs from AL2 AMIs due to the pending end-of-life of AL2.
+- The `check_same_relative_orbits` validator has been updated to account for the repositioning of Sentinel-1C in June, 2026.
+
+### Removed
+- The `hyp3-carter` deployment has been retired.
+
+
 ## [10.17.5]
 
 ### Added
