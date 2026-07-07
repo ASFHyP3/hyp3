@@ -227,7 +227,7 @@ def jobs_upload_post() -> Response:
     validate_files(request)
     validate_job_parameters(request_dict)
 
-    return handlers.post_upload_job(request_dict, request.files, 'user') # g.user)
+    return handlers.post_upload_job(request_dict, request.files, g.user)
 
 
 @app.route('/jobs', methods=['PATCH'])
