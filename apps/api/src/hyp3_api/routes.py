@@ -188,7 +188,7 @@ def validate_job_parameters(request_dict: dict) -> None:
             job_parameter_schema = job_parameters
             break
 
-    validator = Draft7Validator(job_parameter_schema) # type: ignore
+    validator = Draft7Validator(job_parameter_schema)  # type: ignore
     errors = sorted(validator.iter_errors(request_dict['job_parameters']), key=lambda e: e.path)
 
     if errors:

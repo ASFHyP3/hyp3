@@ -2,7 +2,8 @@ from http.client import responses
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from flask import FileStorage, Response, abort, jsonify, request
+from flask import Response, abort, jsonify, request
+from werkzeug.datastructures import FileStorage
 
 import dynamo
 from dynamo.exceptions import (
