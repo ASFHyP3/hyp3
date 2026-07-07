@@ -28,15 +28,48 @@ paths:
               schema:
                 $ref: "#/components/schemas/costs_response"
 
-  # TODO:
   /upload-job:
     post:
       description: Submits a list of jobs for processing.
       requestBody:
         content:
-          multipart/form-data:  # TODO: Can this be multipart/form-data?
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/post_job_body" # TODO:
+              type: object
+              required:
+                - job_type
+              properties:
+                job_type:
+                  $ref: "./job_parameters.yml#/components/schemas/upload_job_type"
+                name:
+                  $ref: "#/components/schemas/name"
+                bucket:
+                  $ref: "#/components/schemas/bucket"
+                bucket_prefix: 
+                  $ref: "#/components/schemas/bucket_prefix"
+                job_parameters:
+                  $ref: "./job_parameters.yml#/components/schemas/job_parameters"
+                {% for job_type, job_spec in job_types.items() %}
+                {% if 'files' in job_spec.keys() %}
+                {% for parameter, parameter_spec in job_spec['files'].items() %}
+                {% if loop.first %}
+                {% endif %}
+                {{ parameter }}:
+                  {{ json.dumps(parameter_spec['api_schema']) }}
+                {% endfor %}  
+                {% endif %}
+                {% endfor %}
+            encoding:
+            {% for job_type, job_spec in job_types.items() %}
+            {% if 'files' in job_spec.keys() %}
+            {% for parameter, parameter_spec in job_spec['files'].items() %}
+            {% if loop.first %}
+            {% endif %}
+              {{ parameter }}:
+                contentType: {{ parameter_spec['allowed_types'] | join(', ') }}
+            {% endfor %}  
+            {% endif %}
+            {% endfor %}
         required: true
       responses:
         "200":
@@ -44,7 +77,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/jobs_response" # TODO:
+                $ref: "#/components/schemas/jobs_response"
 
   /jobs:
     post:

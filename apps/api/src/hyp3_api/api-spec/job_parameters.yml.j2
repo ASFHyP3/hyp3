@@ -16,6 +16,7 @@ components:
         {% endfor %}
 
     job_parameters:
+      type: object
       anyOf:
         {% for job_type in job_types %}
         - $ref: "#/components/schemas/{{ job_type }}Parameters"
@@ -40,13 +41,13 @@ components:
           {{ json.dumps(parameter_spec['api_schema']) }}
       {% endfor %}
 
-    {{ job_type }}Job: # TODO:
+    {{ job_type }}Job:
       description: Contains user provided information on running a new {{ job_type }} job.
       type: object
-      additionalProperties: false
       required:
         - job_type
         - job_parameters
+      additionalProperties: false
       properties:
         job_type:
           type: string
@@ -58,8 +59,6 @@ components:
           $ref: "./openapi-spec.yml#/components/schemas/bucket"
         bucket_prefix: 
           $ref: "./openapi-spec.yml#/components/schemas/bucket_prefix"
-        job_parameters: # TODO: Ultimately, this needs multipart/form-data
-                        # but the request is an array of jobs, not a single job.
+        job_parameters:
           $ref: "#/components/schemas/{{ job_type }}Parameters"
-
     {% endfor %}
