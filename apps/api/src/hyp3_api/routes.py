@@ -7,7 +7,7 @@ from pathlib import Path
 
 import werkzeug
 import yaml
-from flask import Response, abort, g, jsonify, make_response, redirect, render_template, request, Request
+from flask import Request, Response, abort, g, jsonify, make_response, redirect, render_template, request
 from flask.json.provider import JSONProvider
 from flask_cors import CORS
 from jsonschema import Draft7Validator
