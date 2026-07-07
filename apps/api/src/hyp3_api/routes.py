@@ -161,9 +161,13 @@ def validate_files(request: Request) -> None:
         abort(handlers.problem_format(400, f'Missing required file(s): {", ".join(missing_files)}'))
 
     # Check that only the files for the current job type have been provided
-    for file in request.files.keys():
-        if file not in file_spec.keys():
-            abort(handlers.problem_format(400, f'Invalid file provided: {file}: {request.files[file].filename}'))
+    for file_param in request.files.keys():
+        if file_param not in file_spec.keys():
+            abort(
+                handlers.problem_format(
+                    400, f'Invalid file provided: {file_param}: {request.files[file_param].filename}'
+                )
+            )
 
     # Check that the filetype is correct
     for param, file_obj in request.files.items():
@@ -208,7 +212,7 @@ def get_request_dict(request: Request) -> dict:
     request_form['job_parameters'] = json.loads(request_form['job_parameters'])
 
     for param, file_obj in request.files.items():
-        request_form['job_parameters'][param] = file_obj.filename
+        request_form['job_parameters'][param] = file_obj.filename  # type: ignore[index]
 
     return request_form
 

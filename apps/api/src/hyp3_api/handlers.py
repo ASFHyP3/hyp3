@@ -28,6 +28,7 @@ def problem_format(status: int, message: str) -> Response:
 
 def upload_to_s3(file_obj: FileStorage, bucket: str, bucket_prefix: str) -> str:
     filename = file_obj.filename
+    assert filename
     with TemporaryDirectory() as temp_dir:
         filepath = Path(temp_dir) / filename
         file_obj.save(filepath)
@@ -36,7 +37,7 @@ def upload_to_s3(file_obj: FileStorage, bucket: str, bucket_prefix: str) -> str:
     return filename
 
 
-def post_upload_job(request_dict: dict, request_files: dict, user: str) -> dict:
+def post_upload_job(request_dict: dict, request_files: dict, user: str) -> Response:
     try:
         validate_jobs([request_dict])
     except CmrError as e:
@@ -53,7 +54,8 @@ def post_upload_job(request_dict: dict, request_files: dict, user: str) -> dict:
         abort(problem_format(400, str(e)))
     except CustomPrefixForDefaultBucketError as e:
         abort(problem_format(400, str(e)))
-    return request_dict
+
+    return jsonify(request_dict)
 
 
 def post_jobs(body: dict, user: str) -> Response:
@@ -72,7 +74,7 @@ def post_jobs(body: dict, user: str) -> Response:
         abort(problem_format(400, str(e)))
     except CustomPrefixForDefaultBucketError as e:
         abort(problem_format(400, str(e)))
-    return body
+    return jsonify(body)
 
 
 def get_jobs(
