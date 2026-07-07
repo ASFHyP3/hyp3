@@ -279,8 +279,8 @@ components:
       properties:
         validate_only:
           $ref: "#/components/schemas/validate_only"
-        jobs:  # TODO: `multipart/form-data` this is an array of jobs, not a singular job.
-          $ref: "#/components/schemas/list_of_new_jobs"  # job_parameters.yml
+        jobs:
+          $ref: "#/components/schemas/list_of_new_jobs"
 
     patch_jobs_body:
       description: List of jobs to update with a new name.
