@@ -221,7 +221,7 @@ def get_request_dict(request) -> dict:
 
 @app.route('/upload-job', methods=['POST'])
 @openapi
-def jobs_upload_post() -> Response:
+def upload_job_post() -> Response:
     request_dict = get_request_dict(request)
 
     validate_files(request)
