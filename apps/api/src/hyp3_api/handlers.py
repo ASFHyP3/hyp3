@@ -16,7 +16,6 @@ from dynamo.exceptions import (
 from hyp3_api import util
 from hyp3_api.multi_burst_validation import MultiBurstValidationError
 from hyp3_api.validation import CmrError, ValidationError, validate_jobs
-from hyp3lib.aws import upload_file_to_s3
 
 
 def problem_format(status: int, message: str) -> Response:
@@ -31,7 +30,7 @@ def upload_to_s3(file_obj, bucket, bucket_prefix) -> str:
     with TemporaryDirectory() as temp_dir:
         filepath = Path(temp_dir) / filename
         file_obj.save(filepath)
-        upload_file_to_s3(filepath, file_obj.mimetype, bucket, bucket_prefix)
+        util.upload_file_to_s3(filepath, file_obj.mimetype, bucket, bucket_prefix)
     filename = f'{bucket}/{bucket_prefix}/{filename}'
     return filename
 
