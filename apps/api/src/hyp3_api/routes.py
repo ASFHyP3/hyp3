@@ -10,7 +10,9 @@ import yaml
 from flask import Response, abort, g, jsonify, make_response, redirect, render_template, request
 from flask.json.provider import JSONProvider
 from flask_cors import CORS
+from jsonschema import Draft7Validator
 from openapi_core import OpenAPI
+from openapi_core.contrib.flask import FlaskOpenAPIRequest
 from openapi_core.contrib.flask.decorators import FlaskOpenAPIViewDecorator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 
@@ -139,10 +141,93 @@ def costs_get() -> Response:
     return jsonify(dynamo.jobs.COSTS)
 
 
-@app.route('/jobs', methods=['POST'])
+def validate_files(request) -> None:
+    job_type = request.form['job_type']
+    job_spec_path = Path(f'job_spec/{job_type}.yml')
+
+    with open(job_spec_path, 'r') as file:
+        job_spec = yaml.safe_load(file)
+
+    file_spec = job_spec[job_type]['files']
+    request_files = dict(request.files)
+
+    # Check that all required files have been uploaded
+    missing_files = []
+    for key in file_spec.keys():
+        if 'required' in file_spec[key].keys() and file_spec[key]['required'] == True:
+            if key not in request_files.keys():
+                missing_files.append(key)
+
+    if len(missing_files) > 0:
+        abort(handlers.problem_format(400, f'Missing required file(s): {', '.join(missing_files)}'))
+
+    # Check that only the files for the current job type have been provided
+    for file in request.files.keys():
+        if file not in file_spec.keys():
+            abort(handlers.problem_format(
+                400,
+                f'Invalid file provided: {file}: {request.files[file].filename}'
+            ))
+
+    # Check that the filetype is correct
+    for param, file_obj in request.files.items():
+        filetype = file_obj.mimetype
+        allowed_types = file_spec[param]['allowed_types']
+        if filetype not in allowed_types:
+            abort(handlers.problem_format(
+                400,
+                f'Invalid file type for {param}, \'{filetype}\' is not one of {allowed_types}.'
+            ))
+
+
+def validate_job_parameters(request_dict) -> None:
+    job_parameters_list = api_spec_dict['components']['schemas']['job']['properties']['job_parameters']['anyOf']
+    job_type = request_dict['job_type']
+
+    # TODO: There is probably a better way of doing this filtering.
+    job_parameter_schema = None
+    for job_parameters in job_parameters_list:
+        if f' {job_type} ' in job_parameters['description']:
+            job_parameter_schema = job_parameters
+            break
+
+    validator = Draft7Validator(job_parameter_schema)
+    errors = sorted(validator.iter_errors(request_dict['job_parameters']), key=lambda e: e.path)
+
+    if errors:
+        abort(handlers.problem_format(
+            400,
+            str(errors[0])
+        ))
+
+
+def get_request_dict(request) -> dict:
+    request_form = dict(request.form)
+    allowed_params = ['job_type', 'name', 'bucket', 'bucket_prefix', 'job_parameters']
+
+    # Ensure that unused file params are removed from the request
+    params = list(request_form.keys())
+    for param in params:
+        if param not in allowed_params:
+            request_form.pop(param)
+
+    request_form['job_parameters'] = json.loads(request_form['job_parameters'])
+
+    for param, file_obj in request.files.items():
+        request_form['job_parameters'][param] = file_obj.filename
+
+    return request_form
+
+
+@app.route('/upload-job', methods=['POST'])
 @openapi
-def jobs_post() -> Response:
-    return jsonify(handlers.post_jobs(request.get_json(), g.user))
+def jobs_upload_post() -> Response:
+    request_dict = get_request_dict(request)
+
+    validate_files(request)
+    validate_job_parameters(request_dict)
+
+    return handlers.post_upload_job(request_dict, request.files, 'user') # g.user)
 
 
 @app.route('/jobs', methods=['PATCH'])
