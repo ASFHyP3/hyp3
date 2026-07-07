@@ -49,6 +49,22 @@ AK_FIRE_SAFE:
         description: Prefix to pull the fire detection products.
         type: string
         example: "txt"
+    ak_fire_safe_file:
+      api_schema:
+        description: S3 uri for the file
+        type: string
+        nullable: true
+        default: null
+        example: ""
+  files:
+    ak_fire_safe_file:
+      allowed_types: ["image/jpeg", "image/png"]
+      required: true
+      api_schema:
+        description: Test file to upload
+        type: string
+        format: binary
+
   cost_profiles:
     DEFAULT:
       cost: 1.0
