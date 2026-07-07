@@ -15,6 +15,17 @@ components:
         - {{ job_type }}
         {% endfor %}
 
+    upload_job_type:
+      description: Type of process to run this job.
+      type: string
+      example: {{ job_types.__iter__().__next__() }}
+      enum:
+        {% for job_type, job_spec in job_types.items() %}
+        {% if 'files' in job_spec.keys() %}
+        - {{ job_type }}
+        {% endif %}
+        {% endfor %}
+
     job_parameters:
       type: object
       anyOf:
@@ -46,7 +57,6 @@ components:
       type: object
       required:
         - job_type
-        - job_parameters
       additionalProperties: false
       properties:
         job_type:
