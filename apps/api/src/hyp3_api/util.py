@@ -60,7 +60,9 @@ def get_current_account_arn() -> str:
     return sts.get_caller_identity()['Account']
 
 
-def upload_file_to_s3(path_to_file: Path, content_type: str, bucket: str, prefix: str = '', chunk_size: int = 8_388_608):
+def upload_file_to_s3(
+    path_to_file: Path, content_type: str, bucket: str, prefix: str = '', chunk_size: int = 8_388_608
+) -> None:
     key = str(Path(prefix) / path_to_file.name)
     extra_args = {'ContentType': content_type}
     config = TransferConfig(multipart_threshold=chunk_size, multipart_chunksize=chunk_size)

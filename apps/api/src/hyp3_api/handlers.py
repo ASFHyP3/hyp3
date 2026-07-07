@@ -1,8 +1,8 @@
+from http.client import responses
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from http.client import responses
 
-from flask import Response, abort, jsonify, request
+from flask import FileStorage, Response, abort, jsonify, request
 
 import dynamo
 from dynamo.exceptions import (
@@ -25,7 +25,7 @@ def problem_format(status: int, message: str) -> Response:
     return response
 
 
-def upload_to_s3(file_obj, bucket, bucket_prefix) -> str:
+def upload_to_s3(file_obj: FileStorage, bucket: str, bucket_prefix: str) -> str:
     filename = file_obj.filename
     with TemporaryDirectory() as temp_dir:
         filepath = Path(temp_dir) / filename

@@ -12,7 +12,6 @@ from flask.json.provider import JSONProvider
 from flask_cors import CORS
 from jsonschema import Draft7Validator
 from openapi_core import OpenAPI
-from openapi_core.contrib.flask import FlaskOpenAPIRequest
 from openapi_core.contrib.flask.decorators import FlaskOpenAPIViewDecorator
 from openapi_core.contrib.flask.handlers import FlaskOpenAPIErrorsHandler
 
@@ -141,11 +140,11 @@ def costs_get() -> Response:
     return jsonify(dynamo.jobs.COSTS)
 
 
-def validate_files(request) -> None:
+def validate_files(request: request) -> None:
     job_type = request.form['job_type']
     job_spec_path = Path(f'job_spec/{job_type}.yml')
 
-    with open(job_spec_path, 'r') as file:
+    with Path.open(job_spec_path) as file:
         job_spec = yaml.safe_load(file)
 
     file_spec = job_spec[job_type]['files']
@@ -154,33 +153,31 @@ def validate_files(request) -> None:
     # Check that all required files have been uploaded
     missing_files = []
     for key in file_spec.keys():
-        if 'required' in file_spec[key].keys() and file_spec[key]['required'] == True:
+        if 'required' in file_spec[key].keys() and file_spec[key]['required']:
             if key not in request_files.keys():
                 missing_files.append(key)
 
     if len(missing_files) > 0:
-        abort(handlers.problem_format(400, f'Missing required file(s): {', '.join(missing_files)}'))
+        abort(handlers.problem_format(400, f'Missing required file(s): {", ".join(missing_files)}'))
 
     # Check that only the files for the current job type have been provided
     for file in request.files.keys():
         if file not in file_spec.keys():
-            abort(handlers.problem_format(
-                400,
-                f'Invalid file provided: {file}: {request.files[file].filename}'
-            ))
+            abort(handlers.problem_format(400, f'Invalid file provided: {file}: {request.files[file].filename}'))
 
     # Check that the filetype is correct
     for param, file_obj in request.files.items():
         filetype = file_obj.mimetype
         allowed_types = file_spec[param]['allowed_types']
         if filetype not in allowed_types:
-            abort(handlers.problem_format(
-                400,
-                f'Invalid file type for {param}, \'{filetype}\' is not one of {allowed_types}.'
-            ))
+            abort(
+                handlers.problem_format(
+                    400, f"Invalid file type for {param}, '{filetype}' is not one of {allowed_types}."
+                )
+            )
 
 
-def validate_job_parameters(request_dict) -> None:
+def validate_job_parameters(request_dict: dict) -> None:
     job_parameters_list = api_spec_dict['components']['schemas']['job']['properties']['job_parameters']['anyOf']
     job_type = request_dict['job_type']
 
@@ -195,13 +192,10 @@ def validate_job_parameters(request_dict) -> None:
     errors = sorted(validator.iter_errors(request_dict['job_parameters']), key=lambda e: e.path)
 
     if errors:
-        abort(handlers.problem_format(
-            400,
-            str(errors[0])
-        ))
+        abort(handlers.problem_format(400, str(errors[0])))
 
 
-def get_request_dict(request) -> dict:
+def get_request_dict(request: request) -> dict:
     request_form = dict(request.form)
     allowed_params = ['job_type', 'name', 'bucket', 'bucket_prefix', 'job_parameters']
 
