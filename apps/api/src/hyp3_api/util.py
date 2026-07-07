@@ -1,10 +1,15 @@
 import binascii
 import json
 from base64 import b64decode, b64encode
+from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 import boto3
+from boto3.s3.transfer import TransferConfig
+
+
+S3_CLIENT = boto3.client('s3')
 
 
 class TokenDeserializeError(Exception):
@@ -53,3 +58,10 @@ def build_next_url(url: str, start_token: str, x_forwarded_host: str | None = No
 def get_current_account_arn() -> str:
     sts = boto3.client('sts')
     return sts.get_caller_identity()['Account']
+
+
+def upload_file_to_s3(path_to_file: Path, content_type: str, bucket: str, prefix: str = '', chunk_size: int = 8_388_608):
+    key = str(Path(prefix) / path_to_file.name)
+    extra_args = {'ContentType': content_type}
+    config = TransferConfig(multipart_threshold=chunk_size, multipart_chunksize=chunk_size)
+    S3_CLIENT.upload_file(str(path_to_file), bucket, key, extra_args, Config=config)
