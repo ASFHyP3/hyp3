@@ -1,3 +1,5 @@
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from http.client import responses
 
 from flask import Response, abort, jsonify, request
@@ -14,6 +16,7 @@ from dynamo.exceptions import (
 from hyp3_api import util
 from hyp3_api.multi_burst_validation import MultiBurstValidationError
 from hyp3_api.validation import CmrError, ValidationError, validate_jobs
+from hyp3lib.aws import upload_file_to_s3
 
 
 def problem_format(status: int, message: str) -> Response:
@@ -21,6 +24,36 @@ def problem_format(status: int, message: str) -> Response:
     response.headers['Content-Type'] = 'application/problem+json'
     response.status_code = status
     return response
+
+
+def upload_to_s3(file_obj, bucket, bucket_prefix) -> str:
+    filename = file_obj.filename
+    with TemporaryDirectory() as temp_dir:
+        filepath = Path(temp_dir) / filename
+        file_obj.save(filepath)
+        upload_file_to_s3(filepath, file_obj.mimetype, bucket, bucket_prefix)
+    filename = f'{bucket}/{bucket_prefix}/{filename}'
+    return filename
+
+
+def post_upload_job(request_dict: dict, request_files: dict, user: str) -> dict:
+    try:
+        validate_jobs([request_dict])
+    except CmrError as e:
+        abort(problem_format(503, str(e)))
+    except (ValidationError, MultiBurstValidationError) as e:
+        abort(problem_format(400, str(e)))
+    try:
+        request_dict = dynamo.jobs.put_jobs(user, [request_dict])[0]
+        for _, file_obj in request_files.items():
+            upload_to_s3(file_obj, bucket=request_dict['bucket'], bucket_prefix=request_dict['bucket_prefix'])
+    except UnexpectedApplicationStatusError as e:
+        abort(problem_format(403, str(e)))
+    except InsufficientCreditsError as e:
+        abort(problem_format(400, str(e)))
+    except CustomPrefixForDefaultBucketError as e:
+        abort(problem_format(400, str(e)))
+    return request_dict
 
 
 def post_jobs(body: dict, user: str) -> dict:
