@@ -55,7 +55,7 @@ def post_upload_job(request_dict: dict, request_files: dict, user: str) -> dict:
     return request_dict
 
 
-def post_jobs(body: dict, user: str) -> dict:
+def post_jobs(body: dict, user: str) -> Response:
     print(body)
     try:
         validate_jobs(body['jobs'])
