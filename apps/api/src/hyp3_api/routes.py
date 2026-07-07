@@ -7,7 +7,7 @@ from pathlib import Path
 
 import werkzeug
 import yaml
-from flask import Response, abort, g, jsonify, make_response, redirect, render_template, request
+from flask import Response, abort, g, jsonify, make_response, redirect, render_template, request, Request
 from flask.json.provider import JSONProvider
 from flask_cors import CORS
 from jsonschema import Draft7Validator
@@ -140,7 +140,7 @@ def costs_get() -> Response:
     return jsonify(dynamo.jobs.COSTS)
 
 
-def validate_files(request: request) -> None:
+def validate_files(request: Request) -> None:
     job_type = request.form['job_type']
     job_spec_path = Path(f'job_spec/{job_type}.yml')
 
@@ -195,7 +195,7 @@ def validate_job_parameters(request_dict: dict) -> None:
         abort(handlers.problem_format(400, str(errors[0])))
 
 
-def get_request_dict(request: request) -> dict:
+def get_request_dict(request: Request) -> dict:
     request_form = dict(request.form)
     allowed_params = ['job_type', 'name', 'bucket', 'bucket_prefix', 'job_parameters']
 
