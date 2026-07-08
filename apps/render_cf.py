@@ -236,8 +236,8 @@ def render_costs(job_types: dict, cost_profile: str) -> None:
 
 
 def validate_job_spec(job_type: str, job_spec: dict) -> None:
-    expected_fields = set(['required_parameters', 'parameters', 'cost_profiles', 'validators', 'steps'])
-    optional_fields = set(sorted(['files']))
+    expected_fields = {'required_parameters', 'parameters', 'cost_profiles', 'validators', 'steps'}
+    optional_fields = {'files'}
     actual_fields = set(job_spec.keys())
 
     if actual_fields - optional_fields != expected_fields:
