@@ -1,0 +1,59 @@
+NISAR_GUNW:
+  required_parameters:
+    - granules
+  parameters:
+    granules:
+      api_schema:
+        description: Name of the NISAR RSLC granules.
+        type: array
+        minItems: 2
+        maxItems: 2
+        example:
+          - NISAR_L1_PR_RSLC_005_172_A_008_2005_DHDH_A_20251122T024618_20251122T024652_X05007_N_F_J_001
+          - NISAR_L1_PR_RSLC_006_172_A_008_2005_DHDH_A_20251204T024618_20251204T024653_X05007_N_F_J_001
+        items:
+          anyOf:
+            - description: The name of a NISAR L-band RSLC granule to process
+              type: string
+              pattern: "^NISAR_L1_.._RSLC_"
+              minLength: 91
+              maxLength: 91
+              example: NISAR_L1_PR_RSLC_005_172_A_008_2005_DHDH_A_20251122T024618_20251122T024652_X05007_N_F_J_001
+    subset:
+      api_schema:
+        type: array
+        nullable: true
+        default: null
+        description: Bounds for extent of processing, formatted like [min lon, min lat, max lon, max lat] in EPSG:4326.
+        minItems: 4
+        maxItems: 4
+        example:
+          - 40.55
+          - 13.46
+          - 40.78
+          - 13.65
+        items:
+          type: number
+          example: 40.55
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-isce3
+      command:
+        - Ref::granules
+        - --bucket
+        - Ref::bucket
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --subset
+        - Ref::subset
+      timeout: 126000  # 35 hours
+      compute_environment: Default
+      vcpu: 1
+      memory: 30500
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD

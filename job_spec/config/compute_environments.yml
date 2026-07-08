@@ -4,40 +4,24 @@ compute_environments:
   #   ami_id
   #   allocation_type
   #   allocation_strategy
+  #   max_vcpus
   SrgGslc:
     instance_types: g6.2xlarge
-    ami_id: ami-0729c079aae647cb3  # /aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id
+    ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/gpu/recommended/image_id}}'"
   SrgTimeSeries:
     instance_types: c6id.16xlarge
-    allocation_type: EC2
-    allocation_strategy: BEST_FIT_PROGRESSIVE
-  AriaAutorift:
+  ItsLiveSpotIntel:
     instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-    allocation_type: EC2
-    allocation_strategy: BEST_FIT_PROGRESSIVE
-  InsarIsceAria:
-    allocation_type: EC2
-    allocation_strategy: BEST_FIT_PROGRESSIVE
-  AriaS1Gunw:
-    instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge
-    allocation_type: EC2
-    allocation_strategy: BEST_FIT_PROGRESSIVE
-  AutoriftComputeOptimized:
-    instance_types: c6id.4xlarge,c6id.8xlarge
-    allocation_type: EC2
-    allocation_strategy: BEST_FIT_PROGRESSIVE
-  AutoriftComputeOptimizedGraviton:
-    instance_types: c8gd.4xlarge,c8gd.8xlarge
-    allocation_type: EC2
-    allocation_strategy: BEST_FIT_PROGRESSIVE
-    ami_id: ami-003108a738bf4923f  # /aws/service/ecs/optimized-ami/amazon-linux-2/arm64/recommended/image_id
-  AutoriftMemoryOptimizedGraviton4:
-    instance_types: r8gd.2xlarge,r8gd.4xlarge,r8gd.8xlarge
-    allocation_type: EC2
-    allocation_strategy: BEST_FIT_PROGRESSIVE
-    ami_id: ami-003108a738bf4923f
-  AutoriftMemoryOptimizedGraviton3:
-    instance_types: r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
-    allocation_type: EC2
-    allocation_strategy: BEST_FIT_PROGRESSIVE
-    ami_id: ami-003108a738bf4923f
+    ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id}}'"
+    allocation_type: SPOT
+    allocation_strategy: SPOT_PRICE_CAPACITY_OPTIMIZED
+    max_vcpus: 1000
+  ItsLiveIntel:
+    instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+    ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id}}'"
+  SlimSAR:
+    instance_types: g4dn.2xlarge,g4dn.4xlarge,g4dn.8xlarge,g4dn.16xlarge
+    ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/gpu/recommended/image_id}}'"
+  DefaultSpot:
+    allocation_type: SPOT
+    allocation_strategy: SPOT_PRICE_CAPACITY_OPTIMIZED

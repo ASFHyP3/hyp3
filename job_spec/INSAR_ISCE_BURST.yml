@@ -43,15 +43,16 @@ INSAR_ISCE_BURST:
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-isce2
+      image_tag: 3.0.2
       command:
         - ++process
         - insar_tops_burst
         - ++omp-num-threads
         - '1'
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --apply-water-mask
         - Ref::apply_water_mask
         - --looks

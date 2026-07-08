@@ -21,10 +21,10 @@ Parameters:
   DefaultApplicationStatus:
     Type: String
 
-  OperaRtcS1EndDate:
+  SystemAvailable:
     Type: String
 
-  SystemAvailable:
+  ContentBucket:
     Type: String
 
   {% if security_environment == 'EDC' %}
@@ -59,7 +59,7 @@ Resources:
         Types:
           - {{ 'PRIVATE' if security_environment == 'EDC' else 'REGIONAL' }}
       Body:
-        openapi: 3.0.3
+        openapi: {{ openapi_spec }}
         paths:
           /:
             x-amazon-apigateway-any-method:
@@ -195,8 +195,8 @@ Resources:
           AUTH_ALGORITHM: !Ref AuthAlgorithm
           DEFAULT_CREDITS_PER_USER: !Ref DefaultCreditsPerUser
           DEFAULT_APPLICATION_STATUS: !Ref DefaultApplicationStatus
-          OPERA_RTC_S1_END_DATE: !Ref OperaRtcS1EndDate
           SYSTEM_AVAILABLE: !Ref SystemAvailable
+          CONTENT_BUCKET: !Ref ContentBucket
       Code: src/
       Handler: hyp3_api.lambda_handler.handler
       MemorySize: 3008

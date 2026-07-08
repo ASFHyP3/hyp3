@@ -1,4 +1,4 @@
-name: Deploy Enterprise Stacks to AWS
+name: Deploy custom prod stacks to AWS
 
 on:
   push:
@@ -23,13 +23,77 @@ jobs:
             default_application_status: APPROVED
             cost_profile: DEFAULT
             job_files: >-
-              job_spec/AUTORIFT_ITS_LIVE.yml
-              job_spec/S1_CORRECTION_ITS_LIVE.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+              job_spec/ITS_LIVE_AUTORIFT.yml
+              job_spec/ITS_LIVE_CROP.yml
+              job_spec/ITS_LIVE_CROP_BULK.yml
+              job_spec/ITS_LIVE_META_BULK.yml
+            instance_types: r7gd.medium,r7gd.large,r7gd.xlarge,r7gd.2xlarge,r7gd.4xlarge,r7gd.8xlarge
             default_max_vcpus: 2000  # Max: 10,406
             expanded_max_vcpus: 2000  # Max: 10,406
             required_surplus: 0
             security_environment: JPL-public
+            same_account_publishing: false
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/arm64/recommended/image_id
+
+          - environment: hyp3-ak-fire-safe
+            domain: hyp3-ak-fire-safe.asf.alaska.edu
+            template_bucket: cf-templates-kc34l8cyitfn-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/AK_FIRE_SAFE.yml
+              job_spec/FIRE_TRACK.yml
+              job_spec/INSAR_ISCE_BURST.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: true
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
+          - environment: hyp3-pism-cloud
+            domain: pism-cloud.asf.alaska.edu
+            template_bucket: cf-templates-1qca1gr649g17-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/PISM_TERRA_RUN_FORWARD.yml
+              job_spec/PISM_TERRA_RUN_INVERSE.yml
+              job_spec/PISM_TERRA_EXECUTE.yml
+            instance_types: r8id.8xlarge,r8id.12xlarge,r8id.16xlarge,r8id.24xlarge,r8id.32xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: true
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
+          - environment: hyp3-volcsarvatory
+            domain: hyp3-volcsarvatory.asf.alaska.edu
+            template_bucket: cf-templates-1uzy61g1h6omf-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 30
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/INSAR_GAMMA.yml
+              job_spec/NISAR_GUNW.yml
+              job_spec/VOLCSARVATORY_MULTI_BURST.yml
+              job_spec/VOLCSARVATORY_MINTPY.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-a19-jpl
@@ -43,12 +107,14 @@ jobs:
             job_files: >-
               job_spec/ARIA_AUTORIFT.yml
               job_spec/ARIA_RAIDER.yml
+              job_spec/ARIA_S1_COSEIS.yml
               job_spec/INSAR_ISCE.yml
-            instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
+            instance_types: m8id.xlarge,m8id.2xlarge,m8id.4xlarge,m8id.8xlarge,m8id.12xlarge,m8id.16xlarge
             default_max_vcpus: 4000  # Max: 13000
             expanded_max_vcpus: 4000  # Max: 13000
             required_surplus: 0
             security_environment: JPL-public
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-tibet-jpl
@@ -62,13 +128,16 @@ jobs:
             job_files: >-
               job_spec/ARIA_AUTORIFT.yml
               job_spec/ARIA_RAIDER.yml
+              job_spec/ARIA_S1_COSEIS.yml
               job_spec/INSAR_ISCE.yml
               job_spec/OPERA_DIST_S1.yml
-            instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
-            default_max_vcpus: 1000  # Max: 10316
-            expanded_max_vcpus: 1000  # Max: 10316
+              job_spec/OPERA_DIST_S1_CONFIRMATION.yml
+            instance_types: m8id.xlarge,m8id.2xlarge,m8id.4xlarge,m8id.8xlarge,m8id.12xlarge,m8id.16xlarge
+            default_max_vcpus: 6400  # Max: 10316
+            expanded_max_vcpus: 6400  # Max: 10316
             required_surplus: 0
             security_environment: JPL-public
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-nisar-jpl
@@ -82,13 +151,15 @@ jobs:
             job_files: >-
               job_spec/ARIA_AUTORIFT.yml
               job_spec/ARIA_RAIDER.yml
+              job_spec/ARIA_S1_COSEIS.yml
               job_spec/INSAR_ISCE.yml
               job_spec/OPERA_DIST_S1.yml
-            instance_types: m6id.xlarge,m6id.2xlarge,m6id.4xlarge,m6id.8xlarge,m6idn.xlarge,m6idn.2xlarge,m6idn.4xlarge,m6idn.8xlarge
-            default_max_vcpus: 1600  # Max 1652
-            expanded_max_vcpus: 1600  # Max 1652
+            instance_types: m8id.xlarge,m8id.2xlarge,m8id.4xlarge,m8id.8xlarge,m8id.12xlarge,m8id.16xlarge
+            default_max_vcpus: 1600  # Max: 1652
+            expanded_max_vcpus: 1600  # Max: 1652
             required_surplus: 0
             security_environment: JPL-public
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-avo
@@ -103,11 +174,12 @@ jobs:
               job_spec/INSAR_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-watermap
@@ -122,11 +194,12 @@ jobs:
               job_spec/RTC_GAMMA.yml
               job_spec/WATER_MAP.yml
               job_spec/WATER_MAP_EQ.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-streamflow
@@ -141,11 +214,12 @@ jobs:
               job_spec/RTC_GAMMA.yml
               job_spec/WATER_MAP.yml
               job_spec/WATER_MAP_EQ.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 1600
             expanded_max_vcpus: 1600
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: azdwr-hyp3
@@ -160,11 +234,12 @@ jobs:
               job_spec/INSAR_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-cargill
@@ -179,13 +254,15 @@ jobs:
               job_spec/AUTORIFT.yml
               job_spec/INSAR_GAMMA.yml
               job_spec/RTC_GAMMA.yml
-              job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_BURST_SPOT.yml
+              job_spec/INSAR_ISCE_BURST_EC2.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
+            default_max_vcpus: 6000  # Max: 6000
+            expanded_max_vcpus: 6000  # Max: 6000
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-bgc-engineering
@@ -202,32 +279,32 @@ jobs:
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
-          - environment: hyp3-carter
-            domain: hyp3-carter.asf.alaska.edu
-            template_bucket: cf-templates-1qx2mwia5g4kh-us-west-2
+          - environment: hyp3-lavas
+            domain: hyp3-lavas.asf.alaska.edu
+            template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
             image_tag: latest
-            product_lifetime_in_days: 30
+            product_lifetime_in_days: 14
             default_credits_per_user: 0
             default_application_status: APPROVED
             cost_profile: DEFAULT
             job_files: >-
-              job_spec/AUTORIFT.yml
-              job_spec/INSAR_GAMMA.yml
-              job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
-              job_spec/INSAR_ISCE_MULTI_BURST.yml
-            instance_types: r6id.xlarge,r6id.2xlarge,r6id.4xlarge,r6id.8xlarge,r6idn.xlarge,r6idn.2xlarge,r6idn.4xlarge,r6idn.8xlarge
+              job_spec/SRG_GSLC.yml
+              job_spec/SRG_TIME_SERIES.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
     environment:
@@ -235,18 +312,18 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v7.0.0
         with:
           fetch-depth: 0
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.V2_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.V2_AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.V2_AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: 3.13
 
@@ -279,4 +356,5 @@ jobs:
           COST_PROFILE: ${{ matrix.cost_profile }}
           JOB_FILES: ${{ matrix.job_files }}
           SECURITY_ENVIRONMENT: ${{ matrix.security_environment }}
+          SAME_ACCOUNT_PUBLISHING: ${{ matrix.same_account_publishing }}
           PARAMETER_FILE: parameters.json

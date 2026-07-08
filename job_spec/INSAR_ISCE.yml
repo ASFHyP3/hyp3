@@ -11,7 +11,7 @@ INSAR_ISCE:
         items:
           description: The name of the Sentinel-1 SLC granules to use as reference scenes for InSAR processing
           type: string
-          pattern: "^S1[AB]_IW_SLC__1S[SD]V"
+          pattern: "^S1[ABCD]_IW_SLC__1S[SD]V"
           minLength: 67
           maxLength: 67
           example: S1B_IW_SLC__1SDV_20210723T014947_20210723T015014_027915_0354B4_B3A9
@@ -22,7 +22,7 @@ INSAR_ISCE:
         items:
           description: The name of the Sentinel-1 SLC granules to use as secondary scenes for InSAR processing
           type: string
-          pattern: "^S1[AB]_IW_SLC__1S[SD]V"
+          pattern: "^S1[ABCD]_IW_SLC__1S[SD]V"
           minLength: 67
           maxLength: 67
           example: S1B_IW_SLC__1SDV_20210711T014947_20210711T015013_027740_034F80_D404
@@ -102,9 +102,9 @@ INSAR_ISCE:
         - ++omp-num-threads
         - '4'  # 8 vCPUs per 16 GB RAM for the C instance family; 4 for M; 2 for R
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --reference-scenes
         - Ref::granules
         - --secondary-scenes
@@ -128,7 +128,7 @@ INSAR_ISCE:
         - --unfiltered-coherence
         - Ref::unfiltered_coherence
       timeout: 21600
-      compute_environment: InsarIsceAria
+      compute_environment: Default
       vcpu: 1
       memory: 15500
       secrets:
@@ -140,22 +140,31 @@ INSAR_ISCE:
         - ++process
         - calcDelaysGUNW
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --weather-model
         - Ref::weather_model
       timeout: 10800
-      compute_environment: InsarIsceAria
+      compute_environment: Default
       vcpu: 1
       memory: 7500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD
         - RAIDER_ECMWF_ERA5_UID
         - RAIDER_ECMWF_ERA5_API_KEY
         - RAIDER_HRES_EMAIL
         - RAIDER_HRES_API_KEY
         - RAIDER_HRES_URL
+    - name: PUBLISH
+      image: ghcr.io/asfhyp3/ingest-adapter
+      command:
+        - Ref::job_id
+      timeout: 600
+      compute_environment: Default
+      vcpu: 1
+      memory: 512
+      secrets:
+        - TOPIC_ARN
+        - HYP3_URL

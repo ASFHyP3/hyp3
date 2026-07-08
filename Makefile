@@ -7,11 +7,12 @@ SET_BATCH_OVERRIDES = ${PWD}/apps/set-batch-overrides/src
 SCALE_CLUSTER = ${PWD}/apps/scale-cluster/src
 START_EXECUTION = ${PWD}/apps/start-execution/src
 DISABLE_PRIVATE_DNS = ${PWD}/apps/disable-private-dns/src
+SEARCH_ARCHIVE = ${PWD}/apps/search-archive/src
 UPDATE_DB = ${PWD}/apps/update-db/src
 UPLOAD_LOG = ${PWD}/apps/upload-log/src
 DYNAMO = ${PWD}/lib/dynamo
 LAMBDA_LOGGING = ${PWD}/lib/lambda_logging
-export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SET_BATCH_OVERRIDES}:${SCALE_CLUSTER}:${START_EXECUTION}:${DISABLE_PRIVATE_DNS}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}:${LAMBDA_LOGGING}:${APPS}
+export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SET_BATCH_OVERRIDES}:${SCALE_CLUSTER}:${START_EXECUTION}:${DISABLE_PRIVATE_DNS}:${SEARCH_ARCHIVE}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}:${LAMBDA_LOGGING}:${APPS}
 
 
 build: render
@@ -21,8 +22,12 @@ build: render
 	python -m pip install --upgrade -r requirements-apps-scale-cluster.txt -t ${SCALE_CLUSTER}; \
 	python -m pip install --upgrade -r requirements-apps-start-execution.txt -t ${START_EXECUTION}; \
 	python -m pip install --upgrade -r requirements-apps-disable-private-dns.txt -t ${DISABLE_PRIVATE_DNS}; \
+	python -m pip install --upgrade -r requirements-apps-search-archive.txt -t ${SEARCH_ARCHIVE}; \
 	python -m pip install --upgrade -r requirements-apps-update-db.txt -t ${UPDATE_DB}; \
 	python -m pip install --upgrade -r requirements-apps-get-files.txt -t ${GET_FILES}
+
+pythonpath:
+	@echo "export PYTHONPATH=$$PYTHONPATH"
 
 env:
 	@echo "export PYTHONPATH=$$PYTHONPATH $$(xargs < tests/cfg.env)"
@@ -44,8 +49,9 @@ compute_env_file ?= job_spec/config/compute_environments.yml
 security_environment ?= ASF
 api_name ?= local
 cost_profile ?= DEFAULT
+same_account_publishing ?= False
 render:
-	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -e $(compute_env_file) -s $(security_environment) -n $(api_name) -c $(cost_profile)
+	@echo rendering $(files) for API $(api_name) and security environment $(security_environment); python apps/render_cf.py -j $(files) -e $(compute_env_file) -s $(security_environment) -n $(api_name) -c $(cost_profile) --same-account-publishing $(same_account_publishing)
 
 static: ruff mypy openapi-validate cfn-lint
 

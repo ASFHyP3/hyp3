@@ -1,13 +1,12 @@
 import json
-import os
 import sys
 from collections.abc import Iterable
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 
 import requests
 import yaml
-from shapely.geometry import MultiPolygon, Polygon, box, shape
+from shapely.geometry import MultiPolygon, Polygon, shape
 
 from hyp3_api import CMR_URL, multi_burst_validation
 from hyp3_api.util import get_granules
@@ -26,6 +25,12 @@ class ValidationError(Exception):
     pass
 
 
+class CmrError(Exception):
+    """Raised when the CMR query has failed and is required for the current job type."""
+
+    pass
+
+
 with (Path(__file__).parent / 'job_validation_map.yml').open() as job_validation_map_file:
     JOB_VALIDATION_MAP = yaml.safe_load(job_validation_map_file.read())
 
@@ -39,30 +44,32 @@ def _has_sufficient_coverage(granule: Polygon) -> bool:
 
 
 def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
+    if not granules:
+        return []
+
     cmr_parameters = {
-        'granule_ur': [f'{granule}*' for granule in granules],
-        'options[granule_ur][pattern]': 'true',
         'provider': 'ASF',
+        'options[granule_ur][pattern]': 'true',
+        'options[short_name][pattern]': 'true',
+        'granule_ur': [f'{granule}*' for granule in granules],
         'short_name': [
-            'SENTINEL-1A_SLC',
-            'SENTINEL-1B_SLC',
-            'SENTINEL-1C_SLC',
-            'SENTINEL-1A_SP_GRD_HIGH',
-            'SENTINEL-1B_SP_GRD_HIGH',
-            'SENTINEL-1C_SP_GRD_HIGH',
-            'SENTINEL-1A_DP_GRD_HIGH',
-            'SENTINEL-1B_DP_GRD_HIGH',
-            'SENTINEL-1C_DP_GRD_HIGH',
+            'SENTINEL-1?_SLC',
+            'SENTINEL-1?_SP_GRD_HIGH',
+            'SENTINEL-1?_DP_GRD_HIGH',
+            'SENTINEL-1?_RAW',
             'SENTINEL-1_BURSTS',
-            'SENTINEL-1A_RAW',
-            'SENTINEL-1B_RAW',
-            'SENTINEL-1C_RAW',
         ],
         'page_size': 2000,
     }
     response = requests.post(CMR_URL, data=cmr_parameters)
-    response.raise_for_status()
-    return [
+
+    try:
+        response.raise_for_status()
+    except requests.HTTPError as e:
+        print(f'CMR search failed: {e}')
+        return []
+
+    granule_metadata = [
         {
             'name': entry.get('producer_granule_id', entry.get('title')),
             'polygon': Polygon(_format_points(entry['polygons'][0][0])),
@@ -70,9 +77,13 @@ def _get_cmr_metadata(granules: Iterable[str]) -> list[dict]:
         for entry in response.json()['feed']['entry']
     ]
 
+    _make_sure_granules_exist(granules, granule_metadata)
+
+    return granule_metadata
+
 
 def _is_third_party_granule(granule: str) -> bool:
-    return granule.startswith('S2') or granule.startswith('L')
+    return granule.startswith('S2') or granule.startswith('L') or granule.startswith('NISAR')
 
 
 def _make_sure_granules_exist(granules: Iterable[str], granule_metadata: list[dict]) -> None:
@@ -81,6 +92,13 @@ def _make_sure_granules_exist(granules: Iterable[str], granule_metadata: list[di
     not_found_granules = {granule for granule in not_found_granules if not _is_third_party_granule(granule)}
     if not_found_granules:
         raise ValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
+
+
+def check_cmr_query_succeeded(job: dict, granule_metadata: list[dict]) -> None:
+    if not granule_metadata:
+        raise CmrError(
+            f'Cannot validate job(s) of type {job["job_type"]} because CMR query failed. Please try again later.'
+        )
 
 
 def check_dem_coverage(_, granule_metadata: list[dict]) -> None:
@@ -189,10 +207,23 @@ def check_same_relative_orbits(_, granule_metadata: list[dict]) -> None:
     previous_relative_orbit = None
     for granule in granule_metadata:
         name_split = granule['name'].split('_')
-        absolute_orbit = name_split[7]
+        absolute_orbit = int(name_split[7])
         # "Relationship between relative and absolute orbit numbers": https://sentiwiki.copernicus.eu/web/s1-products
-        offset = 73 if name_split[0] == 'S1A' else 27
-        relative_orbit = ((int(absolute_orbit) - offset) % 175) + 1
+        mission = name_split[0]
+        if mission == 'S1A':
+            offset = 73
+        elif mission == 'S1B':
+            offset = 27
+        elif mission == 'S1C':
+            if absolute_orbit <= 8018:
+                offset = 172
+            else:
+                offset = 99
+        elif mission == 'S1D':
+            offset = 42
+        else:
+            raise ValueError(f'Encountered unknown Sentinel-1 mission: {mission}')
+        relative_orbit = ((absolute_orbit - offset) % 175) + 1
         if not previous_relative_orbit:
             previous_relative_orbit = relative_orbit
         if relative_orbit != previous_relative_orbit:
@@ -211,16 +242,6 @@ def check_bounding_box_size(job: dict, _, max_bounds_area: float = 4.5) -> None:
         raise ValidationError(
             f'Bounds must be smaller than {max_bounds_area} degrees squared. Box provided was {bounds_area:.2f}'
         )
-
-
-def check_opera_rtc_s1_bounds(_, granule_metadata: list[dict]) -> None:
-    opera_rtc_s1_bounds = box(-180, -60, 180, 90)
-    for granule in granule_metadata:
-        if not granule['polygon'].intersects(opera_rtc_s1_bounds):
-            raise ValidationError(
-                f'Granule {granule["name"]} is south of -60 degrees latitude and outside the valid processing extent '
-                f'for OPERA RTC-S1 products.'
-            )
 
 
 def check_aria_s1_gunw_dates(job: dict, _) -> None:
@@ -248,43 +269,9 @@ def _validate_date_during_s1(date_name: str, date_value: date) -> None:
         )
 
 
-def check_opera_rtc_s1_date(job: dict, _) -> None:
-    granules = job['job_parameters']['granules']
-    if len(granules) != 1:
-        raise InternalValidationError(f'Expected 1 granule, got {granules}')
-
-    granule = granules[0]
-    granule_date = datetime.strptime(granule.split('_')[3][:8], '%Y%m%d').date()
-
-    # Disallow IPF version < 002.70 according to the dates given at https://sar-mpc.eu/processor/ipf/
-    # Also see https://github.com/ASFHyP3/hyp3/issues/2739
-    if granule_date < date(2016, 4, 14):
-        raise ValidationError(
-            f'Granule {granule} was acquired before 2016-04-14 '
-            'and is not available for On-Demand OPERA RTC-S1 processing.'
-        )
-
-    end_date_str = os.environ['OPERA_RTC_S1_END_DATE']
-    if end_date_str == 'Default':
-        end_date_str = '2022-01-01'
-
-    end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-    if granule_date >= end_date:
-        raise ValidationError(
-            f'Granule {granule} was acquired on or after {end_date_str} '
-            'and is not available for On-Demand OPERA RTC-S1 processing. '
-            'You can download the product from the ASF DAAC archive.'
-        )
-
-
 def validate_jobs(jobs: list[dict]) -> None:
     granules = get_granules(jobs)
-
-    if granules:
-        granule_metadata = _get_cmr_metadata(granules)
-        _make_sure_granules_exist(granules, granule_metadata)
-    else:
-        granule_metadata = []
+    granule_metadata = _get_cmr_metadata(granules)
 
     for job in jobs:
         for validator_name in JOB_VALIDATION_MAP[job['job_type']]:

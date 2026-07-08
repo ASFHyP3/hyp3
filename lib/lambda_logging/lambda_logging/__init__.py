@@ -12,9 +12,11 @@ class UnhandledException(Exception):
     pass
 
 
-def log_exceptions[T](lambda_handler: Callable[[dict, object], T]) -> Callable[[dict, object], T]:
+def log_exceptions[EventType, ReturnType](
+    lambda_handler: Callable[[EventType, object], ReturnType],
+) -> Callable[[EventType, object], ReturnType]:
     @wraps(lambda_handler)
-    def wrapper(event: dict, context: object) -> T:
+    def wrapper(event: EventType, context: object) -> ReturnType:
         try:
             return lambda_handler(event, context)
         except:  # noqa: E722

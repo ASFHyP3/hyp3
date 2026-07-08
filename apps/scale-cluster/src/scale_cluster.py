@@ -17,10 +17,12 @@ def get_time_period(today: date) -> dict:
 
 
 def get_month_to_date_spending(today: date) -> float:
-    time_period = get_time_period(today)
-    granularity = 'MONTHLY'
-    metrics = ['UnblendedCost']
-    response = COST_EXPLORER.get_cost_and_usage(TimePeriod=time_period, Granularity=granularity, Metrics=metrics)
+    response = COST_EXPLORER.get_cost_and_usage(
+        TimePeriod=get_time_period(today),
+        Granularity='MONTHLY',
+        Metrics=['UnblendedCost'],
+        Filter={'Not': {'Dimensions': {'Key': 'RECORD_TYPE', 'Values': ['SavingsPlanNegation']}}},
+    )
     return float(response['ResultsByTime'][0]['Total']['UnblendedCost']['Amount'])
 
 
@@ -38,7 +40,7 @@ def set_max_vcpus(compute_environment_arn: str, target_max_vcpus: int, current_d
             computeResources=compute_resources,
             state='ENABLED',
         )
-    else:
+    elif current_desired_vcpus > target_max_vcpus * 1.05:
         print(
             f'Disabling {compute_environment_arn}. Current desiredvCpus {current_desired_vcpus} is larger than '
             f'target maxvCpus {target_max_vcpus}'
@@ -46,6 +48,11 @@ def set_max_vcpus(compute_environment_arn: str, target_max_vcpus: int, current_d
         BATCH.update_compute_environment(
             computeEnvironment=compute_environment_arn,
             state='DISABLED',
+        )
+    else:
+        print(
+            f'Doing nothing with {compute_environment_arn}. Current desiredvCpus {current_desired_vcpus} only '
+            f'marginally exceeds target maxvCpus {target_max_vcpus}'
         )
 
 

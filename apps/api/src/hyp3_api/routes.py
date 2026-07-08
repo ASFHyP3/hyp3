@@ -145,6 +145,13 @@ def jobs_post() -> Response:
     return jsonify(handlers.post_jobs(request.get_json(), g.user))
 
 
+@app.route('/jobs', methods=['PATCH'])
+@openapi
+def jobs_patch() -> Response:
+    handlers.patch_jobs(request.get_json(), g.user)
+    return jsonify({})
+
+
 @app.route('/jobs', methods=['GET'])
 @openapi
 def jobs_get() -> Response:
@@ -186,3 +193,9 @@ def user_patch() -> Response:
 @openapi
 def user_get() -> Response:
     return jsonify(handlers.get_user(g.user))
+
+
+@app.route('/bucket-policy/<bucket_name>', methods=['GET'])
+@openapi
+def bucket_policy_get(bucket_name: str) -> Response:
+    return jsonify(handlers.get_bucket_policy(bucket_name))

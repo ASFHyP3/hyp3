@@ -37,9 +37,9 @@ ARIA_S1_GUNW:
         - ++omp-num-threads
         - '4'  # 8 vCPUs per 16 GB RAM for the C instance family; 4 for M; 2 for R
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --reference-date
         - Ref::reference_date
         - --secondary-date
@@ -49,7 +49,7 @@ ARIA_S1_GUNW:
         - --min-frame-coverage
         - '0.9'
       timeout: 21600  # 6 hr
-      compute_environment: AriaS1Gunw
+      compute_environment: Default
       vcpu: 1
       memory: 15500
       secrets:
@@ -61,20 +61,18 @@ ARIA_S1_GUNW:
         - ++process
         - calcDelaysGUNW
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --weather-model
         - HRRR
       timeout: 10800  # 3 hr
-      compute_environment: AriaS1Gunw
+      compute_environment: Default
       vcpu: 1
       memory: 7500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD
     - name: PUBLISH
       image: ghcr.io/asfhyp3/ingest-adapter
       command:

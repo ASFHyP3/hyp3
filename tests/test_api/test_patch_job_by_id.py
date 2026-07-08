@@ -144,11 +144,17 @@ def test_patch_job_different_user(client, tables):
 
     response = client.patch(f'{JOBS_URI}/40183948-48a1-42d2-a96b-ce44fbba301b', json={'name': 'newname'})
     assert response.status_code == HTTPStatus.FORBIDDEN
-    assert response.json['detail'] == "You cannot modify a different user's job"
+    assert (
+        response.json['detail']
+        == 'You cannot modify job 40183948-48a1-42d2-a96b-ce44fbba301b because it belongs to a different user'
+    )
 
     response = client.patch(f'{JOBS_URI}/40183948-48a1-42d2-a96b-ce44fbba301b', json={'name': None})
     assert response.status_code == HTTPStatus.FORBIDDEN
-    assert response.json['detail'] == "You cannot modify a different user's job"
+    assert (
+        response.json['detail']
+        == 'You cannot modify job 40183948-48a1-42d2-a96b-ce44fbba301b because it belongs to a different user'
+    )
 
     assert tables.jobs_table.scan()['Items'] == [
         {

@@ -1,8 +1,9 @@
 import pytest
 
 from set_batch_overrides import (
-    AUTORIFT_LANDSAT_MEMORY,
-    AUTORIFT_S2_MEMORY,
+    AUTORIFT_MEMORY_8GB,
+    AUTORIFT_MEMORY_16GB,
+    AUTORIFT_MEMORY_32GB,
     INSAR_ISCE_BURST_MEMORY_8G,
     INSAR_ISCE_BURST_MEMORY_16G,
     INSAR_ISCE_BURST_MEMORY_32G,
@@ -10,6 +11,8 @@ from set_batch_overrides import (
     INSAR_ISCE_BURST_MEMORY_128G,
     RTC_GAMMA_10M_MEMORY,
     WATER_MAP_10M_MEMORY,
+    get_granules,
+    get_vcpus_from_memory,
     lambda_handler,
 )
 
@@ -123,7 +126,7 @@ def test_set_batch_overrides_insar_isce_burst_10x2():
 
 
 def test_set_batch_overrides_insar_isce_burst_20x4():
-    for n in range(1, 16):
+    for n in range(1, 13):
         assert lambda_handler(mock_insar_isce_burst_job('20x4', bursts=n), None) == {
             'ResourceRequirements': [
                 {
@@ -133,7 +136,7 @@ def test_set_batch_overrides_insar_isce_burst_20x4():
             ],
             'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '1'}],
         }
-    for n in range(16, 31):
+    for n in range(13, 31):
         assert lambda_handler(mock_insar_isce_burst_job('20x4', bursts=n), None) == {
             'ResourceRequirements': [
                 {
@@ -153,6 +156,24 @@ def test_set_batch_overrides_insar_isce_burst_value_error():
         lambda_handler(mock_insar_isce_burst_job('foo', bursts=1), None)
 
 
+def test_set_batch_overrides_autorift_s1():
+    assert lambda_handler(
+        {
+            'job_type': 'AUTORIFT',
+            'job_parameters': {'granules': ['S1A_']},
+        },
+        None,
+    ) == {
+        'ResourceRequirements': [
+            {
+                'Type': 'MEMORY',
+                'Value': AUTORIFT_MEMORY_32GB,
+            }
+        ],
+        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '4'}],
+    }
+
+
 def test_set_batch_overrides_autorift_s2():
     assert lambda_handler(
         {
@@ -164,9 +185,29 @@ def test_set_batch_overrides_autorift_s2():
         'ResourceRequirements': [
             {
                 'Type': 'MEMORY',
-                'Value': AUTORIFT_S2_MEMORY,
+                'Value': AUTORIFT_MEMORY_8GB,
             }
-        ]
+        ],
+        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '1'}],
+    }
+
+    assert lambda_handler(
+        {
+            'job_type': 'AUTORIFT',
+            'job_parameters': {
+                'reference': ['S2A_1', 'S2A_2', 'S2A_3', 'S2A_4', 'S2A_5'],
+                'secondary': ['S2B_1'],
+            },
+        },
+        None,
+    ) == {
+        'ResourceRequirements': [
+            {
+                'Type': 'MEMORY',
+                'Value': AUTORIFT_MEMORY_16GB,
+            }
+        ],
+        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '2'}],
     }
 
 
@@ -181,9 +222,10 @@ def test_set_batch_overrides_autorift_landsat():
         'ResourceRequirements': [
             {
                 'Type': 'MEMORY',
-                'Value': AUTORIFT_LANDSAT_MEMORY,
+                'Value': AUTORIFT_MEMORY_16GB,
             }
-        ]
+        ],
+        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '2'}],
     }
 
 
@@ -275,3 +317,32 @@ def test_set_batch_overrides_water_map_10m():
             }
         ]
     }
+
+
+@pytest.mark.parametrize(
+    'job_parameters,expected',
+    [
+        ({'granules': []}, []),
+        ({'granules': ['A', 'B']}, ['A', 'B']),
+        ({'reference': ['C', 'D']}, ['C', 'D']),
+        ({'reference': ['C', 'D'], 'secondary': ['E', 'F']}, ['C', 'D', 'E', 'F']),
+        ({'secondary': []}, []),
+        ({}, []),
+        ({'granules': None}, []),
+        ({'reference': None, 'secondary': None}, []),
+    ],
+)
+def test_get_granules(job_parameters, expected):
+    assert get_granules(job_parameters) == expected
+
+
+def test_get_vcpus_from_memory():
+    assert get_vcpus_from_memory('7875') == '1'
+    assert get_vcpus_from_memory('8000') == '1'
+    assert get_vcpus_from_memory('8001') == '2'
+
+    assert get_vcpus_from_memory('6580', mibs_per_vcpu=4000) == '2'
+    assert get_vcpus_from_memory('8001', mibs_per_vcpu=4000) == '3'
+
+    assert get_vcpus_from_memory('1') == '1'
+    assert get_vcpus_from_memory('127500') == '16'

@@ -23,6 +23,9 @@ inputs:
   SECURITY_ENVIRONMENT:
     description: "Modify resources/configurations for ASF (default), EDC, or JPL security environments"
     required: true
+  SAME_ACCOUNT_PUBLISHING:
+    description: "Allow publishing products to any bucket within the containing AWS account, not just the HyP3 content bucket"
+    required: true
   PARAMETER_FILE:
     description: "JSON file containing parameter overrides for cloudformation stack"
     required: true
@@ -35,7 +38,7 @@ runs:
         run: |
           pip install --upgrade pip
           make install
-          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' api_name='${{ inputs.API_NAME }}' cost_profile='${{ inputs.COST_PROFILE }}' build
+          make files='${{ inputs.JOB_FILES }}' security_environment='${{ inputs.SECURITY_ENVIRONMENT }}' api_name='${{ inputs.API_NAME }}' cost_profile='${{ inputs.COST_PROFILE }}'  same_account_publishing='${{ inputs.SAME_ACCOUNT_PUBLISHING }}' build
       - name: Package and deploy
         shell: bash
         run: |

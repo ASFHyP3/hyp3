@@ -18,6 +18,7 @@ Resources:
               - dynamodb:*
               - ec2:*
               - ecs:*
+              - ecr:GetAuthorizationToken
               - events:*
               - iam:CreateServiceLinkedRole
               - iam:DeleteServiceLinkedRole
@@ -49,6 +50,7 @@ Resources:
           - Effect: Allow
             Action:
               - cloudformation:SetStackPolicy
+              - cloudformation:ListStacks
               - cloudformation:CreateStack
               - cloudformation:UpdateStack
               - cloudformation:DeleteStack
@@ -57,7 +59,21 @@ Resources:
               - cloudformation:ExecuteChangeSet
               - cloudformation:DeleteChangeSet
               - cloudformation:GetTemplateSummary
-            Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+            Resource: !Sub "arn:aws:cloudformation:*:${AWS::AccountId}:stack/*"
+
+          - Effect: Allow
+            Action:
+              - ecr:BatchCheckLayerAvailability
+              - ecr:GetDownloadUrlForLayer
+              - ecr:DescribeRepositories
+              - ecr:ListImages
+              - ecr:DescribeImages
+              - ecr:BatchGetImage
+              - ecr:InitiateLayerUpload
+              - ecr:UploadLayerPart
+              - ecr:CompleteLayerUpload
+              - ecr:PutImage
+            Resource: !Sub "arn:aws:ecr:*:${AWS::AccountId}:repository/*"
 
   ApiGatewayLoggingRole:
     Type: Custom::JplRole

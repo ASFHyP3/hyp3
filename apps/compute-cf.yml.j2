@@ -77,8 +77,8 @@ Resources:
       ServiceRole: !GetAtt BatchServiceRole.Arn
       Type: MANAGED
       ComputeResources:
-        Type: SPOT
-        AllocationStrategy: SPOT_PRICE_CAPACITY_OPTIMIZED
+        Type: EC2
+        AllocationStrategy: BEST_FIT_PROGRESSIVE
         MinvCpus: 0
         MaxvCpus: !Ref MaxvCpus
         InstanceTypes: !Ref InstanceTypes
@@ -108,8 +108,9 @@ Resources:
   {% for name, env in compute_envs.items() %}
   {% set instance_types = env['instance_types'].split(',') if 'instance_types' in env else '!Ref InstanceTypes' %}
   {% set ami_id = env['ami_id'] if 'ami_id' in env else '!Ref AmiId' %}
-  {% set type = env['allocation_type'] if 'allocation_type' in env else 'SPOT' %}
-  {% set strategy = env['allocation_strategy'] if 'allocation_strategy' in env else 'SPOT_PRICE_CAPACITY_OPTIMIZED' %}
+  {% set type = env['allocation_type'] if 'allocation_type' in env else 'EC2' %}
+  {% set strategy = env['allocation_strategy'] if 'allocation_strategy' in env else 'BEST_FIT_PROGRESSIVE' %}
+  {% set max_vcpus = env['max_vcpus'] if 'max_vcpus' in env else '!Ref MaxvCpus' %}
   {{ name }}ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
@@ -119,7 +120,7 @@ Resources:
         Type: {{ type }}
         AllocationStrategy: {{ strategy }}
         MinvCpus: 0
-        MaxvCpus: !Ref MaxvCpus
+        MaxvCpus: {{ max_vcpus }}
         InstanceTypes: {{ instance_types }}
         ImageId: {{ ami_id }}
         Subnets: !Ref SubnetIds
@@ -172,14 +173,29 @@ Resources:
         Version: 2012-10-17
         Statement:
           - Effect: Allow
-            Action: s3:PutObject
-            Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
+            Action:
+              - s3:ListBucket
+              - s3:GetObject
+              - s3:GetObjectTagging
+              - s3:PutObject
+              - s3:PutObjectTagging
+            Resource: "*"
+            {% if not same_account_publishing %}
+            Condition:
+              StringNotEquals:
+                s3:ResourceAccount: !Ref "AWS::AccountId"
+            {% endif %}
           - Effect: Allow
-            Action: s3:PutObjectTagging
+            Action:
+              - s3:PutObject
+              - s3:PutObjectTagging
             Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
           - Effect: Allow
             Action: sns:Publish
-            Resource: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:*"
+            Resource: arn:aws:sns:*
+          - Effect: Allow
+            Action: rds-db:connect
+            Resource: !Sub "arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*/*"
 
   BatchServiceRole:
     Type: {{ 'Custom::JplRole' if security_environment in ('JPL', 'JPL-public') else 'AWS::IAM::Role' }}

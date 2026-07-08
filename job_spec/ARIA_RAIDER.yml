@@ -30,9 +30,9 @@ ARIA_RAIDER:
         - ++process
         - calcDelaysGUNW
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
         - --weather-model
         - Ref::weather_model
         - --input-bucket-prefix
@@ -44,10 +44,19 @@ ARIA_RAIDER:
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
-        - ESA_USERNAME
-        - ESA_PASSWORD
         - RAIDER_ECMWF_ERA5_UID
         - RAIDER_ECMWF_ERA5_API_KEY
         - RAIDER_HRES_EMAIL
         - RAIDER_HRES_API_KEY
         - RAIDER_HRES_URL
+    - name: PUBLISH
+      image: ghcr.io/asfhyp3/ingest-adapter
+      command:
+        - Ref::job_id
+      timeout: 600
+      compute_environment: Default
+      vcpu: 1
+      memory: 512
+      secrets:
+        - TOPIC_ARN
+        - HYP3_URL

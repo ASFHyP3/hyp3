@@ -127,10 +127,6 @@ Resources:
       Targets:
         - Arn: !GetAtt Lambda.Arn
           Id: lambda
-        {% for name in compute_envs %}
-        - Arn: !GetAtt {{ name }}Lambda.Arn
-          Id:  {{ name }}lambda
-        {% endfor %}
 
   EventPermission:
     Type: AWS::Lambda::Permission
@@ -141,6 +137,7 @@ Resources:
       SourceArn: !GetAtt Schedule.Arn
 
   {% for name in compute_envs %}
+
   {{ name }}LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -177,11 +174,19 @@ Resources:
       Qualifier: $LATEST
       MaximumRetryAttempts: 0
 
+  {{ name }}Schedule:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: "rate(30 minutes)"
+      Targets:
+        - Arn: !GetAtt {{ name }}Lambda.Arn
+          Id:  {{ name }}lambda
+
   {{ name }}EventPermission:
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName: !GetAtt  {{ name }}Lambda.Arn
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
-      SourceArn: !GetAtt Schedule.Arn
+      SourceArn: !GetAtt {{ name }}Schedule.Arn
   {% endfor %}

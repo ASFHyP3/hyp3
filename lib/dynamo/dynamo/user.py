@@ -10,6 +10,7 @@ import requests
 import dynamo.util
 from dynamo.exceptions import (
     AccessCodeError,
+    AddToInfiniteCreditsError,
     ApprovedApplicationError,
     DatabaseConditionException,
     InvalidApplicationStatusError,
@@ -178,6 +179,7 @@ def _reset_credits_if_needed(user: dict, current_month: str, users_table: Any) -
 def decrement_credits(user_id: str, cost: Decimal) -> None:
     if cost <= Decimal(0):
         raise ValueError(f'Cost {cost} <= 0')
+
     users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
     try:
         users_table.update_item(
@@ -190,3 +192,36 @@ def decrement_credits(user_id: str, cost: Decimal) -> None:
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
             raise DatabaseConditionException(f'Failed to decrement credits for user {user_id}')
         raise
+
+
+def add_credits(user_id: str, value: Decimal) -> None:
+    if value <= Decimal(0):
+        raise ValueError(f'Cannot add credits: {value} <= 0')
+
+    users_table = DYNAMODB_RESOURCE.Table(environ['USERS_TABLE_NAME'])
+    try:
+        users_table.update_item(
+            Key={'user_id': user_id},
+            UpdateExpression='ADD remaining_credits :value',
+            ConditionExpression='attribute_type(remaining_credits, :number)',
+            ExpressionAttributeValues={':value': value, ':number': 'N'},
+            ReturnValuesOnConditionCheckFailure='ALL_OLD',
+        )
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] != 'ConditionalCheckFailedException':
+            raise
+
+        elif 'Item' not in e.response:
+            raise DatabaseConditionException(f'User {user_id} does not exist')
+
+        elif 'remaining_credits' not in e.response['Item']:
+            raise DatabaseConditionException(f'User {user_id} does not have attribute remaining_credits')
+
+        elif e.response['Item']['remaining_credits'].get('NULL'):
+            raise AddToInfiniteCreditsError(f'User {user_id} has infinite credits')
+
+        else:
+            assert 'N' not in e.response['Item']['remaining_credits']
+            raise DatabaseConditionException(
+                f'User {user_id} attribute remaining_credits is not a number: {e.response["Item"]["remaining_credits"]}'
+            )

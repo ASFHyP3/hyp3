@@ -28,6 +28,8 @@ def test_not_antimeridian():
     with pytest.raises(validation.ValidationError, match=r'.*crosses the antimeridian.*'):
         validation.check_not_antimeridian({}, bad_granules)
 
+    validation.check_not_antimeridian({}, [])
+
 
 def test_has_sufficient_coverage():
     # Wyoming
@@ -221,6 +223,9 @@ def test_make_sure_granules_exist():
     validation._make_sure_granules_exist(['scene1'], granule_metadata)
     validation._make_sure_granules_exist(['scene1', 'scene2'], granule_metadata)
 
+    with pytest.raises(validation.ValidationError, match=r'.*scene1$'):
+        validation._make_sure_granules_exist(['scene1'], [])
+
     with pytest.raises(validation.ValidationError) as e:
         validation._make_sure_granules_exist(
             ['scene1', 'scene2', 'scene3', 'scene4', 'S2_foo', 'LC08_bar', 'LC09_bar'], granule_metadata
@@ -250,6 +255,9 @@ def test_is_third_party_granule():
 
 @responses.activate
 def test_get_cmr_metadata():
+    assert validation._get_cmr_metadata([]) == []
+    assert validation._get_cmr_metadata(set()) == []
+
     response_payload = {
         'feed': {
             'entry': [
@@ -266,7 +274,7 @@ def test_get_cmr_metadata():
     }
     responses.post(CMR_URL, json=response_payload)
 
-    assert validation._get_cmr_metadata(['foo', 'bar', 'hello']) == [
+    assert validation._get_cmr_metadata(['foo', 'bar']) == [
         {
             'name': 'foo',
             'polygon': Polygon([[25.0, -31.4], [25.5, -29.7], [24.6, -29.5], [24.1, -31.2]]),
@@ -276,6 +284,12 @@ def test_get_cmr_metadata():
             'polygon': Polygon([[1, 0], [3, 2], [5, 4], [7, 6]]),
         },
     ]
+
+    with pytest.raises(validation.ValidationError, match=r'.*could not be found: hello$'):
+        validation._get_cmr_metadata(['foo', 'bar', 'hello'])
+
+    responses.post(CMR_URL, status=500)
+    assert validation._get_cmr_metadata(['foo', 'bar']) == []
 
 
 @responses.activate
@@ -358,6 +372,9 @@ def test_validate_jobs():
     with pytest.raises(validation.ValidationError):
         validation.validate_jobs(jobs)
 
+    responses.post(CMR_URL, status=500)
+    validation.validate_jobs(jobs)
+
 
 def test_all_validators_have_correct_signature():
     validators = [getattr(validation, attr) for attr in dir(validation) if attr.startswith('check_')]
@@ -433,6 +450,8 @@ def test_check_granules_intersecting_bounds():
     with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_granules_intersecting_bounds(job_with_specified_bounds, invalid_granule_metadata)
 
+    validation.check_granules_intersecting_bounds(job_with_specified_bounds, [])
+
 
 def test_check_same_relative_orbits():
     valid_granule_metadata = [
@@ -440,13 +459,20 @@ def test_check_same_relative_orbits():
         {'name': 'S1A_IW_RAW__0SDV_20200816T161620_20200816T161652_033934_03EFCE_5730'},
         {'name': 'S1B_IW_RAW__0SDV_20200810T161537_20200810T161610_022863_02B66A_F7D7'},
         {'name': 'S1B_IW_RAW__0SDV_20200623T161535_20200623T161607_022163_02A10F_7FD6'},
+        {'name': 'S1C_IW_RAW__0SDV_20260604T170742_20260604T170815_007958_0102EF_499C'},
+        {'name': 'S1C_IW_RAW__0SDV_20260625T232524_20260625T232557_008235_DDDDDD_CCCC'},
+        {'name': 'S1D_IW_RAW__0SDV_20260617T171023_20260617T171056_003278_005BC8_55E8'},
     ]
     invalid_granule_metadata = valid_granule_metadata.copy()
     invalid_granule_metadata.append({'name': 'S1B_IW_RAW__0SDV_20200623T161535_20200623T161607_012345_02A10F_7FD6'})
+
     validation.check_same_relative_orbits({}, valid_granule_metadata)
+
     error_pattern = r'.*69 is not 87.*'
     with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_same_relative_orbits({}, invalid_granule_metadata)
+
+    validation.check_same_relative_orbits({}, [])
 
 
 def test_check_bounding_box_size():
@@ -457,103 +483,6 @@ def test_check_bounding_box_size():
     error_pattern = r'.*Bounds must be smaller.*'
     with pytest.raises(validation.ValidationError, match=error_pattern):
         validation.check_bounding_box_size(job, None, max_bounds_area=99.9)
-
-
-def test_check_opera_rtc_s1_bounds():
-    granule_metadata = [
-        {
-            'name': 'valid1',
-            'polygon': rectangle(-59.99, -60.01, -180, -179),
-        },
-        {
-            'name': 'valid2',
-            'polygon': rectangle(0, 1, 0, 1),
-        },
-    ]
-    validation.check_opera_rtc_s1_bounds(None, granule_metadata)
-
-    granule_metadata.append(
-        {
-            'name': 'invalid',
-            'polygon': rectangle(-60.01, -61, 23, 24),
-        }
-    )
-    with pytest.raises(validation.ValidationError, match=r'Granule invalid is south of -60 degrees latitude'):
-        validation.check_opera_rtc_s1_bounds(None, granule_metadata)
-
-
-def test_check_opera_rtc_s1_date_1_granule():
-    with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
-        validation.check_opera_rtc_s1_date(
-            {'job_parameters': {'granules': ['foo', 'bar']}},
-            None,
-        )
-
-    with pytest.raises(validation.InternalValidationError, match=r'^Expected 1 granule.*'):
-        validation.check_opera_rtc_s1_date(
-            {'job_parameters': {'granules': []}},
-            None,
-        )
-
-
-def test_check_opera_rtc_s1_date_min():
-    validation.check_opera_rtc_s1_date(
-        {'job_parameters': {'granules': ['S1_000000_IW1_20160414T000000_VV_0000-BURST']}}, None
-    )
-
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'^Granule S1_000000_IW1_20160413T235959_VV_0000-BURST was acquired before 2016-04-14 .*$',
-    ):
-        validation.check_opera_rtc_s1_date(
-            {'job_parameters': {'granules': ['S1_000000_IW1_20160413T235959_VV_0000-BURST']}}, None
-        )
-
-
-def test_check_opera_rtc_s1_date_max():
-    validation.check_opera_rtc_s1_date(
-        {'job_parameters': {'granules': ['S1_000000_IW1_20211231T235959_VV_0000-BURST']}}, None
-    )
-
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'^Granule S1_000000_IW1_20220101T000000_VV_0000-BURST was acquired on or after 2022-01-01 .*',
-    ):
-        validation.check_opera_rtc_s1_date(
-            {'job_parameters': {'granules': ['S1_000000_IW1_20220101T000000_VV_0000-BURST']}}, None
-        )
-
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'^Granule S1_000000_IW1_20250428T000000_VV_0000-BURST was acquired on or after 2022-01-01 .*',
-    ):
-        validation.check_opera_rtc_s1_date(
-            {'job_parameters': {'granules': ['S1_000000_IW1_20250428T000000_VV_0000-BURST']}}, None
-        )
-
-
-def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
-    monkeypatch.setenv('OPERA_RTC_S1_END_DATE', '2025-05-02')
-
-    validation.check_opera_rtc_s1_date(
-        {'job_parameters': {'granules': ['S1_000000_IW1_20250501T235959_VV_0000-BURST']}}, None
-    )
-
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'^Granule S1_000000_IW1_20250502T000000_VV_0000-BURST was acquired on or after 2025-05-02 .*',
-    ):
-        validation.check_opera_rtc_s1_date(
-            {'job_parameters': {'granules': ['S1_000000_IW1_20250502T000000_VV_0000-BURST']}}, None
-        )
-
-    with pytest.raises(
-        validation.ValidationError,
-        match=r'^Granule S1_000000_IW1_20250506T000000_VV_0000-BURST was acquired on or after 2025-05-02 .*',
-    ):
-        validation.check_opera_rtc_s1_date(
-            {'job_parameters': {'granules': ['S1_000000_IW1_20250506T000000_VV_0000-BURST']}}, None
-        )
 
 
 @pytest.mark.parametrize(
@@ -589,3 +518,13 @@ def test_check_opera_rtc_s1_date_max_configurable(monkeypatch):
 def test_check_aria_s1_gunw_dates(job_parameters, error):
     with error:
         validation.check_aria_s1_gunw_dates({'job_parameters': job_parameters}, None)
+
+
+def test_check_cmr_query_succeeded():
+    validation.check_cmr_query_succeeded({'job_type': 'FOO'}, [{}])
+
+    with pytest.raises(
+        validation.CmrError,
+        match=r'^Cannot validate job\(s\) of type FOO because CMR query failed\. Please try again later\.$',
+    ):
+        validation.check_cmr_query_succeeded({'job_type': 'FOO'}, [])

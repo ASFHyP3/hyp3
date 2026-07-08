@@ -34,9 +34,9 @@ OPERA_DISP_TMS:
         - '20140101'
         - '20300101'
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
       timeout: 1800 # 30 min
       compute_environment: Default
       vcpu: 1
@@ -51,9 +51,9 @@ OPERA_DISP_TMS:
         - create_tile_map
         - velocity
         - --bucket
-        - '!Ref Bucket'
+        - Ref::bucket
         - --bucket-prefix
-        - Ref::job_id
+        - Ref::bucket_prefix
       timeout: 21600 # 6 hr
       compute_environment: Default
       vcpu: 1

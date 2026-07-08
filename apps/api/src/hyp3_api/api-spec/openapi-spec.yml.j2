@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: {{ openapi_spec }}
 
 info:
   title: {{ api_name }}-api
@@ -46,6 +46,24 @@ paths:
               schema:
                 $ref: "#/components/schemas/jobs_response"
 
+    patch:
+      description: |-
+        Update a list of up to 100 jobs. The update is not transactional,
+        so it's possible that only some of the jobs will be updated if an error occurs.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/patch_jobs_body"
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+
     get:
       description: Get list of previously run jobs.
       parameters:
@@ -77,7 +95,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/start_token"
-
       responses:
         "200":
           description: 200 response
@@ -118,7 +135,6 @@ paths:
           schema:
             $ref: "#/components/schemas/job_id"
           required: true
-
       responses:
         "200":
           description: 200 response
@@ -153,6 +169,23 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/user"
+
+  /bucket-policy/{bucket_name}:
+    get:
+      description: Get a bucket policy for `bucket_name` which allows HyP3 to write to that bucket.
+      parameters:
+        - name: bucket_name
+          in: path
+          schema:
+            $ref: "#/components/schemas/bucket"
+          required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/bucket_policy"
 
 components:
   schemas:
@@ -198,6 +231,19 @@ components:
           $ref: "#/components/schemas/validate_only"
         jobs:
           $ref: "#/components/schemas/list_of_new_jobs"
+
+    patch_jobs_body:
+      description: List of jobs to update with a new name.
+      type: object
+      required:
+        - job_ids
+        - name
+      additionalProperties: false
+      properties:
+        job_ids:
+          $ref: "#/components/schemas/job_ids_list"
+        name:
+          $ref: "#/components/schemas/name_patch"
 
     jobs_response:
       description: List of submitted jobs.
@@ -263,6 +309,11 @@ components:
       type: number
       minimum: 0
 
+    job_ids_list:
+      type: array
+      items:
+        $ref: "#/components/schemas/job_id"
+
     job_names_list:
       type: array
       items:
@@ -318,6 +369,10 @@ components:
           $ref: "#/components/schemas/execution_started"
         name:
           $ref: "#/components/schemas/name"
+        bucket:
+          $ref: "#/components/schemas/bucket"
+        bucket_prefix:
+          $ref: "#/components/schemas/bucket_prefix"
         files:
           $ref: "#/components/schemas/list_of_files"
         browse_images:
@@ -402,6 +457,71 @@ components:
       maxLength: 100
       example: Job Name
 
+    bucket:
+      description: User provided text to define the product bucket, null for default
+      type: string
+      nullable: true
+      minLength: 3
+      maxLength: 63
+      example: "my-example-bucket"
+      pattern: "(?!(^((2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2}).){3}(2(5[0-5]|[0-4][0-9])|[01]?[0-9]{1,2})$|^xn--|.+-s3alias$))^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
+
+    bucket_prefix:
+      description: User provided text to define the bucket prefix to place the product in
+      type: string
+      nullable: true
+      minLength: 1
+      maxLength: 100
+      example: "{job_id}"
+      pattern: "^(?!\/)(?!.*\/\/)(?:[A-Za-z0-9._\/-]|{job_id}|{name}){1,1024}$"
+
+    bucket_policy:
+      description: An AWS S3 Bucket Policy that, when applied, will allow HyP3 to write to the bucket.
+      type: object
+      required:
+        - Version
+        - Statement
+      additionalProperties: false
+      properties:
+        Version:
+          type: string
+          format: date
+          example: "2012-10-17"
+        Statement:
+          type: array
+          items:
+            type: object
+          example: >-
+            [
+              {
+                "Sid": "HyP3 bucket-level publish permissions",
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": "123456789012"
+                },
+                  "Action": [
+                  "s3:ListBucket",
+                  "s3:getBucketLocation"
+                ],
+                "Resource": "arn:aws:s3:::my-example-bucket"
+              },
+              {
+                "Sid": "HyP3 object-level publish permissions",
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": "123456789012"
+                },
+                "Action": [
+                  "s3:GetObject",
+                  "s3:GetObjectTagging",
+                  "s3:PutObject",
+                  "s3:PutObjectTagging"
+                ],
+                "Resource": "arn:aws:s3:::my-example-bucket/*"
+              }
+            ]
+
+
     start_token:
       description: Token used for fetching subsequent results for large queries
       type: string
@@ -419,7 +539,6 @@ components:
           - filename
           - size
           - url
-          - s3
         additionalProperties: False
         properties:
           filename:
@@ -474,7 +593,6 @@ components:
         Run time in seconds for a processing step's final attempt.
       type: number
       minimum: 0
-      exclusiveMinimum: true
       example: 50
 
   securitySchemes:
