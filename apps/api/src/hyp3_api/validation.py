@@ -38,13 +38,6 @@ with (Path(__file__).parent / 'job_validation_map.yml').open() as job_validation
     JOB_VALIDATION_MAP = yaml.safe_load(job_validation_map_file.read())
 
 
-api_spec_file = Path(__file__).parent / 'api-spec' / 'openapi-spec.yml'
-api_spec_dict = get_spec_yaml(api_spec_file)
-job_parameters_by_title = {
-    x['title']: x for x in api_spec_dict['components']['schemas']['job']['properties']['job_parameters']['anyOf']
-}
-
-
 def _has_sufficient_coverage(granule: Polygon) -> bool:
     global DEM_COVERAGE
     if DEM_COVERAGE is None:
@@ -110,6 +103,11 @@ def validate_job_parameters(request_dict: dict) -> None:
     Args:
         request_dict: Sanitized request dictionary to be validated
     """
+    api_spec_dict = get_spec_yaml(Path(__file__).parent / 'api-spec' / 'openapi-spec.yml')
+    job_parameters_by_title = {
+        x['title']: x for x in api_spec_dict['components']['schemas']['job']['properties']['job_parameters']['anyOf']
+    }
+
     job_type = request_dict['job_type']
     job_parameter_schema = job_parameters_by_title.get(f'{job_type}Parameters')
 
