@@ -45,6 +45,7 @@ jobs:
             cost_profile: DEFAULT
             job_files: >-
               job_spec/AK_FIRE_SAFE.yml
+              job_spec/FIRE_TRACK.yml
               job_spec/INSAR_ISCE_BURST.yml
             instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
@@ -286,28 +287,6 @@ jobs:
             same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
-          - environment: hyp3-carter
-            domain: hyp3-carter.asf.alaska.edu
-            template_bucket: cf-templates-1qx2mwia5g4kh-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 30
-            default_credits_per_user: 0
-            default_application_status: APPROVED
-            cost_profile: DEFAULT
-            job_files: >-
-              job_spec/AUTORIFT.yml
-              job_spec/INSAR_GAMMA.yml
-              job_spec/RTC_GAMMA.yml
-              job_spec/INSAR_ISCE_BURST.yml
-              job_spec/INSAR_ISCE_MULTI_BURST.yml
-            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
-            required_surplus: 0
-            security_environment: ASF
-            same_account_publishing: false
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-
           - environment: hyp3-lavas
             domain: hyp3-lavas.asf.alaska.edu
             template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
@@ -333,7 +312,7 @@ jobs:
       url: https://${{ matrix.domain }}
 
     steps:
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@v7.0.0
         with:
           fetch-depth: 0
 

@@ -129,15 +129,14 @@ The primary and recommended way to deploy HyP3 is though our GitHub Actions CI/C
 For ASF and JPL, this requires some setup:
 
 <details>
-<summary>ASF: Create a service user and deployment role</summary>
+<summary>ASF: Create an OIDC role and deployment role</summary>
 <br />
 
 In order to integrate an ASF deployment we'll need:
 
 1. Account-wide API Gateway logging permissions
 2. A deployment role with the necessary permissions to deploy HyP3
-3. A "service user" so that we can generate long-term AWS access keys and
-   integrate the deployment into our CI/CD pipelines
+3. An OIDC role that GitHub actions can assume to execute deployments in our CI/CD pipelines
 
 These can be done by deploying the [ASF CI stack](cicd-stacks/ASF-deployment-ci-cf.yml).
 
@@ -154,18 +153,12 @@ aws --profile <profile> cloudformation deploy \
     --stack-name hyp3-ci \
     --template-file cicd-stacks/ASF-deployment-ci-cf.yml \
     --capabilities CAPABILITY_NAMED_IAM \
-    --parameter-overrides TemplateBucketName=<template-bucket>
+    --parameter-overrides TemplateBucketName=<template-bucket> SourceRepositories=<source-repositores>
 ```
-
-Once the `github-actions` IAM user has been created, you can create an AWS access key for that user,
-which we will use to deploy HyP3 via CI/CD tooling:
-
-1. Go to AWS console -> IAM -> Users -> github-actions -> security credentials tab -> "create access key".
-2. Select "Other" for key usage
-3. (Optional) Add tag value to describe the key, such as "For GitHub Actions CI/CD pipelines"
-4. Store the access key ID and secret access key using your team's password manager. You will use them below in "Create the GitHub environment"
-   as `V2_AWS_ACCESS_KEY_ID` and `V2_AWS_SECRET_ACCESS_KEY`.
 </details>
+
+where `SourceRepositories` is a comma-delimited list of repository name patterns from which you will be deploying, e.g. `repo:ASFHyP3/*`.
+See https://github.com/aws-actions/configure-aws-credentials#quick-start-oidc-recommended for more details.
 
 <details>
 <summary>JPL: Set up roles-as-code and request a service user</summary>
@@ -284,11 +277,9 @@ of the form `<CNAME_name> IN CNAME <CNAME_value>`, stripping `.asf.alaska.edu` f
     - `CERTIFICATE_ARN` (ASF and JPL only) - ARN of the AWS Certificate Manager certificate that you created manually, e.g. `arn:aws:acm:us-west-2:XXXXXXXXXXXX:certificate/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX`
     - `CLOUDFORMATION_ROLE_ARN` (ASF only) - part of the `hyp3-ci` stack that you deployed, e.g. `arn:aws:iam::xxxxxxxxxxxx:role/hyp3-ci-CloudformationDeploymentRole-XXXXXXXXXXXXX`
     - `SECRET_ARN` - ARN for the AWS Secrets Manager Secret that you created manually, e.g. `arn:aws:secretsmanager:us-west-X:XXXXXXXXXXXX:secret:hyp3-foobar-XXXXXX`
-    - `V2_AWS_ACCESS_KEY_ID` - AWS access key ID:
-      - ASF: for the `github-actions` user (created in step "Enable CI/CD above")
-      - JPL: for the service user
-      - EDC: created by an ASF developer via Kion
-    - `V2_AWS_SECRET_ACCESS_KEY` - The corresponding secret access key
+    - `AWS_ROLE_ARN`  (ASF and EDC only) - part of the `hyp3-ci` stack that you deployed, e.g.  `arn:aws:iam::xxxxxxxxxxxx:role/hyp3-ci-OIDCRole-XXXXXXXXXXXXX`
+    - `V2_AWS_ACCESS_KEY_ID` (JPL only) - AWS access key ID for the service user
+    - `V2_AWS_SECRET_ACCESS_KEY` (JPL only) - The corresponding secret access key
     - `VPC_ID` - ID of the default VPC for this AWS account and region (aws console -> VPC -> Your VPCs, e.g. `vpc-xxxxxxxxxxxxxxxxx`)
     - `SUBNET_IDS` - Comma delimited list (no spaces) of the default subnets for the VPC specified in `VPC_ID` (aws console -> VPC -> Subnets, e.g. `subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx,subnet-xxxxxxxxxxxxxxxxx`)
 

@@ -7,7 +7,7 @@ compute_environments:
   #   max_vcpus
   SrgGslc:
     instance_types: g6.2xlarge
-    ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id}}'"
+    ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/gpu/recommended/image_id}}'"
   SrgTimeSeries:
     instance_types: c6id.16xlarge
   ItsLiveSpotIntel:
@@ -21,7 +21,7 @@ compute_environments:
     ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id}}'"
   SlimSAR:
     instance_types: g4dn.2xlarge,g4dn.4xlarge,g4dn.8xlarge,g4dn.16xlarge
-    ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id}}'"
+    ami_id: "'{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/gpu/recommended/image_id}}'"
   DefaultSpot:
     allocation_type: SPOT
     allocation_strategy: SPOT_PRICE_CAPACITY_OPTIMIZED
