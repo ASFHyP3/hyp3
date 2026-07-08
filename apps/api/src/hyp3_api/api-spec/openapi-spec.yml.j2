@@ -51,8 +51,6 @@ paths:
                 {% for job_type, job_spec in job_types.items() %}
                 {% if 'files' in job_spec.keys() %}
                 {% for parameter, parameter_spec in job_spec['files'].items() %}
-                {% if loop.first %}
-                {% endif %}
                 {{ parameter }}:
                   {{ json.dumps(parameter_spec['api_schema']) }}
                 {% endfor %}  
@@ -62,8 +60,6 @@ paths:
             {% for job_type, job_spec in job_types.items() %}
             {% if 'files' in job_spec.keys() %}
             {% for parameter, parameter_spec in job_spec['files'].items() %}
-            {% if loop.first %}
-            {% endif %}
               {{ parameter }}:
                 contentType: {{ parameter_spec['allowed_types'] | join(', ') }}
             {% endfor %}  
