@@ -228,6 +228,12 @@ def upload_job_post() -> Response:
     return handlers.post_upload_job(request_dict, request.files, g.user)
 
 
+@app.route('/jobs', methods=['POST'])
+@openapi
+def jobs_post() -> Response:
+    return jsonify(handlers.post_jobs(request.get_json(), g.user))
+
+
 @app.route('/jobs', methods=['PATCH'])
 @openapi
 def jobs_patch() -> Response:

@@ -58,7 +58,7 @@ def post_upload_job(request_dict: dict, request_files: dict, user: str) -> Respo
     return jsonify(request_dict)
 
 
-def post_jobs(body: dict, user: str) -> Response:
+def post_jobs(body: dict, user: str) -> dict:
     print(body)
     try:
         validate_jobs(body['jobs'])
@@ -74,7 +74,7 @@ def post_jobs(body: dict, user: str) -> Response:
         abort(problem_format(400, str(e)))
     except CustomPrefixForDefaultBucketError as e:
         abort(problem_format(400, str(e)))
-    return jsonify(body)
+    return body
 
 
 def get_jobs(
