@@ -120,7 +120,7 @@ def validate_job_parameters(request_dict: dict) -> None:
         raise ValidationError(errors[-1])
 
 
-def check_for_missing_files(request_files: dict, file_spec: dict) -> None:
+def _check_for_missing_files(request_files: dict, file_spec: dict) -> None:
     missing_files = []
     for key in file_spec.keys():
         if 'required' in file_spec[key].keys() and file_spec[key]['required']:
@@ -131,14 +131,14 @@ def check_for_missing_files(request_files: dict, file_spec: dict) -> None:
         raise ValidationError(msg)
 
 
-def check_for_irrelevant_files(request_files: dict, file_spec: dict, job_type: str) -> None:
+def _check_for_irrelevant_files(request_files: dict, file_spec: dict, job_type: str) -> None:
     for file_param in request_files.keys():
         if file_param not in file_spec.keys():
             msg = f'Invalid file included for {job_type} job type: ({file_param}) {request_files[file_param].filename}'
             raise ValidationError(msg)
 
 
-def check_file_type(request_files: dict, file_spec: dict) -> None:
+def _check_correct_file_type(request_files: dict, file_spec: dict) -> None:
     for param, file_obj in request_files.items():
         filetype = file_obj.mimetype
         allowed_types = file_spec[param]['allowed_types']
@@ -158,9 +158,9 @@ def validate_files(request: Request) -> None:
     file_spec = job_spec[job_type]['files']
     request_files = dict(request.files)
 
-    check_for_missing_files(request_files, file_spec)
-    check_for_irrelevant_files(request_files, file_spec, job_type)
-    check_file_type(request_files, file_spec)
+    _check_for_missing_files(request_files, file_spec)
+    _check_for_irrelevant_files(request_files, file_spec, job_type)
+    _check_correct_file_type(request_files, file_spec)
 
 
 def check_cmr_query_succeeded(job: dict, granule_metadata: list[dict]) -> None:
