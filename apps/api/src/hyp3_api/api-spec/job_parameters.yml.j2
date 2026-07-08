@@ -35,6 +35,7 @@ components:
 
     {% for job_type, job_spec in job_types.items() %}
     {{ job_type }}Parameters:
+      title: {{ job_type }}Parameters
       description: Parameters for running {{ job_type }} jobs
       type: object
       additionalProperties: false
@@ -53,6 +54,7 @@ components:
       {% endfor %}
 
     {{ job_type }}Job:
+      title: {{ job_type }}Job
       description: Contains user provided information on running a new {{ job_type }} job.
       type: object
       required:
