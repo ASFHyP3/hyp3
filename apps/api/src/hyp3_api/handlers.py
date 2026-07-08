@@ -1,6 +1,7 @@
+import json
 from http.client import responses
 
-from flask import Response, abort, jsonify, request
+from flask import Request, Response, abort, jsonify, request
 
 import dynamo
 from dynamo.exceptions import (
@@ -13,7 +14,7 @@ from dynamo.exceptions import (
 )
 from hyp3_api import util
 from hyp3_api.multi_burst_validation import MultiBurstValidationError
-from hyp3_api.validation import CmrError, ValidationError, validate_jobs
+from hyp3_api.validation import CmrError, ValidationError, validate_files, validate_job_parameters, validate_jobs
 
 
 def problem_format(status: int, message: str) -> Response:
@@ -21,6 +22,50 @@ def problem_format(status: int, message: str) -> Response:
     response.headers['Content-Type'] = 'application/problem+json'
     response.status_code = status
     return response
+
+
+def _get_request_dict(request: Request) -> dict:
+    """Retrieve and sanitize request dictionary from `/upload-job` form."""
+    request_form = dict(request.form)
+    allowed_params = ['job_type', 'name', 'bucket', 'bucket_prefix', 'job_parameters']
+
+    # File params for other job types will be included in all requests and need to be removed
+    params = list(request_form.keys())
+    for param in params:
+        if param not in allowed_params:
+            request_form.pop(param)
+
+    request_form['job_parameters'] = json.loads(request_form['job_parameters'])
+
+    for param, file_obj in request.files.items():
+        request_form['job_parameters'][param] = file_obj.filename  # type: ignore[index]
+
+    return request_form
+
+
+def post_upload_job(request: Request, user: str) -> dict:
+    request_dict = _get_request_dict(request)
+    try:
+        validate_files(request)
+        validate_job_parameters(request_dict)
+        validate_jobs([request_dict])
+    except CmrError as e:
+        abort(problem_format(503, str(e)))
+    except (ValidationError, MultiBurstValidationError) as e:
+        abort(problem_format(400, str(e)))
+    try:
+        request_dict = dynamo.jobs.put_jobs(user, [request_dict])[0]
+        for _, file_obj in request.files.items():
+            util.save_and_upload_to_s3(
+                file_obj=file_obj, bucket=request_dict['bucket'], bucket_prefix=request_dict['bucket_prefix']
+            )
+    except UnexpectedApplicationStatusError as e:
+        abort(problem_format(403, str(e)))
+    except InsufficientCreditsError as e:
+        abort(problem_format(400, str(e)))
+    except CustomPrefixForDefaultBucketError as e:
+        abort(problem_format(400, str(e)))
+    return request_dict
 
 
 def post_jobs(body: dict, user: str) -> dict:

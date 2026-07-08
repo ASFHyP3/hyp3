@@ -139,6 +139,12 @@ def costs_get() -> Response:
     return jsonify(dynamo.jobs.COSTS)
 
 
+@app.route('/upload-job', methods=['POST'])
+@openapi
+def upload_job_post() -> Response:
+    return jsonify(handlers.post_upload_job(request, g.user))
+
+
 @app.route('/jobs', methods=['POST'])
 @openapi
 def jobs_post() -> Response:
