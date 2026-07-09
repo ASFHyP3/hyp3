@@ -148,7 +148,7 @@ def _check_correct_file_type(request_files: dict, file_spec: dict) -> None:
 def validate_files(request: Request) -> None:
     """Check that files have been included correctly in an `/upload-job` request."""
     job_type = request.form['job_type']
-    job_spec_path = Path(f'job_spec/{job_type}.yml')
+    job_spec_path = Path(__file__).parent / f'job_spec/{job_type}.yml'
 
     with Path.open(job_spec_path) as file:
         job_spec = yaml.safe_load(file)
