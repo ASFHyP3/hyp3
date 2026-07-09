@@ -85,7 +85,7 @@ def _raise_for_application_status(application_status: str, user_id: str) -> None
         raise InvalidApplicationStatusError(user_id, application_status)
 
 
-def _handle_content_bucket(job: dict) -> dict:
+def handle_content_bucket(job: dict) -> dict:
     content_bucket = environ['CONTENT_BUCKET']
     example_bucket = 'my-example-bucket'
 
@@ -121,7 +121,6 @@ def _prepare_job_for_database(
     else:
         priority = min(round(remaining_credits - running_cost), 9999)
     prepared_job = {
-        'job_id': str(uuid4()),
         'user_id': user_id,
         'status_code': 'PENDING',
         'execution_started': False,
@@ -129,7 +128,10 @@ def _prepare_job_for_database(
         'priority': priority,
         **job,
     }
-    prepared_job = _handle_content_bucket(prepared_job)
+    # `/upload-job` creates a job_id and handles the bucket in the API handler
+    if 'job_id' not in prepared_job.keys():
+        prepared_job['job_id'] = str(uuid4())
+        prepared_job = handle_content_bucket(prepared_job)
     if 'job_type' in prepared_job:
         prepared_job['job_parameters'] = {
             **DEFAULT_PARAMS_BY_JOB_TYPE[prepared_job['job_type']],

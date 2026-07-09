@@ -1,5 +1,6 @@
 import json
 from http.client import responses
+from uuid import uuid4
 
 from flask import Request, Response, abort, jsonify, request
 
@@ -29,7 +30,7 @@ def _get_request_dict(request: Request) -> dict:
     request_form = dict(request.form)
     allowed_params = ['job_type', 'name', 'bucket', 'bucket_prefix', 'job_parameters']
 
-    # File params for other job types will be included in all requests and need to be removed
+    # File params from other job types with files will be included in the request and need to be removed
     params = list(request_form.keys())
     for param in params:
         if param not in allowed_params:
@@ -37,14 +38,12 @@ def _get_request_dict(request: Request) -> dict:
 
     request_form['job_parameters'] = json.loads(request_form['job_parameters'])
 
-    for param, file_obj in request.files.items():
-        request_form['job_parameters'][param] = file_obj.filename  # type: ignore[index]
-
     return request_form
 
 
 def post_upload_job(request: Request, user: str) -> dict:
     request_dict = _get_request_dict(request)
+    request_dict['job_id'] = str(uuid4())
     try:
         validate_files(request)
         validate_job_parameters(request_dict)
@@ -54,11 +53,13 @@ def post_upload_job(request: Request, user: str) -> dict:
     except (ValidationError, MultiBurstValidationError) as e:
         abort(problem_format(400, str(e)))
     try:
-        request_dict = dynamo.jobs.put_jobs(user, [request_dict])[0]
-        for _, file_obj in request.files.items():
-            util.save_and_upload_to_s3(
+        request_dict = dynamo.jobs.handle_content_bucket(request_dict)
+        for file_param, file_obj in request.files.items():
+            s3_uri = util.save_and_upload_to_s3(
                 file_obj=file_obj, bucket=request_dict['bucket'], bucket_prefix=request_dict['bucket_prefix']
             )
+            request_dict['job_parameters'][file_param] = s3_uri
+        request_dict = dynamo.jobs.put_jobs(user, [request_dict])[0]
     except UnexpectedApplicationStatusError as e:
         abort(problem_format(403, str(e)))
     except InsufficientCreditsError as e:

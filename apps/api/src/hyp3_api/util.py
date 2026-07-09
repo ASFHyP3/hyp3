@@ -78,5 +78,4 @@ def save_and_upload_to_s3(file_obj: FileStorage, bucket: str, bucket_prefix: str
         filepath = Path(temp_dir) / filename
         file_obj.save(filepath)
         _upload_file_to_s3(filepath, file_obj.mimetype, bucket, bucket_prefix)
-    filename = f'{bucket}/{bucket_prefix}/{filename}'
-    return filename
+    return f's3://{bucket}/{bucket_prefix}/{filename}'
