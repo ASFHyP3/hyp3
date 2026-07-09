@@ -26,7 +26,7 @@ CORS(app, origins=r'https?://([-\w]+\.)*asf\.alaska\.edu', supports_credentials=
 
 
 JWKS_CLIENT = auth.get_jwks_client()
-AUTHENTICATED_ROUTES = ['/jobs', '/user']
+AUTHENTICATED_ROUTES = ['/jobs', '/user', '/upload-job']
 
 
 @app.before_request
