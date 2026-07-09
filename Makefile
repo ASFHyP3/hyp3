@@ -16,7 +16,7 @@ export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_
 
 
 build: render
-	cp job_spec apps/api/src/hyp3_api/job_spec
+	cp -r job_spec apps/api/src/hyp3_api/job_spec
 	python -m pip install --upgrade -r requirements-apps-api.txt -t ${API}; \
 	python -m pip install --upgrade -r requirements-apps-api-binary.txt --platform manylinux2014_x86_64 --only-binary=:all: -t ${API}; \
 	python -m pip install --upgrade -r requirements-apps-handle-batch-event.txt -t ${HANDLE_BATCH_EVENT}; \
