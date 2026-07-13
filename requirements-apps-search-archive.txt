@@ -1,5 +1,5 @@
 ./lib/dynamo/
 ./lib/lambda_logging/
 asf_enumeration==0.5.0
-asf_search==12.2.2
+asf_search==12.2.3
 pydantic==2.13.4
