@@ -54,6 +54,7 @@ SRG_GSLC:
         - Ref::bucket
         - --bucket-prefix
         - Ref::bucket_prefix
+        --use-gslc-prefix
         - Ref::granules
       timeout: 10800
       compute_environment: SrgGslc
