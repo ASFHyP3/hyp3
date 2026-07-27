@@ -1,4 +1,4 @@
-SRG_TIME_SERIES:
+SRG_TS:
   required_parameters:
     - bounds
   parameters:
