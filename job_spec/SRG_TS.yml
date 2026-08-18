@@ -1,0 +1,63 @@
+SRG_TS:
+  required_parameters:
+    - bounds
+  parameters:
+    bounds:
+      api_schema:
+        type: array
+        description: Bounds for extent of processing, formatted like [min lon, min lat, max lon, max lat] in EPSG:4326.
+        minItems: 4
+        maxItems: 4
+        example:
+          - -122.53
+          - 37.78
+          - -122.44
+          - 37.85
+        items:
+          type: number
+          example: -122.53
+    process:
+      api_schema:
+        description: SBAS or PS processing.
+        type: string
+        default: 'sbas'
+    tbaseline:
+      api_schema:
+        description: Temporal baseline.
+        type: integer
+        default: 60
+    pbaseline:
+      api_schema:
+        description: Perpendicular baseline.
+        type: integer
+        default: 1000
+  validators: [
+    check_bounds_formatting,
+    check_bounding_box_size
+  ]
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-srg
+      command:
+        - ++process
+        - time_series
+        - --bounds
+        - Ref::bounds
+        - --process
+        - Ref::process
+        - --tbaseline
+        - Ref::tbaseline
+        - --pbaseline
+        - Ref::pbaseline
+        - --bucket
+        - Ref::bucket
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --use-gslc-prefix
+      timeout: 86400 # 24 hr
+      compute_environment: SrgTimeSeries
+      vcpu: 1
+      memory: 125000
