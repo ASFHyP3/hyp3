@@ -29,8 +29,8 @@ jobs:
       matrix:
         security_environment: [ASF, EDC, JPL, JPL-public]
     steps:
-      - uses: actions/checkout@v7.0.0
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7
         with:
           python-version: 3.13
       - run: |
@@ -43,8 +43,8 @@ jobs:
   openapi-spec-validator:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.0
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7
         with:
           python-version: 3.13
       - run: |
@@ -56,12 +56,12 @@ jobs:
   statelint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
       - run: gem install statelint
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: 3.13
       - run: |
@@ -77,9 +77,9 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ ! github.event.pull_request.head.repo.fork }}
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: snyk/actions/setup@v1.0.0
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: 3.13
       - run: |
