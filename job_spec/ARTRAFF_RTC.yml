@@ -62,7 +62,7 @@ ARTRAFF_RTC:
         - Ref::bucket
         - --bucket-prefix
         - Ref::bucket_prefix
-      timeout: 7200
+      timeout: 14400
       compute_environment: Default
       vcpu: 1
       memory: 31500
