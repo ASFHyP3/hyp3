@@ -16,7 +16,6 @@ servers:
 {% endif %}
 
 paths:
-
   /costs:
     get:
       description: Get table of job costs.
@@ -28,8 +27,54 @@ paths:
               schema:
                 $ref: "#/components/schemas/costs_response"
 
-  /jobs:
+  /upload-job:
+    post:
+      description: Submits a list of jobs for processing.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - job_type
+              properties:
+                job_type:
+                  $ref: "./job_parameters.yml#/components/schemas/upload_job_type"
+                name:
+                  $ref: "#/components/schemas/name"
+                bucket:
+                  $ref: "#/components/schemas/bucket"
+                bucket_prefix: 
+                  $ref: "#/components/schemas/bucket_prefix"
+                job_parameters:
+                  $ref: "./job_parameters.yml#/components/schemas/job_parameters"
+                {% for job_type, job_spec in job_types.items() %}
+                {% if 'files' in job_spec.keys() %}
+                {% for parameter, parameter_spec in job_spec['files'].items() %}
+                {{ parameter }}:
+                  {{ json.dumps(parameter_spec['api_schema']) }}
+                {% endfor %}  
+                {% endif %}
+                {% endfor %}
+            encoding:
+            {% for job_type, job_spec in job_types.items() %}
+            {% if 'files' in job_spec.keys() %}
+            {% for parameter, parameter_spec in job_spec['files'].items() %}
+              {{ parameter }}:
+                contentType: {{ parameter_spec['allowed_types'] | join(', ') }}
+            {% endfor %}  
+            {% endif %}
+            {% endfor %}
+        required: true
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/jobs_response"
 
+  /jobs:
     post:
       description: Submits a list of jobs for processing.
       requestBody:

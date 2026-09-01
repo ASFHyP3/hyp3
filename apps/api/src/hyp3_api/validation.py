@@ -6,9 +6,12 @@ from pathlib import Path
 
 import requests
 import yaml
+from flask import Request
+from jsonschema import Draft7Validator
 from shapely.geometry import MultiPolygon, Polygon, shape
 
 from hyp3_api import CMR_URL, multi_burst_validation
+from hyp3_api.openapi import get_spec_yaml
 from hyp3_api.util import get_granules
 
 
@@ -92,6 +95,70 @@ def _make_sure_granules_exist(granules: Iterable[str], granule_metadata: list[di
     not_found_granules = {granule for granule in not_found_granules if not _is_third_party_granule(granule)}
     if not_found_granules:
         raise ValidationError(f'Some requested scenes could not be found: {", ".join(not_found_granules)}')
+
+
+def validate_job_parameters(request_dict: dict) -> None:
+    """Manual validation of job parameters for `/upload-job`.
+
+    Args:
+        request_dict: Sanitized request dictionary to be validated
+    """
+    api_spec_dict = get_spec_yaml(Path(__file__).parent / 'api-spec' / 'openapi-spec.yml')
+    job_parameters_by_title = {
+        x['title']: x for x in api_spec_dict['components']['schemas']['job']['properties']['job_parameters']['anyOf']
+    }
+
+    job_type = request_dict['job_type']
+    job_parameter_schema = job_parameters_by_title.get(f'{job_type}Parameters')
+
+    validator = Draft7Validator(job_parameter_schema)  # type: ignore
+    errors = sorted(validator.iter_errors(request_dict['job_parameters']), key=lambda e: e.path)
+
+    if errors:
+        raise ValidationError(errors[-1])
+
+
+def _check_for_missing_files(request_files: dict, file_spec: dict) -> None:
+    missing_files = []
+    for key in file_spec.keys():
+        if 'required' in file_spec[key].keys() and file_spec[key]['required']:
+            if key not in request_files.keys():
+                missing_files.append(key)
+    if len(missing_files) > 0:
+        msg = f'Missing required file(s): {", ".join(missing_files)}'
+        raise ValidationError(msg)
+
+
+def _check_for_irrelevant_files(request_files: dict, file_spec: dict, job_type: str) -> None:
+    for file_param in request_files.keys():
+        if file_param not in file_spec.keys():
+            msg = f'Invalid file included for {job_type} job type: ({file_param}) {request_files[file_param].filename}'
+            raise ValidationError(msg)
+
+
+def _check_correct_file_type(request_files: dict, file_spec: dict) -> None:
+    for param, file_obj in request_files.items():
+        filetype = file_obj.mimetype
+        allowed_types = file_spec[param]['allowed_types']
+        if filetype not in allowed_types:
+            msg = f"Invalid file type for {param}: '{filetype}' is not one of {allowed_types}."
+            raise ValidationError(msg)
+
+
+def validate_files(request: Request) -> None:
+    """Check that files have been included correctly in an `/upload-job` request."""
+    job_type = request.form['job_type']
+    job_spec_path = Path(__file__).parent / f'job_spec/{job_type}.yml'
+
+    with Path.open(job_spec_path) as file:
+        job_spec = yaml.safe_load(file)
+
+    file_spec = job_spec[job_type]['files']
+    request_files = dict(request.files)
+
+    _check_for_missing_files(request_files, file_spec)
+    _check_for_irrelevant_files(request_files, file_spec, job_type)
+    _check_correct_file_type(request_files, file_spec)
 
 
 def check_cmr_query_succeeded(job: dict, granule_metadata: list[dict]) -> None:

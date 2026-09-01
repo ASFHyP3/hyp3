@@ -182,6 +182,11 @@ Resources:
             Action:
               - dynamodb:GetItem
             Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${AccessCodesTable}*"
+          - Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:PutObjectTagging
+            Resource: !Sub "arn:aws:s3:::${ContentBucket}/*"
 
   Lambda:
     Type: AWS::Lambda::Function

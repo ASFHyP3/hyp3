@@ -236,9 +236,11 @@ def render_costs(job_types: dict, cost_profile: str) -> None:
 
 
 def validate_job_spec(job_type: str, job_spec: dict) -> None:
-    expected_fields = sorted(['required_parameters', 'parameters', 'cost_profiles', 'validators', 'steps'])
-    actual_fields = sorted(job_spec.keys())
-    if actual_fields != expected_fields:
+    expected_fields = {'required_parameters', 'parameters', 'cost_profiles', 'validators', 'steps'}
+    optional_fields = {'files'}
+    actual_fields = set(job_spec.keys())
+
+    if actual_fields - optional_fields != expected_fields:
         raise ValueError(f'{job_type} has fields {actual_fields} but should have {expected_fields}')
 
     if 'job_id' in job_spec['parameters']:
