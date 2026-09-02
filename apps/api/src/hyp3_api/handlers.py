@@ -1,3 +1,4 @@
+import time
 from http.client import responses
 
 from flask import Response, abort, jsonify, request
@@ -14,7 +15,6 @@ from dynamo.exceptions import (
 from hyp3_api import util
 from hyp3_api.multi_burst_validation import MultiBurstValidationError
 from hyp3_api.validation import CmrError, ValidationError, validate_jobs
-import time
 
 
 def problem_format(status: int, message: str) -> Response:
