@@ -14,6 +14,7 @@ from dynamo.exceptions import (
 from hyp3_api import util
 from hyp3_api.multi_burst_validation import MultiBurstValidationError
 from hyp3_api.validation import CmrError, ValidationError, validate_jobs
+import time
 
 
 def problem_format(status: int, message: str) -> Response:
@@ -128,9 +129,13 @@ def _user_response(user_record: dict) -> dict:
 
 def _get_names_for_user(user: str) -> list[str]:
     jobs, next_key = dynamo.jobs.query_jobs(user)
-    while next_key is not None:
-        new_jobs, next_key = dynamo.jobs.query_jobs(user, start_key=next_key)
-        jobs.extend(new_jobs)
+    start = time.time()
+    current_time = time.time()
+    if next_key:
+        while next_key is not None and current_time - start < 10:
+            new_jobs, next_key = dynamo.jobs.query_jobs(user, start_key=next_key)
+            jobs.extend(new_jobs)
+            current_time = time.time()
     names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))
 
