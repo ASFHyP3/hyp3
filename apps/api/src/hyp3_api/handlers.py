@@ -1,3 +1,4 @@
+import time
 from http.client import responses
 
 from flask import Response, abort, jsonify, request
@@ -128,9 +129,12 @@ def _user_response(user_record: dict) -> dict:
 
 def _get_names_for_user(user: str) -> list[str]:
     jobs, next_key = dynamo.jobs.query_jobs(user)
+    start = time.monotonic()
     while next_key is not None:
         new_jobs, next_key = dynamo.jobs.query_jobs(user, start_key=next_key)
         jobs.extend(new_jobs)
+        if time.monotonic() - start > 10:
+            break
     names = {job['name'] for job in jobs if 'name' in job}
     return sorted(list(names))
 
