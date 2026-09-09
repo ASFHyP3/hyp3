@@ -132,10 +132,10 @@ Resources:
             cloud-init-per instance mkfs_ssd mkfs.ext4 /dev/nvme1n1
             mount /dev/nvme1n1 /var/lib/docker
 
-            fallocate -l {{ swap_space }}G /swapfile
-            chmod 600 /swapfile
-            mkswap /swapfile
-            swapon /swapfile
+            fallocate -l {{ swap_space }}G /var/lib/docker/swapfile
+            chmod 600 /var/lib/docker/swapfile
+            mkswap /var/lib/docker/swapfile
+            swapon /var/lib/docker/swapfile
 
             sysctl -w vm.swappiness=10
             echo 'vm.swappiness=10' >> /etc/sysctl.conf
