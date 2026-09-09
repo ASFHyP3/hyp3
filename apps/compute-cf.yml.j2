@@ -111,6 +111,38 @@ Resources:
   {% set type = env['allocation_type'] if 'allocation_type' in env else 'EC2' %}
   {% set strategy = env['allocation_strategy'] if 'allocation_strategy' in env else 'BEST_FIT_PROGRESSIVE' %}
   {% set max_vcpus = env['max_vcpus'] if 'max_vcpus' in env else '!Ref MaxvCpus' %}
+  {% set swap_space = env['swap_space'] if 'swap_space' in env else 0 %}
+  {% set launch_template = name+'LaunchTemplate' if 'swap_space' in env else 'LaunchTemplate' %}
+  {% if swap_space %}
+  {{ name }}LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        MetadataOptions:
+          HttpTokens: required
+        UserData:
+          Fn::Base64: |-
+            Content-Type: multipart/mixed; boundary="==BOUNDARY=="
+            MIME-Version: 1.0
+
+            --==BOUNDARY==
+            Content-Type: text/cloud-boothook; charset="us-ascii"
+
+            #!/bin/bash
+            cloud-init-per instance mkfs_ssd mkfs.ext4 /dev/nvme1n1
+            mount /dev/nvme1n1 /var/lib/docker
+
+            fallocate -l {{ swap_space }}G /swapfile
+            chmod 600 /swapfile
+            mkswap /swapfile
+            swapon /swapfile
+
+            sysctl -w vm.swappiness=10
+            echo 'vm.swappiness=10' >> /etc/sysctl.conf
+
+            --==BOUNDARY==--
+  {% endif %}
+
   {{ name }}ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
@@ -128,8 +160,8 @@ Resources:
         SecurityGroupIds:
           - !Ref SecurityGroup
         LaunchTemplate:
-          LaunchTemplateId: !Ref LaunchTemplate
-          Version: !GetAtt LaunchTemplate.LatestVersionNumber
+          LaunchTemplateId: !Ref {{ launch_template }}
+          Version: !GetAtt {{ launch_template }}.LatestVersionNumber
         Tags:
           Name: !Ref AWS::StackName
 
