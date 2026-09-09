@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `swap_space` option for compute environments. 
 
+### Changed
+- AUTORIFT batch override to 16GB, from 64GB, for NISAR processing.
+
 ## [10.17.8]
 
 ### Fixed
