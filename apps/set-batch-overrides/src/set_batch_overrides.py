@@ -49,7 +49,7 @@ def get_autorift_memory(job_parameters: dict) -> str:
         return AUTORIFT_MEMORY_16GB
 
     elif granules[0].startswith('N'):
-        return AUTORIFT_MEMORY_64GB
+        return AUTORIFT_MEMORY_16GB
 
     return AUTORIFT_MEMORY_32GB
 
