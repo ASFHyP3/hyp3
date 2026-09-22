@@ -47,9 +47,9 @@ jobs:
             default_application_status: APPROVED
             cost_profile: DEFAULT
             job_files: >-
-              job_spec/PISM_TERRA_GLACIER_RUN.yml
-              job_spec/PISM_TERRA_ISMIP7_GREENLAND_RUN.yml
-              job_spec/PISM_TERRA_EXECUTE.yml
+              job_spec/PISM_GLACIER_RUN.yml
+              job_spec/PISM_ISMIP7_GREENLAND_RUN.yml
+              job_spec/PISM_EXECUTE.yml
             instance_types: r8id.8xlarge,r8id.12xlarge,r8id.16xlarge,r8id.24xlarge,r8id.32xlarge,r8id.48xlarge,r8id.96xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
