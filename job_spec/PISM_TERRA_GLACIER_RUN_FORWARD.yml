@@ -1,4 +1,4 @@
-PISM_TERRA_RUN_FORWARD:
+PISM_TERRA_GLACIER_RUN_FORWARD:
   required_parameters:
     - rgi_id
   parameters:
@@ -104,7 +104,7 @@ PISM_TERRA_RUN_FORWARD:
       secrets:
         - CDS_API_URL
         - CDS_API_KEY
-      timeout: 10800  # 3 hours
+      timeout: 604800  # 1 week
       compute_environment: Default
       vcpu: 32
       memory: 254000

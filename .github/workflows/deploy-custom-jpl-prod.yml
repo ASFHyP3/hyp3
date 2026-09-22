@@ -1,4 +1,4 @@
-name: Deploy custom prod stacks to AWS
+name: Deploy custom JPL prod stacks to AWS
 
 on:
   push:

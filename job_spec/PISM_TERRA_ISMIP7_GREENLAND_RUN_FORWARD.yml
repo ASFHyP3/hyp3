@@ -1,18 +1,11 @@
-PISM_TERRA_RUN_INVERSE:
-  required_parameters:
-    - rgi_id
+PISM_TERRA_ISMIP7_GREENLAND_RUN_FORWARD:
+  required_parameters: []
   parameters:
-    rgi_id:
-      api_schema:
-        description: Randolph Glacier Inventory 7.0 identifier the a glacier complex to simulate
-        type: string
-        pattern: 'RGI2000-v7.0-C-.*$'
-        example: RGI2000-v7.0-C-01-09429
     pism_config:
       api_schema:
         description: URI to a PISM config file or the path to one bundled within the pism-terra package
         type: string
-        default: config/era5_ec2.toml
+        default: config/ismip7_greenland_ppe_ssp370.toml
     run_template:
       api_schema:
         description: URI to a Jinja2 run template or the path to one bundled within the pism-terra package
@@ -24,7 +17,7 @@ PISM_TERRA_RUN_INVERSE:
         type: string
         nullable: true
         default: null
-        example: uq/era5_pdd.toml
+        example: uq/ismip7_ppe.toml
     ntasks:
       api_schema:
         description: Number of MPI tasks to use when executing PISM simulations
@@ -63,6 +56,7 @@ PISM_TERRA_RUN_INVERSE:
         type: string
         nullable: true
         default: null
+        example: uq/X_gris_posterior_1e6_samples_11_2021.csv.gz
     pism_config_cdl:
       api_schema:
         description: Path to PISM CDL config file for option validation
@@ -78,8 +72,7 @@ PISM_TERRA_RUN_INVERSE:
       image: ghcr.io/pism/pism-terra
       command:
         - ++process
-        - pism-glacier-run-inverse
-        - Ref::rgi_id
+        - pism-ismip7-greenland-run-forward
         - Ref::pism_config
         - Ref::run_template
         - Ref::uq_config
@@ -104,7 +97,7 @@ PISM_TERRA_RUN_INVERSE:
       secrets:
         - CDS_API_URL
         - CDS_API_KEY
-      timeout: 10800  # 3 hours
+      timeout: 604800  # 1 week
       compute_environment: Default
       vcpu: 32
       memory: 254000
