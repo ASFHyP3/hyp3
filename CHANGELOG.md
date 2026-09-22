@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added SQS and ECR permissions to `ASF-deployment-ci-cf.yml` for deploying - HyP3-based monitoring stacks.
+- Added a new `pism-cloud-sandbox` deployment.
 - Added a `PISM_ISMIP7_GREENLAND_RUN` job for preparing both forward and inverse model runs of Greenland for ISMIP7.
 - Added the `ntasks` API parameter to `PISM_EXECUTE` so vCPUs and memory can be dynamically set from job parameters.
 
