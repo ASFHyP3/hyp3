@@ -51,6 +51,7 @@ Resources:
                   - secretsmanager:*
                   - sns:*
                   - sqs:*
+                  - ssm:GetParameters
                   - states:*
                   - sts:AssumeRole
                 Resource: "*"
@@ -58,6 +59,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - cloudformation:SetStackPolicy
+                  - cloudformation:ListStacks
                   - cloudformation:CreateStack
                   - cloudformation:UpdateStack
                   - cloudformation:DeleteStack
@@ -125,6 +127,7 @@ Resources:
                   - cloudformation:SetStackPolicy
                   - cloudformation:CreateStack
                   - cloudformation:UpdateStack
+                  - cloudformation:DeleteStack
                   - cloudformation:CreateChangeSet
                   - cloudformation:DescribeChangeSet
                   - cloudformation:ExecuteChangeSet
