@@ -150,7 +150,7 @@ with the appropriate values for your AWS account:
 
 ```shell
 aws --profile <profile> cloudformation deploy \
-    --stack-name hyp3-ci \
+    --stack-name github-actions \
     --template-file cicd-stacks/ASF-deployment-ci-cf.yml \
     --capabilities CAPABILITY_NAMED_IAM \
     --parameter-overrides TemplateBucketName=<template-bucket> SourceRepositories=<source-repositores>
@@ -191,7 +191,7 @@ JPL account by deploying the [JPL CI stack](cicd-stacks/JPL-deployment-policy-cf
 From the repository root, run:
 ```shell
 aws cloudformation deploy \
-    --stack-name hyp3-ci \
+    --stack-name github-actions \
     --template-file cicd-stacks/JPL-deployment-policy-cf.yml
 ```
 
@@ -201,9 +201,9 @@ Then open a [Cloud Team Service Desk](https://itsd-jira.jpl.nasa.gov/servicedesk
 request for a service user account here:
 https://itsd-jira.jpl.nasa.gov/servicedesk/customer/portal/13/create/416?q=service%20user&q_time=1643746791578
 with the deployed policy name in the "Managed Permissions to be Attached" field.
-The policy name should look like `hyp3-ci-DeployPolicy-*`, and can be found either
+The policy name should look like `github-actions-DeployPolicy-*`, and can be found either
 in the [IAM console](https://console.aws.amazon.com/iamv2/home?#/policies) or listed under
-the `hyp3-ci` CloudFormation Stack Resources.
+the `github-actions` CloudFormation Stack Resources.
 
 Once the JPL service user has been created, you should receive an AWS access key
 which can be used to deploy HyP3 via CI/CD tooling.
@@ -275,9 +275,9 @@ of the form `<CNAME_name> IN CNAME <CNAME_value>`, stripping `.asf.alaska.edu` f
 5. Add the following environment secrets:
     - `AWS_REGION` - e.g. `us-west-2`
     - `CERTIFICATE_ARN` (ASF and JPL only) - ARN of the AWS Certificate Manager certificate that you created manually, e.g. `arn:aws:acm:us-west-2:XXXXXXXXXXXX:certificate/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX`
-    - `CLOUDFORMATION_ROLE_ARN` (ASF only) - part of the `hyp3-ci` stack that you deployed, e.g. `arn:aws:iam::xxxxxxxxxxxx:role/hyp3-ci-CloudformationDeploymentRole-XXXXXXXXXXXXX`
+    - `CLOUDFORMATION_ROLE_ARN` (ASF only) - part of the `github-actions` stack that you deployed, e.g. `arn:aws:iam::xxxxxxxxxxxx:role/github-actions-CloudformationDeploymentRole-XXXXXXXXXXXXX`
     - `SECRET_ARN` - ARN for the AWS Secrets Manager Secret that you created manually, e.g. `arn:aws:secretsmanager:us-west-X:XXXXXXXXXXXX:secret:hyp3-foobar-XXXXXX`
-    - `AWS_ROLE_ARN`  (ASF and EDC only) - part of the `hyp3-ci` stack that you deployed, e.g.  `arn:aws:iam::xxxxxxxxxxxx:role/hyp3-ci-OIDCRole-XXXXXXXXXXXXX`
+    - `AWS_ROLE_ARN`  (ASF and EDC only) - part of the `github-actions` stack that you deployed, e.g.  `arn:aws:iam::xxxxxxxxxxxx:role/github-actions-OIDCRole-XXXXXXXXXXXXX`
     - `V2_AWS_ACCESS_KEY_ID` (JPL only) - AWS access key ID for the service user
     - `V2_AWS_SECRET_ACCESS_KEY` (JPL only) - The corresponding secret access key
     - `VPC_ID` - ID of the default VPC for this AWS account and region (aws console -> VPC -> Your VPCs, e.g. `vpc-xxxxxxxxxxxxxxxxx`)

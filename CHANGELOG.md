@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.17.9]
+
+### Added
+- Added SQS and ECR permissions to `ASF-deployment-ci-cf.yml` for deploying HyP3-based monitoring stacks.
+
+### Changed
+- Reworked custom HyP3 deployment actions
+  - JPL deployments have been moved to the `deploy-custom-jpl-test.yml` and `deploy-custom-jpl-prod.yml` workflows so they can keep using service user access keys.
+  - Remaining HyP3 deployments in the `delpoy-custom-test.yml` and `deploy-custom-prod.yml` workflows are now deployed via OIDC.
+- All references to the HyP3 CI/CD stack name has been changed to `github-actions` from `hyp3-ci` inline with typical usage.
+
 ## [10.17.8]
 
 ### Fixed
@@ -42,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added an option to force static file regeneration for the `ITS_LIVE_AUTORIFT` job type.
 
 ### Changed
-- ASF-deployment-ci-cf.yml now deploys a role to be assumed via OIDC by Github Actions, rather than a service user
+- `ASF-deployment-ci-cf.yml` now deploys a role to be assumed via OIDC by GitHub Actions, rather than a service user
 - `plus-test` and `plus-prod` environments are now deployed via OIDC
 
 ## [10.17.4]
