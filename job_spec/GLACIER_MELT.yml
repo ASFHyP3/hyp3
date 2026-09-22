@@ -41,7 +41,8 @@ GLACIER_MELT:
   steps:
     - name: ''
       image: ghcr.io/jsingh2344/hyp3-glacier-melt
-      image_tag: 'test'
+      # If left unspecified, HyP3 will automatically use the "deployment" level tag; typically `test` for test deployments and `latest` for production deployments. 
+      # image_tag: v0.1.0   
 
       command:
         - --bucket
