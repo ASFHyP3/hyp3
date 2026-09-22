@@ -6,6 +6,7 @@ PISM_GLACIER_RUN:
       api_schema:
         description: Select whether you're running a forward or inverse simulation
         type: string
+        default: pism-glacier-run-forward
         enum:
           - pism-glacier-run-forward
           - pism-glacier-run-inverse

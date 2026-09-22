@@ -9,10 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added SQS and ECR permissions to `ASF-deployment-ci-cf.yml` for deploying - HyP3-based monitoring stacks.
 - Added a `PISM_ISMIP7_GREENLAND_RUN` job for preparing both forward and inverse model runs of Greenland for ISMIP7.
+- Added the `ntasks` API parameter to `PISM_EXECUTE` so vCPUs and memory can be dynamically set from job parameters.
 
 ### Changed
 - Combined the `PISM_TERRA_RUN_FORWARD` and `PISM_TERRA_RUN_INERVERSE` jobs into `PISM_GLACIER_RUN` job for preparing both forward and inverse model runs of RGI glacier complexes.
-  - vcpu and memory requirements for this job are now
+- Renamed the `PISM_TERRA_EXECUTE` job to `PISM_EXECUTE` in line with the other PISM jobs.
+- all `PISM_*` jobs will now set their vCPU and memory requirements via batch container overrides using the `ntasks` job parameter, which now has a maximum of 192 tasks (corresponding to a `r8id.48xlarge`).
 - The timeout for all PISM jobs has been extended to 1 week.
 - Reworked custom HyP3 deployment actions
   - JPL deployments have been moved to the `deploy-custom-jpl-test.yml` and `deploy-custom-jpl-prod.yml` workflows so they can keep using service user access keys.

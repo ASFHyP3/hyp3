@@ -5,6 +5,7 @@ PISM_ISMIP7_GREENLAND_RUN:
       api_schema:
         description: Select whether you're running a forward or inverse simulation
         type: string
+        default: pism-ismip7-greenland-run-forward
         enum:
           - pism-ismip7-greenland-run-forward
           - pism-ismip7-greenland-run-inverse
