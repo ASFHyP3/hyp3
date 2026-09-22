@@ -1,6 +1,14 @@
-PISM_TERRA_ISMIP7_GREENLAND_RUN_FORWARD:
+PISM_ISMIP7_GREENLAND_RUN:
   required_parameters: []
   parameters:
+    process:
+      api_schema:
+        description: Select whether you're running a forward or inverse simulation
+        type: string
+        default: pism-ismip7-greenland-run-forward
+        enum:
+          - pism-ismip7-greenland-run-forward
+          - pism-ismip7-greenland-run-inverse
     pism_config:
       api_schema:
         description: URI to a PISM config file or the path to one bundled within the pism-terra package
@@ -24,7 +32,7 @@ PISM_TERRA_ISMIP7_GREENLAND_RUN_FORWARD:
         type: integer
         default: 32
         minimum: 2
-        maximum: 32
+        maximum: 192
     resolution:
       api_schema:
         description: Override horizontal grid resolution
@@ -72,7 +80,7 @@ PISM_TERRA_ISMIP7_GREENLAND_RUN_FORWARD:
       image: ghcr.io/pism/pism-terra
       command:
         - ++process
-        - pism-ismip7-greenland-run-forward
+        - Ref::process
         - Ref::pism_config
         - Ref::run_template
         - Ref::uq_config
@@ -99,7 +107,7 @@ PISM_TERRA_ISMIP7_GREENLAND_RUN_FORWARD:
         - CDS_API_KEY
       timeout: 604800  # 1 week
       compute_environment: Default
-      vcpu: 32
-      memory: 254000
+      vcpu: 1    # computed from ntasks
+      memory: 8  # computed from ntasks
       linux_parameters:
         SharedMemorySize: 15259
