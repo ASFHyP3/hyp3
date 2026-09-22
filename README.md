@@ -243,7 +243,7 @@ Go to AWS console -> Secrets Manager, then:
 
 To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for its deployment domain name (URL), which we can request from AWS.
 
-[!NOTE]
+> [!NOTE]
 > For EDC accounts, you should create the cert in the `us-east-1` region
 > for use with the CloudFront distribution that you will create later,
 > even if you're deploying HyP3 to `us-west-2`.*
@@ -252,8 +252,9 @@ Go to the AWS console -> AWS Certificate Manager -> Request certificate and then
 1. Select "Request a public certificate"
 2. Click the orange "Next" button
 3. Choose a "Fully qualified domain name". Domain name should be something like `hyp3-foobar.asf.alaska.edu` or for a test deployment `hyp3-foobar-test.asf.alaska.edu`.
-3. Choose "DNS validation"
-4. Copy the "CNAME name" and "CNAME value"
+4. Ensure the validation method selected is "DNS validation"
+5. Click the orange "Request" button
+6. Record the "CNAME name" and "CNAME value" for later.
 
 Then create a validation record in
 https://gitlab.asf.alaska.edu/operations/puppet/-/edit/production/modules/legacy_dns/files/asf.alaska.edu.db
