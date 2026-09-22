@@ -1,7 +1,14 @@
-PISM_TERRA_EXECUTE:
+PISM_EXECUTE:
   required_parameters:
     - run_script
   parameters:
+    ntasks:
+      api_schema:
+        description: Number of MPI tasks to use when executing PISM simulations
+        type: integer
+        default: 32
+        minimum: 2
+        maximum: 192
     run_script:
       api_schema:
         description: S3 URI to a run script
@@ -29,7 +36,7 @@ PISM_TERRA_EXECUTE:
         - CDS_API_KEY
       timeout: 604800  # 1 week
       compute_environment: Default
-      vcpu: 32
-      memory: 254000
+      vcpu: 1    # computed from ntasks
+      memory: 8  # computed from ntasks
       linux_parameters:
         SharedMemorySize: 15259
