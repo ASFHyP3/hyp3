@@ -3,7 +3,7 @@
 ![Deploy to AWS](https://github.com/ASFHyP3/hyp3/workflows/Deploy%20to%20AWS/badge.svg)
 ![Run tests](https://github.com/ASFHyP3/hyp3/workflows/Run%20tests/badge.svg)
 
-[![DOI](https://zenodo.org/badge/259996151.svg)](https://zenodo.org/badge/latestdoi/259996151)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.259996151.svg)](https://doi.org/10.5281/zenodo.259996151)
 
 
 A processing environment for HyP3 Plugins in AWS.
