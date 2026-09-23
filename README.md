@@ -143,9 +143,9 @@ These can be done by deploying the [ASF CI stack](cicd-stacks/ASF-deployment-ci-
 
 > [!WARNING]
 > This stack only needs to be deployed once per AWS account. This stack also
-assumes you are only deploying into a single AWS Region. If you are deploying into
-multiple regions in the same AWS account, you'll need to adjust the IAM permissions
-that are limited to a single region.
+> assumes you are only deploying into a single AWS Region. If you are deploying into
+> multiple regions in the same AWS account, you'll need to adjust the IAM permissions
+> that are limited to a single region.
 
 From the repository root, run the following command, replacing `<profile>` and `<template-bucket>`
 with the appropriate values for your AWS account:
@@ -160,7 +160,7 @@ aws --profile <profile> cloudformation deploy \
 where `SourceRepositories` is a comma-delimited list of repository name patterns from which you will be deploying, e.g. `repo:ASFHyP3/*`.
 See https://github.com/aws-actions/configure-aws-credentials#quick-start-oidc-recommended for more details.
 
-You will need the OIDCRole Arn and the ClouFormationDeployRole Arn from the `github-actions` stack when you create the [GitHub Actions deploy environment](#create-the-github-environment). The ARNs can be obtained by querying the stack outputs:
+You will need the OIDCRole ARN and the ClouFormationDeployRole ARN from the `github-actions` stack when you create the [GitHub Actions deploy environment](#create-the-github-environment). The ARNs can be obtained by querying the stack outputs:
 ```shell
 aws cloudformation describe-stacks \
   --stack-name github-actions \
@@ -252,7 +252,7 @@ Go to AWS console -> Secrets Manager, then:
 7. Click the orange "Next" button (we won't configure rotation)
 8. Click the orange "Store" button to save the Secret
 
-You will need the secret's Arn when you create the [GitHub Actions deploy environment](#create-the-github-environment).
+You will need the secret's ARN when you create the [GitHub Actions deploy environment](#create-the-github-environment).
 
 #### Request SSL cert
 
@@ -275,7 +275,7 @@ Then create a validation record in
 https://gitlab.asf.alaska.edu/operations/puppet/-/edit/production/modules/legacy_dns/files/asf.alaska.edu.db
 of the form `<CNAME_name> IN CNAME <CNAME_value>`, stripping `.asf.alaska.edu` from the `CNAME_name`  (see previous records for examples).
 
-You will also need the certificate's Arn when you create the [GitHub Actions deploy environment](#create-the-github-environment).
+You will also need the certificate's ARN when you create the [GitHub Actions deploy environment](#create-the-github-environment).
 
 ### Create the GitHub environment
 

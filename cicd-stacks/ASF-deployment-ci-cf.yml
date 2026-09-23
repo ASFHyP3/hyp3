@@ -155,8 +155,8 @@ Resources:
 
 Outputs:
   OIDCRoleOutput:
-    Description: The ARN of the role that GitHub actions can assume
+    Description: The ARN of the role that GitHub Actions can assume
     Value: !GetAtt OIDCRole.Arn
   CloudFormationDeploymentRoleOutput:
-    Description: The ARN of the role with necessary permissions to deploy hyP3
+    Description: The ARN of the role with necessary permissions to deploy HyP3
     Value: !GetAtt CloudformationDeploymentRole.Arn
