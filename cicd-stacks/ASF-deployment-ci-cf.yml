@@ -152,3 +152,11 @@ Resources:
     Type: AWS::ApiGateway::Account
     Properties:
       CloudWatchRoleArn: !GetAtt ApiGatewayLoggingRole.Arn
+
+Outputs:
+  OIDCRoleOutput:
+    Description: The ARN of the role that GitHub actions can assume
+    Value: !GetAtt OIDCRole.Arn
+  CloudFormationDeploymentRoleOutput:
+    Description: The ARN of the role with necessary permissions to deploy hyP3
+    Value: !GetAtt CloudformationDeploymentRole.Arn
