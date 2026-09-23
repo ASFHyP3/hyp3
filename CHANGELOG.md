@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Combined the `PISM_TERRA_RUN_FORWARD` and `PISM_TERRA_RUN_INERVERSE` jobs into `PISM_GLACIER_RUN` job for preparing both forward and inverse model runs of RGI glacier complexes.
 - Renamed the `PISM_TERRA_EXECUTE` job to `PISM_EXECUTE` in line with the other PISM jobs.
+- Removed required RGI subdirectory from the `run_script` S3 URI parameter in the `PISM_EXECUTE` job type generalizing it for non-glaicer runs.
 - all `PISM_*` jobs will now set their vCPU and memory requirements via batch container overrides using the `ntasks` job parameter, which now has a maximum of 192 tasks (corresponding to a `r8id.48xlarge`).
 - The timeout for all PISM jobs has been extended to 1 week.
 - Reworked custom HyP3 deployment actions
