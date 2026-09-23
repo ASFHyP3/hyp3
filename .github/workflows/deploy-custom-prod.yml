@@ -183,8 +183,8 @@ jobs:
             same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
-          - environment: hyp3-pse-watermaps
-            domain: hyp3-pse-watermaps.asf.alaska.edu
+          - environment: hyp3-pse
+            domain: hyp3-pse.asf.alaska.edu
             template_bucket: cf-templates-oehzp6swcf0p-us-west-2
             image_tag: latest
             product_lifetime_in_days: 14
@@ -198,7 +198,7 @@ jobs:
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
-            same_account_publishing: false
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-streamflow
