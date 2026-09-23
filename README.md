@@ -44,7 +44,7 @@ A processing environment for HyP3 Plugins in AWS.
    Also, remember to re-run `make render` after making changes to rendered files.
 
 4. Additionally, if you just want to set up `PYTHONPATH`
-   without setting up all of the environment variables needed for testing, you can run:
+   without setting up all the environment variables needed for testing, you can run:
    ```
    eval $(make pythonpath)
    ```
@@ -137,7 +137,7 @@ In order to integrate an ASF deployment we'll need:
 
 1. Account-wide API Gateway logging permissions
 2. A deployment role with the necessary permissions to deploy HyP3
-3. An OIDC role that GitHub actions can assume to execute deployments in our CI/CD pipelines
+3. An OIDC role that GitHub Actions can assume to execute deployments in our CI/CD pipelines
 
 These can be done by deploying the [ASF CI stack](cicd-stacks/ASF-deployment-ci-cf.yml).
 
@@ -235,7 +235,7 @@ you will need to create an Earthdata Login user for your deployment if you do no
 1. Visit https://urs.earthdata.nasa.gov/home and click "Register"
 2. Fill in the required fields
 3. Fill in a Study Area
-4. After finishing, visit Eulas -> Accept New EULAs and accept "Alaska Satellite Facility Data Access"
+4. After finishing, visit EULAs -> Accept New EULAs and accept "Alaska Satellite Facility Data Access"
 5. Log into Vertex as the new user, and confirm you can download files, e.g. https://datapool.asf.alaska.edu/METADATA_SLC/SA/S1A_IW_SLC__1SDV_20230130T184017_20230130T184044_047017_05A3C3_381F.iso.xml
 6. Add the new username and password to your team's password manager.
 
@@ -305,7 +305,7 @@ You will also need the certificate's Arn when you create the [GitHub Actions dep
 
 You will need to add the deployment to the matrix in an existing GitHub Actions `deploy-*.yml` workflow located in the `.github/workflows/` directory, or create
 a new one for the deployment. If you need to create a new one, we recommend copying one of the
-existing workflows, and then updating all of the fields
+existing workflows, and then updating all the fields
 as appropriate for your deployment. Also make sure to update the top-level `name` of the workflow and the name
 of the branch or tag to deploy from. (This is typically `v*` tags for prod deployments, the `develop` branch for test deployments, or a feature branch name for sandbox deployments.)
 
@@ -351,14 +351,14 @@ Update the [AWS Accounts and HyP3 Deployments](https://docs.google.com/spreadshe
 #### Testing and adding user credits to your hyp3 deployment
 
 After successfully deploying HyP3 and your new DNS record has taken effect (or you've edited your local DNS name resolution), you can test your
-deployment by accessing the Swagger UI and using the POST `/user` tab to check if your user is approved and has credits for running jobs on the
+deployment by accessing the Swagger UI by using the POST `/user` tab to check if your user is approved and has credits for running jobs on the
 deployment. You will need to be authenticated by either providing an Earthdata Login Bearer Token using the "Authorize" button, or by having a
 valid `asf-urs` browser cookie, typically obtained by logging into [Vertex](https://search.asf.alaska.edu). Interacting with HyP3 should
 automatically add your user to the DynamoDB table with the default number of credits (typically 0).
 
 To add credits to your (or any) user, log in to the AWS console and navigate to  DynamoDB -> Explore items, then:
 1. Find the table with a format like `hyp3-foobar-UsersTable-XXXXXXXXXXXXX`
-2. Edit your user record if present (after using the Swagger UI in some way) or duplicate an existing reccord updaing the `user_id`.
+2. Edit your user record if present (after using the Swagger UI in some way) or duplicate an existing record and updating the `user_id`.
 
 You can then return the Swagger UI and use the POST `/jobs` to run a test job and confirm it completes.
 
