@@ -69,17 +69,17 @@ A HyP3 deployment stack provides a reproducible cloud processing environment tha
 We currently have HyP3 deployments in various AWS accounts managed by three different organizations,
 also referred to as "security environments" throughout our code and docs
 (because the AWS accounts have different security requirements depending on the organization):
-- ASF
-- EDC (Earthdata Cloud)
-- JPL
-- JPL-public 
+- `ASF`
+- `EDC` (Earthdata Cloud)
+- `JPL`
+- `JPL-public`
 
 For EDC, you will also need to refer to our
 [Deploy HyP3 to Earthdata Cloud](https://github.com/ASFHyP3/.github-private/blob/main/docs/Deploy-HyP3-to-Earthdata-Cloud.md)
 internal docs article (only accessible to members of ASF).
 
 > [!IMPORTANT]
-> JPL deployments _must_ start with the JPL security environment, but can be migrated to `JPL-public`
+> JPL deployments _must_ start with the `JPL` security environment, but can be migrated to `JPL-public`
 > after they are fully deployed and approved to have a public bucket.
 
 For JPL, these deployment docs assume that:
@@ -112,14 +112,14 @@ which is needed to deploy a CloudFormation stack. AWS will automatically make a
 suitable bucket if you try and create a new CloudFormation Stack in the AWS Console:
 
 1. Navigate to the CloudFormation service in the region you are going to deploy to
-1. Click the blue "Create stack" button and select "With new resources (standard)"
-1. For "Prepare template" select "Choose an existing template"
-1. For "Specify template" select "Upload a template file"
-1. Choose any JSON or YAML formatted file from your computer to upload
-1. Once the file is uploaded, you should see an S3 URL on the bottom indicating the
+2. Click the blue "Create stack" button and select "With new resources (standard)"
+3. For "Prepare template" select "Choose an existing template"
+4. For "Specify template" select "Upload a template file"
+5. Choose any JSON or YAML formatted file from your computer to upload
+6. Once the file is uploaded, you should see an S3 URL on the bottom indicating the
    bucket the template file was uploaded. This is your newly created CloudFormation
    templates bucket and should be named something like `cf-templates-<HASH>-<region>`
-1. Click "Cancel" to exit the CloudFormation stack creation now that we have a templates bucket
+7. Click "Cancel" to exit the CloudFormation stack creation now that we have a templates bucket
 
 </details>
 
@@ -140,7 +140,8 @@ In order to integrate an ASF deployment we'll need:
 
 These can be done by deploying the [ASF CI stack](cicd-stacks/ASF-deployment-ci-cf.yml).
 
-*Warning: This stack only needs to be deployed once per AWS account. This stack also
+> [!WARNING]
+> This stack only needs to be deployed once per AWS account. This stack also
 assumes you are only deploying into a single AWS Region. If you are deploying into
 multiple regions in the same AWS account, you'll need to adjust the IAM permissions
 that are limited to a single region.*
@@ -155,10 +156,18 @@ aws --profile <profile> cloudformation deploy \
     --capabilities CAPABILITY_NAMED_IAM \
     --parameter-overrides TemplateBucketName=<template-bucket> SourceRepositories=<source-repositores>
 ```
-</details>
-
 where `SourceRepositories` is a comma-delimited list of repository name patterns from which you will be deploying, e.g. `repo:ASFHyP3/*`.
 See https://github.com/aws-actions/configure-aws-credentials#quick-start-oidc-recommended for more details.
+
+You will need the OIDCRole Arn and the ClouFormationDeployRole Arn from the `github-actions` stack when you create the [GitHub Actions deploy environment](#create-the-github-environment). The ARNs can be obtained by querying the stack outputs:
+```shell
+aws cloudformation describe-stacks \
+  --stack-name github-actions \
+  --query 'Stacks[0].Outputs[].OutputValue' \
+  --output table --no-cli-pager
+```
+
+</details>
 
 <details>
 <summary>JPL: Set up roles-as-code and request a service user</summary>
@@ -239,6 +248,8 @@ Go to AWS console -> Secrets Manager, then:
 7. Click the orange "Next" button (we won't configure rotation)
 8. Click the orange "Store" button to save the Secret
 
+You will need the secret's Arn when you create the [GitHub Actions deploy environment](#create-the-github-environment).
+
 #### Request SSL cert
 
 To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for its deployment domain name (URL), which we can request from AWS.
@@ -260,6 +271,8 @@ Then create a validation record in
 https://gitlab.asf.alaska.edu/operations/puppet/-/edit/production/modules/legacy_dns/files/asf.alaska.edu.db
 of the form `<CNAME_name> IN CNAME <CNAME_value>`, stripping `.asf.alaska.edu` from the `CNAME_name`  (see previous records for examples).
 
+You will also need the certificate's Arn when you create the [GitHub Actions deploy environment](#create-the-github-environment).
+
 ### Create the GitHub environment
 
 > [!WARNING]
@@ -268,11 +281,11 @@ of the form `<CNAME_name> IN CNAME <CNAME_value>`, stripping `.asf.alaska.edu` f
 
 1. Go to https://github.com/ASFHyP3/hyp3/settings/environments -> New Environment
 2. Name the environment like your chosen domain name i.e. `hyp3-foobar` or `hyp3-foobar-test`
-3. Check "required reviewers" and add the appropriate team(s) or user(s)
+3. Check "required reviewers" and add the appropriate team(s) or user(s) (This is typically only needed for prod deployments.)
 4. Change "Deployment branches and tags" to "Selected branches and tags" and
    - add a deployment branch or tag rule
-   - use "Ref Type: Branch" and write the name of the branch it will be deploying out of.
-     (This is typically `main` for prod deployments, `develop` for test deployments, or a feature branch name for sandbox deployments.)
+   - For test and sandbox deployments use "Ref Type: Branch" and write the name of the branch it will be deploying out of. (This is typically `develop` for test deployments or a feature branch name for sandbox deployments.)
+   - For prod deployments use "Ref Type: Tag" and write `v*`
 5. Add the following environment secrets:
     - `AWS_REGION` - e.g. `us-west-2`
     - `CERTIFICATE_ARN` (ASF and JPL only) - ARN of the AWS Certificate Manager certificate that you created manually, e.g. `arn:aws:acm:us-west-2:XXXXXXXXXXXX:certificate/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX`
@@ -290,7 +303,7 @@ You will need to add the deployment to the matrix in an existing GitHub Actions 
 a new one for the deployment. If you need to create a new one, we recommend copying one of the
 existing workflows, and then updating all of the fields
 as appropriate for your deployment. Also make sure to update the top-level `name` of the workflow and the name
-of the branch to deploy from. (This is typically `main` for prod deployments, `develop` for test deployments, or a feature branch name for sandbox deployments.)
+of the branch or tag to deploy from. (This is typically `v*` tags for prod deployments, the `develop` branch for test deployments, or a feature branch name for sandbox deployments.)
 
 > [!TIP]
 > If you're deploying from a feature branch, make sure to [protect](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
@@ -299,7 +312,7 @@ of the branch to deploy from. (This is typically `main` for prod deployments, `d
 > [!TIP]
 > If your CI/CD workflow fails. Delete the "Rolled Back" stack (AWS Manager -> CloudFormation -> Stacks) before re-running the failed job.
 
-The deployment workflow will run as soon as you merge your changes into the branch specified in the workflow file.
+The deployment workflow will run as soon as you merge your changes into the branch specified in the workflow file, or a matching appropriate tag is created the release workflow after merging into the `main` branch.
 
 ### Finishing touches
 
