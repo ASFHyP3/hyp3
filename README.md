@@ -105,7 +105,8 @@ for a bucket named something like `cf-templates-<HASH>-<region>`. If not, follow
 <summary>ASF: Create a CloudFormation templates bucket</summary>
 <br />
 
-*Note: This section only needs to be completed once per region used in an AWS account.*
+> [!NOTE]
+> This section only needs to be completed once per region used in an AWS account.
 
 A new account will not have a bucket for storing AWS CloudFormation templates,
 which is needed to deploy a CloudFormation stack. AWS will automatically make a
@@ -144,7 +145,7 @@ These can be done by deploying the [ASF CI stack](cicd-stacks/ASF-deployment-ci-
 > This stack only needs to be deployed once per AWS account. This stack also
 assumes you are only deploying into a single AWS Region. If you are deploying into
 multiple regions in the same AWS account, you'll need to adjust the IAM permissions
-that are limited to a single region.*
+that are limited to a single region.
 
 From the repository root, run the following command, replacing `<profile>` and `<template-bucket>`
 with the appropriate values for your AWS account:
@@ -187,7 +188,8 @@ For more information about `roles-as-code`, see:
 * https://wiki.jpl.nasa.gov/display/cloudcomputing/IAM+Roles+and+Policies
 * https://github.jpl.nasa.gov/cloud/roles-as-code/blob/master/Documentation.md
 
-*Note: You must be on the JPL VPN to view the `.jpl.nasa.gov` links in this document.*
+> [!NOTE]
+> You must be on the JPL VPN to view the `.jpl.nasa.gov` links in this document.
 
 ##### Set up a service user for JPL accounts
 
@@ -204,7 +206,8 @@ aws cloudformation deploy \
     --template-file cicd-stacks/JPL-deployment-policy-cf.yml
 ```
 
-*Warning: This stack should only be deployed once per AWS account.*
+> [!WARNING]
+> This stack should only be deployed once per AWS account.
 
 Then open a [Cloud Team Service Desk](https://itsd-jira.jpl.nasa.gov/servicedesk/customer/portal/13)
 request for a service user account here:
@@ -217,9 +220,10 @@ the `github-actions` CloudFormation Stack Resources.
 Once the JPL service user has been created, you should receive an AWS access key
 which can be used to deploy HyP3 via CI/CD tooling.
 
-*Important: These keys will be stored in the associated JPL-managed AWS account in an AWS SecretsManager secret
+> [!IMPORTANT]
+> These keys will be stored in the associated JPL-managed AWS account in an AWS SecretsManager secret
 with the same name as the service user. JPL automatically rotates them every 90 days and so
-will need to be periodically refreshed in the GitHub deploy environment secrets (described below).*
+will need to be periodically refreshed in the [GitHub Actions deploy environment](#create-the-github-environment).
 
 </details>
 
@@ -257,7 +261,7 @@ To allow HTTPS connections, HyP3 needs an SSL certificate that is valid for its 
 > [!NOTE]
 > For EDC accounts, you should create the cert in the `us-east-1` region
 > for use with the CloudFront distribution that you will create later,
-> even if you're deploying HyP3 to `us-west-2`.*
+> even if you're deploying HyP3 to `us-west-2`.
 
 Go to the AWS console -> AWS Certificate Manager -> Request certificate and then:
 1. Select "Request a public certificate"
@@ -380,7 +384,8 @@ HyP3 content bucket by redeploying HyP3 using the `JPL-public` security environm
 <summary>All: Grant AWS account permission to pull the hyp3-gamma container</summary>
 <br />
 
-*Warning: This step must be done by an ASF employee.*
+> [!WARNING]
+> This step must be done by an ASF employee.
 
 If your HyP3 deployment uses the `RTC_GAMMA` or `INSAR_GAMMA` job types
 and is the first such deployment in this AWS account,
