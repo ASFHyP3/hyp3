@@ -38,6 +38,25 @@ jobs:
             same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
+          - environment: hyp3-beta-test
+            domain: hyp3-beta-test.asf.alaska.edu
+            template_bucket: cf-templates-1qsz358g31bdr-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 30
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/ARTRAFF_RTC.yml
+              job_spec/NISAR_GUNW.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: false
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
           - environment: hyp3-lavas-test
             domain: hyp3-lavas-test.asf.alaska.edu
             template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
@@ -98,6 +117,24 @@ jobs:
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: true
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
+          - environment: hyp3-pse-watermaps-test
+            domain: hyp3-pse-watermaps-test.asf.alaska.edu
+            template_bucket: cf-templates-oehzp6swcf0p-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/ARTRAFF_RTC.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-slimsar-test

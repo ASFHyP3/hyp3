@@ -112,9 +112,9 @@ which is needed to deploy a CloudFormation stack. AWS will automatically make a
 suitable bucket if you try and create a new CloudFormation Stack in the AWS Console:
 
 1. Navigate to the CloudFormation service in the region you are going to deploy to
-1. Click the orange "Create stack" button
-1. For "Prepare template" make select "Template is ready"
-1. For "Template source" select "Upload a template file"
+1. Click the blue "Create stack" button and select "With new resources (standard)"
+1. For "Prepare template" select "Choose an existing template"
+1. For "Specify template" select "Upload a template file"
 1. Choose any JSON or YAML formatted file from your computer to upload
 1. Once the file is uploaded, you should see an S3 URL on the bottom indicating the
    bucket the template file was uploaded. This is your newly created CloudFormation
