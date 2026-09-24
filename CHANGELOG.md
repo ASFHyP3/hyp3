@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed required RGI subdirectory from the `run_script` S3 URI parameter in the `PISM_EXECUTE` job type generalizing it for non-glaicer runs.
 - all `PISM_*` jobs will now set their vCPU and memory requirements via batch container overrides using the `ntasks` job parameter, which now has a maximum of 192 tasks (corresponding to a `r8id.48xlarge`).
 - The timeout for all PISM jobs has been extended to 1 week.
+- Increased default/expanded vCPUs to 13000 for all PSIM deployments.
 - Reworked custom HyP3 deployment actions
   - JPL deployments have been moved to the `deploy-custom-jpl-test.yml` and `deploy-custom-jpl-prod.yml` workflows so they can keep using service user access keys.
   - Remaining HyP3 deployments in the `delpoy-custom-test.yml` and `deploy-custom-prod.yml` workflows are now deployed via OIDC.
