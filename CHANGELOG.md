@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.18.0]
+
+### Added
+- Added SQS and ECR permissions to `ASF-deployment-ci-cf.yml` for deploying - HyP3-based monitoring stacks.
+- New deployments: `pism-cloud-sandbox`, `hyp3-beta-test`, `hyp3-beta`, `hyp3-pse-watermaps-test`, and `hyp3-pse-watermaps`.
+- Added a `PISM_ISMIP7_GREENLAND_RUN` job for preparing both forward and inverse model runs of Greenland for ISMIP7.
+- Added the `ntasks` API parameter to `PISM_EXECUTE` so vCPUs and memory can be dynamically set from job parameters.
+
+### Changed
+- The maximum length of the `bucket_prefix` job parameter has been increased to 700 UTF-8 characters from 100.
+- `ARTRAFF_RTC` (MultiRTC) jobs now take a floating point number instead of an integer for the resolution parameter. The minimum of 0 is also now correctly represented as an exclusive minimum (must be `>` 0, not `≥`).
+- Combined the `PISM_TERRA_RUN_FORWARD` and `PISM_TERRA_RUN_INERVERSE` jobs into `PISM_GLACIER_RUN` job for preparing both forward and inverse model runs of RGI glacier complexes.
+- Renamed the `PISM_TERRA_EXECUTE` job to `PISM_EXECUTE` in line with the other PISM jobs.
+- Removed required RGI subdirectory from the `run_script` S3 URI parameter in the `PISM_EXECUTE` job type generalizing it for non-glaicer runs.
+- all `PISM_*` jobs will now set their vCPU and memory requirements via batch container overrides using the `ntasks` job parameter, which now has a maximum of 192 tasks (corresponding to a `r8id.48xlarge`).
+- The timeout for all PISM jobs has been extended to 1 week.
+- Increased default/expanded vCPUs to 13000 for all PSIM deployments.
+- Reworked custom HyP3 deployment actions
+  - JPL deployments have been moved to the `deploy-custom-jpl-test.yml` and `deploy-custom-jpl-prod.yml` workflows so they can keep using service user access keys.
+  - Remaining HyP3 deployments in the `delpoy-custom-test.yml` and `deploy-custom-prod.yml` workflows are now deployed via OIDC.
+- All references to the HyP3 CI/CD stack name has been changed to `github-actions` from `hyp3-ci` inline with typical usage.
+
 ## [10.17.8]
 
 ### Fixed
@@ -42,7 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added an option to force static file regeneration for the `ITS_LIVE_AUTORIFT` job type.
 
 ### Changed
-- ASF-deployment-ci-cf.yml now deploys a role to be assumed via OIDC by Github Actions, rather than a service user
+- `ASF-deployment-ci-cf.yml` now deploys a role to be assumed via OIDC by GitHub Actions, rather than a service user
 - `plus-test` and `plus-prod` environments are now deployed via OIDC
 
 ## [10.17.4]
