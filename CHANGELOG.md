@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [10.17.9]
+## [10.18.0]
 
 ### Added
 - Added SQS and ECR permissions to `ASF-deployment-ci-cf.yml` for deploying - HyP3-based monitoring stacks.
@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the `ntasks` API parameter to `PISM_EXECUTE` so vCPUs and memory can be dynamically set from job parameters.
 
 ### Changed
+- The maximum length of the `bucket_prefix` job parameter has been increased to 700 UTF-8 characters from 100.
 - `ARTRAFF_RTC` (MultiRTC) jobs now take a floating point number instead of an integer for the resolution parameter. The minimum of 0 is also now correctly represented as an exclusive minimum (must be `>` 0, not `≥`).
 - Combined the `PISM_TERRA_RUN_FORWARD` and `PISM_TERRA_RUN_INERVERSE` jobs into `PISM_GLACIER_RUN` job for preparing both forward and inverse model runs of RGI glacier complexes.
 - Renamed the `PISM_TERRA_EXECUTE` job to `PISM_EXECUTE` in line with the other PISM jobs.
