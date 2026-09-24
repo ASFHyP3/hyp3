@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the `ntasks` API parameter to `PISM_EXECUTE` so vCPUs and memory can be dynamically set from job parameters.
 
 ### Changed
+- `ARTRAFF_RTC` (MultiRTC) jobs now take a floating point number instead of an integer for the resolution parameter. The minimum of 0 is also now correctly represented as an exclusive minimum (must be `>` 0, not `≥`).
 - Combined the `PISM_TERRA_RUN_FORWARD` and `PISM_TERRA_RUN_INERVERSE` jobs into `PISM_GLACIER_RUN` job for preparing both forward and inverse model runs of RGI glacier complexes.
 - Renamed the `PISM_TERRA_EXECUTE` job to `PISM_EXECUTE` in line with the other PISM jobs.
 - Removed required RGI subdirectory from the `run_script` S3 URI parameter in the `PISM_EXECUTE` job type generalizing it for non-glaicer runs.
