@@ -38,47 +38,6 @@ jobs:
             same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
-          - environment: hyp3-pism-cloud
-            domain: pism-cloud.asf.alaska.edu
-            template_bucket: cf-templates-1qca1gr649g17-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 14
-            default_credits_per_user: 0
-            default_application_status: APPROVED
-            cost_profile: DEFAULT
-            job_files: >-
-              job_spec/PISM_GLACIER_RUN.yml
-              job_spec/PISM_ISMIP7_GREENLAND_RUN.yml
-              job_spec/PISM_EXECUTE.yml
-            instance_types: r8id.8xlarge,r8id.12xlarge,r8id.16xlarge,r8id.24xlarge,r8id.32xlarge,r8id.48xlarge,r8id.96xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
-            required_surplus: 0
-            security_environment: ASF
-            same_account_publishing: true
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-
-          - environment: hyp3-volcsarvatory
-            domain: hyp3-volcsarvatory.asf.alaska.edu
-            template_bucket: cf-templates-1uzy61g1h6omf-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 30
-            default_credits_per_user: 0
-            default_application_status: APPROVED
-            cost_profile: DEFAULT
-            job_files: >-
-              job_spec/INSAR_GAMMA.yml
-              job_spec/NISAR_GUNW.yml
-              job_spec/VOLCSARVATORY_MULTI_BURST.yml
-              job_spec/VOLCSARVATORY_MINTPY.yml
-            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
-            required_surplus: 0
-            security_environment: ASF
-            same_account_publishing: true
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-
           - environment: hyp3-avo
             domain: hyp3-avo.asf.alaska.edu
             template_bucket: cf-templates-1x4a21iq1cba7-us-west-2
@@ -99,46 +58,6 @@ jobs:
             same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
-          - environment: hyp3-watermap
-            domain: hyp3-watermap.asf.alaska.edu
-            template_bucket: cf-templates-1217di08q7vwl-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 14
-            default_credits_per_user: 0
-            default_application_status: APPROVED
-            cost_profile: DEFAULT
-            job_files: >-
-              job_spec/RTC_GAMMA.yml
-              job_spec/WATER_MAP.yml
-              job_spec/WATER_MAP_EQ.yml
-            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
-            required_surplus: 0
-            security_environment: ASF
-            same_account_publishing: false
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-
-          - environment: hyp3-streamflow
-            domain: hyp3-streamflow.asf.alaska.edu
-            template_bucket: cf-templates-15gmiot9prm67-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 90
-            default_credits_per_user: 0
-            default_application_status: APPROVED
-            cost_profile: DEFAULT
-            job_files: >-
-              job_spec/RTC_GAMMA.yml
-              job_spec/WATER_MAP.yml
-              job_spec/WATER_MAP_EQ.yml
-            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
-            default_max_vcpus: 1600
-            expanded_max_vcpus: 1600
-            required_surplus: 0
-            security_environment: ASF
-            same_account_publishing: true
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-
           - environment: azdwr-hyp3
             domain: azdwr-hyp3.asf.alaska.edu
             template_bucket: cf-templates-xlga17noink6-us-west-2
@@ -149,6 +68,47 @@ jobs:
             cost_profile: DEFAULT
             job_files: >-
               job_spec/INSAR_GAMMA.yml
+              job_spec/INSAR_ISCE_BURST.yml
+              job_spec/INSAR_ISCE_MULTI_BURST.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: false
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
+          - environment: hyp3-beta
+            domain: hyp3-beta.asf.alaska.edu
+            template_bucket: cf-templates-1qsz358g31bdr-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 30
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/ARTRAFF_RTC.yml
+              job_spec/NISAR_GUNW.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: false
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
+          - environment: hyp3-bgc-engineering
+            domain: hyp3-bgc-engineering.asf.alaska.edu
+            template_bucket: cf-templates-ez0805f6vy20-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/AUTORIFT.yml
+              job_spec/INSAR_GAMMA.yml
+              job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
             instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
@@ -182,28 +142,6 @@ jobs:
             same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
-          - environment: hyp3-bgc-engineering
-            domain: hyp3-bgc-engineering.asf.alaska.edu
-            template_bucket: cf-templates-ez0805f6vy20-us-west-2
-            image_tag: latest
-            product_lifetime_in_days: 14
-            default_credits_per_user: 0
-            default_application_status: APPROVED
-            cost_profile: DEFAULT
-            job_files: >-
-              job_spec/AUTORIFT.yml
-              job_spec/INSAR_GAMMA.yml
-              job_spec/RTC_GAMMA.yml
-              job_spec/INSAR_ISCE_BURST.yml
-              job_spec/INSAR_ISCE_MULTI_BURST.yml
-            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
-            default_max_vcpus: 640
-            expanded_max_vcpus: 640
-            required_surplus: 0
-            security_environment: ASF
-            same_account_publishing: false
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-
           - environment: hyp3-lavas
             domain: hyp3-lavas.asf.alaska.edu
             template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
@@ -217,6 +155,105 @@ jobs:
               job_spec/SRG_GSLC.yml
               job_spec/SRG_TIME_SERIES.yml
               job_spec/SRG_TS.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: true
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
+          - environment: hyp3-pism-cloud
+            domain: pism-cloud.asf.alaska.edu
+            template_bucket: cf-templates-1qca1gr649g17-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/PISM_GLACIER_RUN.yml
+              job_spec/PISM_ISMIP7_GREENLAND_RUN.yml
+              job_spec/PISM_EXECUTE.yml
+            instance_types: r8id.8xlarge,r8id.12xlarge,r8id.16xlarge,r8id.24xlarge,r8id.32xlarge,r8id.48xlarge,r8id.96xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: true
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
+          - environment: hyp3-pse
+            domain: hyp3-pse.asf.alaska.edu
+            template_bucket: cf-templates-oehzp6swcf0p-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/ARTRAFF_RTC.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: true
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
+          - environment: hyp3-streamflow
+            domain: hyp3-streamflow.asf.alaska.edu
+            template_bucket: cf-templates-15gmiot9prm67-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 90
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/RTC_GAMMA.yml
+              job_spec/WATER_MAP.yml
+              job_spec/WATER_MAP_EQ.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
+            default_max_vcpus: 1600
+            expanded_max_vcpus: 1600
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: true
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
+          - environment: hyp3-watermap
+            domain: hyp3-watermap.asf.alaska.edu
+            template_bucket: cf-templates-1217di08q7vwl-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/RTC_GAMMA.yml
+              job_spec/WATER_MAP.yml
+              job_spec/WATER_MAP_EQ.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
+            default_max_vcpus: 640
+            expanded_max_vcpus: 640
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: false
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
+          - environment: hyp3-volcsarvatory
+            domain: hyp3-volcsarvatory.asf.alaska.edu
+            template_bucket: cf-templates-1uzy61g1h6omf-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 30
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/INSAR_GAMMA.yml
+              job_spec/NISAR_GUNW.yml
+              job_spec/VOLCSARVATORY_MULTI_BURST.yml
+              job_spec/VOLCSARVATORY_MINTPY.yml
             instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
