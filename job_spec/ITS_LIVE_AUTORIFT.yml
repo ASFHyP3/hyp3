@@ -193,33 +193,15 @@ AUTORIFT:
         - Ref::frame_id
       timeout: 21600
       compute_environment: DefaultSpot
-      vcpu: 1
+      vcpu: 8
       memory: 8  # Memory is always overridden in the step function by set-batch-overrides
+      linux_parameters:
+        MaxSwap: 16000
+        Swappiness: 25
+        SharedMemorySize: 15
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
         - PUBLISH_ACCESS_KEY_ID
         - PUBLISH_SECRET_ACCESS_KEY
-    - name: METADATA
-      image: ghcr.io/asfhyp3/itslive-metadata
-      command:
-        - ++plugin
-        - meta
-        - --bucket
-        - Ref::bucket
-        - --bucket-prefix
-        - Ref::bucket_prefix
-        - --publish-bucket
-        - Ref::publish_bucket
-        - --stac-items-endpoint
-        - Ref::stac_items_endpoint
-        - --stac-exists-ok
-        - Ref::stac_exists_ok
-      timeout: 10800
-      compute_environment: ItsLiveSpotIntel
-      vcpu: 1
-      memory: 7875
-      secrets:
-        - STAC_API_TOKEN
-        - PUBLISH_ACCESS_KEY_ID
-        - PUBLISH_SECRET_ACCESS_KEY
+
