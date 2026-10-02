@@ -11,7 +11,7 @@ moto[dynamodb]==5.2.3
 pytest==9.1.1
 PyYAML==6.0.3
 responses==0.26.3
-ruff==0.16.9
+ruff==0.15.22
 mypy==2.3.1
 setuptools==84.0.0
 setuptools_scm==10.3.4
