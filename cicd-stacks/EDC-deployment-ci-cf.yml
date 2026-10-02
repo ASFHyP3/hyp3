@@ -39,24 +39,24 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - ec2:*
-                  - s3:*
-                  - ecs:*
-                  - batch:*
-                  - events:*
-                  - logs:*
-                  - iam:*
-                  - lambda:*
-                  - ssm:GetParameters
                   - apigateway:*
-                  - states:*
-                  - dynamodb:*
-                  - rds:*
+                  - batch:*
                   - cloudwatch:*
-                  - sns:*
-                  - secretsmanager:*
+                  - dynamodb:*
+                  - ec2:*
+                  - ecs:*
+                  - events:*
+                  - iam:*
                   - kms:*
+                  - lambda:*
+                  - logs:*
+                  - rds:*
+                  - s3:*
+                  - secretsmanager:*
+                  - sns:*
                   - sqs:*
+                  - ssm:GetParameters
+                  - states:*
                 Resource: "*"
 
               - Effect: Allow
