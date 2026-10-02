@@ -83,7 +83,7 @@ def get_insar_isce_burst_memory(job_parameters: dict) -> str:
     raise ValueError(f'No memory value for {bursts} bursts and {looks} looks')
 
 
-def get_vcpus_from_memory(memory: str, mibs_per_vcpu: int = 8000) -> str:
+def get_vcpus_from_memory(memory: str, mibs_per_vcpu: int = 2000) -> str:
     """Determine available vCPUs (threads) from memory reservation.
 
     Args:
