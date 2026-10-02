@@ -83,7 +83,7 @@ def get_insar_isce_burst_memory(job_parameters: dict) -> str:
     raise ValueError(f'No memory value for {bursts} bursts and {looks} looks')
 
 
-def get_vcpus_from_memory(memory: str, mibs_per_vcpu: int = 2000) -> str:
+def get_vcpus_from_memory(memory: str, mibs_per_vcpu: int = 8000) -> str:
     """Determine available vCPUs (threads) from memory reservation.
 
     Args:
@@ -106,7 +106,7 @@ def lambda_handler(event: dict, _) -> dict:
 
     if job_type == 'AUTORIFT':
         autorift_memory = get_autorift_memory(job_parameters)
-        omp_num_threads = get_vcpus_from_memory(autorift_memory)
+        omp_num_threads = get_vcpus_from_memory(autorift_memory, mibs_per_vcpu=2000)
         return get_container_overrides(autorift_memory, omp_num_threads)
 
     if job_type == 'RTC_GAMMA' and job_parameters['resolution'] in [10, 20]:
