@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - JPL deployments have been moved to the `deploy-custom-jpl-test.yml` and `deploy-custom-jpl-prod.yml` workflows so they can keep using service user access keys.
   - Remaining HyP3 deployments in the `delpoy-custom-test.yml` and `deploy-custom-prod.yml` workflows are now deployed via OIDC.
 - All references to the HyP3 CI/CD stack name has been changed to `github-actions` from `hyp3-ci` inline with typical usage.
+- Reduced default/expanded vCPUs to 1000/2000 in hyp3-edc-uat and hyp3-edc-prod.
 
 ## [10.17.8]
 
