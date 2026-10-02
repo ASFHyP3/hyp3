@@ -26,4 +26,5 @@ compute_environments:
   DefaultSpot:
     allocation_type: SPOT
     allocation_strategy: SPOT_PRICE_CAPACITY_OPTIMIZED
-    swap_space: 4
+    swap_space: 16
+
