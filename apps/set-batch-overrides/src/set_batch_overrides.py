@@ -96,6 +96,12 @@ def get_vcpus_from_memory(memory: str, mibs_per_vcpu: int = 8000) -> str:
     return str(ceil(int(memory) / mibs_per_vcpu))
 
 
+def get_memory_from_ntasks(job_parameters: dict, mibs_per_vcpu: int = 8000, hold_for_aws: int = 500) -> str:
+    vcpus = job_parameters.get('ntasks', 32)
+    memory = vcpus * mibs_per_vcpu - hold_for_aws
+    return str(int(memory))
+
+
 def lambda_handler(event: dict, _) -> dict:
     job_type, job_parameters = event['job_type'], event['job_parameters']
 
@@ -114,5 +120,9 @@ def lambda_handler(event: dict, _) -> dict:
 
     if job_type in ['WATER_MAP', 'WATER_MAP_EQ'] and job_parameters['resolution'] in [10, 20]:
         return get_container_overrides(WATER_MAP_10M_MEMORY)
+
+    if job_type.startswith('PISM'):
+        pism_memory = get_memory_from_ntasks(job_parameters)
+        return get_container_overrides(pism_memory)
 
     return {}
