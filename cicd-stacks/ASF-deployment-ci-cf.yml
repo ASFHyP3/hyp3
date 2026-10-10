@@ -156,6 +156,12 @@ Resources:
 
               - Effect: Allow
                 Action:
+                  - rds-db:connect
+                Resource:
+                  - !Sub "arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*"
+
+              - Effect: Allow
+                Action:
                   - sns:Publish
                 Resource: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:*"
 
