@@ -49,7 +49,7 @@ def get_autorift_memory(job_parameters: dict) -> str:
         return AUTORIFT_MEMORY_16GB
 
     elif granules[0].startswith('N'):
-        return AUTORIFT_MEMORY_64GB
+        return AUTORIFT_MEMORY_16GB
 
     return AUTORIFT_MEMORY_32GB
 
@@ -112,7 +112,7 @@ def lambda_handler(event: dict, _) -> dict:
 
     if job_type == 'AUTORIFT':
         autorift_memory = get_autorift_memory(job_parameters)
-        omp_num_threads = get_vcpus_from_memory(autorift_memory)
+        omp_num_threads = get_vcpus_from_memory(autorift_memory, mibs_per_vcpu=2000)
         return get_container_overrides(autorift_memory, omp_num_threads)
 
     if job_type == 'RTC_GAMMA' and job_parameters['resolution'] in [10, 20]:
