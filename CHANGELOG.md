@@ -7,10 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.18.1]
 
 ### Added
-- `swap_space` option for compute environments. 
+- Added an `swap_space` option to compute environments that will allocate the desired swap space via the instance launch template. Note: This will typically be used in conjunction with a job spec that sets the `MaxSwap` and `Swappiness` `linux_parameters`.  
 
 ### Changed
-- AUTORIFT batch override to 16GB, from 64GB, for NISAR processing.
+- `AUTORIFT` jobs will now request 16GB memory for NISAR processing instead of 64GB.
 
 ## [10.18.0]
 
