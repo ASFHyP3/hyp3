@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.18.1]
+
+### Added
+- Added an `swap_space` option to compute environments that will allocate the desired swap space via the instance launch template. Note: This will typically be used in conjunction with a job spec that sets the `MaxSwap` and `Swappiness` `linux_parameters`.  
+
+### Changed
+- `AUTORIFT` jobs will now request 16GB memory for NISAR processing instead of 64GB.
+
 ## [10.18.0]
 
 ### Added
