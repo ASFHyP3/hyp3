@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.18.1]
 
 ### Added
+- Added `s3:get*` permissions to `ASF-deployment-ci-cf.yml` for building docker images which need to pull objects from S3 (e.g., hyp3-gamma).
 - Added an `swap_space` option to compute environments that will allocate the desired swap space via the instance launch template. Note: This will typically be used in conjunction with a job spec that sets the `MaxSwap` and `Swappiness` `linux_parameters`.  
 
 ### Changed
