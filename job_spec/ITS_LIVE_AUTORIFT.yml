@@ -204,4 +204,26 @@ AUTORIFT:
         - EARTHDATA_PASSWORD
         - PUBLISH_ACCESS_KEY_ID
         - PUBLISH_SECRET_ACCESS_KEY
-
+    - name: METADATA
+      image: ghcr.io/asfhyp3/itslive-metadata
+      command:
+        - ++plugin
+        - meta
+        - --bucket
+        - Ref::bucket
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --publish-bucket
+        - Ref::publish_bucket
+        - --stac-items-endpoint
+        - Ref::stac_items_endpoint
+        - --stac-exists-ok
+        - Ref::stac_exists_ok
+      timeout: 10800
+      compute_environment: ItsLiveSpotIntel
+      vcpu: 1
+      memory: 7875
+      secrets:
+        - STAC_API_TOKEN
+        - PUBLISH_ACCESS_KEY_ID
+        - PUBLISH_SECRET_ACCESS_KEY
