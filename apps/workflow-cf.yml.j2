@@ -62,9 +62,9 @@ Resources:
         ExecutionRoleArn: !GetAtt ExecutionRole.Arn
         ResourceRequirements:
           - Type: VCPU
-            Value: "{{ step['vcpu'] }}"
+            Value: "{{ step.get('vcpu', 1) }}"
           - Type: MEMORY
-            Value: "{{ step['memory'] }}"
+            Value: "{{ step.get('memory', 4) }}"
           {% if 'gpu' in step %}
           - Type: GPU
             Value: "{{ step['gpu'] }}"

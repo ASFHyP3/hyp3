@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `AUTORIFT` jobs will now request 16GB memory for NISAR processing instead of 64GB.
+- Job specs no longer need to set `vcpu` or `memory` for each step as it will default to 1 vCPU and 4 MiB (the AWS Batch minimums for ECS on EC2), respectively, if not provided.
 
 ## [10.18.0]
 
