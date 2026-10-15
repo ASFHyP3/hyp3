@@ -89,7 +89,7 @@ NISAR_CV:
       timeout: 10800
       compute_environment: Default
       vcpu: 1
-      memory: 7875
+      memory: 15500
       secrets:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
