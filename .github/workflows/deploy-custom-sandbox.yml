@@ -3,7 +3,8 @@ name: Deploy custom sandbox stacks to AWS
 on:
   push:
     branches:
-      - '*-sandbox'
+      - pism-sandbox
+      - jhk-sandbox
   workflow_dispatch:
 
 
