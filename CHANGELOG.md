@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `rds-db:connect` permissions to `ASF-deployment-ci-cf.yml` for setting up postgres databases used in  HyP3-backed monitoring stacks.
 - Added `s3:get*` permissions to `ASF-deployment-ci-cf.yml` for building docker images which need to pull objects from S3 (e.g., hyp3-gamma).
 - Added an `swap_space` option to compute environments that will allocate the desired swap space via the instance launch template. Note: This will typically be used in conjunction with a job spec that sets the `MaxSwap` and `Swappiness` `linux_parameters`.
+- Added a `hyp3-bridge-test` deployment for use by the NISAR Bridge project.
 
 ### Changed
 - `AUTORIFT` jobs will now request 16GB memory for NISAR processing instead of 64GB.
