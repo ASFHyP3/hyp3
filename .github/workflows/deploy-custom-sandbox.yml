@@ -1,0 +1,85 @@
+name: Deploy custom sandbox stacks to AWS
+
+on:
+  push:
+    branches:
+      - '*-sandbox'
+  workflow_dispatch:
+
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - deploy_ref: 'refs/heads/pism-sandbox'
+            environment: hyp3-pism-cloud-sandbox
+            domain: pism-cloud-sandbox.asf.alaska.edu
+
+          - deploy_ref: 'refs/heads/jhk-sandbox'
+            environment: hyp3-jhk-sandbox
+            domain: hyp3-jhk-sandbox.asf.alaska.edu
+
+    environment:
+      name: ${{ matrix.environment }}
+      url: https://${{ matrix.domain }}
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        if: github.ref == matrix.deploy_ref
+        with:
+          fetch-depth: 0
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        if: github.ref == matrix.deploy_ref
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - uses: actions/setup-python@v7
+        if: github.ref == matrix.deploy_ref
+        with:
+          python-version: 3.13
+
+      - name: Create parameter file
+        if: github.ref == matrix.deploy_ref
+        run: |
+          jq -n '{"Parameters": $ARGS.named}' \
+            --arg AuthPublicKey '${{ secrets.AUTH_PUBLIC_KEY }}' \
+            --arg CertificateArn '${{ secrets.CERTIFICATE_ARN }}' \
+            --arg SecretArn '${{ secrets.SECRET_ARN }}' \
+            --arg SubnetIds '${{ secrets.SUBNET_IDS }}' \
+            --arg VpcId '${{ secrets.VPC_ID }}' \
+            --arg DomainName '${{ matrix.domain }}' \
+            --arg AmiId '${{ vars.AMI_ID }}' \
+            --arg DefaultApplicationStatus '${{ vars.DEFAULT_APPLICATION_STATUS }}' \
+            --arg DefaultCreditsPerUser '${{ vars.DEFAULT_CREDITS_PER_USER }}' \
+            --arg DefaultMaxvCpus '${{ vars.DEFAULT_MAX_VCPUS }}' \
+            --arg ExpandedMaxvCpus '${{ vars.EXPANDED_MAX_VCPUS }}' \
+            --arg ImageTag '${{ vars.IMAGE_TAG }}' \
+            --arg InstanceTypes '${{ vars.INSTANCE_TYPES }}' \
+            --arg MonthlyBudget '${{ vars.MONTHLY_BUDGET }}' \
+            --arg ProductLifetimeInDays '${{ vars.PRODUCT_LIFETIME_IN_DAYS }} ' \
+            --arg RequiredSurplus '${{ vars.REQUIRED_SURPLUS }}' \
+            > parameters.json
+
+      - uses: ./.github/actions/deploy-hyp3
+        if: github.ref == matrix.deploy_ref
+        with:
+          CLOUDFORMATION_ROLE_ARN: ${{ secrets.CLOUDFORMATION_ROLE_ARN }}
+          STACK_NAME: ${{ matrix.environment }}
+          API_NAME: ${{ matrix.environment }}
+          COST_PROFILE: ${{ vars.COST_PROFILE }}
+          JOB_FILES: ${{ vars.JOB_FILES }}
+          SAME_ACCOUNT_PUBLISHING: ${{ vars.SAME_ACCOUNT_PUBLISHING }}
+          SECURITY_ENVIRONMENT: ${{ vars.SECURITY_ENVIRONMENT }}
+          TEMPLATE_BUCKET:  ${{ vars.TEMPLATE_BUCKET }}
+          PARAMETER_FILE: parameters.json
