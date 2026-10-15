@@ -1,0 +1,95 @@
+NISAR_CV:
+  required_parameters:
+    - granules
+  parameters:
+    granules:
+      api_schema:
+        description: The list of NISAR GCOV granule to process
+        type: array
+        minItems: 2
+        example:
+          - NISAR_L2_PR_GCOV_023_148_A_024_2005_DHDH_M_20260624T105804_20260624T105843_P05023_N_F_J_001
+          - NISAR_L2_PR_GCOV_024_148_A_024_2005_DHDH_M_20260706T105804_20260706T105842_P05023_N_F_J_001
+          - NISAR_L2_PR_GCOV_025_148_A_024_2005_DHDH_M_20260718T105803_20260718T105841_P05023_N_F_J_001
+          - NISAR_L2_PR_GCOV_027_148_A_024_2005_DHDH_M_20260811T105802_20260811T105840_P05023_N_F_J_001
+        items:
+          description: The name of a NISAR GCOV granule to process
+          type: string
+          pattern: "NISAR_L2_.._GCOV_*"
+          minLength: 91
+          maxLength: 91
+          example: NISAR_L2_PR_GCOV_023_148_A_024_2005_DHDH_M_20260624T105804_20260624T105843_P05023_N_F_J_001
+    pol:
+      api_schema:
+        description: Polarization of input granules to use.
+        type: string
+        enum:
+          - HHHH
+          - HVHV
+        default: HHHH
+    subset:
+      api_schema:
+        description: Geographic subset of the granules to use, in the format of a WKT string.
+        type: string
+        default: ''
+        example: POLYGON((-91.2399 45.1589,-90.7532 45.1589,-90.7532 45.4609,-91.2399 45.4609,-91.2399 45.1589))
+    crop_area:
+      api_schema:
+        description: Choose whether to generate a crop area classification map. If False, only a coefficient of variation file is created.
+        type: boolean
+        default: false
+    cv_threshold:
+      api_schema:
+        description: Coefficient of variation threshold to use for crop area classification.
+        type: number
+        format: float
+        minimum: 0.0
+        default: 0.4
+        example: 0.4
+    water_threshold_db:
+      api_schema:
+        description: Backscatter threshold, in decibels, for watermask generation. Pixels with backscatter below this threshold in more than --water-fraction % of images are classified as water.
+        type: number
+        format: float
+        default: -16.5
+        example: -16.5
+    water_fraction:
+      api_schema:
+        type: number
+        format: float
+        description: Fraction of images in which the backscatter of a pixel is below --water-threshold-db in order for the pixel to be classified as water.
+        minimum: 0.0
+        default: 0.75
+        example: 0.75
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/asfhyp3/hyp3-nisar-cv
+      command:
+        - Ref::granules
+        - --pol
+        - Ref::pol
+        - --subset
+        - Ref::subset
+        - --crop-area
+        - Ref::crop_area
+        - --cv-threshold
+        - Ref::cv_threshold
+        - --water-threshold-db
+        - Ref::water_threshold_db
+        - --water-fraction
+        - Ref::water_fraction
+        - --bucket
+        - Ref::bucket
+        - --bucket-prefix
+        - Ref::bucket_prefix
+      timeout: 10800
+      compute_environment: Default
+      vcpu: 1
+      memory: 7875
+      secrets:
+        - EARTHDATA_USERNAME
+        - EARTHDATA_PASSWORD
