@@ -120,6 +120,10 @@ Resources:
                     iam:AssociatedResourceArn: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
 
               - Effect: Allow
+                Action: s3:Get*
+                Resource: "arn:aws:s3:::*/*"
+
+              - Effect: Allow
                 Action: s3:PutObject
                 Resource: !Sub "arn:aws:s3:::${TemplateBucketName}/*"
 
@@ -149,6 +153,12 @@ Resources:
                   - ecr:CompleteLayerUpload
                   - ecr:PutImage
                 Resource: !Sub "arn:aws:ecr:*:${AWS::AccountId}:repository/*"
+
+              - Effect: Allow
+                Action:
+                  - rds-db:connect
+                Resource:
+                  - !Sub "arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*"
 
               - Effect: Allow
                 Action:

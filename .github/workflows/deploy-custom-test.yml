@@ -58,6 +58,25 @@ jobs:
             same_account_publishing: false
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
+          - environment: hyp3-bridge-test
+            domain: hyp3-bridge-test.asf.alaska.edu
+            template_bucket: cf-templates-1mdlrj4lir4eu-us-west-2
+            image_tag: test
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/INSAR_ISCE_BURST.yml
+              job_spec/NISAR_CV.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
+            default_max_vcpus: 512
+            expanded_max_vcpus: 512
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: true
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
           - environment: hyp3-lavas-test
             domain: hyp3-lavas-test.asf.alaska.edu
             template_bucket: cf-templates-10a5pjrsv3cgo-us-west-2
@@ -83,27 +102,6 @@ jobs:
             domain: pism-cloud-test.asf.alaska.edu
             template_bucket: cf-templates-1qca1gr649g17-us-west-2
             image_tag: test
-            product_lifetime_in_days: 14
-            default_credits_per_user: 0
-            default_application_status: APPROVED
-            cost_profile: DEFAULT
-            job_files: >-
-              job_spec/PISM_GLACIER_RUN.yml
-              job_spec/PISM_ISMIP7_GREENLAND_RUN.yml
-              job_spec/PISM_EXECUTE.yml
-            instance_types: r8id.8xlarge,r8id.12xlarge,r8id.16xlarge,r8id.24xlarge,r8id.32xlarge,r8id.48xlarge,r8id.96xlarge
-            default_max_vcpus: 13000    # Max: 13,000
-            expanded_max_vcpus: 13000    # Max: 13,000
-            required_surplus: 0
-            security_environment: ASF
-            same_account_publishing: true
-            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
-
-          # Here because it doesn't need its own branch (dev is fine) and a whole new workflow file seems too much
-          - environment: hyp3-pism-cloud-sandbox
-            domain: pism-cloud-sandbox.asf.alaska.edu
-            template_bucket: cf-templates-1qca1gr649g17-us-west-2
-            image_tag: sandbox
             product_lifetime_in_days: 14
             default_credits_per_user: 0
             default_application_status: APPROVED

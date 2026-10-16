@@ -37,6 +37,6 @@ PISM_EXECUTE:
       timeout: 604800  # 1 week
       compute_environment: Default
       vcpu: 1    # computed from ntasks
-      memory: 8  # computed from ntasks
+      # memory: 8  # computed from ntasks
       linux_parameters:
         SharedMemorySize: 15259

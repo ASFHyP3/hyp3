@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.18.1]
+
+### Added
+- Added the `NISAR_GUNW` job spec to hyp3-bgc-engineering.
+- Added `rds-db:connect` permissions to `ASF-deployment-ci-cf.yml` for setting up postgres databases used in  HyP3-backed monitoring stacks.
+- Added `s3:get*` permissions to `ASF-deployment-ci-cf.yml` for building docker images which need to pull objects from S3 (e.g., hyp3-gamma).
+- Added an `swap_space` option to compute environments that will allocate the desired swap space via the instance launch template. Note: This will typically be used in conjunction with a job spec that sets the `MaxSwap` and `Swappiness` `linux_parameters`.
+- Added `hyp3-bridge` and `hyp3-bridge-test` deployments for use by the NISAR Bridge project.
+- Added a new `NISAR_CV` job spec and made it available in the `hyp3-bridge` and `hyp3-bridge-test` deployments.
+
+### Changed
+- `AUTORIFT` jobs will now request 16GB memory for NISAR processing instead of 64GB.
+- Job specs no longer need to set `vcpu` or `memory` for each step as it will default to 1 vCPU and 4 MiB (the AWS Batch minimums for ECS on EC2), respectively, if not provided.
+- Custom sandbox stacks are now deployed out of `deploy-custom-sandbox.yml` on merges to a `*-sandbox` branch or via a workflow dispatch event. Notably, most deploy parameters are now GitHub Actions Environments variables for more agility since sandboxes don't need their parameters tracked.
+
 ## [10.18.0]
 
 ### Added

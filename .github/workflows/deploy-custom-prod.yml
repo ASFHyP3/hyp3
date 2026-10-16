@@ -112,12 +112,32 @@ jobs:
               job_spec/RTC_GAMMA.yml
               job_spec/INSAR_ISCE_BURST.yml
               job_spec/INSAR_ISCE_MULTI_BURST.yml
+              job_spec/NISAR_GUNW.yml
             instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
             required_surplus: 0
             security_environment: ASF
             same_account_publishing: false
+            ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
+
+          - environment: hyp3-bridge
+            domain: hyp3-bridge.asf.alaska.edu
+            template_bucket: cf-templates-1mdlrj4lir4eu-us-west-2
+            image_tag: latest
+            product_lifetime_in_days: 14
+            default_credits_per_user: 0
+            default_application_status: APPROVED
+            cost_profile: DEFAULT
+            job_files: >-
+              job_spec/INSAR_ISCE_BURST.yml
+              job_spec/NISAR_CV.yml
+            instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
+            default_max_vcpus: 512
+            expanded_max_vcpus: 512
+            required_surplus: 0
+            security_environment: ASF
+            same_account_publishing: true
             ami_id: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
 
           - environment: hyp3-cargill
