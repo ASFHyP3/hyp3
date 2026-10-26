@@ -1,2 +1,2 @@
-boto3==1.43.103
-pydantic==2.13.5
+boto3==1.43.118
+pydantic==2.14.1
