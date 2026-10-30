@@ -3,8 +3,6 @@ from math import ceil
 
 AUTORIFT_MEMORY_8GB = '7875'
 AUTORIFT_MEMORY_16GB = '15750'
-AUTORIFT_MEMORY_32GB = '31500'
-AUTORIFT_MEMORY_64GB = '63200'
 
 RTC_GAMMA_10M_MEMORY = '63200'
 WATER_MAP_10M_MEMORY = '126000'
@@ -41,17 +39,10 @@ def get_autorift_memory(job_parameters: dict) -> str:
     num_frames = max(frame_counts)
 
     if granules[0].startswith('S2'):
-        if num_frames > 4:
-            return AUTORIFT_MEMORY_16GB
-        return AUTORIFT_MEMORY_8GB
+        if num_frames <= 4:
+            return AUTORIFT_MEMORY_8GB
 
-    elif granules[0].startswith('L'):
-        return AUTORIFT_MEMORY_16GB
-
-    elif granules[0].startswith('N'):
-        return AUTORIFT_MEMORY_16GB
-
-    return AUTORIFT_MEMORY_32GB
+    return AUTORIFT_MEMORY_16GB  # S1, L, NISAR
 
 
 def get_insar_isce_burst_memory(job_parameters: dict) -> str:
