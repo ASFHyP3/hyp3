@@ -266,3 +266,71 @@ def test_get_files_failed_job(s3_stubber: Stubber):
                     'logs': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myJobId.log'],
                 }
             )
+
+def test_get_files_with_stac_json(s3_stubber: Stubber):
+    files = [
+        {
+            'Key': 'NISAR_148_A_024_HHHH_20260624_20260811_CROP_100m.tif' ,
+            'Size': 9
+        },
+        {
+            'Key': 'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif' ,
+            'Size': 600
+        },
+        {
+            'Key': 'NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
+            'Size': 20
+        },
+        {
+            'Key': 'NISAR_148_A_024_HHHH_20260624_20260811_WATER.tif',
+            'Size': 40
+        },
+        {
+            'Key': 'myJobId/my.stac.json',
+            'Size': 15
+        }
+    ]
+
+    stub_list_files(s3_stubber, 'myJobId', 'myBucket', files)
+
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myProduct.nc', 'product')
+    stub_expiration(s3_stubber, 'myBucket', 'myJobId/myProduct.nc')
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myThumbnail.png', 'amp_thumbnail')
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'amp_browse')
+    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
+    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/my.stac.json', 'json')
+
+    event = {'job_id': 'myJobId', 'bucket': 'myBucket', 'bucket_prefix': 'myJobId'}
+    with patch('dynamo.jobs.get_job') as mock_get_job:
+        with patch('dynamo.jobs.update_job') as mock_update_job:
+            mock_get_job.return_value = {
+                'job_id': 'myJobId',
+                'bucket': 'myBucket',
+                'bucket_prefix': 'myJobId',
+            }
+            get_files.lambda_handler(event, None)
+            mock_update_job.assert_called_once_with(
+                {
+                    'job_id': 'myJobId',
+                    'expiration_time': '2020-01-01T00:00:00+00:00',
+                    'files': [
+                        {
+                            'url': 'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myProduct.nc',
+                            's3': {
+                                'bucket': 'myBucket',
+                                'key': 'myJobId/myProduct.nc',
+                            },
+                            'size': 50,
+                            'filename': 'myProduct.nc',
+                        }
+                    ],
+                    'browse_images': [
+                        'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse.png',
+                    ],
+                    'thumbnail_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myThumbnail.png'],
+                    'logs': [],
+                }
+            )
