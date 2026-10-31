@@ -74,7 +74,7 @@ def visible_product(product_path: str | Path) -> bool:
     return Path(product_path).suffix in ('.zip', '.nc', '.geojson', '.parquet')
 
 
-def get_products(files: list[dict]) -> list[dict]:
+def get_products(files: list[dict]) -> list[ProductFile]:
     return [
         {
             'url': item['download_url'],
@@ -94,7 +94,7 @@ def get_file_urls_by_type(file_list: list[dict], file_type: str) -> list[str]:
     return urls
 
 
-def _is_stac_json(s3_object: dict) -> bool:
+def is_stac_json(s3_object: dict) -> bool:
     return s3_object['Key'].endswith('.stac.json')
 
 
@@ -130,7 +130,7 @@ def organize_files_tags(s3_objects: list[dict], bucket: str) -> OrganizedFiles:
 
 
 def organize_files_stac(s3_objects: list[dict], bucket: str) -> StacFiles:
-    stac_s3_key = [obj['Key'] for obj in s3_objects if _is_stac_json(obj)][0]
+    stac_s3_key = [obj['Key'] for obj in s3_objects if is_stac_json(obj)][0]
 
     stac_str = S3_CLIENT.get_object(Bucket=bucket, Key=stac_s3_key)['Body'].read()
     item = pystac.Item.from_dict(json.loads(stac_str))
@@ -166,7 +166,7 @@ def organize_files_stac(s3_objects: list[dict], bucket: str) -> StacFiles:
 def organize_files(s3_objects: list[dict], bucket: str) -> OrganizedFiles:
     files = organize_files_tags(s3_objects, bucket)
 
-    if any(_is_stac_json(obj) for obj in s3_objects):
+    if any(is_stac_json(obj) for obj in s3_objects):
         files = {**files, **organize_files_stac(s3_objects, bucket)}
 
     return files

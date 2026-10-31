@@ -293,7 +293,6 @@ def test_organize_files_stac(s3_stubber, stac_json):
         {'Key': nvalid_key, 'Size': 25},
     ]
 
-    # read the STAC item, then one head_bucket per data asset URL
     stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_json)
     for _ in range(3):
         stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
@@ -301,7 +300,7 @@ def test_organize_files_stac(s3_stubber, stac_json):
     result = get_files.organize_files_stac(s3_objects, 'myBucket')
 
     base = 'https://myBucket.s3.myRegion.amazonaws.com'
-    assert result == {
+    expected: get_files.StacFiles = {
         'files': [
             {
                 'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif',
@@ -334,6 +333,7 @@ def test_organize_files_stac(s3_stubber, stac_json):
         'browse_images': [],
         'thumbnail_images': [],
     }
+    assert result == expected
 
 
 @pytest.fixture
