@@ -1,8 +1,11 @@
+import io
+import json
 import os
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from botocore.response import StreamingBody
 from botocore.stub import Stubber
 
 import get_files
@@ -267,70 +270,133 @@ def test_get_files_failed_job(s3_stubber: Stubber):
                 }
             )
 
-def test_get_files_with_stac_json(s3_stubber: Stubber):
-    files = [
-        {
-            'Key': 'NISAR_148_A_024_HHHH_20260624_20260811_CROP_100m.tif' ,
-            'Size': 9
-        },
-        {
-            'Key': 'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif' ,
-            'Size': 600
-        },
-        {
-            'Key': 'NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
-            'Size': 20
-        },
-        {
-            'Key': 'NISAR_148_A_024_HHHH_20260624_20260811_WATER.tif',
-            'Size': 40
-        },
-        {
-            'Key': 'myJobId/my.stac.json',
-            'Size': 15
-        }
+
+def stub_get_stac_object(s3_stubber, bucket, key, stac_path):
+    data = stac_path.read_bytes()
+    s3_stubber.add_response(
+        'get_object',
+        {'Body': StreamingBody(io.BytesIO(data), len(data))},
+        {'Bucket': bucket, 'Key': key},
+    )
+
+
+def test_organize_files_stac(s3_stubber, stac_json):
+    stac_key = 'myJobId/nisar-cv-test-docker-container.stac.json'
+    cv_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif'
+    cv_100m_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif'
+    nvalid_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif'
+
+    s3_objects = [
+        {'Key': stac_key, 'Size': 2000},
+        {'Key': cv_key, 'Size': 100},
+        {'Key': cv_100m_key, 'Size': 50},
+        {'Key': nvalid_key, 'Size': 25},
     ]
 
-    stub_list_files(s3_stubber, 'myJobId', 'myBucket', files)
+    # read the STAC item, then one head_bucket per data asset URL
+    stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_json)
+    for _ in range(3):
+        stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
 
-    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
-    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myProduct.nc', 'product')
-    stub_expiration(s3_stubber, 'myBucket', 'myJobId/myProduct.nc')
-    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
-    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myThumbnail.png', 'amp_thumbnail')
-    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
-    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/myBrowse.png', 'amp_browse')
-    stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
-    stub_get_object_tagging(s3_stubber, 'myBucket', 'myJobId/my.stac.json', 'json')
+    result = get_files.organize_files_stac(s3_objects, 'myBucket')
 
-    event = {'job_id': 'myJobId', 'bucket': 'myBucket', 'bucket_prefix': 'myJobId'}
-    with patch('dynamo.jobs.get_job') as mock_get_job:
-        with patch('dynamo.jobs.update_job') as mock_update_job:
-            mock_get_job.return_value = {
-                'job_id': 'myJobId',
-                'bucket': 'myBucket',
-                'bucket_prefix': 'myJobId',
+    base = 'https://myBucket.s3.myRegion.amazonaws.com'
+    assert result == {
+        'files': [
+            {
+                'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif',
+                'size': 100,
+                'filename': 'NISAR_148_A_024_HHHH_20260624_20260811_CV.tif',
+                's3': {
+                    'bucket': 'myBucket',
+                    'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif',
+                },
+            },
+            {
+                'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
+                'size': 50,
+                'filename': 'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
+                's3': {
+                    'bucket': 'myBucket',
+                    'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
+                },
+            },
+            {
+                'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
+                'size': 25,
+                'filename': 'NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
+                's3': {
+                    'bucket': 'myBucket',
+                    'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
+                },
+            },
+        ],
+        'browse_images': [],
+        'thumbnail_images': [],
+    }
+
+
+@pytest.fixture
+def stac_json(tmp_path, stac_dict):
+    path = tmp_path / 'nisar-cv.stac.json'
+    path.write_text(json.dumps(stac_dict, indent=2))
+    return path
+
+
+@pytest.fixture
+def stac_dict():
+    return {
+        'type': 'Feature',
+        'stac_version': '1.1.0',
+        'id': 'nisar-cv-test-docker-container',
+        'geometry': {
+            'type': 'Polygon',
+            'coordinates': [
+                [
+                    [45.14133887649169, 45.47807891055877],
+                    [-91.26268826545007, 45.47807891055877],
+                    [-91.26268826545007, -90.73298114286905],
+                    [45.14133887649169, -90.73298114286905],
+                    [45.14133887649169, 45.47807891055877],
+                ]
+            ],
+        },
+        'bbox': [45.14133887649169, 45.47807891055877, -91.26268826545007, -90.73298114286905],
+        'properties': {
+            'start_datetime': '2026-06-24T00:00:00',
+            'end_datetime': '2026-08-11T00:00:00',
+            'datetime': '2026-08-11T00:00:00',
+        },
+        'collection': 'nisar-bridge',
+        'links': [
+            {
+                'rel': 'self',
+                'href': 's3://nisar-bridge-demo-nisar-cv/test-docker-container/nisar-cv-test-docker-container.stac.json',
+                'title': 'stac_id STAC Item',
+                'type': 'application/geo+json',
             }
-            get_files.lambda_handler(event, None)
-            mock_update_job.assert_called_once_with(
-                {
-                    'job_id': 'myJobId',
-                    'expiration_time': '2020-01-01T00:00:00+00:00',
-                    'files': [
-                        {
-                            'url': 'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myProduct.nc',
-                            's3': {
-                                'bucket': 'myBucket',
-                                'key': 'myJobId/myProduct.nc',
-                            },
-                            'size': 50,
-                            'filename': 'myProduct.nc',
-                        }
-                    ],
-                    'browse_images': [
-                        'https://myBucket.s3.myRegion.amazonaws.com/myJobId/myBrowse.png',
-                    ],
-                    'thumbnail_images': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myThumbnail.png'],
-                    'logs': [],
-                }
-            )
+        ],
+        'assets': {
+            'NISAR_148_A_024_HHHH_20260624_20260811_CV': {
+                'href': 'NISAR_148_A_024_HHHH_20260624_20260811_CV.tif',
+                'roles': ['data'],
+                'type': 'image/tiff',
+                'title': 'NISAR_148_A_024_HHHH_20260624_20260811_CV',
+                'description': '',
+            },
+            'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m': {
+                'href': 'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
+                'roles': ['data'],
+                'type': 'image/tiff',
+                'title': 'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m',
+                'description': '',
+            },
+            'NISAR_148_A_024_HHHH_20260624_20260811_NVALID': {
+                'href': 'NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
+                'roles': ['data'],
+                'type': 'image/tiff',
+                'title': 'NISAR_148_A_024_HHHH_20260624_20260811_NVALID',
+                'description': '',
+            },
+        },
+    }
