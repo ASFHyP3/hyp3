@@ -1,8 +1,11 @@
+import io
+import json
 import os
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from botocore.response import StreamingBody
 from botocore.stub import Stubber
 
 import get_files
@@ -266,3 +269,134 @@ def test_get_files_failed_job(s3_stubber: Stubber):
                     'logs': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myJobId.log'],
                 }
             )
+
+
+def stub_get_stac_object(s3_stubber, bucket, key, stac_path):
+    data = stac_path.read_bytes()
+    s3_stubber.add_response(
+        'get_object',
+        {'Body': StreamingBody(io.BytesIO(data), len(data))},
+        {'Bucket': bucket, 'Key': key},
+    )
+
+
+def test_organize_files_stac(s3_stubber, stac_json):
+    stac_key = 'myJobId/nisar-cv-test-docker-container.stac.json'
+    cv_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif'
+    cv_100m_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif'
+    nvalid_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif'
+
+    s3_objects = [
+        {'Key': stac_key, 'Size': 2000},
+        {'Key': cv_key, 'Size': 100},
+        {'Key': cv_100m_key, 'Size': 50},
+        {'Key': nvalid_key, 'Size': 25},
+    ]
+
+    stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_json)
+    for _ in range(3):
+        stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
+
+    result = get_files.organize_files_stac(s3_objects, 'myBucket')
+
+    base = 'https://myBucket.s3.myRegion.amazonaws.com'
+    expected: get_files.StacFiles = {
+        'files': [
+            {
+                'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif',
+                'size': 100,
+                'filename': 'NISAR_148_A_024_HHHH_20260624_20260811_CV.tif',
+                's3': {
+                    'bucket': 'myBucket',
+                    'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif',
+                },
+            },
+            {
+                'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
+                'size': 50,
+                'filename': 'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
+                's3': {
+                    'bucket': 'myBucket',
+                    'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
+                },
+            },
+            {
+                'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
+                'size': 25,
+                'filename': 'NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
+                's3': {
+                    'bucket': 'myBucket',
+                    'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
+                },
+            },
+        ],
+        'browse_images': [],
+        'thumbnail_images': [],
+    }
+    assert result == expected
+
+
+@pytest.fixture
+def stac_json(tmp_path, stac_dict):
+    path = tmp_path / 'nisar-cv.stac.json'
+    path.write_text(json.dumps(stac_dict, indent=2))
+    return path
+
+
+@pytest.fixture
+def stac_dict():
+    return {
+        'type': 'Feature',
+        'stac_version': '1.1.0',
+        'id': 'nisar-cv-test-docker-container',
+        'geometry': {
+            'type': 'Polygon',
+            'coordinates': [
+                [
+                    [45.14133887649169, 45.47807891055877],
+                    [-91.26268826545007, 45.47807891055877],
+                    [-91.26268826545007, -90.73298114286905],
+                    [45.14133887649169, -90.73298114286905],
+                    [45.14133887649169, 45.47807891055877],
+                ]
+            ],
+        },
+        'bbox': [45.14133887649169, 45.47807891055877, -91.26268826545007, -90.73298114286905],
+        'properties': {
+            'start_datetime': '2026-06-24T00:00:00',
+            'end_datetime': '2026-08-11T00:00:00',
+            'datetime': '2026-08-11T00:00:00',
+        },
+        'collection': 'nisar-bridge',
+        'links': [
+            {
+                'rel': 'self',
+                'href': 's3://nisar-bridge-demo-nisar-cv/test-docker-container/nisar-cv-test-docker-container.stac.json',
+                'title': 'stac_id STAC Item',
+                'type': 'application/geo+json',
+            }
+        ],
+        'assets': {
+            'NISAR_148_A_024_HHHH_20260624_20260811_CV': {
+                'href': 'NISAR_148_A_024_HHHH_20260624_20260811_CV.tif',
+                'roles': ['data'],
+                'type': 'image/tiff',
+                'title': 'NISAR_148_A_024_HHHH_20260624_20260811_CV',
+                'description': '',
+            },
+            'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m': {
+                'href': 'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
+                'roles': ['data'],
+                'type': 'image/tiff',
+                'title': 'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m',
+                'description': '',
+            },
+            'NISAR_148_A_024_HHHH_20260624_20260811_NVALID': {
+                'href': 'NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
+                'roles': ['data'],
+                'type': 'image/tiff',
+                'title': 'NISAR_148_A_024_HHHH_20260624_20260811_NVALID',
+                'description': '',
+            },
+        },
+    }
