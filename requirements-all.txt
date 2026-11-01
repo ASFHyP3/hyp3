@@ -13,7 +13,7 @@ PyYAML==6.0.3
 responses==0.26.3
 ruff==0.15.22
 mypy==2.3.1
-setuptools==84.0.0
+setuptools==84.1.0
 setuptools_scm==10.3.4
 jsonschema==4.26.0
 openapi-spec-validator==0.8.5
