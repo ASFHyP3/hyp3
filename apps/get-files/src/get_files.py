@@ -6,9 +6,9 @@ from os import environ
 from pathlib import Path
 from typing import TypedDict
 
+import boto3
 import pystac
 
-import boto3
 import dynamo
 
 
@@ -20,8 +20,21 @@ class S3Location(TypedDict):
     key: str
 
 
+class S3Object(TypedDict):
+    Key: str
+    Size: int
+
+
 class ProductFile(TypedDict):
     url: str
+    size: int
+    filename: str
+    s3: S3Location
+
+
+class S3File(TypedDict):
+    download_url: str
+    file_type: str
     size: int
     filename: str
     s3: S3Location
@@ -74,7 +87,7 @@ def visible_product(product_path: str | Path) -> bool:
     return Path(product_path).suffix in ('.zip', '.nc', '.geojson', '.parquet')
 
 
-def get_products(files: list[dict]) -> list[ProductFile]:
+def get_products(files: list[S3File]) -> list[ProductFile]:
     return [
         {
             'url': item['download_url'],
@@ -87,24 +100,26 @@ def get_products(files: list[dict]) -> list[ProductFile]:
     ]
 
 
-def get_file_urls_by_type(file_list: list[dict], file_type: str) -> list[str]:
+def get_file_urls_by_type(file_list: list[S3File], file_type: str) -> list[str]:
     files = [item for item in file_list if file_type in item['file_type']]
     sorted_files = sorted(files, key=lambda x: x['file_type'])
     urls = [item['download_url'] for item in sorted_files]
     return urls
 
 
-def is_stac_json(s3_object: dict) -> bool:
+def is_stac_json(s3_object: S3Object) -> bool:
     return s3_object['Key'].endswith('.stac.json')
 
 
-def organize_files_tags(s3_objects: list[dict], bucket: str) -> OrganizedFiles:
-    all_files = []
+def organize_files_tags(s3_objects: list[S3Object], bucket: str) -> OrganizedFiles:
+    all_files: list[S3File] = []
     expiration = None
 
     for item in s3_objects:
         download_url = get_download_url(bucket, item['Key'])
         file_type = get_object_file_type(bucket, item['Key'])
+        assert file_type is not None, f"Can't find file type for {item}"
+
         all_files.append(
             {
                 'download_url': download_url,
@@ -129,43 +144,45 @@ def organize_files_tags(s3_objects: list[dict], bucket: str) -> OrganizedFiles:
     }
 
 
-def organize_files_stac(s3_objects: list[dict], bucket: str) -> StacFiles:
+def get_s3_object_for(asset: pystac.Asset, s3_objects: list[S3Object]) -> S3Object:
+    for s3_object in s3_objects:
+        if s3_object['Key'].split('/')[-1] in asset.href:
+            return s3_object
+
+    assert False, f"Can't find s3_object for {asset}"
+
+
+def organize_files_stac(s3_objects: list[S3Object], bucket: str) -> StacFiles:
     stac_s3_key = [obj['Key'] for obj in s3_objects if is_stac_json(obj)][0]
 
     stac_str = S3_CLIENT.get_object(Bucket=bucket, Key=stac_s3_key)['Body'].read()
     item = pystac.Item.from_dict(json.loads(stac_str))
 
-    prefix = Path(stac_s3_key).parent
-    sizes = {obj['Key']: obj['Size'] for obj in s3_objects}
-
-    def key_for(asset: pystac.Asset) -> str:
-        return str(prefix / asset.href)
-
-    def has_relative_url(asset: pystac.Asset) -> bool:
-        return 'https:' in asset.href
-
-    def urls_for_role(role: str) -> list[str]:
-        urls = []
-
-        for asset in item.get_assets(role=role).values():
-            if has_relative_url(asset):
-                url = get_download_url(bucket, key_for(asset))
-            else:
-                url = asset.href
-
-            urls.append(url)
-
-        return urls
-
     files: list[ProductFile] = []
+    browse_images: list[str] = []
+    thumbnail_images: list[str] = []
 
-    breakpoint()
-    for asset in item.get_assets(role='data').values():
-        key = key_for(asset)
+    for asset in item.get_assets().values():
+        s3_object = get_s3_object_for(asset, s3_objects)
+        key = s3_object['Key']
+        url = get_download_url(bucket, key)
+
+        if asset.roles is None:
+            continue
+
+        if 'overview' in asset.roles:
+            browse_images.append(url)
+
+        if 'thumbnail' in asset.roles:
+            thumbnail_images.append(url)
+
+        if 'data' not in asset.roles:
+            continue
+
         files.append(
             {
-                'url': get_download_url(bucket, key),
-                'size': sizes[key],
+                'url': url,
+                'size': s3_object['Size'],
                 'filename': Path(key).name,
                 's3': {'bucket': bucket, 'key': key},
             }
@@ -173,12 +190,12 @@ def organize_files_stac(s3_objects: list[dict], bucket: str) -> StacFiles:
 
     return {
         'files': files,
-        'browse_images': urls_for_role('overview'),
-        'thumbnail_images': urls_for_role('thumbnail'),
+        'browse_images': browse_images,
+        'thumbnail_images': thumbnail_images,
     }
 
 
-def organize_files(s3_objects: list[dict], bucket: str) -> OrganizedFiles:
+def organize_files(s3_objects: list[S3Object], bucket: str) -> OrganizedFiles:
     files = organize_files_tags(s3_objects, bucket)
 
     if any(is_stac_json(obj) for obj in s3_objects):
@@ -188,7 +205,7 @@ def organize_files(s3_objects: list[dict], bucket: str) -> OrganizedFiles:
             'browse_images': stac_files['browse_images'],
             'thumbnail_images': stac_files['thumbnail_images'],
             'logs': files['logs'],
-            'expiration_time': files['expiration_time']
+            'expiration_time': files['expiration_time'],
         }
 
     return files

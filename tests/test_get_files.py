@@ -285,16 +285,20 @@ def test_organize_files_stac(s3_stubber, stac_nisar_cv):
     cv_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif'
     cv_100m_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif'
     nvalid_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif'
+    water_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_WATER.tif'
+    crop_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CROP_100m.tif'
 
-    s3_objects = [
+    s3_objects: list[get_files.S3Object] = [
         {'Key': stac_key, 'Size': 2000},
         {'Key': cv_key, 'Size': 100},
         {'Key': cv_100m_key, 'Size': 50},
         {'Key': nvalid_key, 'Size': 25},
+        {'Key': water_key, 'Size': 30},
+        {'Key': crop_key, 'Size': 35},
     ]
 
     stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_nisar_cv)
-    for _ in range(3):
+    for _ in range(5):
         stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
 
     result = get_files.organize_files_stac(s3_objects, 'myBucket')
@@ -329,30 +333,46 @@ def test_organize_files_stac(s3_stubber, stac_nisar_cv):
                     'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
                 },
             },
+            {
+                'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_WATER.tif',
+                'size': 30,
+                'filename': 'NISAR_148_A_024_HHHH_20260624_20260811_WATER.tif',
+                's3': {
+                    'bucket': 'myBucket',
+                    'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_WATER.tif',
+                },
+            },
+            {
+                'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CROP_100m.tif',
+                'size': 35,
+                'filename': 'NISAR_148_A_024_HHHH_20260624_20260811_CROP_100m.tif',
+                's3': {
+                    'bucket': 'myBucket',
+                    'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CROP_100m.tif',
+                },
+            },
         ],
-        'browse_images': [],
+        'browse_images': [
+            'https://myBucket.s3.myRegion.amazonaws.com/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
+            'https://myBucket.s3.myRegion.amazonaws.com/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CROP_100m.tif',
+        ],
         'thumbnail_images': [],
     }
 
     assert result == expected
 
+
 def test_organize_files_stac_itslive(s3_stubber, stac_itslive):
     stac_key = 'myJobId/itslive.stac.json'
-    data_key =      'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.nc'
-    overview_key =  'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.png'
+    data_key = (
+        'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.nc'
+    )
+    overview_key = (
+        'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.png'
+    )
     thumbnail_key = 'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084_thumb.png'
 
-
-    '''
-    2026-10-30 13:29:52    2645423 LT04_L1TP_063018_19880611_20200917_02_T1_X_LT04_L1TP_063018_19880627_20200917_02_T1_G0120V02_P019.nc
-    2026-10-30 13:30:41        505 LT04_L1TP_063018_19880611_20200917_02_T1_X_LT04_L1TP_063018_19880627_20200917_02_T1_G0120V02_P019.nc.premet
-    2026-10-30 13:30:41         56 LT04_L1TP_063018_19880611_20200917_02_T1_X_LT04_L1TP_063018_19880627_20200917_02_T1_G0120V02_P019.nc.spatial
-    2026-10-30 13:29:52     932783 LT04_L1TP_063018_19880611_20200917_02_T1_X_LT04_L1TP_063018_19880627_20200917_02_T1_G0120V02_P019.png
-    2026-10-30 13:30:41       3599 LT04_L1TP_063018_19880611_20200917_02_T1_X_LT04_L1TP_063018_19880627_20200917_02_T1_G0120V02_P019.stac.json
-    2026-10-30 13:29:52       8458 LT04_L1TP_063018_19880611_20200917_02_T1_X_LT04_L1TP_063018_19880627_20200917_02_T1_G0120V02_P019_thumb.png
-    2026-10-30 13:29:53        200 publish_info.json
-    '''
-    s3_objects = [
+    s3_objects: list[get_files.S3Object] = [
         {'Key': stac_key, 'Size': 20},
         {'Key': data_key, 'Size': 100},
         {'Key': overview_key, 'Size': 50},
@@ -378,12 +398,15 @@ def test_organize_files_stac_itslive(s3_stubber, stac_itslive):
                 },
             },
         ],
-        'browse_images': [ f'{base}/myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.png' ],
-        'thumbnail_images': [ f'{base}/myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084_thumb.png' ],
+        'browse_images': [
+            f'{base}/myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.png'
+        ],
+        'thumbnail_images': [
+            f'{base}/myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084_thumb.png'
+        ],
     }
 
     assert result == expected
-
 
 
 @pytest.fixture
