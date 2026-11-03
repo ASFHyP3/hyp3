@@ -1,6 +1,6 @@
 import io
-import json
 import os
+import shutil
 from pathlib import Path
 from unittest.mock import patch
 
@@ -280,7 +280,7 @@ def stub_get_stac_object(s3_stubber, bucket, key, stac_path):
     )
 
 
-def test_organize_files_stac(s3_stubber, stac_json):
+def test_organize_files_stac(s3_stubber, stac_nisar_cv):
     stac_key = 'myJobId/nisar-cv-test-docker-container.stac.json'
     cv_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif'
     cv_100m_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif'
@@ -293,7 +293,7 @@ def test_organize_files_stac(s3_stubber, stac_json):
         {'Key': nvalid_key, 'Size': 25},
     ]
 
-    stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_json)
+    stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_nisar_cv)
     for _ in range(3):
         stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
 
@@ -333,70 +333,72 @@ def test_organize_files_stac(s3_stubber, stac_json):
         'browse_images': [],
         'thumbnail_images': [],
     }
+
+    assert result == expected
+
+def test_organize_files_stac_itslive(s3_stubber, stac_itslive):
+    stac_key = 'myJobId/itslive.stac.json'
+    data_key =      'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.nc'
+    overview_key =  'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.png'
+    thumbnail_key = 'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084_thumb.png'
+
+
+    '''
+    2026-10-30 13:29:52    2645423 LT04_L1TP_063018_19880611_20200917_02_T1_X_LT04_L1TP_063018_19880627_20200917_02_T1_G0120V02_P019.nc
+    2026-10-30 13:30:41        505 LT04_L1TP_063018_19880611_20200917_02_T1_X_LT04_L1TP_063018_19880627_20200917_02_T1_G0120V02_P019.nc.premet
+    2026-10-30 13:30:41         56 LT04_L1TP_063018_19880611_20200917_02_T1_X_LT04_L1TP_063018_19880627_20200917_02_T1_G0120V02_P019.nc.spatial
+    2026-10-30 13:29:52     932783 LT04_L1TP_063018_19880611_20200917_02_T1_X_LT04_L1TP_063018_19880627_20200917_02_T1_G0120V02_P019.png
+    2026-10-30 13:30:41       3599 LT04_L1TP_063018_19880611_20200917_02_T1_X_LT04_L1TP_063018_19880627_20200917_02_T1_G0120V02_P019.stac.json
+    2026-10-30 13:29:52       8458 LT04_L1TP_063018_19880611_20200917_02_T1_X_LT04_L1TP_063018_19880627_20200917_02_T1_G0120V02_P019_thumb.png
+    2026-10-30 13:29:53        200 publish_info.json
+    '''
+    s3_objects = [
+        {'Key': stac_key, 'Size': 20},
+        {'Key': data_key, 'Size': 100},
+        {'Key': overview_key, 'Size': 50},
+        {'Key': thumbnail_key, 'Size': 25},
+    ]
+
+    stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_itslive)
+    for _ in range(3):
+        stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
+
+    result = get_files.organize_files_stac(s3_objects, 'myBucket')
+
+    base = 'https://myBucket.s3.myRegion.amazonaws.com'
+    expected: get_files.StacFiles = {
+        'files': [
+            {
+                'url': f'{base}/myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.nc',
+                'size': 100,
+                'filename': 'LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.nc',
+                's3': {
+                    'bucket': 'myBucket',
+                    'key': 'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.nc',
+                },
+            },
+        ],
+        'browse_images': [ f'{base}/myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.png' ],
+        'thumbnail_images': [ f'{base}/myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084_thumb.png' ],
+    }
+
     assert result == expected
 
 
+
 @pytest.fixture
-def stac_json(tmp_path, stac_dict):
+def stac_nisar_cv(tmp_path):
+    asset_path = Path(__file__).parent / 'assets' / 'stac' / 'nisar-cv.stac.json'
     path = tmp_path / 'nisar-cv.stac.json'
-    path.write_text(json.dumps(stac_dict, indent=2))
+    shutil.copy2(asset_path, path)
+
     return path
 
 
 @pytest.fixture
-def stac_dict():
-    return {
-        'type': 'Feature',
-        'stac_version': '1.1.0',
-        'id': 'nisar-cv-test-docker-container',
-        'geometry': {
-            'type': 'Polygon',
-            'coordinates': [
-                [
-                    [45.14133887649169, 45.47807891055877],
-                    [-91.26268826545007, 45.47807891055877],
-                    [-91.26268826545007, -90.73298114286905],
-                    [45.14133887649169, -90.73298114286905],
-                    [45.14133887649169, 45.47807891055877],
-                ]
-            ],
-        },
-        'bbox': [45.14133887649169, 45.47807891055877, -91.26268826545007, -90.73298114286905],
-        'properties': {
-            'start_datetime': '2026-06-24T00:00:00',
-            'end_datetime': '2026-08-11T00:00:00',
-            'datetime': '2026-08-11T00:00:00',
-        },
-        'collection': 'nisar-bridge',
-        'links': [
-            {
-                'rel': 'self',
-                'href': 's3://nisar-bridge-demo-nisar-cv/test-docker-container/nisar-cv-test-docker-container.stac.json',
-                'title': 'stac_id STAC Item',
-                'type': 'application/geo+json',
-            }
-        ],
-        'assets': {
-            'NISAR_148_A_024_HHHH_20260624_20260811_CV': {
-                'href': 'NISAR_148_A_024_HHHH_20260624_20260811_CV.tif',
-                'roles': ['data'],
-                'type': 'image/tiff',
-                'title': 'NISAR_148_A_024_HHHH_20260624_20260811_CV',
-                'description': '',
-            },
-            'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m': {
-                'href': 'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
-                'roles': ['data'],
-                'type': 'image/tiff',
-                'title': 'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m',
-                'description': '',
-            },
-            'NISAR_148_A_024_HHHH_20260624_20260811_NVALID': {
-                'href': 'NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
-                'roles': ['data'],
-                'type': 'image/tiff',
-                'title': 'NISAR_148_A_024_HHHH_20260624_20260811_NVALID',
-                'description': '',
-            },
-        },
-    }
+def stac_itslive(tmp_path):
+    asset_path = Path(__file__).parent / 'assets' / 'stac' / 'itslive.stac.json'
+    path = tmp_path / 'itslive.stac.json'
+    shutil.copy2(asset_path, path)
+
+    return path

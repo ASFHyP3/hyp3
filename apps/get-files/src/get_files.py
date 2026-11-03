@@ -6,9 +6,9 @@ from os import environ
 from pathlib import Path
 from typing import TypedDict
 
-import boto3
 import pystac
 
+import boto3
 import dynamo
 
 
@@ -141,10 +141,25 @@ def organize_files_stac(s3_objects: list[dict], bucket: str) -> StacFiles:
     def key_for(asset: pystac.Asset) -> str:
         return str(prefix / asset.href)
 
+    def has_relative_url(asset: pystac.Asset) -> bool:
+        return 'https:' in asset.href
+
     def urls_for_role(role: str) -> list[str]:
-        return [get_download_url(bucket, key_for(asset)) for asset in item.get_assets(role=role).values()]
+        urls = []
+
+        for asset in item.get_assets(role=role).values():
+            if has_relative_url(asset):
+                url = get_download_url(bucket, key_for(asset))
+            else:
+                url = asset.href
+
+            urls.append(url)
+
+        return urls
 
     files: list[ProductFile] = []
+
+    breakpoint()
     for asset in item.get_assets(role='data').values():
         key = key_for(asset)
         files.append(
@@ -167,7 +182,14 @@ def organize_files(s3_objects: list[dict], bucket: str) -> OrganizedFiles:
     files = organize_files_tags(s3_objects, bucket)
 
     if any(is_stac_json(obj) for obj in s3_objects):
-        files = {**files, **organize_files_stac(s3_objects, bucket)}
+        stac_files = organize_files_stac(s3_objects, bucket)
+        files = {
+            'files': stac_files['files'],
+            'browse_images': stac_files['browse_images'],
+            'thumbnail_images': stac_files['thumbnail_images'],
+            'logs': files['logs'],
+            'expiration_time': files['expiration_time']
+        }
 
     return files
 
