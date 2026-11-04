@@ -94,10 +94,11 @@ AUTORIFT_JULIA:
       api_schema:
         description: Publish the resulting product files to the ITS_LIVE AWS Open Data (or test) S3 Bucket
         type: string
+        nullable: true
         enum:
           - its-live-data
           - its-live-data-test
-        default: its-live-data-test
+        default: null
     # FIXME: I'll bet money we'll need to provide this.
     # frame_id:
     #   api_schema:
