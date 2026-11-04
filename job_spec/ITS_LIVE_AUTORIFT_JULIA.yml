@@ -4,12 +4,10 @@ AUTORIFT_JULIA:
     reference:
       api_schema:
         type: array
-        nullable: true
         minItems: 1
         maxItems: 30
         example:
           - S2B_MSIL1C_20200105T152259_N0208_R039_T13CES_20200105T181230
-        default: null
         items:
           anyOf:
             - description: The name of a NISAR L-band RSLC or GSLC granule to process
@@ -45,12 +43,10 @@ AUTORIFT_JULIA:
     secondary:
       api_schema:
         type: array
-        nullable: true
         minItems: 1
         maxItems: 30
         example:
           - S2B_MSIL1C_20200315T152259_N0209_R039_T13CES_20200315T181115
-        default: null
         items:
           anyOf:
             - description: The name of a NISAR L-band RSLC or GSLC granule to process
