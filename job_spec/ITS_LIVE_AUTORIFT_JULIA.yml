@@ -1,5 +1,5 @@
 AUTORIFT_JULIA:
-  required_parameters: [reference, secondary, subset]
+  required_parameters: [reference, secondary]
   parameters:
     reference:
       api_schema:
@@ -87,6 +87,8 @@ AUTORIFT_JULIA:
       api_schema:
         description: WKT geometry used to subset reference and secondary S1 SLCs to bursts that intersect it by at least 50%
         type: string
+        nullable: true
+        default: null
         example: POLYGON ((-50.588 67.891, -52.646 68.054, -52.678 67.996, -54.567 68.121, -53.926 69.47, -51.994 69.336, -51.961 69.391, -49.788 69.214, -49.742 69.28, -47.634 69.078, -48.621 67.758, -50.558 67.937, -50.588 67.891))
     publish_bucket:
       api_schema:
@@ -123,6 +125,7 @@ AUTORIFT_JULIA:
   steps:
     - name: ''
       image: ghcr.io/alex-s-gardner/itsliveoffsetproduction.jl
+      image_tag: 'v0.4.1'
       command:
         - --bucket
         - Ref::bucket
