@@ -301,7 +301,7 @@ def test_organize_files_stac(s3_stubber, stac_nisar_cv):
     for _ in range(5):
         stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
 
-    result = get_files.organize_files_stac(s3_objects, 'myBucket')
+    result = get_files.organize_files_stac(s3_objects, 'myBucket', stac_key)
 
     base = 'https://myBucket.s3.myRegion.amazonaws.com'
     expected: get_files.StacFiles = {
@@ -383,7 +383,7 @@ def test_organize_files_stac_itslive(s3_stubber, stac_itslive):
     for _ in range(3):
         stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
 
-    result = get_files.organize_files_stac(s3_objects, 'myBucket')
+    result = get_files.organize_files_stac(s3_objects, 'myBucket', stac_key)
 
     base = 'https://myBucket.s3.myRegion.amazonaws.com'
     expected: get_files.StacFiles = {

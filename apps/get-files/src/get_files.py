@@ -152,41 +152,36 @@ def get_s3_object_for(asset: pystac.Asset, s3_objects: list[S3Object]) -> S3Obje
     assert False, f"Can't find s3_object for {asset}"
 
 
-def organize_files_stac(s3_objects: list[S3Object], bucket: str) -> StacFiles:
-    stac_s3_key = [obj['Key'] for obj in s3_objects if is_stac_json(obj)][0]
-
-    stac_str = S3_CLIENT.get_object(Bucket=bucket, Key=stac_s3_key)['Body'].read()
-    item = pystac.Item.from_dict(json.loads(stac_str))
+def organize_files_stac(s3_objects: list[S3Object], bucket: str, stac_key: str) -> StacFiles:
+    body = S3_CLIENT.get_object(Bucket=bucket, Key=stac_key)['Body']
+    item = pystac.Item.from_dict(json.load(body))
 
     files: list[ProductFile] = []
     browse_images: list[str] = []
     thumbnail_images: list[str] = []
 
-    for asset in item.get_assets().values():
+    for asset in item.assets.values():
+        roles = asset.roles or []
+        if not roles:
+            continue
+
         s3_object = get_s3_object_for(asset, s3_objects)
         key = s3_object['Key']
         url = get_download_url(bucket, key)
 
-        if asset.roles is None:
-            continue
-
-        if 'overview' in asset.roles:
+        if 'overview' in roles:
             browse_images.append(url)
-
-        if 'thumbnail' in asset.roles:
+        if 'thumbnail' in roles:
             thumbnail_images.append(url)
-
-        if 'data' not in asset.roles:
-            continue
-
-        files.append(
-            {
-                'url': url,
-                'size': s3_object['Size'],
-                'filename': Path(key).name,
-                's3': {'bucket': bucket, 'key': key},
-            }
-        )
+        if 'data' in roles:
+            files.append(
+                {
+                    'url': url,
+                    'size': s3_object['Size'],
+                    'filename': Path(key).name,
+                    's3': {'bucket': bucket, 'key': key},
+                }
+            )
 
     return {
         'files': files,
@@ -198,8 +193,8 @@ def organize_files_stac(s3_objects: list[S3Object], bucket: str) -> StacFiles:
 def organize_files(s3_objects: list[S3Object], bucket: str) -> OrganizedFiles:
     files = organize_files_tags(s3_objects, bucket)
 
-    if any(is_stac_json(obj) for obj in s3_objects):
-        stac_files = organize_files_stac(s3_objects, bucket)
+    if stac_key := next((obj['Key'] for obj in s3_objects if is_stac_json(obj)), None):
+        stac_files = organize_files_stac(s3_objects, bucket, stac_key)
         files = {
             'files': stac_files['files'],
             'browse_images': stac_files['browse_images'],
