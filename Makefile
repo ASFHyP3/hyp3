@@ -15,7 +15,13 @@ LAMBDA_LOGGING = ${PWD}/lib/lambda_logging
 export PYTHONPATH = ${API}:${CHECK_PROCESSING_TIME}:${GET_FILES}:${HANDLE_BATCH_EVENT}:${SET_BATCH_OVERRIDES}:${SCALE_CLUSTER}:${START_EXECUTION}:${DISABLE_PRIVATE_DNS}:${SEARCH_ARCHIVE}:${UPDATE_DB}:${UPLOAD_LOG}:${DYNAMO}:${LAMBDA_LOGGING}:${APPS}
 
 
-build: render
+check-python:
+	@case "$$(python --version 2>&1)" in \
+		'Python 3.13.'*) ;; \
+		*) echo "make build requires Python 3.13.x but found: $$(python --version 2>&1)" >&2; exit 1 ;; \
+	esac
+
+build: check-python render
 	python -m pip install --upgrade -r requirements-apps-api.txt -t ${API}; \
 	python -m pip install --upgrade -r requirements-apps-api-binary.txt --platform manylinux2014_x86_64 --only-binary=:all: -t ${API}; \
 	python -m pip install --upgrade -r requirements-apps-handle-batch-event.txt -t ${HANDLE_BATCH_EVENT}; \
