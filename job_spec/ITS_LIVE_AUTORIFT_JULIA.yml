@@ -92,6 +92,7 @@ AUTORIFT_JULIA:
         type: string
         nullable: true
         enum:
+          - null
           - its-live-data
           - its-live-data-test
         default: null
