@@ -1,9 +1,11 @@
 import io
+import json
 import os
 import shutil
 from pathlib import Path
 from unittest.mock import patch
 
+import pystac
 import pytest
 from botocore.response import StreamingBody
 from botocore.stub import Stubber
@@ -280,81 +282,73 @@ def stub_get_stac_object(s3_stubber, bucket, key, stac_path):
     )
 
 
-def test_organize_files_stac(s3_stubber, stac_nisar_cv):
+def test_get_stac_json(s3_stubber, stac_nisar_cv):
     stac_key = 'myJobId/nisar-cv-test-docker-container.stac.json'
-    cv_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif'
-    cv_100m_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif'
-    nvalid_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif'
-    water_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_WATER.tif'
-    crop_key = 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CROP_100m.tif'
-
     s3_objects: list[get_files.S3Object] = [
+        {'Key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif', 'Size': 100},
         {'Key': stac_key, 'Size': 2000},
-        {'Key': cv_key, 'Size': 100},
-        {'Key': cv_100m_key, 'Size': 50},
-        {'Key': nvalid_key, 'Size': 25},
-        {'Key': water_key, 'Size': 30},
-        {'Key': crop_key, 'Size': 35},
     ]
 
     stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_nisar_cv)
+
+    item = get_files.get_stac_json(s3_objects, 'myBucket')
+
+    assert isinstance(item, pystac.Item)
+    assert item.id == 'nisar-cv-test-stac'
+
+
+def test_get_stac_json_no_stac_file():
+    s3_objects: list[get_files.S3Object] = [
+        {'Key': 'myJobId/product.zip', 'Size': 100},
+    ]
+
+    assert get_files.get_stac_json(s3_objects, 'myBucket') is None
+
+
+def test_get_stac_json_missing_extensions(s3_stubber, stac_nisar_cv):
+    stac_dict = json.loads(stac_nisar_cv.read_text())
+    stac_dict['stac_extensions'] = [stac_dict['stac_extensions'][0]]  # drop alternate-assets
+    stac_nisar_cv.write_text(json.dumps(stac_dict))
+
+    stac_key = 'myJobId/nisar-cv-test-docker-container.stac.json'
+    s3_objects: list[get_files.S3Object] = [{'Key': stac_key, 'Size': 2000}]
+
+    stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_nisar_cv)
+
+    assert get_files.get_stac_json(s3_objects, 'myBucket') is None
+
+
+def test_organize_files_stac(s3_stubber, stac_nisar_cv):
+    item = pystac.Item.from_file(str(stac_nisar_cv))
+
     for _ in range(5):
         stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
 
-    result = get_files.organize_files_stac(s3_objects, 'myBucket', stac_key)
+    result = get_files.organize_files_stac(item, 'myBucket')
 
-    base = 'https://myBucket.s3.myRegion.amazonaws.com'
+    base = 'https://myBucket.s3.myRegion.amazonaws.com/test-stac'
+    prefix = 'NISAR_148_A_024_HHHH_20260624_20260811'
+
+    def product(suffix: str, size: int) -> get_files.ProductFile:
+        filename = f'{prefix}_{suffix}.tif'
+        return {
+            'url': f'{base}/{filename}',
+            'size': size,
+            'filename': filename,
+            's3': {'bucket': 'myBucket', 'key': f'test-stac/{filename}'},
+        }
+
     expected: get_files.StacFiles = {
         'files': [
-            {
-                'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif',
-                'size': 100,
-                'filename': 'NISAR_148_A_024_HHHH_20260624_20260811_CV.tif',
-                's3': {
-                    'bucket': 'myBucket',
-                    'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif',
-                },
-            },
-            {
-                'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
-                'size': 50,
-                'filename': 'NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
-                's3': {
-                    'bucket': 'myBucket',
-                    'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
-                },
-            },
-            {
-                'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
-                'size': 25,
-                'filename': 'NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
-                's3': {
-                    'bucket': 'myBucket',
-                    'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_NVALID.tif',
-                },
-            },
-            {
-                'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_WATER.tif',
-                'size': 30,
-                'filename': 'NISAR_148_A_024_HHHH_20260624_20260811_WATER.tif',
-                's3': {
-                    'bucket': 'myBucket',
-                    'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_WATER.tif',
-                },
-            },
-            {
-                'url': f'{base}/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CROP_100m.tif',
-                'size': 35,
-                'filename': 'NISAR_148_A_024_HHHH_20260624_20260811_CROP_100m.tif',
-                's3': {
-                    'bucket': 'myBucket',
-                    'key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CROP_100m.tif',
-                },
-            },
+            product('CV', 20504873),
+            product('CV_100m', 619057),
+            product('NVALID', 32621),
+            product('WATER', 47932),
+            product('CROP_100m', 9717),
         ],
         'browse_images': [
-            'https://myBucket.s3.myRegion.amazonaws.com/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV_100m.tif',
-            'https://myBucket.s3.myRegion.amazonaws.com/myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CROP_100m.tif',
+            f'{base}/{prefix}_CV_100m.tif',
+            f'{base}/{prefix}_CROP_100m.tif',
         ],
         'thumbnail_images': [],
     }
@@ -362,51 +356,21 @@ def test_organize_files_stac(s3_stubber, stac_nisar_cv):
     assert result == expected
 
 
-def test_organize_files_stac_itslive(s3_stubber, stac_itslive):
+def test_get_stac_json_itslive_skipped(s3_stubber, stac_itslive):
     stac_key = 'myJobId/itslive.stac.json'
     data_key = (
         'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.nc'
     )
-    overview_key = (
-        'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.png'
-    )
-    thumbnail_key = 'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084_thumb.png'
 
     s3_objects: list[get_files.S3Object] = [
         {'Key': stac_key, 'Size': 20},
         {'Key': data_key, 'Size': 100},
-        {'Key': overview_key, 'Size': 50},
-        {'Key': thumbnail_key, 'Size': 25},
     ]
 
     stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_itslive)
-    for _ in range(3):
-        stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
 
-    result = get_files.organize_files_stac(s3_objects, 'myBucket', stac_key)
-
-    base = 'https://myBucket.s3.myRegion.amazonaws.com'
-    expected: get_files.StacFiles = {
-        'files': [
-            {
-                'url': f'{base}/myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.nc',
-                'size': 100,
-                'filename': 'LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.nc',
-                's3': {
-                    'bucket': 'myBucket',
-                    'key': 'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.nc',
-                },
-            },
-        ],
-        'browse_images': [
-            f'{base}/myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.png'
-        ],
-        'thumbnail_images': [
-            f'{base}/myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084_thumb.png'
-        ],
-    }
-
-    assert result == expected
+    # Missing the `file` extension (and file:size on assets), so we fall back to tag-based organizing
+    assert get_files.get_stac_json(s3_objects, 'myBucket') is None
 
 
 @pytest.fixture
