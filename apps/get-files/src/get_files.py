@@ -150,11 +150,10 @@ def organize_files_tags(s3_objects: list[S3Object], bucket: str) -> OrganizedFil
 
 def get_s3_object_for(asset: pystac.Asset) -> S3Object:
     s3_path = Path(asset.extra_fields['alternate']['s3']['href'].removeprefix('s3://'))
-    key = Path(s3_path)
     size = asset.extra_fields['file:size']
 
     bucket = s3_path.parts[0]
-    key = s3_path.relative_to(bucket).as_posix()
+    key = str(s3_path.relative_to(bucket).as_posix())
 
     return {'Key': key, 'Size': size}
 
@@ -197,7 +196,7 @@ def organize_files_stac(stac_item: pystac.Item, bucket: str) -> StacFiles:
 def get_stac_json(s3_objects: list[S3Object], bucket: str) -> pystac.Item | None:
     stac_key = next((obj['Key'] for obj in s3_objects if is_stac_json(obj)), None)
     if stac_key is None:
-        return
+        return None
 
     body = S3_CLIENT.get_object(Bucket=bucket, Key=stac_key)['Body']
     stac_item = pystac.Item.from_dict(json.load(body))
