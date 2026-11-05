@@ -101,7 +101,7 @@ def lambda_handler(event: dict, _) -> dict:
         omp_num_threads = get_vcpus_from_memory(burst_memory)
         return get_container_overrides(burst_memory, omp_num_threads)
 
-    if job_type == 'AUTORIFT':
+    if job_type in ['AUTORIFT', 'AUTORIFT_JULIA']:
         autorift_memory = get_autorift_memory(job_parameters)
         omp_num_threads = get_vcpus_from_memory(autorift_memory, mibs_per_vcpu=2000)
         return get_container_overrides(autorift_memory, omp_num_threads)
