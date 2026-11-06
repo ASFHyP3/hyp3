@@ -10,14 +10,14 @@ NISAR_CV:
       api_schema:
         description: Start date of CV calculation in YYYY-MM-DD format
         type: string
-        pattern: "[0-9]{4}-[0-1][0-9]-[0-3][0-9]"
-        example: 2026-06-24
+        format: date
+        example: "2026-06-24"
     end_date:
       api_schema:
         description: End date of CV calculation in YYYY-MM-DD format
         type: string
-        pattern: "[0-9]{4}-[0-1][0-9]-[0-3][0-9]"
-        example: 2026-08-12
+        format: date
+        example: "2026-08-12"
     relative_orbit:
       api_schema:
         description: NISAR relative orbit number.
