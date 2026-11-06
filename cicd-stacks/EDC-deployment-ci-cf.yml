@@ -28,10 +28,10 @@ Resources:
               Federated: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
             Action: sts:AssumeRoleWithWebIdentity
             Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
               StringLike:
-                'token.actions.githubusercontent.com:sub': !Ref SourceRepositories
-              StringEqualsIgnoreCase:
-                'token.actions.githubusercontent.com:aud': sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Ref SourceRepositories
       Policies:
         - PolicyName: cloud-formation-deployment-policy
           PolicyDocument:
@@ -39,23 +39,24 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - ec2:*
-                  - s3:*
-                  - ecs:*
-                  - batch:*
-                  - events:*
-                  - logs:*
-                  - iam:*
-                  - lambda:*
-                  - ssm:GetParameters
                   - apigateway:*
-                  - states:*
-                  - dynamodb:*
-                  - rds:*
+                  - batch:*
                   - cloudwatch:*
-                  - sns:*
-                  - secretsmanager:*
+                  - dynamodb:*
+                  - ec2:*
+                  - ecs:*
+                  - events:*
+                  - iam:*
                   - kms:*
+                  - lambda:*
+                  - logs:*
+                  - rds:*
+                  - s3:*
+                  - secretsmanager:*
+                  - sns:*
+                  - sqs:*
+                  - ssm:GetParameters
+                  - states:*
                 Resource: "*"
 
               - Effect: Allow

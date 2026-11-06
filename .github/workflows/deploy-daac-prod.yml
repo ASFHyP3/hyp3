@@ -1,5 +1,9 @@
 name: Deploy DAAC prod to AWS
 
+permissions:
+  contents: read
+  id-token: write
+
 on:
   push:
     tags:
@@ -31,9 +35,9 @@ jobs:
               job_spec/ARIA_S1_GUNW.yml
               job_spec/OPERA_DISP_TMS.yml
             instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
-            default_max_vcpus: 1500
-            expanded_max_vcpus: 3000
-            required_surplus: 3000
+            default_max_vcpus: 1000
+            expanded_max_vcpus: 2000
+            required_surplus: 2000
             security_environment: EDC
             same_account_publishing: false
             ami_id: /ngap/amis/image_id_ecs_al2023_x86
@@ -43,7 +47,7 @@ jobs:
       name: ${{ matrix.environment }}
 
     steps:
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
@@ -52,7 +56,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: 3.13
 

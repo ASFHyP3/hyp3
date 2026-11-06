@@ -42,7 +42,7 @@ def get_object_file_type(bucket: str, key: str) -> str | None:
 
 
 def visible_product(product_path: str | Path) -> bool:
-    return Path(product_path).suffix in ('.zip', '.nc', '.geojson')
+    return Path(product_path).suffix in ('.zip', '.nc', '.geojson', '.parquet')
 
 
 def get_products(files: list[dict]) -> list[dict]:

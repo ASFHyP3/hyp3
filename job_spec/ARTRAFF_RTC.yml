@@ -22,10 +22,12 @@ ARTRAFF_RTC:
     resolution:
       api_schema:
         description: Resolution of the output RTC in meters.
-        type: integer
+        type: number
+        format: float
         default: 3
-        minimum: 0
         example: 30
+        minimum: 0
+        exclusiveMinimum: true
     dem:
       api_schema:
         description: DEM file. If you use `lidar_local_dem_file`, you must choose demtype=`Lidar 0.5m`

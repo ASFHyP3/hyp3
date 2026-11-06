@@ -10,25 +10,23 @@ Parameters:
     Default: repo:ASFHyP3/*
 
 Resources:
+  GitHubActionsOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      ClientIdList:
+        - sts.amazonaws.com
+      Url: https://token.actions.githubusercontent.com
+
   CloudformationDeploymentRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Effect: Allow
-            Principal:
-              Service: cloudformation.amazonaws.com
-            Action: sts:AssumeRole
-          - Effect: Allow
-            Principal:
-              Federated: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
-            Action: sts:AssumeRoleWithWebIdentity
-            Condition:
-              StringLike:
-                'token.actions.githubusercontent.com:sub': !Ref SourceRepositories
-              StringEqualsIgnoreCase:
-                'token.actions.githubusercontent.com:aud': sts.amazonaws.com
+          Action: sts:AssumeRole
+          Principal:
+            Service: cloudformation.amazonaws.com
+          Effect: Allow
       Policies:
         - PolicyName: cloud-formation-deployment-policy
           PolicyDocument:
@@ -36,24 +34,98 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - ec2:*
-                  - s3:*
-                  - ecs:*
-                  - batch:*
-                  - events:*
-                  - logs:*
-                  - iam:*
-                  - lambda:*
-                  - ssm:GetParameters
                   - apigateway:*
-                  - states:*
-                  - dynamodb:*
-                  - rds:*
+                  - batch:*
                   - cloudwatch:*
-                  - sns:*
-                  - secretsmanager:*
+                  - dynamodb:*
+                  - ec2:*
+                  - ecs:*
+                  - ecr:GetAuthorizationToken
+                  - events:*
+                  - iam:*
                   - kms:*
+                  - lambda:*
+                  - logs:*
+                  - rds:*
+                  - s3:*
+                  - secretsmanager:*
+                  - sns:*
+                  - sqs:*
+                  - ssm:GetParameters
+                  - states:*
+                  - sts:AssumeRole
                 Resource: "*"
+
+              - Effect: Allow
+                Action:
+                  - cloudformation:SetStackPolicy
+                  - cloudformation:ListStacks
+                  - cloudformation:CreateStack
+                  - cloudformation:UpdateStack
+                  - cloudformation:DeleteStack
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:GetTemplateSummary
+                Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+
+              - Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:DescribeRepositories
+                  - ecr:ListImages
+                  - ecr:DescribeImages
+                  - ecr:BatchGetImage
+                  - ecr:InitiateLayerUpload
+                  - ecr:UploadLayerPart
+                  - ecr:CompleteLayerUpload
+                  - ecr:PutImage
+                Resource: !Sub "arn:aws:ecr:*:${AWS::AccountId}:repository/*"
+
+  OIDCRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Ref SourceRepositories
+      Policies:
+        - PolicyName: github-actions-oidc-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:ValidateTemplate
+                  - cloudformation:DescribeStacks
+                  - ecr:GetAuthorizationToken
+                  - ssm:GetParameters
+                Resource: "*"
+
+              - Effect: Allow
+                Action: iam:PassRole
+                Resource: !GetAtt CloudformationDeploymentRole.Arn
+                Condition:
+                  StringLike:
+                    iam:AssociatedResourceArn: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+
+              - Effect: Allow
+                Action: s3:Get*
+                Resource: "arn:aws:s3:::*/*"
+
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub "arn:aws:s3:::${TemplateBucketName}/*"
 
               - Effect: Allow
                 Action:
@@ -68,44 +140,30 @@ Resources:
                   - cloudformation:GetTemplateSummary
                 Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
 
-  GithubActionsUser:
-    Type: AWS::IAM::User
-    Properties:
-      UserName: github-actions
-      Policies:
-        - PolicyName: github-actions-user-policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
               - Effect: Allow
                 Action:
-                  - cloudformation:ValidateTemplate
-                  - cloudformation:DescribeStacks
-                  - ssm:GetParameters
-                Resource: "*"
-
-              - Effect: Allow
-                Action: iam:PassRole
-                Resource: !GetAtt CloudformationDeploymentRole.Arn
-                Condition:
-                  StringLike:
-                    iam:AssociatedResourceArn: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
-
-              - Effect: Allow
-                Action: s3:PutObject
-                Resource: !Sub "arn:aws:s3:::${TemplateBucketName}/*"
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:DescribeRepositories
+                  - ecr:ListImages
+                  - ecr:DescribeImages
+                  - ecr:BatchGetImage
+                  - ecr:InitiateLayerUpload
+                  - ecr:UploadLayerPart
+                  - ecr:CompleteLayerUpload
+                  - ecr:PutImage
+                Resource: !Sub "arn:aws:ecr:*:${AWS::AccountId}:repository/*"
 
               - Effect: Allow
                 Action:
-                  - cloudformation:SetStackPolicy
-                  - cloudformation:CreateStack
-                  - cloudformation:UpdateStack
-                  - cloudformation:CreateChangeSet
-                  - cloudformation:DescribeChangeSet
-                  - cloudformation:ExecuteChangeSet
-                  - cloudformation:DeleteChangeSet
-                  - cloudformation:GetTemplateSummary
-                Resource: !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+                  - rds-db:connect
+                Resource:
+                  - !Sub "arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*"
+
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:*"
 
   ApiGatewayLoggingRole:
     Type: AWS::IAM::Role
@@ -125,11 +183,10 @@ Resources:
     Properties:
       CloudWatchRoleArn: !GetAtt ApiGatewayLoggingRole.Arn
 
-  GitHubActionsOidcProvider:
-    Type: AWS::IAM::OIDCProvider
-    Properties:
-      ClientIdList:
-        - sts.amazonaws.com
-      ThumbprintList:
-        - 6938fd4d98bab03faadb97b34396831e3780aea1
-      Url: https://token.actions.githubusercontent.com
+Outputs:
+  OIDCRoleOutput:
+    Description: The ARN of the role that GitHub Actions can assume
+    Value: !GetAtt OIDCRole.Arn
+  CloudFormationDeploymentRoleOutput:
+    Description: The ARN of the role with necessary permissions to deploy HyP3
+    Value: !GetAtt CloudformationDeploymentRole.Arn

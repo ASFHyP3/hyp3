@@ -1,2 +1,2 @@
 ./lib/dynamo/
-pydantic==2.13.4
+pydantic==2.13.5

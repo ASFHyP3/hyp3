@@ -4,6 +4,86 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.18.1]
+
+### Added
+- Added the `NISAR_GUNW` job spec to hyp3-bgc-engineering.
+- Added `rds-db:connect` permissions to `ASF-deployment-ci-cf.yml` for setting up postgres databases used in  HyP3-backed monitoring stacks.
+- Added `s3:get*` permissions to `ASF-deployment-ci-cf.yml` for building docker images which need to pull objects from S3 (e.g., hyp3-gamma).
+- Added an `swap_space` option to compute environments that will allocate the desired swap space via the instance launch template. Note: This will typically be used in conjunction with a job spec that sets the `MaxSwap` and `Swappiness` `linux_parameters`.
+- Added `hyp3-bridge` and `hyp3-bridge-test` deployments for use by the NISAR Bridge project.
+- Added a new `NISAR_CV` job spec and made it available in the `hyp3-bridge` and `hyp3-bridge-test` deployments.
+
+### Changed
+- `AUTORIFT` jobs will now request 16GB memory for NISAR processing instead of 64GB.
+- Job specs no longer need to set `vcpu` or `memory` for each step as it will default to 1 vCPU and 4 MiB (the AWS Batch minimums for ECS on EC2), respectively, if not provided.
+- Custom sandbox stacks are now deployed out of `deploy-custom-sandbox.yml` on merges to a `*-sandbox` branch or via a workflow dispatch event. Notably, most deploy parameters are now GitHub Actions Environments variables for more agility since sandboxes don't need their parameters tracked.
+
+## [10.18.0]
+
+### Added
+- Added SNS, SQS and ECR permissions to `ASF-deployment-ci-cf.yml` for deploying HyP3-backed monitoring stacks.
+- New deployments: `pism-cloud-sandbox`, `hyp3-beta-test`, `hyp3-beta`, `hyp3-pse-watermaps-test`, and `hyp3-pse-watermaps`.
+- Added a `PISM_ISMIP7_GREENLAND_RUN` job for preparing both forward and inverse model runs of Greenland for ISMIP7.
+- Added the `ntasks` API parameter to `PISM_EXECUTE` so vCPUs and memory can be dynamically set from job parameters.
+- A `GLACIER_MELT` job, which is made available in hyp3-beta, for computing melt extents and snowlines from glacier backscatter images.
+
+### Changed
+- The maximum length of the `bucket_prefix` job parameter has been increased to 700 UTF-8 characters from 100.
+- `ARTRAFF_RTC` (MultiRTC) jobs now take a floating point number instead of an integer for the resolution parameter. The minimum of 0 is also now correctly represented as an exclusive minimum (must be `>` 0, not `≥`).
+- Combined the `PISM_TERRA_RUN_FORWARD` and `PISM_TERRA_RUN_INERVERSE` jobs into `PISM_GLACIER_RUN` job for preparing both forward and inverse model runs of RGI glacier complexes.
+- Renamed the `PISM_TERRA_EXECUTE` job to `PISM_EXECUTE` in line with the other PISM jobs.
+- Removed required RGI subdirectory from the `run_script` S3 URI parameter in the `PISM_EXECUTE` job type generalizing it for non-glaicer runs.
+- all `PISM_*` jobs will now set their vCPU and memory requirements via batch container overrides using the `ntasks` job parameter, which now has a maximum of 192 tasks (corresponding to a `r8id.48xlarge`).
+- The timeout for all PISM jobs has been extended to 1 week.
+- Increased default/expanded vCPUs to 13000 for all PSIM deployments.
+- Reworked custom HyP3 deployment actions
+  - JPL deployments have been moved to the `deploy-custom-jpl-test.yml` and `deploy-custom-jpl-prod.yml` workflows so they can keep using service user access keys.
+  - Remaining HyP3 deployments in the `delpoy-custom-test.yml` and `deploy-custom-prod.yml` workflows are now deployed via OIDC.
+- All references to the HyP3 CI/CD stack name has been changed to `github-actions` from `hyp3-ci` inline with typical usage.
+- Reduced default/expanded vCPUs to 1000/2000 in hyp3-edc-uat and hyp3-edc-prod.
+
+## [10.17.8]
+
+### Fixed
+
+- `/user` endpoint no longer times out for users with large amounts of jobs.
+
+## [10.17.7]
+
+### Added
+- Added a new job spec (`SRG_TS`) to separate the time series workflow from the back projection.
+
+## [10.17.6]
+
+### Added
+- Added RDS Connection Permission to the TaskRole.
+- Added `FIRE_TRACK` job spec to `hyp3-ak-fire-safe`.
+- Added parameter `upload_to_db` to `AK_FIRE_SAFE` job spec.
+- Added environment variable `DB_HOST` to `AK_FIRE_SAFE` job spec.
+
+### Changed
+- Parquet file products are now visible.
+- Sentinel-1D scenes are now accepted by `ARIA_S1_COSEIS`, `INSAR_ISCE`, `WATER_MAP` and `WATERMAP_EQ` jobs.
+- Updated the pinned version of hyp3-isce2 from v3.0.1 to v3.0.2 in `INSAR_ISCE_BURST`, `INSAR_ISCE_BURST`, and `INSAR_ISCE_BURST` job specs to support Sentinel-1D processing in single burst jobs. 
+
+### Fixed
+- The SrgGslc and SlimSAR compute environments have been upgraded to AL2023-based AMIs from AL2 AMIs due to the pending end-of-life of AL2.
+- The `check_same_relative_orbits` validator has been updated to account for the repositioning of Sentinel-1C in June, 2026.
+
+### Removed
+- The `hyp3-carter` deployment has been retired.
+
+
+## [10.17.5]
+
+### Added
+- Added an option to force static file regeneration for the `ITS_LIVE_AUTORIFT` job type.
+
+### Changed
+- `ASF-deployment-ci-cf.yml` now deploys a role to be assumed via OIDC by GitHub Actions, rather than a service user
+- `plus-test` and `plus-prod` environments are now deployed via OIDC
+
 ## [10.17.4]
 
 ### Changed
