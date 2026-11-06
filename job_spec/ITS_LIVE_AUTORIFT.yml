@@ -134,16 +134,16 @@ AUTORIFT:
           - "its-live-data"
           - "its-live-data-test"
         default: null
-    use_static_files:
+    static_files:
       api_schema:
-        description:  Use static topographic correction files for ISCE3 processing if available (Sentinel-1 only)
-        default: true
-        type: boolean
-    regenerate_static_files:
-      api_schema:
-        description:  Force the creation of new static topographic correction files (Sentinel-1 only).
-        default: false
-        type: boolean
+        description: Whether to use published static topographic correction files for ISCE3 processing, create and publish new ones, or not use them at all (Sentinel-1 only)
+        type: string
+        nullable: true
+        enum:
+          - "use"
+          - "create"
+          - null
+        default: null
     frame_id:
       api_schema:
         description:  Sentinel-1 OPERA Frame ID to be placed in product metadata after processing
@@ -182,10 +182,8 @@ AUTORIFT:
         - Ref::publish_bucket
         - --naming-scheme
         - ITS_LIVE_PROD
-        - --use-static-files
-        - Ref::use_static_files
-        - --regenerate-static-files
-        - Ref::regenerate_static_files
+        - --static-files
+        - Ref::static_files
         - --reference
         - Ref::reference
         - --secondary
