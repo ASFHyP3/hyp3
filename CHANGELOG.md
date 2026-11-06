@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [10.19.0]
+
+### Added
+- `get_files` will uses a stack.json to set files, browse_images, thumbnail_images if one is present
+
 ## [10.18.1]
 
 ### Added
@@ -65,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Parquet file products are now visible.
 - Sentinel-1D scenes are now accepted by `ARIA_S1_COSEIS`, `INSAR_ISCE`, `WATER_MAP` and `WATERMAP_EQ` jobs.
-- Updated the pinned version of hyp3-isce2 from v3.0.1 to v3.0.2 in `INSAR_ISCE_BURST`, `INSAR_ISCE_BURST`, and `INSAR_ISCE_BURST` job specs to support Sentinel-1D processing in single burst jobs. 
+- Updated the pinned version of hyp3-isce2 from v3.0.1 to v3.0.2 in `INSAR_ISCE_BURST`, `INSAR_ISCE_BURST`, and `INSAR_ISCE_BURST` job specs to support Sentinel-1D processing in single burst jobs.
 
 ### Fixed
 - The SrgGslc and SlimSAR compute environments have been upgraded to AL2023-based AMIs from AL2 AMIs due to the pending end-of-life of AL2.
@@ -110,7 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added PS processing for `SRG_TIME_SERIES`, and new argument `process` to choose between `ps` and `sbas`.
 - Added new parameters `tbaseline` and `pbaseline` to customize temporal and perpendicular baselines.
-- Added a deployment parameter which will allow publishing products to any bucket within the containing AWS account, not just the HyP3 content bucket. This should only be allowed for projects that have a separate log-term archive bucket in the same account and have set the default user credits to 0. 
+- Added a deployment parameter which will allow publishing products to any bucket within the containing AWS account, not just the HyP3 content bucket. This should only be allowed for projects that have a separate log-term archive bucket in the same account and have set the default user credits to 0.
 
 ## [10.17.1]
 
@@ -125,7 +130,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The `bucket_prefix` parameter:
     - allows for overwriting the default prefix (the job ID) for the S3 bucket.
     - can only be used if also using a custom bucket.
-    - allows for inserting the job's ID and name by including `{job_id}` or `{name}` in the prefix string. 
+    - allows for inserting the job's ID and name by including `{job_id}` or `{name}` in the prefix string.
 - `/bucket-policy/<bucket_name>` route for retrieving an AWS policy that will allow HyP3 to write to a the `<bucket_name>` S3 Bucket.
 
 ## [10.16.5]
@@ -213,7 +218,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.14.1]
 
 ### Changed
-- PISM job specs no longer need to provide an RGI geopackage. 
+- PISM job specs no longer need to provide an RGI geopackage.
 
 ## [10.14.0]
 
@@ -221,7 +226,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Job specs may now specify any [LinuxParameters](https://docs.aws.amazon.com/batch/latest/APIReference/API_LinuxParameters.html) using the `linux_parameters` key on a per-step basis.
 - Added three new PISM job specs to prepare and run ensemble simulations of any [RGI v7.0](https://www.glims.org/RGI/) glacier complex to the PISM-Cloud deployments.
 - Added a new `VOLCSARVATORY_MINTPY` job spec which pulls multiburst products and generates time series files using MintPy.
-- Added support for NISAR RSLC and GSLC scenes to the `ITS_LIVE_AUTORIFT` and `ARIA_AUTORIFT` job specs. 
+- Added support for NISAR RSLC and GSLC scenes to the `ITS_LIVE_AUTORIFT` and `ARIA_AUTORIFT` job specs.
 
 ### Changed
 - Implemented dynamic memory allocation for multi-frame `AUTORIFT` jobs in `set_batch_overrides.py`. Sentinel-2 jobs with more than 4 frames now use 16 GB of memory instead of 8 GB. Single-frame Sentinel-2/Landsat and Sentinel-1 memory allocation is unchanged, while NISAR memory allocation is 64 GB.
