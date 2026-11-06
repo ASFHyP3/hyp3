@@ -1,9 +1,23 @@
 NISAR_CV:
   required_parameters:
+    - start_date
+    - end_date
     - relative_orbit
     - orbit_direction
     - frame_number
   parameters:
+    start_date:
+      api_schema:
+        description: Start date of CV calculation in YYYY-MM-DD format
+        type: string
+        pattern: "[0-9]{4}-[0-1][0-9]-[0-3][0-9]"
+        example: 2026-06-24
+    end_date:
+      api_schema:
+        description: End date of CV calculation in YYYY-MM-DD format
+        type: string
+        pattern: "[0-9]{4}-[0-1][0-9]-[0-3][0-9]"
+        example: 2026-08-12
     relative_orbit:
       api_schema:
         description: NISAR relative orbit number.
@@ -76,6 +90,8 @@ NISAR_CV:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-nisar-cv
       command:
+        - Ref::start_date
+        - Ref::end_date
         - Ref::relative_orbit
         - Ref::orbit_direction
         - Ref::frame_number
