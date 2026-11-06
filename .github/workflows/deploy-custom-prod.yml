@@ -275,6 +275,7 @@ jobs:
               job_spec/NISAR_GUNW.yml
               job_spec/VOLCSARVATORY_MULTI_BURST.yml
               job_spec/VOLCSARVATORY_MINTPY.yml
+              job_spec/VOLCSARVATORY_OPERA.yml
             instance_types: r8id.xlarge,r8id.2xlarge,r8id.4xlarge,r8id.8xlarge,r8id.12xlarge,r8id.16xlarge
             default_max_vcpus: 640
             expanded_max_vcpus: 640
