@@ -5,6 +5,7 @@ from datetime import datetime
 from os import environ
 from pathlib import Path
 from typing import TypedDict
+from urllib.parse import urlparse
 
 import boto3
 import pystac
@@ -111,10 +112,6 @@ def get_file_urls_by_type(file_list: list[S3File], file_type: str) -> list[str]:
     return urls
 
 
-def is_stac_json(s3_object: S3Object) -> bool:
-    return s3_object['Key'].endswith('.stac.json')
-
-
 def organize_files_tags(s3_objects: list[S3Object], bucket: str) -> OrganizedFiles:
     all_files: list[S3File] = []
     expiration = None
@@ -163,6 +160,9 @@ def organize_files_stac(stac_item: pystac.Item, bucket: str) -> StacFiles:
     browse_images: list[str] = []
     thumbnail_images: list[str] = []
 
+    def is_absolute_url(href: str) -> bool:
+        return bool(urlparse(href).scheme)
+
     for asset in stac_item.assets.values():
         roles = asset.roles or []
         if not roles:
@@ -170,7 +170,11 @@ def organize_files_stac(stac_item: pystac.Item, bucket: str) -> StacFiles:
 
         s3_object = get_s3_object_for(asset)
         key = s3_object['Key']
-        url = get_download_url(bucket, key)
+
+        if is_absolute_url(asset.href):
+            url = asset.href
+        else:
+            url = get_download_url(bucket, key)
 
         if 'overview' in roles:
             browse_images.append(url)
@@ -194,6 +198,9 @@ def organize_files_stac(stac_item: pystac.Item, bucket: str) -> StacFiles:
 
 
 def get_stac_json(s3_objects: list[S3Object], bucket: str) -> pystac.Item | None:
+    def is_stac_json(s3_object: S3Object) -> bool:
+        return s3_object['Key'].endswith('.stac.json')
+
     stac_key = next((obj['Key'] for obj in s3_objects if is_stac_json(obj)), None)
     if stac_key is None:
         return None
@@ -210,15 +217,18 @@ def get_stac_json(s3_objects: list[S3Object], bucket: str) -> pystac.Item | None
 def organize_files(s3_objects: list[S3Object], bucket: str) -> OrganizedFiles:
     files = organize_files_tags(s3_objects, bucket)
 
-    if stac_item := get_stac_json(s3_objects, bucket):
-        stac_files = organize_files_stac(stac_item, bucket)
-        files = {
-            'files': stac_files['files'],
-            'browse_images': stac_files['browse_images'],
-            'thumbnail_images': stac_files['thumbnail_images'],
-            'logs': files['logs'],
-            'expiration_time': files['expiration_time'],
-        }
+    try:
+        if stac_item := get_stac_json(s3_objects, bucket):
+            stac_files = organize_files_stac(stac_item, bucket)
+            files = {
+                'files': stac_files['files'],
+                'browse_images': stac_files['browse_images'],
+                'thumbnail_images': stac_files['thumbnail_images'],
+                'logs': files['logs'],
+                'expiration_time': files['expiration_time'],
+            }
+    except Exception:
+        pass
 
     return files
 

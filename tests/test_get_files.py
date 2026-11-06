@@ -307,7 +307,7 @@ def test_get_stac_json_no_stac_file():
 
 def test_get_stac_json_missing_extensions(s3_stubber, stac_nisar_cv):
     stac_dict = json.loads(stac_nisar_cv.read_text())
-    stac_dict['stac_extensions'] = [stac_dict['stac_extensions'][0]]  # drop alternate-assets
+    stac_dict['stac_extensions'] = [stac_dict['stac_extensions'][0]]
     stac_nisar_cv.write_text(json.dumps(stac_dict))
 
     stac_key = 'myJobId/nisar-cv-test-docker-container.stac.json'
@@ -369,8 +369,33 @@ def test_get_stac_json_itslive_skipped(s3_stubber, stac_itslive):
 
     stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_itslive)
 
-    # Missing the `file` extension (and file:size on assets), so we fall back to tag-based organizing
     assert get_files.get_stac_json(s3_objects, 'myBucket') is None
+
+
+def test_organize_files_stac_absolute_href(s3_stubber, stac_nisar_cv):
+    stac_dict = json.loads(stac_nisar_cv.read_text())
+
+    prefix = 'NISAR_148_A_024_HHHH_20260624_20260811'
+    absolute_url = f'https://example.com/cdn/{prefix}_CV_100m.tif'
+    stac_dict['assets'][f'{prefix}_CV_100m']['href'] = absolute_url
+
+    item = pystac.Item.from_dict(stac_dict)
+
+    for _ in range(4):
+        stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
+
+    result = get_files.organize_files_stac(item, 'myBucket')
+
+    base = 'https://myBucket.s3.myRegion.amazonaws.com/test-stac'
+
+    urls_by_filename = {f['filename']: f['url'] for f in result['files']}
+
+    assert urls_by_filename[f'{prefix}_CV_100m.tif'] == absolute_url
+    assert result['browse_images'][0] == absolute_url
+
+    # Relative hrefs are resolved through get_download_url
+    assert urls_by_filename[f'{prefix}_CV.tif'] == f'{base}/{prefix}_CV.tif'
+    assert result['browse_images'][1] == f'{base}/{prefix}_CROP_100m.tif'
 
 
 @pytest.fixture
