@@ -3,6 +3,7 @@ from math import ceil
 
 AUTORIFT_MEMORY_8GB = '7875'
 AUTORIFT_MEMORY_16GB = '15750'
+AUTORIFT_MEMORY_32GB = '31500'
 
 RTC_GAMMA_10M_MEMORY = '63200'
 WATER_MAP_10M_MEMORY = '126000'
@@ -43,6 +44,23 @@ def get_autorift_memory(job_parameters: dict) -> str:
             return AUTORIFT_MEMORY_8GB
 
     return AUTORIFT_MEMORY_16GB  # S1, L, NISAR
+
+
+def get_autorift_julia_memory(job_parameters: dict) -> str:
+    granules = get_granules(job_parameters)
+
+    frame_counts = [len(job_parameters.get(k) or []) for k in ['reference', 'secondary']]
+    num_frames = max(frame_counts)
+
+    if granules[0].startswith('S2'):
+        if num_frames <= 4:
+            return AUTORIFT_MEMORY_8GB
+
+    if granules[0].startswith('N'):
+        return AUTORIFT_MEMORY_32GB
+
+    return AUTORIFT_MEMORY_16GB  # S1, L
+
 
 
 def get_insar_isce_burst_memory(job_parameters: dict) -> str:
@@ -101,8 +119,13 @@ def lambda_handler(event: dict, _) -> dict:
         omp_num_threads = get_vcpus_from_memory(burst_memory)
         return get_container_overrides(burst_memory, omp_num_threads)
 
-    if job_type in ['AUTORIFT', 'AUTORIFT_JULIA']:
+    if job_type == 'AUTORIFT':
         autorift_memory = get_autorift_memory(job_parameters)
+        omp_num_threads = get_vcpus_from_memory(autorift_memory, mibs_per_vcpu=2000)
+        return get_container_overrides(autorift_memory, omp_num_threads)
+
+    if job_type == 'AUTORIFT_JULIA':
+        autorift_memory = get_autorift_julia_memory(job_parameters)
         omp_num_threads = get_vcpus_from_memory(autorift_memory, mibs_per_vcpu=2000)
         return get_container_overrides(autorift_memory, omp_num_threads)
 
