@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `get_files` will uses a stack.json to set files, browse_images, thumbnail_images if one is present
 
+## [10.18.3]
+
+### Added
+- Added the `VOLCSARVATORY_OPERA` job spec to `hyp3-volcsarvatory` and `hyp3-volcsarvatory-test`.
+
+## [10.18.2]
+
+### Changed
+- Updated python dependencies.
+
 ## [10.18.1]
 
 ### Added
