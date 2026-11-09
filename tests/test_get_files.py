@@ -1,8 +1,13 @@
+import io
+import json
 import os
+import shutil
 from pathlib import Path
 from unittest.mock import patch
 
+import pystac
 import pytest
+from botocore.response import StreamingBody
 from botocore.stub import Stubber
 
 import get_files
@@ -266,3 +271,146 @@ def test_get_files_failed_job(s3_stubber: Stubber):
                     'logs': ['https://myBucket.s3.myRegion.amazonaws.com/myJobId/myJobId.log'],
                 }
             )
+
+
+def stub_get_stac_object(s3_stubber, bucket, key, stac_path):
+    data = stac_path.read_bytes()
+    s3_stubber.add_response(
+        'get_object',
+        {'Body': StreamingBody(io.BytesIO(data), len(data))},
+        {'Bucket': bucket, 'Key': key},
+    )
+
+
+def test_get_stac_json(s3_stubber, stac_nisar_cv):
+    stac_key = 'myJobId/nisar-cv-test-docker-container.stac.json'
+    s3_objects: list[get_files.S3Object] = [
+        {'Key': 'myJobId/NISAR_148_A_024_HHHH_20260624_20260811_CV.tif', 'Size': 100},
+        {'Key': stac_key, 'Size': 2000},
+    ]
+
+    stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_nisar_cv)
+
+    item = get_files.get_stac_json(s3_objects, 'myBucket')
+
+    assert isinstance(item, pystac.Item)
+    assert item.id == 'nisar-cv-test-stac'
+
+
+def test_get_stac_json_no_stac_file():
+    s3_objects: list[get_files.S3Object] = [
+        {'Key': 'myJobId/product.zip', 'Size': 100},
+    ]
+
+    assert get_files.get_stac_json(s3_objects, 'myBucket') is None
+
+
+def test_get_stac_json_missing_extensions(s3_stubber, stac_nisar_cv):
+    stac_dict = json.loads(stac_nisar_cv.read_text())
+    stac_dict['stac_extensions'] = [stac_dict['stac_extensions'][0]]
+    stac_nisar_cv.write_text(json.dumps(stac_dict))
+
+    stac_key = 'myJobId/nisar-cv-test-docker-container.stac.json'
+    s3_objects: list[get_files.S3Object] = [{'Key': stac_key, 'Size': 2000}]
+
+    stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_nisar_cv)
+
+    assert get_files.get_stac_json(s3_objects, 'myBucket') is None
+
+
+def test_organize_files_stac(s3_stubber, stac_nisar_cv):
+    item = pystac.Item.from_file(str(stac_nisar_cv))
+
+    for _ in range(5):
+        stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
+
+    result = get_files.organize_files_stac(item, 'myBucket')
+
+    base = 'https://myBucket.s3.myRegion.amazonaws.com/test-stac'
+    prefix = 'NISAR_148_A_024_HHHH_20260624_20260811'
+
+    def product(suffix: str, size: int) -> get_files.ProductFile:
+        filename = f'{prefix}_{suffix}.tif'
+        return {
+            'url': f'{base}/{filename}',
+            'size': size,
+            'filename': filename,
+            's3': {'bucket': 'myBucket', 'key': f'test-stac/{filename}'},
+        }
+
+    expected: get_files.StacFiles = {
+        'files': [
+            product('CV', 20504873),
+            product('CV_100m', 619057),
+            product('NVALID', 32621),
+            product('WATER', 47932),
+            product('CROP_100m', 9717),
+        ],
+        'browse_images': [
+            f'{base}/{prefix}_CV_100m.tif',
+            f'{base}/{prefix}_CROP_100m.tif',
+        ],
+        'thumbnail_images': [],
+    }
+
+    assert result == expected
+
+
+def test_get_stac_json_itslive_skipped(s3_stubber, stac_itslive):
+    stac_key = 'myJobId/itslive.stac.json'
+    data_key = (
+        'myJobId/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.nc'
+    )
+
+    s3_objects: list[get_files.S3Object] = [
+        {'Key': stac_key, 'Size': 20},
+        {'Key': data_key, 'Size': 100},
+    ]
+
+    stub_get_stac_object(s3_stubber, 'myBucket', stac_key, stac_itslive)
+
+    assert get_files.get_stac_json(s3_objects, 'myBucket') is None
+
+
+def test_organize_files_stac_absolute_href(s3_stubber, stac_nisar_cv):
+    stac_dict = json.loads(stac_nisar_cv.read_text())
+
+    prefix = 'NISAR_148_A_024_HHHH_20260624_20260811'
+    absolute_url = f'https://example.com/cdn/{prefix}_CV_100m.tif'
+    stac_dict['assets'][f'{prefix}_CV_100m']['href'] = absolute_url
+
+    item = pystac.Item.from_dict(stac_dict)
+
+    for _ in range(4):
+        stub_bucket_head(s3_stubber, 'myBucket', 'myRegion')
+
+    result = get_files.organize_files_stac(item, 'myBucket')
+
+    base = 'https://myBucket.s3.myRegion.amazonaws.com/test-stac'
+
+    urls_by_filename = {f['filename']: f['url'] for f in result['files']}
+
+    assert urls_by_filename[f'{prefix}_CV_100m.tif'] == absolute_url
+    assert result['browse_images'][0] == absolute_url
+
+    # Relative hrefs are resolved through get_download_url
+    assert urls_by_filename[f'{prefix}_CV.tif'] == f'{base}/{prefix}_CV.tif'
+    assert result['browse_images'][1] == f'{base}/{prefix}_CROP_100m.tif'
+
+
+@pytest.fixture
+def stac_nisar_cv(tmp_path):
+    asset_path = Path(__file__).parent / 'assets' / 'stac' / 'nisar-cv.stac.json'
+    path = tmp_path / 'nisar-cv.stac.json'
+    shutil.copy2(asset_path, path)
+
+    return path
+
+
+@pytest.fixture
+def stac_itslive(tmp_path):
+    asset_path = Path(__file__).parent / 'assets' / 'stac' / 'itslive.stac.json'
+    path = tmp_path / 'itslive.stac.json'
+    shutil.copy2(asset_path, path)
+
+    return path

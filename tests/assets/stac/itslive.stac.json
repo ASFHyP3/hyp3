@@ -1,0 +1,105 @@
+{
+  "id": "LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084",
+  "bbox": [-179.9996, -83.222, 176.6339, -80.3427],
+  "type": "Feature",
+  "links": [
+    {
+      "rel": "collection",
+      "type": "application/json",
+      "href": "https://stac.itslive.cloud/collections/itslive-granules"
+    },
+    {
+      "rel": "parent",
+      "type": "application/json",
+      "href": "https://stac.itslive.cloud/collections/itslive-granules"
+    },
+    {
+      "rel": "root",
+      "type": "application/json",
+      "href": "https://stac.itslive.cloud/"
+    },
+    {
+      "rel": "self",
+      "type": "application/geo+json",
+      "href": "https://stac.itslive.cloud/collections/itslive-granules/items/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "https://its-live-data.s3.amazonaws.com/velocity_image_pair/landsatOLI/v02/S80W170/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.nc",
+      "type": "application/netcdf",
+      "roles": ["data"],
+      "alternate": {
+        "s3": {
+          "href": "s3://its-live-data/velocity_image_pair/landsatOLI/v02/S80W170/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.nc",
+          "alternate:name": "S3"
+        }
+      }
+    },
+    "overview": {
+      "href": "https://its-live-data.s3.amazonaws.com/velocity_image_pair/landsatOLI/v02/S80W170/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.png",
+      "type": "image/png",
+      "roles": ["overview"]
+    },
+    "thumbnail": {
+      "href": "https://its-live-data.s3.amazonaws.com/velocity_image_pair/landsatOLI/v02/S80W170/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084_thumb.png",
+      "type": "image/png",
+      "roles": ["thumbnail"]
+    }
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [-173.2897, -80.3427],
+        [-176.6331, -80.3921],
+        [-179.9996, -80.4086],
+        [176.6339, -80.3921],
+        [173.2905, -80.3427],
+        [172.7635, -81.0399],
+        [172.1471, -81.7369],
+        [171.4168, -82.4333],
+        [170.5382, -83.1287],
+        [175.2369, -83.1986],
+        [-179.9994, -83.222],
+        [-175.2357, -83.1985],
+        [-170.537, -83.1287],
+        [-171.4158, -82.4332],
+        [-172.1461, -81.7368],
+        [-172.7626, -81.0399],
+        [-173.2897, -80.3427]
+      ]
+    ]
+  },
+  "collection": "itslive-granules",
+  "properties": {
+    "created": "2024-08-27T00:29:36Z",
+    "date_dt": 24,
+    "updated": "2024-08-27T00:29:36Z",
+    "version": "002",
+    "datetime": "2023-10-25T16:52:37.987916Z",
+    "latitude": -81.8141,
+    "platform": "LC08",
+    "longitude": -179.9995,
+    "proj:code": "EPSG:3031",
+    "scene_1_id": "LC08_L1GT_020121_20231013_20231102_02_T2",
+    "scene_2_id": "LC09_L1GT_020121_20231106_20231106_02_T2",
+    "end_datetime": "2023-11-06T16:52:37.860541Z",
+    "mid_datetime": "2023-10-25T16:52:37.987916Z",
+    "scene_1_frame": "020121",
+    "scene_2_frame": "020121",
+    "grid_partition": "81ec7ffffffffff",
+    "start_datetime": "2023-10-13T16:52:38.115291Z",
+    "sat:orbit_state": "N/A",
+    "percent_valid_pixels": 84
+  },
+  "_source_key": "velocity_image_pair/landsatOLI/v02/S80W170/LC08_L1GT_020121_20231013_20231102_02_T2_X_LC09_L1GT_020121_20231106_20231106_02_T2_G0120V02_P084.stac.json",
+  "stac_version": "1.1.0",
+  "_source_bucket": "its-live-data",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/projection/v2.0.0/schema.json",
+    "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
+    "https://stac-extensions.github.io/version/v1.2.0/schema.json",
+    "https://stac-extensions.github.io/sat/v1.1.0/schema.json"
+  ]
+}
