@@ -1,4 +1,4 @@
-boto3==1.43.123
-pydantic==2.14.2
+boto3==1.43.125
+pydantic==2.14.3
 ./lib/dynamo/
 ./lib/lambda_logging/
