@@ -52,7 +52,7 @@ NISAR_CV:
       api_schema:
         description: Geographic subset of the granules to use, in the format of a WKT string.
         type: string
-        default: ''
+        default: null
         example: POLYGON((-91.2399 45.1589,-90.7532 45.1589,-90.7532 45.4609,-91.2399 45.4609,-91.2399 45.1589))
     crop_area:
       api_schema:
