@@ -1,0 +1,32 @@
+GLACIER_MELT_STITCHING:
+  required_parameters:
+    - product_urls
+  parameters:
+    product_urls:
+      api_schema:
+        type: array
+        description: Original glacier-melt output ZIP locations (HTTPS or S3).
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: string
+          pattern: '^(https://|s3://).+'
+  cost_profiles:
+    DEFAULT:
+      cost: 1.0
+  validators: []
+  steps:
+    - name: ''
+      image: ghcr.io/jsingh2344/hyp3-glacier-melt-stitching
+      image_tag: test
+      command:
+        - --bucket
+        - Ref::bucket
+        - --bucket-prefix
+        - Ref::bucket_prefix
+        - --product-urls
+        - Ref::product_urls
+      timeout: 21600
+      compute_environment: Default
+      vcpu: 2
+      memory: 7600

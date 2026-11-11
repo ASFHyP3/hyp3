@@ -28,7 +28,11 @@ def get_batch_job_parameters(job: dict) -> dict[str, str]:
     # Convert parameters to strings so they can be passed to Batch; see:
     # https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html#Batch-SubmitJob-request-parameters
     return {
-        key: convert_to_string(value)
+        key: (
+            json.dumps(value)
+            if job['job_type'] == 'GLACIER_MELT_STITCHING' and key == 'product_urls'
+            else convert_to_string(value)
+        )
         for key, value in job['job_parameters'].items()
         if key in BATCH_PARAMS_BY_JOB_TYPE[job['job_type']]
     }
