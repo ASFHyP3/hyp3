@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [10.19.1]
 
 ### Changed
-- Renamed `hyp3-srg` to `srg` for LAVAS job specs.
+- Updated the LAVAs job specs to use  `ghcr.io/asfhyp3/srg` images instead of the deprecated `ghcr.io/asfhyp3/hyp3-srg` images.
 
 ## [10.19.0]
 
