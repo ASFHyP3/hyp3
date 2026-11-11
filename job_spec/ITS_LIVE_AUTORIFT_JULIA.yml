@@ -96,7 +96,7 @@ AUTORIFT_JULIA:
           - its-live-data
           - its-live-data-test
         default: null
-    # FIXME: I'll bet money we'll need to provide this.
+    # FIXME: I'll bet money we'll need to provide this. AND CONFIRMED; WE DO!
     # frame_id:
     #   api_schema:
     #     description:  Sentinel-1 OPERA Frame ID to be placed in product metadata after processing
@@ -123,7 +123,7 @@ AUTORIFT_JULIA:
   steps:
     - name: ''
       image: ghcr.io/alex-s-gardner/itsliveoffsetproduction.jl
-      image_tag: 'v0.4.1'
+      image_tag: 'v0.5.1'
       command:
         - --bucket
         - Ref::bucket
