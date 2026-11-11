@@ -195,3 +195,11 @@ def test_lambda_handler():
         mock_get_jobs_waiting_for_execution.assert_called_once_with(limit=500)
         mock_convert_decimals_to_numbers.assert_called_once_with('mock_jobs')
         mock_submit_jobs.assert_called_once_with('converted_jobs')
+
+
+def test_stitching_product_urls_are_json():
+    urls = ['https://example.com/product.zip?signature=a&key=b', 's3://products/second.zip']
+    job = {'job_type': 'GLACIER_MELT_STITCHING', 'job_parameters': {'product_urls': urls}}
+    with patch.object(start_execution, 'BATCH_PARAMS_BY_JOB_TYPE', {'GLACIER_MELT_STITCHING': ['product_urls']}):
+        parameters = start_execution.get_batch_job_parameters(job)
+    assert json.loads(parameters['product_urls']) == urls
