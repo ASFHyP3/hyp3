@@ -60,7 +60,7 @@ SRG_TIME_SERIES:
   steps:
     - name: BACK_PROJECTION
       map: for granule in granules
-      image: ghcr.io/asfhyp3/hyp3-srg
+      image: ghcr.io/asfhyp3/srg
       command:
         - ++process
         - back_projection
@@ -82,7 +82,7 @@ SRG_TIME_SERIES:
         - EARTHDATA_USERNAME
         - EARTHDATA_PASSWORD
     - name: ''
-      image: ghcr.io/asfhyp3/hyp3-srg
+      image: ghcr.io/asfhyp3/srg
       command:
         - ++process
         - time_series
