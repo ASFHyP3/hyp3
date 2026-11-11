@@ -62,7 +62,6 @@ def get_autorift_julia_memory(job_parameters: dict) -> str:
     return AUTORIFT_MEMORY_16GB  # S1, L
 
 
-
 def get_insar_isce_burst_memory(job_parameters: dict) -> str:
     looks = job_parameters['looks']
     bursts = len(job_parameters['reference'])
