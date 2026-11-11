@@ -121,12 +121,12 @@ def lambda_handler(event: dict, _) -> dict:
 
     if job_type == 'AUTORIFT':
         autorift_memory = get_autorift_memory(job_parameters)
-        omp_num_threads = get_vcpus_from_memory(autorift_memory, mibs_per_vcpu=2000)
+        omp_num_threads = get_vcpus_from_memory(autorift_memory, mibs_per_vcpu=4000)
         return get_container_overrides(autorift_memory, omp_num_threads)
 
     if job_type == 'AUTORIFT_JULIA':
         autorift_memory = get_autorift_julia_memory(job_parameters)
-        omp_num_threads = get_vcpus_from_memory(autorift_memory, mibs_per_vcpu=2000)
+        omp_num_threads = get_vcpus_from_memory(autorift_memory, mibs_per_vcpu=4000)
         return get_container_overrides(autorift_memory, omp_num_threads)
 
     if job_type == 'RTC_GAMMA' and job_parameters['resolution'] in [10, 20]:
