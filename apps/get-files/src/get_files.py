@@ -1,15 +1,62 @@
+import json
 import os
 import urllib.parse
 from datetime import datetime
 from os import environ
 from pathlib import Path
+from typing import TypedDict
+from urllib.parse import urlparse
 
 import boto3
+import pystac
 
 import dynamo
 
 
 S3_CLIENT = boto3.client('s3')
+REQUIRED_STAC_EXTENSIONS = {
+    'https://stac-extensions.github.io/file/v2.1.0/schema.json',
+    'https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json',
+}
+
+
+class S3Location(TypedDict):
+    bucket: str
+    key: str
+
+
+class S3Object(TypedDict):
+    Key: str
+    Size: int
+
+
+class ProductFile(TypedDict):
+    url: str
+    size: int
+    filename: str
+    s3: S3Location
+
+
+class S3File(TypedDict):
+    download_url: str
+    file_type: str
+    size: int
+    filename: str
+    s3: S3Location
+
+
+class StacFiles(TypedDict):
+    files: list[ProductFile]
+    browse_images: list[str]
+    thumbnail_images: list[str]
+
+
+class OrganizedFiles(TypedDict):
+    files: list[ProductFile]
+    browse_images: list[str]
+    thumbnail_images: list[str]
+    logs: list[str]
+    expiration_time: str | None
 
 
 def get_download_url(bucket: str, key: str) -> str:
@@ -45,7 +92,7 @@ def visible_product(product_path: str | Path) -> bool:
     return Path(product_path).suffix in ('.zip', '.nc', '.geojson', '.parquet')
 
 
-def get_products(files: list[dict]) -> list[dict]:
+def get_products(files: list[S3File]) -> list[ProductFile]:
     return [
         {
             'url': item['download_url'],
@@ -58,19 +105,22 @@ def get_products(files: list[dict]) -> list[dict]:
     ]
 
 
-def get_file_urls_by_type(file_list: list[dict], file_type: str) -> list[str]:
+def get_file_urls_by_type(file_list: list[S3File], file_type: str) -> list[str]:
     files = [item for item in file_list if file_type in item['file_type']]
     sorted_files = sorted(files, key=lambda x: x['file_type'])
     urls = [item['download_url'] for item in sorted_files]
     return urls
 
 
-def organize_files(s3_objects: list[dict], bucket: str) -> dict:
-    all_files = []
+def organize_files_tags(s3_objects: list[S3Object], bucket: str) -> OrganizedFiles:
+    all_files: list[S3File] = []
     expiration = None
+
     for item in s3_objects:
         download_url = get_download_url(bucket, item['Key'])
         file_type = get_object_file_type(bucket, item['Key'])
+        assert file_type is not None, f"Can't find file type for {item}"
+
         all_files.append(
             {
                 'download_url': download_url,
@@ -93,6 +143,94 @@ def organize_files(s3_objects: list[dict], bucket: str) -> dict:
         'logs': get_file_urls_by_type(all_files, 'log'),
         'expiration_time': expiration,
     }
+
+
+def get_s3_object_for(asset: pystac.Asset) -> S3Object:
+    s3_path = Path(asset.extra_fields['alternate']['s3']['href'].removeprefix('s3://'))
+    size = asset.extra_fields['file:size']
+
+    bucket = s3_path.parts[0]
+    key = str(s3_path.relative_to(bucket).as_posix())
+
+    return {'Key': key, 'Size': size}
+
+
+def organize_files_stac(stac_item: pystac.Item, bucket: str) -> StacFiles:
+    files: list[ProductFile] = []
+    browse_images: list[str] = []
+    thumbnail_images: list[str] = []
+
+    def is_absolute_url(href: str) -> bool:
+        return bool(urlparse(href).scheme)
+
+    for asset in stac_item.assets.values():
+        roles = asset.roles or []
+        if not roles:
+            continue
+
+        s3_object = get_s3_object_for(asset)
+        key = s3_object['Key']
+
+        if is_absolute_url(asset.href):
+            url = asset.href
+        else:
+            url = get_download_url(bucket, key)
+
+        if 'overview' in roles:
+            browse_images.append(url)
+        if 'thumbnail' in roles:
+            thumbnail_images.append(url)
+        if 'data' in roles:
+            files.append(
+                {
+                    'url': url,
+                    'size': s3_object['Size'],
+                    'filename': Path(key).name,
+                    's3': {'bucket': bucket, 'key': key},
+                }
+            )
+
+    return {
+        'files': files,
+        'browse_images': browse_images,
+        'thumbnail_images': thumbnail_images,
+    }
+
+
+def get_stac_json(s3_objects: list[S3Object], bucket: str) -> pystac.Item | None:
+    def is_stac_json(s3_object: S3Object) -> bool:
+        return s3_object['Key'].endswith('.stac.json')
+
+    stac_key = next((obj['Key'] for obj in s3_objects if is_stac_json(obj)), None)
+    if stac_key is None:
+        return None
+
+    body = S3_CLIENT.get_object(Bucket=bucket, Key=stac_key)['Body']
+    stac_item = pystac.Item.from_dict(json.load(body))
+
+    if not REQUIRED_STAC_EXTENSIONS <= set(stac_item.stac_extensions):
+        return None
+
+    return stac_item
+
+
+def organize_files(s3_objects: list[S3Object], bucket: str) -> OrganizedFiles:
+    files = organize_files_tags(s3_objects, bucket)
+
+    try:
+        if stac_item := get_stac_json(s3_objects, bucket):
+            stac_files = organize_files_stac(stac_item, bucket)
+            files = {
+                'files': stac_files['files'],
+                'browse_images': stac_files['browse_images'],
+                'thumbnail_images': stac_files['thumbnail_images'],
+                'logs': files['logs'],
+                'expiration_time': files['expiration_time'],
+            }
+    except Exception:
+        pass
+
+    return files
 
 
 def lambda_handler(event: dict, context: object) -> None:
