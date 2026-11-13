@@ -24,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated python dependencies.
 
+## [10.18.2]
+
+### Changed
+- `make build` now stops with an error message, before it renders or installs anything, unless `python --version` reports Python 3.13.x. This prevents installing the AWS Lambda dependencies with the wrong Python version.
+
 ## [10.18.1]
 
 ### Added
