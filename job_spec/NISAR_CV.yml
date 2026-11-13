@@ -22,7 +22,7 @@ NISAR_CV:
       api_schema:
         description: NISAR relative orbit number.
         type: integer
-        minimum: 001
+        minimum: 1
         maximum: 173
         example: 148
     orbit_direction:
@@ -37,9 +37,9 @@ NISAR_CV:
       api_schema:
         description: NISAR track frame number containing scene.
         type: integer
-        minimum: 001
+        minimum: 1
         maximum: 176
-        example: 024
+        example: 24
     pol:
       api_schema:
         description: Polarization of input granules to use.
