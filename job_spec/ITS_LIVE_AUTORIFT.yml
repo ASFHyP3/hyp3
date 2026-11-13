@@ -169,7 +169,6 @@ AUTORIFT:
   steps:
     - name: ''
       image: ghcr.io/asfhyp3/hyp3-autorift
-      image_tag: '0.28.5.dev52_g2ee6bbd'
       command:
         - Ref::granules
         - --bucket
