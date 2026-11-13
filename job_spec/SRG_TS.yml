@@ -40,7 +40,7 @@ SRG_TS:
       cost: 1.0
   steps:
     - name: ''
-      image: ghcr.io/asfhyp3/hyp3-srg
+      image: ghcr.io/asfhyp3/srg
       command:
         - ++process
         - time_series
