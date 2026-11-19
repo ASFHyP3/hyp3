@@ -49,12 +49,8 @@ def get_autorift_memory(job_parameters: dict) -> str:
 def get_autorift_julia_memory(job_parameters: dict) -> str:
     granules = get_granules(job_parameters)
 
-    frame_counts = [len(job_parameters.get(k) or []) for k in ['reference', 'secondary']]
-    num_frames = max(frame_counts)
-
     if granules[0].startswith('S2'):
-        if num_frames <= 4:
-            return AUTORIFT_MEMORY_8GB
+        return AUTORIFT_MEMORY_8GB
 
     if granules[0].startswith('N'):
         return AUTORIFT_MEMORY_32GB
@@ -120,12 +116,12 @@ def lambda_handler(event: dict, _) -> dict:
 
     if job_type == 'AUTORIFT':
         autorift_memory = get_autorift_memory(job_parameters)
-        omp_num_threads = get_vcpus_from_memory(autorift_memory, mibs_per_vcpu=4000)
+        omp_num_threads = get_vcpus_from_memory(autorift_memory)
         return get_container_overrides(autorift_memory, omp_num_threads)
 
     if job_type == 'AUTORIFT_JULIA':
         autorift_memory = get_autorift_julia_memory(job_parameters)
-        omp_num_threads = get_vcpus_from_memory(autorift_memory, mibs_per_vcpu=4000)
+        omp_num_threads = get_vcpus_from_memory(autorift_memory)
         return get_container_overrides(autorift_memory, omp_num_threads)
 
     if job_type == 'RTC_GAMMA' and job_parameters['resolution'] in [10, 20]:

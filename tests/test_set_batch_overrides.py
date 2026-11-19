@@ -169,7 +169,7 @@ def test_set_batch_overrides_autorift_s1():
                 'Value': AUTORIFT_MEMORY_16GB,
             }
         ],
-        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '8'}],
+        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '2'}],
     }
 
 
@@ -187,7 +187,7 @@ def test_set_batch_overrides_autorift_s2():
                 'Value': AUTORIFT_MEMORY_8GB,
             }
         ],
-        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '4'}],
+        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '1'}],
     }
 
     assert lambda_handler(
@@ -206,7 +206,7 @@ def test_set_batch_overrides_autorift_s2():
                 'Value': AUTORIFT_MEMORY_16GB,
             }
         ],
-        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '8'}],
+        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '2'}],
     }
 
 
@@ -224,7 +224,7 @@ def test_set_batch_overrides_autorift_landsat():
                 'Value': AUTORIFT_MEMORY_16GB,
             }
         ],
-        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '8'}],
+        'Environment': [{'Name': 'OMP_NUM_THREADS', 'Value': '2'}],
     }
 
 
