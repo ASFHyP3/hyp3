@@ -6,7 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [10.19.2]
 
+### Added
+- Added the new `AUTORIFT_JULIA` job spec to ITS_LIVE deployments and `set_batch_overrides.py`.
+
 ### Changed
+- ITS_LIVE deployments now use `r6gd,r7gd,r8gd,r9gd` instance families by default and the `r6id,r6idn,r8id,r8idn` instance families for intel environments.
+- Combined the `use_static_files` and `regenerate_static_files`  boolean parameters to a unified `static_files` enum in the `ITS_LIVE_AUTORIFT` job spec.
 - Increased `ARTRAFF_RTC` timeout from 2 hours to 4 hours.
 
 ## [10.19.1]
