@@ -71,10 +71,11 @@ jobs:
             cost_profile: DEFAULT
             job_files: >-
               job_spec/ITS_LIVE_AUTORIFT.yml
+              job_spec/ITS_LIVE_AUTORIFT_JULIA.yml
               job_spec/ITS_LIVE_CROP.yml
               job_spec/ITS_LIVE_CROP_BULK.yml
               job_spec/ITS_LIVE_META_BULK.yml
-            instance_types: r6gd,r7gd,r8gd,r9gd
+            instance_types: r9gd
             default_max_vcpus: 640  # Max: 10,406
             expanded_max_vcpus: 640  # Max: 10,406
             required_surplus: 0
