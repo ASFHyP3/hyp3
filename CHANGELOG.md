@@ -4,10 +4,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [10.19.3]
-  - Increased `ARTRAFF_RTC` timeout from 4 hours to 24 hours 
-    for stubborn Umbra SICD imagery.
-
 ## [10.19.2]
 
 ### Added
@@ -16,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - ITS_LIVE deployments now use `r9gd` instance families by default and the `r6id,r6idn,r8id,r8idn` instance families for intel environments.
 - The `use_static_files` and `regenerate_static_files` boolean parameters were combined into a unified `static_files` enum in the `ITS_LIVE_AUTORIFT` job spec.
-- Increased `ARTRAFF_RTC` timeout from 2 hours to 4 hours.
+- Increased `ARTRAFF_RTC` timeout from 2 hours to 24 hours for stubborn Umbra SICD imagery.
 
 ## [10.19.1]
 
