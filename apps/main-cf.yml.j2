@@ -103,6 +103,12 @@ Parameters:
     Description: CloudFront Distribution URL for Earthdata Cloud environments
   {% endif %}
 
+  {% if security_environment not in  ('JPL', 'EDC') %}
+  ContentBucketEventsTopicName:
+    Description: Name for the HyP3 content bucket create events SNS Topic
+    Type: String
+  {% endif %}
+
 Conditions:
 
   ScaleCluster: !Not [!Equals [!Ref DefaultMaxvCpus, !Ref ExpandedMaxvCpus]]
@@ -111,6 +117,11 @@ Outputs:
 
   ApiUrl:
     Value: !GetAtt Api.Outputs.Url
+  {% if security_environment not in  ('JPL', 'EDC') %}
+  TopicArn:
+    Description: ARN of the Content Bucket Events SNS Topic
+    Value: !Ref ContentBucketEventsTopic
+  {% endif %}
 
 Resources:
 
@@ -253,6 +264,9 @@ Resources:
 
   ContentBucket:
     Type: AWS::S3::Bucket
+    {% if security_environment not in ('JPL', 'EDC') %}
+    DependsOn: ContentBucketEventsTopicPolicy
+    {%  endif %}
     Properties:
       LoggingConfiguration:
         DestinationBucketName: !Ref LogBucket
@@ -286,6 +300,12 @@ Resources:
               - HEAD
             AllowedOrigins:
               - "*.asf.alaska.edu"
+      {% if security_environment not in ('JPL', 'EDC') %}
+      NotificationConfiguration:
+        TopicConfigurations:
+          - Event: s3:ObjectCreated:*
+            Topic: !Ref ContentBucketEventsTopic
+      {% endif %}
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
@@ -323,6 +343,45 @@ Resources:
             {% endif %}
             Action: s3:ListBucket
             Resource: !GetAtt ContentBucket.Arn
+  {% endif %}
+
+  {% if security_environment not in ('JPL', 'EDC') %}
+  ContentBucketEventsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      # Note: The only other parameter that requires replacement on update is FifoTopic, so this shan't be troublesome.
+      #       See: https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-sns-topic.html
+      TopicName: !Sub '${ContentBucketEventsTopicName}'
+
+  ContentBucketEventsTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref ContentBucketEventsTopic
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref ContentBucketEventsTopic
+            Condition:
+              ArnLike:
+                # FIXME: E3004 Circular Dependencies for resource ContentBucketEventsTopicPolicy. Circular dependency with [ContentBucket]
+                aws:SourceArn: !Ref ContentBucket
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+          - Effect: Allow
+            Action: sns:Subscribe
+            Resource: !Ref Topic
+            Principal:
+              AWS: "*"
+            Condition:
+              StringEquals:
+                SNS:Protocol:
+                  - sqs
+                  - lambda
   {% endif %}
 
   JobsTable:
