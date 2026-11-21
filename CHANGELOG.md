@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - ITS_LIVE deployments now use `r9gd` instance families by default and the `r6id,r6idn,r8id,r8idn` instance families for intel environments.
 - The `use_static_files` and `regenerate_static_files` boolean parameters were combined into a unified `static_files` enum in the `ITS_LIVE_AUTORIFT` job spec.
-- Increased `ARTRAFF_RTC` timeout from 2 hours to 4 hours.
+- Increased `ARTRAFF_RTC` timeout from 2 hours to 24 hours for stubborn Umbra SICD imagery.
 
 ## [10.19.1]
 
