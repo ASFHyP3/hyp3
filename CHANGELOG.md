@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ITS_LIVE deployments now use `r9gd` instance families by default and the `r6id,r6idn,r8id,r8idn` instance families for intel environments.
 - The `use_static_files` and `regenerate_static_files` boolean parameters were combined into a unified `static_files` enum in the `ITS_LIVE_AUTORIFT` job spec.
 - Increased `ARTRAFF_RTC` timeout from 2 hours to 24 hours for stubborn Umbra SICD imagery.
+- The `PISM_GLACIER_RUN` and `PISM_ISMIP7_GREENLAND_RUN` job specs have been combined into a single, unified `PISM_RUN` job spec. Notably, in the combined job spec:
+  - Instead of specifying a specific PISM `process` to run, you now specify a `domain` and `direction` which pism-terra uses to select the appropriate run process.
+  - You can optionally specify a `run_name`, which takes place of the `rgi_id` parameter in `PISM_GLACIER_RUN`
+  - The `--output-path` and `--data-path` arguments have been hard-coded to a specific directory to ensure a consistent PISM directory structure for PISM-Cloud
+- The `PISM_EXECUTE` job spec now accepts a `domain` parameter and `run_name` parameter which are used to ensure the expected PISM directory structure is present when executing a PISM simulation.
 
 ## [10.19.1]
 
