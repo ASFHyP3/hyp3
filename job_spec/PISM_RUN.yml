@@ -42,7 +42,7 @@ PISM_RUN:
         type: integer
         default: 32
         minimum: 2
-        maximum: 192
+        maximum: 384  # r8id[n].96xlarge
     resolution:
       api_schema:
         description: Override horizontal grid resolution
