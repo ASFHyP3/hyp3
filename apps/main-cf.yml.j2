@@ -305,6 +305,8 @@ Resources:
         TopicConfigurations:
           - Event: s3:ObjectCreated:*
             Topic: !Ref ContentBucketEventsTopic
+          - Event: s3:LifecycleExpiration:*
+            Topic: !Ref ContentBucketEventsTopic
       {% endif %}
       OwnershipControls:
         Rules:
