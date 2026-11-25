@@ -7,7 +7,7 @@ Parameters:
 
   SourceRepositories:
     Type: CommaDelimitedList
-    Default: repo:ASFHyP3/*
+    Default: "repo:ASFHyP3/*,repo:ASFHyP3@68247451/*"
 
 Resources:
   GitHubActionsOidcProvider:
