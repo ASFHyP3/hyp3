@@ -2,20 +2,29 @@ PISM_EXECUTE:
   required_parameters:
     - run_script
   parameters:
-    ntasks:
+    domain:
       api_schema:
-        description: Number of MPI tasks to use when executing PISM simulations
-        type: integer
-        default: 32
-        minimum: 2
-        maximum: 192
+        description: Select the PISM TERRA domain you're simulating
+        type: string
+        default: ismip7-greenland
+    run_name:
+      api_schema:
+        description: Name used to identify a pism-terra run (e.g., a RGI ID for glacier runs, an ice sheet name, or any arbitrary string).
+        type: string
+        default: ''
     run_script:
       api_schema:
         description: S3 URI to a run script
         type: string
         pattern: "^s3://.*/run_scripts/.*.sh"
         example: s3://pism-cloud-data/summer_school/inverse_test/224e6d60-95de-48fe-8f56-70e697a8ec15/RGI2000-v7.0-C-01-04374/run_scripts/submit_g500m_RGI2000-v7.0-C-01-04374_id_0_0001-01-01_0021-02-01.sh
-
+    ntasks:
+      api_schema:
+        description: Number of MPI tasks to use when executing PISM simulations
+        type: integer
+        default: 32
+        minimum: 2
+        maximum: 384  # r8id[n].96xlarge
   cost_profiles:
     DEFAULT:
       cost: 1.0
@@ -25,12 +34,16 @@ PISM_EXECUTE:
       image: ghcr.io/pism/pism-terra
       command:
         - ++process
-        - pism-glacier-execute
+        - pism-execute
         - Ref::run_script
         - --bucket
         - Ref::bucket
         - --bucket-prefix
         - Ref::bucket_prefix
+        - --domain
+        - Ref::domain
+        - --run-name
+        - Ref::run_name
       secrets:
         - CDS_API_URL
         - CDS_API_KEY
