@@ -32,6 +32,8 @@ PISM_EXECUTE:
   steps:
     - name: ''
       image: ghcr.io/pism/pism-terra
+      # FIXME: remove before merging to main
+      image_tag: 0.1.4.dev1275_g7243220ba
       command:
         - ++process
         - pism-execute
